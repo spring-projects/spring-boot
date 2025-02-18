@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,16 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link BuildProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class BuildPropertiesTests {
 
@@ -51,6 +55,14 @@ class BuildPropertiesTests {
 		assertThat(properties.getArtifact()).isNull();
 		assertThat(properties.getVersion()).isNull();
 		assertThat(properties.getTime()).isNull();
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new BuildProperties.BuildPropertiesRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/build-info.properties"))
+			.accepts(runtimeHints);
 	}
 
 	private static Properties createProperties(String group, String artifact, String version, String buildTime) {

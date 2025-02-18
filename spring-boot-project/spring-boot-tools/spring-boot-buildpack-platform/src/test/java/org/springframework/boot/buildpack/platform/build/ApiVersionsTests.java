@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.build;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -70,12 +72,12 @@ class ApiVersionsTests {
 	@Test
 	void createFromRange() {
 		ApiVersions versions = ApiVersions.of(1, IntStream.rangeClosed(2, 7));
-		assertThat(versions.toString()).isEqualTo("1.2,1.3,1.4,1.5,1.6,1.7");
+		assertThat(versions).hasToString("1.2,1.3,1.4,1.5,1.6,1.7");
 	}
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(ApiVersions.parse("1.1", "2.2", "3.3").toString()).isEqualTo("1.1,2.2,3.3");
+		assertThat(ApiVersions.parse("1.1", "2.2", "3.3")).hasToString("1.1,2.2,3.3");
 	}
 
 	@Test
@@ -83,7 +85,7 @@ class ApiVersionsTests {
 		ApiVersions v12a = ApiVersions.parse("1.2", "2.3");
 		ApiVersions v12b = ApiVersions.parse("1.2", "2.3");
 		ApiVersions v13 = ApiVersions.parse("1.3", "2.4");
-		assertThat(v12a.hashCode()).isEqualTo(v12b.hashCode());
+		assertThat(v12a).hasSameHashCodeAs(v12b);
 		assertThat(v12a).isEqualTo(v12a).isEqualTo(v12b).isNotEqualTo(v13);
 	}
 

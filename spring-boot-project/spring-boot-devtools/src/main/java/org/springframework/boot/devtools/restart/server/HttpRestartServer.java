@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class HttpRestartServer {
 	 * the local classpath
 	 */
 	public HttpRestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter) {
-		Assert.notNull(sourceDirectoryUrlFilter, "SourceDirectoryUrlFilter must not be null");
+		Assert.notNull(sourceDirectoryUrlFilter, "'sourceDirectoryUrlFilter' must not be null");
 		this.server = new RestartServer(sourceDirectoryUrlFilter);
 	}
 
@@ -57,7 +57,7 @@ public class HttpRestartServer {
 	 * @param restartServer the underlying restart server
 	 */
 	public HttpRestartServer(RestartServer restartServer) {
-		Assert.notNull(restartServer, "RestartServer must not be null");
+		Assert.notNull(restartServer, "'restartServer' must not be null");
 		this.server = restartServer;
 	}
 

@@ -174,8 +174,8 @@ class WebConversionServiceTests {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2018);
-		assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.JANUARY);
-		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1);
+		assertThat(calendar.get(Calendar.MONTH)).isZero();
+		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isOne();
 	}
 
 	private void customDateFormat(Object input) {

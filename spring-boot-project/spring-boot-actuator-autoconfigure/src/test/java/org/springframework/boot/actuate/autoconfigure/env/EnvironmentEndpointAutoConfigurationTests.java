@@ -17,10 +17,12 @@
 package org.springframework.boot.actuate.autoconfigure.env;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor;
@@ -33,6 +35,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,16 +68,9 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
-			.withSystemProperties("dbPassword=123456", "apiKey=123456")
-			.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
-			.run(validateSystemProperties("******", "123456"));
-	}
-
-	@Test
 	void customSanitizingFunctionsAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(SanitizingFunctionConfiguration.class)
+			.withPropertyValues("management.endpoint.env.show-values: WHEN_AUTHORIZED")
 			.withPropertyValues("management.endpoints.web.exposure.include=env")
 			.withSystemProperties("custom=123456", "password=123456")
 			.run((context) -> {
@@ -89,11 +85,32 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void additionalKeysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
+	@SuppressWarnings("unchecked")
+	void rolesCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withPropertyValues("management.endpoint.env.roles: test")
+			.withPropertyValues("management.endpoints.web.exposure.include=env")
 			.withSystemProperties("dbPassword=123456", "apiKey=123456")
-			.withPropertyValues("management.endpoint.env.additional-keys-to-sanitize=key")
-			.run(validateSystemProperties("******", "******"));
+			.run((context) -> {
+				assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
+				EnvironmentEndpointWebExtension endpoint = context.getBean(EnvironmentEndpointWebExtension.class);
+				Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
+				assertThat(roles).contains("test");
+			});
+	}
+
+	@Test
+	void showValuesCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withPropertyValues("management.endpoint.env.show-values: WHEN_AUTHORIZED")
+			.withPropertyValues("management.endpoints.web.exposure.include=env")
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
+				assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
+				EnvironmentEndpointWebExtension webExtension = context.getBean(EnvironmentEndpointWebExtension.class);
+				EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
+				assertThat(webExtension).extracting("showValues").isEqualTo(Show.WHEN_AUTHORIZED);
+				assertThat(endpoint).extracting("showValues").isEqualTo(Show.WHEN_AUTHORIZED);
+			});
 	}
 
 	@Test

@@ -42,7 +42,7 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 	void toLinksWhenServletPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
-			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
+			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isNotFound();
 			webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
 		});
 	}

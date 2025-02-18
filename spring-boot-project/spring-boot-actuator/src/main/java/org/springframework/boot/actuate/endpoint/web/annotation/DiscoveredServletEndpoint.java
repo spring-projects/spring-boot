@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.annotation;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> implements ExposableServletEndpoint {
 
 	private final String rootPath;
@@ -39,8 +41,8 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> im
 	private final EndpointServlet endpointServlet;
 
 	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
-			boolean enabledByDefault) {
-		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
+			Access defaultAccess) {
+		super(discoverer, endpointBean, id, defaultAccess, Collections.emptyList());
 		String beanType = endpointBean.getClass().getName();
 		Assert.state(endpointBean instanceof Supplier,
 				() -> "ServletEndpoint bean " + beanType + " must be a supplier");

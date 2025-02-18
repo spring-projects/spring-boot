@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 
@@ -31,7 +33,7 @@ import org.springframework.util.MimeType;
  * @author Dave Syer
  * @since 1.2.2
  */
-@ConfigurationProperties(prefix = "spring.mustache")
+@ConfigurationProperties("spring.mustache")
 public class MustacheProperties {
 
 	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
@@ -42,7 +44,7 @@ public class MustacheProperties {
 
 	public static final String DEFAULT_SUFFIX = ".mustache";
 
-	private final Servlet servlet = new Servlet();
+	private final Servlet servlet = new Servlet(this::getCharset);
 
 	private final Reactive reactive = new Reactive();
 
@@ -149,83 +151,6 @@ public class MustacheProperties {
 		this.enabled = enabled;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.allow-request-override")
-	public boolean isAllowRequestOverride() {
-		return this.servlet.isAllowRequestOverride();
-	}
-
-	@Deprecated
-	public void setAllowRequestOverride(boolean allowRequestOverride) {
-		this.servlet.setAllowRequestOverride(allowRequestOverride);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.allow-session-override")
-	public boolean isAllowSessionOverride() {
-		return this.servlet.isAllowSessionOverride();
-	}
-
-	@Deprecated
-	public void setAllowSessionOverride(boolean allowSessionOverride) {
-		this.servlet.setAllowSessionOverride(allowSessionOverride);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.cache")
-	public boolean isCache() {
-		return this.servlet.isCache();
-	}
-
-	@Deprecated
-	public void setCache(boolean cache) {
-		this.servlet.setCache(cache);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.content-type")
-	public MimeType getContentType() {
-		return this.servlet.getContentType();
-	}
-
-	@Deprecated
-	public void setContentType(MimeType contentType) {
-		this.servlet.setContentType(contentType);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-request-attributes")
-	public boolean isExposeRequestAttributes() {
-		return this.servlet.isExposeRequestAttributes();
-	}
-
-	@Deprecated
-	public void setExposeRequestAttributes(boolean exposeRequestAttributes) {
-		this.servlet.setExposeRequestAttributes(exposeRequestAttributes);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-session-attributes")
-	public boolean isExposeSessionAttributes() {
-		return this.servlet.isExposeSessionAttributes();
-	}
-
-	@Deprecated
-	public void setExposeSessionAttributes(boolean exposeSessionAttributes) {
-		this.servlet.setExposeSessionAttributes(exposeSessionAttributes);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.mustache.servlet.expose-spring-macro-helpers")
-	public boolean isExposeSpringMacroHelpers() {
-		return this.servlet.isExposeSessionAttributes();
-	}
-
-	@Deprecated
-	public void setExposeSpringMacroHelpers(boolean exposeSpringMacroHelpers) {
-		this.servlet.setExposeSpringMacroHelpers(exposeSpringMacroHelpers);
-	}
-
 	public static class Servlet {
 
 		/**
@@ -268,6 +193,16 @@ public class MustacheProperties {
 		 */
 		private boolean exposeSpringMacroHelpers = true;
 
+		private final Supplier<Charset> charset;
+
+		public Servlet() {
+			this.charset = () -> null;
+		}
+
+		private Servlet(Supplier<Charset> charset) {
+			this.charset = charset;
+		}
+
 		public boolean isAllowRequestOverride() {
 			return this.allowRequestOverride;
 		}
@@ -293,6 +228,15 @@ public class MustacheProperties {
 		}
 
 		public MimeType getContentType() {
+			if (this.contentType != null && this.contentType.getCharset() == null) {
+				Charset charset = this.charset.get();
+				if (charset != null) {
+					Map<String, String> parameters = new LinkedHashMap<>();
+					parameters.put("charset", charset.name());
+					parameters.putAll(this.contentType.getParameters());
+					return new MimeType(this.contentType, parameters);
+				}
+			}
 			return this.contentType;
 		}
 

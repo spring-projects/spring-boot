@@ -1,0 +1,11 @@
+name: boot
+version: true
+ext:
+  zip_contents_collector:
+    include:
+    - name: maven-plugin
+      classifier: aggregate-content
+    - name: maven-plugin
+      classifier: catalog-content
+      module: maven-plugin
+      destination: content-catalog

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setDataLocations(Arrays.asList("data.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("data.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
-		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
+		assertThatExceptionOfType(DataAccessException.class).isThrownBy(initializer::initializeDatabase);
 		assertThatDatabaseWasAccessed(initializer);
 	}
 
@@ -141,7 +141,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.EMBEDDED);
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -163,7 +163,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.ALWAYS);
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.ALWAYS);
 		T initializer = createStandaloneDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	protected abstract T createStandaloneDatabaseInitializer(DatabaseInitializationSettings settings);

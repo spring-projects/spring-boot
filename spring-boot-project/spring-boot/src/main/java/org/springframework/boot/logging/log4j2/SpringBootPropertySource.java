@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -59,6 +60,11 @@ public class SpringBootPropertySource implements PropertySource {
 	@Override
 	public boolean containsProperty(String key) {
 		return this.properties.containsKey(key);
+	}
+
+	@Override
+	public Collection<String> getPropertyNames() {
+		return this.properties.keySet();
 	}
 
 }

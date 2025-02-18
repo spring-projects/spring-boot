@@ -42,7 +42,7 @@ import static org.mockito.Mockito.spy;
  */
 class JacksonJmxOperationResponseMapperTests {
 
-	private JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(null);
+	private final JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(null);
 
 	private final BasicJsonTester json = new BasicJsonTester(getClass());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties Properties} for Spring WebFlux.
  *
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.webflux")
+@ConfigurationProperties("spring.webflux")
 public class WebFluxProperties {
 
 	/**
@@ -36,12 +36,17 @@ public class WebFluxProperties {
 
 	private final Format format = new Format();
 
-	private final Session session = new Session();
+	private final Problemdetails problemdetails = new Problemdetails();
 
 	/**
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
+
+	/**
+	 * Path pattern used for WebJar assets.
+	 */
+	private String webjarsPathPattern = "/webjars/**";
 
 	public String getBasePath() {
 		return this.basePath;
@@ -52,7 +57,10 @@ public class WebFluxProperties {
 	}
 
 	private String cleanBasePath(String basePath) {
-		String candidate = StringUtils.trimWhitespace(basePath);
+		String candidate = null;
+		if (StringUtils.hasLength(basePath)) {
+			candidate = basePath.strip();
+		}
 		if (StringUtils.hasText(candidate)) {
 			if (!candidate.startsWith("/")) {
 				candidate = "/" + candidate;
@@ -68,9 +76,8 @@ public class WebFluxProperties {
 		return this.format;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "server.reactive.session")
-	public Session getSession() {
-		return this.session;
+	public Problemdetails getProblemdetails() {
+		return this.problemdetails;
 	}
 
 	public String getStaticPathPattern() {
@@ -81,20 +88,31 @@ public class WebFluxProperties {
 		this.staticPathPattern = staticPathPattern;
 	}
 
+	public String getWebjarsPathPattern() {
+		return this.webjarsPathPattern;
+	}
+
+	public void setWebjarsPathPattern(String webjarsPathPattern) {
+		this.webjarsPathPattern = webjarsPathPattern;
+	}
+
 	public static class Format {
 
 		/**
-		 * Date format to use, for example 'dd/MM/yyyy'.
+		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
+		 * java.util.Date and java.time.LocalDate.
 		 */
 		private String date;
 
 		/**
-		 * Time format to use, for example 'HH:mm:ss'.
+		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
+		 * LocalTime and OffsetTime.
 		 */
 		private String time;
 
 		/**
-		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'.
+		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
+		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
 		private String dateTime;
 
@@ -124,83 +142,19 @@ public class WebFluxProperties {
 
 	}
 
-	/**
-	 * Session properties.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@code server.reactive.session}.
-	 */
-	@Deprecated
-	public static class Session {
-
-		private final Cookie cookie = new Cookie();
-
-		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie")
-		public Cookie getCookie() {
-			return this.cookie;
-		}
-
-	}
-
-	/**
-	 * Session cookie properties.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link org.springframework.boot.web.server.Cookie}.
-	 */
-	@Deprecated
-	public static class Cookie {
+	public static class Problemdetails {
 
 		/**
-		 * SameSite attribute value for session Cookies.
+		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
-		private SameSite sameSite;
+		private boolean enabled = false;
 
-		@DeprecatedConfigurationProperty(replacement = "server.reactive.session.cookie.same-site")
-		public SameSite getSameSite() {
-			return this.sameSite;
+		public boolean isEnabled() {
+			return this.enabled;
 		}
 
-		public void setSameSite(SameSite sameSite) {
-			this.sameSite = sameSite;
-		}
-
-	}
-
-	/**
-	 * SameSite values.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link org.springframework.boot.web.server.Cookie.SameSite}.
-	 */
-	@Deprecated
-	public enum SameSite {
-
-		/**
-		 * Cookies are sent in both first-party and cross-origin requests.
-		 */
-		NONE("None"),
-
-		/**
-		 * Cookies are sent in a first-party context, also when following a link to the
-		 * origin site.
-		 */
-		LAX("Lax"),
-
-		/**
-		 * Cookies are only sent in a first-party context (i.e. not when following a link
-		 * to the origin site).
-		 */
-		STRICT("Strict");
-
-		private final String attribute;
-
-		SameSite(String attribute) {
-			this.attribute = attribute;
-		}
-
-		public String attribute() {
-			return this.attribute;
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

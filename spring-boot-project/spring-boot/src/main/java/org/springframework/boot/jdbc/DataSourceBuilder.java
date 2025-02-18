@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.vibur.dbcp.ViburDBCPDataSource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
@@ -59,6 +60,8 @@ import org.springframework.util.StringUtils;
  * <li>Tomcat JDBC Pool ({@code org.apache.tomcat.jdbc.pool.DataSource})</li>
  * <li>Apache DBCP2 ({@code org.apache.commons.dbcp2.BasicDataSource})</li>
  * <li>Oracle UCP ({@code oracle.ucp.jdbc.PoolDataSourceImpl})</li>
+ * <li>C3P0 ({@code com.mchange.v2.c3p0.ComboPooledDataSource})</li>
+ * <li>Vibur ({@code org.vibur.dbcp.ViburDBCPDataSource})</li>
  * </ul>
  * <p>
  * The following non-pooling {@link DataSource} implementations can be used when
@@ -102,7 +105,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	@SuppressWarnings("unchecked")
 	private DataSourceBuilder(T deriveFrom) {
-		Assert.notNull(deriveFrom, "DataSource must not be null");
+		Assert.notNull(deriveFrom, "'deriveFrom' must not be null");
 		this.classLoader = deriveFrom.getClass().getClassLoader();
 		this.type = (Class<T>) deriveFrom.getClass();
 		this.deriveFrom = deriveFrom;
@@ -186,8 +189,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 		if (!applied.contains(DataSourceProperty.DRIVER_CLASS_NAME)
 				&& properties.canSet(DataSourceProperty.DRIVER_CLASS_NAME)
-				&& this.values.containsKey(DataSourceProperty.URL)) {
-			String url = this.values.get(DataSourceProperty.URL);
+				&& applied.contains(DataSourceProperty.URL)) {
+			String url = properties.get(dataSource, DataSourceProperty.URL);
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
 			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
 		}
@@ -238,7 +241,23 @@ public final class DataSourceBuilder<T extends DataSource> {
 				throw new IllegalStateException("Unable to unwrap embedded database", ex);
 			}
 		}
-		return new DataSourceBuilder<>(dataSource);
+		return new DataSourceBuilder<>(unwrap(dataSource));
+	}
+
+	private static DataSource unwrap(DataSource dataSource) {
+		try {
+			while (dataSource.isWrapperFor(DataSource.class)) {
+				DataSource unwrapped = dataSource.unwrap(DataSource.class);
+				if (unwrapped == dataSource) {
+					return unwrapped;
+				}
+				dataSource = unwrapped;
+			}
+		}
+		catch (SQLException ex) {
+			// Try to continue with the existing, potentially still wrapped, DataSource
+		}
+		return dataSource;
 	}
 
 	/**
@@ -395,6 +414,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 					OraclePoolDataSourceProperties::new, "oracle.jdbc.OracleConnection");
 			result = lookup(classLoader, type, result, "com.mchange.v2.c3p0.ComboPooledDataSource",
 					ComboPooledDataSourceProperties::new);
+			result = lookup(classLoader, type, result, "org.vibur.dbcp.ViburDBCPDataSource",
+					ViburDataSourceProperties::new);
 			return result;
 		}
 
@@ -628,8 +649,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 			add(DataSourceProperty.URL, BasicDataSource::getUrl, BasicDataSource::setUrl);
 			add(DataSourceProperty.DRIVER_CLASS_NAME, BasicDataSource::getDriverClassName,
 					BasicDataSource::setDriverClassName);
-			add(DataSourceProperty.USERNAME, BasicDataSource::getUsername, BasicDataSource::setUsername);
-			add(DataSourceProperty.PASSWORD, BasicDataSource::getPassword, BasicDataSource::setPassword);
+			add(DataSourceProperty.USERNAME, BasicDataSource::getUserName, BasicDataSource::setUsername);
+			add(DataSourceProperty.PASSWORD, null, BasicDataSource::setPassword);
 		}
 
 	}
@@ -673,6 +694,18 @@ public final class DataSourceBuilder<T extends DataSource> {
 			catch (PropertyVetoException ex) {
 				throw new IllegalArgumentException(ex);
 			}
+		}
+
+	}
+
+	private static class ViburDataSourceProperties extends MappedDataSourceProperties<ViburDBCPDataSource> {
+
+		ViburDataSourceProperties() {
+			add(DataSourceProperty.URL, ViburDBCPDataSource::getJdbcUrl, ViburDBCPDataSource::setJdbcUrl);
+			add(DataSourceProperty.DRIVER_CLASS_NAME, ViburDBCPDataSource::getDriverClassName,
+					ViburDBCPDataSource::setDriverClassName);
+			add(DataSourceProperty.USERNAME, ViburDBCPDataSource::getUsername, ViburDBCPDataSource::setUsername);
+			add(DataSourceProperty.PASSWORD, ViburDBCPDataSource::getPassword, ViburDBCPDataSource::setPassword);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
-				"ApplicationContext does not implement ConfigurableApplicationContext");
+				"'applicationContext' must be a ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
 
@@ -98,11 +98,11 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationReadyEvent) {
-			onApplicationReadyEvent((ApplicationReadyEvent) event);
+		if (event instanceof ApplicationReadyEvent readyEvent) {
+			onApplicationReadyEvent(readyEvent);
 		}
-		if (event instanceof WebServerInitializedEvent) {
-			onWebServerInitializedEvent((WebServerInitializedEvent) event);
+		if (event instanceof WebServerInitializedEvent initializedEvent) {
+			onWebServerInitializedEvent(initializedEvent);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		ManagementFactory.getPlatformMBeanServer().unregisterMBean(this.objectName);
 	}
 
-	private class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
+	private final class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
 
 		@Override
 		public boolean isReady() {

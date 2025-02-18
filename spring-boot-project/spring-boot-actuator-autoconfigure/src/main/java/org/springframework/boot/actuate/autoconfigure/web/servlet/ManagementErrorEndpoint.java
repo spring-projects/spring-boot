@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.web.context.request.ServletWebRequest;
  *
  * @author Dave Syer
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @Controller
@@ -46,8 +47,8 @@ public class ManagementErrorEndpoint {
 	private final ErrorProperties errorProperties;
 
 	public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		Assert.notNull(errorProperties, "ErrorProperties must not be null");
+		Assert.notNull(errorAttributes, "'errorAttributes' must not be null");
+		Assert.notNull(errorProperties, "'errorProperties' must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorProperties = errorProperties;
 	}
@@ -72,40 +73,40 @@ public class ManagementErrorEndpoint {
 		if (includeBindingErrors(request)) {
 			options = options.including(Include.BINDING_ERRORS);
 		}
+		options = includePath(request) ? options.including(Include.PATH) : options.excluding(Include.PATH);
 		return options;
 	}
 
 	private boolean includeStackTrace(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeStacktrace()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return getBooleanParameter(request, "trace");
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "trace");
+			case NEVER -> false;
+		};
 	}
 
 	private boolean includeMessage(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeMessage()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return getBooleanParameter(request, "message");
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "message");
+			case NEVER -> false;
+		};
 	}
 
 	private boolean includeBindingErrors(ServletWebRequest request) {
-		switch (this.errorProperties.getIncludeBindingErrors()) {
-			case ALWAYS:
-				return true;
-			case ON_PARAM:
-				return getBooleanParameter(request, "errors");
-			default:
-				return false;
-		}
+		return switch (this.errorProperties.getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "errors");
+			case NEVER -> false;
+		};
+	}
+
+	private boolean includePath(ServletWebRequest request) {
+		return switch (this.errorProperties.getIncludePath()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> getBooleanParameter(request, "path");
+			case NEVER -> false;
+		};
 	}
 
 	protected boolean getBooleanParameter(ServletWebRequest request, String parameterName) {

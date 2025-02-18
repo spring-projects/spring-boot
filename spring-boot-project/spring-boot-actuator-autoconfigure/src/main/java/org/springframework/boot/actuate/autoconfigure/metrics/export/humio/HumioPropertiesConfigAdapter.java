@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<H
 
 	@Override
 	public String prefix() {
-		return "management.metrics.export.humio";
+		return "management.humio.metrics.export";
 	}
 
 	@Override

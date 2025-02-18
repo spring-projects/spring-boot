@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import org.springframework.boot.build.bom.Library;
  */
 class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
 
 	private final int threads;
 
@@ -55,14 +55,19 @@ class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 	@Override
 	public List<LibraryWithVersionOptions> findLibraryUpdates(Collection<Library> librariesToUpgrade,
 			Map<String, Library> librariesByName) {
-		LOGGER.info("Looking for updates using {} threads", this.threads);
+		logger.info("Looking for updates using {} threads", this.threads);
 		ExecutorService executorService = Executors.newFixedThreadPool(this.threads);
 		try {
-			return librariesToUpgrade.stream()
-				.map((library) -> executorService.submit(
-						() -> this.delegate.findLibraryUpdates(Collections.singletonList(library), librariesByName)))
-				.flatMap(this::getResult)
-				.collect(Collectors.toList());
+			return librariesToUpgrade.stream().map((library) -> {
+				if (library.getVersionAlignment() == null) {
+					return executorService.submit(() -> this.delegate
+						.findLibraryUpdates(Collections.singletonList(library), librariesByName));
+				}
+				else {
+					return CompletableFuture.completedFuture(
+							this.delegate.findLibraryUpdates(Collections.singletonList(library), librariesByName));
+				}
+			}).flatMap(this::getResult).toList();
 		}
 		finally {
 			executorService.shutdownNow();

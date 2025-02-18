@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ class OpenLibertyDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
 	static WarDeploymentContainer container = new WarDeploymentContainer(
-			"openliberty/open-liberty:full-java8-openj9-ubi", "/config/dropins", PORT);
+			"icr.io/appcafe/open-liberty:full-java17-openj9-ubi", "/config/dropins", PORT,
+			(builder) -> builder.run("sed -i 's/javaee-8.0/jakartaee-10.0/g' /config/server.xml"));
 
 	@Override
 	WarDeploymentContainer getContainer() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +61,7 @@ class TestEntityManagerTests {
 	@Test
 	void createWhenEntityManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestEntityManager(null))
-			.withMessageContaining("EntityManagerFactory must not be null");
+			.withMessageContaining("'entityManagerFactory' must not be null");
 	}
 
 	@Test

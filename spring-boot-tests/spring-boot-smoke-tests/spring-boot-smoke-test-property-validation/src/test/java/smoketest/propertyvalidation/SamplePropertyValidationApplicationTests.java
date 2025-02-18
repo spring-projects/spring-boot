@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -56,15 +57,17 @@ class SamplePropertyValidationApplicationTests {
 	void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090").applyTo(this.context);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> this.context.refresh())
-			.withMessageContaining("Failed to bind properties under 'sample'");
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.havingRootCause()
+			.isInstanceOf(BindValidationException.class);
 	}
 
 	@Test
 	void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> this.context.refresh())
-			.withMessageContaining("Failed to bind properties under 'sample'");
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.havingRootCause()
+			.isInstanceOf(BindValidationException.class);
 	}
 
 	@Test

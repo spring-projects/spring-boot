@@ -1,0 +1,24 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootBuildImage {
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+	pullPolicy = "IF_NOT_PRESENT"
+	buildWorkspace {
+		volume {
+			name = "pack-${rootProject.name}.work"
+		}
+	}
+	buildCache {
+		volume {
+			name = "cache-${rootProject.name}.build"
+		}
+	}
+	launchCache {
+		volume {
+			name = "cache-${rootProject.name}.launch"
+		}
+	}
+}

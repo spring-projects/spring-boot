@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,22 +47,22 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent) {
-			onApplicationStartingEvent((ApplicationStartingEvent) event);
+		if (event instanceof ApplicationStartingEvent startingEvent) {
+			onApplicationStartingEvent(startingEvent);
 		}
-		if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		if (event instanceof ApplicationPreparedEvent preparedEvent) {
+			onApplicationPreparedEvent(preparedEvent);
 		}
 		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
 		}
-		if (event instanceof ApplicationFailedEvent) {
-			onApplicationFailedEvent((ApplicationFailedEvent) event);
+		if (event instanceof ApplicationFailedEvent failedEvent) {
+			onApplicationFailedEvent(failedEvent);
 		}
 	}
 
 	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
-		// It's too early to use the Spring environment but we should still allow
+		// It's too early to use the Spring environment, but we should still allow
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
 		RestartInitializer restartInitializer = null;

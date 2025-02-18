@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -61,13 +62,13 @@ public final class ConditionMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ConditionMessage)) {
-			return false;
-		}
 		if (obj == this) {
 			return true;
 		}
-		return ObjectUtils.nullSafeEquals(((ConditionMessage) obj).message, this.message);
+		if (obj instanceof ConditionMessage other) {
+			return ObjectUtils.nullSafeEquals(other.message, this.message);
+		}
+		return false;
 	}
 
 	@Override
@@ -107,7 +108,7 @@ public final class ConditionMessage {
 	 * @see #forCondition(Class, Object...)
 	 */
 	public Builder andCondition(Class<? extends Annotation> condition, Object... details) {
-		Assert.notNull(condition, "Condition must not be null");
+		Assert.notNull(condition, "'condition' must not be null");
 		return andCondition("@" + ClassUtils.getShortName(condition), details);
 	}
 
@@ -121,7 +122,7 @@ public final class ConditionMessage {
 	 * @see #forCondition(String, Object...)
 	 */
 	public Builder andCondition(String condition, Object... details) {
-		Assert.notNull(condition, "Condition must not be null");
+		Assert.notNull(condition, "'condition' must not be null");
 		String detail = StringUtils.arrayToDelimitedString(details, " ");
 		if (StringUtils.hasLength(detail)) {
 			return new Builder(condition + " " + detail);
@@ -378,7 +379,7 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage items(Style style, Collection<?> items) {
-			Assert.notNull(style, "Style must not be null");
+			Assert.notNull(style, "'style' must not be null");
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
 			if ((this.condition == null || items == null || items.size() <= 1)
@@ -388,7 +389,7 @@ public final class ConditionMessage {
 			else if (StringUtils.hasLength(this.plural)) {
 				message.append(" ").append(this.plural);
 			}
-			if (items != null && !items.isEmpty()) {
+			if (!CollectionUtils.isEmpty(items)) {
 				message.append(" ").append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
 			return this.condition.because(message.toString());

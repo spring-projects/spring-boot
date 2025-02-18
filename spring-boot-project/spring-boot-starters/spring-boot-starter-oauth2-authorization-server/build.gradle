@@ -1,0 +1,10 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Authorization Server features"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	api("org.springframework.security:spring-security-oauth2-authorization-server")
+}

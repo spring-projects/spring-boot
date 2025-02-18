@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -130,13 +132,13 @@ public class UndertowWebServer implements WebServer {
 					throw new WebServerException("Unable to start embedded Undertow", ex);
 				}
 				finally {
-					stopSilently();
+					destroySilently();
 				}
 			}
 		}
 	}
 
-	private void stopSilently() {
+	private void destroySilently() {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
@@ -153,6 +155,7 @@ public class UndertowWebServer implements WebServer {
 			closeable.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -168,23 +171,32 @@ public class UndertowWebServer implements WebServer {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
-			if (handler instanceof Closeable) {
-				this.closeables.add((Closeable) handler);
+			if (handler instanceof Closeable closeable) {
+				this.closeables.add(closeable);
 			}
-			if (handler instanceof GracefulShutdownHandler) {
-				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
-				this.gracefulShutdown = (GracefulShutdownHandler) handler;
+			if (handler instanceof GracefulShutdownHandler shutdownHandler) {
+				Assert.state(this.gracefulShutdown == null, "Only a single GracefulShutdownHandler can be defined");
+				this.gracefulShutdown = shutdownHandler;
 			}
 		}
 		return handler;
 	}
 
 	private String getPortsDescription() {
+		StringBuilder description = new StringBuilder();
 		List<UndertowWebServer.Port> ports = getActualPorts();
-		if (!ports.isEmpty()) {
-			return StringUtils.collectionToDelimitedString(ports, " ");
+		description.append("port");
+		if (ports.size() != 1) {
+			description.append("s");
 		}
-		return "unknown";
+		description.append(" ");
+		if (!ports.isEmpty()) {
+			description.append(StringUtils.collectionToDelimitedString(ports, ", "));
+		}
+		else {
+			description.append("unknown");
+		}
+		return description.toString();
 	}
 
 	private List<Port> getActualPorts() {
@@ -214,10 +226,10 @@ public class UndertowWebServer implements WebServer {
 
 	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
-		if (socketAddress instanceof InetSocketAddress) {
+		if (socketAddress instanceof InetSocketAddress inetSocketAddress) {
 			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
 			String protocol = (sslField != null) ? "https" : "http";
-			return new UndertowWebServer.Port(((InetSocketAddress) socketAddress).getPort(), protocol);
+			return new UndertowWebServer.Port(inetSocketAddress.getPort(), protocol);
 		}
 		return null;
 	}
@@ -272,7 +284,7 @@ public class UndertowWebServer implements WebServer {
 				}
 			}
 			catch (Exception ex) {
-				throw new WebServerException("Unable to stop undertow", ex);
+				throw new WebServerException("Unable to stop Undertow", ex);
 			}
 		}
 	}
@@ -286,6 +298,24 @@ public class UndertowWebServer implements WebServer {
 		return ports.get(0).getNumber();
 	}
 
+	/**
+	 * Returns the {@link Undertow Undertow server}. Returns {@code null} until the server
+	 * has been started.
+	 * @return the Undertow server or {@code null} if the server hasn't been started yet
+	 * @since 3.3.0
+	 */
+	public Undertow getUndertow() {
+		return this.undertow;
+	}
+
+	/**
+	 * Initiates a graceful shutdown of the Undertow web server. Handling of new requests
+	 * is prevented and the given {@code callback} is invoked at the end of the attempt.
+	 * The attempt can be explicitly ended by invoking {@link #stop}.
+	 * <p>
+	 * Once shutdown has been initiated Undertow will return an {@code HTTP 503} response
+	 * for any new or existing connections.
+	 */
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
@@ -313,7 +343,7 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	protected String getStartLogMessage() {
-		return "Undertow started on port(s) " + getPortsDescription();
+		return "Undertow started on " + getPortsDescription();
 	}
 
 	/**
@@ -398,6 +428,27 @@ public class UndertowWebServer implements WebServer {
 	 * {@link Closeable} {@link HttpHandler}.
 	 */
 	private interface CloseableHttpHandler extends HttpHandler, Closeable {
+
+	}
+
+	/**
+	 * {@link RuntimeHintsRegistrar} that allows Undertow's configured and actual ports to
+	 * be retrieved at runtime in a native image.
+	 */
+	static class UndertowWebServerRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.Undertow",
+						(hint) -> hint.withField("listeners").withField("channels"));
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.Undertow$ListenerConfig",
+						(hint) -> hint.withField("type").withField("port"));
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.protocols.ssl.UndertowAcceptingSslChannel",
+						(hint) -> hint.withField("ssl"));
+		}
 
 	}
 

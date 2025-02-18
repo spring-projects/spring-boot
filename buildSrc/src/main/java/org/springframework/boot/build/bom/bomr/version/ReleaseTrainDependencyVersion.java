@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public int compareTo(DependencyVersion other) {
-		if (!(other instanceof ReleaseTrainDependencyVersion)) {
+		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
 			return -1;
 		}
-		ReleaseTrainDependencyVersion otherReleaseTrain = (ReleaseTrainDependencyVersion) other;
 		int comparison = this.releaseTrain.compareTo(otherReleaseTrain.releaseTrain);
 		if (comparison != 0) {
 			return comparison;
@@ -65,22 +64,25 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
-		if (!(candidate instanceof ReleaseTrainDependencyVersion)) {
-			return true;
+		if (candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain) {
+			return isUpgrade(candidateReleaseTrain, movingToSnapshots);
 		}
-		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
-		int comparison = this.releaseTrain.compareTo(candidateReleaseTrain.releaseTrain);
+		return true;
+	}
+
+	private boolean isUpgrade(ReleaseTrainDependencyVersion candidate, boolean movingToSnapshots) {
+		int comparison = this.releaseTrain.compareTo(candidate.releaseTrain);
 		if (comparison != 0) {
 			return comparison < 0;
 		}
-		if (movingToSnapshots && !isSnapshot() && candidateReleaseTrain.isSnapshot()) {
+		if (movingToSnapshots && !isSnapshot() && candidate.isSnapshot()) {
 			return true;
 		}
-		comparison = this.type.compareTo(candidateReleaseTrain.type);
+		comparison = this.type.compareTo(candidate.type);
 		if (comparison != 0) {
 			return comparison < 0;
 		}
-		return Integer.compare(this.version, candidateReleaseTrain.version) < 0;
+		return Integer.compare(this.version, candidate.version) < 0;
 	}
 
 	private boolean isSnapshot() {
@@ -89,10 +91,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isSnapshotFor(DependencyVersion candidate) {
-		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion)) {
+		if (!isSnapshot() || !(candidate instanceof ReleaseTrainDependencyVersion candidateReleaseTrain)) {
 			return false;
 		}
-		ReleaseTrainDependencyVersion candidateReleaseTrain = (ReleaseTrainDependencyVersion) candidate;
 		return this.releaseTrain.equals(candidateReleaseTrain.releaseTrain);
 	}
 
@@ -110,11 +111,10 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		if (other instanceof CalendarVersionDependencyVersion) {
 			return false;
 		}
-		if (!(other instanceof ReleaseTrainDependencyVersion)) {
-			return true;
+		if (other instanceof ReleaseTrainDependencyVersion otherReleaseTrain) {
+			return otherReleaseTrain.releaseTrain.equals(this.releaseTrain);
 		}
-		ReleaseTrainDependencyVersion otherReleaseTrain = (ReleaseTrainDependencyVersion) other;
-		return otherReleaseTrain.releaseTrain.equals(this.releaseTrain);
+		return true;
 	}
 
 	@Override
@@ -129,10 +129,7 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 			return false;
 		}
 		ReleaseTrainDependencyVersion other = (ReleaseTrainDependencyVersion) obj;
-		if (!this.original.equals(other.original)) {
-			return false;
-		}
-		return true;
+		return this.original.equals(other.original);
 	}
 
 	@Override

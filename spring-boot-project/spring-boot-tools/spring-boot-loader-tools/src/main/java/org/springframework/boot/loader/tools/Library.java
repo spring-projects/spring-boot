@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 * @param local if the library is local (part of the same build) to the application
 	 * that is being packaged
-	 * @param included if the library is included in the fat jar
+	 * @param included if the library is included in the uber jar
 	 * @since 2.4.8
 	 */
 	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired,
@@ -142,7 +142,7 @@ public class Library {
 	}
 
 	/**
-	 * Return if the library is included in the fat jar.
+	 * Return if the library is included in the uber jar.
 	 * @return if the library is included
 	 */
 	public boolean isIncluded() {

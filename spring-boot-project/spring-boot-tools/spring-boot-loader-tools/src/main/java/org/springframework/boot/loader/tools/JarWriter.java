@@ -99,8 +99,8 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	}
 
 	private JarArchiveEntry asJarArchiveEntry(ZipEntry entry) throws ZipException {
-		if (entry instanceof JarArchiveEntry) {
-			return (JarArchiveEntry) entry;
+		if (entry instanceof JarArchiveEntry jarArchiveEntry) {
+			return jarArchiveEntry;
 		}
 		return new JarArchiveEntry(entry);
 	}

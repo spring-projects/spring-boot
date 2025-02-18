@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,6 +117,7 @@ class MustacheAutoConfigurationTests {
 			assertThat(viewResolver).extracting("allowSessionOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("cache", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("contentType").isEqualTo("text/html;charset=UTF-8");
 			assertThat(viewResolver).extracting("exposeRequestAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("exposeSessionAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("exposeSpringMacroHelpers", InstanceOfAssertFactories.BOOLEAN).isTrue();
@@ -147,22 +148,8 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void allowRequestOverrideCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-request-override=true",
-				"allowRequestOverride", true);
-	}
-
-	@Test
 	void allowSessionOverrideCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.allow-session-override=true",
-				"allowSessionOverride", true);
-	}
-
-	@Test
-	@Deprecated
-	void allowSessionOverrideCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.allow-session-override=true",
 				"allowSessionOverride", true);
 	}
 
@@ -171,28 +158,19 @@ class MustacheAutoConfigurationTests {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.cache=true", "cache", true);
 	}
 
-	@Test
-	@Deprecated
-	void cacheCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.cache=true", "cache", true);
-	}
-
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", "UTF-16");
+		if (kind == ViewResolverKind.SERVLET) {
+			assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "contentType",
+					"text/html;charset=UTF-16");
+		}
 	}
 
 	@Test
 	void exposeRequestAttributesCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-request-attributes=true",
-				"exposeRequestAttributes", true);
-	}
-
-	@Test
-	@Deprecated
-	void exposeRequestAttributesCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-request-attributes=true",
 				"exposeRequestAttributes", true);
 	}
 
@@ -203,41 +181,27 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void exposeSessionAttributesCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-session-attributes=true",
-				"exposeSessionAttributes", true);
-	}
-
-	@Test
 	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.servlet.expose-spring-macro-helpers=true",
 				"exposeSpringMacroHelpers", true);
 	}
 
-	@Test
-	@Deprecated
-	void exposeSpringMacroHelpersCanBeCustomizedOnServletViewResolverUsingDeprecatedProperty() {
-		assertViewResolverProperty(ViewResolverKind.SERVLET, "spring.mustache.expose-spring-macro-helpers=true",
-				"exposeSpringMacroHelpers", true);
-	}
-
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void prefixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.prefix=classpath:/mustache-templates/", "prefix",
 				"classpath:/mustache-templates/");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void requestContextAttributeCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.request-context-attribute=test", "requestContextAttribute",
 				"test");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void suffixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.suffix=.tache", "suffix", ".tache");
 	}

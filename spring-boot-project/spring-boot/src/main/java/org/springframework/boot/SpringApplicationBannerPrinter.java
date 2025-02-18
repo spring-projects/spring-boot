@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.StringUtils;
 
 /**
  * Class used by {@link SpringApplication} to print the application banner.
@@ -39,11 +39,7 @@ class SpringApplicationBannerPrinter {
 
 	static final String BANNER_LOCATION_PROPERTY = "spring.banner.location";
 
-	static final String BANNER_IMAGE_LOCATION_PROPERTY = "spring.banner.image.location";
-
 	static final String DEFAULT_BANNER_LOCATION = "banner.txt";
-
-	static final String[] IMAGE_EXTENSION = { "gif", "jpg", "png" };
 
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
 
@@ -74,11 +70,9 @@ class SpringApplicationBannerPrinter {
 	}
 
 	private Banner getBanner(Environment environment) {
-		Banners banners = new Banners();
-		banners.addIfNotNull(getImageBanner(environment));
-		banners.addIfNotNull(getTextBanner(environment));
-		if (banners.hasAtLeastOneBanner()) {
-			return banners;
+		Banner textBanner = getTextBanner(environment);
+		if (textBanner != null) {
+			return textBanner;
 		}
 		if (this.fallbackBanner != null) {
 			return this.fallbackBanner;
@@ -100,53 +94,14 @@ class SpringApplicationBannerPrinter {
 		return null;
 	}
 
-	private Banner getImageBanner(Environment environment) {
-		String location = environment.getProperty(BANNER_IMAGE_LOCATION_PROPERTY);
-		if (StringUtils.hasLength(location)) {
-			Resource resource = this.resourceLoader.getResource(location);
-			return resource.exists() ? new ImageBanner(resource) : null;
-		}
-		for (String ext : IMAGE_EXTENSION) {
-			Resource resource = this.resourceLoader.getResource("banner." + ext);
-			if (resource.exists()) {
-				return new ImageBanner(resource);
-			}
-		}
-		return null;
-	}
-
 	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
 			throws UnsupportedEncodingException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		banner.printBanner(environment, mainApplicationClass, new PrintStream(baos));
-		String charset = environment.getProperty("spring.banner.charset", "UTF-8");
-		return baos.toString(charset);
-	}
-
-	/**
-	 * {@link Banner} comprised of other {@link Banner Banners}.
-	 */
-	private static class Banners implements Banner {
-
-		private final List<Banner> banners = new ArrayList<>();
-
-		void addIfNotNull(Banner banner) {
-			if (banner != null) {
-				this.banners.add(banner);
-			}
+		String charset = environment.getProperty("spring.banner.charset", StandardCharsets.UTF_8.name());
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try (PrintStream out = new PrintStream(byteArrayOutputStream, false, charset)) {
+			banner.printBanner(environment, mainApplicationClass, out);
 		}
-
-		boolean hasAtLeastOneBanner() {
-			return !this.banners.isEmpty();
-		}
-
-		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-			for (Banner banner : this.banners) {
-				banner.printBanner(environment, sourceClass, out);
-			}
-		}
-
+		return byteArrayOutputStream.toString(charset);
 	}
 
 	/**
@@ -168,6 +123,15 @@ class SpringApplicationBannerPrinter {
 		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
+		}
+
+	}
+
+	static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern(DEFAULT_BANNER_LOCATION);
 		}
 
 	}

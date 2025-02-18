@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 the original author or authors.
+ * Copyright 2021-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.build;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -31,45 +33,33 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class SyncAppSource extends DefaultTask {
+public abstract class SyncAppSource extends DefaultTask {
 
-	private final DirectoryProperty sourceDirectory;
+	private final FileSystemOperations fileSystemOperations;
 
-	private final DirectoryProperty destinationDirectory;
-
-	private final Property<String> pluginVersion;
-
-	public SyncAppSource() {
-		ObjectFactory objects = getProject().getObjects();
-		this.sourceDirectory = objects.directoryProperty();
-		this.destinationDirectory = objects.directoryProperty();
-		this.pluginVersion = objects.property(String.class)
-			.convention(getProject().provider(() -> getProject().getVersion().toString()));
-	}
-
-	@TaskAction
-	void syncAppSources() {
-		getProject().sync((copySpec) -> {
-			copySpec.from(this.sourceDirectory);
-			copySpec.into(this.destinationDirectory);
-			copySpec.filter((line) -> line.replace("id \"org.springframework.boot\"",
-					"id \"org.springframework.boot\" version \"" + getProject().getVersion() + "\""));
-		});
+	@Inject
+	public SyncAppSource(FileSystemOperations fileSystemOperations) {
+		getPluginVersion().convention(getProject().provider(() -> getProject().getVersion().toString()));
+		this.fileSystemOperations = fileSystemOperations;
 	}
 
 	@InputDirectory
-	public DirectoryProperty getSourceDirectory() {
-		return this.sourceDirectory;
-	}
+	public abstract DirectoryProperty getSourceDirectory();
 
 	@OutputDirectory
-	public DirectoryProperty getDestinationDirectory() {
-		return this.destinationDirectory;
-	}
+	public abstract DirectoryProperty getDestinationDirectory();
 
 	@Input
-	public Property<String> getPluginVersion() {
-		return this.pluginVersion;
+	public abstract Property<String> getPluginVersion();
+
+	@TaskAction
+	void syncAppSources() {
+		this.fileSystemOperations.sync((copySpec) -> {
+			copySpec.from(getSourceDirectory());
+			copySpec.into(getDestinationDirectory());
+			copySpec.filter((line) -> line.replace("id \"org.springframework.boot\"",
+					"id \"org.springframework.boot\" version \"" + getPluginVersion().get() + "\""));
+		});
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,18 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -38,15 +42,19 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.
 import org.springframework.boot.context.config.TestConfigDataEnvironmentUpdateListener.AddedPropertySource;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,23 +65,17 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataEnvironmentTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
-	private MockApplicationEnvironment environment = new MockApplicationEnvironment();
+	private final MockApplicationEnvironment environment = new MockApplicationEnvironment();
 
-	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	private Collection<String> additionalProfiles = Collections.emptyList();
+	private final Collection<String> additionalProfiles = Collections.emptyList();
 
-	@Test
-	void createWhenUseLegacyPropertyInEnvironmentThrowsException() {
-		this.environment.setProperty("spring.config.use-legacy-processing", "true");
-		assertThatExceptionOfType(UseLegacyConfigProcessingException.class)
-			.isThrownBy(() -> new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, this.environment,
-					this.resourceLoader, this.additionalProfiles, null));
-	}
+	private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {
@@ -173,7 +175,7 @@ class ConfigDataEnvironmentTests {
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
-		List<PropertySource<?>> sources = this.environment.getPropertySources().stream().collect(Collectors.toList());
+		List<PropertySource<?>> sources = this.environment.getPropertySources().stream().toList();
 		assertThat(sources.get(sources.size() - 1)).isSameAs(defaultPropertySource);
 	}
 
@@ -219,7 +221,8 @@ class ConfigDataEnvironmentTests {
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)),
 						ConfigData.Option.IGNORE_PROFILES);
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -243,7 +246,8 @@ class ConfigDataEnvironmentTests {
 				source.put("spring.profiles." + property, "include");
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -266,7 +270,8 @@ class ConfigDataEnvironmentTests {
 				source.put(property, "included");
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -290,7 +295,8 @@ class ConfigDataEnvironmentTests {
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)),
 						ConfigData.Option.IGNORE_PROFILES);
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -307,7 +313,7 @@ class ConfigDataEnvironmentTests {
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-			.isThrownBy(() -> configDataEnvironment.processAndApply());
+			.isThrownBy(configDataEnvironment::processAndApply);
 	}
 
 	@Test
@@ -320,7 +326,7 @@ class ConfigDataEnvironmentTests {
 		assertThat(listener.getAddedPropertySources()).hasSize(1);
 		AddedPropertySource addedPropertySource = listener.getAddedPropertySources().get(0);
 		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
-		assertThat(addedPropertySource.getLocation().toString()).isEqualTo(getConfigLocation(info));
+		assertThat(addedPropertySource.getLocation()).hasToString(getConfigLocation(info));
 		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
 			.contains(info.getTestMethod().get().getName());
 	}
@@ -333,6 +339,33 @@ class ConfigDataEnvironmentTests {
 				this.environment, this.resourceLoader, this.additionalProfiles, listener);
 		configDataEnvironment.processAndApply();
 		assertThat(listener.getProfiles().getActive()).containsExactly("one", "two", "three");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void configDataLoadersAreLoadedUsingClassLoaderFromResourceLoader() {
+		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		ClassLoader classLoader = new ClassLoader() {
+
+			@Override
+			public Enumeration<URL> getResources(String name) throws IOException {
+				if (SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION.equals(name)) {
+					return Collections.enumeration(List.of(new File(
+							"src/test/resources/org/springframework/boot/context/config/separate-class-loader-spring.factories")
+						.toURI()
+						.toURL()));
+				}
+				return super.getResources(name);
+			}
+
+		};
+		given(resourceLoader.getClassLoader()).willReturn(classLoader);
+		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
+				this.bootstrapContext, this.environment, resourceLoader, this.additionalProfiles, null);
+		assertThat(configDataEnvironment).extracting("loaders.loaders")
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.extracting((item) -> (Class) item.getClass())
+			.containsOnly(SeparateClassLoaderConfigDataLoader.class);
 	}
 
 	private String getConfigLocation(TestInfo info) {
@@ -360,6 +393,16 @@ class ConfigDataEnvironmentTests {
 
 		Binder getConfigDataLocationResolversBinder() {
 			return this.configDataLocationResolversBinder;
+		}
+
+	}
+
+	static class SeparateClassLoaderConfigDataLoader implements ConfigDataLoader<ConfigDataResource> {
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource)
+				throws IOException, ConfigDataResourceNotFoundException {
+			return null;
 		}
 
 	}

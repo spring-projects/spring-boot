@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,15 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.sql.DatabaseMetaData;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
@@ -32,19 +34,29 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
-import org.flywaydb.core.internal.plugin.PluginRegister;
+import org.flywaydb.core.extensibility.ConfigurationExtension;
+import org.flywaydb.database.oracle.OracleConfigurationExtension;
+import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Oracle;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Postgresql;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Sqlserver;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -57,6 +69,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
@@ -67,6 +82,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
@@ -82,14 +98,17 @@ import org.springframework.util.StringUtils;
  * @author András Deák
  * @author Semyon Danilov
  * @author Chris Bono
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
-@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.flyway.enabled", matchIfMissing = true)
 @Import(DatabaseInitializationDependencyConfigurer.class)
+@ImportRuntimeHints(FlywayAutoConfigurationRuntimeHints.class)
 public class FlywayAutoConfiguration {
 
 	@Bean
@@ -109,55 +128,93 @@ public class FlywayAutoConfiguration {
 	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {
 
+		private final FlywayProperties properties;
+
+		FlywayConfiguration(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
 		@Bean
-		public Flyway flyway(FlywayProperties properties, ResourceLoader resourceLoader,
+		ResourceProviderCustomizer resourceProviderCustomizer() {
+			return new ResourceProviderCustomizer();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(FlywayConnectionDetails.class)
+		PropertiesFlywayConnectionDetails flywayConnectionDetails() {
+			return new PropertiesFlywayConnectionDetails(this.properties);
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
+		SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer() {
+			return new SqlServerFlywayConfigurationCustomizer(this.properties);
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
+		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
+			return new OracleFlywayConfigurationCustomizer(this.properties);
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
+		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
+			return new PostgresqlFlywayConfigurationCustomizer(this.properties);
+		}
+
+		@Bean
+		Flyway flyway(FlywayConnectionDetails connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
-				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
+				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
+				ResourceProviderCustomizer resourceProviderCustomizer) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
-			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
-			configureProperties(configuration, properties);
-			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());
-			configureCallbacks(configuration, orderedCallbacks);
+			configureDataSource(configuration, flywayDataSource.getIfAvailable(), dataSource.getIfUnique(),
+					connectionDetails);
+			configureProperties(configuration, this.properties);
+			configureCallbacks(configuration, callbacks.orderedStream().toList());
+			configureJavaMigrations(configuration, javaMigrations.orderedStream().toList());
 			fluentConfigurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
-			configureFlywayCallbacks(configuration, orderedCallbacks);
-			List<JavaMigration> migrations = javaMigrations.stream().collect(Collectors.toList());
-			configureJavaMigrations(configuration, migrations);
+			resourceProviderCustomizer.customize(configuration);
 			return configuration.load();
 		}
 
-		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
-				DataSource flywayDataSource, DataSource dataSource) {
-			DataSource migrationDataSource = getMigrationDataSource(properties, flywayDataSource, dataSource);
+		private void configureDataSource(FluentConfiguration configuration, DataSource flywayDataSource,
+				DataSource dataSource, FlywayConnectionDetails connectionDetails) {
+			DataSource migrationDataSource = getMigrationDataSource(flywayDataSource, dataSource, connectionDetails);
 			configuration.dataSource(migrationDataSource);
 		}
 
-		private DataSource getMigrationDataSource(FlywayProperties properties, DataSource flywayDataSource,
-				DataSource dataSource) {
+		private DataSource getMigrationDataSource(DataSource flywayDataSource, DataSource dataSource,
+				FlywayConnectionDetails connectionDetails) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
-			if (properties.getUrl() != null) {
+			String url = connectionDetails.getJdbcUrl();
+			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
-				builder.url(properties.getUrl());
-				applyCommonBuilderProperties(properties, builder);
+				builder.url(url);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
-			if (properties.getUser() != null && dataSource != null) {
+			String user = connectionDetails.getUsername();
+			if (user != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 					.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(properties, builder);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Flyway migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(FlywayProperties properties, DataSourceBuilder<?> builder) {
-			builder.username(properties.getUser());
-			builder.password(properties.getPassword());
-			if (StringUtils.hasText(properties.getDriverClassName())) {
-				builder.driverClassName(properties.getDriverClassName());
+		private void applyConnectionDetails(FlywayConnectionDetails connectionDetails, DataSourceBuilder<?> builder) {
+			builder.username(connectionDetails.getUsername());
+			builder.password(connectionDetails.getPassword());
+			String driverClassName = connectionDetails.getDriverClassName();
+			if (StringUtils.hasText(driverClassName)) {
+				builder.driverClassName(driverClassName);
 			}
 		}
 
@@ -169,25 +226,31 @@ public class FlywayAutoConfiguration {
 		 * @param configuration the configuration
 		 * @param properties the properties
 		 */
+		@SuppressWarnings("removal")
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
+			// NOTE: Using method references in the mapper methods can break
+			// back-compatibility (see gh-38164)
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			configureFailOnMissingLocations(configuration, properties.isFailOnMissingLocations());
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
 				.toArray(new String[0]);
 			configuration.locations(locations);
+			map.from(properties.isFailOnMissingLocations())
+				.to((failOnMissingLocations) -> configuration.failOnMissingLocations(failOnMissingLocations));
 			map.from(properties.getEncoding()).to((encoding) -> configuration.encoding(encoding));
 			map.from(properties.getConnectRetries())
 				.to((connectRetries) -> configuration.connectRetries(connectRetries));
 			map.from(properties.getConnectRetriesInterval())
-				.to((interval) -> configuration.connectRetriesInterval((int) interval.getSeconds()));
+				.as(Duration::getSeconds)
+				.as(Long::intValue)
+				.to((connectRetriesInterval) -> configuration.connectRetriesInterval(connectRetriesInterval));
 			map.from(properties.getLockRetryCount())
 				.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
 			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
 			map.from(properties.getSchemas())
 				.as(StringUtils::toStringArray)
 				.to((schemas) -> configuration.schemas(schemas));
-			configureCreateSchemas(configuration, properties.isCreateSchemas());
+			map.from(properties.isCreateSchemas()).to((createSchemas) -> configuration.createSchemas(createSchemas));
 			map.from(properties.getTable()).to((table) -> configuration.table(table));
 			map.from(properties.getTablespace()).to((tablespace) -> configuration.tablespace(tablespace));
 			map.from(properties.getBaselineDescription())
@@ -221,14 +284,14 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isCleanOnValidationError())
 				.to((cleanOnValidationError) -> configuration.cleanOnValidationError(cleanOnValidationError));
 			map.from(properties.isGroup()).to((group) -> configuration.group(group));
-			configureIgnoredMigrations(configuration, properties, map);
 			map.from(properties.isMixed()).to((mixed) -> configuration.mixed(mixed));
 			map.from(properties.isOutOfOrder()).to((outOfOrder) -> configuration.outOfOrder(outOfOrder));
 			map.from(properties.isSkipDefaultCallbacks())
 				.to((skipDefaultCallbacks) -> configuration.skipDefaultCallbacks(skipDefaultCallbacks));
 			map.from(properties.isSkipDefaultResolvers())
 				.to((skipDefaultResolvers) -> configuration.skipDefaultResolvers(skipDefaultResolvers));
-			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
+			map.from(properties.isValidateMigrationNaming())
+				.to((validateMigrationNaming) -> configuration.validateMigrationNaming(validateMigrationNaming));
 			map.from(properties.isValidateOnMigrate())
 				.to((validateOnMigrate) -> configuration.validateOnMigrate(validateOnMigrate));
 			map.from(properties.getInitSqls())
@@ -239,31 +302,23 @@ public class FlywayAutoConfiguration {
 				.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
 			map.from(properties.getScriptPlaceholderSuffix())
 				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
-			// Pro properties
+			configureExecuteInTransaction(configuration, properties, map);
+			map.from(properties::getLoggers).to((loggers) -> configuration.loggers(loggers));
+			map.from(properties::getCommunityDbSupportEnabled)
+				.to((communityDbSupportEnabled) -> configuration.communityDBSupportEnabled(communityDbSupportEnabled));
+			// Flyway Teams properties
 			map.from(properties.getBatch()).to((batch) -> configuration.batch(batch));
 			map.from(properties.getDryRunOutput()).to((dryRunOutput) -> configuration.dryRunOutput(dryRunOutput));
 			map.from(properties.getErrorOverrides())
 				.to((errorOverrides) -> configuration.errorOverrides(errorOverrides));
-			map.from(properties.getLicenseKey()).to((licenseKey) -> configuration.licenseKey(licenseKey));
-			map.from(properties.getOracleSqlplus()).to((oracleSqlplus) -> configuration.oracleSqlplus(oracleSqlplus));
-			map.from(properties.getOracleSqlplusWarn())
-				.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).to((stream) -> configuration.stream(stream));
-			map.from(properties.getUndoSqlMigrationPrefix())
-				.to((undoSqlMigrationPrefix) -> configuration.undoSqlMigrationPrefix(undoSqlMigrationPrefix));
-			map.from(properties.getCherryPick()).to((cherryPick) -> configuration.cherryPick(cherryPick));
 			map.from(properties.getJdbcProperties())
 				.whenNot(Map::isEmpty)
 				.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
 			map.from(properties.getKerberosConfigFile())
 				.to((configFile) -> configuration.kerberosConfigFile(configFile));
-			map.from(properties.getOracleKerberosCacheFile())
-				.to((cacheFile) -> configuration.oracleKerberosCacheFile(cacheFile));
 			map.from(properties.getOutputQueryResults())
 				.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
-			map.from(properties.getSqlServerKerberosLoginFile())
-				.whenNonNull()
-				.to(this::configureSqlServerKerberosLoginFile);
 			map.from(properties.getSkipExecutingMigrations())
 				.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 			map.from(properties.getIgnoreMigrationPatterns())
@@ -272,56 +327,15 @@ public class FlywayAutoConfiguration {
 					.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			map.from(properties.getDetectEncoding())
 				.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
-			map.from(properties.getBaselineMigrationPrefix())
-				.to((baselineMigrationPrefix) -> configuration.baselineMigrationPrefix(baselineMigrationPrefix));
 		}
 
-		@SuppressWarnings("deprecation")
-		private void configureIgnoredMigrations(FluentConfiguration configuration, FlywayProperties properties,
+		private void configureExecuteInTransaction(FluentConfiguration configuration, FlywayProperties properties,
 				PropertyMapper map) {
 			try {
-				map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
-				map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
-				map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
-				map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
-			}
-			catch (BootstrapMethodError | NoSuchMethodError ex) {
-				// Flyway 9+
-			}
-		}
-
-		private void configureFailOnMissingLocations(FluentConfiguration configuration,
-				boolean failOnMissingLocations) {
-			try {
-				configuration.failOnMissingLocations(failOnMissingLocations);
+				map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
 			}
 			catch (NoSuchMethodError ex) {
-				// Flyway < 7.9
-			}
-		}
-
-		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
-			try {
-				configuration.createSchemas(createSchemas);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 6.5
-			}
-		}
-
-		private void configureSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
-			SQLServerConfigurationExtension sqlServerConfigurationExtension = PluginRegister
-				.getPlugin(SQLServerConfigurationExtension.class);
-			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
-		}
-
-		private void configureValidateMigrationNaming(FluentConfiguration configuration,
-				boolean validateMigrationNaming) {
-			try {
-				configuration.validateMigrationNaming(validateMigrationNaming);
-			}
-			catch (NoSuchMethodError ex) {
-				// Flyway < 6.2
+				// Flyway < 9.14
 			}
 		}
 
@@ -331,20 +345,9 @@ public class FlywayAutoConfiguration {
 			}
 		}
 
-		private void configureFlywayCallbacks(FluentConfiguration flyway, List<Callback> callbacks) {
-			if (!callbacks.isEmpty()) {
-				flyway.callbacks(callbacks.toArray(new Callback[0]));
-			}
-		}
-
 		private void configureJavaMigrations(FluentConfiguration flyway, List<JavaMigration> migrations) {
 			if (!migrations.isEmpty()) {
-				try {
-					flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
-				}
-				catch (NoSuchMethodError ex) {
-					// Flyway 5.x
-				}
+				flyway.javaMigrations(migrations.toArray(new JavaMigration[0]));
 			}
 		}
 
@@ -380,9 +383,7 @@ public class FlywayAutoConfiguration {
 				return locations;
 			}
 			String vendor = databaseDriver.getId();
-			return locations.stream()
-				.map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor))
-				.collect(Collectors.toList());
+			return locations.stream().map((location) -> location.replace(VENDOR_PLACEHOLDER, vendor)).toList();
 		}
 
 		private DatabaseDriver getDatabaseDriver() {
@@ -445,9 +446,150 @@ public class FlywayAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.flyway", name = "url")
+		@ConditionalOnBean(JdbcConnectionDetails.class)
+		private static final class JdbcConnectionDetailsCondition {
+
+		}
+
+		@ConditionalOnProperty("spring.flyway.url")
 		private static final class FlywayUrlCondition {
 
+		}
+
+	}
+
+	static class FlywayAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("db/migration/*");
+		}
+
+	}
+
+	/**
+	 * Adapts {@link FlywayProperties} to {@link FlywayConnectionDetails}.
+	 */
+	static final class PropertiesFlywayConnectionDetails implements FlywayConnectionDetails {
+
+		private final FlywayProperties properties;
+
+		PropertiesFlywayConnectionDetails(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public String getJdbcUrl() {
+			return this.properties.getUrl();
+		}
+
+		@Override
+		public String getDriverClassName() {
+			return this.properties.getDriverClassName();
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static final class OracleFlywayConfigurationCustomizer implements FlywayConfigurationCustomizer {
+
+		private final FlywayProperties properties;
+
+		OracleFlywayConfigurationCustomizer(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(FluentConfiguration configuration) {
+			Extension<OracleConfigurationExtension> extension = new Extension<>(configuration,
+					OracleConfigurationExtension.class, "Oracle");
+			Oracle properties = this.properties.getOracle();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getSqlplus).to(extension.via((ext, sqlplus) -> ext.setSqlplus(sqlplus)));
+			map.from(properties::getSqlplusWarn)
+				.to(extension.via((ext, sqlplusWarn) -> ext.setSqlplusWarn(sqlplusWarn)));
+			map.from(properties::getWalletLocation)
+				.to(extension.via((ext, walletLocation) -> ext.setWalletLocation(walletLocation)));
+			map.from(properties::getKerberosCacheFile)
+				.to(extension.via((ext, kerberosCacheFile) -> ext.setKerberosCacheFile(kerberosCacheFile)));
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static final class PostgresqlFlywayConfigurationCustomizer implements FlywayConfigurationCustomizer {
+
+		private final FlywayProperties properties;
+
+		PostgresqlFlywayConfigurationCustomizer(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(FluentConfiguration configuration) {
+			Extension<PostgreSQLConfigurationExtension> extension = new Extension<>(configuration,
+					PostgreSQLConfigurationExtension.class, "PostgreSQL");
+			Postgresql properties = this.properties.getPostgresql();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getTransactionalLock)
+				.to(extension.via((ext, transactionalLock) -> ext.setTransactionalLock(transactionalLock)));
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static final class SqlServerFlywayConfigurationCustomizer implements FlywayConfigurationCustomizer {
+
+		private final FlywayProperties properties;
+
+		SqlServerFlywayConfigurationCustomizer(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(FluentConfiguration configuration) {
+			Extension<SQLServerConfigurationExtension> extension = new Extension<>(configuration,
+					SQLServerConfigurationExtension.class, "SQL Server");
+			Sqlserver properties = this.properties.getSqlserver();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getKerberosLoginFile).to(extension.via(this::setKerberosLoginFile));
+		}
+
+		private void setKerberosLoginFile(SQLServerConfigurationExtension configuration, String file) {
+			configuration.getKerberos().getLogin().setFile(file);
+		}
+
+	}
+
+	/**
+	 * Helper class used to map properties to a {@link ConfigurationExtension}.
+	 *
+	 * @param <E> the extension type
+	 */
+	static class Extension<E extends ConfigurationExtension> {
+
+		private SingletonSupplier<E> extension;
+
+		Extension(FluentConfiguration configuration, Class<E> type, String name) {
+			this.extension = SingletonSupplier.of(() -> {
+				E extension = configuration.getPluginRegister().getPlugin(type);
+				Assert.state(extension != null, () -> "Flyway %s extension missing".formatted(name));
+				return extension;
+			});
+		}
+
+		<T> Consumer<T> via(BiConsumer<E, T> action) {
+			return (value) -> action.accept(this.extension.get(), value);
 		}
 
 	}

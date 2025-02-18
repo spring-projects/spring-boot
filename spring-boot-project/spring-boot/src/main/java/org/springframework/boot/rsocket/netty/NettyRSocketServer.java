@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class NettyRSocketServer implements RSocketServer {
 	private CloseableChannel channel;
 
 	public NettyRSocketServer(Mono<CloseableChannel> starter, Duration lifecycleTimeout) {
-		Assert.notNull(starter, "starter must not be null");
+		Assert.notNull(starter, "'starter' must not be null");
 		this.starter = starter;
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
@@ -62,7 +62,7 @@ public class NettyRSocketServer implements RSocketServer {
 	@Override
 	public void start() throws RSocketServerException {
 		this.channel = block(this.starter, this.lifecycleTimeout);
-		logger.info("Netty RSocket started on port(s): " + address().getPort());
+		logger.info("Netty RSocket started on port " + address().getPort());
 		startDaemonAwaitThread(this.channel);
 	}
 

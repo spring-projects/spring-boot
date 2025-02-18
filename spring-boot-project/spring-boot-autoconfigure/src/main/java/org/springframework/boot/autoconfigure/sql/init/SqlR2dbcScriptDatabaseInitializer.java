@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.boot.autoconfigure.batch.BatchDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link R2dbcScriptDatabaseInitializer} for the primary SQL database. May be registered
@@ -30,6 +31,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
  * @author Phillip Webb
  * @since 2.6.0
  */
+@ImportRuntimeHints(SqlInitializationScriptsRuntimeHints.class)
 public class SqlR2dbcScriptDatabaseInitializer extends R2dbcScriptDatabaseInitializer {
 
 	/**

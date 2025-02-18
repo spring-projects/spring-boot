@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -36,9 +34,10 @@ import org.springframework.util.StreamUtils;
  * @author Madhura Bhave
  * @author Artsiom Yudovin
  * @author Mushtaq Ahmed
+ * @author Yan Kardziyaka
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
+@ConfigurationProperties("spring.security.oauth2.resourceserver")
 public class OAuth2ResourceServerProperties {
 
 	private final Jwt jwt = new Jwt();
@@ -81,6 +80,26 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private List<String> audiences = new ArrayList<>();
 
+		/**
+		 * Prefix to use for authorities mapped from JWT.
+		 */
+		private String authorityPrefix;
+
+		/**
+		 * Regex to use for splitting the value of the authorities claim into authorities.
+		 */
+		private String authoritiesClaimDelimiter;
+
+		/**
+		 * Name of token claim to use for mapping authorities from JWT.
+		 */
+		private String authoritiesClaimName;
+
+		/**
+		 * JWT principal claim name.
+		 */
+		private String principalClaimName;
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
@@ -89,23 +108,12 @@ public class OAuth2ResourceServerProperties {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.security.oauth2.resourceserver.jwt.jws-algorithms")
-		public String getJwsAlgorithm() {
-			return this.jwsAlgorithms.isEmpty() ? null : this.jwsAlgorithms.get(0);
-		}
-
-		@Deprecated
-		public void setJwsAlgorithm(String jwsAlgorithm) {
-			this.jwsAlgorithms = new ArrayList<>(Arrays.asList(jwsAlgorithm));
-		}
-
 		public List<String> getJwsAlgorithms() {
 			return this.jwsAlgorithms;
 		}
 
-		public void setJwsAlgorithms(List<String> jwsAlgortithms) {
-			this.jwsAlgorithms = jwsAlgortithms;
+		public void setJwsAlgorithms(List<String> jwsAlgorithms) {
+			this.jwsAlgorithms = jwsAlgorithms;
 		}
 
 		public String getIssuerUri() {
@@ -132,9 +140,44 @@ public class OAuth2ResourceServerProperties {
 			this.audiences = audiences;
 		}
 
+		public String getAuthorityPrefix() {
+			return this.authorityPrefix;
+		}
+
+		public void setAuthorityPrefix(String authorityPrefix) {
+			this.authorityPrefix = authorityPrefix;
+		}
+
+		public String getAuthoritiesClaimDelimiter() {
+			return this.authoritiesClaimDelimiter;
+		}
+
+		public void setAuthoritiesClaimDelimiter(String authoritiesClaimDelimiter) {
+			this.authoritiesClaimDelimiter = authoritiesClaimDelimiter;
+		}
+
+		public String getAuthoritiesClaimName() {
+			return this.authoritiesClaimName;
+		}
+
+		public void setAuthoritiesClaimName(String authoritiesClaimName) {
+			this.authoritiesClaimName = authoritiesClaimName;
+		}
+
+		public String getPrincipalClaimName() {
+			return this.principalClaimName;
+		}
+
+		public void setPrincipalClaimName(String principalClaimName) {
+			this.principalClaimName = principalClaimName;
+		}
+
 		public String readPublicKey() throws IOException {
 			String key = "spring.security.oauth2.resourceserver.public-key-location";
-			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
+			if (this.publicKeyLocation == null) {
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"No public key location specified");
+			}
 			if (!this.publicKeyLocation.exists()) {
 				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
 						"Public key location does not exist");

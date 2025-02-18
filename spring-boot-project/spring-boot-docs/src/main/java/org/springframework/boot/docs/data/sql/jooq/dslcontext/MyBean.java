@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,9 @@ public class MyBean {
 
 	// tag::method[]
 	public List<GregorianCalendar> authorsBornAfter1980() {
-		// @formatter:off
 		return this.create.selectFrom(AUTHOR)
-				.where(AUTHOR.DATE_OF_BIRTH.greaterThan(new GregorianCalendar(1980, 0, 1)))
-				.fetch(AUTHOR.DATE_OF_BIRTH);
-		// @formatter:on
+			.where(AUTHOR.DATE_OF_BIRTH.greaterThan(new GregorianCalendar(1980, 0, 1)))
+			.fetch(AUTHOR.DATE_OF_BIRTH);
 	} // end::method[]
 
 }

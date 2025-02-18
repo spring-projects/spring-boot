@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.env;
 
+import java.util.HexFormat;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Random;
@@ -31,7 +32,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Matt Benson
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  * @since 1.0.0
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
@@ -136,9 +137,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	private Object getRandomBytes() {
-		byte[] bytes = new byte[32];
+		byte[] bytes = new byte[16];
 		getSource().nextBytes(bytes);
-		return DigestUtils.md5DigestAsHex(bytes);
+		return HexFormat.of().withLowerCase().formatHex(bytes);
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
@@ -194,11 +195,11 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 			String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
 			T min = parse.apply(tokens[0]);
 			if (tokens.length == 1) {
-				Assert.isTrue(min.compareTo(zero) > 0, "Bound must be positive.");
+				Assert.state(min.compareTo(zero) > 0, "Bound must be positive.");
 				return new Range<>(value, zero, min);
 			}
 			T max = parse.apply(tokens[1]);
-			Assert.isTrue(min.compareTo(max) < 0, "Lower bound must be less than upper bound.");
+			Assert.state(min.compareTo(max) < 0, "Lower bound must be less than upper bound.");
 			return new Range<>(value, min, max);
 		}
 

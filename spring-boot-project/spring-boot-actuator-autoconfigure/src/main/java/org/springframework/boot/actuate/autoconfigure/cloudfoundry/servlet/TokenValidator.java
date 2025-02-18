@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
-import org.springframework.util.Base64Utils;
 
 /**
  * Validator used to ensure that a signed {@link Token} has not been tampered with.
@@ -102,7 +102,7 @@ class TokenValidator {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
-		byte[] bytes = Base64Utils.decodeFromString(key);
+		byte[] bytes = Base64.getDecoder().decode(key);
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
 		return KeyFactory.getInstance("RSA").generatePublic(keySpec);
 	}

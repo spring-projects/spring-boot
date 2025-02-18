@@ -1,0 +1,8 @@
+services:
+  cassandra:
+    image: '{imageName}'
+    ports:
+      - '9042'
+    environment:
+      - 'CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch'
+      - 'CASSANDRA_DATACENTER=testdc1'

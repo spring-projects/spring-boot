@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitive;
@@ -46,11 +47,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentTestSlices extends DefaultTask {
+public abstract class DocumentTestSlices extends DefaultTask {
 
 	private FileCollection testSlices;
-
-	private File outputFile;
 
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -63,13 +62,7 @@ public class DocumentTestSlices extends DefaultTask {
 	}
 
 	@OutputFile
-	public File getOutputFile() {
-		return this.outputFile;
-	}
-
-	public void setOutputFile(File outputFile) {
-		this.outputFile = outputFile;
-	}
+	public abstract RegularFileProperty getOutputFile();
 
 	@TaskAction
 	void documentTestSlices() throws IOException {
@@ -94,8 +87,9 @@ public class DocumentTestSlices extends DefaultTask {
 	}
 
 	private void writeTable(Set<TestSlice> testSlices) throws IOException {
-		this.outputFile.getParentFile().mkdirs();
-		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile))) {
+		File outputFile = getOutputFile().getAsFile().get();
+		outputFile.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(new FileWriter(outputFile))) {
 			writer.println("[cols=\"d,a\"]");
 			writer.println("|===");
 			writer.println("| Test slice | Imported auto-configuration");

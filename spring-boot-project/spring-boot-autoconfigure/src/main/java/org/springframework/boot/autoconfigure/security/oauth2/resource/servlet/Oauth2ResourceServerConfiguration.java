@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ class Oauth2ResourceServerConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JwtDecoder.class)
-	@Import({ OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
+	@Import({ OAuth2ResourceServerJwtConfiguration.JwtConverterConfiguration.class,
+			OAuth2ResourceServerJwtConfiguration.JwtDecoderConfiguration.class,
 			OAuth2ResourceServerJwtConfiguration.OAuth2SecurityFilterChainConfiguration.class })
 	static class JwtConfiguration {
 

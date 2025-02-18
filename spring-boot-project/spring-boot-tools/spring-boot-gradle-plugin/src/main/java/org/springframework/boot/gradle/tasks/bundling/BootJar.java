@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,26 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.work.DisableCachingByDefault;
+
+import org.springframework.boot.loader.tools.LoaderImplementation;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -46,9 +49,9 @@ import org.gradle.work.DisableCachingByDefault;
  * @since 2.0.0
  */
 @DisableCachingByDefault(because = "Not worth caching")
-public class BootJar extends Jar implements BootArchive {
+public abstract class BootJar extends Jar implements BootArchive {
 
-	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";
+	private static final String LAUNCHER = "org.springframework.boot.loader.launch.JarLauncher";
 
 	private static final String CLASSES_DIRECTORY = "BOOT-INF/classes/";
 
@@ -58,17 +61,19 @@ public class BootJar extends Jar implements BootArchive {
 
 	private static final String CLASSPATH_INDEX = "BOOT-INF/classpath.idx";
 
-	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
-
 	private final BootArchiveSupport support;
 
 	private final CopySpec bootInfSpec;
 
-	private final Property<String> mainClass;
+	private final LayeredSpec layered;
+
+	private final Provider<String> projectName;
+
+	private final Provider<Object> projectVersion;
+
+	private final ResolvedDependencies resolvedDependencies;
 
 	private FileCollection classpath;
-
-	private LayeredSpec layered = new LayeredSpec();
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -77,17 +82,13 @@ public class BootJar extends Jar implements BootArchive {
 		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
 		Project project = getProject();
 		this.bootInfSpec = project.copySpec().into("BOOT-INF");
-		this.mainClass = project.getObjects().property(String.class);
+		this.layered = project.getObjects().newInstance(LayeredSpec.class);
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(project, configuration);
-				}
-			});
-		});
+		this.projectName = project.provider(project::getName);
+		this.projectVersion = project.provider(project::getVersion);
+		this.resolvedDependencies = new ResolvedDependencies(project);
+		getIncludeTools().convention(true);
 	}
 
 	private void configureBootInfSpec(CopySpec bootInfSpec) {
@@ -120,29 +121,41 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
+	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
+		this.resolvedDependencies.resolvedArtifacts(resolvedArtifacts);
+	}
+
+	@Nested
+	ResolvedDependencies getResolvedDependencies() {
+		return this.resolvedDependencies;
+	}
+
+	@Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
-				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX,
+				this.getTargetJavaVersion().get().getMajorVersion(), this.projectName.get(), this.projectVersion.get());
 		super.copy();
 	}
 
 	private boolean isLayeredDisabled() {
-		return this.layered != null && !this.layered.isEnabled();
+		return !getLayered().getEnabled().get();
 	}
 
 	@Override
 	protected CopyAction createCopyAction() {
+		LoaderImplementation loaderImplementation = getLoaderImplementation().getOrElse(LoaderImplementation.DEFAULT);
+		LayerResolver layerResolver = null;
 		if (!isLayeredDisabled()) {
-			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
-			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
+			layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 		}
-		return this.support.createCopyAction(this);
+		String jarmodeToolsLocation = isIncludeJarmodeTools() ? LIB_DIRECTORY : null;
+		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, true, layerResolver,
+				jarmodeToolsLocation);
 	}
 
-	@Override
-	public Property<String> getMainClass() {
-		return this.mainClass;
+	private boolean isIncludeJarmodeTools() {
+		return Boolean.TRUE.equals(this.getIncludeTools().get());
 	}
 
 	@Override
@@ -289,11 +302,6 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	private static <T> Callable<T> callTo(Callable<T> callable) {
 		return callable;
-	}
-
-	@Internal
-	ResolvedDependencies getResolvedDependencies() {
-		return this.resolvedDependencies;
 	}
 
 	private final class LibrarySpec implements Spec<FileCopyDetails> {

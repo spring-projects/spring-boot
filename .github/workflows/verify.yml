@@ -1,0 +1,88 @@
+name: Verify
+on:
+  workflow_call:
+    inputs:
+      staging:
+        description: 'Whether the release to verify is in the staging repository'
+        required: false
+        default: false
+        type: boolean
+      version:
+        description: 'Version to verify'
+        required: true
+        type: string
+    secrets:
+      commercial-repository-password:
+        description: 'Password for authentication with the commercial repository'
+        required: false
+      commercial-repository-username:
+        description: 'Username for authentication with the commercial repository'
+        required: false
+      google-chat-webhook-url:
+        description: 'Google Chat Webhook URL'
+        required: true
+      opensource-repository-password:
+        description: 'Password for authentication with the open-source repository'
+        required: false
+      opensource-repository-username:
+        description: 'Username for authentication with the open-source repository'
+        required: false
+      token:
+        description: 'Token to use for authentication with GitHub'
+        required: true
+jobs:
+  verify:
+    name: Verify
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
+    steps:
+      - name: Check Out Release Verification Tests
+        uses: actions/checkout@v4
+        with:
+          ref: 'v0.0.8'
+          repository: spring-projects/spring-boot-release-verification
+          token: ${{ secrets.token }}
+      - name: Check Out Send Notification Action
+        uses: actions/checkout@v4
+        with:
+          path: send-notification
+          sparse-checkout: .github/actions/send-notification
+      - name: Set Up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica'
+          java-version: 17
+      - name: Set Up Homebrew
+        if: ${{ !vars.COMMERCIAL }}
+        uses: Homebrew/actions/setup-homebrew@7657c9512f50e1c35b640971116425935bab3eea
+      - name: Set Up Gradle
+        uses: gradle/actions/setup-gradle@94baf225fe0a508e581a564467443d0e2379123b # v4.3.0
+        with:
+          cache-read-only: false
+      - name: Configure Gradle Properties
+        shell: bash
+        run: |
+          mkdir -p $HOME/.gradle
+          echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
+      - name: Run Release Verification Tests
+        env:
+          RVT_COMMERCIAL_REPOSITORY_PASSWORD: ${{ secrets.commercial-repository-password }}
+          RVT_COMMERCIAL_REPOSITORY_USERNAME: ${{ secrets.commercial-repository-username }}
+          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.opensource-repository-password }}
+          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.opensource-repository-username }}
+          RVT_RELEASE_TYPE: ${{ vars.COMMERCIAL && 'commercial' || 'oss' }}
+          RVT_STAGING: ${{ inputs.staging }}
+          RVT_VERSION: ${{ inputs.version }}
+        run: ./gradlew spring-boot-release-verification-tests:test
+      - name: Upload Build Reports on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: '**/build/reports/'
+      - name: Send Notification
+        if: always()
+        uses: ./send-notification/.github/actions/send-notification
+        with:
+          run-name: ${{ format('{0} | Verification | {1}', github.ref_name, inputs.version) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.google-chat-webhook-url }}

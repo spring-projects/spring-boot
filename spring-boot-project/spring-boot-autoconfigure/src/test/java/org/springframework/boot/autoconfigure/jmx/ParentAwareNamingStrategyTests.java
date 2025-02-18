@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ParentAwareNamingStrategyTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner();
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
 	void objectNameMatchesManagedResourceByDefault() {

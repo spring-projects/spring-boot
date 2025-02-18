@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 /**
  * {@link ConfigurationProperties Properties} for Spring GraphQL.
@@ -27,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@ConfigurationProperties(prefix = "spring.graphql")
+@ConfigurationProperties("spring.graphql")
 public class GraphQlProperties {
 
 	/**
@@ -42,6 +43,8 @@ public class GraphQlProperties {
 	private final Websocket websocket = new Websocket();
 
 	private final Rsocket rsocket = new Rsocket();
+
+	private final Sse sse = new Sse();
 
 	public Graphiql getGraphiql() {
 		return this.graphiql;
@@ -67,6 +70,10 @@ public class GraphQlProperties {
 		return this.rsocket;
 	}
 
+	public Sse getSse() {
+		return this.sse;
+	}
+
 	public static class Schema {
 
 		/**
@@ -78,6 +85,13 @@ public class GraphQlProperties {
 		 * File extensions for GraphQL schema files.
 		 */
 		private String[] fileExtensions = new String[] { ".graphqls", ".gqls" };
+
+		/**
+		 * Locations of additional, individual schema files to parse.
+		 */
+		private Resource[] additionalFiles = new Resource[0];
+
+		private final Inspection inspection = new Inspection();
 
 		private final Introspection introspection = new Introspection();
 
@@ -99,10 +113,22 @@ public class GraphQlProperties {
 			this.fileExtensions = fileExtensions;
 		}
 
+		public Resource[] getAdditionalFiles() {
+			return this.additionalFiles;
+		}
+
+		public void setAdditionalFiles(Resource[] additionalFiles) {
+			this.additionalFiles = additionalFiles;
+		}
+
 		private String[] appendSlashIfNecessary(String[] locations) {
 			return Arrays.stream(locations)
 				.map((location) -> location.endsWith("/") ? location : location + "/")
 				.toArray(String[]::new);
+		}
+
+		public Inspection getInspection() {
+			return this.inspection;
 		}
 
 		public Introspection getIntrospection() {
@@ -111,6 +137,24 @@ public class GraphQlProperties {
 
 		public Printer getPrinter() {
 			return this.printer;
+		}
+
+		public static class Inspection {
+
+			/**
+			 * Whether schema should be compared to the application to detect missing
+			 * mappings.
+			 */
+			private boolean enabled = true;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
 		}
 
 		public static class Introspection {
@@ -193,6 +237,11 @@ public class GraphQlProperties {
 		 */
 		private Duration connectionInitTimeout = Duration.ofSeconds(60);
 
+		/**
+		 * Maximum idle period before a server keep-alive ping is sent to client.
+		 */
+		private Duration keepAlive;
+
 		public String getPath() {
 			return this.path;
 		}
@@ -207,6 +256,14 @@ public class GraphQlProperties {
 
 		public void setConnectionInitTimeout(Duration connectionInitTimeout) {
 			this.connectionInitTimeout = connectionInitTimeout;
+		}
+
+		public Duration getKeepAlive() {
+			return this.keepAlive;
+		}
+
+		public void setKeepAlive(Duration keepAlive) {
+			this.keepAlive = keepAlive;
 		}
 
 	}
@@ -224,6 +281,23 @@ public class GraphQlProperties {
 
 		public void setMapping(String mapping) {
 			this.mapping = mapping;
+		}
+
+	}
+
+	public static class Sse {
+
+		/**
+		 * Time required for concurrent handling to complete.
+		 */
+		private Duration timeout;
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}

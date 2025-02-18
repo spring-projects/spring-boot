@@ -1,4 +1,0 @@
-[[messaging.whats-next]]
-== What to Read Next
-The next section describes how to enable <<io#io, IO capabilities>> in your application.
-You can read about <<io#io.caching, caching>>, <<io#io.email, mail>>, <<io#io.validation, validation>>, <<io#io.rest-client, rest clients>> and more in this section.

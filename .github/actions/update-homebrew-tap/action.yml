@@ -1,0 +1,36 @@
+name: Update Homebrew Tap
+description: Updates the Homebrew Tap for the Spring Boot CLI
+inputs:
+  spring-boot-version:
+    description: 'The version to publish'
+    required: true
+  token:
+    description: 'Token to use for GitHub authentication'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check Out Homebrew Tap Repo
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        path: updated-homebrew-tap-repo
+        repository: spring-io/homebrew-tap
+        token: ${{ inputs.token }}
+    - name: Await Formula
+      uses: ./.github/actions/await-http-resource
+      with:
+        url: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/${{ inputs.spring-boot-version }}/spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb
+    - name: Update Homebrew Tap
+      shell: bash
+      run: |
+        pushd updated-homebrew-tap-repo > /dev/null
+        curl https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/${{ inputs.spring-boot-version }}/spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb --output spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb
+        rm spring-boot.rb
+        mv spring-boot-cli-*.rb spring-boot.rb
+        git config user.name "Spring Builds" > /dev/null
+        git config user.email "spring-builds@users.noreply.github.com" > /dev/null
+        git add spring-boot.rb > /dev/null
+        git commit -m "Upgrade to Spring Boot ${{ inputs.spring-boot-version }}" > /dev/null
+        git push
+        echo "DONE"
+        popd > /dev/null

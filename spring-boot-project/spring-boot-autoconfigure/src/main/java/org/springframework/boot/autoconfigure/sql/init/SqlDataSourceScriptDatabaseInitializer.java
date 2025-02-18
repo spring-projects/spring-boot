@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the primary SQL database. May be
@@ -29,6 +30,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
  * @author Phillip Webb
  * @since 2.6.0
  */
+@ImportRuntimeHints(SqlInitializationScriptsRuntimeHints.class)
 public class SqlDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
 	/**

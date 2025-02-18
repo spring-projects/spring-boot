@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package smoketest.test.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.springframework.util.Assert;
 
@@ -46,8 +46,8 @@ public class User {
 	}
 
 	public User(String username, VehicleIdentificationNumber vin) {
-		Assert.hasLength(username, "Username must not be empty");
-		Assert.notNull(vin, "VIN must not be null");
+		Assert.hasLength(username, "'username' must not be empty");
+		Assert.notNull(vin, "'vin' must not be null");
 		this.username = username;
 		this.vin = vin;
 	}

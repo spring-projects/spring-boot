@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
-import java.util.stream.Collectors;
-
 import javax.management.MBeanServer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +25,9 @@ import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -36,12 +36,13 @@ import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.JacksonJmxOperationResponseMapper;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExporter;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperationResponseMapper;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -62,7 +63,7 @@ import org.springframework.util.ObjectUtils;
  */
 @AutoConfiguration(after = { JmxAutoConfiguration.class, EndpointAutoConfiguration.class })
 @EnableConfigurationProperties({ JmxEndpointProperties.class, JmxProperties.class })
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
+@ConditionalOnBooleanProperty("spring.jmx.enabled")
 public class JmxEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
@@ -82,10 +83,11 @@ public class JmxEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(JmxEndpointsSupplier.class)
 	public JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
-			ObjectProvider<EndpointFilter<ExposableJmxEndpoint>> filters) {
+			ObjectProvider<EndpointFilter<ExposableJmxEndpoint>> endpointFilters,
+			ObjectProvider<OperationFilter<JmxOperation>> operationFilters) {
 		return new JmxEndpointDiscoverer(this.applicationContext, parameterValueMapper,
-				invokerAdvisors.orderedStream().collect(Collectors.toList()),
-				filters.orderedStream().collect(Collectors.toList()));
+				invokerAdvisors.orderedStream().toList(), endpointFilters.orderedStream().toList(),
+				operationFilters.orderedStream().toList());
 	}
 
 	@Bean
@@ -117,6 +119,11 @@ public class JmxEndpointAutoConfiguration {
 	@Bean
 	static LazyInitializationExcludeFilter eagerlyInitializeJmxEndpointExporter() {
 		return LazyInitializationExcludeFilter.forBeanTypes(JmxEndpointExporter.class);
+	}
+
+	@Bean
+	OperationFilter<JmxOperation> jmxAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
+		return OperationFilter.byAccess(endpointAccessResolver);
 	}
 
 }

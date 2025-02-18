@@ -20,20 +20,20 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
@@ -56,21 +56,12 @@ class ElasticsearchDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
-				ReactiveElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
-
-	@BeforeEach
-	void setUp() {
-		System.setProperty("es.set.netty.runtime.available.processors", "false");
-	}
-
-	@AfterEach
-	void tearDown() {
-		System.clearProperty("es.set.netty.runtime.available.processors");
-	}
+				ElasticsearchClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
+				ReactiveElasticsearchClientAutoConfiguration.class));
 
 	@Test
 	void defaultRestBeansRegistered() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class)
 			.hasSingleBean(ReactiveElasticsearchTemplate.class)
 			.hasSingleBean(ElasticsearchConverter.class)
 			.hasSingleBean(ElasticsearchConverter.class)
@@ -93,21 +84,21 @@ class ElasticsearchDataAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ElasticsearchCustomConversions.class).hasBean("testCustomConversions");
 			assertThat(context.getBean(ElasticsearchConverter.class)
 				.getConversionService()
-				.canConvert(ElasticsearchRestTemplate.class, Boolean.class)).isTrue();
+				.canConvert(ElasticsearchTemplate.class, Boolean.class)).isTrue();
 		});
 	}
 
 	@Test
 	void customRestTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRestTemplate.class)
-			.run((context) -> assertThat(context).getBeanNames(ElasticsearchRestTemplate.class)
+			.run((context) -> assertThat(context).getBeanNames(ElasticsearchTemplate.class)
 				.hasSize(1)
 				.contains("elasticsearchTemplate"));
 	}
 
 	@Test
 	void customReactiveRestTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
+		this.contextRunner.withUserConfiguration(CustomReactiveElasticsearchTemplate.class)
 			.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class)
 				.hasSize(1)
 				.contains("reactiveElasticsearchTemplate"));
@@ -135,14 +126,14 @@ class ElasticsearchDataAutoConfigurationTests {
 	static class CustomRestTemplate {
 
 		@Bean
-		ElasticsearchRestTemplate elasticsearchTemplate() {
-			return mock(ElasticsearchRestTemplate.class);
+		ElasticsearchTemplate elasticsearchTemplate() {
+			return mock(ElasticsearchTemplate.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomReactiveRestTemplate {
+	static class CustomReactiveElasticsearchTemplate {
 
 		@Bean
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate() {
@@ -157,10 +148,10 @@ class ElasticsearchDataAutoConfigurationTests {
 
 	}
 
-	static class MyConverter implements Converter<ElasticsearchRestTemplate, Boolean> {
+	static class MyConverter implements Converter<ElasticsearchTemplate, Boolean> {
 
 		@Override
-		public Boolean convert(ElasticsearchRestTemplate source) {
+		public Boolean convert(ElasticsearchTemplate source) {
 			return null;
 		}
 

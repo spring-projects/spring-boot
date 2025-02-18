@@ -19,8 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +31,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -82,8 +80,7 @@ class FilterOrderingIntegrationTests {
 			.extracting("beanName")
 			.isEqualTo("formContentFilter");
 		assertThat(registeredFilters.get(4).getFilter()).isInstanceOf(OrderedRequestContextFilter.class);
-		assertThat(registeredFilters.get(5).getFilter()).isInstanceOf(ErrorPageSecurityFilter.class);
-		assertThat(registeredFilters.get(6).getFilter()).isInstanceOf(FilterChainProxy.class);
+		assertThat(registeredFilters.get(5).getFilter()).isInstanceOf(FilterChainProxy.class);
 	}
 
 	private void load() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 package org.springframework.boot.system;
 
 import java.io.Console;
-import java.lang.invoke.MethodHandles;
+import java.io.Reader;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.SortedSet;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 import org.springframework.util.ClassUtils;
 
@@ -38,60 +37,6 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 public enum JavaVersion {
-
-	/**
-	 * Java 1.8.
-	 * @since 2.0.0
-	 */
-	EIGHT("1.8", Optional.class, "empty"),
-
-	/**
-	 * Java 9.
-	 * @since 2.0.0
-	 */
-	NINE("9", Optional.class, "stream"),
-
-	/**
-	 * Java 10.
-	 * @since 2.1.7
-	 */
-	TEN("10", Optional.class, "orElseThrow"),
-
-	/**
-	 * Java 11.
-	 * @since 2.1.7
-	 */
-	ELEVEN("11", String.class, "strip"),
-
-	/**
-	 * Java 12.
-	 * @since 2.1.7
-	 */
-	TWELVE("12", String.class, "describeConstable"),
-
-	/**
-	 * Java 13.
-	 * @since 2.1.7
-	 */
-	THIRTEEN("13", String.class, "stripIndent"),
-
-	/**
-	 * Java 14.
-	 * @since 2.3.0
-	 */
-	FOURTEEN("14", MethodHandles.Lookup.class, "hasFullPrivilegeAccess"),
-
-	/**
-	 * Java 15.
-	 * @since 2.3.0
-	 */
-	FIFTEEN("15", CharSequence.class, "isEmpty"),
-
-	/**
-	 * Java 16.
-	 * @since 2.4.2
-	 */
-	SIXTEEN("16", Stream.class, "toList"),
 
 	/**
 	 * Java 17.
@@ -121,15 +66,33 @@ public enum JavaVersion {
 	 * Java 21.
 	 * @since 2.7.16
 	 */
-	TWENTY_ONE("21", SortedSet.class, "getFirst");
+	TWENTY_ONE("21", SortedSet.class, "getFirst"),
+
+	/**
+	 * Java 22.
+	 * @since 3.2.4
+	 */
+	TWENTY_TWO("22", Console.class, "isTerminal"),
+
+	/**
+	 * Java 23.
+	 * @since 3.2.9
+	 */
+	TWENTY_THREE("23", NumberFormat.class, "isStrict"),
+
+	/**
+	 * Java 24.
+	 * @since 3.4.3
+	 */
+	TWENTY_FOUR("24", Reader.class, "of", CharSequence.class);
 
 	private final String name;
 
 	private final boolean available;
 
-	JavaVersion(String name, Class<?> clazz, String methodName) {
+	JavaVersion(String name, Class<?> versionSpecificClass, String versionSpecificMethod, Class<?>... paramTypes) {
 		this.name = name;
-		this.available = ClassUtils.hasMethod(clazz, methodName);
+		this.available = ClassUtils.hasMethod(versionSpecificClass, versionSpecificMethod, paramTypes);
 	}
 
 	@Override
@@ -149,7 +112,7 @@ public enum JavaVersion {
 				return candidate;
 			}
 		}
-		return EIGHT;
+		return SEVENTEEN;
 	}
 
 	/**

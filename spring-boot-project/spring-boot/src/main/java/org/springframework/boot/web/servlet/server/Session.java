@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -43,6 +44,7 @@ public class Session {
 	 */
 	private File storeDir;
 
+	@NestedConfigurationProperty
 	private final Cookie cookie = new Cookie();
 
 	private final SessionStoreDirectory sessionStoreDirectory = new SessionStoreDirectory();
@@ -101,32 +103,17 @@ public class Session {
 	}
 
 	/**
-	 * Session cookie properties.
+	 * Session cookie properties. This class is provided only for back-compatibility
+	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whenever
+	 * possible.
 	 */
 	public static class Cookie extends org.springframework.boot.web.server.Cookie {
-
-		/**
-		 * Comment for the session cookie.
-		 */
-		private String comment;
-
-		/**
-		 * Return the comment for the session cookie.
-		 * @return the session cookie comment
-		 */
-		public String getComment() {
-			return this.comment;
-		}
-
-		public void setComment(String comment) {
-			this.comment = comment;
-		}
 
 	}
 
 	/**
 	 * Available session tracking modes (mirrors
-	 * {@link javax.servlet.SessionTrackingMode}.
+	 * {@link jakarta.servlet.SessionTrackingMode}).
 	 */
 	public enum SessionTrackingMode {
 

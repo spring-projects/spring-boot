@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ interface HotelRepository extends Repository<Hotel, Long> {
 
 	Hotel findByCityAndName(City city, String name);
 
-	@Query("select h.city as city, h.name as name, avg(r.rating) as averageRating "
+	@Query("select h.city as city, h.name as name, avg(cast(r.rating as Integer)) as averageRating "
 			+ "from Hotel h left outer join h.reviews r where h.city = ?1 group by h")
 	Page<HotelSummary> findByCity(City city, Pageable pageable);
 

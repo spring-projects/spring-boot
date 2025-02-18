@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,32 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider.DispatcherServletsMappingDescriptionProviderRuntimeHints;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.function.HandlerFunction;
+import org.springframework.web.servlet.function.RequestPredicate;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions.Visitor;
+import org.springframework.web.servlet.function.ServerRequest;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
@@ -47,8 +60,10 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Xiong Tang
  * @since 2.0.0
  */
+@ImportRuntimeHints(DispatcherServletsMappingDescriptionProviderRuntimeHints.class)
 public class DispatcherServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
@@ -58,6 +73,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		providers.add(new RequestMappingInfoHandlerMappingDescriptionProvider());
 		providers.add(new UrlHandlerMappingDescriptionProvider());
 		providers.add(new IterableDelegatesHandlerMappingDescriptionProvider(new ArrayList<>(providers)));
+		providers.add(new RouterFunctionMappingDescriptionProvider());
 		descriptionProviders = Collections.unmodifiableList(providers);
 	}
 
@@ -68,8 +84,8 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 	@Override
 	public Map<String, List<DispatcherServletMappingDescription>> describeMappings(ApplicationContext context) {
-		if (context instanceof WebApplicationContext) {
-			return describeMappings((WebApplicationContext) context);
+		if (context instanceof WebApplicationContext webApplicationContext) {
+			return describeMappings(webApplicationContext);
 		}
 		return Collections.emptyMap();
 	}
@@ -98,7 +114,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 	}
 
 	private List<DispatcherServletMappingDescription> describeMappings(DispatcherServletHandlerMappings mappings) {
-		return mappings.getHandlerMappings().stream().flatMap(this::describe).collect(Collectors.toList());
+		return mappings.getHandlerMappings().stream().flatMap(this::describe).toList();
 	}
 
 	private <T> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
@@ -135,7 +151,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		@Override
 		public List<DispatcherServletMappingDescription> describe(RequestMappingInfoHandlerMapping handlerMapping) {
 			Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
-			return handlerMethods.entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMethods.entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherServletMappingDescription describe(Entry<RequestMappingInfo, HandlerMethod> mapping) {
@@ -158,7 +174,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 		@Override
 		public List<DispatcherServletMappingDescription> describe(AbstractUrlHandlerMapping handlerMapping) {
-			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherServletMappingDescription describe(Entry<String, Object> mapping) {
@@ -191,6 +207,74 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 					.addAll(DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
 			}
 			return descriptions;
+		}
+
+	}
+
+	private static final class RouterFunctionMappingDescriptionProvider
+			implements HandlerMappingDescriptionProvider<RouterFunctionMapping> {
+
+		@Override
+		public Class<RouterFunctionMapping> getMappingClass() {
+			return RouterFunctionMapping.class;
+		}
+
+		@Override
+		public List<DispatcherServletMappingDescription> describe(RouterFunctionMapping handlerMapping) {
+			MappingDescriptionVisitor visitor = new MappingDescriptionVisitor();
+			RouterFunction<?> routerFunction = handlerMapping.getRouterFunction();
+			if (routerFunction != null) {
+				routerFunction.accept(visitor);
+			}
+			return visitor.descriptions;
+		}
+
+	}
+
+	private static final class MappingDescriptionVisitor implements Visitor {
+
+		private final List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
+
+		@Override
+		public void startNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void endNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
+			DispatcherServletMappingDetails details = new DispatcherServletMappingDetails();
+			details.setHandlerFunction(new HandlerFunctionDescription(handlerFunction));
+			this.descriptions.add(
+					new DispatcherServletMappingDescription(predicate.toString(), handlerFunction.toString(), details));
+		}
+
+		@Override
+		public void resources(Function<ServerRequest, Optional<Resource>> lookupFunction) {
+
+		}
+
+		@Override
+		public void attributes(Map<String, Object> attributes) {
+		}
+
+		@Override
+		public void unknown(RouterFunction<?> routerFunction) {
+
+		}
+
+	}
+
+	static class DispatcherServletsMappingDescriptionProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
+					DispatcherServletMappingDescription.class);
 		}
 
 	}

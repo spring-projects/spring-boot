@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class MyBean(private val template: ElasticsearchRestTemplate) {
+class MyBean(private val template: org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate ) {
 
 	// @fold:on // ...
 	fun someMethod(id: String): Boolean {

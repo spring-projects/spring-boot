@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class Link {
 	 * @param href the href
 	 */
 	public Link(String href) {
-		Assert.notNull(href, "HREF must not be null");
+		Assert.notNull(href, "'href' must not be null");
 		this.href = href;
 		this.templated = href.contains("{");
 	}

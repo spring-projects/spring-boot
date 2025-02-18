@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ class MavenBuildExtension implements TestTemplateInvocationContextProvider {
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		try {
+			// Returning a stream which must be closed here is fine, as JUnit will take
+			// care of closing it
 			return Files.list(Paths.get("build/maven-binaries")).map(MavenVersionTestTemplateInvocationContext::new);
 		}
 		catch (IOException ex) {

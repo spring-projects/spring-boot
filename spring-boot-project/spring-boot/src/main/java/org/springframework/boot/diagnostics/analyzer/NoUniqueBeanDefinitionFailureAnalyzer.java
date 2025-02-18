@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,23 +44,22 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoUniqueBeanDefinitionException cause,
 			String description) {
-		if (description == null) {
-			return null;
-		}
 		String[] beanNames = extractBeanNames(cause);
 		if (beanNames == null) {
 			return null;
 		}
 		StringBuilder message = new StringBuilder();
-		message.append(String.format("%s required a single bean, but %d were found:%n", description, beanNames.length));
+		message.append(String.format("%s required a single bean, but %d were found:%n",
+				(description != null) ? description : "A component", beanNames.length));
 		for (String beanName : beanNames) {
 			buildMessage(message, beanName);
 		}
-		return new FailureAnalysis(message.toString(),
-				"Consider marking one of the beans as @Primary, updating the consumer to"
-						+ " accept multiple beans, or using @Qualifier to identify the"
-						+ " bean that should be consumed",
-				cause);
+		MissingParameterNamesFailureAnalyzer.appendPossibility(message);
+		StringBuilder action = new StringBuilder(
+				"Consider marking one of the beans as @Primary, updating the consumer to accept multiple beans, "
+						+ "or using @Qualifier to identify the bean that should be consumed");
+		action.append("%n%n%s".formatted(MissingParameterNamesFailureAnalyzer.ACTION));
+		return new FailureAnalysis(message.toString(), action.toString(), cause);
 	}
 
 	private void buildMessage(StringBuilder message, String beanName) {
@@ -69,7 +68,7 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 			message.append(getDefinitionDescription(beanName, definition));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			message.append(String.format("\t- %s: a programmatically registered singleton", beanName));
+			message.append(String.format("\t- %s: a programmatically registered singleton%n", beanName));
 		}
 	}
 

@@ -30,16 +30,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 
-	@SuppressWarnings("deprecation")
 	@Test
 	void defaultValuesAreConsistent() {
 		DynatraceProperties properties = new DynatraceProperties();
 		DynatraceConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
-		assertThat(properties.getTechnologyType()).isEqualTo(config.technologyType());
 		assertThat(properties.getV1().getTechnologyType()).isEqualTo(config.technologyType());
 		assertThat(properties.getV2().isUseDynatraceSummaryInstruments())
 			.isEqualTo(config.useDynatraceSummaryInstruments());
+		assertThat(properties.getV2().isExportMeterMetadata()).isEqualTo(config.exportMeterMetadata());
 	}
 
 }

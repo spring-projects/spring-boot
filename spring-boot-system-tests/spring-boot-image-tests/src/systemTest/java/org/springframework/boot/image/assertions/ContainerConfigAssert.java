@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.springframework.boot.image.assertions;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.github.dockerjava.api.model.ContainerConfig;
@@ -100,8 +103,18 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[*].id");
 		}
 
-		public AbstractObjectAssert<?, Object> processOfType(String type) {
-			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type).singleElement();
+		public AbstractListAssert<?, List<? extends String>, String, ObjectAssert<String>> processOfType(String type) {
+			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type)
+				.singleElement()
+				.extracting("command", "args")
+				.flatMap(this::getArgs);
+		}
+
+		private Collection<String> getArgs(Object obj) {
+			if (obj instanceof List<?> list) {
+				return list.stream().map(Objects::toString).toList();
+			}
+			return Collections.emptyList();
 		}
 
 	}

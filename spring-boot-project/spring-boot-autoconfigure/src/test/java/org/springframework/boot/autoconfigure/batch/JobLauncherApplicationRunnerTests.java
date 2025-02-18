@@ -30,8 +30,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
@@ -43,8 +41,8 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -68,7 +66,8 @@ import static org.assertj.core.api.Assertions.fail;
 class JobLauncherApplicationRunnerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class))
 		.withUserConfiguration(BatchConfiguration.class);
 
 	@Test
@@ -96,9 +95,10 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecution() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 				.incrementer(new RunIdIncrementer())
 				.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
@@ -110,9 +110,10 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void runDifferentInstances() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 				.build();
 			// start a job instance
 			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
@@ -128,10 +129,11 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecutionOnNonRestartableJob() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
 				.preventRestart()
-				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 				.incrementer(new RunIdIncrementer())
 				.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
@@ -151,9 +153,10 @@ class JobLauncherApplicationRunnerTests {
 	@Test
 	void retryFailedExecutionWithNonIdentifyingParameters() {
 		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet()).build())
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 				.incrementer(new RunIdIncrementer())
 				.build();
 			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
@@ -180,21 +183,22 @@ class JobLauncherApplicationRunnerTests {
 
 		private final JobExplorer jobExplorer;
 
-		private final JobBuilderFactory jobs;
-
-		private final StepBuilderFactory steps;
+		private final JobBuilder jobBuilder;
 
 		private final Job job;
+
+		private final StepBuilder stepBuilder;
 
 		private final Step step;
 
 		JobLauncherApplicationRunnerContext(ApplicationContext context) {
 			JobLauncher jobLauncher = context.getBean(JobLauncher.class);
 			JobRepository jobRepository = context.getBean(JobRepository.class);
-			this.jobs = new JobBuilderFactory(jobRepository);
-			this.steps = new StepBuilderFactory(jobRepository, context.getBean(PlatformTransactionManager.class));
-			this.step = this.steps.get("step").tasklet((contribution, chunkContext) -> null).build();
-			this.job = this.jobs.get("job").start(this.step).build();
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
+			this.stepBuilder = new StepBuilder("step", jobRepository);
+			this.step = this.stepBuilder.tasklet((contribution, chunkContext) -> null, transactionManager).build();
+			this.jobBuilder = new JobBuilder("job", jobRepository);
+			this.job = this.jobBuilder.start(this.step).build();
 			this.jobExplorer = context.getBean(JobExplorer.class);
 			this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);
 		}
@@ -208,27 +212,26 @@ class JobLauncherApplicationRunnerTests {
 		}
 
 		JobBuilder jobBuilder() {
-			return this.jobs.get("job");
+			return this.jobBuilder;
 		}
 
 		StepBuilder stepBuilder() {
-			return this.steps.get("step");
+			return this.stepBuilder;
 		}
 
 		SimpleJobBuilder configureJob() {
-			return this.jobs.get("job").start(this.step);
+			return this.jobBuilder.start(this.step);
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
-	static class BatchConfiguration extends BasicBatchConfigurer {
+	@Configuration(proxyBeanMethods = false)
+	static class BatchConfiguration {
 
 		private final DataSource dataSource;
 
 		protected BatchConfiguration(DataSource dataSource) {
-			super(new BatchProperties(), dataSource, new TransactionManagerCustomizers(null));
 			this.dataSource = dataSource;
 		}
 

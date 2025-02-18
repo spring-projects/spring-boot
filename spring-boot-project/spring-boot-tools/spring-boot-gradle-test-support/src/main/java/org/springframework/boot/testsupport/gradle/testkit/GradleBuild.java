@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.testsupport.gradle.testkit;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,35 +29,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.jar.JarFile;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.Versioned;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.sun.jna.Platform;
-import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
-import org.antlr.v4.runtime.Lexer;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.http.HttpRequest;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
-import org.jetbrains.kotlin.gradle.model.KotlinProject;
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
-import org.jetbrains.kotlin.project.model.LanguageSettings;
-import org.tomlj.Toml;
 
-import org.springframework.asm.ClassVisitor;
-import org.springframework.boot.buildpack.platform.build.BuildRequest;
-import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * A {@code GradleBuild} is used to run a Gradle build using {@link GradleRunner}.
@@ -80,17 +65,17 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
-	private List<String> expectedDeprecationMessages = new ArrayList<>();
+	private final List<String> expectedDeprecationMessages = new ArrayList<>();
 
 	private boolean configurationCache = false;
 
-	private Map<String, String> scriptProperties = new HashMap<>();
+	private final Map<String, String> scriptProperties = new HashMap<>();
 
 	public GradleBuild() {
 		this(Dsl.GROOVY);
 	}
 
-	public GradleBuild(Dsl dsl) {
+	protected GradleBuild(Dsl dsl) {
 		this.dsl = dsl;
 	}
 
@@ -105,39 +90,6 @@ public class GradleBuild {
 	void after() {
 		this.script = null;
 		FileSystemUtils.deleteRecursively(this.projectDir);
-	}
-
-	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
-				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
-				new File(pathOfJarContaining(ClassVisitor.class)),
-				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.compilerRunner.KotlinLogger")),
-				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")),
-				new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)),
-				new File(pathOfJarContaining(LanguageSettings.class)),
-				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
-				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
-				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
-				new File(pathOfJarContaining(Versioned.class)),
-				new File(pathOfJarContaining(ParameterNamesModule.class)),
-				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
-				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)));
-	}
-
-	private String pathOfJarContaining(String className) {
-		try {
-			return pathOfJarContaining(Class.forName(className));
-		}
-		catch (ClassNotFoundException ex) {
-			throw new IllegalArgumentException(ex);
-		}
-	}
-
-	private String pathOfJarContaining(Class<?> type) {
-		return type.getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 
 	public GradleBuild script(String script) {
@@ -173,16 +125,23 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild scriptPropertyFrom(File propertiesFile, String key) {
+		this.scriptProperties.put(key, getProperty(propertiesFile, key));
+		return this;
+	}
+
+	public boolean gradleVersionIsAtLeast(String version) {
+		return GradleVersion.version(this.gradleVersion).compareTo(GradleVersion.version(version)) >= 0;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
 			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
 					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
 				String buildOutput = result.getOutput();
-				if (this.expectedDeprecationMessages != null) {
-					for (String message : this.expectedDeprecationMessages) {
-						buildOutput = buildOutput.replaceAll(message, "");
-					}
+				for (String message : this.expectedDeprecationMessages) {
+					buildOutput = buildOutput.replaceAll(message, "");
 				}
 				assertThat(buildOutput).doesNotContainIgnoringCase("deprecated");
 			}
@@ -213,9 +172,7 @@ public class GradleBuild {
 		if (repository.exists()) {
 			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
 		}
-		GradleRunner gradleRunner = GradleRunner.create()
-			.withProjectDir(this.projectDir)
-			.withPluginClasspath(pluginClasspath());
+		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir);
 		if (!this.configurationCache) {
 			// See https://github.com/gradle/gradle/issues/14125
 			gradleRunner.withDebug(true);
@@ -286,6 +243,28 @@ public class GradleBuild {
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to find dependency management plugin version", ex);
+		}
+	}
+
+	private String getProperty(File propertiesFile, String key) {
+		try {
+			assertThat(propertiesFile)
+				.withFailMessage("Expecting properties file to exist at path '%s'", propertiesFile.getCanonicalFile())
+				.exists();
+			Properties properties = new Properties();
+			try (FileInputStream input = new FileInputStream(propertiesFile)) {
+				properties.load(input);
+				String value = properties.getProperty(key);
+				assertThat(value)
+					.withFailMessage("Expecting properties file '%s' to contain the key '%s'",
+							propertiesFile.getCanonicalFile(), key)
+					.isNotEmpty();
+				return value;
+			}
+		}
+		catch (IOException ex) {
+			fail("Error reading properties file '" + propertiesFile + "'");
+			return null;
 		}
 	}
 

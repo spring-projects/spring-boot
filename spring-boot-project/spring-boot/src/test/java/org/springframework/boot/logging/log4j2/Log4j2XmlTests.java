@@ -27,7 +27,7 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.logging.LoggingSystemProperty;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@code log4j2.xml}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class Log4j2XmlTests {
 
@@ -52,7 +53,7 @@ class Log4j2XmlTests {
 
 	@Test
 	void whenLogExceptionConversionWordIsSetThenConsoleUsesIt() {
-		withSystemProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD, "custom",
+		withSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD.getEnvironmentVariableName(), "custom",
 				() -> assertThat(consolePattern()).contains("custom"));
 	}
 
@@ -63,18 +64,18 @@ class Log4j2XmlTests {
 
 	@Test
 	void whenLogLevelPatternIsSetThenConsoleUsesIt() {
-		withSystemProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN, "custom",
+		withSystemProperty(LoggingSystemProperty.LEVEL_PATTERN.getEnvironmentVariableName(), "custom",
 				() -> assertThat(consolePattern()).contains("custom"));
 	}
 
 	@Test
 	void whenLogLDateformatPatternIsNotConfiguredThenConsoleUsesDefault() {
-		assertThat(consolePattern()).contains("yyyy-MM-dd HH:mm:ss.SSS");
+		assertThat(consolePattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	}
 
 	@Test
 	void whenLogDateformatPatternIsSetThenConsoleUsesIt() {
-		withSystemProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, "dd-MM-yyyy",
+		withSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN.getEnvironmentVariableName(), "dd-MM-yyyy",
 				() -> assertThat(consolePattern()).contains("dd-MM-yyyy"));
 	}
 

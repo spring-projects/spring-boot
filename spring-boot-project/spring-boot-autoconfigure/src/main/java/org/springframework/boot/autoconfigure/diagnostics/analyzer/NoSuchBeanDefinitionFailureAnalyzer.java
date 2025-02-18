@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -39,15 +37,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.KotlinDetector;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -72,7 +65,8 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 	private final ConditionEvaluationReport report;
 
 	NoSuchBeanDefinitionFailureAnalyzer(BeanFactory beanFactory) {
-		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
+		Assert.isTrue(beanFactory instanceof ConfigurableListableBeanFactory,
+				"'beanFactory' must be a ConfigurableListableBeanFactory");
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(this.beanFactory.getBeanClassLoader());
 		// Get early as won't be accessible once context has failed to start
@@ -112,27 +106,6 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 				(!autoConfigurationResults.isEmpty() || !userConfigurationResults.isEmpty())
 						? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
-		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor) {
-			Constructor<?> constructor = (Constructor<?>) injectionPoint.getMember();
-			Class<?> declaringClass = constructor.getDeclaringClass();
-			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
-				.get(ConfigurationProperties.class);
-			if (configurationProperties.isPresent()) {
-				if (KotlinDetector.isKotlinType(declaringClass) && !KotlinDetector.isKotlinReflectPresent()) {
-					action = String.format(
-							"%s%nConsider adding a dependency on kotlin-reflect so that the constructor used for @%s can be located. Also, ensure that @%s is present on '%s' if you intended to use constructor-based "
-									+ "configuration property binding.",
-							action, ConstructorBinding.class.getSimpleName(), ConstructorBinding.class.getSimpleName(),
-							constructor.getName());
-				}
-				else {
-					action = String.format(
-							"%s%nConsider adding @%s to %s if you intended to use constructor-based "
-									+ "configuration property binding.",
-							action, ConstructorBinding.class.getSimpleName(), constructor.getName());
-				}
-			}
-		}
 		return new FailureAnalysis(message.toString(), action, cause);
 	}
 
@@ -164,13 +137,13 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		return Arrays.stream(beanNames)
 			.map((beanName) -> new UserConfigurationResult(getFactoryMethodMetadata(beanName),
 					this.beanFactory.getBean(beanName).equals(null)))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private MethodMetadata getFactoryMethodMetadata(String beanName) {
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
-		if (beanDefinition instanceof AnnotatedBeanDefinition) {
-			return ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+			return annotatedBeanDefinition.getFactoryMethodMetadata();
 		}
 		return null;
 	}

@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.tests;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.util.FileSystemUtils;
@@ -45,9 +44,7 @@ abstract class AbstractApplicationLauncher implements ApplicationLauncher {
 	}
 
 	protected final List<String> getDependencyJarPaths() {
-		return Stream.of(this.directories.getDependenciesDirectory().listFiles())
-			.map(File::getAbsolutePath)
-			.collect(Collectors.toList());
+		return Stream.of(this.directories.getDependenciesDirectory().listFiles()).map(File::getAbsolutePath).toList();
 	}
 
 	protected final Directories getDirectories() {

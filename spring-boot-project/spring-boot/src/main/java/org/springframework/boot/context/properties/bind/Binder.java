@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.PropertyEditorRegistry;
@@ -64,7 +67,7 @@ public class Binder {
 
 	private final BindHandler defaultBindHandler;
 
-	private final List<DataObjectBinder> dataObjectBinders;
+	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -181,9 +184,9 @@ public class Binder {
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		for (ConfigurationPropertySource source : sources) {
-			Assert.notNull(source, "Sources must not contain null elements");
+			Assert.notNull(source, "'sources' must not contain null elements");
 		}
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
@@ -194,7 +197,11 @@ public class Binder {
 		}
 		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
 		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
-		this.dataObjectBinders = Collections.unmodifiableList(Arrays.asList(valueObjectBinder, javaBeanBinder));
+		Map<BindMethod, List<DataObjectBinder>> dataObjectBinders = new HashMap<>();
+		dataObjectBinders.put(BindMethod.VALUE_OBJECT, List.of(valueObjectBinder));
+		dataObjectBinders.put(BindMethod.JAVA_BEAN, List.of(javaBeanBinder));
+		dataObjectBinders.put(null, List.of(valueObjectBinder, javaBeanBinder));
+		this.dataObjectBinders = Collections.unmodifiableMap(dataObjectBinders);
 	}
 
 	/**
@@ -265,8 +272,8 @@ public class Binder {
 
 	/**
 	 * Bind the specified target {@link Class} using this binder's
-	 * {@link ConfigurationPropertySource property sources} or create a new instance using
-	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * {@link ConfigurationPropertySource property sources} or create a new instance of
+	 * the specified target {@link Class} if the result of the binding is {@code null}.
 	 * @param name the configuration property name to bind
 	 * @param target the target class
 	 * @param <T> the bound type
@@ -325,8 +332,8 @@ public class Binder {
 	}
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(target, "Target must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(target, "'target' must not be null");
 		handler = (handler != null) ? handler : this.defaultBindHandler;
 		Context context = new Context();
 		return bind(name, target, handler, context, false, create);
@@ -355,23 +362,20 @@ public class Binder {
 			result = context.getConverter().convert(result, target);
 		}
 		if (result == null && create) {
-			result = create(target, context);
+			result = fromDataObjectBinders(target.getBindMethod(),
+					(dataObjectBinder) -> dataObjectBinder.create(target, context));
 			result = handler.onCreate(name, target, context, result);
 			result = context.getConverter().convert(result, target);
-			Assert.state(result != null, () -> "Unable to create instance for " + target.getType());
+			if (result == null) {
+				IllegalStateException ex = new IllegalStateException(
+						"Unable to create instance for " + target.getType());
+				this.dataObjectBinders.get(target.getBindMethod())
+					.forEach((dataObjectBinder) -> dataObjectBinder.onUnableToCreateInstance(target, context, ex));
+				throw ex;
+			}
 		}
 		handler.onFinish(name, target, context, result);
 		return context.getConverter().convert(result, target);
-	}
-
-	private Object create(Bindable<?> target, Context context) {
-		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
-			Object instance = dataObjectBinder.create(target, context);
-			if (instance != null) {
-				return instance;
-			}
-		}
-		return null;
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
@@ -381,8 +385,8 @@ public class Binder {
 			return context.getConverter().convert(result, target);
 		}
 		catch (Exception ex) {
-			if (ex instanceof BindException) {
-				throw (BindException) ex;
+			if (ex instanceof BindException bindException) {
+				throw bindException;
 			}
 			throw new BindException(name, target, context.getConfigurationProperty(), ex);
 		}
@@ -466,20 +470,23 @@ public class Binder {
 			return null;
 		}
 		Class<?> type = target.getType().resolve(Object.class);
+		BindMethod bindMethod = target.getBindMethod();
 		if (!allowRecursiveBinding && context.isBindingDataObject(type)) {
 			return null;
 		}
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
-		return context.withDataObject(type, () -> {
-			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
-				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
-				if (instance != null) {
-					return instance;
-				}
-			}
-			return null;
-		});
+		return context.withDataObject(type, () -> fromDataObjectBinders(bindMethod,
+				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder)));
+	}
+
+	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
+		return this.dataObjectBinders.get(bindMethod)
+			.stream()
+			.map(operation)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {

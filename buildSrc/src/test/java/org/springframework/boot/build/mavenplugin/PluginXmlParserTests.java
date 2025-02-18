@@ -18,7 +18,6 @@ package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +43,8 @@ class PluginXmlParserTests {
 		assertThat(plugin.getArtifactId()).isEqualTo("spring-boot-maven-plugin");
 		assertThat(plugin.getVersion()).isEqualTo("2.2.0.GRADLE-SNAPSHOT");
 		assertThat(plugin.getGoalPrefix()).isEqualTo("spring-boot");
-		assertThat(plugin.getMojos().stream().map(PluginXmlParser.Mojo::getGoal).collect(Collectors.toList()))
-			.containsExactly("build-info", "help", "repackage", "run", "start", "stop");
+		assertThat(plugin.getMojos().stream().map(PluginXmlParser.Mojo::getGoal)).containsExactly("build-info", "help",
+				"repackage", "run", "start", "stop");
 	}
 
 	@Test

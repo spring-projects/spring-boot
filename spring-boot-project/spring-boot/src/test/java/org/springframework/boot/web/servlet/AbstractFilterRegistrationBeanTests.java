@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,19 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -95,6 +97,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 
 	@Test
 	void specificName() throws Exception {
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setName("specificName");
 		bean.onStartup(this.servletContext);
@@ -103,6 +106,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 
 	@Test
 	void deducedName() throws Exception {
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.onStartup(this.servletContext);
 		then(this.servletContext).should().addFilter(eq("mockFilter"), getExpectedFilter());
@@ -120,7 +124,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletRegistrationBeans(null))
-			.withMessageContaining("ServletRegistrationBeans must not be null");
+			.withMessageContaining("servletRegistrationBeans' must not be null");
 	}
 
 	@Test
@@ -128,15 +132,14 @@ abstract class AbstractFilterRegistrationBeanTests {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
-			.withMessageContaining("ServletRegistrationBeans must not be null");
+			.withMessageContaining("'servletRegistrationBeans' must not be null");
 	}
 
 	@Test
 	void setServletRegistrationBeanReplacesValue() throws Exception {
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean(mockServletRegistration("a"));
-		bean.setServletRegistrationBeans(
-				new LinkedHashSet<ServletRegistrationBean<?>>(Collections.singletonList(mockServletRegistration("b"))));
+		bean.setServletRegistrationBeans(new LinkedHashSet<>(Collections.singletonList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
 		then(this.registration).should().addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), false, "b");
 	}
@@ -155,28 +158,28 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlPatterns(null))
-			.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("'urlPatterns' must not be null");
 	}
 
 	@Test
 	void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlPatterns((String[]) null))
-			.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("'urlPatterns' must not be null");
 	}
 
 	@Test
 	void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletNames(null))
-			.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("'servletNames' must not be null");
 	}
 
 	@Test
 	void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addServletNames((String[]) null))
-			.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("'servletNames' must not be null");
 	}
 
 	@Test
@@ -197,6 +200,31 @@ abstract class AbstractFilterRegistrationBeanTests {
 		bean.setDispatcherTypes(types);
 		bean.onStartup(this.servletContext);
 		then(this.registration).should().addMappingForUrlPatterns(types, false, "/*");
+	}
+
+	@Test
+	void failsWithDoubleRegistration() {
+		assertThatIllegalStateException().isThrownBy(this::doubleRegistration)
+			.withMessage("Failed to register 'filter double-registration' on the "
+					+ "servlet context. Possibly already registered?");
+	}
+
+	private void doubleRegistration() throws ServletException {
+		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
+		bean.setName("double-registration");
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(null);
+		bean.onStartup(this.servletContext);
+	}
+
+	@Test
+	void doesntFailIfDoubleRegistrationIsIgnored() {
+		assertThatCode(() -> {
+			AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
+			bean.setName("double-registration");
+			given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(null);
+			bean.setIgnoreRegistrationFailure(true);
+			bean.onStartup(this.servletContext);
+		}).doesNotThrowAnyException();
 	}
 
 	protected abstract Filter getExpectedFilter();

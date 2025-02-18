@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,18 +39,15 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
+public abstract class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 
 	private final Configuration devtools;
 
-	private final RegularFileProperty outputFile;
-
 	public DocumentDevtoolsPropertyDefaults() {
 		this.devtools = getProject().getConfigurations().create("devtools");
-		this.outputFile = getProject().getObjects().fileProperty();
-		this.outputFile.convention(getProject().getLayout()
+		getOutputFile().convention(getProject().getLayout()
 			.getBuildDirectory()
-			.file("docs/generated/using/devtools-property-defaults.adoc"));
+			.file("generated/docs/using/devtools-property-defaults.adoc"));
 		Map<String, String> dependency = new HashMap<>();
 		dependency.put("path", ":spring-boot-project:spring-boot-devtools");
 		dependency.put("configuration", "propertyDefaults");
@@ -63,9 +60,7 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 	}
 
 	@OutputFile
-	public RegularFileProperty getOutputFile() {
-		return this.outputFile;
-	}
+	public abstract RegularFileProperty getOutputFile();
 
 	@TaskAction
 	void documentPropertyDefaults() throws IOException {
@@ -86,7 +81,7 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 	}
 
 	private void documentProperties(Map<String, String> properties) throws IOException {
-		try (PrintWriter writer = new PrintWriter(new FileWriter(this.outputFile.getAsFile().get()))) {
+		try (PrintWriter writer = new PrintWriter(new FileWriter(getOutputFile().getAsFile().get()))) {
 			writer.println("[cols=\"3,1\"]");
 			writer.println("|===");
 			writer.println("| Name | Default Value");

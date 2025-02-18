@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.management;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -90,7 +90,7 @@ class HeapDumpWebEndpointWebIntegrationTests {
 
 		private boolean available;
 
-		private String heapDump = "HEAPDUMP";
+		private final String heapDump = "HEAPDUMP";
 
 		private File file;
 
@@ -105,15 +105,13 @@ class HeapDumpWebEndpointWebIntegrationTests {
 
 		@Override
 		protected HeapDumper createHeapDumper() {
-			return (file, live) -> {
-				this.file = file;
+			return (live) -> {
+				this.file = Files.createTempFile("heap-", ".dump").toFile();
 				if (!TestHeapDumpWebEndpoint.this.available) {
 					throw new HeapDumperUnavailableException("Not available", null);
 				}
-				if (file.exists()) {
-					throw new IOException("File exists");
-				}
-				FileCopyUtils.copy(TestHeapDumpWebEndpoint.this.heapDump.getBytes(), file);
+				FileCopyUtils.copy(TestHeapDumpWebEndpoint.this.heapDump.getBytes(), this.file);
+				return this.file;
 			};
 		}
 

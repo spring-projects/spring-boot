@@ -53,14 +53,14 @@ class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
-		this.contextRunner.withPropertyValues("management.metrics.export.defaults.enabled=false")
+		this.contextRunner.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
 				.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
-		this.contextRunner.withPropertyValues("management.metrics.export.statsd.enabled=false")
+		this.contextRunner.withPropertyValues("management.statsd.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
 				.doesNotHaveBean(StatsdConfig.class));
 	}

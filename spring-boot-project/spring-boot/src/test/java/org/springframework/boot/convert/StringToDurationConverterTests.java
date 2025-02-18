@@ -122,6 +122,7 @@ class StringToDurationConverterTests {
 	@ConversionServiceTest
 	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10foo"))
+			.havingRootCause()
 			.withMessageContaining("'10foo' is not a valid duration");
 	}
 

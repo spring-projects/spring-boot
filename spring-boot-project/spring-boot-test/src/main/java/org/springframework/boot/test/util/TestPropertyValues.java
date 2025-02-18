@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,9 +155,9 @@ public final class TestPropertyValues {
 	 * @param name the name for the property source
 	 */
 	public void applyTo(ConfigurableEnvironment environment, Type type, String name) {
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(type, "Property source type must not be null");
-		Assert.notNull(name, "Property source name must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
+		Assert.notNull(type, "'type' must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		MutablePropertySources sources = environment.getPropertySources();
 		addToSources(sources, type, name);
 		ConfigurationPropertySources.attach(environment);
@@ -165,7 +165,20 @@ public final class TestPropertyValues {
 
 	/**
 	 * Add the properties to the {@link System#getProperties() system properties} for the
-	 * duration of the {@code call}, restoring previous values when the call completes.
+	 * duration of the {@code action}, restoring previous values when it completes.
+	 * @param action the action to take
+	 * @since 3.0.0
+	 */
+	public void applyToSystemProperties(Runnable action) {
+		applyToSystemProperties(() -> {
+			action.run();
+			return null;
+		});
+	}
+
+	/**
+	 * Add the properties to the {@link System#getProperties() system properties} for the
+	 * duration of the {@code call}, restoring previous values when it completes.
 	 * @param <T> the result type
 	 * @param call the call to make
 	 * @return the result of the call
@@ -311,7 +324,7 @@ public final class TestPropertyValues {
 		private final String value;
 
 		private Pair(String name, String value) {
-			Assert.hasLength(name, "Name must not be empty");
+			Assert.hasLength(name, "'name' must not be empty");
 			this.name = name;
 			this.value = value;
 		}
@@ -388,7 +401,7 @@ public final class TestPropertyValues {
 		}
 
 		private String setOrClear(String name, String value) {
-			Assert.notNull(name, "Name must not be null");
+			Assert.notNull(name, "'name' must not be null");
 			if (!StringUtils.hasLength(value)) {
 				return (String) System.getProperties().remove(name);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class ScheduledBeanLazyInitializationExcludeFilterTests {
 		return this.filter.isExcluded("test", new RootBeanDefinition(type), type);
 	}
 
-	private static class TestBean {
+	private static final class TestBean {
 
 		@Scheduled
 		void doStuff() {
@@ -60,7 +60,7 @@ class ScheduledBeanLazyInitializationExcludeFilterTests {
 
 	}
 
-	private static class AnotherTestBean {
+	private static final class AnotherTestBean {
 
 		@Schedules({ @Scheduled(fixedRate = 5000), @Scheduled(fixedRate = 2500) })
 		void doStuff() {

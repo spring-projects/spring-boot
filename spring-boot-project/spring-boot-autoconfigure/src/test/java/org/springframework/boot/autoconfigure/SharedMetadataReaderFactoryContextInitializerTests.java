@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,9 @@ package org.springframework.boot.autoconfigure;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -35,10 +33,10 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -72,9 +70,8 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		ConfigurationClassPostProcessor configurationAnnotationPostProcessor = mock(
 				ConfigurationClassPostProcessor.class);
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
-			.genericBeanDefinition(ConfigurationClassPostProcessor.class)
+			.rootBeanDefinition(ConfigurationClassPostProcessor.class, () -> configurationAnnotationPostProcessor)
 			.getBeanDefinition();
-		((AbstractBeanDefinition) beanDefinition).setInstanceSupplier(() -> configurationAnnotationPostProcessor);
 		registry.registerBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME,
 				beanDefinition);
 		CachingMetadataReaderFactoryPostProcessor postProcessor = new CachingMetadataReaderFactoryPostProcessor(
@@ -83,11 +80,9 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		context.refresh();
 		ConfigurationClassPostProcessor bean = context.getBean(ConfigurationClassPostProcessor.class);
 		assertThat(bean).isSameAs(configurationAnnotationPostProcessor);
-		ArgumentCaptor<MetadataReaderFactory> metadataReaderFactory = ArgumentCaptor
-			.forClass(MetadataReaderFactory.class);
-		then(configurationAnnotationPostProcessor).should().setMetadataReaderFactory(metadataReaderFactory.capture());
-		assertThat(metadataReaderFactory.getValue())
-			.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class);
+		then(configurationAnnotationPostProcessor).should()
+			.setMetadataReaderFactory(assertArg((metadataReaderFactory) -> assertThat(metadataReaderFactory)
+				.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class)));
 	}
 
 	static class TestConfig {

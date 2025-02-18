@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,6 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  * @since 2.3.0
  */
 public abstract class AbstractJarWriter implements LoaderClassesWriter {
-
-	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
@@ -128,11 +126,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			writeEntry(entryName, new InputStreamEntryWriter(inputStream));
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 
@@ -202,13 +197,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		return library.getLastModified();
 	}
 
-	/**
-	 * Write the required spring-boot-loader classes to the JAR.
-	 * @throws IOException if the classes cannot be written
-	 */
 	@Override
 	public void writeLoaderClasses() throws IOException {
-		writeLoaderClasses(NESTED_LOADER_JAR);
+		writeLoaderClasses(LoaderImplementation.DEFAULT);
+	}
+
+	@Override
+	public void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException {
+		writeLoaderClasses((loaderImplementation != null) ? loaderImplementation.getJarResourceName()
+				: LoaderImplementation.DEFAULT.getJarResourceName());
 	}
 
 	/**
@@ -223,7 +220,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {
-				if (isDirectoryEntry(entry) || isClassEntry(entry)) {
+				if (isDirectoryEntry(entry) || isClassEntry(entry) || isServicesEntry(entry)) {
 					writeEntry(new JarArchiveEntry(entry), new InputStreamEntryWriter(inputStream));
 				}
 			}
@@ -236,6 +233,10 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private boolean isClassEntry(JarEntry entry) {
 		return entry.getName().endsWith(".class");
+	}
+
+	private boolean isServicesEntry(JarEntry entry) {
+		return !entry.isDirectory() && entry.getName().startsWith("META-INF/services/");
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {

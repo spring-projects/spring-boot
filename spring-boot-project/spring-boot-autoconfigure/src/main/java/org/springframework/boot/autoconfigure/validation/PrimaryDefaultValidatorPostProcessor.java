@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * Enable the {@code Primary} flag on the auto-configured validator if necessary.
  * <p>
  * As {@link LocalValidatorFactoryBean} exposes 3 validator related contracts and we're
- * only checking for the absence {@link javax.validation.Validator}, we should flag the
+ * only checking for the absence {@link jakarta.validation.Validator}, we should flag the
  * auto-configured validator as primary only if no Spring's {@link Validator} is flagged
  * as primary.
  *
@@ -50,8 +50,8 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		if (beanFactory instanceof ConfigurableListableBeanFactory) {
-			this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+		if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
+			this.beanFactory = listableBeanFactory;
 		}
 	}
 

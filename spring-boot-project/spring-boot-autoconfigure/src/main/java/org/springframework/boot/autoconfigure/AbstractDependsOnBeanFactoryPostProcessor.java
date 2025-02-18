@@ -139,8 +139,8 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
+			if (parentBeanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
+				return getBeanDefinition(beanName, listableBeanFactory);
 			}
 			throw ex;
 		}

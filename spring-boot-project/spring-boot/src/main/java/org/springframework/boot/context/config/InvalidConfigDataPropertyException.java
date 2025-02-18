@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -38,14 +36,14 @@ import org.springframework.core.env.AbstractEnvironment;
  */
 public class InvalidConfigDataPropertyException extends ConfigDataException {
 
-	private static final Map<ConfigurationPropertyName, ConfigurationPropertyName> WARNINGS;
+	private static final Map<ConfigurationPropertyName, ConfigurationPropertyName> ERRORS;
 	static {
-		Map<ConfigurationPropertyName, ConfigurationPropertyName> warnings = new LinkedHashMap<>();
-		warnings.put(ConfigurationPropertyName.of("spring.profiles"),
+		Map<ConfigurationPropertyName, ConfigurationPropertyName> errors = new LinkedHashMap<>();
+		errors.put(ConfigurationPropertyName.of("spring.profiles"),
 				ConfigurationPropertyName.of("spring.config.activate.on-profile"));
-		warnings.put(ConfigurationPropertyName.of("spring.profiles[0]"),
+		errors.put(ConfigurationPropertyName.of("spring.profiles[0]"),
 				ConfigurationPropertyName.of("spring.config.activate.on-profile"));
-		WARNINGS = Collections.unmodifiableMap(warnings);
+		ERRORS = Collections.unmodifiableMap(errors);
 	}
 
 	private static final Set<ConfigurationPropertyName> PROFILE_SPECIFIC_ERRORS;
@@ -101,20 +99,18 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 	}
 
 	/**
-	 * Throw an {@link InvalidConfigDataPropertyException} or log a warning if the given
-	 * {@link ConfigDataEnvironmentContributor} contains any invalid property. A warning
-	 * is logged if the property is still supported, but not recommended. An error is
-	 * thrown if the property is completely unsupported.
-	 * @param logger the logger to use for warnings
+	 * Throw an {@link InvalidConfigDataPropertyException} if the given
+	 * {@link ConfigDataEnvironmentContributor} contains any invalid property.
 	 * @param contributor the contributor to check
 	 */
-	static void throwOrWarn(Log logger, ConfigDataEnvironmentContributor contributor) {
+	static void throwIfPropertyFound(ConfigDataEnvironmentContributor contributor) {
 		ConfigurationPropertySource propertySource = contributor.getConfigurationPropertySource();
 		if (propertySource != null) {
-			WARNINGS.forEach((name, replacement) -> {
+			ERRORS.forEach((name, replacement) -> {
 				ConfigurationProperty property = propertySource.getConfigurationProperty(name);
 				if (property != null) {
-					logger.warn(getMessage(property, false, replacement, contributor.getResource()));
+					throw new InvalidConfigDataPropertyException(property, false, replacement,
+							contributor.getResource());
 				}
 			});
 			if (contributor.isFromProfileSpecificImport()

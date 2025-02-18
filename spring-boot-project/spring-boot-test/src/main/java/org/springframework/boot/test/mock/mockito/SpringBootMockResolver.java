@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.mockito.plugins.MockResolver;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.util.Assert;
 
 /**
@@ -29,7 +31,10 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @since 2.4.0
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * {@link MockitoBean} and {@link MockitoSpyBean}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class SpringBootMockResolver implements MockResolver {
 
 	@Override
@@ -39,10 +44,9 @@ public class SpringBootMockResolver implements MockResolver {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T getUltimateTargetObject(Object candidate) {
-		Assert.notNull(candidate, "Candidate must not be null");
+		Assert.notNull(candidate, "'candidate' must not be null");
 		try {
-			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised) {
-				Advised advised = (Advised) candidate;
+			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised advised) {
 				TargetSource targetSource = advised.getTargetSource();
 				if (targetSource.isStatic()) {
 					Object target = targetSource.getTarget();

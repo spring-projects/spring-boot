@@ -52,7 +52,7 @@ class SendGridAutoConfigurationTests {
 	void expectedSendGridBeanCreatedApiKey() {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid.getRequestHeaders().get("Authorization")).isEqualTo("Bearer SG.SECRET-API-KEY");
+		assertThat(sendGrid.getRequestHeaders()).containsEntry("Authorization", "Bearer SG.SECRET-API-KEY");
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class SendGridAutoConfigurationTests {
 	void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid.getRequestHeaders().get("Authorization")).isEqualTo("Bearer SG.CUSTOM_API_KEY");
+		assertThat(sendGrid.getRequestHeaders()).containsEntry("Authorization", "Bearer SG.CUSTOM_API_KEY");
 	}
 
 	@Test

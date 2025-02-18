@@ -100,7 +100,7 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target")).isEqualTo(Integer.class.getName());
+		assertThat(valueProvider.getParameters()).containsEntry("target", Integer.class.getName());
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target")).isEqualTo(String.class.getName());
+		assertThat(valueProvider.getParameters()).containsEntry("target", String.class.getName());
 		ValueProvider valueProvider2 = hint.getValueProviders().get(1);
 		assertThat(valueProvider2.getName()).isEqualTo("any");
 		assertThat(valueProvider2.getParameters()).isEmpty();

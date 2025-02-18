@@ -56,6 +56,33 @@ class ManagementContextAutoConfigurationTests {
 	}
 
 	@Test
+	void childManagementContextShouldNotStartWithoutEmbeddedServer(CapturedOutput output) {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(output).doesNotContain("Tomcat started");
+		});
+	}
+
+	@Test
+	void childManagementContextShouldRestartWhenParentIsStoppedThenStarted(CapturedOutput output) {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").run((context) -> {
+			assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2));
+			context.getSourceApplicationContext().stop();
+			context.getSourceApplicationContext().start();
+			assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 4));
+		});
+	}
+
+	@Test
 	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)

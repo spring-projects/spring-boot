@@ -5,7 +5,9 @@ plugins {
 
 repositories {
 	mavenCentral()
-	maven { url "file:repository" }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {
@@ -21,5 +23,5 @@ task explode(type: Sync) {
 
 task launch(type: JavaExec) {
 	classpath = files(explode)
-	mainClass = 'org.springframework.boot.loader.JarLauncher'
+	mainClass = 'org.springframework.boot.loader.launch.JarLauncher'
 }

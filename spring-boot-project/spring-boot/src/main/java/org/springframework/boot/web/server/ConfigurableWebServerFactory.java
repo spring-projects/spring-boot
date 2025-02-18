@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package org.springframework.boot.web.server;
 import java.net.InetAddress;
 import java.util.Set;
 
+import org.springframework.boot.ssl.SslBundles;
+
 /**
  * A configurable {@link WebServerFactory}.
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  * @see ErrorPageRegistry
  */
@@ -56,10 +59,11 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	void setSsl(Ssl ssl);
 
 	/**
-	 * Sets a provider that will be used to obtain SSL stores.
-	 * @param sslStoreProvider the SSL store provider
+	 * Sets the SSL bundles that can be used to configure SSL connections.
+	 * @param sslBundles the SSL bundles
+	 * @since 3.1.0
 	 */
-	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
+	void setSslBundles(SslBundles sslBundles);
 
 	/**
 	 * Sets the HTTP/2 configuration that will be applied to the server.

@@ -71,7 +71,7 @@ class CustomHibernateJpaAutoConfigurationTests {
 				HibernateProperties hibernateProperties = context.getBean(HibernateProperties.class);
 				Map<String, Object> properties = hibernateProperties
 					.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
-				assertThat(properties.get("hibernate.ejb.naming_strategy")).isNull();
+				assertThat(properties).doesNotContainKey("hibernate.ejb.naming_strategy");
 			});
 	}
 
@@ -82,10 +82,10 @@ class CustomHibernateJpaAutoConfigurationTests {
 			.run((context) -> {
 				HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
 				Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
-				assertThat(hibernateProperties.get("hibernate.implicit_naming_strategy"))
-					.isEqualTo(NamingStrategyConfiguration.implicitNamingStrategy);
-				assertThat(hibernateProperties.get("hibernate.physical_naming_strategy"))
-					.isEqualTo(NamingStrategyConfiguration.physicalNamingStrategy);
+				assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
+						NamingStrategyConfiguration.implicitNamingStrategy);
+				assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
+						NamingStrategyConfiguration.physicalNamingStrategy);
 			});
 	}
 
@@ -94,7 +94,7 @@ class CustomHibernateJpaAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(HibernatePropertiesCustomizerConfiguration.class).run((context) -> {
 			HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
 			Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
-			assertThat(hibernateProperties.get("test.counter")).isEqualTo(2);
+			assertThat(hibernateProperties).containsEntry("test.counter", 2);
 		});
 	}
 

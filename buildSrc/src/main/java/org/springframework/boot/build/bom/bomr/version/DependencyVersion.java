@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface DependencyVersion extends Comparable<DependencyVersion> {
 	 * Returns whether the given {@code candidate} is an upgrade of this version.
 	 * @param candidate the version to consider
 	 * @param movingToSnapshots whether the upgrade is to be considered as part of moving
-	 * to snaphots
+	 * to snapshots
 	 * @return {@code true} if the candidate is an upgrade, otherwise false
 	 */
 	boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots);

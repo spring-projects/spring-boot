@@ -100,8 +100,7 @@ public class JSONTokener {
 			case '[':
 				return readArray();
 
-			case '\'':
-			case '"':
+			case '\'', '"':
 				return nextString((char) c);
 
 			default:
@@ -114,10 +113,7 @@ public class JSONTokener {
 		while (this.pos < this.in.length()) {
 			int c = this.in.charAt(this.pos++);
 			switch (c) {
-				case '\t':
-				case ' ':
-				case '\n':
-				case '\r':
+				case '\t', ' ', '\n', '\r':
 					continue;
 
 				case '/':
@@ -262,9 +258,7 @@ public class JSONTokener {
 			case 'f':
 				return '\f';
 
-			case '\'':
-			case '"':
-			case '\\':
+			case '\'', '"', '\\':
 			default:
 				return escaped;
 		}
@@ -326,7 +320,8 @@ public class JSONTokener {
 		try {
 			return Double.valueOf(literal);
 		}
-		catch (NumberFormatException ignored) {
+		catch (NumberFormatException ex) {
+			// Ignore
 		}
 
 		/* ... finally give up. We have an unquoted string */
@@ -398,8 +393,7 @@ public class JSONTokener {
 			switch (nextCleanInternal()) {
 				case '}':
 					return result;
-				case ';':
-				case ',':
+				case ';', ',':
 					continue;
 				default:
 					throw syntaxError("Unterminated object");
@@ -429,8 +423,7 @@ public class JSONTokener {
 						result.put(null);
 					}
 					return result;
-				case ',':
-				case ';':
+				case ',', ';':
 					/* A separator without a value first means "null". */
 					result.put(null);
 					hasTrailingSeparator = true;
@@ -444,8 +437,7 @@ public class JSONTokener {
 			switch (nextCleanInternal()) {
 				case ']':
 					return result;
-				case ',':
-				case ';':
+				case ',', ';':
 					hasTrailingSeparator = true;
 					continue;
 				default:

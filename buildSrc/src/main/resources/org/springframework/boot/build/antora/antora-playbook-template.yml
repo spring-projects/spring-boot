@@ -1,0 +1,21 @@
+antora:
+  extensions:
+site:
+  title: Spring Boot
+content:
+  sources: []
+asciidoc:
+  sourcemap: true
+  attributes:
+    chomp: all
+    hide-uri-scheme: '@'
+    javadoc-location: xref:api:java/
+    page-pagination: ''
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-boot
+    tabs-sync-option: '@'
+  extensions:
+urls:
+  latest_version_segment: ''
+runtime:
+  log:
+    failure_level: warn

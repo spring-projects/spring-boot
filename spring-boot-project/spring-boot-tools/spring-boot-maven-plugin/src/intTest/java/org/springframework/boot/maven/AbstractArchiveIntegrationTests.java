@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
@@ -59,10 +58,10 @@ abstract class AbstractArchiveIntegrationTests {
 	}
 
 	protected AssertProvider<JarAssert> jar(File file) {
-		return new AssertProvider<JarAssert>() {
+		return new AssertProvider<>() {
 
 			@Override
-			@Deprecated
+			@Deprecated(since = "2.3.0", forRemoval = false)
 			public JarAssert assertThat() {
 				return new JarAssert(file);
 			}
@@ -182,7 +181,7 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> withEntries(jarFile,
 					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
 						.filter((name) -> name.startsWith(path) && name.length() > path.length())
-						.collect(Collectors.toList()))));
+						.toList())));
 			return new ListAssert<>(matches);
 		}
 

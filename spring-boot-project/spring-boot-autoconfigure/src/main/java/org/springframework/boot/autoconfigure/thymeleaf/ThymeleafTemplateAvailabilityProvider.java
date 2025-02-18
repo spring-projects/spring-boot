@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class ThymeleafTemplateAvailabilityProvider implements TemplateAvailabili
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine", classLoader)) {
+		if (ClassUtils.isPresent("org.thymeleaf.spring6.SpringTemplateEngine", classLoader)) {
 			String prefix = environment.getProperty("spring.thymeleaf.prefix", ThymeleafProperties.DEFAULT_PREFIX);
 			String suffix = environment.getProperty("spring.thymeleaf.suffix", ThymeleafProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();

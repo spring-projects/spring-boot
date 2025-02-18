@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,19 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.List;
+
+import com.rabbitmq.client.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link RabbitProperties}.
@@ -31,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Rafael Carvalho
+ * @author Scott Frederick
  */
 class RabbitPropertiesTests {
 
@@ -49,7 +56,7 @@ class RabbitPropertiesTests {
 
 	@Test
 	void hostIsDeterminedFromFirstAddress() {
-		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
+		this.properties.setAddresses(List.of("rabbit1.example.com:1234", "rabbit2.example.com:2345"));
 		assertThat(this.properties.determineHost()).isEqualTo("rabbit1.example.com");
 	}
 
@@ -72,7 +79,7 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determinePortReturnsPortOfFirstAddress() {
-		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
+		this.properties.setAddresses(List.of("rabbit1.example.com:1234", "rabbit2.example.com:2345"));
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
 	}
 
@@ -96,19 +103,19 @@ class RabbitPropertiesTests {
 	@Test
 	void determinePortReturnsDefaultAmqpPortWhenFirstAddressHasNoExplicitPort() {
 		this.properties.setPort(1234);
-		this.properties.setAddresses("rabbit1.example.com,rabbit2.example.com:2345");
+		this.properties.setAddresses(List.of("rabbit1.example.com", "rabbit2.example.com:2345"));
 		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test
 	void determinePortUsingAmqpReturnsPortOfFirstAddress() {
-		this.properties.setAddresses("amqp://root:password@otherhost,amqps://root:password2@otherhost2");
+		this.properties.setAddresses(List.of("amqp://root:password@otherhost", "amqps://root:password2@otherhost2"));
 		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test
 	void determinePortUsingAmqpsReturnsPortOfFirstAddress() {
-		this.properties.setAddresses("amqps://root:password@otherhost,amqp://root:password2@otherhost2");
+		this.properties.setAddresses(List.of("amqps://root:password@otherhost", "amqp://root:password2@otherhost2"));
 		assertThat(this.properties.determinePort()).isEqualTo(5671);
 	}
 
@@ -116,7 +123,7 @@ class RabbitPropertiesTests {
 	void determinePortReturnsDefaultAmqpsPortWhenFirstAddressHasNoExplicitPortButSslEnabled() {
 		this.properties.getSsl().setEnabled(true);
 		this.properties.setPort(1234);
-		this.properties.setAddresses("rabbit1.example.com,rabbit2.example.com:2345");
+		this.properties.setAddresses(List.of("rabbit1.example.com", "rabbit2.example.com:2345"));
 		assertThat(this.properties.determinePort()).isEqualTo(5671);
 	}
 
@@ -139,7 +146,7 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determineVirtualHostReturnsVirtualHostOfFirstAddress() {
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses(List.of("rabbit1.example.com:1234/alpha", "rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
 	}
 
@@ -152,13 +159,13 @@ class RabbitPropertiesTests {
 	@Test
 	void determineVirtualHostReturnsPropertyWhenFirstAddressHasNoVirtualHost() {
 		this.properties.setVirtualHost("alpha");
-		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345/bravo");
+		this.properties.setAddresses(List.of("rabbit1.example.com:1234", "rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
 	}
 
 	@Test
 	void determineVirtualHostIsSlashWhenAddressHasTrailingSlash() {
-		this.properties.setAddresses("amqp://root:password@otherhost:1111/");
+		this.properties.setAddresses(List.of("amqp://root:password@otherhost:1111/"));
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("/");
 	}
 
@@ -181,7 +188,8 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determineUsernameReturnsUsernameOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
+		this.properties
+			.setAddresses(List.of("user:secret@rabbit1.example.com:1234/alpha", "rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determineUsername()).isEqualTo("user");
 	}
 
@@ -194,7 +202,8 @@ class RabbitPropertiesTests {
 	@Test
 	void determineUsernameReturnsPropertyWhenFirstAddressHasNoUsername() {
 		this.properties.setUsername("alice");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha,user:secret@rabbit2.example.com:2345/bravo");
+		this.properties
+			.setAddresses(List.of("rabbit1.example.com:1234/alpha", "user:secret@rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determineUsername()).isEqualTo("alice");
 	}
 
@@ -211,7 +220,8 @@ class RabbitPropertiesTests {
 
 	@Test
 	void determinePasswordReturnsPasswordOfFirstAddress() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
+		this.properties
+			.setAddresses(List.of("user:secret@rabbit1.example.com:1234/alpha", "rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determinePassword()).isEqualTo("secret");
 	}
 
@@ -224,7 +234,8 @@ class RabbitPropertiesTests {
 	@Test
 	void determinePasswordReturnsPropertyWhenFirstAddressHasNoPassword() {
 		this.properties.setPassword("12345678");
-		this.properties.setAddresses("rabbit1.example.com:1234/alpha,user:secret@rabbit2.example.com:2345/bravo");
+		this.properties
+			.setAddresses(List.of("rabbit1.example.com:1234/alpha", "user:secret@rabbit2.example.com:2345/bravo"));
 		assertThat(this.properties.determinePassword()).isEqualTo("12345678");
 	}
 
@@ -235,72 +246,80 @@ class RabbitPropertiesTests {
 
 	@Test
 	void customAddresses() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
-		assertThat(this.properties.getAddresses())
-			.isEqualTo("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		this.properties.setAddresses(List.of("user:secret@rabbit1.example.com:1234/alpha", "rabbit2.example.com"));
+		assertThat(this.properties.getAddresses()).containsExactly("user:secret@rabbit1.example.com:1234/alpha",
+				"rabbit2.example.com");
 	}
 
 	@Test
 	void ipv6Address() {
-		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234");
+		this.properties.setAddresses(List.of("amqp://foo:bar@[aaaa:bbbb:cccc::d]:1234"));
 		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
 		assertThat(this.properties.determinePort()).isEqualTo(1234);
 	}
 
 	@Test
 	void ipv6AddressDefaultPort() {
-		this.properties.setAddresses("amqp://foo:bar@[aaaa:bbbb:cccc::d]");
+		this.properties.setAddresses(List.of("amqp://foo:bar@[aaaa:bbbb:cccc::d]"));
 		assertThat(this.properties.determineHost()).isEqualTo("[aaaa:bbbb:cccc::d]");
 		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test
 	void determineAddressesReturnsAddressesWithJustHostAndPort() {
-		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
-		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
+		this.properties.setAddresses(List.of("user:secret@rabbit1.example.com:1234/alpha", "rabbit2.example.com"));
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit1.example.com:1234",
+				"rabbit2.example.com:5672");
 	}
 
 	@Test
 	void determineAddressesUsesDefaultWhenNoAddressesSet() {
-		assertThat(this.properties.determineAddresses()).isEqualTo("localhost:5672");
+		assertThat(this.properties.determineAddresses()).containsExactly("localhost:5672");
 	}
 
 	@Test
 	void determineAddressesWithSslUsesDefaultWhenNoAddressesSet() {
 		this.properties.getSsl().setEnabled(true);
-		assertThat(this.properties.determineAddresses()).isEqualTo("localhost:5671");
+		assertThat(this.properties.determineAddresses()).containsExactly("localhost:5671");
 	}
 
 	@Test
 	void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSet() {
 		this.properties.setHost("rabbit.example.com");
 		this.properties.setPort(1234);
-		assertThat(this.properties.determineAddresses()).isEqualTo("rabbit.example.com:1234");
+		assertThat(this.properties.determineAddresses()).containsExactly("rabbit.example.com:1234");
+	}
+
+	@Test
+	void determineAddressesUsesIpv6HostAndPortPropertiesWhenNoAddressesSet() {
+		this.properties.setHost("[::1]");
+		this.properties.setPort(32863);
+		assertThat(this.properties.determineAddresses()).containsExactly("[::1]:32863");
 	}
 
 	@Test
 	void determineSslUsingAmqpsReturnsStateOfFirstAddress() {
-		this.properties.setAddresses("amqps://root:password@otherhost,amqp://root:password2@otherhost2");
+		this.properties.setAddresses(List.of("amqps://root:password@otherhost", "amqp://root:password2@otherhost2"));
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
 	}
 
 	@Test
 	void sslDetermineEnabledIsTrueWhenAddressHasNoProtocolAndSslIsEnabled() {
 		this.properties.getSsl().setEnabled(true);
-		this.properties.setAddresses("root:password@otherhost");
+		this.properties.setAddresses(List.of("root:password@otherhost"));
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
 	}
 
 	@Test
 	void sslDetermineEnabledIsFalseWhenAddressHasNoProtocolAndSslIsDisabled() {
 		this.properties.getSsl().setEnabled(false);
-		this.properties.setAddresses("root:password@otherhost");
+		this.properties.setAddresses(List.of("root:password@otherhost"));
 		assertThat(this.properties.getSsl().determineEnabled()).isFalse();
 	}
 
 	@Test
 	void determineSslUsingAmqpReturnsStateOfFirstAddress() {
-		this.properties.setAddresses("amqp://root:password@otherhost,amqps://root:password2@otherhost2");
+		this.properties.setAddresses(List.of("amqp://root:password@otherhost", "amqps://root:password2@otherhost2"));
 		assertThat(this.properties.getSsl().determineEnabled()).isFalse();
 	}
 
@@ -308,6 +327,19 @@ class RabbitPropertiesTests {
 	void determineSslReturnFlagPropertyWhenNoAddresses() {
 		this.properties.getSsl().setEnabled(true);
 		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void determineSslEnabledIsTrueWhenBundleIsSetAndNoAddresses() {
+		this.properties.getSsl().setBundle("test");
+		assertThat(this.properties.getSsl().determineEnabled()).isTrue();
+	}
+
+	@Test
+	void propertiesUseConsistentDefaultValues() {
+		ConnectionFactory connectionFactory = new ConnectionFactory();
+		assertThat(connectionFactory).hasFieldOrPropertyWithValue("maxInboundMessageBodySize",
+				(int) this.properties.getMaxInboundMessageBodySize().toBytes());
 	}
 
 	@Test
@@ -319,6 +351,7 @@ class RabbitPropertiesTests {
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", simple.isMissingQueuesFatal());
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", simple.isDeBatchingEnabled());
 		assertThat(container).hasFieldOrPropertyWithValue("consumerBatchEnabled", simple.isConsumerBatchEnabled());
+		assertThat(container).hasFieldOrPropertyWithValue("forceStop", simple.isForceStop());
 	}
 
 	@Test
@@ -329,13 +362,23 @@ class RabbitPropertiesTests {
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", direct.isMissingQueuesFatal());
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", direct.isDeBatchingEnabled());
+		assertThat(container).hasFieldOrPropertyWithValue("forceStop", direct.isForceStop());
 	}
 
 	@Test
 	void determineUsernameWithoutPassword() {
-		this.properties.setAddresses("user@rabbit1.example.com:1234/alpha");
+		this.properties.setAddresses(List.of("user@rabbit1.example.com:1234/alpha"));
 		assertThat(this.properties.determineUsername()).isEqualTo("user");
 		assertThat(this.properties.determinePassword()).isEqualTo("guest");
+	}
+
+	@Test
+	void hostPropertyMustBeSingleHost() {
+		this.properties.setHost("my-rmq-host.net,my-rmq-host-2.net");
+		assertThat(this.properties.getHost()).isEqualTo("my-rmq-host.net,my-rmq-host-2.net");
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(this.properties::determineAddresses)
+			.withMessageContaining("spring.rabbitmq.host");
 	}
 
 }

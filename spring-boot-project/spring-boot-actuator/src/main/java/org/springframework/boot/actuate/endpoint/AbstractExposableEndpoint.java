@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.util.Assert;
@@ -34,22 +32,36 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 
 	private final EndpointId id;
 
-	private boolean enabledByDefault;
+	private final Access defaultAccess;
 
-	private List<O> operations;
+	private final List<O> operations;
 
 	/**
 	 * Create a new {@link AbstractExposableEndpoint} instance.
 	 * @param id the endpoint id
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #AbstractExposableEndpoint(EndpointId, Access, Collection)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public AbstractExposableEndpoint(EndpointId id, boolean enabledByDefault, Collection<? extends O> operations) {
-		Assert.notNull(id, "ID must not be null");
-		Assert.notNull(operations, "Operations must not be null");
+		this(id, (enabledByDefault) ? Access.UNRESTRICTED : Access.READ_ONLY, operations);
+	}
+
+	/**
+	 * Create a new {@link AbstractExposableEndpoint} instance.
+	 * @param id the endpoint id
+	 * @param defaultAccess access to the endpoint that is permitted by default
+	 * @param operations the endpoint operations
+	 * @since 3.4.0
+	 */
+	public AbstractExposableEndpoint(EndpointId id, Access defaultAccess, Collection<? extends O> operations) {
+		Assert.notNull(id, "'id' must not be null");
+		Assert.notNull(operations, "'operations' must not be null");
 		this.id = id;
-		this.enabledByDefault = enabledByDefault;
-		this.operations = Collections.unmodifiableList(new ArrayList<>(operations));
+		this.defaultAccess = defaultAccess;
+		this.operations = List.copyOf(operations);
 	}
 
 	@Override
@@ -58,8 +70,15 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 	}
 
 	@Override
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public boolean isEnableByDefault() {
-		return this.enabledByDefault;
+		return this.defaultAccess != Access.NONE;
+	}
+
+	@Override
+	public Access getDefaultAccess() {
+		return this.defaultAccess;
 	}
 
 	@Override

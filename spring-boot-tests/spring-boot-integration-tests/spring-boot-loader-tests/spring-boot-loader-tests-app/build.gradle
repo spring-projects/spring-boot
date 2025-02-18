@@ -3,16 +3,19 @@ plugins {
 	id "org.springframework.boot"
 }
 
-apply plugin: "io.spring.dependency-management"
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
 
 repositories {
-	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	maven { url "file:${rootDir}/../docker-test-maven-repository"}
 	mavenCentral()
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://repo.spring.io/milestone" }
+	spring.mavenRepositories()
 }
 
 dependencies {
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.webjars:jquery:3.5.0")
 }

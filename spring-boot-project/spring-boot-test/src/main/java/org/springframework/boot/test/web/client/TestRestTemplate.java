@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,37 @@
 
 package org.springframework.boot.test.web.client;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
+import javax.net.ssl.SSLContext;
 
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.http.ssl.TLS;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustStrategy;
+
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -44,10 +57,10 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
-import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -80,13 +93,12 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Andy Wilkinson
  * @author Kristine Jetzke
  * @author Dmytro Nosan
+ * @author Yanming Zhou
  * @since 1.4.0
  */
 public class TestRestTemplate {
 
 	private final RestTemplateBuilder builder;
-
-	private final HttpClientOption[] httpClientOptions;
 
 	private final RestTemplate restTemplate;
 
@@ -128,21 +140,34 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder builder, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		Assert.notNull(builder, "Builder must not be null");
+		this(createInitialBuilder(builder, username, password, httpClientOptions), null);
+	}
+
+	private TestRestTemplate(RestTemplateBuilder builder, UriTemplateHandler uriTemplateHandler) {
 		this.builder = builder;
-		this.httpClientOptions = httpClientOptions;
+		this.restTemplate = builder.build();
+		if (uriTemplateHandler != null) {
+			this.restTemplate.setUriTemplateHandler(uriTemplateHandler);
+		}
+		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+	}
+
+	private static RestTemplateBuilder createInitialBuilder(RestTemplateBuilder builder, String username,
+			String password, HttpClientOption... httpClientOptions) {
+		Assert.notNull(builder, "'builder' must not be null");
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder
-					.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+				builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
+						? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
+				builder = builder.requestFactoryBuilder(
+						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
 		}
 		if (username != null || password != null) {
 			builder = builder.basicAuthentication(username, password);
 		}
-		this.restTemplate = builder.build();
-		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+		return builder;
 	}
 
 	/**
@@ -158,14 +183,14 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Returns the root URI applied by a {@link RootUriTemplateHandler} or {@code ""} if
-	 * the root URI is not available.
+	 * Returns the root URI applied by {@link RestTemplateBuilder#rootUri(String)} or
+	 * {@code ""} if the root URI has not been applied.
 	 * @return the root URI
 	 */
 	public String getRootUri() {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if (uriTemplateHandler instanceof RootUriTemplateHandler) {
-			return ((RootUriTemplateHandler) uriTemplateHandler).getRootUri();
+		if (uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) {
+			return rootHandler.getRootUri();
 		}
 		return "";
 	}
@@ -929,9 +954,41 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
-		TestRestTemplate template = new TestRestTemplate(this.builder, username, password, this.httpClientOptions);
-		template.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
-		return template;
+		if (username == null && password == null) {
+			return this;
+		}
+		return new TestRestTemplate(this.builder.basicAuthentication(username, password),
+				this.restTemplate.getUriTemplateHandler());
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will apply the given {@link ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param requestFactorySettings the new request factory settings
+	 * @return the new template
+	 * @since 3.4.1
+	 */
+	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
+				this.restTemplate.getUriTemplateHandler());
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will customize the {@link ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update the
+	 * settings
+	 * @return the new template
+	 * @since 3.4.1
+	 */
+	public TestRestTemplate withRequestFactorySettings(
+			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
+		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
+				this.restTemplate.getUriTemplateHandler());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -942,15 +999,14 @@ public class TestRestTemplate {
 
 	private URI applyRootUriIfNecessary(URI uri) {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if ((uriTemplateHandler instanceof RootUriTemplateHandler) && uri.toString().startsWith("/")) {
-			return URI.create(((RootUriTemplateHandler) uriTemplateHandler).getRootUri() + uri.toString());
+		if ((uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) && uri.toString().startsWith("/")) {
+			return URI.create(rootHandler.getRootUri() + uri);
 		}
 		return uri;
 	}
 
 	private URI resolveUri(RequestEntity<?> entity) {
-		if (entity instanceof UriTemplateRequestEntity) {
-			UriTemplateRequestEntity<?> templatedUriEntity = (UriTemplateRequestEntity<?>) entity;
+		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
 				return this.restTemplate.getUriTemplateHandler()
 					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
@@ -981,9 +1037,13 @@ public class TestRestTemplate {
 		ENABLE_REDIRECTS,
 
 		/**
-		 * Use a {@link SSLConnectionSocketFactory} with {@link TrustSelfSignedStrategy}.
+		 * Use a {@link TlsSocketStrategy} that trusts self-signed certificates.
 		 */
-		SSL
+		SSL;
+
+		boolean isPresent(HttpClientOption[] options) {
+			return ObjectUtils.containsElement(options, this);
+		}
 
 	}
 
@@ -996,48 +1056,97 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
-			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
-			if (options.contains(HttpClientOption.SSL)) {
-				setHttpClient(createSslHttpClient());
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], ClientHttpRequestFactorySettings)}
+		 */
+		@Deprecated(since = "3.4.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
+			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
+					settings.readTimeout(), settings.sslBundle()));
+		}
+
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 */
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				ClientHttpRequestFactorySettings settings) {
+			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
+					: StandardCookieSpec.IGNORE);
+			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
+			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
+			if (settings.readTimeout() != null || ssl) {
+				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
+			}
+			if (settings.connectTimeout() != null) {
+				setConnectTimeout((int) settings.connectTimeout().toMillis());
 			}
 		}
 
-		private HttpClient createSslHttpClient() {
+		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
 			try {
-				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-						new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-				return HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+				HttpClientBuilder builder = HttpClients.custom();
+				builder.setConnectionManager(createConnectionManager(readTimeout, ssl));
+				builder.setDefaultRequestConfig(createRequestConfig());
+				return builder.build();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Unable to create SSL HttpClient", ex);
+				throw new IllegalStateException("Unable to create customized HttpClient", ex);
 			}
+		}
+
+		private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
+				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
+			if (ssl) {
+				builder.setTlsSocketStrategy(createTlsSocketStrategy());
+			}
+			if (readTimeout != null) {
+				SocketConfig socketConfig = SocketConfig.custom()
+					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+					.build();
+				builder.setDefaultSocketConfig(socketConfig);
+			}
+			return builder.build();
+		}
+
+		private TlsSocketStrategy createTlsSocketStrategy()
+				throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+				.build();
+			return new DefaultClientTlsStrategy(sslContext, new String[] { TLS.V_1_3.getId(), TLS.V_1_2.getId() }, null,
+					null, null);
 		}
 
 		@Override
 		protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
 			HttpClientContext context = HttpClientContext.create();
-			context.setRequestConfig(getRequestConfig());
+			context.setRequestConfig(createRequestConfig());
 			return context;
 		}
 
-		protected RequestConfig getRequestConfig() {
-			Builder builder = RequestConfig.custom()
-				.setCookieSpec(this.cookieSpec)
-				.setAuthenticationEnabled(false)
-				.setRedirectsEnabled(this.enableRedirects);
+		protected RequestConfig createRequestConfig() {
+			RequestConfig.Builder builder = RequestConfig.custom();
+			builder.setCookieSpec(this.cookieSpec);
+			builder.setAuthenticationEnabled(false);
+			builder.setRedirectsEnabled(this.enableRedirects);
 			return builder.build();
 		}
 
 	}
 
-	private static class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
+	private static final class TrustSelfSignedStrategy implements TrustStrategy {
 
 		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
+		public boolean isTrusted(X509Certificate[] chain, String authType) {
+			return chain.length == 1;
 		}
 
 	}

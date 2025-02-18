@@ -25,7 +25,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import org.assertj.core.api.Assumptions;
-import org.gradle.api.JavaVersion;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
@@ -98,12 +97,7 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			assertThat(result.getOutput()).contains("1. -XX:TieredStopAtLevel=1");
-		}
-		else {
-			assertThat(result.getOutput()).contains("1. -Xverify:none").contains("2. -XX:TieredStopAtLevel=1");
-		}
+		assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate
@@ -126,17 +120,9 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
-				.contains("2. -Dcom.foo=bar")
-				.contains("3. -XX:TieredStopAtLevel=1");
-		}
-		else {
-			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
-				.contains("2. -Dcom.foo=bar")
-				.contains("3. -Xverify:none")
-				.contains("4. -XX:TieredStopAtLevel=1");
-		}
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
+			.contains("-Dcom.foo=bar")
+			.contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate
@@ -158,6 +144,22 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
+	}
+
+	@TestTemplate
+	void developmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
 	}
 
 	private void copyMainClassApplication() throws IOException {

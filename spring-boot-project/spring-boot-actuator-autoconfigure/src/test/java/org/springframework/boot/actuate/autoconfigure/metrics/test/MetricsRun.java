@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.Gr
 import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.InfluxMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic.NewRelicMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -46,6 +46,7 @@ import org.springframework.util.Assert;
  * @author Jon Schneider
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 public final class MetricsRun {
 
 	private static final Set<Class<?>> EXPORT_AUTO_CONFIGURATIONS;
@@ -59,9 +60,11 @@ public final class MetricsRun {
 		implementations.add(InfluxMetricsExportAutoConfiguration.class);
 		implementations.add(JmxMetricsExportAutoConfiguration.class);
 		implementations.add(NewRelicMetricsExportAutoConfiguration.class);
+		implementations.add(OtlpMetricsExportAutoConfiguration.class);
 		implementations.add(PrometheusMetricsExportAutoConfiguration.class);
 		implementations.add(SimpleMetricsExportAutoConfiguration.class);
-		implementations.add(SignalFxMetricsExportAutoConfiguration.class);
+		implementations.add(
+				org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxMetricsExportAutoConfiguration.class);
 		implementations.add(StatsdMetricsExportAutoConfiguration.class);
 		EXPORT_AUTO_CONFIGURATIONS = Collections.unmodifiableSet(implementations);
 	}

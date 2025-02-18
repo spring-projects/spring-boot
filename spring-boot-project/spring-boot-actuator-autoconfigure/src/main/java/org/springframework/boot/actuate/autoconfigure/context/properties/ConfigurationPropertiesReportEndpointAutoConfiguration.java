@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.context.properties;
-
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -41,7 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
+@ConditionalOnAvailableEndpoint(ConfigurationPropertiesReportEndpoint.class)
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)
 public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 
@@ -50,26 +48,19 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
 			ConfigurationPropertiesReportEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
-				sanitizingFunctions.orderedStream().collect(Collectors.toList()));
-		String[] keysToSanitize = properties.getKeysToSanitize();
-		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
-		}
-		String[] additionalKeysToSanitize = properties.getAdditionalKeysToSanitize();
-		if (additionalKeysToSanitize != null) {
-			endpoint.keysToSanitize(additionalKeysToSanitize);
-		}
-		return endpoint;
+		return new ConfigurationPropertiesReportEndpoint(sanitizingFunctions.orderedStream().toList(),
+				properties.getShowValues());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
-	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
 	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
-			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint) {
-		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint);
+			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint,
+			ConfigurationPropertiesReportEndpointProperties properties) {
+		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint,
+				properties.getShowValues(), properties.getRoles());
 	}
 
 }

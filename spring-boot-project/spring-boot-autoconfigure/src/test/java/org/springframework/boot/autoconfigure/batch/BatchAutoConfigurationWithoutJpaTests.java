@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration.SpringBootBatchConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -34,7 +35,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BatchAutoConfigurationWithoutJpaTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class, TransactionAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class, TransactionAutoConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class));
 
 	@Test
 	void jdbcWithDefaultSettings() {
@@ -57,12 +59,8 @@ class BatchAutoConfigurationWithoutJpaTests {
 				assertThat(context).hasSingleBean(JobLauncher.class);
 				assertThat(context).hasSingleBean(JobExplorer.class);
 				assertThat(context).hasSingleBean(JobRepository.class);
-				assertThat(context).hasSingleBean(PlatformTransactionManager.class);
-				assertThat(context.getBean(PlatformTransactionManager.class).toString())
-					.contains("DataSourceTransactionManager");
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
-				assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel()).isNull();
 				assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 					.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 				assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
@@ -91,11 +89,11 @@ class BatchAutoConfigurationWithoutJpaTests {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
 					"spring.batch.jdbc.isolation-level-for-create=read_committed")
-			.run((context) -> assertThat(context.getBean(BasicBatchConfigurer.class).determineIsolationLevel())
-				.isEqualTo("ISOLATION_READ_COMMITTED"));
+			.run((context) -> assertThat(
+					context.getBean(SpringBootBatchConfiguration.class).getIsolationLevelForCreate())
+				.isEqualTo(Isolation.READ_COMMITTED));
 	}
 
-	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	static class DefaultConfiguration {
 

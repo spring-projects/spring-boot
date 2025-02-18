@@ -116,17 +116,17 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getArchiveHasFixedCreateDate() throws Exception {
+	void getArchiveHasFixedCreatedDate() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
 		Instant createInstant = builder.getArchive().getCreateDate();
 		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
 		assertThat(createDateTime.getYear()).isEqualTo(1980);
-		assertThat(createDateTime.getMonthValue()).isEqualTo(1);
-		assertThat(createDateTime.getDayOfMonth()).isEqualTo(1);
-		assertThat(createDateTime.getHour()).isEqualTo(0);
-		assertThat(createDateTime.getMinute()).isEqualTo(0);
-		assertThat(createDateTime.getSecond()).isEqualTo(1);
+		assertThat(createDateTime.getMonthValue()).isOne();
+		assertThat(createDateTime.getDayOfMonth()).isOne();
+		assertThat(createDateTime.getHour()).isZero();
+		assertThat(createDateTime.getMinute()).isZero();
+		assertThat(createDateTime.getSecond()).isOne();
 	}
 
 	@Test

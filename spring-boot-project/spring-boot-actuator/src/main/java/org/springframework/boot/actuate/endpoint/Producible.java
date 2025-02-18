@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.util.MimeType;
  * producible mime-types.
  * <p>
  * Can be used with {@link ReadOperation @ReadOperation},
- * {@link WriteOperation @ReadOperation} and {@link DeleteOperation @ReadOperation}
+ * {@link WriteOperation @WriteOperation} and {@link DeleteOperation @DeleteOperation}
  * annotations to quickly define a list of {@code produces} values.
  * <p>
  * {@link Producible} types can also be injected into operations when the underlying

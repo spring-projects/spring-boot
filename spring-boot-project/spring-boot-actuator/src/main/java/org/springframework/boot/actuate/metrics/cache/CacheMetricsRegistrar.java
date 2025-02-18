@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,12 +96,12 @@ public class CacheMetricsRegistrar {
 		return cache;
 	}
 
-	private static class TransactionAwareCacheDecoratorHandler {
+	private static final class TransactionAwareCacheDecoratorHandler {
 
 		private static Cache unwrapIfNecessary(Cache cache) {
 			try {
-				if (cache instanceof TransactionAwareCacheDecorator) {
-					return ((TransactionAwareCacheDecorator) cache).getTargetCache();
+				if (cache instanceof TransactionAwareCacheDecorator decorator) {
+					return decorator.getTargetCache();
 				}
 			}
 			catch (NoClassDefFoundError ex) {

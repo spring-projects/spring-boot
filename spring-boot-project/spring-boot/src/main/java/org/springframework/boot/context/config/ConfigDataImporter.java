@@ -146,8 +146,8 @@ class ConfigDataImporter {
 	}
 
 	private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location, ConfigDataResource resource) {
-		if (ex instanceof ConfigDataResourceNotFoundException) {
-			ex = ((ConfigDataResourceNotFoundException) ex).withLocation(location);
+		if (ex instanceof ConfigDataResourceNotFoundException notFoundException) {
+			ex = notFoundException.withLocation(location);
 		}
 		getNotFoundAction(location, resource).handle(this.logger, ex);
 	}

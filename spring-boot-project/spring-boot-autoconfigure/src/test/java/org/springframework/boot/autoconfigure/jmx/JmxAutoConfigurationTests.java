@@ -33,6 +33,7 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
+import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,6 +73,8 @@ class JmxAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ParentAwareNamingStrategy.class);
 			MBeanExporter exporter = context.getBean(MBeanExporter.class);
 			assertThat(exporter).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", false);
+			assertThat(exporter).hasFieldOrPropertyWithValue("registrationPolicy", RegistrationPolicy.FAIL_ON_EXISTING);
+
 			MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(exporter,
 					"namingStrategy");
 			assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", false);
@@ -82,11 +85,14 @@ class JmxAutoConfigurationTests {
 	void testDefaultDomainConfiguredOnMBeanExport() {
 		this.contextRunner
 			.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default-domain=my-test-domain",
-					"spring.jmx.unique-names=true")
+					"spring.jmx.unique-names=true", "spring.jmx.registration-policy=IGNORE_EXISTING")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MBeanExporter.class);
 				MBeanExporter exporter = context.getBean(MBeanExporter.class);
 				assertThat(exporter).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
+				assertThat(exporter).hasFieldOrPropertyWithValue("registrationPolicy",
+						RegistrationPolicy.IGNORE_EXISTING);
+
 				MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(exporter,
 						"namingStrategy");
 				assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");

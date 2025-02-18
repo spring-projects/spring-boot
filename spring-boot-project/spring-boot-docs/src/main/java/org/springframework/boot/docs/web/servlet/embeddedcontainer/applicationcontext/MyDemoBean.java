@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.web.servlet.embeddedcontainer.applicationcontext;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;

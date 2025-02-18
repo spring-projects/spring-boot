@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package org.springframework.boot.configurationprocessor.metadata;
  * Describe an item deprecation.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.3.0
  */
 public class ItemDeprecation {
@@ -28,19 +29,22 @@ public class ItemDeprecation {
 
 	private String replacement;
 
+	private String since;
+
 	private String level;
 
 	public ItemDeprecation() {
-		this(null, null);
+		this(null, null, null);
 	}
 
-	public ItemDeprecation(String reason, String replacement) {
-		this(reason, replacement, null);
+	public ItemDeprecation(String reason, String replacement, String since) {
+		this(reason, replacement, since, null);
 	}
 
-	public ItemDeprecation(String reason, String replacement, String level) {
+	public ItemDeprecation(String reason, String replacement, String since, String level) {
 		this.reason = reason;
 		this.replacement = replacement;
+		this.since = since;
 		this.level = level;
 	}
 
@@ -58,6 +62,14 @@ public class ItemDeprecation {
 
 	public void setReplacement(String replacement) {
 		this.replacement = replacement;
+	}
+
+	public String getSince() {
+		return this.since;
+	}
+
+	public void setSince(String since) {
+		this.since = since;
 	}
 
 	public String getLevel() {
@@ -78,7 +90,7 @@ public class ItemDeprecation {
 		}
 		ItemDeprecation other = (ItemDeprecation) o;
 		return nullSafeEquals(this.reason, other.reason) && nullSafeEquals(this.replacement, other.replacement)
-				&& nullSafeEquals(this.level, other.level);
+				&& nullSafeEquals(this.level, other.level) && nullSafeEquals(this.since, other.since);
 	}
 
 	@Override
@@ -86,13 +98,14 @@ public class ItemDeprecation {
 		int result = nullSafeHashCode(this.reason);
 		result = 31 * result + nullSafeHashCode(this.replacement);
 		result = 31 * result + nullSafeHashCode(this.level);
+		result = 31 * result + nullSafeHashCode(this.since);
 		return result;
 	}
 
 	@Override
 	public String toString() {
 		return "ItemDeprecation{reason='" + this.reason + '\'' + ", replacement='" + this.replacement + '\''
-				+ ", level='" + this.level + '\'' + '}';
+				+ ", level='" + this.level + '\'' + ", since='" + this.since + '\'' + '}';
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {

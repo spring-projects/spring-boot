@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -47,18 +46,16 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
+public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
-	private final RegularFileProperty reportLocation;
+	private final File projectDir;
 
 	public CheckAdditionalSpringConfigurationMetadata() {
-		this.reportLocation = getProject().getObjects().fileProperty();
+		this.projectDir = getProject().getProjectDir();
 	}
 
 	@OutputFile
-	public RegularFileProperty getReportLocation() {
-		return this.reportLocation;
-	}
+	public abstract RegularFileProperty getReportLocation();
 
 	@Override
 	@InputFiles
@@ -83,7 +80,7 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Report report = new Report();
 		for (File file : getSource().getFiles()) {
-			Analysis analysis = report.analysis(getProject().getProjectDir().toPath().relativize(file.toPath()));
+			Analysis analysis = report.analysis(this.projectDir.toPath().relativize(file.toPath()));
 			Map<String, Object> json = objectMapper.readValue(file, Map.class);
 			check("groups", json, analysis);
 			check("properties", json, analysis);
@@ -94,8 +91,8 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
 	@SuppressWarnings("unchecked")
 	private void check(String key, Map<String, Object> json, Analysis analysis) {
-		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.get(key);
-		List<String> names = groups.stream().map((group) -> (String) group.get("name")).collect(Collectors.toList());
+		List<Map<String, Object>> groups = (List<Map<String, Object>>) json.getOrDefault(key, Collections.emptyList());
+		List<String> names = groups.stream().map((group) -> (String) group.get("name")).toList();
 		List<String> sortedNames = sortedCopy(names);
 		for (int i = 0; i < names.size(); i++) {
 			String actual = names.get(i);

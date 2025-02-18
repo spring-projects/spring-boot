@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class LibraryCoordinatesTests {
 		assertThat(coordinates.getGroupId()).isEqualTo("g");
 		assertThat(coordinates.getArtifactId()).isEqualTo("a");
 		assertThat(coordinates.getVersion()).isEqualTo("v");
-		assertThat(coordinates.toString()).isEqualTo("g:a:v");
+		assertThat(coordinates).hasToString("g:a:v");
 	}
 
 	@Test

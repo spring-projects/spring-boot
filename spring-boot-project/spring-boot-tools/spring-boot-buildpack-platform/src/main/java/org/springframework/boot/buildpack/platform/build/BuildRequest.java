@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.File;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -43,15 +46,30 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-jammy-base:latest";
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-jammy-java-tiny";
 
-	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_NAME);
+	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
+
+	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
+			ImageReference.of("paketobuildpacks/builder-noble-java-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-java-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-base"),
+			ImageReference.of("paketobuildpacks/builder-jammy-full"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-base"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-full"),
+			ImageReference.of("gcr.io/buildpacks/builder"), ImageReference.of("heroku/builder"));
+
+	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_REF);
 
 	private final ImageReference name;
 
 	private final Function<Owner, TarArchive> applicationContent;
 
 	private final ImageReference builder;
+
+	private final Boolean trustBuilder;
 
 	private final ImageReference runImage;
 
@@ -75,16 +93,27 @@ public class BuildRequest {
 
 	private final List<ImageReference> tags;
 
+	private final Cache buildWorkspace;
+
 	private final Cache buildCache;
 
 	private final Cache launchCache;
 
+	private final Instant createdDate;
+
+	private final String applicationDirectory;
+
+	private final List<String> securityOptions;
+
+	private final ImagePlatform platform;
+
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(applicationContent, "ApplicationContent must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(applicationContent, "'applicationContent' must not be null");
 		this.name = name.inTaggedForm();
 		this.applicationContent = applicationContent;
 		this.builder = DEFAULT_BUILDER;
+		this.trustBuilder = null;
 		this.runImage = null;
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
@@ -96,17 +125,25 @@ public class BuildRequest {
 		this.bindings = Collections.emptyList();
 		this.network = null;
 		this.tags = Collections.emptyList();
+		this.buildWorkspace = null;
 		this.buildCache = null;
 		this.launchCache = null;
+		this.createdDate = null;
+		this.applicationDirectory = null;
+		this.securityOptions = null;
+		this.platform = null;
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
-			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
+			Boolean trustBuilder, ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
 			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
-			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildCache, Cache launchCache) {
+			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildWorkspace, Cache buildCache,
+			Cache launchCache, Instant createdDate, String applicationDirectory, List<String> securityOptions,
+			ImagePlatform platform) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
+		this.trustBuilder = trustBuilder;
 		this.runImage = runImage;
 		this.creator = creator;
 		this.env = env;
@@ -118,8 +155,13 @@ public class BuildRequest {
 		this.bindings = bindings;
 		this.network = network;
 		this.tags = tags;
+		this.buildWorkspace = buildWorkspace;
 		this.buildCache = buildCache;
 		this.launchCache = launchCache;
+		this.createdDate = createdDate;
+		this.applicationDirectory = applicationDirectory;
+		this.securityOptions = securityOptions;
+		this.platform = platform;
 	}
 
 	/**
@@ -128,10 +170,26 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withBuilder(ImageReference builder) {
-		Assert.notNull(builder, "Builder must not be null");
-		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
+		Assert.notNull(builder, "'builder' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.trustBuilder,
+				this.runImage, this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy,
+				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace,
+				this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions,
+				this.platform);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated trust builder setting.
+	 * @param trustBuilder {@code true} if the builder should be treated as trusted,
+	 * {@code false} otherwise
+	 * @return an updated build request
+	 * @since 3.4.0
+	 */
+	public BuildRequest withTrustBuilder(boolean trustBuilder) {
+		return new BuildRequest(this.name, this.applicationContent, this.builder, trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -140,9 +198,11 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withRunImage(ImageReference runImageName) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
-				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder,
+				runImageName.inTaggedOrDigestForm(), this.creator, this.env, this.cleanCache, this.verboseLogging,
+				this.pullPolicy, this.publish, this.buildpacks, this.bindings, this.network, this.tags,
+				this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory,
+				this.securityOptions, this.platform);
 	}
 
 	/**
@@ -151,10 +211,11 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withCreator(Creator creator) {
-		Assert.notNull(creator, "Creator must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		Assert.notNull(creator, "'creator' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -164,13 +225,15 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withEnv(String name, String value) {
-		Assert.hasText(name, "Name must not be empty");
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(name, "'name' must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
-				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks, this.bindings, this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.pullPolicy,
+				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace,
+				this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions,
+				this.platform);
 	}
 
 	/**
@@ -179,13 +242,14 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withEnv(Map<String, String> env) {
-		Assert.notNull(env, "Env must not be null");
+		Assert.notNull(env, "'env' must not be null");
 		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
-				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging, this.pullPolicy,
-				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildCache,
-				this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging,
+				this.pullPolicy, this.publish, this.buildpacks, this.bindings, this.network, this.tags,
+				this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory,
+				this.securityOptions, this.platform);
 	}
 
 	/**
@@ -194,9 +258,10 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -205,9 +270,10 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -216,9 +282,10 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withPullPolicy(PullPolicy pullPolicy) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -227,9 +294,10 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withPublish(boolean publish) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -239,7 +307,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(BuildpackReference... buildpacks) {
-		Assert.notEmpty(buildpacks, "Buildpacks must not be empty");
+		Assert.notEmpty(buildpacks, "'buildpacks' must not be empty");
 		return withBuildpacks(Arrays.asList(buildpacks));
 	}
 
@@ -250,10 +318,11 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(List<BuildpackReference> buildpacks) {
-		Assert.notNull(buildpacks, "Buildpacks must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		Assert.notNull(buildpacks, "'buildpacks' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks,
+				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
+				this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -263,7 +332,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(Binding... bindings) {
-		Assert.notEmpty(bindings, "Bindings must not be empty");
+		Assert.notEmpty(bindings, "'bindings' must not be empty");
 		return withBindings(Arrays.asList(bindings));
 	}
 
@@ -274,10 +343,11 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(List<Binding> bindings) {
-		Assert.notNull(bindings, "Bindings must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, bindings,
-				this.network, this.tags, this.buildCache, this.launchCache);
+		Assert.notNull(bindings, "'bindings' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -287,9 +357,10 @@ public class BuildRequest {
 	 * @since 2.6.0
 	 */
 	public BuildRequest withNetwork(String network) {
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				network, this.tags, this.buildCache, this.launchCache);
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -298,7 +369,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withTags(ImageReference... tags) {
-		Assert.notEmpty(tags, "Tags must not be empty");
+		Assert.notEmpty(tags, "'tags' must not be empty");
 		return withTags(Arrays.asList(tags));
 	}
 
@@ -308,10 +379,25 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withTags(List<ImageReference> tags) {
-		Assert.notNull(tags, "Tags must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, tags, this.buildCache, this.launchCache);
+		Assert.notNull(tags, "'tags' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated build workspace.
+	 * @param buildWorkspace the build workspace
+	 * @return an updated build request
+	 * @since 3.2.0
+	 */
+	public BuildRequest withBuildWorkspace(Cache buildWorkspace) {
+		Assert.notNull(buildWorkspace, "'buildWorkspace' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -320,10 +406,11 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withBuildCache(Cache buildCache) {
-		Assert.notNull(buildCache, "BuildCache must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, buildCache, this.launchCache);
+		Assert.notNull(buildCache, "'buildCache' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
 	}
 
 	/**
@@ -332,10 +419,79 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withLaunchCache(Cache launchCache) {
-		Assert.notNull(launchCache, "LaunchCache must not be null");
-		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
-				this.network, this.tags, this.buildCache, launchCache);
+		Assert.notNull(launchCache, "'launchCache' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.platform);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated created date.
+	 * @param createdDate the created date
+	 * @return an updated build request
+	 */
+	public BuildRequest withCreatedDate(String createdDate) {
+		Assert.notNull(createdDate, "'createdDate' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, parseCreatedDate(createdDate), this.applicationDirectory, this.securityOptions,
+				this.platform);
+	}
+
+	private Instant parseCreatedDate(String createdDate) {
+		if ("now".equalsIgnoreCase(createdDate)) {
+			return Instant.now();
+		}
+		try {
+			return Instant.parse(createdDate);
+		}
+		catch (DateTimeParseException ex) {
+			throw new IllegalArgumentException("Error parsing '" + createdDate + "' as an image created date", ex);
+		}
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated application directory.
+	 * @param applicationDirectory the application directory
+	 * @return an updated build request
+	 */
+	public BuildRequest withApplicationDirectory(String applicationDirectory) {
+		Assert.notNull(applicationDirectory, "'applicationDirectory' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, applicationDirectory, this.securityOptions, this.platform);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated security options.
+	 * @param securityOptions the security options
+	 * @return an updated build request
+	 * @since 3.2.0
+	 */
+	public BuildRequest withSecurityOptions(List<String> securityOptions) {
+		Assert.notNull(securityOptions, "'securityOptions' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, securityOptions, this.platform);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated image platform.
+	 * @param platform the image platform
+	 * @return an updated build request
+	 * @since 3.4.0
+	 */
+	public BuildRequest withImagePlatform(String platform) {
+		Assert.notNull(platform, "'platform' must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
+				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions,
+				ImagePlatform.of(platform));
 	}
 
 	/**
@@ -363,6 +519,19 @@ public class BuildRequest {
 	 */
 	public ImageReference getBuilder() {
 		return this.builder;
+	}
+
+	/**
+	 * Return whether the builder should be treated as trusted.
+	 * @return the trust builder flag
+	 * @since 3.4.0
+	 */
+	public boolean isTrustBuilder() {
+		return (this.trustBuilder != null) ? this.trustBuilder : isBuilderKnownAndTrusted();
+	}
+
+	private boolean isBuilderKnownAndTrusted() {
+		return KNOWN_TRUSTED_BUILDERS.stream().anyMatch((builder) -> builder.getName().equals(this.builder.getName()));
 	}
 
 	/**
@@ -456,6 +625,15 @@ public class BuildRequest {
 	}
 
 	/**
+	 * Return the build workspace that should be used by the lifecycle.
+	 * @return the build workspace or {@code null}
+	 * @since 3.2.0
+	 */
+	public Cache getBuildWorkspace() {
+		return this.buildWorkspace;
+	}
+
+	/**
 	 * Return the custom build cache that should be used by the lifecycle.
 	 * @return the build cache
 	 */
@@ -469,6 +647,40 @@ public class BuildRequest {
 	 */
 	public Cache getLaunchCache() {
 		return this.launchCache;
+	}
+
+	/**
+	 * Return the custom created date that should be used by the lifecycle.
+	 * @return the created date
+	 */
+	public Instant getCreatedDate() {
+		return this.createdDate;
+	}
+
+	/**
+	 * Return the application directory that should be used by the lifecycle.
+	 * @return the application directory
+	 */
+	public String getApplicationDirectory() {
+		return this.applicationDirectory;
+	}
+
+	/**
+	 * Return the security options that should be used by the lifecycle.
+	 * @return the security options or {@code null}
+	 * @since 3.2.0
+	 */
+	public List<String> getSecurityOptions() {
+		return this.securityOptions;
+	}
+
+	/**
+	 * Return the platform that should be used when pulling images.
+	 * @return the platform or {@code null}
+	 * @since 3.4.0
+	 */
+	public ImagePlatform getImagePlatform() {
+		return this.platform;
 	}
 
 	/**
@@ -503,9 +715,9 @@ public class BuildRequest {
 	}
 
 	private static void assertJarFile(File jarFile) {
-		Assert.notNull(jarFile, "JarFile must not be null");
-		Assert.isTrue(jarFile.exists(), "JarFile must exist");
-		Assert.isTrue(jarFile.isFile(), "JarFile must be a file");
+		Assert.notNull(jarFile, "'jarFile' must not be null");
+		Assert.isTrue(jarFile.exists(), "'jarFile' must exist");
+		Assert.isTrue(jarFile.isFile(), "'jarFile' must be a file");
 	}
 
 }

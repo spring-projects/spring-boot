@@ -93,8 +93,8 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 			return environment.getConversionService().convert(value, Integer.class);
 		}
 		catch (ConversionFailedException ex) {
-			if (value instanceof String) {
-				return getResolvedValueIfPossible(environment, (String) value);
+			if (value instanceof String string) {
+				return getResolvedValueIfPossible(environment, string);
 			}
 			throw ex;
 		}

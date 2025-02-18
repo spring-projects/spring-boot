@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,10 @@ class OperationMethodParameter implements OperationParameter {
 		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
 			return false;
 		}
-		return (jsr305Present) ? new Jsr305().isMandatory(this.parameter) : true;
+		if (jsr305Present) {
+			return new Jsr305().isMandatory(this.parameter);
+		}
+		return true;
 	}
 
 	@Override
@@ -81,7 +84,7 @@ class OperationMethodParameter implements OperationParameter {
 		return this.name + " of type " + this.parameter.getType().getName();
 	}
 
-	private static class Jsr305 {
+	private static final class Jsr305 {
 
 		boolean isMandatory(Parameter parameter) {
 			MergedAnnotation<Nonnull> annotation = MergedAnnotations.from(parameter).get(Nonnull.class);

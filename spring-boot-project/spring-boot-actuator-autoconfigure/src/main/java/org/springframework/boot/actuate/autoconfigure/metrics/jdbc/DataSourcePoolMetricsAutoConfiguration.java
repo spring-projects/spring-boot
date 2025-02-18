@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -33,6 +32,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.jdbc.DataSourcePoolMetrics;
@@ -53,6 +54,7 @@ import org.springframework.util.StringUtils;
  * {@link DataSource datasources}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
@@ -68,9 +70,11 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		private static final String DATASOURCE_SUFFIX = "dataSource";
 
 		@Bean
-		DataSourcePoolMetadataMeterBinder dataSourcePoolMetadataMeterBinder(Map<String, DataSource> dataSources,
+		DataSourcePoolMetadataMeterBinder dataSourcePoolMetadataMeterBinder(ConfigurableListableBeanFactory beanFactory,
 				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-			return new DataSourcePoolMetadataMeterBinder(dataSources, metadataProviders);
+			return new DataSourcePoolMetadataMeterBinder(
+					SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, DataSource.class),
+					metadataProviders);
 		}
 
 		static class DataSourcePoolMetadataMeterBinder implements MeterBinder {
@@ -87,8 +91,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream()
-					.collect(Collectors.toList());
+				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream().toList();
 				this.dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name, dataSource,
 						metadataProvidersList, registry));
 			}
@@ -138,13 +141,13 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				for (DataSource dataSource : this.dataSources) {
+				this.dataSources.stream(ObjectProvider.UNFILTERED).forEach((dataSource) -> {
 					HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
 							HikariDataSource.class);
 					if (hikariDataSource != null) {
 						bindMetricsRegistryToHikariDataSource(hikariDataSource, registry);
 					}
-				}
+				});
 			}
 
 			private void bindMetricsRegistryToHikariDataSource(HikariDataSource hikari, MeterRegistry registry) {

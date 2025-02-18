@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A collection of {@link PathMappedEndpoint path mapped endpoints}.
@@ -47,7 +47,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param supplier the endpoint supplier
 	 */
 	public PathMappedEndpoints(String basePath, EndpointsSupplier<?> supplier) {
-		Assert.notNull(supplier, "Supplier must not be null");
+		Assert.notNull(supplier, "'supplier' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(Collections.singleton(supplier));
 	}
@@ -58,7 +58,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param suppliers the endpoint suppliers
 	 */
 	public PathMappedEndpoints(String basePath, Collection<EndpointsSupplier<?>> suppliers) {
-		Assert.notNull(suppliers, "Suppliers must not be null");
+		Assert.notNull(suppliers, "'suppliers' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(suppliers);
 	}
@@ -66,8 +66,8 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	private Map<EndpointId, PathMappedEndpoint> getEndpoints(Collection<EndpointsSupplier<?>> suppliers) {
 		Map<EndpointId, PathMappedEndpoint> endpoints = new LinkedHashMap<>();
 		suppliers.forEach((supplier) -> supplier.getEndpoints().forEach((endpoint) -> {
-			if (endpoint instanceof PathMappedEndpoint) {
-				endpoints.put(endpoint.getEndpointId(), (PathMappedEndpoint) endpoint);
+			if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
+				endpoints.put(endpoint.getEndpointId(), pathMappedEndpoint);
 			}
 		}));
 		return Collections.unmodifiableMap(endpoints);
@@ -103,19 +103,42 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	/**
-	 * Return the root paths for each mapped endpoint.
+	 * Return the root paths for each mapped endpoint (excluding additional paths).
 	 * @return all root paths
 	 */
 	public Collection<String> getAllRootPaths() {
-		return asList(stream().map(PathMappedEndpoint::getRootPath));
+		return stream().map(PathMappedEndpoint::getRootPath).toList();
 	}
 
 	/**
-	 * Return the full paths for each mapped endpoint.
+	 * Return the full paths for each mapped endpoint (excluding additional paths).
 	 * @return all root paths
 	 */
 	public Collection<String> getAllPaths() {
-		return asList(stream().map(this::getPath));
+		return stream().map(this::getPath).toList();
+	}
+
+	/**
+	 * Return the additional paths for each mapped endpoint.
+	 * @param webServerNamespace the web server namespace
+	 * @param endpointId the endpoint ID
+	 * @return all additional paths
+	 * @since 3.4.0
+	 */
+	public Collection<String> getAdditionalPaths(WebServerNamespace webServerNamespace, EndpointId endpointId) {
+		return getAdditionalPaths(webServerNamespace, getEndpoint(endpointId)).toList();
+	}
+
+	private Stream<String> getAdditionalPaths(WebServerNamespace webServerNamespace, PathMappedEndpoint endpoint) {
+		List<String> additionalPaths = (endpoint != null) ? endpoint.getAdditionalPaths(webServerNamespace) : null;
+		if (CollectionUtils.isEmpty(additionalPaths)) {
+			return Stream.empty();
+		}
+		return additionalPaths.stream().map(this::getAdditionalPath);
+	}
+
+	private String getAdditionalPath(String path) {
+		return path.startsWith("/") ? path : "/" + path;
 	}
 
 	/**
@@ -142,11 +165,17 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	private String getPath(PathMappedEndpoint endpoint) {
-		return (endpoint != null) ? this.basePath + "/" + endpoint.getRootPath() : null;
-	}
-
-	private <T> List<T> asList(Stream<T> stream) {
-		return stream.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+		if (endpoint == null) {
+			return null;
+		}
+		StringBuilder path = new StringBuilder(this.basePath);
+		if (!this.basePath.equals("/")) {
+			path.append("/");
+		}
+		if (!endpoint.getRootPath().equals("/")) {
+			path.append(endpoint.getRootPath());
+		}
+		return path.toString();
 	}
 
 }

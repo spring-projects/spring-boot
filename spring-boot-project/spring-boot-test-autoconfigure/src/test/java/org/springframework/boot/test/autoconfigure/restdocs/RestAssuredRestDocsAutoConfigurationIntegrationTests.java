@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.contentOf;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 /**
  * Integration tests for {@link RestDocsAutoConfiguration} with REST Assured.

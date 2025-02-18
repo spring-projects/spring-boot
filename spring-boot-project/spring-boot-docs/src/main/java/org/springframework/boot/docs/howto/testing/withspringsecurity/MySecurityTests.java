@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(UserController.class)
 class MySecurityTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
 	@WithMockUser(roles = "ADMIN")
-	void requestProtectedUrlWithUser() throws Exception {
-		this.mvc.perform(get("/"));
+	void requestProtectedUrlWithUser() {
+		assertThat(this.mvc.get().uri("/")).doesNotHaveFailed();
 	}
 
 }

@@ -18,48 +18,32 @@ package smoketest.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootApplication
-@EnableBatchProcessing
 public class SampleBatchApplication {
 
-	@Autowired
-	private JobBuilderFactory jobs;
-
-	@Autowired
-	private StepBuilderFactory steps;
-
 	@Bean
-	protected Tasklet tasklet() {
-
-		return new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution, ChunkContext context) {
-				return RepeatStatus.FINISHED;
-			}
-		};
-
+	Tasklet tasklet() {
+		return (contribution, context) -> RepeatStatus.FINISHED;
 	}
 
 	@Bean
-	public Job job() {
-		return this.jobs.get("job").start(step1()).build();
+	Job job(JobRepository jobRepository, Step step) {
+		return new JobBuilder("job", jobRepository).start(step).build();
 	}
 
 	@Bean
-	protected Step step1() {
-		return this.steps.get("step1").tasklet(tasklet()).build();
+	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
+		return new StepBuilder("step1", jobRepository).tasklet(tasklet, transactionManager).build();
 	}
 
 	public static void main(String[] args) {

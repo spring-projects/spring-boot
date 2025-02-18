@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcesso
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -97,14 +98,15 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	private final Log logger;
 
 	// Before ConfigDataEnvironmentPostProcessor so values there can use these
-	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 1;
+	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 5;
 
 	/**
 	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
-	 * @param logger the logger to use
+	 * @param logFactory the log factory to use
+	 * @since 3.0.0
 	 */
-	public CloudFoundryVcapEnvironmentPostProcessor(Log logger) {
-		this.logger = logger;
+	public CloudFoundryVcapEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+		this.logger = logFactory.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
 	}
 
 	public void setOrder(int order) {
@@ -199,9 +201,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 				// Need a compound key
 				flatten(properties, (Map<String, Object>) value, name);
 			}
-			else if (value instanceof Collection) {
+			else if (value instanceof Collection<?> collection) {
 				// Need a compound key
-				Collection<Object> collection = (Collection<Object>) value;
 				properties.put(name, StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object item : collection) {
@@ -212,10 +213,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			else if (value instanceof String) {
 				properties.put(name, value);
 			}
-			else if (value instanceof Number) {
-				properties.put(name, value.toString());
-			}
-			else if (value instanceof Boolean) {
+			else if (value instanceof Number || value instanceof Boolean) {
 				properties.put(name, value.toString());
 			}
 			else {

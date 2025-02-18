@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.devtools")
+@ConfigurationProperties("spring.devtools")
 public class DevToolsProperties {
 
-	private Restart restart = new Restart();
+	private final Restart restart = new Restart();
 
-	private Livereload livereload = new Livereload();
+	private final Livereload livereload = new Livereload();
 
 	@NestedConfigurationProperty
 	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();

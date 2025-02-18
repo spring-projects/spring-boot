@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.neo4j;
 
-import java.util.Map;
-
 import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -43,10 +42,14 @@ class Neo4jHealthContributorConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	static class Neo4jConfiguration extends CompositeHealthContributorConfiguration<Neo4jHealthIndicator, Driver> {
 
+		Neo4jConfiguration() {
+			super(Neo4jHealthIndicator::new);
+		}
+
 		@Bean
 		@ConditionalOnMissingBean(name = { "neo4jHealthIndicator", "neo4jHealthContributor" })
-		HealthContributor neo4jHealthContributor(Map<String, Driver> drivers) {
-			return createContributor(drivers);
+		HealthContributor neo4jHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+			return createContributor(beanFactory, Driver.class);
 		}
 
 	}
@@ -56,10 +59,14 @@ class Neo4jHealthContributorConfigurations {
 	static class Neo4jReactiveConfiguration
 			extends CompositeReactiveHealthContributorConfiguration<Neo4jReactiveHealthIndicator, Driver> {
 
+		Neo4jReactiveConfiguration() {
+			super(Neo4jReactiveHealthIndicator::new);
+		}
+
 		@Bean
 		@ConditionalOnMissingBean(name = { "neo4jHealthIndicator", "neo4jHealthContributor" })
-		ReactiveHealthContributor neo4jHealthContributor(Map<String, Driver> drivers) {
-			return createContributor(drivers);
+		ReactiveHealthContributor neo4jHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+			return createContributor(beanFactory, Driver.class);
 		}
 
 	}

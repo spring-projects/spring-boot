@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class SessionAutoConfigurationEarlyInitializationIntegrationTests {
+class SessionAutoConfigurationEarlyInitializationIntegrationTests {
 
 	@Test
 	void configurationIsFrozenWhenSessionRepositoryAccessed() {
@@ -57,7 +57,7 @@ public class SessionAutoConfigurationEarlyInitializationIntegrationTests {
 
 		@Bean
 		MapSessionRepository mapSessionRepository(ConfigurableApplicationContext context) {
-			Assert.isTrue(context.getBeanFactory().isConfigurationFrozen(), "Context should be frozen");
+			Assert.isTrue(context.getBeanFactory().isConfigurationFrozen(), "'context' should be frozen");
 			return new MapSessionRepository(new LinkedHashMap<>());
 		}
 

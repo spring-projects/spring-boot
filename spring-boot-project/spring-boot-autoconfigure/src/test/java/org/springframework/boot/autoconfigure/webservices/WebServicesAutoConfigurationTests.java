@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ class WebServicesAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
 			.run((context) -> assertThat(context).getFailure()
 				.isInstanceOf(BeanCreationException.class)
-				.hasMessageContaining("Failed to bind properties under 'spring.webservices'"));
+				.rootCause()
+				.hasMessageContaining("'path' must start with '/'"));
 	}
 
 	@Test

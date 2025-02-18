@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import static org.mockito.Mockito.mock;
  */
 class OriginTrackedMapPropertySourceTests {
 
-	private Map<String, Object> map = new LinkedHashMap<>();
+	private final Map<String, Object> map = new LinkedHashMap<>();
 
-	private OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource("test", this.map);
+	private final OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource("test", this.map);
 
-	private Origin origin = mock(Origin.class);
+	private final Origin origin = mock(Origin.class);
 
 	@Test
 	void getPropertyWhenMissingShouldReturnNull() {

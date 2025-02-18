@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
@@ -44,6 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class UndertowWebServerFactoryDelegate {
 
@@ -72,12 +76,12 @@ class UndertowWebServerFactoryDelegate {
 	private boolean useForwardHeaders;
 
 	void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.builderCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -141,8 +145,8 @@ class UndertowWebServerFactoryDelegate {
 		return this.useForwardHeaders;
 	}
 
-	Builder createBuilder(AbstractConfigurableWebServerFactory factory) {
-		Ssl ssl = factory.getSsl();
+	Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier,
+			Supplier<Map<String, SslBundle>> serverNameSslBundlesSupplier) {
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
 		Builder builder = Undertow.builder();
@@ -162,8 +166,10 @@ class UndertowWebServerFactoryDelegate {
 		if (http2 != null) {
 			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2.isEnabled());
 		}
-		if (ssl != null && ssl.isEnabled()) {
-			new SslBuilderCustomizer(factory.getPort(), address, ssl, factory.getOrCreateSslStoreProvider())
+		Ssl ssl = factory.getSsl();
+		if (Ssl.isEnabled(ssl)) {
+			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), sslBundleSupplier.get(),
+					serverNameSslBundlesSupplier.get())
 				.customize(builder);
 		}
 		else {

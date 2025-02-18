@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.data;
 
+import java.util.Collections;
 import java.util.List;
 
 import graphql.GraphQL;
@@ -29,9 +30,9 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
-import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.graphql.data.query.QueryByExampleDataFetcher;
 import org.springframework.graphql.execution.GraphQlSource;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that creates a
@@ -49,10 +50,10 @@ import org.springframework.graphql.execution.GraphQlSource;
 public class GraphQlQueryByExampleAutoConfiguration {
 
 	@Bean
-	public GraphQlSourceBuilderCustomizer queryByExampleRegistrar(ObjectProvider<QueryByExampleExecutor<?>> executors,
-			ObjectProvider<ReactiveQueryByExampleExecutor<?>> reactiveExecutors) {
-		return new GraphQlQuerydslSourceBuilderCustomizer<>(QueryByExampleDataFetcher::autoRegistrationConfigurer,
-				executors, reactiveExecutors);
+	public GraphQlSourceBuilderCustomizer queryByExampleRegistrar(ObjectProvider<QueryByExampleExecutor<?>> executors) {
+		RuntimeWiringConfigurer configurer = QueryByExampleDataFetcher
+			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());
+		return (builder) -> builder.configureRuntimeWiring(configurer);
 	}
 
 }

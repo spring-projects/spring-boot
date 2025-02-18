@@ -1,0 +1,70 @@
+[[features.json]]
+= JSON
+
+Spring Boot provides integration with three JSON mapping libraries:
+
+- Gson
+- Jackson
+- JSON-B
+
+Jackson is the preferred and default library.
+
+
+
+[[features.json.jackson]]
+== Jackson
+
+Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
+When Jackson is on the classpath an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean is automatically configured.
+Several configuration properties are provided for xref:how-to:spring-mvc.adoc#howto.spring-mvc.customize-jackson-objectmapper[customizing the configuration of the javadoc:com.fasterxml.jackson.databind.ObjectMapper[]].
+
+
+
+[[features.json.jackson.custom-serializers-and-deserializers]]
+=== Custom Serializers and Deserializers
+
+If you use Jackson to serialize and deserialize JSON data, you might want to write your own javadoc:com.fasterxml.jackson.databind.JsonSerializer[] and javadoc:com.fasterxml.jackson.databind.JsonDeserializer[] classes.
+Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] annotation that makes it easier to directly register Spring Beans.
+
+You can use the javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] annotation directly on javadoc:com.fasterxml.jackson.databind.JsonSerializer[], javadoc:com.fasterxml.jackson.databind.JsonDeserializer[] or javadoc:com.fasterxml.jackson.databind.KeyDeserializer[] implementations.
+You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
+
+include-code::MyJsonComponent[]
+
+All javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] beans in the javadoc:org.springframework.context.ApplicationContext[] are automatically registered with Jackson.
+Because javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] is meta-annotated with javadoc:org.springframework.stereotype.Component[format=annotation], the usual component-scanning rules apply.
+
+Spring Boot also provides javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
+See javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] in the API documentation for details.
+
+The example above can be rewritten to use javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] as follows:
+
+include-code::object/MyJsonComponent[]
+
+
+
+[[features.json.jackson.mixins]]
+=== Mixins
+
+Jackson has support for mixins that can be used to mix additional annotations into those already declared on a target class.
+Spring Boot's Jackson auto-configuration will scan your application's packages for classes annotated with javadoc:org.springframework.boot.jackson.JsonMixin[format=annotation] and register them with the auto-configured javadoc:com.fasterxml.jackson.databind.ObjectMapper[].
+The registration is performed by Spring Boot's javadoc:org.springframework.boot.jackson.JsonMixinModule[].
+
+
+
+[[features.json.gson]]
+== Gson
+
+Auto-configuration for Gson is provided.
+When Gson is on the classpath a javadoc:com.google.gson.Gson[] bean is automatically configured.
+Several `+spring.gson.*+` configuration properties are provided for customizing the configuration.
+To take more control, one or more javadoc:org.springframework.boot.autoconfigure.gson.GsonBuilderCustomizer[] beans can be used.
+
+
+
+[[features.json.json-b]]
+== JSON-B
+
+Auto-configuration for JSON-B is provided.
+When the JSON-B API and an implementation are on the classpath a javadoc:jakarta.json.bind.Jsonb[] bean will be automatically configured.
+The preferred JSON-B implementation is Eclipse Yasson for which dependency management is provided.

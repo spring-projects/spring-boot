@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Condition;
 import org.hamcrest.collection.IsMapContaining;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
+import org.springframework.boot.configurationsample.Access;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -65,6 +65,10 @@ public final class Metadata {
 
 	public static Metadata.MetadataItemCondition withEnabledFlag(String key) {
 		return withProperty(key).ofType(Boolean.class);
+	}
+
+	public static Metadata.MetadataItemCondition withAccess(String key) {
+		return withProperty(key).ofType(Access.class);
 	}
 
 	public static MetadataHintCondition withHint(String name) {
@@ -158,10 +162,7 @@ public final class Metadata {
 			if (this.deprecation == null && itemMetadata.getDeprecation() != null) {
 				return false;
 			}
-			if (this.deprecation != null && !this.deprecation.equals(itemMetadata.getDeprecation())) {
-				return false;
-			}
-			return true;
+			return this.deprecation == null || this.deprecation.equals(itemMetadata.getDeprecation());
 		}
 
 		public MetadataItemCondition ofType(Class<?> dataType) {
@@ -194,13 +195,17 @@ public final class Metadata {
 					this.description, defaultValue, this.deprecation);
 		}
 
-		public MetadataItemCondition withDeprecation(String reason, String replacement) {
-			return withDeprecation(reason, replacement, null);
+		public MetadataItemCondition withDeprecation() {
+			return withDeprecation(null, null, null, null);
 		}
 
-		public MetadataItemCondition withDeprecation(String reason, String replacement, String level) {
+		public MetadataItemCondition withDeprecation(String reason, String replacement, String since) {
+			return withDeprecation(reason, replacement, since, null);
+		}
+
+		public MetadataItemCondition withDeprecation(String reason, String replacement, String since, String level) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type, this.sourceType, this.sourceMethod,
-					this.description, this.defaultValue, new ItemDeprecation(reason, replacement, level));
+					this.description, this.defaultValue, new ItemDeprecation(reason, replacement, since, level));
 		}
 
 		public MetadataItemCondition withNoDeprecation() {
@@ -212,7 +217,7 @@ public final class Metadata {
 			List<ItemMetadata> candidates = metadata.getItems()
 				.stream()
 				.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName()))
-				.collect(Collectors.toList());
+				.toList();
 			if (candidates.size() > 1) {
 				throw new IllegalStateException("More than one metadata item with name '" + name + "': " + candidates);
 			}
@@ -345,10 +350,7 @@ public final class Metadata {
 			if (this.value != null && !this.value.equals(valueHint.getValue())) {
 				return false;
 			}
-			if (this.description != null && !this.description.equals(valueHint.getDescription())) {
-				return false;
-			}
-			return true;
+			return this.description == null || this.description.equals(valueHint.getDescription());
 		}
 
 	}

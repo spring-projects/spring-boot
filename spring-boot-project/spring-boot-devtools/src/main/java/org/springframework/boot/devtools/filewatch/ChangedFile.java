@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ public final class ChangedFile {
 	 * @param type the type of change
 	 */
 	public ChangedFile(File sourceDirectory, File file, Type type) {
-		Assert.notNull(sourceDirectory, "SourceDirectory must not be null");
-		Assert.notNull(file, "File must not be null");
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(sourceDirectory, "'sourceDirectory' must not be null");
+		Assert.notNull(file, "'file' must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		this.sourceDirectory = sourceDirectory;
 		this.file = file;
 		this.type = type;
@@ -89,8 +89,7 @@ public final class ChangedFile {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof ChangedFile) {
-			ChangedFile other = (ChangedFile) obj;
+		if (obj instanceof ChangedFile other) {
 			return this.file.equals(other.file) && this.type.equals(other.type);
 		}
 		return super.equals(obj);

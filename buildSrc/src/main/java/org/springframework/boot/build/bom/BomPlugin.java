@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
@@ -60,14 +61,13 @@ public class BomPlugin implements Plugin<Project> {
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
-		BomExtension bom = project.getExtensions()
-			.create("bom", BomExtension.class, project.getDependencies(), project);
-		CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
+		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project);
+		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
-		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
-		project.getTasks().create("moveToSnapshots", MoveToSnapshots.class, bom);
+		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
+		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
+		project.getTasks().register("checkLinks", CheckLinks.class, bom);
 		new PublishingCustomizer(project, bom).customize();
-
 	}
 
 	private void createApiEnforcedConfiguration(Project project) {
@@ -221,7 +221,7 @@ public class BomPlugin implements Plugin<Project> {
 						.collect(Collectors.toSet());
 					Node target = dependency;
 					for (String classifier : classifiers) {
-						if (classifier.length() > 0) {
+						if (!classifier.isEmpty()) {
 							if (target == null) {
 								target = new Node(null, "dependency");
 								target.appendNode("groupId", groupId);
@@ -269,14 +269,8 @@ public class BomPlugin implements Plugin<Project> {
 
 		private Node findChild(Node parent, String name) {
 			for (Object child : parent.children()) {
-				if (child instanceof Node) {
-					Node node = (Node) child;
-					if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
-						return node;
-					}
-					if (name.equals(node.name())) {
-						return node;
-					}
+				if (isNodeWithName(child, name)) {
+					return (Node) child;
 				}
 			}
 			return null;
@@ -284,22 +278,15 @@ public class BomPlugin implements Plugin<Project> {
 
 		@SuppressWarnings("unchecked")
 		private List<Node> findChildren(Node parent, String name) {
-			return (List<Node>) parent.children()
-				.stream()
-				.filter((child) -> isNodeWithName(child, name))
-				.collect(Collectors.toList());
-
+			return parent.children().stream().filter((child) -> isNodeWithName(child, name)).toList();
 		}
 
 		private boolean isNodeWithName(Object candidate, String name) {
-			if (candidate instanceof Node) {
-				Node node = (Node) candidate;
-				if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
+			if (candidate instanceof Node node) {
+				if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
 					return true;
 				}
-				if (name.equals(node.name())) {
-					return true;
-				}
+				return name.equals(node.name());
 			}
 			return false;
 		}

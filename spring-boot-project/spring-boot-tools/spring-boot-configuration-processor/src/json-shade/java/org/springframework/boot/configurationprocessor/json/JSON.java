@@ -29,8 +29,7 @@ class JSON {
 		if (value instanceof Boolean) {
 			return (Boolean) value;
 		}
-		if (value instanceof String) {
-			String stringValue = (String) value;
+		if (value instanceof String stringValue) {
 			if ("true".equalsIgnoreCase(stringValue)) {
 				return true;
 			}
@@ -52,7 +51,8 @@ class JSON {
 			try {
 				return Double.valueOf((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -69,7 +69,8 @@ class JSON {
 			try {
 				return (int) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -86,7 +87,8 @@ class JSON {
 			try {
 				return (long) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;

@@ -1,0 +1,5 @@
+<included>
+	<springProfile name="production">
+		<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+	</springProfile>
+</included>

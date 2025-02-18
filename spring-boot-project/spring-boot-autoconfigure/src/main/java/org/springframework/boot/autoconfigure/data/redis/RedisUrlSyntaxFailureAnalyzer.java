@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ class RedisUrlSyntaxFailureAnalyzer extends AbstractFailureAnalyzer<RedisUrlSynt
 			URI uri = new URI(cause.getUrl());
 			if ("redis-sentinel".equals(uri.getScheme())) {
 				return new FailureAnalysis(getUnsupportedSchemeDescription(cause.getUrl(), uri.getScheme()),
-						"Use spring.redis.sentinel properties instead of spring.redis.url to configure Redis sentinel addresses.",
+						"Use spring.data.redis.sentinel properties instead of spring.data.redis.url to configure Redis sentinel addresses.",
 						cause);
 			}
 			if ("redis-socket".equals(uri.getScheme())) {
 				return new FailureAnalysis(getUnsupportedSchemeDescription(cause.getUrl(), uri.getScheme()),
-						"Configure the appropriate Spring Data Redis connection beans directly instead of setting the property 'spring.redis.url'.",
+						"Configure the appropriate Spring Data Redis connection beans directly instead of setting the property 'spring.data.redis.url'.",
 						cause);
 			}
 			if (!"redis".equals(uri.getScheme()) && !"rediss".equals(uri.getScheme())) {
@@ -54,7 +54,7 @@ class RedisUrlSyntaxFailureAnalyzer extends AbstractFailureAnalyzer<RedisUrlSynt
 			// fall through to default description and action
 		}
 		return new FailureAnalysis(getDefaultDescription(cause.getUrl()),
-				"Review the value of the property 'spring.redis.url'.", cause);
+				"Review the value of the property 'spring.data.redis.url'.", cause);
 	}
 
 	private String getDefaultDescription(String url) {

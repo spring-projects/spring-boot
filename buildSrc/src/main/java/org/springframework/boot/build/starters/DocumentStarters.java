@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
@@ -47,11 +48,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentStarters extends DefaultTask {
+public abstract class DocumentStarters extends DefaultTask {
 
 	private final Configuration starters;
-
-	private File outputDir;
 
 	public DocumentStarters() {
 		this.starters = getProject().getConfigurations().create("starters");
@@ -68,13 +67,7 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public File getOutputDir() {
-		return this.outputDir;
-	}
-
-	public void setOutputDir(File outputDir) {
-		this.outputDir = outputDir;
-	}
+	public abstract DirectoryProperty getOutputDir();
 
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -106,7 +99,7 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	private void writeTable(String name, Stream<Starter> starters) {
-		File output = new File(this.outputDir, name + ".adoc");
+		File output = new File(getOutputDir().getAsFile().get(), name + ".adoc");
 		output.getParentFile().mkdirs();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(output))) {
 			writer.println("|===");
@@ -128,7 +121,7 @@ public class DocumentStarters extends DefaultTask {
 	}
 
 	private String addStarterCrossLinks(String input) {
-		return input.replaceAll("(spring-boot-starter[A-Za-z-]*)", "<<$1,`$1`>>");
+		return input.replaceAll("(spring-boot-starter[A-Za-z-]*)", "xref:#$1[`$1`]");
 	}
 
 	private static final class Starter implements Comparable<Starter> {

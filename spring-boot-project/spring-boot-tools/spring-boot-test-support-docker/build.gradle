@@ -1,0 +1,33 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Docker Testing Support"
+
+dependencies {
+	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
+	api(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	compileOnly("org.testcontainers:testcontainers")
+
+	compileOnly("org.junit.jupiter:junit-jupiter")
+	compileOnly("org.springframework:spring-core")
+
+	optional("org.testcontainers:activemq")
+	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:couchbase")
+	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:grafana")
+	optional("org.testcontainers:junit-jupiter")
+	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:neo4j")
+	optional("org.testcontainers:oracle-xe")
+	optional("org.testcontainers:oracle-free")
+	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:pulsar")
+	optional("org.testcontainers:rabbitmq")
+	optional("org.testcontainers:redpanda")
+	optional("com.redis:testcontainers-redis")
+}

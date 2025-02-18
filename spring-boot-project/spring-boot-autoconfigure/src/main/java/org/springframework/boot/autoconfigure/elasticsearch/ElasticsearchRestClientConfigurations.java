@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Stream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -28,6 +31,8 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.sniff.Sniffer;
@@ -36,11 +41,17 @@ import org.elasticsearch.client.sniff.SnifferBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties.Restclient.Ssl;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -48,6 +59,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -55,94 +69,61 @@ class ElasticsearchRestClientConfigurations {
 	@ConditionalOnMissingBean(RestClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
-		private final ConsolidatedProperties properties;
+		private final ElasticsearchProperties properties;
 
-		@SuppressWarnings("deprecation")
-		RestClientBuilderConfiguration(ElasticsearchProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
-			this.properties = new ConsolidatedProperties(properties, deprecatedProperties);
+		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
+			this.properties = properties;
 		}
 
 		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
-			return new DefaultRestClientBuilderCustomizer(this.properties);
+		@ConditionalOnMissingBean(ElasticsearchConnectionDetails.class)
+		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesElasticsearchConnectionDetails(this.properties, sslBundles.getIfAvailable());
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+				ElasticsearchConnectionDetails connectionDetails) {
+			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
+		}
+
+		@Bean
+		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			HttpHost[] hosts = this.properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
-			RestClientBuilder builder = RestClient.builder(hosts);
+			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
+				.stream()
+				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
+				.toArray(HttpHost[]::new));
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
+				SslBundle sslBundle = connectionDetails.getSslBundle();
+				if (sslBundle != null) {
+					configureSsl(httpClientBuilder, sslBundle);
+				}
 				return httpClientBuilder;
 			});
 			builder.setRequestConfigCallback((requestConfigBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			if (this.properties.getPathPrefix() != null) {
-				builder.setPathPrefix(this.properties.properties.getPathPrefix());
+			String pathPrefix = connectionDetails.getPathPrefix();
+			if (pathPrefix != null) {
+				builder.setPathPrefix(pathPrefix);
 			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
 
-		private HttpHost createHttpHost(String uri) {
-			try {
-				return createHttpHost(URI.create(uri));
-			}
-			catch (IllegalArgumentException ex) {
-				return HttpHost.create(uri);
-			}
-		}
-
-		private HttpHost createHttpHost(URI uri) {
-			if (!StringUtils.hasLength(uri.getUserInfo())) {
-				return HttpHost.create(uri.toString());
-			}
-			try {
-				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
-						uri.getQuery(), uri.getFragment())
-					.toString());
-			}
-			catch (URISyntaxException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnMissingBean({ org.elasticsearch.client.RestHighLevelClient.class, RestClient.class })
-	static class RestHighLevelClientConfiguration {
-
-		@Bean
-		org.elasticsearch.client.RestHighLevelClient elasticsearchRestHighLevelClient(
-				RestClientBuilder restClientBuilder) {
-			return new org.elasticsearch.client.RestHighLevelClient(restClientBuilder);
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnMissingBean(RestClient.class)
-	static class RestClientFromRestHighLevelClientConfiguration {
-
-		@Bean
-		RestClient elasticsearchRestClient(org.elasticsearch.client.RestHighLevelClient restHighLevelClient) {
-			return restHighLevelClient.getLowLevelClient();
+		private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
+			SSLContext sslcontext = sslBundle.createSslContext();
+			SslOptions sslOptions = sslBundle.getOptions();
+			httpClientBuilder.setSSLStrategy(new SSLIOSessionStrategy(sslcontext, sslOptions.getEnabledProtocols(),
+					sslOptions.getCiphers(), (HostnameVerifier) null));
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("org.elasticsearch.client.RestHighLevelClient")
 	@ConditionalOnMissingBean(RestClient.class)
 	static class RestClientConfiguration {
 
@@ -160,17 +141,12 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("deprecation")
-		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchRestClientProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
+		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			Duration interval = deprecatedProperties.isCustomized() ? deprecatedProperties.getSniffer().getInterval()
-					: properties.getSniffer().getInterval();
+			Duration interval = properties.getRestclient().getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);
-			Duration delayAfterFailure = deprecatedProperties.isCustomized()
-					? deprecatedProperties.getSniffer().getDelayAfterFailure()
-					: properties.getSniffer().getDelayAfterFailure();
+			Duration delayAfterFailure = properties.getRestclient().getSniffer().getDelayAfterFailure();
 			map.from(delayAfterFailure).asInt(Duration::toMillis).to(builder::setSniffAfterFailureDelayMillis);
 			return builder.build();
 		}
@@ -181,10 +157,14 @@ class ElasticsearchRestClientConfigurations {
 
 		private static final PropertyMapper map = PropertyMapper.get();
 
-		private final ConsolidatedProperties properties;
+		private final ElasticsearchProperties properties;
 
-		DefaultRestClientBuilderCustomizer(ConsolidatedProperties properties) {
+		private final ElasticsearchConnectionDetails connectionDetails;
+
+		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
+				ElasticsearchConnectionDetails connectionDetails) {
 			this.properties = properties;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
@@ -193,7 +173,10 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
-			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
+			builder.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
+			map.from(this.properties::isSocketKeepAlive)
+				.to((keepAlive) -> builder
+					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
 		}
 
 		@Override
@@ -210,28 +193,20 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
+	private static class ConnectionDetailsCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ConsolidatedProperties properties) {
-			if (StringUtils.hasText(properties.getUsername())) {
-				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
-						properties.getPassword());
+		ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
+			String username = connectionDetails.getUsername();
+			if (StringUtils.hasText(username)) {
+				Credentials credentials = new UsernamePasswordCredentials(username, connectionDetails.getPassword());
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			properties.getUris()
-				.stream()
-				.map(this::toUri)
-				.filter(this::hasUserInfo)
-				.forEach(this::addUserInfoCredentials);
+			Stream<URI> uris = getUris(connectionDetails);
+			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
 		}
 
-		private URI toUri(String uri) {
-			try {
-				return URI.create(uri);
-			}
-			catch (IllegalArgumentException ex) {
-				return null;
-			}
+		private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
+			return connectionDetails.getNodes().stream().map(Node::toUri);
 		}
 
 		private boolean hasUserInfo(URI uri) {
@@ -256,46 +231,70 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	@SuppressWarnings("deprecation")
-	private static final class ConsolidatedProperties {
+	/**
+	 * Adapts {@link ElasticsearchProperties} to {@link ElasticsearchConnectionDetails}.
+	 */
+	static class PropertiesElasticsearchConnectionDetails implements ElasticsearchConnectionDetails {
 
 		private final ElasticsearchProperties properties;
 
-		private final DeprecatedElasticsearchRestClientProperties deprecatedProperties;
+		private final SslBundles sslBundles;
 
-		private ConsolidatedProperties(ElasticsearchProperties properties,
-				DeprecatedElasticsearchRestClientProperties deprecatedProperties) {
+		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties, SslBundles sslBundles) {
 			this.properties = properties;
-			this.deprecatedProperties = deprecatedProperties;
+			this.sslBundles = sslBundles;
 		}
 
-		private List<String> getUris() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getUris()
-					: this.properties.getUris();
+		@Override
+		public List<Node> getNodes() {
+			return this.properties.getUris().stream().map(this::createNode).toList();
 		}
 
-		private String getUsername() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getUsername()
-					: this.properties.getUsername();
+		@Override
+		public String getUsername() {
+			return this.properties.getUsername();
 		}
 
-		private String getPassword() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getPassword()
-					: this.properties.getPassword();
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
 		}
 
-		private Duration getConnectionTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getConnectionTimeout()
-					: this.properties.getConnectionTimeout();
+		@Override
+		public String getPathPrefix() {
+			return this.properties.getPathPrefix();
 		}
 
-		private Duration getSocketTimeout() {
-			return this.deprecatedProperties.isCustomized() ? this.deprecatedProperties.getReadTimeout()
-					: this.properties.getSocketTimeout();
+		@Override
+		public SslBundle getSslBundle() {
+			Ssl ssl = this.properties.getRestclient().getSsl();
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(ssl.getBundle());
+			}
+			return null;
 		}
 
-		private String getPathPrefix() {
-			return this.deprecatedProperties.isCustomized() ? null : this.properties.getPathPrefix();
+		private Node createNode(String uri) {
+			if (!(uri.startsWith("http://") || uri.startsWith("https://"))) {
+				uri = "http://" + uri;
+			}
+			return createNode(URI.create(uri));
+		}
+
+		private Node createNode(URI uri) {
+			String userInfo = uri.getUserInfo();
+			Protocol protocol = Protocol.forScheme(uri.getScheme());
+			if (!StringUtils.hasLength(userInfo)) {
+				return new Node(uri.getHost(), uri.getPort(), protocol, null, null);
+			}
+			int separatorIndex = userInfo.indexOf(':');
+			if (separatorIndex == -1) {
+				return new Node(uri.getHost(), uri.getPort(), protocol, userInfo, null);
+			}
+			String[] components = userInfo.split(":");
+			return new Node(uri.getHost(), uri.getPort(), protocol, components[0],
+					(components.length > 1) ? components[1] : "");
 		}
 
 	}

@@ -1,0 +1,10 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'java'
+}
+
+task('taskExists') {
+	doFirst {
+		println "${taskName} exists = ${tasks.findByName(taskName) != null}"
+	}
+}

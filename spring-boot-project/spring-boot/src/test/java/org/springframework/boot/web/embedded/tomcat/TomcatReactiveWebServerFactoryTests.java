@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
@@ -51,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -89,9 +89,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
-		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-		then(customizer).should().customize(contextCaptor.capture());
-		assertThat(contextCaptor.getValue().getParent()).isNotNull();
+		then(customizer).should().customize(assertArg((context) -> assertThat(context.getParent()).isNotNull()));
 	}
 
 	@Test
@@ -123,7 +121,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
@@ -131,14 +129,14 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
 	void setNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizers' must not be null");
 	}
 
 	@Test
@@ -146,7 +144,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizers' must not be null");
 	}
 
 	@Test
@@ -195,7 +193,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	void addNullAdditionalConnectorsThrows() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
-			.withMessageContaining("Connectors must not be null");
+			.withMessageContaining("'connectors' must not be null");
 	}
 
 	@Test
@@ -275,6 +273,18 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	private void handleExceptionCausedByBlockedPortOnPrimaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(PortInUseException.class);
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((TomcatWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+		connector.setPort(port);
+		((TomcatReactiveWebServerFactory) factory).addAdditionalTomcatConnectors(connector);
 	}
 
 }

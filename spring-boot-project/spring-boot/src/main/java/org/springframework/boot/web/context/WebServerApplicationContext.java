@@ -54,8 +54,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @since 2.1.8
 	 */
 	static boolean hasServerNamespace(ApplicationContext context, String serverNamespace) {
-		return (context instanceof WebServerApplicationContext) && ObjectUtils
-			.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
+		return (context instanceof WebServerApplicationContext webServerApplicationContext)
+				&& ObjectUtils.nullSafeEquals(webServerApplicationContext.getServerNamespace(), serverNamespace);
 	}
 
 	/**
@@ -67,8 +67,8 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * @since 2.6.0
 	 */
 	static String getServerNamespace(ApplicationContext context) {
-		return (context instanceof WebServerApplicationContext)
-				? ((WebServerApplicationContext) context).getServerNamespace() : null;
+		return (context instanceof WebServerApplicationContext configurableContext)
+				? configurableContext.getServerNamespace() : null;
 
 	}
 

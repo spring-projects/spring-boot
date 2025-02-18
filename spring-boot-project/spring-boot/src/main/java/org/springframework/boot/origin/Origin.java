@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,15 +57,15 @@ public interface Origin {
 	 * @return an optional {@link Origin}
 	 */
 	static Origin from(Object source) {
-		if (source instanceof Origin) {
-			return (Origin) source;
+		if (source instanceof Origin origin) {
+			return origin;
 		}
 		Origin origin = null;
-		if (source instanceof OriginProvider) {
-			origin = ((OriginProvider) source).getOrigin();
+		if (source instanceof OriginProvider originProvider) {
+			origin = originProvider.getOrigin();
 		}
-		if (origin == null && source instanceof Throwable) {
-			return from(((Throwable) source).getCause());
+		if (origin == null && source instanceof Throwable throwable) {
+			return from(throwable.getCause());
 		}
 		return origin;
 	}

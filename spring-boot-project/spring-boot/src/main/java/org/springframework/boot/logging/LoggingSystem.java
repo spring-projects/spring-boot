@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -57,6 +58,13 @@ public abstract class LoggingSystem {
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
 	private static final LoggingSystemFactory SYSTEM_FACTORY = LoggingSystemFactory.fromSpringFactories();
+
+	/**
+	 * The name of an {@link Environment} property used to indicate that a correlation ID
+	 * is expected to be logged at some point.
+	 * @since 3.2.0
+	 */
+	public static final String EXPECT_CORRELATION_ID_PROPERTY = "logging.expect-correlation-id";
 
 	/**
 	 * Return the {@link LoggingSystemProperties} that should be applied.

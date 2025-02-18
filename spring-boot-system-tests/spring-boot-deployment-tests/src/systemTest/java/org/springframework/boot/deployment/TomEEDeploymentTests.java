@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class TomEEDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("tomee:8", "/usr/local/tomee/webapps",
-			DEFAULT_PORT);
+	static WarDeploymentContainer container = new WarDeploymentContainer("tomee:9.1.1-jre17-webprofile",
+			"/usr/local/tomee/webapps", DEFAULT_PORT);
 
 	@Override
 	WarDeploymentContainer getContainer() {

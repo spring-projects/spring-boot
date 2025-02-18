@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,14 @@
 
 package org.springframework.boot.devtools.remote.server;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
@@ -58,12 +56,6 @@ class DispatcherFilterTests {
 	@Mock
 	private FilterChain chain;
 
-	@Captor
-	private ArgumentCaptor<ServerHttpResponse> serverResponseCaptor;
-
-	@Captor
-	private ArgumentCaptor<ServerHttpRequest> serverRequestCaptor;
-
 	private DispatcherFilter filter;
 
 	@BeforeEach
@@ -74,7 +66,7 @@ class DispatcherFilterTests {
 	@Test
 	void dispatcherMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DispatcherFilter(null))
-			.withMessageContaining("Dispatcher must not be null");
+			.withMessageContaining("'dispatcher' must not be null");
 	}
 
 	@Test
@@ -101,13 +93,15 @@ class DispatcherFilterTests {
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
 		then(this.chain).shouldHaveNoInteractions();
-		then(this.dispatcher).should().handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
-		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
-		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
-		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();
-		ServletServerHttpResponse actualResponse = (ServletServerHttpResponse) dispatcherResponse;
-		assertThat(actualRequest.getServletRequest()).isEqualTo(request);
-		assertThat(actualResponse.getServletResponse()).isEqualTo(response);
+		then(this.dispatcher).should()
+			.handle(assertArg((serverHttpRequest) -> assertThat(serverHttpRequest).isInstanceOfSatisfying(
+					ServletServerHttpRequest.class,
+					(servletServerHttpRequest) -> assertThat(servletServerHttpRequest.getServletRequest())
+						.isEqualTo(request))),
+					assertArg((serverHttpResponse) -> assertThat(serverHttpResponse).isInstanceOfSatisfying(
+							ServletServerHttpResponse.class,
+							(servletServerHttpResponse) -> assertThat(servletServerHttpResponse.getServletResponse())
+								.isEqualTo(response))));
 	}
 
 }

@@ -128,7 +128,8 @@ public class OutputCaptureExtension
 	}
 
 	private OutputCapture getOutputCapture(ExtensionContext context) {
-		return getStore(context).getOrComputeIfAbsent(OutputCapture.class);
+		return getStore(context).getOrComputeIfAbsent(OutputCapture.class, (key) -> new OutputCapture(),
+				OutputCapture.class);
 	}
 
 	private Store getStore(ExtensionContext context) {

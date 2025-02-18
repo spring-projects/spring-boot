@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.security.reactive;
 
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
@@ -83,7 +81,7 @@ public final class StaticResourceRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public StaticResourceServerWebExchange at(Set<StaticResourceLocation> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+		Assert.notNull(locations, "'locations' must not be null");
 		return new StaticResourceServerWebExchange(new LinkedHashSet<>(locations));
 	}
 
@@ -117,14 +115,10 @@ public final class StaticResourceRequest {
 		 * @return a new {@link StaticResourceServerWebExchange}
 		 */
 		public StaticResourceServerWebExchange excluding(Set<StaticResourceLocation> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+			Assert.notNull(locations, "'locations' must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceServerWebExchange(subset);
-		}
-
-		private List<ServerWebExchangeMatcher> getDelegateMatchers() {
-			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new).collect(Collectors.toList());
 		}
 
 		private Stream<String> getPatterns() {
@@ -133,8 +127,11 @@ public final class StaticResourceRequest {
 
 		@Override
 		public Mono<MatchResult> matches(ServerWebExchange exchange) {
-			OrServerWebExchangeMatcher matcher = new OrServerWebExchangeMatcher(getDelegateMatchers());
-			return matcher.matches(exchange);
+			return new OrServerWebExchangeMatcher(getDelegateMatchers().toList()).matches(exchange);
+		}
+
+		private Stream<ServerWebExchangeMatcher> getDelegateMatchers() {
+			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new);
 		}
 
 	}

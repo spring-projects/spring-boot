@@ -1,0 +1,6 @@
+* xref:index.adoc[,role=navtree-icon-home]
+* xref:documentation.adoc[,role=navtree-icon-book]
+* xref:community.adoc[,role=navtree-icon-question]
+* xref:system-requirements.adoc[,role=navtree-icon-server]
+* xref:installing.adoc[,role=navtree-icon-gift]
+* xref:upgrading.adoc[,role=navtree-icon-rocket]

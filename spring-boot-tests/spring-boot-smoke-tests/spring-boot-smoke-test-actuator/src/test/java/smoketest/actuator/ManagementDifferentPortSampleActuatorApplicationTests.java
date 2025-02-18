@@ -42,7 +42,7 @@ class ManagementDifferentPortSampleActuatorApplicationTests {
 	@Test
 	void linksEndpointShouldBeAvailable() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
-			.getForEntity("http://localhost:" + this.managementPort + "/", String.class);
+			.getForEntity("http://localhost:" + this.managementPort, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\"");
 	}

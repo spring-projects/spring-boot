@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Justin Bertram
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.artemis")
+@ConfigurationProperties("spring.artemis")
 public class ArtemisProperties {
 
 	/**
@@ -131,12 +131,12 @@ public class ArtemisProperties {
 		private String dataDirectory;
 
 		/**
-		 * Comma-separated list of queues to create on startup.
+		 * List of queues to create on startup.
 		 */
 		private String[] queues = new String[0];
 
 		/**
-		 * Comma-separated list of topics to create on startup.
+		 * List of topics to create on startup.
 		 */
 		private String[] topics = new String[0];
 

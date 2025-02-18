@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.springframework.boot.context.config;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
@@ -37,8 +35,7 @@ import org.springframework.core.io.ResourceLoader;
  * {@code spring.factories} entries. The following constructor parameter types are
  * supported:
  * <ul>
- * <li>{@link Log} or {@link DeferredLogFactory} - if the resolver needs deferred
- * logging</li>
+ * <li>{@link DeferredLogFactory} - if the resolver needs deferred logging</li>
  * <li>{@link Binder} - if the resolver needs to obtain values from the initial
  * {@link Environment}</li>
  * <li>{@link ResourceLoader} - if the resolver needs a resource loader</li>

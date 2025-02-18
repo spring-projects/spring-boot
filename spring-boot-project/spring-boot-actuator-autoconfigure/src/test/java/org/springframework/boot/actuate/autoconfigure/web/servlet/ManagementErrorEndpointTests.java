@@ -48,7 +48,7 @@ class ManagementErrorEndpointTests {
 
 	@BeforeEach
 	void setUp() {
-		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException("test exception"));
+		this.request.setAttribute("jakarta.servlet.error.exception", new RuntimeException("test exception"));
 	}
 
 	@Test

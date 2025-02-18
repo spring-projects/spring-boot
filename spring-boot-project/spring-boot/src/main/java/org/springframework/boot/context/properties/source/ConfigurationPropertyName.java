@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A configuration property name composed of elements separated by dots. User created
- * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with an alphanumeric character. The "{@code -}" is
- * used purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
+ * names may contain the characters "{@code a-z}" "{@code 0-9}" and "{@code -}", they must
+ * be lower-case and must start with an alphanumeric character. The "{@code -}" is used
+ * purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
  * equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
@@ -59,7 +59,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(Elements.EMPTY);
 
-	private Elements elements;
+	private final Elements elements;
 
 	private final CharSequence[] uniformElements;
 
@@ -273,7 +273,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isParentOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		if (getNumberOfElements() != name.getNumberOfElements() - 1) {
 			return false;
 		}
@@ -287,7 +287,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		if (getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
@@ -493,7 +493,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 		int length = elements.getLength(element);
 		do {
-			char c = Character.toLowerCase(elements.charAt(element, index++));
+			char c = elements.charAt(element, index++);
 			if (c != '-') {
 				return false;
 			}
@@ -543,7 +543,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		StringBuilder result = new StringBuilder(elements * 8);
 		for (int i = 0; i < elements; i++) {
 			boolean indexed = isIndexed(i);
-			if (result.length() > 0 && !indexed) {
+			if (!result.isEmpty() && !indexed) {
 				result.append('.');
 			}
 			if (indexed) {
@@ -612,10 +612,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid, int parserCapacity) {
 		if (name == null) {
-			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
+			Assert.isTrue(returnNullIfInvalid, "'name' must not be null");
 			return null;
 		}
-		if (name.length() == 0) {
+		if (name.isEmpty()) {
 			return Elements.EMPTY;
 		}
 		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
@@ -674,7 +674,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	static ConfigurationPropertyName adapt(CharSequence name, char separator,
 			Function<CharSequence, CharSequence> elementValueProcessor) {
 		Assert.notNull(name, "Name must not be null");
-		if (name.length() == 0) {
+		if (name.isEmpty()) {
 			return EMPTY;
 		}
 		Elements elements = new ElementsParser(name, separator).parse(elementValueProcessor);
@@ -760,7 +760,6 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		private final CharSequence[] resolved;
 
 		Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, CharSequence[] resolved) {
-			super();
 			this.source = source;
 			this.size = size;
 			this.start = start;
@@ -774,7 +773,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			ElementType[] type = new ElementType[size];
 			System.arraycopy(this.type, 0, type, 0, this.size);
 			System.arraycopy(additional.type, 0, type, this.size, additional.size);
-			CharSequence[] resolved = newResolved(size);
+			CharSequence[] resolved = newResolved(0, size);
 			for (int i = 0; i < additional.size; i++) {
 				resolved[this.size + i] = additional.get(i);
 			}
@@ -782,13 +781,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		Elements chop(int size) {
-			CharSequence[] resolved = newResolved(size);
+			CharSequence[] resolved = newResolved(0, size);
 			return new Elements(this.source, size, this.start, this.end, this.type, resolved);
 		}
 
 		Elements subElements(int offset) {
 			int size = this.size - offset;
-			CharSequence[] resolved = newResolved(size);
+			CharSequence[] resolved = newResolved(offset, size);
 			int[] start = new int[size];
 			System.arraycopy(this.start, offset, start, 0, size);
 			int[] end = new int[size];
@@ -798,10 +797,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return new Elements(this.source, size, start, end, type, resolved);
 		}
 
-		private CharSequence[] newResolved(int size) {
+		private CharSequence[] newResolved(int offset, int size) {
 			CharSequence[] resolved = new CharSequence[size];
 			if (this.resolved != null) {
-				System.arraycopy(this.resolved, 0, resolved, 0, Math.min(size, this.size));
+				System.arraycopy(this.resolved, offset, resolved, 0, Math.min(size, this.size));
 			}
 			return resolved;
 		}

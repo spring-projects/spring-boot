@@ -53,26 +53,10 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
-	@Deprecated
-	void whenPropertiesDeviceIdIsSetAdapterDeviceIdReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setDeviceId("dev-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId()).isEqualTo("dev-1");
-	}
-
-	@Test
 	void whenPropertiesV1DeviceIdIsSetAdapterDeviceIdReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setDeviceId("dev-1");
 		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId()).isEqualTo("dev-1");
-	}
-
-	@Test
-	@Deprecated
-	void whenPropertiesTechnologyTypeIsSetAdapterTechnologyTypeReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setTechnologyType("tech-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).technologyType()).isEqualTo("tech-1");
 	}
 
 	@Test
@@ -83,26 +67,10 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
-	@Deprecated
-	void whenPropertiesGroupIsSetAdapterGroupReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setGroup("group-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).group()).isEqualTo("group-1");
-	}
-
-	@Test
 	void whenPropertiesV1GroupIsSetAdapterGroupReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setGroup("group-1");
 		assertThat(new DynatracePropertiesConfigAdapter(properties).group()).isEqualTo("group-1");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void whenDeviceIdIsSetThenAdapterApiVersionIsV1() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setDeviceId("dev-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).apiVersion()).isSameAs(DynatraceApiVersion.V1);
 	}
 
 	@Test
@@ -151,7 +119,6 @@ class DynatracePropertiesConfigAdapterTests
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void defaultValues() {
 		DynatraceProperties properties = new DynatraceProperties();
 		assertThat(properties.getApiToken()).isNull();
@@ -163,9 +130,6 @@ class DynatracePropertiesConfigAdapterTests
 		assertThat(properties.getV2().isEnrichWithDynatraceMetadata()).isTrue();
 		assertThat(properties.getV2().getDefaultDimensions()).isNull();
 		assertThat(properties.getV2().isUseDynatraceSummaryInstruments()).isTrue();
-		assertThat(properties.getDeviceId()).isNull();
-		assertThat(properties.getTechnologyType()).isEqualTo("java");
-		assertThat(properties.getGroup()).isNull();
 	}
 
 }

@@ -1,0 +1,24 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::docker-auth-token[]
+tasks.named("bootBuildImage") {
+	docker {
+		builderRegistry {
+			token = "9cbaf023786cd7..."
+		}
+	}
+}
+// end::docker-auth-token[]
+
+tasks.register("bootBuildImageDocker") {
+	doFirst {
+		println("token=${tasks.bootBuildImage.docker.builderRegistry.token.get()}")
+	}
+}

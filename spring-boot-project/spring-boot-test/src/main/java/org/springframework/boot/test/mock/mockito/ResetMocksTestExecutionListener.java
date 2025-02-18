@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -42,7 +43,11 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  * @see MockitoTestExecutionListener
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * {@link org.springframework.test.context.bean.override.mockito.MockitoResetTestExecutionListener}
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class ResetMocksTestExecutionListener extends AbstractTestExecutionListener {
 
 	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent("org.mockito.MockSettings",
@@ -55,21 +60,21 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
-		if (MOCKITO_IS_PRESENT) {
+		if (MOCKITO_IS_PRESENT && !NativeDetector.inNativeImage()) {
 			resetMocks(testContext.getApplicationContext(), MockReset.BEFORE);
 		}
 	}
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
-		if (MOCKITO_IS_PRESENT) {
+		if (MOCKITO_IS_PRESENT && !NativeDetector.inNativeImage()) {
 			resetMocks(testContext.getApplicationContext(), MockReset.AFTER);
 		}
 	}
 
 	private void resetMocks(ApplicationContext applicationContext, MockReset reset) {
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			resetMocks((ConfigurableApplicationContext) applicationContext, reset);
+		if (applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			resetMocks(configurableContext, reset);
 		}
 	}
 
@@ -118,9 +123,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		String factoryBeanName = BeanFactory.FACTORY_BEAN_PREFIX + name;
 		if (beanFactory.containsBean(factoryBeanName)) {
 			FactoryBean<?> factoryBean = (FactoryBean<?>) beanFactory.getBean(factoryBeanName);
-			if (!factoryBean.isSingleton()) {
-				return false;
-			}
+			return factoryBean.isSingleton();
 		}
 		return true;
 	}

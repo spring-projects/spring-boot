@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import javax.servlet.ServletException;
-
+import jakarta.servlet.ServletException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Wrapper;
@@ -31,6 +31,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
 
+import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ClassUtils;
 
@@ -44,6 +45,8 @@ import org.springframework.util.ClassUtils;
 class TomcatEmbeddedContext extends StandardContext {
 
 	private TomcatStarter starter;
+
+	private MimeMappings mimeMappings;
 
 	@Override
 	public boolean loadOnStartup(Container[] children) {
@@ -117,6 +120,28 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	TomcatStarter getStarter() {
 		return this.starter;
+	}
+
+	void setMimeMappings(MimeMappings mimeMappings) {
+		this.mimeMappings = mimeMappings;
+	}
+
+	@Override
+	public String[] findMimeMappings() {
+		List<String> mappings = new ArrayList<>(Arrays.asList(super.findMimeMappings()));
+		if (this.mimeMappings != null) {
+			this.mimeMappings.forEach((mapping) -> mappings.add(mapping.getExtension()));
+		}
+		return mappings.toArray(String[]::new);
+	}
+
+	@Override
+	public String findMimeMapping(String extension) {
+		String mimeMapping = super.findMimeMapping(extension);
+		if (mimeMapping != null) {
+			return mimeMapping;
+		}
+		return (this.mimeMappings != null) ? this.mimeMappings.get(extension) : null;
 	}
 
 }

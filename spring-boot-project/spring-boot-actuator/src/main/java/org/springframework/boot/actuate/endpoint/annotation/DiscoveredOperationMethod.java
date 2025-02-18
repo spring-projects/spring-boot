@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ public class DiscoveredOperationMethod extends OperationMethod {
 	public DiscoveredOperationMethod(Method method, OperationType operationType,
 			AnnotationAttributes annotationAttributes) {
 		super(method, operationType);
-		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
+		Assert.notNull(annotationAttributes, "'annotationAttributes' must not be null");
 		List<String> producesMediaTypes = new ArrayList<>();
 		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
-		producesMediaTypes.addAll(getProducesFromProducable(annotationAttributes));
+		producesMediaTypes.addAll(getProducesFromProducible(annotationAttributes));
 		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
 	}
 
-	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducable(
+	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducible(
 			AnnotationAttributes annotationAttributes) {
 		Class<?> type = getProducesFrom(annotationAttributes);
 		if (type == Producible.class) {

@@ -1,0 +1,13 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+if (project.hasProperty('applyWarPlugin')) {
+	apply plugin: 'war'
+}
+
+bootBuildImage {
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+	pullPolicy = "IF_NOT_PRESENT"
+}

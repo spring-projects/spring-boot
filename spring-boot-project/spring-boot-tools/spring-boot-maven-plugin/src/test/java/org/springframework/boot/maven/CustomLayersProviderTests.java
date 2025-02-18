@@ -60,13 +60,13 @@ class CustomLayersProviderTests {
 		Library otherDependency = mockLibrary("other-library", "org.foo", null);
 		Library localSnapshotDependency = mockLibrary("local-library", "org.foo", "1.0-SNAPSHOT");
 		given(localSnapshotDependency.isLocal()).willReturn(true);
-		assertThat(layers.getLayer(snapshot).toString()).isEqualTo("snapshot-dependencies");
-		assertThat(layers.getLayer(groupId).toString()).isEqualTo("my-deps");
-		assertThat(layers.getLayer(otherDependency).toString()).isEqualTo("my-dependencies-name");
-		assertThat(layers.getLayer(localSnapshotDependency).toString()).isEqualTo("application");
-		assertThat(layers.getLayer("META-INF/resources/test.css").toString()).isEqualTo("my-resources");
-		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("configuration");
-		assertThat(layers.getLayer("test").toString()).isEqualTo("application");
+		assertThat(layers.getLayer(snapshot)).hasToString("snapshot-dependencies");
+		assertThat(layers.getLayer(groupId)).hasToString("my-deps");
+		assertThat(layers.getLayer(otherDependency)).hasToString("my-dependencies-name");
+		assertThat(layers.getLayer(localSnapshotDependency)).hasToString("application");
+		assertThat(layers.getLayer("META-INF/resources/test.css")).hasToString("my-resources");
+		assertThat(layers.getLayer("application.yml")).hasToString("configuration");
+		assertThat(layers.getLayer("test")).hasToString("application");
 	}
 
 	private Library mockLibrary(String name, String groupId, String version) {
@@ -80,7 +80,7 @@ class CustomLayersProviderTests {
 	void getLayerResolverWhenDocumentContainsLibraryLayerWithNoFilters() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("dependencies-layer-no-filter.xml"));
 		Library library = mockLibrary("my-library", "com.acme", null);
-		assertThat(layers.getLayer(library).toString()).isEqualTo("my-deps");
+		assertThat(layers.getLayer(library)).hasToString("my-deps");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer("application.yml"))
 			.withMessageContaining("match any layer");
 	}
@@ -89,7 +89,7 @@ class CustomLayersProviderTests {
 	void getLayerResolverWhenDocumentContainsResourceLayerWithNoFilters() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("application-layer-no-filter.xml"));
 		Library library = mockLibrary("my-library", "com.acme", null);
-		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("my-layer");
+		assertThat(layers.getLayer("application.yml")).hasToString("my-layer");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(library))
 			.withMessageContaining("match any layer");
 	}

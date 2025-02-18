@@ -34,7 +34,7 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("redis://invalid");
 		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
 		assertThat(analysis.getDescription()).contains("The URL 'redis://invalid' is not valid");
-		assertThat(analysis.getAction()).contains("Review the value of the property 'spring.redis.url'");
+		assertThat(analysis.getAction()).contains("Review the value of the property 'spring.data.redis.url'");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).contains(
 				"The URL 'redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster' is not valid")
 			.contains("The scheme 'redis-sentinel' is not supported");
-		assertThat(analysis.getAction()).contains("Use spring.redis.sentinel properties");
+		assertThat(analysis.getAction()).contains("Use spring.data.redis.sentinel properties");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,8 @@ class ForwardHeadersCustomizer implements JettyServerCustomizer {
 		ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
 		for (Connector connector : server.getConnectors()) {
 			for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
-				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-					((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
-						.addCustomizer(customizer);
+				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory jettyConnectionFactory) {
+					jettyConnectionFactory.getHttpConfiguration().addCustomizer(customizer);
 				}
 			}
 		}

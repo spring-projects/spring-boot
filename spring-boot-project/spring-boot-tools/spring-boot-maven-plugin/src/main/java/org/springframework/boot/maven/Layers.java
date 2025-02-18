@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ public class Layers {
 
 	private boolean enabled = true;
 
-	private boolean includeLayerTools = true;
-
 	private File configuration;
 
 	/**
@@ -38,14 +36,6 @@ public class Layers {
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
-	}
-
-	/**
-	 * Whether to include the layer tools jar.
-	 * @return true if layer tools should be included
-	 */
-	public boolean isIncludeLayerTools() {
-		return this.includeLayerTools;
 	}
 
 	/**

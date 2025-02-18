@@ -65,10 +65,10 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 	}
 
 	private Manager findManager(ApplicationContext applicationContext) {
-		if (applicationContext instanceof WebServerApplicationContext) {
-			WebServer webServer = ((WebServerApplicationContext) applicationContext).getWebServer();
-			if (webServer instanceof TomcatWebServer) {
-				Context context = findContext((TomcatWebServer) webServer);
+		if (applicationContext instanceof WebServerApplicationContext webServerApplicationContext) {
+			WebServer webServer = webServerApplicationContext.getWebServer();
+			if (webServer instanceof TomcatWebServer tomcatWebServer) {
+				Context context = findContext(tomcatWebServer);
 				if (context != null) {
 					return context.getManager();
 				}
@@ -79,8 +79,8 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	private Context findContext(TomcatWebServer tomcatWebServer) {
 		for (Container container : tomcatWebServer.getTomcat().getHost().findChildren()) {
-			if (container instanceof Context) {
-				return (Context) container;
+			if (container instanceof Context context) {
+				return context;
 			}
 		}
 		return null;

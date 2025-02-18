@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Dynatrace
@@ -30,7 +29,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Georg Pirklbauer
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.dynatrace")
+@ConfigurationProperties("management.dynatrace.metrics.export")
 public class DynatraceProperties extends StepRegistryProperties {
 
 	private final V1 v1 = new V1();
@@ -56,45 +55,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.apiToken = apiToken;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.device-id")
-	public String getDeviceId() {
-		return this.v1.getDeviceId();
-	}
-
-	@Deprecated
-	public void setDeviceId(String deviceId) {
-		this.v1.setDeviceId(deviceId);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.technology-type")
-	public String getTechnologyType() {
-		return this.v1.getTechnologyType();
-	}
-
-	@Deprecated
-	public void setTechnologyType(String technologyType) {
-		this.v1.setTechnologyType(technologyType);
-	}
-
 	public String getUri() {
 		return this.uri;
 	}
 
 	public void setUri(String uri) {
 		this.uri = uri;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "management.metrics.export.dynatrace.v1.group")
-	public String getGroup() {
-		return this.v1.getGroup();
-	}
-
-	@Deprecated
-	public void setGroup(String group) {
-		this.v1.setGroup(group);
 	}
 
 	public V1 getV1() {
@@ -174,6 +140,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private boolean useDynatraceSummaryInstruments = true;
 
+		/**
+		 * Whether to export meter metadata (unit and description) to the Dynatrace
+		 * backend.
+		 */
+		private boolean exportMeterMetadata = true;
+
 		public Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
@@ -204,6 +176,14 @@ public class DynatraceProperties extends StepRegistryProperties {
 
 		public void setUseDynatraceSummaryInstruments(boolean useDynatraceSummaryInstruments) {
 			this.useDynatraceSummaryInstruments = useDynatraceSummaryInstruments;
+		}
+
+		public boolean isExportMeterMetadata() {
+			return this.exportMeterMetadata;
+		}
+
+		public void setExportMeterMetadata(boolean exportMeterMetadata) {
+			this.exportMeterMetadata = exportMeterMetadata;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,23 +58,6 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	 * @param environment the environment containing the properties
 	 * @param prefix the property prefix to bind
 	 * @param defaultIncludes the default {@code includes} to use when none are specified.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #IncludeExcludeEndpointFilter(Class, Environment, String, String[])}
-	 */
-	@Deprecated
-	public IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
-			DefaultIncludes defaultIncludes) {
-		this(endpointType, environment, prefix, DefaultIncludes.patterns(defaultIncludes));
-	}
-
-	/**
-	 * Create a new {@link IncludeExcludeEndpointFilter} with include/exclude rules bound
-	 * from the {@link Environment}.
-	 * @param endpointType the endpoint type that should be considered (other types always
-	 * match)
-	 * @param environment the environment containing the properties
-	 * @param prefix the property prefix to bind
-	 * @param defaultIncludes the default {@code includes} to use when none are specified.
 	 */
 	public IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			String... defaultIncludes) {
@@ -95,29 +78,12 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		this(endpointType, include, exclude, new EndpointPatterns(defaultIncludes));
 	}
 
-	/**
-	 * Create a new {@link IncludeExcludeEndpointFilter} with specific include/exclude
-	 * rules.
-	 * @param endpointType the endpoint type that should be considered (other types always
-	 * match)
-	 * @param include the include patterns
-	 * @param exclude the exclude patterns
-	 * @param defaultIncludes the default {@code includes} to use when none are specified.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #IncludeExcludeEndpointFilter(Class, Environment, String, String[])}
-	 */
-	@Deprecated
-	public IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
-			DefaultIncludes defaultIncludes) {
-		this(endpointType, include, exclude, DefaultIncludes.patterns(defaultIncludes));
-	}
-
 	private IncludeExcludeEndpointFilter(Class<E> endpointType, Environment environment, String prefix,
 			EndpointPatterns defaultIncludes) {
-		Assert.notNull(endpointType, "EndpointType must not be null");
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.hasText(prefix, "Prefix must not be empty");
-		Assert.notNull(defaultIncludes, "DefaultIncludes must not be null");
+		Assert.notNull(endpointType, "'endpointType' must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
+		Assert.hasText(prefix, "'prefix' must not be empty");
+		Assert.notNull(defaultIncludes, "'defaultIncludes' must not be null");
 		Binder binder = Binder.get(environment);
 		this.endpointType = endpointType;
 		this.include = new EndpointPatterns(bind(binder, prefix + ".include"));
@@ -127,8 +93,8 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 
 	private IncludeExcludeEndpointFilter(Class<E> endpointType, Collection<String> include, Collection<String> exclude,
 			EndpointPatterns defaultIncludes) {
-		Assert.notNull(endpointType, "EndpointType Type must not be null");
-		Assert.notNull(defaultIncludes, "DefaultIncludes must not be null");
+		Assert.notNull(endpointType, "'endpointType' Type must not be null");
+		Assert.notNull(defaultIncludes, "'defaultIncludes' must not be null");
 		this.endpointType = endpointType;
 		this.include = new EndpointPatterns(include);
 		this.defaultIncludes = defaultIncludes;
@@ -173,36 +139,6 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	}
 
 	/**
-	 * Default include patterns that can be used.
-	 *
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of {@link EndpointExposure}.
-	 */
-	@Deprecated
-	public enum DefaultIncludes {
-
-		/**
-		 * The default set of include patterns used for JMX.
-		 */
-		JMX("*"),
-
-		/**
-		 * The default set of include patterns used for web.
-		 */
-		WEB("health");
-
-		private final EndpointPatterns patterns;
-
-		DefaultIncludes(String... patterns) {
-			this.patterns = new EndpointPatterns(patterns);
-		}
-
-		static EndpointPatterns patterns(DefaultIncludes defaultIncludes) {
-			return (defaultIncludes != null) ? defaultIncludes.patterns : (EndpointPatterns) null;
-		}
-
-	}
-
-	/**
 	 * A set of endpoint patterns used to match IDs.
 	 */
 	private static class EndpointPatterns {
@@ -214,7 +150,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		private final Set<EndpointId> endpointIds;
 
 		EndpointPatterns(String[] patterns) {
-			this((patterns != null) ? Arrays.asList(patterns) : (Collection<String>) null);
+			this((patterns != null) ? Arrays.asList(patterns) : null);
 		}
 
 		EndpointPatterns(Collection<String> patterns) {

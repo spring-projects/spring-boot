@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import io.rsocket.core.RSocketServer;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.WebsocketServerSpec.Builder;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -33,20 +34,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for RSocket servers. In the case of
@@ -56,6 +60,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * server port is configured, a new standalone RSocket server is created.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.2.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
@@ -73,12 +78,23 @@ public class RSocketServerAutoConfiguration {
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), customizers.orderedStream());
+					messageHandler.responder(), customizeWebsocketServerSpec(properties.getServer().getSpec()),
+					customizers.orderedStream());
+		}
+
+		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
+			return (builder) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(spec.getProtocols()).to(builder::protocols);
+				map.from(spec.getMaxFramePayloadLength()).asInt(DataSize::toBytes).to(builder::maxFramePayloadLength);
+				map.from(spec.isHandlePing()).to(builder::handlePing);
+				map.from(spec.isCompress()).to(builder::compress);
+			};
 		}
 
 	}
 
-	@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
+	@ConditionalOnProperty("spring.rsocket.server.port")
 	@ConditionalOnClass(ReactorResourceFactory.class)
 	@Configuration(proxyBeanMethods = false)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
@@ -87,7 +103,7 @@ public class RSocketServerAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
-				ObjectProvider<RSocketServerCustomizer> customizers) {
+				ObjectProvider<RSocketServerCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
@@ -96,7 +112,8 @@ public class RSocketServerAutoConfiguration {
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);
 			map.from(properties.getServer().getSsl()).to(factory::setSsl);
-			factory.setRSocketServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+			factory.setSslBundles(sslBundles.getIfAvailable());
+			factory.setRSocketServerCustomizers(customizers.orderedStream().toList());
 			return factory;
 		}
 
@@ -130,17 +147,17 @@ public class RSocketServerAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.rsocket.server.port", matchIfMissing = true)
 		static class HasNoPortConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "mapping-path")
+		@ConditionalOnProperty("spring.rsocket.server.mapping-path")
 		static class HasMappingPathConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "transport", havingValue = "websocket")
+		@ConditionalOnProperty(name = "spring.rsocket.server.transport", havingValue = "websocket")
 		static class HasWebsocketTransportConfigured {
 
 		}

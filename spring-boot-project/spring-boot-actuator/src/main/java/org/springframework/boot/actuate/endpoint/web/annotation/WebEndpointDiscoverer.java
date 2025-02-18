@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,31 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer.WebEndpointDiscovererRuntimeHints;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableWebEndpoint web endpoints}.
@@ -40,10 +49,13 @@ import org.springframework.context.ApplicationContext;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@ImportRuntimeHints(WebEndpointDiscovererRuntimeHints.class)
 public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation>
 		implements WebEndpointsSupplier {
 
 	private final List<PathMapper> endpointPathMappers;
+
+	private final List<AdditionalPathsMapper> additionalPathsMappers;
 
 	private final RequestPredicateFactory requestPredicateFactory;
 
@@ -55,21 +67,48 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #WebEndpointDiscoverer(ApplicationContext, ParameterValueMapper, EndpointMediaTypes, List, List, Collection, Collection, Collection)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
-		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
-		this.endpointPathMappers = endpointPathMappers;
+		this(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, Collections.emptyList(),
+				invokerAdvisors, filters, Collections.emptyList());
+	}
+
+	/**
+	 * Create a new {@link WebEndpointDiscoverer} instance.
+	 * @param applicationContext the source application context
+	 * @param parameterValueMapper the parameter value mapper
+	 * @param endpointMediaTypes the endpoint media types
+	 * @param endpointPathMappers the endpoint path mappers
+	 * @param additionalPathsMappers the
+	 * @param invokerAdvisors invoker advisors to apply
+	 * @param endpointFilters endpoint filters to apply
+	 * @param operationFilters operation filters to apply
+	 * @since 3.4.0
+	 */
+	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
+			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
+			List<AdditionalPathsMapper> additionalPathsMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
+			Collection<EndpointFilter<ExposableWebEndpoint>> endpointFilters,
+			Collection<OperationFilter<WebOperation>> operationFilters) {
+		super(applicationContext, parameterValueMapper, invokerAdvisors, endpointFilters, operationFilters);
+		this.endpointPathMappers = (endpointPathMappers != null) ? endpointPathMappers : Collections.emptyList();
+		this.additionalPathsMappers = (additionalPathsMappers != null) ? additionalPathsMappers
+				: Collections.emptyList();
 		this.requestPredicateFactory = new RequestPredicateFactory(endpointMediaTypes);
 	}
 
 	@Override
-	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<WebOperation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, enabledByDefault, operations);
+		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, defaultAccess, operations,
+				this.additionalPathsMappers);
 	}
 
 	@Override
@@ -85,6 +124,15 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	protected OperationKey createOperationKey(WebOperation operation) {
 		return new OperationKey(operation.getRequestPredicate(),
 				() -> "web request predicate " + operation.getRequestPredicate());
+	}
+
+	static class WebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(WebEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+		}
+
 	}
 
 }

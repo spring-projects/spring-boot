@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public final class RemoteSpringApplication {
 	private Collection<ApplicationListener<?>> getListeners() {
 		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
-		listeners.add(new EnvironmentPostProcessorApplicationListener(
-				EnvironmentPostProcessorsFactory.of(ConfigDataEnvironmentPostProcessor.class)));
+		listeners.add(EnvironmentPostProcessorApplicationListener
+			.with(EnvironmentPostProcessorsFactory.of(ConfigDataEnvironmentPostProcessor.class)));
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());
 		return listeners;

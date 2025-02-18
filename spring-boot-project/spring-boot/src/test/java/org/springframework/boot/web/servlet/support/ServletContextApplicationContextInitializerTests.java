@@ -16,8 +16,7 @@
 
 package org.springframework.boot.web.servlet.support;
 
-import javax.servlet.ServletContext;
-
+import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.web.context.ConfigurableWebApplicationContext;

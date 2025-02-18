@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.util.CollectionUtils;
@@ -81,7 +80,7 @@ public class SimpleStatusAggregator implements StatusAggregator {
 	}
 
 	private static List<String> getUniformCodes(Stream<String> codes) {
-		return codes.map(SimpleStatusAggregator::getUniformCode).collect(Collectors.toList());
+		return codes.map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
 	private static String getUniformCode(String code) {
@@ -101,7 +100,7 @@ public class SimpleStatusAggregator implements StatusAggregator {
 	/**
 	 * {@link Comparator} used to order {@link Status}.
 	 */
-	private class StatusComparator implements Comparator<Status> {
+	private final class StatusComparator implements Comparator<Status> {
 
 		@Override
 		public int compare(Status s1, Status s2) {

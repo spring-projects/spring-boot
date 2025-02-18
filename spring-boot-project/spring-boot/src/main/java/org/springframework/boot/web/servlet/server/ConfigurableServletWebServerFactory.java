@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -81,6 +81,13 @@ public interface ConfigurableServletWebServerFactory
 	 * {@link MimeMappings#DEFAULT})
 	 */
 	void setMimeMappings(MimeMappings mimeMappings);
+
+	/**
+	 * Adds mime-type mappings.
+	 * @param mimeMappings the mime type mappings to add
+	 * @since 3.3.0
+	 */
+	void addMimeMappings(MimeMappings mimeMappings);
 
 	/**
 	 * Sets the document root directory which will be used by the web context to serve

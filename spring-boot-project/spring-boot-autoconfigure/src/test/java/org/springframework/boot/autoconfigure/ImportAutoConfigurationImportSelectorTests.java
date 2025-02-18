@@ -75,6 +75,25 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	void importsAreSelectedFromImportsFile() throws Exception {
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(FromImportsFile.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(
+				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
+				"org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration");
+	}
+
+	@Test
+	void importsSelectedFromImportsFileIgnoreMissingOptionalClasses() throws Exception {
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(
+				FromImportsFileIgnoresMissingOptionalClasses.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(
+				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
+				"org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration");
+	}
+
+	@Test
 	void propertyExclusionsAreApplied() throws IOException {
 		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
@@ -125,7 +144,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set2 = this.importSelector
 			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test
@@ -153,7 +172,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set2 = this.importSelector
 			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test
@@ -309,6 +328,18 @@ class ImportAutoConfigurationImportSelectorTests {
 		Class<?>[] excludeAutoConfiguration() default {
 
 		};
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration
+	@interface FromImportsFile {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration
+	@interface FromImportsFileIgnoresMissingOptionalClasses {
 
 	}
 

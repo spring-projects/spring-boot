@@ -54,7 +54,8 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getInputStream()).willThrow(IOException.class);
 		assertThatExceptionOfType(ConversionFailedException.class)
 			.isThrownBy(() -> conversionService.convert(source, byte[].class))
-			.withCauseExactlyInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
 			.withMessageContaining("Unable to read from input stream source");
 	}
 
@@ -67,7 +68,8 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(((OriginProvider) source).getOrigin()).willReturn(origin);
 		assertThatExceptionOfType(ConversionFailedException.class)
 			.isThrownBy(() -> conversionService.convert(source, byte[].class))
-			.withCauseExactlyInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
 			.withMessageContaining("Unable to read from mylocation");
 	}
 
@@ -79,7 +81,8 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getDescription()).willReturn("myresource");
 		assertThatExceptionOfType(ConversionFailedException.class)
 			.isThrownBy(() -> conversionService.convert(source, byte[].class))
-			.withCauseExactlyInstanceOf(IllegalStateException.class)
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
 			.withMessageContaining("Unable to read from myresource");
 	}
 

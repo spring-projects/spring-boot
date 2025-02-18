@@ -51,13 +51,11 @@ class ReactiveCloudFoundrySecurityServiceTests {
 
 	private MockWebServer server;
 
-	private WebClient.Builder builder;
-
 	@BeforeEach
 	void setup() {
 		this.server = new MockWebServer();
-		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
-		this.securityService = new ReactiveCloudFoundrySecurityService(this.builder, CLOUD_CONTROLLER, false);
+		WebClient.Builder builder = WebClient.builder().baseUrl(this.server.url("/").toString());
+		this.securityService = new ReactiveCloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);
 	}
 
 	@AfterEach
@@ -143,14 +141,16 @@ class ReactiveCloudFoundrySecurityServiceTests {
 
 	@Test
 	void fetchTokenKeysWhenSuccessfulShouldReturnListOfKeysFromUAA() throws Exception {
-		String tokenKeyValue = "-----BEGIN PUBLIC KEY-----\n"
-				+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO\n"
-				+ "rn2dVQ3vfBJqcDuFUK03d+1PZGbVlNCqnkpIJ8syFppW8ljnWweP7+LiWpRoz0I7\n"
-				+ "fYb3d8TjhV86Y997Fl4DBrxgM6KTJOuE/uxnoDhZQ14LgOU2ckXjOzOdTsnGMKQB\n"
-				+ "LCl0vpcXBtFLMaSbpv1ozi8h7DJyVZ6EnFQZUWGdgTMhDrmqevfx95U/16c5WBDO\n"
-				+ "kqwIn7Glry9n9Suxygbf8g5AzpWcusZgDLIIZ7JTUldBb8qU2a0Dl4mvLZOn4wPo\n"
-				+ "jfj9Cw2QICsc5+Pwf21fP+hzf+1WSRHbnYv8uanRO0gZ8ekGaghM/2H6gqJbo2nI\n"
-				+ "JwIDAQAB\n-----END PUBLIC KEY-----";
+		String tokenKeyValue = """
+				-----BEGIN PUBLIC KEY-----
+				MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO
+				rn2dVQ3vfBJqcDuFUK03d+1PZGbVlNCqnkpIJ8syFppW8ljnWweP7+LiWpRoz0I7
+				fYb3d8TjhV86Y997Fl4DBrxgM6KTJOuE/uxnoDhZQ14LgOU2ckXjOzOdTsnGMKQB
+				LCl0vpcXBtFLMaSbpv1ozi8h7DJyVZ6EnFQZUWGdgTMhDrmqevfx95U/16c5WBDO
+				kqwIn7Glry9n9Suxygbf8g5AzpWcusZgDLIIZ7JTUldBb8qU2a0Dl4mvLZOn4wPo
+				jfj9Cw2QICsc5+Pwf21fP+hzf+1WSRHbnYv8uanRO0gZ8ekGaghM/2H6gqJbo2nI
+				JwIDAQAB
+				-----END PUBLIC KEY-----""";
 		prepareResponse((response) -> {
 			response.setBody("{\"token_endpoint\":\"/my-uaa.com\"}");
 			response.setHeader("Content-Type", "application/json");
@@ -181,7 +181,7 @@ class ReactiveCloudFoundrySecurityServiceTests {
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-			.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).hasSize(0))
+			.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).isEmpty())
 			.expectComplete()
 			.verify();
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo("/my-cloud-controller.com/info"));

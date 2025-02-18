@@ -18,11 +18,11 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -72,7 +72,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
 			.map((source) -> Descriptor.get(source, propertyName))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
@@ -86,7 +86,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
 			List<Descriptor> descriptors) {
-		descriptors.sort((d1, d2) -> d1.propertyName.compareTo(d2.propertyName));
+		descriptors.sort(Comparator.comparing((descriptor) -> descriptor.propertyName));
 		message.append(String.format("The following configuration properties are mutually exclusive:%n%n"));
 		sortedStrings(cause.getMutuallyExclusiveNames())
 			.forEach((name) -> message.append(String.format("\t%s%n", name)));
@@ -99,7 +99,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		configuredDescriptions.forEach(message::append);
 	}
 
-	private <S> Set<String> sortedStrings(Collection<String> input) {
+	private Set<String> sortedStrings(Collection<String> input) {
 		return sortedStrings(input, Function.identity());
 	}
 

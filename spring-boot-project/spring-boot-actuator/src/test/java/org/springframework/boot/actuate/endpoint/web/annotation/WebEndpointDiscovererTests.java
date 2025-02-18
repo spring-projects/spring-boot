@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -41,12 +43,15 @@ import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServic
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer.WebEndpointDiscovererRuntimeHints;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class WebEndpointDiscovererTests {
 
@@ -219,11 +225,43 @@ class WebEndpointDiscovererTests {
 		});
 	}
 
+	@Test
+	void getEndpointsWhenHasAdditionalPaths() {
+		AdditionalPathsMapper additionalPathsMapper = (id, webServerNamespace) -> {
+			if (!WebServerNamespace.SERVER.equals(webServerNamespace)) {
+				return Collections.emptyList();
+			}
+			return List.of("/test");
+		};
+		load((id) -> null, EndpointId::toString, additionalPathsMapper,
+				AdditionalOperationWebEndpointConfiguration.class, (discoverer) -> {
+					Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+					ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+					assertThat(endpoint.getAdditionalPaths(WebServerNamespace.SERVER)).containsExactly("/test");
+					assertThat(endpoint.getAdditionalPaths(WebServerNamespace.MANAGEMENT)).isEmpty();
+				});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new WebEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(WebEndpointFilter.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
+	}
+
 	private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
 		load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
 	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,
+			Consumer<WebEndpointDiscoverer> consumer) {
+		load(timeToLive, endpointPathMapper, null, configuration, consumer);
+	}
+
+	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper,
+			AdditionalPathsMapper additionalPathsMapper, Class<?> configuration,
 			Consumer<WebEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
@@ -232,7 +270,9 @@ class WebEndpointDiscovererTests {
 					Collections.singletonList("application/json"));
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context, parameterMapper, mediaTypes,
 					Collections.singletonList(endpointPathMapper),
-					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList());
+					(additionalPathsMapper != null) ? Collections.singletonList(additionalPathsMapper) : null,
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList(),
+					Collections.emptyList());
 			consumer.accept(discoverer);
 		}
 	}
@@ -244,7 +284,7 @@ class WebEndpointDiscovererTests {
 	}
 
 	private List<WebOperationRequestPredicate> requestPredicates(ExposableWebEndpoint endpoint) {
-		return endpoint.getOperations().stream().map(WebOperation::getRequestPredicate).collect(Collectors.toList());
+		return endpoint.getOperations().stream().map(WebOperation::getRequestPredicate).toList();
 	}
 
 	private Condition<List<? extends WebOperationRequestPredicate>> requestPredicates(

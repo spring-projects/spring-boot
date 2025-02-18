@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional @Conditional} that checks whether a metrics exporter is enabled. If
- * the {@code management.metrics.export.<name>.enabled} property is configured then its
+ * the {@code management.<name>.metrics.export.enabled} property is configured then its
  * value is used to determine if it matches. Otherwise, matches if the value of the
- * {@code management.metrics.export.defaults.enabled} property is {@code true} or if it is
+ * {@code management.defaults.metrics.export.enabled} property is {@code true} or if it is
  * not configured.
  *
  * @author Chris Bono

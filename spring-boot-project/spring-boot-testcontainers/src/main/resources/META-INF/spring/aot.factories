@@ -1,0 +1,5 @@
+org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter=\
+org.springframework.boot.testcontainers.service.connection.ConnectionDetailsRegistrar.ServiceConnectionBeanRegistrationExcludeFilter
+
+org.springframework.aot.hint.RuntimeHintsRegistrar=\
+org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory.ContainerConnectionDetailsFactoriesRuntimeHints

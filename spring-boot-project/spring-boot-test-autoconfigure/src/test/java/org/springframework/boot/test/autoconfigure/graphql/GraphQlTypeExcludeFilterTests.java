@@ -20,21 +20,10 @@ import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import graphql.ExecutionResult;
 import graphql.GraphQLError;
-import graphql.execution.instrumentation.ExecutionStrategyInstrumentationContext;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.execution.instrumentation.InstrumentationContext;
-import graphql.execution.instrumentation.parameters.InstrumentationExecuteOperationParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationExecutionStrategyParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationFieldParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
-import graphql.language.Document;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
-import graphql.validation.ValidationError;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -63,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GraphQlTypeExcludeFilterTests {
 
-	private MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
+	private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 	@Test
 	void matchWhenHasNoControllers() throws Exception {
@@ -223,44 +212,6 @@ class GraphQlTypeExcludeFilterTests {
 	}
 
 	static class ExampleInstrumentation implements Instrumentation {
-
-		@Override
-		public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public InstrumentationContext<Document> beginParse(InstrumentationExecutionParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public InstrumentationContext<List<ValidationError>> beginValidation(
-				InstrumentationValidationParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public InstrumentationContext<ExecutionResult> beginExecuteOperation(
-				InstrumentationExecuteOperationParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public ExecutionStrategyInstrumentationContext beginExecutionStrategy(
-				InstrumentationExecutionStrategyParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public InstrumentationContext<ExecutionResult> beginField(InstrumentationFieldParameters parameters) {
-			return null;
-		}
-
-		@Override
-		public InstrumentationContext<Object> beginFieldFetch(InstrumentationFieldFetchParameters parameters) {
-			return null;
-		}
 
 	}
 

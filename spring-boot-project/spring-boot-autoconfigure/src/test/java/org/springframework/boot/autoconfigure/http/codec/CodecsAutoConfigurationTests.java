@@ -74,7 +74,7 @@ class CodecsAutoConfigurationTests {
 					CodecsAutoConfiguration.DefaultCodecsConfiguration.class, "defaultCodecCustomizer",
 					CodecProperties.class);
 			Integer order = new TestAnnotationAwareOrderComparator().findOrder(customizerMethod);
-			assertThat(order).isEqualTo(0);
+			assertThat(order).isZero();
 		});
 	}
 

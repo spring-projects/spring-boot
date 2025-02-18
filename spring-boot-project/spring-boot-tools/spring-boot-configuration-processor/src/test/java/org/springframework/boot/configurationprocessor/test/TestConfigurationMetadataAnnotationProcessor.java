@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package org.springframework.boot.configurationprocessor.test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,8 +25,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
 import org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor;
-import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
  * Test {@link ConfigurationMetadataAnnotationProcessor}.
@@ -39,6 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kris De Volder
+ * @author Scott Frederick
  */
 @SupportedAnnotationTypes({ TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
 		TestConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
@@ -59,6 +54,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.ConstructorBinding";
 
+	public static final String AUTOWIRED_ANNOTATION = "org.springframework.boot.configurationsample.Autowired";
+
 	public static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.configurationsample.DefaultValue";
 
 	public static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.ControllerEndpoint";
@@ -77,12 +74,9 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.Name";
 
-	private ConfigurationMetadata metadata;
+	public static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.configurationsample.Access";
 
-	private final File outputLocation;
-
-	public TestConfigurationMetadataAnnotationProcessor(File outputLocation) {
-		this.outputLocation = outputLocation;
+	public TestConfigurationMetadataAnnotationProcessor() {
 	}
 
 	@Override
@@ -103,6 +97,11 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	@Override
 	protected String constructorBindingAnnotation() {
 		return CONSTRUCTOR_BINDING_ANNOTATION;
+	}
+
+	@Override
+	protected String autowiredAnnotation() {
+		return AUTOWIRED_ANNOTATION;
 	}
 
 	@Override
@@ -127,27 +126,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	}
 
 	@Override
-	protected ConfigurationMetadata writeMetadata() throws Exception {
-		super.writeMetadata();
-		try {
-			File metadataFile = new File(this.outputLocation, "META-INF/spring-configuration-metadata.json");
-			if (metadataFile.isFile()) {
-				try (InputStream input = new FileInputStream(metadataFile)) {
-					this.metadata = new JsonMarshaller().read(input);
-				}
-			}
-			else {
-				this.metadata = new ConfigurationMetadata();
-			}
-			return this.metadata;
-		}
-		catch (IOException ex) {
-			throw new RuntimeException("Failed to read metadata from disk", ex);
-		}
-	}
-
-	public ConfigurationMetadata getMetadata() {
-		return this.metadata;
+	protected String endpointAccessEnum() {
+		return ENDPOINT_ACCESS_ENUM;
 	}
 
 }

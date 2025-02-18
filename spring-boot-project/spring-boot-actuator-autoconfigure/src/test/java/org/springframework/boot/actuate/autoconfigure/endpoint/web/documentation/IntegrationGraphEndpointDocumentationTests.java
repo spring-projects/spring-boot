@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@ import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.graph.IntegrationGraphServer;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for generating documentation describing the {@link IntegrationGraphEndpoint}.
@@ -38,17 +37,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void graph() throws Exception {
-		this.mockMvc.perform(get("/actuator/integrationgraph"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("integrationgraph/graph"));
+	void graph() {
+		assertThat(this.mvc.get().uri("/actuator/integrationgraph")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("integrationgraph/graph"));
 	}
 
 	@Test
-	void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph"))
-			.andExpect(status().isNoContent())
-			.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
+	void rebuild() {
+		assertThat(this.mvc.post().uri("/actuator/integrationgraph")).hasStatus(HttpStatus.NO_CONTENT)
+			.apply(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,10 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
@@ -59,6 +56,9 @@ import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -85,6 +85,7 @@ import org.springframework.util.CollectionUtils;
  * @author Andy Wilkinson
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Scott Frederick
  * @since 2.0.0
  * @see UndertowServletWebServer
  */
@@ -95,7 +96,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
+	private final UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
 
 	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
@@ -226,7 +227,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers = new LinkedHashSet<>(customizers);
 	}
 
@@ -236,7 +237,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -295,7 +296,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		Builder builder = this.delegate.createBuilder(this);
+		Builder builder = this.delegate.createBuilder(this, this::getSslBundle, this::getServerNameSslBundles);
 		DeploymentManager manager = createManager(initializers);
 		return getUndertowWebServer(builder, manager, getPort());
 	}
@@ -328,8 +329,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
-		if (manager.getDeployment() instanceof DeploymentImpl) {
-			removeSuperfluousMimeMappings((DeploymentImpl) manager.getDeployment(), deployment);
+		if (manager.getDeployment() instanceof DeploymentImpl managerDeployment) {
+			removeSuperfluousMimeMappings(managerDeployment, deployment);
 		}
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();
@@ -368,7 +369,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
 		Initializer initializer = new Initializer(mergedInitializers);
 		deployment.addServletContainerInitializer(new ServletContainerInitializerInfo(Initializer.class,
-				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer), NO_CLASSES));
+				new ImmediateInstanceFactory<>(initializer), NO_CLASSES));
 	}
 
 	private ClassLoader getServletClassLoader() {
@@ -554,7 +555,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 		private URLResource getMetaInfResource(URL resourceJar, String path) {
 			try {
-				String urlPath = URLEncoder.encode(ENCODED_SLASH.matcher(path).replaceAll("/"), "UTF-8");
+				String urlPath = URLEncoder.encode(ENCODED_SLASH.matcher(path).replaceAll("/"), StandardCharsets.UTF_8);
 				URL resourceUrl = new URL(resourceJar + "META-INF/resources" + urlPath);
 				URLResource resource = new URLResource(resourceUrl, path);
 				if (resource.getContentLength() < 0) {
@@ -640,9 +641,10 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			}
 		}
 
-		private javax.servlet.http.Cookie asServletCookie(Cookie cookie) {
+		@SuppressWarnings("removal")
+		private jakarta.servlet.http.Cookie asServletCookie(Cookie cookie) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			javax.servlet.http.Cookie result = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+			jakarta.servlet.http.Cookie result = new jakarta.servlet.http.Cookie(cookie.getName(), cookie.getValue());
 			map.from(cookie::getComment).to(result::setComment);
 			map.from(cookie::getDomain).to(result::setDomain);
 			map.from(cookie::getMaxAge).to(result::setMaxAge);
@@ -653,7 +655,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			return result;
 		}
 
-		private SameSite getSameSite(javax.servlet.http.Cookie cookie) {
+		private SameSite getSameSite(jakarta.servlet.http.Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

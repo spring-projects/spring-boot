@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * @param mappers the property mappers
 	 */
 	SpringConfigurationPropertySource(PropertySource<?> propertySource, PropertyMapper... mappers) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
-		Assert.isTrue(mappers.length > 0, "Mappers must contain at least one item");
+		Assert.notNull(propertySource, "'propertySource' must not be null");
+		Assert.isTrue(mappers.length > 0, "'mappers' must contain at least one item");
 		this.propertySource = propertySource;
 		this.mappers = mappers;
 	}
@@ -89,6 +89,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -97,11 +98,12 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		PropertySource<?> source = getPropertySource();
-		if (source.getSource() instanceof Random) {
+		Object underlyingSource = source.getSource();
+		if (underlyingSource instanceof Random) {
 			return containsDescendantOfForRandom("random", name);
 		}
-		if (source.getSource() instanceof PropertySource<?>
-				&& ((PropertySource<?>) source.getSource()).getSource() instanceof Random) {
+		if (underlyingSource instanceof PropertySource<?> underlyingPropertySource
+				&& underlyingPropertySource.getSource() instanceof Random) {
 			// Assume wrapped random sources use the source name as the prefix
 			return containsDescendantOfForRandom(source.getName(), name);
 		}
@@ -142,7 +144,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * {@link SpringIterableConfigurationPropertySource} instance
 	 */
 	static SpringConfigurationPropertySource from(PropertySource<?> source) {
-		Assert.notNull(source, "Source must not be null");
+		Assert.notNull(source, "'source' must not be null");
 		PropertyMapper[] mappers = getPropertyMappers(source);
 		if (isFullEnumerable(source)) {
 			return new SpringIterableConfigurationPropertySource((EnumerablePropertySource<?>) source, mappers);
@@ -165,10 +167,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private static boolean isFullEnumerable(PropertySource<?> source) {
 		PropertySource<?> rootSource = getRootSource(source);
-		if (rootSource.getSource() instanceof Map) {
+		if (rootSource.getSource() instanceof Map<?, ?> map) {
 			// Check we're not security restricted
 			try {
-				((Map<?, ?>) rootSource.getSource()).size();
+				map.size();
 			}
 			catch (UnsupportedOperationException ex) {
 				return false;
@@ -178,8 +180,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertySource<?> getRootSource(PropertySource<?> source) {
-		while (source.getSource() != null && source.getSource() instanceof PropertySource) {
-			source = (PropertySource<?>) source.getSource();
+		while (source.getSource() instanceof PropertySource<?> propertySource) {
+			source = propertySource;
 		}
 		return source;
 	}

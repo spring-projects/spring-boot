@@ -1,0 +1,56 @@
+[[io.quartz]]
+= Quartz Scheduler
+
+Spring Boot offers several conveniences for working with the https://www.quartz-scheduler.org/[Quartz scheduler], including the `spring-boot-starter-quartz` starter.
+If Quartz is available, a javadoc:org.quartz.Scheduler[] is auto-configured (through the javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] abstraction).
+
+Beans of the following types are automatically picked up and associated with the javadoc:org.quartz.Scheduler[]:
+
+* javadoc:org.quartz.JobDetail[]: defines a particular Job.
+  javadoc:org.quartz.JobDetail[] instances can be built with the javadoc:org.quartz.JobBuilder[] API.
+* javadoc:org.quartz.Calendar[].
+* javadoc:org.quartz.Trigger[]: defines when a particular job is triggered.
+
+By default, an in-memory javadoc:org.quartz.spi.JobStore[] is used.
+However, it is possible to configure a JDBC-based store if a javadoc:javax.sql.DataSource[] bean is available in your application and if the configprop:spring.quartz.job-store-type[] property is configured accordingly, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  quartz:
+    job-store-type: "jdbc"
+----
+
+When the JDBC store is used, the schema can be initialized on startup, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  quartz:
+    jdbc:
+      initialize-schema: "always"
+----
+
+WARNING: By default, the database is detected and initialized by using the standard scripts provided with the Quartz library.
+These scripts drop existing tables, deleting all triggers on every restart.
+To use a custom script, set the configprop:spring.quartz.jdbc.schema[] property.
+Some of the standard scripts – such as those for SQL Server, Azure SQL, and Sybase – cannot be used without modification.
+In these cases, make a copy of the script and edit it as directed in the script's comments then set configprop:spring.quartz.jdbc.schema[] to use your customized script.
+
+To have Quartz use a javadoc:javax.sql.DataSource[] other than the application's main javadoc:javax.sql.DataSource[], declare a javadoc:javax.sql.DataSource[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzDataSource[format=annotation].
+Doing so ensures that the Quartz-specific javadoc:javax.sql.DataSource[] is used by both the javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] and for schema initialization.
+Similarly, to have Quartz use a javadoc:org.springframework.transaction.TransactionManager[] other than the application's main javadoc:org.springframework.transaction.TransactionManager[] declare a javadoc:org.springframework.transaction.TransactionManager[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager[format=annotation].
+
+By default, jobs created by configuration will not overwrite already registered jobs that have been read from a persistent job store.
+To enable overwriting existing job definitions set the configprop:spring.quartz.overwrite-existing-jobs[] property.
+
+Quartz Scheduler configuration can be customized using `spring.quartz` properties and javadoc:org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer[] beans, which allow programmatic javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] customization.
+Advanced Quartz configuration properties can be customized using `spring.quartz.properties.*`.
+
+NOTE: In particular, an javadoc:java.util.concurrent.Executor[] bean is not associated with the scheduler as Quartz offers a way to configure the scheduler through `spring.quartz.properties`.
+If you need to customize the task executor, consider implementing javadoc:org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer[].
+
+Jobs can define setters to inject data map properties.
+Regular beans can also be injected in a similar manner, as shown in the following example:
+
+include-code::MySampleJob[]

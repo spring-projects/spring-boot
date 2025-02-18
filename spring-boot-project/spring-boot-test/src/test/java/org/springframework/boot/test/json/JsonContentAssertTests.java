@@ -60,7 +60,7 @@ class JsonContentAssertTests {
 
 	private static final String NULLS = loadJson("nulls.json");
 
-	private static JSONComparator COMPARATOR = new DefaultComparator(JSONCompareMode.LENIENT);
+	private static final JSONComparator COMPARATOR = new DefaultComparator(JSONCompareMode.LENIENT);
 
 	@TempDir
 	public Path tempDir;

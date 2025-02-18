@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.MultipartConfigElement;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -43,6 +43,7 @@ import org.springframework.util.unit.DataSize;
  * @author Josh Long
  * @author Toshiaki Maki
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.servlet.multipart", ignoreUnknownFields = false)
@@ -79,7 +80,13 @@ public class MultipartProperties {
 	 */
 	private boolean resolveLazily = false;
 
-	public boolean getEnabled() {
+	/**
+	 * Whether to resolve the multipart request strictly complying with the Servlet
+	 * specification, only to be used for "multipart/form-data" requests.
+	 */
+	private boolean strictServletCompliance = false;
+
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
@@ -125,6 +132,14 @@ public class MultipartProperties {
 
 	public void setResolveLazily(boolean resolveLazily) {
 		this.resolveLazily = resolveLazily;
+	}
+
+	public boolean isStrictServletCompliance() {
+		return this.strictServletCompliance;
+	}
+
+	public void setStrictServletCompliance(boolean strictServletCompliance) {
+		this.strictServletCompliance = strictServletCompliance;
 	}
 
 	/**

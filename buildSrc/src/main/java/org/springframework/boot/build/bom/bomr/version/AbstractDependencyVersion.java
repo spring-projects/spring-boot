@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,15 @@ abstract class AbstractDependencyVersion implements DependencyVersion {
 
 	@Override
 	public int compareTo(DependencyVersion other) {
-		ComparableVersion otherComparable = (other instanceof AbstractDependencyVersion)
-				? ((AbstractDependencyVersion) other).comparableVersion : new ComparableVersion(other.toString());
+		ComparableVersion otherComparable = (other instanceof AbstractDependencyVersion otherVersion)
+				? otherVersion.comparableVersion : new ComparableVersion(other.toString());
 		return this.comparableVersion.compareTo(otherComparable);
 	}
 
 	@Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
-		ComparableVersion comparableCandidate = (candidate instanceof AbstractDependencyVersion)
-				? ((AbstractDependencyVersion) candidate).comparableVersion
-				: new ComparableVersion(candidate.toString());
+		ComparableVersion comparableCandidate = (candidate instanceof AbstractDependencyVersion abstractDependencyVersion)
+				? abstractDependencyVersion.comparableVersion : new ComparableVersion(candidate.toString());
 		return comparableCandidate.compareTo(this.comparableVersion) > 0;
 	}
 
@@ -58,10 +57,7 @@ abstract class AbstractDependencyVersion implements DependencyVersion {
 			return false;
 		}
 		AbstractDependencyVersion other = (AbstractDependencyVersion) obj;
-		if (!this.comparableVersion.equals(other.comparableVersion)) {
-			return false;
-		}
-		return true;
+		return this.comparableVersion.equals(other.comparableVersion);
 	}
 
 	@Override

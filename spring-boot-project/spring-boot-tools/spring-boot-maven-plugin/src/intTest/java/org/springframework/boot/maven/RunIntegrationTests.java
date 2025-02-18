@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -31,6 +30,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Integration tests for the Maven plugin's run goal.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ExtendWith(MavenBuildExtension.class)
 class RunIntegrationTests {
@@ -38,29 +38,9 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenTheRunGoalIsExecutedTheApplicationIsForkedWithOptimizedJvmArguments(MavenBuild mavenBuild) {
 		mavenBuild.project("run").goals("spring-boot:run", "-X").execute((project) -> {
-			String jvmArguments = isJava13OrLater() ? "JVM argument(s): -XX:TieredStopAtLevel=1"
-					: "JVM argument(s): -Xverify:none -XX:TieredStopAtLevel=1";
+			String jvmArguments = "JVM argument: -XX:TieredStopAtLevel=1";
 			assertThat(buildLog(project)).contains("I haz been run").contains(jvmArguments);
 		});
-	}
-
-	@TestTemplate
-	@Deprecated
-	void whenForkingIsDisabledAndDevToolsIsPresentDevToolsIsDisabled(MavenBuild mavenBuild) {
-		mavenBuild.project("run-devtools")
-			.goals("spring-boot:run")
-			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run")
-				.contains("Fork mode disabled, devtools will be disabled"));
-	}
-
-	@TestTemplate
-	@Deprecated
-	void whenForkingIsDisabledJvmArgumentsAndWorkingDirectoryAreIgnored(MavenBuild mavenBuild) {
-		mavenBuild.project("run-disable-fork")
-			.goals("spring-boot:run")
-			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run")
-				.contains("Fork mode disabled, ignoring JVM argument(s) [-Dproperty1=value1 -Dproperty2 -Dfoo=bar]")
-				.contains("Fork mode disabled, ignoring working directory configuration"));
 	}
 
 	@TestTemplate
@@ -115,14 +95,6 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
-	@Deprecated
-	void whenProfilesAreConfiguredAndForkingIsDisabledTheyArePassedToTheApplication(MavenBuild mavenBuild) {
-		mavenBuild.project("run-profiles-fork-disabled")
-			.goals("spring-boot:run")
-			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run with profile(s) 'foo,bar'"));
-	}
-
-	@TestTemplate
 	void whenUseTestClasspathIsEnabledTheApplicationHasTestDependenciesOnItsClasspath(MavenBuild mavenBuild) {
 		mavenBuild.project("run-use-test-classpath")
 			.goals("spring-boot:run")
@@ -134,6 +106,20 @@ class RunIntegrationTests {
 		mavenBuild.project("run-working-directory")
 			.goals("spring-boot:run")
 			.execute((project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*src.main.java"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathDirectoryIsConfiguredItsResourcesAreAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-directory")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathFileIsConfiguredItsContentIsAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-jar")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
 	@TestTemplate
@@ -175,15 +161,6 @@ class RunIntegrationTests {
 
 	private String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
-	}
-
-	private boolean isJava13OrLater() {
-		for (Method method : String.class.getMethods()) {
-			if (method.getName().equals("stripIndent")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

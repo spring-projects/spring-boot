@@ -38,8 +38,7 @@ class MockServletWebServerTests {
 	@Test
 	void servletContextHasSessionCookieConfigConfigured() {
 		MockServletWebServer server = TestMockServletWebServer.create();
-		assertThat(server.getServletContext().getSessionCookieConfig()).isNotNull()
-			.isInstanceOf(MockSessionCookieConfig.class);
+		assertThat(server.getServletContext().getSessionCookieConfig()).isInstanceOf(MockSessionCookieConfig.class);
 	}
 
 	private static final class TestMockServletWebServer extends MockServletWebServer {

@@ -1,0 +1,14 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Prometheus smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation('io.micrometer:micrometer-tracing-bridge-brave')
+	runtimeOnly('io.micrometer:micrometer-registry-prometheus')
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

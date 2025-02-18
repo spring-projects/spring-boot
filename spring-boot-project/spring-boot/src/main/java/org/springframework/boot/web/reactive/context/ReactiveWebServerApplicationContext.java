@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,9 +66,15 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			WebServerManager serverManager = this.serverManager;
-			if (serverManager != null) {
-				serverManager.getWebServer().stop();
+			WebServer webServer = getWebServer();
+			if (webServer != null) {
+				try {
+					webServer.stop();
+					webServer.destroy();
+				}
+				catch (RuntimeException stopOrDestroyEx) {
+					ex.addSuppressed(stopOrDestroyEx);
+				}
 			}
 			throw ex;
 		}
@@ -88,7 +94,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	private void createWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
-			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
+			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			createWebServer.tag("factory", webServerFactory.getClass().toString());
@@ -147,6 +153,10 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
 		}
 		super.doClose();
+		WebServer webServer = getWebServer();
+		if (webServer != null) {
+			webServer.destroy();
+		}
 	}
 
 	/**

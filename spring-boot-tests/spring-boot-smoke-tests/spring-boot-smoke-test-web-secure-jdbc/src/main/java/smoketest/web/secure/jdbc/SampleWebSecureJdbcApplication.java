@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package smoketest.web.secure.jdbc;
 
 import javax.sql.DataSource;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -46,8 +49,11 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
-			http.authorizeRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.csrf(CsrfConfigurer::disable);
+			http.authorizeHttpRequests((requests) -> {
+				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			return http.build();
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class CouchbasePropertiesTests {
 	@Test
 	void ioHaveConsistentDefaults() {
 		Io io = new CouchbaseProperties().getEnv().getIo();
-		assertThat(io.getMinEndpoints()).isEqualTo(IoConfig.DEFAULT_NUM_KV_CONNECTIONS);
+		assertThat(io.getMinEndpoints()).isOne();
 		assertThat(io.getMaxEndpoints()).isEqualTo(IoConfig.DEFAULT_MAX_HTTP_CONNECTIONS);
 		assertThat(io.getIdleHttpConnectionTimeout()).isEqualTo(IoConfig.DEFAULT_IDLE_HTTP_CONNECTION_TIMEOUT);
 	}

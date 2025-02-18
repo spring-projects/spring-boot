@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.io.restclient.webclient
 
-import org.neo4j.cypherdsl.core.Relationship
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -30,10 +29,9 @@ class MyService(webClientBuilder: WebClient.Builder) {
 		webClient = webClientBuilder.baseUrl("https://example.org").build()
 	}
 
-	fun someRestCall(name: String?): Mono<Relationship.Details> {
-		return webClient.get().uri("/{name}/details", name).retrieve().bodyToMono(
-			Relationship.Details::class.java
-		)
+	fun someRestCall(name: String?): Mono<Details> {
+		return webClient.get().uri("/{name}/details", name)
+				.retrieve().bodyToMono(Details::class.java)
 	}
 
 }

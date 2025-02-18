@@ -51,20 +51,20 @@ class DefaultEndpointObjectNameFactoryTests {
 	@Test
 	void generateObjectName() {
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test");
 	}
 
 	@Test
 	void generateObjectNameWithCapitalizedId() {
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("testEndpoint")));
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=TestEndpoint");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=TestEndpoint");
 	}
 
 	@Test
 	void generateObjectNameWithCustomDomain() {
 		this.properties.setDomain("com.example.acme");
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString()).isEqualTo("com.example.acme:type=Endpoint,name=Test");
+		assertThat(objectName).hasToString("com.example.acme:type=Endpoint,name=Test");
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class DefaultEndpointObjectNameFactoryTests {
 		ExposableJmxEndpoint endpoint = endpoint(EndpointId.of("test"));
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
 	}
 
 	@Test
@@ -96,8 +96,7 @@ class DefaultEndpointObjectNameFactoryTests {
 		given(this.mBeanServer.queryNames(new ObjectName("org.springframework.boot:type=Endpoint,name=Test,*"), null))
 			.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString())
-			.isEqualTo("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
 
 	}
 

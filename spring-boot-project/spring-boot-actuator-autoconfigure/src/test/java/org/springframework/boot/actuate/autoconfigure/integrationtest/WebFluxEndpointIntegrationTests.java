@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -23,8 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -35,6 +35,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the WebFlux actuator endpoints.
@@ -77,6 +79,25 @@ class WebFluxEndpointIntegrationTests {
 		});
 	}
 
+	@Test
+	void endpointObjectMapperCanBeApplied() {
+		this.contextRunner.withUserConfiguration(EndpointObjectMapperConfiguration.class)
+			.withPropertyValues("management.endpoints.web.exposure.include:*")
+			.run((context) -> {
+				WebTestClient client = createWebTestClient(context);
+				client.get()
+					.uri("/actuator/beans")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.consumeWith((result) -> {
+						String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+						assertThat(json).contains("\"scope\":\"notelgnis\"");
+					});
+			});
+	}
+
 	private WebTestClient createWebTestClient(ApplicationContext context) {
 		return WebTestClient.bindToApplicationContext(context)
 			.configureClient()
@@ -84,12 +105,14 @@ class WebFluxEndpointIntegrationTests {
 			.build();
 	}
 
-	@ControllerEndpoint(id = "controller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint(id = "controller")
+	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
-	@RestControllerEndpoint(id = "restcontroller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "restcontroller")
+	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 
 	}

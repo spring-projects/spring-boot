@@ -47,7 +47,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 
 	@Test
 	void getMinPoolSize() {
-		assertThat(getDataSourceMetadata().getMin()).isEqualTo(0);
+		assertThat(getDataSourceMetadata().getMin()).isZero();
 	}
 
 	@Test
@@ -55,15 +55,15 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getActive()).isEqualTo(0);
-		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0f);
+		assertThat(getDataSourceMetadata().getActive()).isZero();
+		assertThat(getDataSourceMetadata().getUsage()).isZero();
 	}
 
 	@Test
 	void getPoolSizeOneConnection() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
-			assertThat(getDataSourceMetadata().getActive()).isEqualTo(1);
+			assertThat(getDataSourceMetadata().getActive()).isOne();
 			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5f);
 			return null;
 		});
@@ -73,7 +73,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 	void getIdle() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getIdle()).isEqualTo(1);
+		assertThat(getDataSourceMetadata().getIdle()).isOne();
 	}
 
 	@Test
@@ -82,7 +82,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
 			jdbcTemplate.execute((ConnectionCallback<Void>) (connection1) -> {
 				assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
-				assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0f);
+				assertThat(getDataSourceMetadata().getUsage()).isOne();
 				return null;
 			});
 			return null;

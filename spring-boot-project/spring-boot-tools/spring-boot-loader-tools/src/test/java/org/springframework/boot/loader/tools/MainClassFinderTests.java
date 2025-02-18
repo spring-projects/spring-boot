@@ -163,7 +163,7 @@ class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
 		ClassNameCollector callback = new ClassNameCollector();
 		MainClassFinder.doWithMainClasses(this.testJarFile.getJarSource(), callback);
-		assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
+		assertThat(callback.getClassNames()).hasToString("[a.b.G, a.b.c.D]");
 	}
 
 	@Test
@@ -175,7 +175,7 @@ class MainClassFinderTests {
 		ClassNameCollector callback = new ClassNameCollector();
 		try (JarFile jarFile = this.testJarFile.getJarFile()) {
 			MainClassFinder.doWithMainClasses(jarFile, null, callback);
-			assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
+			assertThat(callback.getClassNames()).hasToString("[a.b.G, a.b.c.D]");
 		}
 	}
 

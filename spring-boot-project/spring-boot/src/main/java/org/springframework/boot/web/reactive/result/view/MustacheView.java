@@ -34,6 +34,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.View;
@@ -81,7 +82,9 @@ public class MustacheView extends AbstractUrlBasedView {
 			return Mono
 				.error(new IllegalStateException("Could not find Mustache template with URL [" + getUrl() + "]"));
 		}
-		DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
+		DataBuffer dataBuffer = exchange.getResponse()
+			.bufferFactory()
+			.allocateBuffer(DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
 			Charset charset = getCharset(contentType).orElseGet(this::getDefaultCharset);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,9 @@ public class FreeMarkerAutoConfiguration {
 		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();
 			if (locations.stream().noneMatch(this::locationExists)) {
-				logger.warn("Cannot find template location(s): " + locations + " (please add some templates, "
-						+ "check your FreeMarker configuration, or set "
+				String suffix = (locations.size() == 1) ? "" : "s";
+				logger.warn("Cannot find template location" + suffix + ": " + locations
+						+ " (please add some templates, " + "check your FreeMarker configuration, or set "
 						+ "spring.freemarker.check-template-location=false)");
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Locale;
+
 import org.springframework.core.env.PropertySource;
 
 /**
  * Value object that represents the data that can be used by a {@link SanitizingFunction}.
  *
  * @author Madhura Bhave
+ * @author Rohan Goyal
  * @since 2.6.0
  **/
 public final class SanitizableData {
@@ -34,6 +37,8 @@ public final class SanitizableData {
 	private final PropertySource<?> propertySource;
 
 	private final String key;
+
+	private String lowerCaseKey;
 
 	private final Object value;
 
@@ -67,11 +72,34 @@ public final class SanitizableData {
 	}
 
 	/**
+	 * Return the key as a lowercase value.
+	 * @return the key as a lowercase value
+	 * @since 3.5.0
+	 */
+	public String getLowerCaseKey() {
+		String result = this.lowerCaseKey;
+		if (result == null && this.key != null) {
+			result = this.key.toLowerCase(Locale.getDefault());
+			this.lowerCaseKey = result;
+		}
+		return result;
+	}
+
+	/**
 	 * Return the value of the data.
 	 * @return the data value
 	 */
 	public Object getValue() {
 		return this.value;
+	}
+
+	/**
+	 * Return a new {@link SanitizableData} instance with sanitized value.
+	 * @return a new sanitizable data instance.
+	 * @since 3.1.0
+	 */
+	public SanitizableData withSanitizedValue() {
+		return withValue(SANITIZED_VALUE);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,10 @@ import org.springframework.test.context.MergedContextConfiguration;
  * A {@link ContextCustomizer} to add Mockito support.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class MockitoContextCustomizer implements ContextCustomizer {
 
 	private final Set<Definition> definitions;
@@ -40,8 +43,8 @@ class MockitoContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		if (context instanceof BeanDefinitionRegistry) {
-			MockitoPostProcessor.register((BeanDefinitionRegistry) context, this.definitions);
+		if (context instanceof BeanDefinitionRegistry registry) {
+			MockitoPostProcessor.register(registry, this.definitions);
 		}
 	}
 

@@ -16,12 +16,12 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.validate.nested
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
 import java.net.InetAddress
-import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 @ConfigurationProperties("my.service")
 @Validated
@@ -29,7 +29,7 @@ class MyProperties {
 
 	var remoteAddress: @NotNull InetAddress? = null
 
-	val security: @Valid Security? = Security()
+	val security: @Valid Security = Security()
 
 	class Security {
 		var username: @NotEmpty String? = null

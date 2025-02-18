@@ -146,7 +146,7 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("version");
-			assertThat(h.getDetails().get("version")).isEqualTo(Version.V4_0_0);
+			assertThat(h.getDetails()).containsEntry("version", Version.V4_0_0);
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
@@ -157,7 +157,7 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails().get("version")).isNull();
+			assertThat(h.getDetails()).doesNotContainKey("version");
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
@@ -171,8 +171,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error"))
-				.isEqualTo(DriverTimeoutException.class.getName() + ": Test Exception");
+			assertThat(h.getDetails()).containsEntry("error",
+					DriverTimeoutException.class.getName() + ": Test Exception");
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 

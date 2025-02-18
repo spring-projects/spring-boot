@@ -16,15 +16,15 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata;
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MyBean {
 
-	private final ElasticsearchRestTemplate template;
+	private final ElasticsearchTemplate template;
 
-	public MyBean(ElasticsearchRestTemplate template) {
+	public MyBean(ElasticsearchTemplate template) {
 		this.template = template;
 	}
 

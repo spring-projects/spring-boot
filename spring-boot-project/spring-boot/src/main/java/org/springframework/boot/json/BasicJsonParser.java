@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.json;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	private List<Object> parseListInternal(int nesting, String json) {
 		List<Object> list = new ArrayList<>();
-		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[').trim();
+		json = trimEdges(json, '[', ']').trim();
 		for (String value : tokenize(json)) {
 			list.add(parseInternal(nesting + 1, value));
 		}
@@ -70,35 +71,37 @@ public class BasicJsonParser extends AbstractJsonParser {
 			return parseMapInternal(nesting + 1, json);
 		}
 		if (json.startsWith("\"")) {
-			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');
+			return trimEdges(json, '"', '"');
 		}
-		try {
-			return Long.valueOf(json);
-		}
-		catch (NumberFormatException ex) {
-			// ignore
-		}
-		try {
-			return Double.valueOf(json);
-		}
-		catch (NumberFormatException ex) {
-			// ignore
-		}
-		return json;
+		return parseNumber(json);
 	}
 
 	private Map<String, Object> parseMapInternal(int nesting, String json) {
 		Map<String, Object> map = new LinkedHashMap<>();
-		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
+		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
 			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
 			Assert.state(values[0].startsWith("\"") && values[0].endsWith("\""),
 					"Expecting double-quotes around field names");
-			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
+			String key = trimEdges(values[0], '"', '"');
 			Object value = parseInternal(nesting, values[1]);
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	private Object parseNumber(String json) {
+		try {
+			return Long.valueOf(json);
+		}
+		catch (NumberFormatException ex) {
+			try {
+				return Double.valueOf(json);
+			}
+			catch (NumberFormatException ex2) {
+				return json;
+			}
+		}
 	}
 
 	private static String trimTrailingCharacter(String string, char c) {
@@ -115,53 +118,78 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return string;
 	}
 
+	private static String trimEdges(String string, char leadingChar, char trailingChar) {
+		return trimTrailingCharacter(trimLeadingCharacter(string, leadingChar), trailingChar);
+	}
+
 	private List<String> tokenize(String json) {
 		List<String> list = new ArrayList<>();
-		int index = 0;
-		int inObject = 0;
-		int inList = 0;
-		boolean inValue = false;
-		boolean inEscape = false;
+		Tracking tracking = new Tracking();
 		StringBuilder build = new StringBuilder();
+		int index = 0;
 		while (index < json.length()) {
-			char current = json.charAt(index);
-			if (inEscape) {
-				build.append(current);
+			char ch = json.charAt(index);
+			if (tracking.in(Tracked.ESCAPE)) {
+				build.append(ch);
 				index++;
-				inEscape = false;
+				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
-			if (current == '{') {
-				inObject++;
+			switch (ch) {
+				case '{' -> tracking.update(Tracked.OBJECT, +1);
+				case '}' -> tracking.update(Tracked.OBJECT, -1);
+				case '[' -> tracking.update(Tracked.LIST, +1);
+				case ']' -> tracking.update(Tracked.LIST, -1);
+				case '"' -> tracking.toggle(Tracked.VALUE);
 			}
-			if (current == '}') {
-				inObject--;
-			}
-			if (current == '[') {
-				inList++;
-			}
-			if (current == ']') {
-				inList--;
-			}
-			if (current == '"') {
-				inValue = !inValue;
-			}
-			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
+			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
 				list.add(build.toString());
 				build.setLength(0);
 			}
-			else if (current == '\\') {
-				inEscape = true;
+			else if (ch == '\\') {
+				tracking.set(Tracked.ESCAPE, 1);
 			}
 			else {
-				build.append(current);
+				build.append(ch);
 			}
 			index++;
 		}
-		if (build.length() > 0) {
+		if (!build.isEmpty()) {
 			list.add(build.toString().trim());
 		}
 		return list;
+	}
+
+	private static final class Tracking {
+
+		private final int[] counts = new int[Tracked.values().length];
+
+		boolean in(Tracked... tracked) {
+			return Arrays.stream(tracked).mapToInt(this::get).anyMatch((i) -> i > 0);
+		}
+
+		void toggle(Tracked tracked) {
+			set(tracked, (get(tracked) != 0) ? 0 : 1);
+		}
+
+		void update(Tracked tracked, int delta) {
+			set(tracked, get(tracked) + delta);
+		}
+
+		private int get(Tracked tracked) {
+			return this.counts[tracked.ordinal()];
+		}
+
+		void set(Tracked tracked, int count) {
+			this.counts[tracked.ordinal()] = count;
+		}
+
+	}
+
+	private enum Tracked {
+
+		OBJECT, LIST, VALUE, ESCAPE
+
 	}
 
 }

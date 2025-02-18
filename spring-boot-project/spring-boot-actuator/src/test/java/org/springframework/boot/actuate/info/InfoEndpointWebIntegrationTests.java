@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.info;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
@@ -62,7 +61,7 @@ class InfoEndpointWebIntegrationTests {
 
 		@Bean
 		InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
-			return new InfoEndpoint(infoContributors.orderedStream().collect(Collectors.toList()));
+			return new InfoEndpoint(infoContributors.orderedStream().toList());
 		}
 
 		@Bean

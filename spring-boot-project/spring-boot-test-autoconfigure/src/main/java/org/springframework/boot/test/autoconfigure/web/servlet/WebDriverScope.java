@@ -36,11 +36,15 @@ import org.springframework.util.StringUtils;
  * {@link WebDriverTestExecutionListener}.
  *
  * @author Phillip Webb
+ * @since 3.0.0
  * @see WebDriverContextCustomizerFactory
  * @see WebDriverTestExecutionListener
  */
-class WebDriverScope implements Scope {
+public class WebDriverScope implements Scope {
 
+	/**
+	 * WebDriver bean scope name.
+	 */
 	public static final String NAME = "webDriver";
 
 	private static final String WEB_DRIVER_CLASS = "org.openqa.selenium.WebDriver";
@@ -92,8 +96,8 @@ class WebDriverScope implements Scope {
 		synchronized (this.instances) {
 			for (Object instance : this.instances.values()) {
 				reset = true;
-				if (instance instanceof WebDriver) {
-					((WebDriver) instance).quit();
+				if (instance instanceof WebDriver webDriver) {
+					webDriver.quit();
 				}
 			}
 			this.instances.clear();
@@ -134,9 +138,9 @@ class WebDriverScope implements Scope {
 	 * @return the web driver scope or {@code null}
 	 */
 	static WebDriverScope getFrom(ApplicationContext context) {
-		if (context instanceof ConfigurableApplicationContext) {
-			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory().getRegisteredScope(NAME);
-			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;
+		if (context instanceof ConfigurableApplicationContext configurableContext) {
+			Scope scope = configurableContext.getBeanFactory().getRegisteredScope(NAME);
+			return (scope instanceof WebDriverScope webDriverScope) ? webDriverScope : null;
 		}
 		return null;
 	}

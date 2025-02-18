@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings xmlns="http://www.jooq.org/xsd/jooq-runtime-3.19.0.xsd">
+	<batchSize>100</batchSize>
+</settings>

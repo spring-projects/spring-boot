@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	private final ConfigurationPhase configurationPhase;
 
 	AbstractNestedCondition(ConfigurationPhase configurationPhase) {
-		Assert.notNull(configurationPhase, "ConfigurationPhase must not be null");
+		Assert.notNull(configurationPhase, "'configurationPhase' must not be null");
 		this.configurationPhase = configurationPhase;
 	}
 
@@ -132,8 +132,9 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 
 		private void validateMemberCondition(Condition condition, ConfigurationPhase nestedPhase,
 				String nestedClassName) {
-			if (nestedPhase == ConfigurationPhase.PARSE_CONFIGURATION && condition instanceof ConfigurationCondition) {
-				ConfigurationPhase memberPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
+			if (nestedPhase == ConfigurationPhase.PARSE_CONFIGURATION
+					&& condition instanceof ConfigurationCondition configurationCondition) {
+				ConfigurationPhase memberPhase = configurationCondition.getConfigurationPhase();
 				if (memberPhase == ConfigurationPhase.REGISTER_BEAN) {
 					throw new IllegalStateException("Nested condition " + nestedClassName + " uses a configuration "
 							+ "phase that is inappropriate for " + condition.getClass());
@@ -190,8 +191,8 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 		}
 
 		private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata, Condition condition) {
-			if (condition instanceof SpringBootCondition) {
-				return ((SpringBootCondition) condition).getMatchOutcome(this.context, metadata);
+			if (condition instanceof SpringBootCondition springBootCondition) {
+				return springBootCondition.getMatchOutcome(this.context, metadata);
 			}
 			return new ConditionOutcome(condition.matches(this.context, metadata), ConditionMessage.empty());
 		}

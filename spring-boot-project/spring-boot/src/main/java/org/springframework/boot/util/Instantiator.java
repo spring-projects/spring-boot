@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -110,7 +109,7 @@ public class Instantiator<T> {
 	 * @return a list of instantiated instances
 	 */
 	public List<T> instantiate(Collection<String> names) {
-		return instantiate((ClassLoader) null, names);
+		return instantiate(null, names);
 	}
 
 	/**
@@ -122,8 +121,42 @@ public class Instantiator<T> {
 	 * @since 2.4.8
 	 */
 	public List<T> instantiate(ClassLoader classLoader, Collection<String> names) {
-		Assert.notNull(names, "Names must not be null");
+		Assert.notNull(names, "'names' must not be null");
 		return instantiate(names.stream().map((name) -> TypeSupplier.forName(classLoader, name)));
+	}
+
+	/**
+	 * Instantiate the given set of class name, injecting constructor arguments as
+	 * necessary.
+	 * @param name the class name to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiate(String name) {
+		return instantiate(null, name);
+	}
+
+	/**
+	 * Instantiate the given set of class name, injecting constructor arguments as
+	 * necessary.
+	 * @param classLoader the source classloader
+	 * @param name the class name to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiate(ClassLoader classLoader, String name) {
+		return instantiate(TypeSupplier.forName(classLoader, name));
+	}
+
+	/**
+	 * Instantiate the given class, injecting constructor arguments as necessary.
+	 * @param type the type to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiateType(Class<?> type) {
+		Assert.notNull(type, "'type' must not be null");
+		return instantiate(TypeSupplier.forType(type));
 	}
 
 	/**
@@ -133,20 +166,34 @@ public class Instantiator<T> {
 	 * @since 2.4.8
 	 */
 	public List<T> instantiateTypes(Collection<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return instantiate(types.stream().map(TypeSupplier::forType));
 	}
 
+	/**
+	 * Get an injectable argument instance for the given type. This method can be used
+	 * when manually instantiating an object without reflection.
+	 * @param <A> the argument type
+	 * @param type the argument type
+	 * @return the argument to inject or {@code null}
+	 * @since 3.4.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <A> A getArg(Class<A> type) {
+		Assert.notNull(type, "'type' must not be null");
+		Function<Class<?>, Object> parameter = getAvailableParameter(type);
+		Assert.state(parameter != null, "Unknown argument type " + type.getName());
+		return (A) parameter.apply(this.type);
+	}
+
 	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
-		List<T> instances = typeSuppliers.map(this::instantiate).collect(Collectors.toList());
-		AnnotationAwareOrderComparator.sort(instances);
-		return Collections.unmodifiableList(instances);
+		return typeSuppliers.map(this::instantiate).sorted(AnnotationAwareOrderComparator.INSTANCE).toList();
 	}
 
 	private T instantiate(TypeSupplier typeSupplier) {
 		try {
 			Class<?> type = typeSupplier.get();
-			Assert.isAssignable(this.type, type);
+			Assert.state(this.type.isAssignableFrom(type), () -> type + " is not assignable to " + this.type);
 			return instantiate(type);
 		}
 		catch (Throwable ex) {
@@ -245,7 +292,7 @@ public class Instantiator<T> {
 				}
 
 				@Override
-				public Class<?> get() throws ClassNotFoundException {
+				public Class<?> get() {
 					return type;
 				}
 

@@ -1,0 +1,145 @@
+import org.springframework.boot.build.properties.BuildProperties
+import org.springframework.boot.build.properties.BuildType
+
+plugins {
+	id "java"
+	id "eclipse"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.integration-test"
+}
+
+description = "Spring Boot CLI"
+
+configurations {
+	dependenciesBom
+	loader
+	testRepository
+	compileOnlyProject
+	compileClasspath.extendsFrom(compileOnlyProject)
+}
+
+dependencies {
+	compileOnlyProject(project(":spring-boot-project:spring-boot"))
+
+	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
+
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("com.vaadin.external.google:android-json")
+	implementation("jline:jline")
+	implementation("net.sf.jopt-simple:jopt-simple")
+	implementation("org.apache.httpcomponents.client5:httpclient5")
+	implementation("org.slf4j:slf4j-simple")
+	implementation("org.springframework:spring-core")
+	implementation("org.springframework.security:spring-security-crypto")
+
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation("org.assertj:assertj-core")
+	intTestImplementation("org.junit.jupiter:junit-jupiter")
+	intTestImplementation("org.springframework:spring-core")
+
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+
+	testImplementation(project(":spring-boot-project:spring-boot"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-test")
+}
+
+task fullJar(type: Jar) {
+	dependsOn configurations.loader
+	archiveClassifier = "full"
+	entryCompression = "stored"
+	from(configurations.runtimeClasspath) {
+		into "BOOT-INF/lib"
+	}
+	from(sourceSets.main.output) {
+		into "BOOT-INF/classes"
+	}
+	from {
+		zipTree(configurations.loader.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
+		}
+	}
+	manifest {
+		attributes(
+			"Main-Class": "org.springframework.boot.loader.launch.JarLauncher",
+			"Start-Class": "org.springframework.boot.cli.SpringCli"
+		)
+	}
+}
+
+def configureArchive(archive) {
+	archive.archiveClassifier = "bin"
+	archive.into "spring-${project.version}"
+	archive.from(fullJar) {
+		rename {
+			it.replace("-full", "")
+		}
+		into "lib/"
+	}
+	archive.from(file("src/main/content")) {
+		dirPermissions { unix(0755) }
+		filePermissions { unix(0644) }
+	}
+	archive.from(file("src/main/executablecontent")) {
+		filePermissions { unix(0755) }
+	}
+}
+
+task zip(type: Zip) {
+	archiveClassifier = "bin"
+	configureArchive it
+}
+
+intTest {
+	dependsOn zip
+}
+
+task tar(type: Tar) {
+	compression = "gzip"
+	archiveExtension = "tar.gz"
+	configureArchive it
+}
+
+if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
+	task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
+		dependsOn tar
+		outputDir = layout.buildDirectory.dir("homebrew")
+		template = file("src/main/homebrew/spring-boot.rb")
+		archive = tar.archiveFile
+	}
+
+	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
+		type = "rb"
+		classifier = "homebrew"
+		builtBy "homebrewFormula"
+	}
+
+	publishing {
+		publications {
+			getByName("maven") {
+				artifact homebrewFormulaArtifact
+			}
+		}
+	}
+}
+
+publishing {
+	publications {
+		getByName("maven") {
+			artifact fullJar
+			artifact tar
+			artifact zip
+		}
+	}
+}
+
+eclipse.classpath { // https://github.com/eclipse/buildship/issues/939
+	plusConfigurations += [ configurations.compileOnlyProject ]
+}

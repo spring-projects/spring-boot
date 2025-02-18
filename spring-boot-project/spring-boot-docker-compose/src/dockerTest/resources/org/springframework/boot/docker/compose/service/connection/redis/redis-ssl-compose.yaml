@@ -1,0 +1,21 @@
+services:
+  redis:
+    image: '{imageName}'
+    ports:
+      - '6379'
+    secrets:
+      - ssl-ca
+      - ssl-key
+      - ssl-cert
+    command: 'redis-server --tls-port 6379 --port 0 --tls-cert-file /run/secrets/ssl-cert --tls-key-file /run/secrets/ssl-key --tls-ca-cert-file /run/secrets/ssl-ca'
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+secrets:
+  ssl-ca:
+    file: 'ca.crt'
+  ssl-key:
+    file: 'server.key'
+  ssl-cert:
+    file: 'server.crt'

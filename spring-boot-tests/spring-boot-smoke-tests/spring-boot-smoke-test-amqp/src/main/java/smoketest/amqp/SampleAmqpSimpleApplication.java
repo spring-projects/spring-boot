@@ -16,7 +16,8 @@
 
 package smoketest.amqp;
 
-import java.util.Date;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -31,6 +32,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 @RabbitListener(queues = "foo")
 public class SampleAmqpSimpleApplication {
 
+	private static final Log logger = LogFactory.getLog(SampleAmqpSimpleApplication.class);
+
 	@Bean
 	public Sender mySender() {
 		return new Sender();
@@ -43,7 +46,7 @@ public class SampleAmqpSimpleApplication {
 
 	@RabbitHandler
 	public void process(@Payload String foo) {
-		System.out.println(new Date() + ": " + foo);
+		logger.info(foo);
 	}
 
 	@Bean

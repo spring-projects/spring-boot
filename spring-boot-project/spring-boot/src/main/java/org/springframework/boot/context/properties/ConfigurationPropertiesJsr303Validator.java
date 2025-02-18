@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,21 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  */
 final class ConfigurationPropertiesJsr303Validator implements Validator {
 
-	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory", "javax.validation.bootstrap.GenericBootstrap" };
+	private static final String[] VALIDATOR_CLASSES = { "jakarta.validation.Validator",
+			"jakarta.validation.ValidatorFactory", "jakarta.validation.bootstrap.GenericBootstrap" };
 
 	private final Delegate delegate;
 
-	ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext) {
+	private final Class<?> validatedType;
+
+	ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext, Class<?> validatedType) {
 		this.delegate = new Delegate(applicationContext);
+		this.validatedType = validatedType;
 	}
 
 	@Override
 	public boolean supports(Class<?> type) {
-		return this.delegate.supports(type);
+		return this.validatedType.equals(type) && this.delegate.supports(type);
 	}
 
 	@Override

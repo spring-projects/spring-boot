@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
@@ -42,11 +43,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentAutoConfigurationClasses extends DefaultTask {
+public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 
 	private FileCollection autoConfiguration;
-
-	private File outputDir;
 
 	@InputFiles
 	public FileCollection getAutoConfiguration() {
@@ -58,13 +57,7 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public File getOutputDir() {
-		return this.outputDir;
-	}
-
-	public void setOutputDir(File outputDir) {
-		this.outputDir = outputDir;
-	}
+	public abstract DirectoryProperty getOutputDir();
 
 	@TaskAction
 	void documentAutoConfigurationClasses() throws IOException {
@@ -80,18 +73,19 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	private void writeTable(AutoConfiguration autoConfigurationClasses) throws IOException {
-		this.outputDir.mkdirs();
+		File outputDir = getOutputDir().getAsFile().get();
+		outputDir.mkdirs();
 		try (PrintWriter writer = new PrintWriter(
-				new FileWriter(new File(this.outputDir, autoConfigurationClasses.module + ".adoc")))) {
+				new FileWriter(new File(outputDir, autoConfigurationClasses.module + ".adoc")))) {
 			writer.println("[cols=\"4,1\"]");
 			writer.println("|===");
 			writer.println("| Configuration Class | Links");
 
 			for (AutoConfigurationClass autoConfigurationClass : autoConfigurationClasses.classes) {
 				writer.println();
-				writer.printf("| {spring-boot-code}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
+				writer.printf("| {code-spring-boot}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
 						autoConfigurationClasses.module, autoConfigurationClass.path, autoConfigurationClass.name);
-				writer.printf("| {spring-boot-api}/%s.html[javadoc]%n", autoConfigurationClass.path);
+				writer.printf("| xref:api:java/%s.html[javadoc]%n", autoConfigurationClass.path);
 			}
 
 			writer.println("|===");

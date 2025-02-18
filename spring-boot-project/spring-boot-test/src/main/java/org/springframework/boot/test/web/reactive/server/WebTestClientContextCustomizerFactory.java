@@ -30,24 +30,14 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Anugrah Singhal
  */
 class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory {
-
-	private static final boolean reactorClientPresent;
-
-	private static final boolean jettyClientPresent;
-
-	private static final boolean httpComponentsClientPresent;
 
 	private static final boolean webClientPresent;
 
 	static {
 		ClassLoader loader = WebTestClientContextCustomizerFactory.class.getClassLoader();
-		reactorClientPresent = ClassUtils.isPresent("reactor.netty.http.client.HttpClient", loader);
-		jettyClientPresent = ClassUtils.isPresent("org.eclipse.jetty.client.HttpClient", loader);
-		httpComponentsClientPresent = ClassUtils
-			.isPresent("org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient", loader)
-				&& ClassUtils.isPresent("org.apache.hc.core5.reactive.ReactiveDataConsumer", loader);
 		webClientPresent = ClassUtils.isPresent("org.springframework.web.reactive.function.client.WebClient", loader);
 	}
 
@@ -56,9 +46,7 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
-		return (springBootTest != null && webClientPresent
-				&& (reactorClientPresent || jettyClientPresent || httpComponentsClientPresent))
-						? new WebTestClientContextCustomizer() : null;
+		return (springBootTest != null && webClientPresent) ? new WebTestClientContextCustomizer() : null;
 	}
 
 }

@@ -1,6 +1,6 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot cache smoke test"
@@ -16,85 +16,78 @@ configurations {
 	caffeine
 	couchbase
 	ehcache
-	ehcache2
 	hazelcast
 	infinispan
 }
 
 dependencies {
+	caffeine(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	caffeine("com.github.ben-manes.caffeine:caffeine")
+
+	couchbase(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	couchbase(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
+	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	ehcache("javax.cache:cache-api")
+	ehcache("org.ehcache:ehcache::jakarta")
+
+	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	hazelcast("com.hazelcast:hazelcast")
+	hazelcast("com.hazelcast:hazelcast-spring")
+
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-cache"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-
-	caffeine(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	caffeine("com.github.ben-manes.caffeine:caffeine")
-	
-	couchbase(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	couchbase(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
-	
-	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	ehcache("javax.cache:cache-api")
-	ehcache("org.ehcache:ehcache")
-	ehcache2(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	ehcache2("net.sf.ehcache:ehcache")
-	
-	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	hazelcast("com.hazelcast:hazelcast")
-	hazelcast("com.hazelcast:hazelcast-spring")
-	
 	infinispan(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	infinispan("javax.cache:cache-api")
+	infinispan("org.infinispan:infinispan-commons")
+	infinispan("org.infinispan:infinispan-component-annotations")
+	infinispan("org.infinispan:infinispan-core")
 	infinispan("org.infinispan:infinispan-jcache")
-	infinispan("org.infinispan:infinispan-spring5-embedded")
 
-	redisTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
-	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
-	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	redisTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	redisTestImplementation("org.testcontainers:testcontainers")
-	redisTestImplementation("org.testcontainers:junit-jupiter")
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }
 
 def testCaffeine = tasks.register("testCaffeine", Test) {
 	description = "Runs the tests against Caffeine"
 	classpath = sourceSets.test.runtimeClasspath + configurations.caffeine
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testCouchbase = tasks.register("testCouchbase", Test) {
 	description = "Runs the tests against Couchbase"
 	classpath = sourceSets.test.runtimeClasspath + configurations.couchbase
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testEhcache = tasks.register("testEhcache", Test) {
 	description = "Runs the tests against Ehcache"
 	classpath = sourceSets.test.runtimeClasspath + configurations.ehcache
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 	systemProperties = ["spring.cache.jcache.config" : "classpath:ehcache3.xml"]
-}
-
-def testEhcache2 = tasks.register("testEhcache2", Test) {
-	description = "Runs the tests against Ehcache2"
-	classpath = sourceSets.test.runtimeClasspath + configurations.ehcache2
 }
 
 def testHazelcast = tasks.register("testHazelcast", Test) {
 	description = "Runs the tests against Hazelcast"
 	classpath = sourceSets.test.runtimeClasspath + configurations.hazelcast
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testInfinispan = tasks.register("testInfinispan", Test) {
 	description = "Runs the tests against Infinispan"
 	classpath = sourceSets.test.runtimeClasspath + configurations.infinispan
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 	systemProperties = ["spring.cache.jcache.config" : "classpath:infinispan.xml"]
 }
 
-def testRedis = tasks.register("testRedis", Test) {
-	description = "Runs the tests against Redis"
-	classpath = sourceSets.redisTest.runtimeClasspath
-	testClassesDirs = sourceSets.redisTest.output.classesDirs
-}
-
 tasks.named("check").configure {
-	dependsOn testCaffeine, testCouchbase, testEhcache, testEhcache2, testHazelcast, testInfinispan, testRedis
+	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testInfinispan
 }

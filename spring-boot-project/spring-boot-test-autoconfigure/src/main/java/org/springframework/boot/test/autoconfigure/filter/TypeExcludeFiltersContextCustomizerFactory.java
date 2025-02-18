@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
@@ -42,6 +43,9 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
+		if (AotDetector.useGeneratedArtifacts()) {
+			return null;
+		}
 		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
 			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
 		Class<?>[] filterClasses = (descriptor != null) ? descriptor.getAnnotation().value() : NO_FILTERS;

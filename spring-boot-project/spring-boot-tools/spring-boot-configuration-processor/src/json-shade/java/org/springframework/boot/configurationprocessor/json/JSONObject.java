@@ -311,8 +311,7 @@ public class JSONObject {
 			JSON.checkDouble(((Number) value).doubleValue());
 		}
 
-		if (current instanceof JSONArray) {
-			JSONArray array = (JSONArray) current;
+		if (current instanceof JSONArray array) {
 			array.put(value);
 		}
 		else {
@@ -787,7 +786,7 @@ public class JSONObject {
 	/**
 	 * Wraps the given object if necessary.
 	 * <p>
-	 * If the object is null or , returns {@link #NULL}. If the object is a
+	 * If the object is null or, returns {@link #NULL}. If the object is a
 	 * {@code JSONArray} or {@code JSONObject}, no wrapping is necessary. If the object is
 	 * {@code NULL}, no wrapping is necessary. If the object is an array or
 	 * {@code Collection}, returns an equivalent {@code JSONArray}. If the object is a
@@ -828,7 +827,8 @@ public class JSONObject {
 				return o.toString();
 			}
 		}
-		catch (Exception ignored) {
+		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}

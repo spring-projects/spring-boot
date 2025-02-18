@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package smoketest.tomcat.web;
 
+import jakarta.servlet.http.HttpServletResponse;
 import smoketest.tomcat.service.HelloWorldService;
+import smoketest.tomcat.service.HttpHeaderService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,12 +27,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	private final HelloWorldService helloWorldService;
+
+	private final HttpHeaderService httpHeaderService;
+
+	public SampleController(HelloWorldService helloWorldService, HttpHeaderService httpHeaderService) {
+		this.helloWorldService = helloWorldService;
+		this.httpHeaderService = httpHeaderService;
+	}
 
 	@GetMapping("/")
 	@ResponseBody
 	public String helloWorld() {
+		return this.helloWorldService.getHelloMessage();
+	}
+
+	@GetMapping("/max-http-response-header")
+	@ResponseBody
+	public String maxHttpResponseHeader(HttpServletResponse response) {
+		String headerValue = this.httpHeaderService.getHeaderValue();
+		response.addHeader("x-max-header", headerValue);
 		return this.helloWorldService.getHelloMessage();
 	}
 

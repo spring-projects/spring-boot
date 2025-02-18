@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,14 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -45,19 +47,17 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
  */
 class ReactiveCloudFoundrySecurityService {
 
-	private static final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP = new ParameterizedTypeReference<>() {
 	};
 
 	private final WebClient webClient;
 
 	private final String cloudControllerUrl;
 
-	private Mono<String> uaaUrl;
-
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
-		Assert.notNull(webClientBuilder, "Webclient must not be null");
-		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
+		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {
 			webClientBuilder.clientConnector(buildTrustAllSslConnector());
 		}
@@ -70,7 +70,7 @@ class ReactiveCloudFoundrySecurityService {
 		return new ReactorClientHttpConnector(client);
 	}
 
-	private Http11SslContextSpec createSslContextSpec() {
+	private GenericSslContextSpec<?> createSslContextSpec() {
 		return Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE));
@@ -95,8 +95,8 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	private Throwable mapError(Throwable throwable) {
-		if (throwable instanceof WebClientResponseException) {
-			HttpStatus statusCode = ((WebClientResponseException) throwable).getStatusCode();
+		if (throwable instanceof WebClientResponseException webClientResponseException) {
+			HttpStatusCode statusCode = webClientResponseException.getStatusCode();
 			if (statusCode.equals(HttpStatus.FORBIDDEN)) {
 				return new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied");
 			}
@@ -148,7 +148,7 @@ class ReactiveCloudFoundrySecurityService {
 	 * @return the UAA url Mono
 	 */
 	Mono<String> getUaaUrl() {
-		this.uaaUrl = this.webClient.get()
+		return this.webClient.get()
 			.uri(this.cloudControllerUrl + "/info")
 			.retrieve()
 			.bodyToMono(Map.class)
@@ -156,7 +156,6 @@ class ReactiveCloudFoundrySecurityService {
 			.cache()
 			.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Unable to fetch token keys from UAA."));
-		return this.uaaUrl;
 	}
 
 }

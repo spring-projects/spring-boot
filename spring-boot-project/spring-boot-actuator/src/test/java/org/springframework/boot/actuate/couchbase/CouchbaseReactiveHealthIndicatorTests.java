@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import com.couchbase.client.core.diagnostics.DiagnosticsResult;
 import com.couchbase.client.core.diagnostics.EndpointDiagnostics;
+import com.couchbase.client.core.endpoint.CircuitBreaker;
 import com.couchbase.client.core.endpoint.EndpointState;
 import com.couchbase.client.core.service.ServiceType;
 import com.couchbase.client.java.Cluster;
@@ -51,9 +52,9 @@ class CouchbaseReactiveHealthIndicatorTests {
 		Cluster cluster = mock(Cluster.class);
 		CouchbaseReactiveHealthIndicator healthIndicator = new CouchbaseReactiveHealthIndicator(cluster);
 		Map<ServiceType, List<EndpointDiagnostics>> endpoints = Collections.singletonMap(ServiceType.KV,
-				Collections.singletonList(
-						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED, "127.0.0.1", "127.0.0.1",
-								Optional.empty(), Optional.of(1234L), Optional.of("endpoint-1"), Optional.empty())));
+				Collections.singletonList(new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED,
+						CircuitBreaker.State.DISABLED, "127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L),
+						Optional.of("endpoint-1"), Optional.empty())));
 		DiagnosticsResult diagnostics = new DiagnosticsResult(endpoints, "test-sdk", "test-id");
 		ReactiveCluster reactiveCluster = mock(ReactiveCluster.class);
 		given(reactiveCluster.diagnostics()).willReturn(Mono.just(diagnostics));
@@ -73,10 +74,12 @@ class CouchbaseReactiveHealthIndicatorTests {
 		CouchbaseReactiveHealthIndicator healthIndicator = new CouchbaseReactiveHealthIndicator(cluster);
 		Map<ServiceType, List<EndpointDiagnostics>> endpoints = Collections.singletonMap(ServiceType.KV,
 				Arrays.asList(
-						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED, "127.0.0.1", "127.0.0.1",
-								Optional.empty(), Optional.of(1234L), Optional.of("endpoint-1"), Optional.empty()),
-						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTING, "127.0.0.1", "127.0.0.1",
-								Optional.empty(), Optional.of(1234L), Optional.of("endpoint-2"), Optional.empty())));
+						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED, CircuitBreaker.State.DISABLED,
+								"127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L),
+								Optional.of("endpoint-1"), Optional.empty()),
+						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTING, CircuitBreaker.State.DISABLED,
+								"127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L),
+								Optional.of("endpoint-2"), Optional.empty())));
 		DiagnosticsResult diagnostics = new DiagnosticsResult(endpoints, "test-sdk", "test-id");
 		ReactiveCluster reactiveCluster = mock(ReactiveCluster.class);
 		given(reactiveCluster.diagnostics()).willReturn(Mono.just(diagnostics));

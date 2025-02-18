@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.availability;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.mock.env.MockEnvironment;
@@ -37,7 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 
-	private AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
+	private final AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
 			new MockEnvironment());
 
 	@Test
@@ -80,8 +85,8 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		HealthEndpointGroups postProcessed = getPostProcessed("true");
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
-		assertThat(liveness.getAdditionalPath().toString()).isEqualTo("server:/livez");
-		assertThat(readiness.getAdditionalPath().toString()).isEqualTo("server:/readyz");
+		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
+		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
 	}
 
 	@Test
@@ -99,8 +104,41 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
-		assertThat(liveness.getAdditionalPath().toString()).isEqualTo("server:/livez");
-		assertThat(readiness.getAdditionalPath().toString()).isEqualTo("server:/readyz");
+		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
+		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
+	}
+
+	@Test
+	void delegatesAdditionalPathMappingToOriginalBean() {
+		HealthEndpointGroups groups = mock(HealthEndpointGroups.class,
+				Mockito.withSettings().extraInterfaces(AdditionalPathsMapper.class));
+		given(((AdditionalPathsMapper) groups).getAdditionalPaths(EndpointId.of("health"), WebServerNamespace.SERVER))
+			.willReturn(List.of("/one", "/two", "/three"));
+		MockEnvironment environment = new MockEnvironment();
+		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
+				environment);
+		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
+		assertThat(postProcessed).isInstanceOf(AdditionalPathsMapper.class);
+		AdditionalPathsMapper additionalPathsMapper = (AdditionalPathsMapper) postProcessed;
+		assertThat(additionalPathsMapper.getAdditionalPaths(EndpointId.of("health"), WebServerNamespace.SERVER))
+			.containsExactly("/one", "/two", "/three");
+	}
+
+	@Test
+	void whenAddAdditionalPathsIsTrueThenIncludesOwnAdditionalPathsInGetAdditionalPathsResult() {
+		HealthEndpointGroups groups = mock(HealthEndpointGroups.class,
+				Mockito.withSettings().extraInterfaces(AdditionalPathsMapper.class));
+		given(((AdditionalPathsMapper) groups).getAdditionalPaths(EndpointId.of("health"), WebServerNamespace.SERVER))
+			.willReturn(List.of("/one", "/two", "/three"));
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("management.endpoint.health.probes.add-additional-paths", "true");
+		AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
+				environment);
+		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
+		assertThat(postProcessed).isInstanceOf(AdditionalPathsMapper.class);
+		AdditionalPathsMapper additionalPathsMapper = (AdditionalPathsMapper) postProcessed;
+		assertThat(additionalPathsMapper.getAdditionalPaths(EndpointId.of("health"), WebServerNamespace.SERVER))
+			.containsExactly("/one", "/two", "/three", "/livez", "/readyz");
 	}
 
 	private HealthEndpointGroups getPostProcessed(String value) {

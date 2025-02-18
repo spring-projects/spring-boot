@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
@@ -37,10 +37,11 @@ import static org.mockito.Mockito.spy;
  *
  * @author Dave Syer
  * @author Matt Benson
+ * @author Moritz Halbritter
  */
 class RandomValuePropertySourceTests {
 
-	private RandomValuePropertySource source = new RandomValuePropertySource();
+	private final RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
 	void getPropertyWhenNotRandomReturnsNull() {
@@ -69,21 +70,21 @@ class RandomValuePropertySourceTests {
 	void getPropertyWhenIntRangeReturnsValue() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertThat(value).isNotNull();
-		assertThat(value >= 4).isTrue();
-		assertThat(value < 10).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(4);
+		assertThat(value).isLessThan(10);
 	}
 
 	@Test
 	void intRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
 			.withMessage("Lower bound must be less than upper bound.");
 	}
 
 	@Test
 	void intRangeWhenLowerBoundNegative() {
 		Integer value = (Integer) this.source.getProperty("random.int[-4,4]");
-		assertThat(value >= -4).isTrue();
-		assertThat(value < 4).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
 	}
 
 	@Test
@@ -94,13 +95,13 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void intMaxZero() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
 			.withMessage("Bound must be positive.");
 	}
 
 	@Test
 	void intNegativeBound() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
 			.withMessage("Bound must be positive.");
 	}
 
@@ -118,15 +119,15 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void longRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
 			.withMessage("Lower bound must be less than upper bound.");
 	}
 
 	@Test
 	void longRangeWhenLowerBoundNegative() {
 		Long value = (Long) this.source.getProperty("random.long[-4,4]");
-		assertThat(value >= -4).isTrue();
-		assertThat(value < 4).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
 	}
 
 	@Test
@@ -137,13 +138,13 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void longMaxZero() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
 			.withMessage("Bound must be positive.");
 	}
 
 	@Test
 	void longNegativeBound() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
 			.withMessage("Bound must be positive.");
 	}
 
@@ -190,6 +191,11 @@ class RandomValuePropertySourceTests {
 		assertThat(environment.getPropertySources().stream().map(PropertySource::getName)).containsExactly(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				RandomValuePropertySource.RANDOM_PROPERTY_SOURCE_NAME, "mockProperties");
+	}
+
+	@Test
+	void randomStringIs32CharsLong() {
+		assertThat(this.source.getProperty("random.string")).asString().hasSize(32);
 	}
 
 }

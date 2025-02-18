@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,18 +41,18 @@ class ExitCodeGeneratorsTests {
 		assertThatIllegalArgumentException().isThrownBy(() -> {
 			List<ExitCodeGenerator> generators = null;
 			new ExitCodeGenerators().addAll(generators);
-		}).withMessageContaining("Generators must not be null");
+		}).withMessageContaining("'generators' must not be null");
 	}
 
 	@Test
 	void addWhenGeneratorIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ExitCodeGenerators().add(null))
-			.withMessageContaining("Generator must not be null");
+			.withMessageContaining("'generator' must not be null");
 	}
 
 	@Test
 	void getExitCodeWhenNoGeneratorsShouldReturnZero() {
-		assertThat(new ExitCodeGenerators().getExitCode()).isEqualTo(0);
+		assertThat(new ExitCodeGenerators().getExitCode()).isZero();
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class ExitCodeGeneratorsTests {
 		given(generator.getExitCode()).willThrow(new IllegalStateException());
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(generator);
-		assertThat(generators.getExitCode()).isEqualTo(1);
+		assertThat(generators.getExitCode()).isOne();
 	}
 
 	@Test

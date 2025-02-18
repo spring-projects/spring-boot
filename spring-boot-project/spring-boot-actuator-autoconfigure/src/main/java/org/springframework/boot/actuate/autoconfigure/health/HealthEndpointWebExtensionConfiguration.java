@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
@@ -65,8 +64,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnBean(HealthEndpoint.class)
-@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class,
-		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 class HealthEndpointWebExtensionConfiguration {
 
 	@Bean
@@ -82,11 +80,10 @@ class HealthEndpointWebExtensionConfiguration {
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.get();
+			.orElse(null);
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class MvcAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
@@ -102,7 +99,6 @@ class HealthEndpointWebExtensionConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class JerseyAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
@@ -118,7 +114,7 @@ class HealthEndpointWebExtensionConfiguration {
 		static class JerseyInfrastructureConfiguration {
 
 			@Bean
-			@ConditionalOnMissingBean(JerseyApplicationPath.class)
+			@ConditionalOnMissingBean
 			JerseyApplicationPath jerseyApplicationPath(JerseyProperties properties, ResourceConfig config) {
 				return new DefaultJerseyApplicationPath(properties.getApplicationPath(), config);
 			}
@@ -163,10 +159,11 @@ class HealthEndpointWebExtensionConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.SERVER, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.endpoint))
+				.createEndpointResources(mapping,
+						(this.endpoint != null) ? Collections.singletonList(this.endpoint) : Collections.emptyList())
 				.stream()
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				.toList();
 			register(endpointResources, config);
 		}
 

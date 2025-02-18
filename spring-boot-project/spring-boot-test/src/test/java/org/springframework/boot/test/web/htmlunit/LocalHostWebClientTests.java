@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,12 @@ package org.springframework.boot.test.web.htmlunit;
 import java.io.IOException;
 import java.net.URL;
 
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebConnection;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
+import org.htmlunit.StringWebResponse;
+import org.htmlunit.WebClient;
+import org.htmlunit.WebConnection;
+import org.htmlunit.WebResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.mock.env.MockEnvironment;
@@ -35,6 +32,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -48,13 +46,10 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class LocalHostWebClientTests {
 
-	@Captor
-	private ArgumentCaptor<WebRequest> requestCaptor;
-
 	@Test
 	void createWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebClient(null))
-			.withMessageContaining("Environment must not be null");
+			.withMessageContaining("'environment' must not be null");
 	}
 
 	@Test
@@ -64,8 +59,9 @@ class LocalHostWebClientTests {
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("/test");
-		then(connection).should().getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8080/test"));
+		URL expectedUrl = new URL("http://localhost:8080/test");
+		then(connection).should()
+			.getResponse(assertArg((request) -> assertThat(request.getUrl()).isEqualTo(expectedUrl)));
 	}
 
 	@Test
@@ -76,8 +72,9 @@ class LocalHostWebClientTests {
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("/test");
-		then(connection).should().getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8181/test"));
+		URL expectedUrl = new URL("http://localhost:8181/test");
+		then(connection).should()
+			.getResponse(assertArg((request) -> assertThat(request.getUrl()).isEqualTo(expectedUrl)));
 	}
 
 	private WebConnection mockConnection() throws IOException {

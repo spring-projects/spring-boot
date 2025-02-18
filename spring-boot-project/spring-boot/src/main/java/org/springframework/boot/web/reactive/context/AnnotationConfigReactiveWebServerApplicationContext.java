@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.ApplicationContextFactory;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
@@ -178,7 +175,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 	 */
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "'annotatedClasses' must not be empty");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
@@ -191,7 +188,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 	 */
 	@Override
 	public final void scan(String... basePackages) {
-		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		Assert.notEmpty(basePackages, "'basePackages' must not be empty");
 		this.basePackages = basePackages;
 	}
 
@@ -210,30 +207,6 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 		if (!this.annotatedClasses.isEmpty()) {
 			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
-	}
-
-	/**
-	 * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
-	 * {@link AnnotationConfigReactiveWebServerApplicationContext}.
-	 */
-	static class Factory implements ApplicationContextFactory {
-
-		@Override
-		public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
-			return (webApplicationType != WebApplicationType.REACTIVE) ? null : ApplicationReactiveWebEnvironment.class;
-		}
-
-		@Override
-		public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
-			return (webApplicationType != WebApplicationType.REACTIVE) ? null : new ApplicationReactiveWebEnvironment();
-		}
-
-		@Override
-		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
-			return (webApplicationType != WebApplicationType.REACTIVE) ? null
-					: new AnnotationConfigReactiveWebServerApplicationContext();
-		}
-
 	}
 
 }

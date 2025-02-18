@@ -26,7 +26,6 @@ import java.lang.management.ThreadInfo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -73,9 +72,7 @@ class PlainTextThreadDumpFormatter {
 	}
 
 	private List<MonitorInfo> lockedMonitorsForDepth(MonitorInfo[] lockedMonitors, int depth) {
-		return Stream.of(lockedMonitors)
-			.filter((lockedMonitor) -> lockedMonitor.getLockedStackDepth() == depth)
-			.collect(Collectors.toList());
+		return Stream.of(lockedMonitors).filter((candidate) -> candidate.getLockedStackDepth() == depth).toList();
 	}
 
 	private void writeStackTraceElement(PrintWriter writer, StackTraceElement element, ThreadInfo info,

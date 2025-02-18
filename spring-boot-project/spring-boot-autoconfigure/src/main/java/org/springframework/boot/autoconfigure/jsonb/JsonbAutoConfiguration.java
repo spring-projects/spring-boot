@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jsonb;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,8 +34,8 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnClass(Jsonb.class)
-@ConditionalOnResource(resources = { "classpath:META-INF/services/javax.json.bind.spi.JsonbProvider",
-		"classpath:META-INF/services/javax.json.spi.JsonProvider" })
+@ConditionalOnResource(resources = { "classpath:META-INF/services/jakarta.json.bind.spi.JsonbProvider",
+		"classpath:META-INF/services/jakarta.json.spi.JsonProvider" })
 public class JsonbAutoConfiguration {
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.io.ObjectOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -38,6 +36,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 
 /**
@@ -53,9 +52,6 @@ class HttpRestartServerTests {
 
 	private HttpRestartServer server;
 
-	@Captor
-	private ArgumentCaptor<ClassLoaderFiles> filesCaptor;
-
 	@BeforeEach
 	void setup() {
 		this.server = new HttpRestartServer(this.delegate);
@@ -64,13 +60,13 @@ class HttpRestartServerTests {
 	@Test
 	void sourceDirectoryUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceDirectoryUrlFilter) null))
-			.withMessageContaining("SourceDirectoryUrlFilter must not be null");
+			.withMessageContaining("'sourceDirectoryUrlFilter' must not be null");
 	}
 
 	@Test
 	void restartServerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((RestartServer) null))
-			.withMessageContaining("RestartServer must not be null");
+			.withMessageContaining("'restartServer' must not be null");
 	}
 
 	@Test
@@ -82,8 +78,9 @@ class HttpRestartServerTests {
 		byte[] bytes = serialize(files);
 		request.setContent(bytes);
 		this.server.handle(new ServletServerHttpRequest(request), new ServletServerHttpResponse(response));
-		then(this.delegate).should().updateAndRestart(this.filesCaptor.capture());
-		assertThat(this.filesCaptor.getValue().getFile("name")).isNotNull();
+		then(this.delegate).should()
+			.updateAndRestart(
+					assertArg((classLoaderFiles) -> assertThat(classLoaderFiles.getFile("name")).isNotNull()));
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 

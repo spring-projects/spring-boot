@@ -16,11 +16,16 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -40,39 +45,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
+@DirtiesUrlFactories
 class ServletWebServerServletContextListenerTests {
 
-	@Test
-	void registeredServletContextListenerBeanIsCalledByJetty() {
-		registeredServletContextListenerBeanIsCalled(JettyConfiguration.class);
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	@ForkedClassPath
+	void registeredServletContextListenerBeanIsCalled(String serverName, Class<?> configuration) {
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				ServletListenerRegistrationBeanConfiguration.class, configuration);
+		ServletContextListener servletContextListener = (ServletContextListener) context
+			.getBean("registration", ServletListenerRegistrationBean.class)
+			.getListener();
+		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
+		context.close();
 	}
 
-	@Test
-	void registeredServletContextListenerBeanIsCalledByTomcat() {
-		registeredServletContextListenerBeanIsCalled(TomcatConfiguration.class);
-	}
-
-	@Test
-	void registeredServletContextListenerBeanIsCalledByUndertow() {
-		registeredServletContextListenerBeanIsCalled(UndertowConfiguration.class);
-	}
-
-	@Test
-	void servletContextListenerBeanIsCalledByJetty() {
-		servletContextListenerBeanIsCalled(JettyConfiguration.class);
-	}
-
-	@Test
-	void servletContextListenerBeanIsCalledByTomcat() {
-		servletContextListenerBeanIsCalled(TomcatConfiguration.class);
-	}
-
-	@Test
-	void servletContextListenerBeanIsCalledByUndertow() {
-		servletContextListenerBeanIsCalled(UndertowConfiguration.class);
-	}
-
-	private void servletContextListenerBeanIsCalled(Class<?> configuration) {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	@ForkedClassPath
+	void servletContextListenerBeanIsCalled(String serverName, Class<?> configuration) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = context.getBean("servletContextListener",
@@ -81,14 +73,10 @@ class ServletWebServerServletContextListenerTests {
 		context.close();
 	}
 
-	private void registeredServletContextListenerBeanIsCalled(Class<?> configuration) {
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
-				ServletListenerRegistrationBeanConfiguration.class, configuration);
-		ServletContextListener servletContextListener = (ServletContextListener) context
-			.getBean("registration", ServletListenerRegistrationBean.class)
-			.getListener();
-		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
-		context.close();
+	static Stream<Arguments> testConfiguration() {
+		return Stream.of(Arguments.of("Jetty", JettyConfiguration.class),
+				Arguments.of("Tomcat", TomcatConfiguration.class),
+				Arguments.of("Undertow", UndertowConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

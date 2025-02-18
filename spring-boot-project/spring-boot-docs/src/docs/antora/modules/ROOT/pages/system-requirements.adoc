@@ -1,0 +1,61 @@
+[[getting-started.system-requirements]]
+= System Requirements
+
+Spring Boot {version-spring-boot} requires at least https://www.java.com[Java 17] and is compatible with versions up to and including Java 23.
+{url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.
+
+Explicit build support is provided for the following build tools:
+
+|===
+| Build Tool | Version
+
+| Maven
+| 3.6.3 or later
+
+| Gradle
+| Gradle 7.x (7.6.4 or later) or 8.x (8.4 or later)
+|===
+
+
+
+[[getting-started.system-requirements.servlet-containers]]
+== Servlet Containers
+
+Spring Boot supports the following embedded servlet containers:
+
+|===
+| Name | Servlet Version
+
+| Tomcat 10.1 (10.1.25 or later)
+| 6.0
+
+| Jetty 12.0
+| 6.0
+
+| Undertow 2.3
+| 6.0
+|===
+
+You can also deploy Spring Boot applications to any servlet 5.0+ compatible container.
+
+
+
+[[getting-started.system-requirements.graal]]
+== GraalVM Native Images
+
+Spring Boot applications can be xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[converted into a Native Image] using GraalVM {version-graal} or above.
+
+Images can be created using the https://github.com/graalvm/native-build-tools[native build tools] Gradle/Maven plugins or `native-image` tool provided by GraalVM.
+You can also create native images using the https://github.com/paketo-buildpacks/native-image[native-image Paketo buildpack].
+
+The following versions are supported:
+
+|===
+| Name | Version
+
+| GraalVM Community
+| {version-graal}
+
+| Native Build Tools
+| {version-native-build-tools}
+|===

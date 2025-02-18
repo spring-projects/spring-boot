@@ -1,26 +1,27 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Buildpack Platform"
 
 dependencies {
-	api("com.fasterxml.jackson.core:jackson-databind")
-	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	api("net.java.dev.jna:jna-platform")
-	api("org.apache.commons:commons-compress:1.19")
-	api("org.apache.httpcomponents:httpclient") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
-	api("org.springframework:spring-core")
-	api("org.tomlj:tomlj:1.0.0")
-	
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestRuntimeOnly("org.testcontainers:testcontainers")
+
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
+	implementation("net.java.dev.jna:jna-platform")
+	implementation("org.apache.commons:commons-compress")
+	implementation("org.apache.httpcomponents.client5:httpclient5")
+	implementation("org.springframework:spring-core")
+	implementation("org.tomlj:tomlj:1.0.0")
+
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")

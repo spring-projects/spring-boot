@@ -21,16 +21,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -39,6 +42,7 @@ import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfig
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
@@ -55,14 +59,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"management.endpoints.web.exposure.include=*", "spring.jackson.default-property-inclusion=non_null" })
+@TestPropertySource(properties = { "management.endpoints.web.exposure.include=*" })
 public abstract class AbstractEndpointDocumentationTests {
 
 	protected static String describeEnumValues(Class<? extends Enum<?>> enumType) {
-		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
-			.map((constant) -> "`" + constant.name() + "`")
-			.collect(Collectors.toList()), ", ");
+		return StringUtils.collectionToDelimitedString(
+				Stream.of(enumType.getEnumConstants()).map((constant) -> "`" + constant.name() + "`").toList(), ", ");
 	}
 
 	protected OperationPreprocessor limit(String... keys) {
@@ -117,10 +119,7 @@ public abstract class AbstractEndpointDocumentationTests {
 
 	@SuppressWarnings("unchecked")
 	private <T> List<Object> select(List<Object> candidates, Predicate<T> filter) {
-		return candidates.stream()
-			.filter((candidate) -> filter.test((T) candidate))
-			.limit(3)
-			.collect(Collectors.toList());
+		return candidates.stream().filter((candidate) -> filter.test((T) candidate)).limit(3).toList();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -128,8 +127,25 @@ public abstract class AbstractEndpointDocumentationTests {
 			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
 			WebFluxEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-			WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class })
+			WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
+			JacksonEndpointAutoConfiguration.class })
 	static class BaseDocumentationConfiguration {
+
+		@Bean
+		static BeanPostProcessor endpointObjectMapperBeanPostProcessor() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof EndpointObjectMapper) {
+						return (EndpointObjectMapper) () -> ((EndpointObjectMapper) bean).get()
+							.enable(SerializationFeature.INDENT_OUTPUT);
+					}
+					return bean;
+				}
+
+			};
+		}
 
 	}
 

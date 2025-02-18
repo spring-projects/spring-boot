@@ -83,8 +83,14 @@ class TestTarGzip {
 		buildpackToml.append("homepage = \"https://github.com/example/example-buildpack\"\n");
 		buildpackToml.append("[[stacks]]\n");
 		buildpackToml.append("id = \"io.buildpacks.stacks.bionic\"\n");
-		String detectScript = "#!/usr/bin/env bash\n" + "echo \"---> detect\"\n";
-		String buildScript = "#!/usr/bin/env bash\n" + "echo \"---> build\"\n";
+		String detectScript = """
+				#!/usr/bin/env bash
+				echo "---> detect"
+				""";
+		String buildScript = """
+				#!/usr/bin/env bash
+				echo "---> build"
+				""";
 		try (TarArchiveOutputStream tar = new TarArchiveOutputStream(Files.newOutputStream(archive))) {
 			writeEntry(tar, "buildpack.toml", buildpackToml.toString());
 			writeEntry(tar, "bin/");

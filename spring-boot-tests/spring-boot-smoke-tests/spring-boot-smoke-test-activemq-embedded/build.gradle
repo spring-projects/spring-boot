@@ -1,0 +1,13 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Actuator ActiveMQ Embedded smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-activemq"))
+
+	runtimeOnly("org.apache.activemq:activemq-broker")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

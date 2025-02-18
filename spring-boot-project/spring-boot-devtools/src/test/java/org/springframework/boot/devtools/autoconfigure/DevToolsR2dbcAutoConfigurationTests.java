@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,28 +71,32 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 		@Test
 		void nonEmbeddedConnectionFactoryIsNotShutdown() throws Exception {
-			ConfigurableApplicationContext context = getContext(() -> createContext("r2dbc:h2:file:///testdb"));
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			context.close();
-			assertThat(shutdowns).doesNotContain(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(() -> createContext("r2dbc:h2:file:///testdb"))) {
+				ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+				context.close();
+				assertThat(shutdowns).doesNotContain(connectionFactory);
+			}
 		}
 
 		@Test
 		void singleManuallyConfiguredConnectionFactoryIsNotClosed() throws Exception {
-			ConfigurableApplicationContext context = getContext(
-					() -> createContext(SingleConnectionFactoryConfiguration.class));
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			context.close();
-			assertThat(shutdowns).doesNotContain(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(
+					() -> createContext(SingleConnectionFactoryConfiguration.class))) {
+				ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+				context.close();
+				assertThat(shutdowns).doesNotContain(connectionFactory);
+			}
 		}
 
 		@Test
 		void multipleConnectionFactoriesAreIgnored() throws Exception {
-			ConfigurableApplicationContext context = getContext(
-					() -> createContext(MultipleConnectionFactoriesConfiguration.class));
-			Collection<ConnectionFactory> connectionFactory = context.getBeansOfType(ConnectionFactory.class).values();
-			context.close();
-			assertThat(shutdowns).doesNotContainAnyElementsOf(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(
+					() -> createContext(MultipleConnectionFactoriesConfiguration.class))) {
+				Collection<ConnectionFactory> connectionFactory = context.getBeansOfType(ConnectionFactory.class)
+					.values();
+				context.close();
+				assertThat(shutdowns).doesNotContainAnyElementsOf(connectionFactory);
+			}
 		}
 
 		@Test
@@ -152,12 +156,12 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 	@Nested
 	@ClassPathExclusions("r2dbc-pool*.jar")
-	static class Embedded extends Common {
+	class Embedded extends Common {
 
 	}
 
 	@Nested
-	static class Pooled extends Common {
+	class Pooled extends Common {
 
 	}
 
@@ -186,7 +190,7 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 	}
 
-	private static class MockConnectionFactory implements ConnectionFactory {
+	private static final class MockConnectionFactory implements ConnectionFactory {
 
 		@Override
 		public Publisher<? extends Connection> create() {

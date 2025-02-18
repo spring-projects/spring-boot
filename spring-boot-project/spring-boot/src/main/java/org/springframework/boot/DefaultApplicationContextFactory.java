@@ -19,8 +19,10 @@ package org.springframework.boot;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -46,12 +48,19 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
 		try {
 			return getFromSpringFactories(webApplicationType, ApplicationContextFactory::create,
-					AnnotationConfigApplicationContext::new);
+					this::createDefaultApplicationContext);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable create a default ApplicationContext instance, "
 					+ "you may need a custom ApplicationContextFactory", ex);
 		}
+	}
+
+	private ConfigurableApplicationContext createDefaultApplicationContext() {
+		if (!AotDetector.useGeneratedArtifacts()) {
+			return new AnnotationConfigApplicationContext();
+		}
+		return new GenericApplicationContext();
 	}
 
 	private <T> T getFromSpringFactories(WebApplicationType webApplicationType,

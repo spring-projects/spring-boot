@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.web.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -68,7 +68,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	public DelegatingFilterProxyRegistrationBean(String targetBeanName,
 			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
-		Assert.hasLength(targetBeanName, "TargetBeanName must not be null or empty");
+		Assert.hasLength(targetBeanName, "'targetBeanName' must not be empty");
 		this.targetBeanName = targetBeanName;
 		setName(targetBeanName);
 	}
@@ -95,8 +95,9 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	private WebApplicationContext getWebApplicationContext() {
-		Assert.notNull(this.applicationContext, "ApplicationContext be injected");
-		Assert.isInstanceOf(WebApplicationContext.class, this.applicationContext);
+		Assert.state(this.applicationContext != null, "ApplicationContext has not been injected");
+		Assert.state(this.applicationContext instanceof WebApplicationContext,
+				"Injected ApplicationContext is not a WebApplicationContext");
 		return (WebApplicationContext) this.applicationContext;
 	}
 

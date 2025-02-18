@@ -42,8 +42,8 @@ class StaticResourceJars {
 
 	List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		if (classLoader instanceof URLClassLoader) {
-			return getUrlsFrom(((URLClassLoader) classLoader).getURLs());
+		if (classLoader instanceof URLClassLoader urlClassLoader) {
+			return getUrlsFrom(urlClassLoader.getURLs());
 		}
 		else {
 			return getUrlsFrom(Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
@@ -108,14 +108,14 @@ class StaticResourceJars {
 	}
 
 	private void addUrlConnection(List<URL> urls, URL url, URLConnection connection) {
-		if (connection instanceof JarURLConnection && isResourcesJar((JarURLConnection) connection)) {
+		if (connection instanceof JarURLConnection jarURLConnection && isResourcesJar(jarURLConnection)) {
 			urls.add(url);
 		}
 	}
 
 	private boolean isResourcesJar(JarURLConnection connection) {
 		try {
-			return isResourcesJar(connection.getJarFile());
+			return isResourcesJar(connection.getJarFile(), !connection.getUseCaches());
 		}
 		catch (IOException ex) {
 			return false;
@@ -124,19 +124,21 @@ class StaticResourceJars {
 
 	private boolean isResourcesJar(File file) {
 		try {
-			return isResourcesJar(new JarFile(file));
+			return isResourcesJar(new JarFile(file), true);
 		}
 		catch (IOException | InvalidPathException ex) {
 			return false;
 		}
 	}
 
-	private boolean isResourcesJar(JarFile jar) throws IOException {
+	private boolean isResourcesJar(JarFile jarFile, boolean closeJarFile) throws IOException {
 		try {
-			return jar.getName().endsWith(".jar") && (jar.getJarEntry("META-INF/resources") != null);
+			return jarFile.getName().endsWith(".jar") && (jarFile.getJarEntry("META-INF/resources") != null);
 		}
 		finally {
-			jar.close();
+			if (closeJarFile) {
+				jarFile.close();
+			}
 		}
 	}
 

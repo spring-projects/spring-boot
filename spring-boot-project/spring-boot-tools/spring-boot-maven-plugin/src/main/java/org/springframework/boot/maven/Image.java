@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 
@@ -50,6 +49,8 @@ public class Image {
 
 	String builder;
 
+	Boolean trustBuilder;
+
 	String runImage;
 
 	Map<String, String> env;
@@ -70,9 +71,19 @@ public class Image {
 
 	List<String> tags;
 
+	CacheInfo buildWorkspace;
+
 	CacheInfo buildCache;
 
 	CacheInfo launchCache;
+
+	String createdDate;
+
+	String applicationDirectory;
+
+	List<String> securityOptions;
+
+	String imagePlatform;
 
 	/**
 	 * The name of the created image.
@@ -96,6 +107,18 @@ public class Image {
 
 	void setBuilder(String builder) {
 		this.builder = builder;
+	}
+
+	/**
+	 * If the builder should be treated as trusted.
+	 * @return {@code true} if the builder should be treated as trusted
+	 */
+	public Boolean getTrustBuilder() {
+		return this.trustBuilder;
+	}
+
+	void setTrustBuilder(Boolean trustBuilder) {
+		this.trustBuilder = trustBuilder;
 	}
 
 	/**
@@ -174,6 +197,44 @@ public class Image {
 		this.network = network;
 	}
 
+	/**
+	 * Returns the created date for the image.
+	 * @return the created date
+	 */
+	public String getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	/**
+	 * Returns the application content directory for the image.
+	 * @return the application directory
+	 */
+	public String getApplicationDirectory() {
+		return this.applicationDirectory;
+	}
+
+	public void setApplicationDirectory(String applicationDirectory) {
+		this.applicationDirectory = applicationDirectory;
+	}
+
+	/**
+	 * Returns the platform (os/architecture/variant) that will be used for all pulled
+	 * images. When {@code null}, the system will choose a platform based on the host
+	 * operating system and architecture.
+	 * @return the image platform
+	 */
+	public String getImagePlatform() {
+		return this.imagePlatform;
+	}
+
+	public void setImagePlatform(String imagePlatform) {
+		this.imagePlatform = imagePlatform;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -190,10 +251,13 @@ public class Image {
 		if (StringUtils.hasText(this.builder)) {
 			request = request.withBuilder(ImageReference.of(this.builder));
 		}
+		if (this.trustBuilder != null) {
+			request = request.withTrustBuilder(this.trustBuilder);
+		}
 		if (StringUtils.hasText(this.runImage)) {
 			request = request.withRunImage(ImageReference.of(this.runImage));
 		}
-		if (this.env != null && !this.env.isEmpty()) {
+		if (!CollectionUtils.isEmpty(this.env)) {
 			request = request.withEnv(this.env);
 		}
 		if (this.cleanCache != null) {
@@ -207,21 +271,35 @@ public class Image {
 			request = request.withPublish(this.publish);
 		}
 		if (!CollectionUtils.isEmpty(this.buildpacks)) {
-			request = request
-				.withBuildpacks(this.buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+			request = request.withBuildpacks(this.buildpacks.stream().map(BuildpackReference::of).toList());
 		}
 		if (!CollectionUtils.isEmpty(this.bindings)) {
-			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
+			request = request.withBindings(this.bindings.stream().map(Binding::of).toList());
 		}
 		request = request.withNetwork(this.network);
 		if (!CollectionUtils.isEmpty(this.tags)) {
-			request = request.withTags(this.tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+			request = request.withTags(this.tags.stream().map(ImageReference::of).toList());
+		}
+		if (this.buildWorkspace != null) {
+			request = request.withBuildWorkspace(this.buildWorkspace.asCache());
 		}
 		if (this.buildCache != null) {
 			request = request.withBuildCache(this.buildCache.asCache());
 		}
 		if (this.launchCache != null) {
 			request = request.withLaunchCache(this.launchCache.asCache());
+		}
+		if (StringUtils.hasText(this.createdDate)) {
+			request = request.withCreatedDate(this.createdDate);
+		}
+		if (StringUtils.hasText(this.applicationDirectory)) {
+			request = request.withApplicationDirectory(this.applicationDirectory);
+		}
+		if (this.securityOptions != null) {
+			request = request.withSecurityOptions(this.securityOptions);
+		}
+		if (StringUtils.hasText(this.imagePlatform)) {
+			request = request.withImagePlatform(this.imagePlatform);
 		}
 		return request;
 	}

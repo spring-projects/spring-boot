@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class RequestPredicateFactory {
 	private final EndpointMediaTypes endpointMediaTypes;
 
 	RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes) {
-		Assert.notNull(endpointMediaTypes, "EndpointMediaTypes must not be null");
+		Assert.notNull(endpointMediaTypes, "'endpointMediaTypes' must not be null");
 		this.endpointMediaTypes = endpointMediaTypes;
 	}
 
@@ -86,7 +86,7 @@ class RequestPredicateFactory {
 			boolean matchRemainingPathSegments) {
 		StringBuilder path = new StringBuilder(rootPath);
 		for (int i = 0; i < selectorParameters.length; i++) {
-			path.append("/{");
+			path.append((i != 0 || !rootPath.endsWith("/")) ? "/{" : "{");
 			if (i == selectorParameters.length - 1 && matchRemainingPathSegments) {
 				path.append("*");
 			}

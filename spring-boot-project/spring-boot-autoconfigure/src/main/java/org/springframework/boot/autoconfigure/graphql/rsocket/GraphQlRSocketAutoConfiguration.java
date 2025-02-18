@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.graphql.rsocket;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.GraphQL;
@@ -52,16 +49,15 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 @AutoConfiguration(after = { GraphQlAutoConfiguration.class, RSocketMessagingAutoConfiguration.class })
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, RSocketServer.class, HttpServer.class })
 @ConditionalOnBean({ RSocketMessageHandler.class, AnnotatedControllerConfigurer.class })
-@ConditionalOnProperty(prefix = "spring.graphql.rsocket", name = "mapping")
+@ConditionalOnProperty("spring.graphql.rsocket.mapping")
 public class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
-			ObjectProvider<RSocketGraphQlInterceptor> interceptorsProvider, ObjectMapper objectMapper) {
-		List<RSocketGraphQlInterceptor> interceptors = interceptorsProvider.orderedStream()
-			.collect(Collectors.toList());
-		return new GraphQlRSocketHandler(graphQlService, interceptors, new Jackson2JsonEncoder(objectMapper));
+			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
+		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),
+				new Jackson2JsonEncoder(objectMapper));
 	}
 
 	@Bean

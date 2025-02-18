@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -42,11 +41,14 @@ import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration.PropertiesArtemisConnectionDetails;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -64,6 +66,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
+@EnabledForJreRange(min = JRE.JAVA_17, max = JRE.JAVA_22,
+		disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 class ArtemisAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -80,7 +84,7 @@ class ArtemisAutoConfigurationTests {
 			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
 			assertThat(connectionFactory.isCacheConsumers()).isFalse();
 			assertThat(connectionFactory.isCacheProducers()).isTrue();
-			assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(1);
+			assertThat(connectionFactory.getSessionCacheSize()).isOne();
 		});
 	}
 
@@ -372,6 +376,27 @@ class ArtemisAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(ActiveMQConnectionFactory.class));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesArtemisConnectionDetails.class));
+	}
+
+	@Test
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+			.withPropertyValues("spring.artemis.pool.enabled=false", "spring.jms.cache.enabled=false")
+			.withUserConfiguration(TestConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ArtemisConnectionDetails.class)
+					.doesNotHaveBean(PropertiesArtemisConnectionDetails.class);
+				ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+				assertThat(connectionFactory.toURI().toString()).startsWith("tcp://localhost:12345");
+				assertThat(connectionFactory.getUser()).isEqualTo("springuser");
+				assertThat(connectionFactory.getPassword()).isEqualTo("spring");
+			});
+	}
+
 	private ConnectionFactory getConnectionFactory(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(ConnectionFactory.class).hasBean("jmsConnectionFactory");
 		ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
@@ -394,10 +419,10 @@ class ArtemisAutoConfigurationTests {
 			String host, int port) {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
 		assertThat(transportConfig.getFactoryClassName()).isEqualTo(NettyConnectorFactory.class.getName());
-		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
+		assertThat(transportConfig.getParams()).containsEntry("host", host);
 		Object transportConfigPort = transportConfig.getParams().get("port");
-		if (transportConfigPort instanceof String) {
-			transportConfigPort = Integer.parseInt((String) transportConfigPort);
+		if (transportConfigPort instanceof String portString) {
+			transportConfigPort = Integer.parseInt(portString);
 		}
 		assertThat(transportConfigPort).isEqualTo(port);
 		return transportConfig;
@@ -428,7 +453,7 @@ class ArtemisAutoConfigurationTests {
 
 		void checkDestination(String name, RoutingType routingType, boolean shouldExist) {
 			try {
-				BindingQueryResult result = this.server.bindingQuery(new SimpleString(name));
+				BindingQueryResult result = this.server.bindingQuery(SimpleString.of(name));
 				assertThat(result.isExists()).isEqualTo(shouldExist);
 				if (shouldExist) {
 					assertThat(result.getAddressInfo().getRoutingType()).isEqualTo(routingType);
@@ -492,6 +517,38 @@ class ArtemisAutoConfigurationTests {
 			return (configuration) -> {
 				configuration.setClusterPassword("Foobar");
 				configuration.setName("customFooBar");
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConnectionDetailsConfiguration {
+
+		@Bean
+		ArtemisConnectionDetails activemqConnectionDetails() {
+			return new ArtemisConnectionDetails() {
+
+				@Override
+				public ArtemisMode getMode() {
+					return ArtemisMode.NATIVE;
+				}
+
+				@Override
+				public String getBrokerUrl() {
+					return "tcp://localhost:12345";
+				}
+
+				@Override
+				public String getUser() {
+					return "springuser";
+				}
+
+				@Override
+				public String getPassword() {
+					return "spring";
+				}
+
 			};
 		}
 

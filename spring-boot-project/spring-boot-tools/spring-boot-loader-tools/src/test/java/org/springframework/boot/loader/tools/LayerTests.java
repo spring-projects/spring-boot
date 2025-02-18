@@ -31,12 +31,12 @@ class LayerTests {
 
 	@Test
 	void createWhenNameIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("Name must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("'name' must not be empty");
 	}
 
 	@Test
 	void createWhenNameIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("")).withMessage("Name must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("")).withMessage("'name' must not be empty");
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class LayerTests {
 		Layer layer1 = new Layer("testa");
 		Layer layer2 = new Layer("testa");
 		Layer layer3 = new Layer("testb");
-		assertThat(layer1.hashCode()).isEqualTo(layer2.hashCode());
+		assertThat(layer1).hasSameHashCodeAs(layer2);
 		assertThat(layer1).isEqualTo(layer1).isEqualTo(layer2).isNotEqualTo(layer3);
 	}
 

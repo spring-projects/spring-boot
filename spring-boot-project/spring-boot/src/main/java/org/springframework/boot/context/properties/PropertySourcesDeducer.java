@@ -71,8 +71,8 @@ class PropertySourcesDeducer {
 
 	private MutablePropertySources extractEnvironmentPropertySources() {
 		Environment environment = this.applicationContext.getEnvironment();
-		if (environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) environment).getPropertySources();
+		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
+			return configurableEnvironment.getPropertySources();
 		}
 		return null;
 	}

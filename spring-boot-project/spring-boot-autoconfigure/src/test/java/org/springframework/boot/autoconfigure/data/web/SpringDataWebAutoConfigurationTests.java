@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
+import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
+import org.springframework.data.web.config.SpringDataWebSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class SpringDataWebAutoConfigurationTests {
 
@@ -53,13 +56,16 @@ class SpringDataWebAutoConfigurationTests {
 
 	@Test
 	void customizePageable() {
-		this.contextRunner.withPropertyValues("spring.data.web.pageable.page-parameter=p",
-				"spring.data.web.pageable.size-parameter=s", "spring.data.web.pageable.default-page-size=10",
-				"spring.data.web.pageable.prefix=abc", "spring.data.web.pageable.qualifier-delimiter=__",
-				"spring.data.web.pageable.max-page-size=100", "spring.data.web.pageable.one-indexed-parameters=true")
+		this.contextRunner
+			.withPropertyValues("spring.data.web.pageable.page-parameter=p",
+					"spring.data.web.pageable.size-parameter=s", "spring.data.web.pageable.default-page-size=10",
+					"spring.data.web.pageable.prefix=abc", "spring.data.web.pageable.qualifier-delimiter=__",
+					"spring.data.web.pageable.max-page-size=100", "spring.data.web.pageable.serialization-mode=VIA_DTO",
+					"spring.data.web.pageable.one-indexed-parameters=true")
 			.run((context) -> {
 				PageableHandlerMethodArgumentResolver argumentResolver = context
 					.getBean(PageableHandlerMethodArgumentResolver.class);
+				SpringDataWebSettings springDataWebSettings = context.getBean(SpringDataWebSettings.class);
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("pageParameterName", "p");
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("sizeParameterName", "s");
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("oneIndexedParameters", true);
@@ -67,6 +73,7 @@ class SpringDataWebAutoConfigurationTests {
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("qualifierDelimiter", "__");
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("fallbackPageable", PageRequest.of(0, 10));
 				assertThat(argumentResolver).hasFieldOrPropertyWithValue("maxPageSize", 100);
+				assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(PageSerializationMode.VIA_DTO);
 			});
 	}
 
@@ -76,6 +83,7 @@ class SpringDataWebAutoConfigurationTests {
 			SpringDataWebProperties.Pageable properties = new SpringDataWebProperties().getPageable();
 			PageableHandlerMethodArgumentResolver argumentResolver = context
 				.getBean(PageableHandlerMethodArgumentResolver.class);
+			SpringDataWebSettings springDataWebSettings = context.getBean(SpringDataWebSettings.class);
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("pageParameterName",
 					properties.getPageParameter());
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("sizeParameterName",
@@ -88,6 +96,7 @@ class SpringDataWebAutoConfigurationTests {
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("fallbackPageable",
 					PageRequest.of(0, properties.getDefaultPageSize()));
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("maxPageSize", properties.getMaxPageSize());
+			assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(properties.getSerializationMode());
 		});
 	}
 
@@ -98,6 +107,26 @@ class SpringDataWebAutoConfigurationTests {
 				.getBean(SortHandlerMethodArgumentResolver.class);
 			assertThat(argumentResolver).hasFieldOrPropertyWithValue("sortParameter", "s");
 		});
+	}
+
+	@Test
+	void customizePageSerializationModeViaConfigProps() {
+		this.contextRunner.withPropertyValues("spring.data.web.pageable.serialization-mode=VIA_DTO").run((context) -> {
+			SpringDataWebSettings springDataWebSettings = context.getBean(SpringDataWebSettings.class);
+			assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(PageSerializationMode.VIA_DTO);
+		});
+	}
+
+	@Test
+	void customizePageSerializationModeViaCustomBean() {
+		this.contextRunner
+			.withBean("customSpringDataWebSettings", SpringDataWebSettings.class,
+					() -> new SpringDataWebSettings(PageSerializationMode.VIA_DTO))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("springDataWebSettings");
+				SpringDataWebSettings springDataWebSettings = context.getBean(SpringDataWebSettings.class);
+				assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(PageSerializationMode.VIA_DTO);
+			});
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.springframework.boot.test.web.htmlunit;
 
 import java.io.IOException;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.Page;
+import org.htmlunit.WebClient;
 
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -37,7 +37,7 @@ public class LocalHostWebClient extends WebClient {
 	private final Environment environment;
 
 	public LocalHostWebClient(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 	}
 

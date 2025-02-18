@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -42,13 +43,13 @@ class BindableTests {
 	@Test
 	void ofClassWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((Class<?>) null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
 	void ofTypeWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((ResolvableType) null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
@@ -85,7 +86,7 @@ class BindableTests {
 	void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123))
-			.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
+			.withMessageContaining("'existingValue' must be an instance of " + String.class.getName());
 	}
 
 	@Test
@@ -155,7 +156,7 @@ class BindableTests {
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
-		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
+		assertThat(bindable1).hasSameHashCodeAs(bindable2);
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
 		assertThat(bindable1).isEqualTo(bindable3);
 	}
@@ -190,8 +191,63 @@ class BindableTests {
 		assertThat(restricted.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isTrue();
 	}
 
+	@Test
+	void whenTypeCouldUseJavaBeanOrValueObjectJavaBeanBindingCanBeSpecified() {
+		BindMethod bindMethod = Bindable.of(JavaBeanOrValueObject.class)
+			.withBindMethod(BindMethod.JAVA_BEAN)
+			.getBindMethod();
+		assertThat(bindMethod).isEqualTo(BindMethod.JAVA_BEAN);
+	}
+
+	@Test
+	void whenTypeCouldUseJavaBeanOrValueObjectExistingValueForcesJavaBeanBinding() {
+		BindMethod bindMethod = Bindable.of(JavaBeanOrValueObject.class)
+			.withExistingValue(new JavaBeanOrValueObject("value"))
+			.getBindMethod();
+		assertThat(bindMethod).isEqualTo(BindMethod.JAVA_BEAN);
+	}
+
+	@Test
+	void whenBindingIsValueObjectExistingValueThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> Bindable.of(JavaBeanOrValueObject.class)
+			.withBindMethod(BindMethod.VALUE_OBJECT)
+			.withExistingValue(new JavaBeanOrValueObject("value")));
+	}
+
+	@Test
+	void whenBindableHasExistingValueValueObjectBindMethodThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> Bindable.of(JavaBeanOrValueObject.class)
+			.withExistingValue(new JavaBeanOrValueObject("value"))
+			.withBindMethod(BindMethod.VALUE_OBJECT));
+	}
+
+	@Test
+	void whenBindableHasSuppliedValueValueObjectBindMethodThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> Bindable.of(JavaBeanOrValueObject.class)
+			.withSuppliedValue(() -> new JavaBeanOrValueObject("value"))
+			.withBindMethod(BindMethod.VALUE_OBJECT));
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface TestAnnotation {
+
+	}
+
+	static class JavaBeanOrValueObject {
+
+		private String property;
+
+		JavaBeanOrValueObject(String property) {
+			this.property = property;
+		}
+
+		String getProperty() {
+			return this.property;
+		}
+
+		void setProperty(String property) {
+			this.property = property;
+		}
 
 	}
 

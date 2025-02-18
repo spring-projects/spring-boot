@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -37,7 +37,7 @@ public class WebApplicationContextServletContextAwareProcessor extends ServletCo
 	private final ConfigurableWebApplicationContext webApplicationContext;
 
 	public WebApplicationContextServletContextAwareProcessor(ConfigurableWebApplicationContext webApplicationContext) {
-		Assert.notNull(webApplicationContext, "WebApplicationContext must not be null");
+		Assert.notNull(webApplicationContext, "'webApplicationContext' must not be null");
 		this.webApplicationContext = webApplicationContext;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Validation;
-
+import jakarta.validation.Validation;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -74,25 +73,25 @@ class BinderTests {
 	@Test
 	void createWhenSourcesIsNullArrayShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((ConfigurationPropertySource[]) null))
-			.withMessageContaining("Sources must not be null");
+			.withMessageContaining("'sources' must not be null");
 	}
 
 	@Test
 	void createWhenSourcesIsNullIterableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
-			.withMessageContaining("Sources must not be null");
+			.withMessageContaining("'sources' must not be null");
 	}
 
 	@Test
 	void createWhenArraySourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(new ConfigurationPropertySource[] { null }))
-			.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("'sources' must not contain null elements");
 	}
 
 	@Test
 	void createWhenIterableSourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(Collections.singletonList(null)))
-			.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("'sources' must not contain null elements");
 	}
 
 	@Test
@@ -100,14 +99,14 @@ class BinderTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
 					BindHandler.DEFAULT))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
 	void bindWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
-			.withMessageContaining("Target must not be null");
+			.withMessageContaining("'target' must not be null");
 	}
 
 	@Test
@@ -261,7 +260,7 @@ class BinderTests {
 		DateTimeFormat annotation = AnnotationUtils.synthesizeAnnotation(
 				Collections.singletonMap("iso", DateTimeFormat.ISO.DATE_TIME), DateTimeFormat.class, null);
 		LocalDate result = this.binder.bind("foo", Bindable.of(LocalDate.class).withAnnotations(annotation)).get();
-		assertThat(result.toString()).isEqualTo("2014-04-01");
+		assertThat(result).hasToString("2014-04-01");
 	}
 
 	@Test
@@ -375,7 +374,7 @@ class BinderTests {
 
 		private String value;
 
-		private List<String> items = Collections.emptyList();
+		private final List<String> items = Collections.emptyList();
 
 		String getValue() {
 			return this.value;
@@ -409,7 +408,7 @@ class BinderTests {
 
 		private String value = "hello";
 
-		private List<String> items = Collections.emptyList();
+		private final List<String> items = Collections.emptyList();
 
 		String getValue() {
 			return this.value;

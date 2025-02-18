@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,28 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.beans.PropertyDescriptor;
+import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
+import io.micrometer.observation.ObservationRegistry;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
@@ -48,10 +56,11 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -62,6 +71,8 @@ import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
+import org.springframework.integration.handler.BridgeHandler;
+import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
@@ -77,8 +88,10 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -90,6 +103,7 @@ import static org.mockito.Mockito.mock;
  * @author Artem Bilan
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Yong-Hyun Kim
  */
 class IntegrationAutoConfigurationTests {
 
@@ -292,53 +306,61 @@ class IntegrationAutoConfigurationTests {
 
 	@Test
 	void integrationGlobalPropertiesAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.integration.channel.auto-create=false",
+		String[] propertyValues = { "spring.integration.channel.auto-create=false",
 				"spring.integration.channel.max-unicast-subscribers=2",
 				"spring.integration.channel.max-broadcast-subscribers=3",
 				"spring.integration.error.require-subscribers=false", "spring.integration.error.ignore-failures=false",
+				"spring.integration.endpoint.defaultTimeout=60s",
 				"spring.integration.endpoint.throw-exception-on-late-reply=true",
 				"spring.integration.endpoint.read-only-headers=ignoredHeader",
-				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
-				org.springframework.integration.context.IntegrationProperties integrationProperties = context
-					.getBean(org.springframework.integration.context.IntegrationProperties.class);
-				assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
-				assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
-				assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
-				assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
-				assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
-				assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
-				assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
-				assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
-						"_org.springframework.integration.errorLogger");
-			});
+				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger" };
+		assertThat(propertyValues).hasSameSizeAs(globalIntegrationPropertyNames());
+		this.contextRunner.withPropertyValues(propertyValues).run((context) -> {
+			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+			org.springframework.integration.context.IntegrationProperties integrationProperties = context
+				.getBean(org.springframework.integration.context.IntegrationProperties.class);
+			assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
+			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
+			assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
+			assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
+			assertThat(integrationProperties.getEndpointsDefaultTimeout()).isEqualTo(60000);
+			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
+			assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+			assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
+					"_org.springframework.integration.errorLogger");
+		});
 	}
 
 	@Test
 	void integrationGlobalPropertiesUseConsistentDefault() {
+		List<PropertyAccessor> properties = List
+			.of("isChannelsAutoCreate", "getChannelsMaxUnicastSubscribers", "getChannelsMaxBroadcastSubscribers",
+					"isErrorChannelRequireSubscribers", "isErrorChannelIgnoreFailures", "getEndpointsDefaultTimeout",
+					"isMessagingTemplateThrowExceptionOnLateReply", "getReadOnlyHeaders", "getNoAutoStartupEndpoints")
+			.stream()
+			.map(PropertyAccessor::new)
+			.toList();
+		assertThat(properties).hasSameSizeAs(globalIntegrationPropertyNames());
 		org.springframework.integration.context.IntegrationProperties defaultIntegrationProperties = new org.springframework.integration.context.IntegrationProperties();
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
 			org.springframework.integration.context.IntegrationProperties integrationProperties = context
 				.getBean(org.springframework.integration.context.IntegrationProperties.class);
-			assertThat(integrationProperties.isChannelsAutoCreate())
-				.isEqualTo(defaultIntegrationProperties.isChannelsAutoCreate());
-			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers())
-				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
-			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers())
-				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
-			assertThat(integrationProperties.isErrorChannelRequireSubscribers())
-				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
-			assertThat(integrationProperties.isErrorChannelIgnoreFailures())
-				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
-			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply())
-				.isEqualTo(defaultIntegrationProperties.isMessagingTemplateThrowExceptionOnLateReply());
-			assertThat(integrationProperties.getReadOnlyHeaders())
-				.isEqualTo(defaultIntegrationProperties.getReadOnlyHeaders());
-			assertThat(integrationProperties.getNoAutoStartupEndpoints())
-				.isEqualTo(defaultIntegrationProperties.getNoAutoStartupEndpoints());
+			properties.forEach((property) -> assertThat(property.get(integrationProperties))
+				.isEqualTo(property.get(defaultIntegrationProperties)));
 		});
+	}
+
+	private List<String> globalIntegrationPropertyNames() {
+		return Stream
+			.of(PropertyAccessorFactory
+				.forBeanPropertyAccess(new org.springframework.integration.context.IntegrationProperties())
+				.getPropertyDescriptors())
+			.map(PropertyDescriptor::getName)
+			.filter((name) -> !"class".equals(name))
+			.filter((name) -> !"taskSchedulerPoolSize".equals(name))
+			.toList();
 	}
 
 	@Test
@@ -384,18 +406,6 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void whenTheUserDefinesTheirOwnIntegrationDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
-		this.contextRunner.withUserConfiguration(CustomIntegrationDataSourceInitializerConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					DataSourceTransactionManagerAutoConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-				.hasSingleBean(IntegrationDataSourceInitializer.class)
-				.hasBean("customInitializer"));
-	}
-
-	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredIntegrationInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -428,7 +438,7 @@ class IntegrationAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(PollerMetadata.class);
 				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-				assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(1L);
+				assertThat(metadata.getMaxMessagesPerPoll()).isOne();
 				assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
 				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
 					.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));
@@ -443,7 +453,7 @@ class IntegrationAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasFailed()
 				.getFailure()
 				.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
-				.getRootCause()
+				.rootCause()
 				.asInstanceOf(InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
 				.satisfies((ex) -> {
 					assertThat(ex.getConfiguredNames()).containsExactlyInAnyOrder("spring.integration.poller.cron",
@@ -464,7 +474,7 @@ class IntegrationAutoConfigurationTests {
 				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
 				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
 					.satisfies((trigger) -> {
-						assertThat(trigger.getPeriod()).isEqualTo(5000L);
+						assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
 						assertThat(trigger.isFixedRate()).isFalse();
 					});
 			});
@@ -479,7 +489,7 @@ class IntegrationAutoConfigurationTests {
 				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
 				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
 					.satisfies((trigger) -> {
-						assertThat(trigger.getPeriod()).isEqualTo(5000L);
+						assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
 						assertThat(trigger.isFixedRate()).isTrue();
 					});
 			});
@@ -501,6 +511,33 @@ class IntegrationAutoConfigurationTests {
 				.extracting(DirectChannel::isLoggingEnabled)
 				.isEqualTo(false));
 
+	}
+
+	@Test
+	void integrationManagementInstrumentedWithObservation() {
+		this.contextRunner.withPropertyValues("spring.integration.management.observation-patterns=testHandler")
+			.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
+			.withBean(ObservationRegistry.class, ObservationRegistry::create)
+			.withBean(BridgeHandler.class, BridgeHandler::new)
+			.run((context) -> {
+				assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
+				assertThat(context).getBean(BridgeHandler.class)
+					.extracting("observationRegistry")
+					.isEqualTo(ObservationRegistry.NOOP);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void integrationVirtualThreadsEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(TaskScheduler.class)
+				.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+				.isInstanceOf(SimpleAsyncTaskScheduler.class)
+				.satisfies((taskScheduler) -> SimpleAsyncTaskExecutorAssert
+					.assertThat((SimpleAsyncTaskExecutor) taskScheduler)
+					.usesVirtualThreads()));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -578,18 +615,6 @@ class IntegrationAutoConfigurationTests {
 
 	}
 
-	@Deprecated
-	@Configuration(proxyBeanMethods = false)
-	static class CustomIntegrationDataSourceInitializerConfiguration {
-
-		@Bean
-		IntegrationDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-				IntegrationProperties properties) {
-			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class PollingConsumerConfiguration {
 
@@ -607,6 +632,25 @@ class IntegrationAutoConfigurationTests {
 		@Bean
 		MessageHandler handler(BlockingQueue<Message<?>> sink) {
 			return sink::add;
+		}
+
+	}
+
+	static class PropertyAccessor {
+
+		private final String name;
+
+		PropertyAccessor(String name) {
+			this.name = name;
+		}
+
+		Object get(org.springframework.integration.context.IntegrationProperties properties) {
+			return ReflectionTestUtils.invokeMethod(properties, this.name);
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}

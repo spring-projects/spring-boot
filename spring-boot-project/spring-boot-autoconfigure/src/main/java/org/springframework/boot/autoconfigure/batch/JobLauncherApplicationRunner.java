@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -40,7 +39,6 @@ import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.JobParametersNotFoundException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
@@ -54,13 +52,12 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
-import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. Runs all
- * jobs in the surrounding context by default. Can also be used to launch a specific job
- * by providing a jobName
+ * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. If a single
+ * job is found in the context, it will be executed by default. If multiple jobs are
+ * found, launch a specific job by providing a jobName.
  *
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
@@ -89,7 +86,7 @@ public class JobLauncherApplicationRunner
 
 	private JobRegistry jobRegistry;
 
-	private String jobNames;
+	private String jobName;
 
 	private Collection<Job> jobs = Collections.emptySet();
 
@@ -105,9 +102,9 @@ public class JobLauncherApplicationRunner
 	 * when running a job
 	 */
 	public JobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer, JobRepository jobRepository) {
-		Assert.notNull(jobLauncher, "JobLauncher must not be null");
-		Assert.notNull(jobExplorer, "JobExplorer must not be null");
-		Assert.notNull(jobRepository, "JobRepository must not be null");
+		Assert.notNull(jobLauncher, "'jobLauncher' must not be null");
+		Assert.notNull(jobExplorer, "'jobExplorer' must not be null");
+		Assert.notNull(jobRepository, "'jobRepository' must not be null");
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 		this.jobRepository = jobRepository;
@@ -115,12 +112,17 @@ public class JobLauncherApplicationRunner
 
 	@Override
 	public void afterPropertiesSet() {
-		if (StringUtils.hasText(this.jobNames)) {
-			for (String jobName : jobsToRun()) {
-				Assert.isTrue(isLocalJob(jobName) || isRegisteredJob(jobName),
-						() -> "No job found with name '" + jobName + "'");
-			}
+		Assert.state(this.jobs.size() <= 1 || StringUtils.hasText(this.jobName),
+				"Job name must be specified in case of multiple jobs");
+		if (StringUtils.hasText(this.jobName)) {
+			Assert.state(isLocalJob(this.jobName) || isRegisteredJob(this.jobName),
+					() -> "No job found with name '" + this.jobName + "'");
 		}
+	}
+
+	@Deprecated(since = "3.0.10", forRemoval = true)
+	public void validate() {
+		afterPropertiesSet();
 	}
 
 	public void setOrder(int order) {
@@ -142,8 +144,8 @@ public class JobLauncherApplicationRunner
 		this.jobRegistry = jobRegistry;
 	}
 
-	public void setJobNames(String jobNames) {
-		this.jobNames = jobNames;
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	@Autowired(required = false)
@@ -183,9 +185,8 @@ public class JobLauncherApplicationRunner
 
 	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
-			if (StringUtils.hasText(this.jobNames)) {
-				String[] jobsToRun = jobsToRun();
-				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
+			if (StringUtils.hasText(this.jobName)) {
+				if (!this.jobName.equals(job.getName())) {
 					logger.debug(LogMessage.format("Skipped job: %s", job.getName()));
 					continue;
 				}
@@ -195,20 +196,16 @@ public class JobLauncherApplicationRunner
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters) throws JobExecutionException {
-		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
-			String[] jobsToRun = jobsToRun();
-			for (String jobName : jobsToRun) {
-				if (!isLocalJob(jobName)) {
-					Job job = this.jobRegistry.getJob(jobName);
-					execute(job, jobParameters);
-				}
+		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
+			if (!isLocalJob(this.jobName)) {
+				Job job = this.jobRegistry.getJob(this.jobName);
+				execute(job, jobParameters);
 			}
 		}
 	}
 
-	protected void execute(Job job, JobParameters jobParameters)
-			throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException,
-			JobParametersInvalidException, JobParametersNotFoundException {
+	protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobParameters parameters = getNextJobParameters(job, jobParameters);
 		JobExecution execution = this.jobLauncher.run(job, parameters);
 		if (this.publisher != null) {
@@ -232,7 +229,8 @@ public class JobLauncherApplicationRunner
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
-			JobParameters previousIdentifyingParameters = getGetIdentifying(lastExecution.getJobParameters());
+			JobParameters previousIdentifyingParameters = new JobParameters(
+					lastExecution.getJobParameters().getIdentifyingParameters());
 			return merge(previousIdentifyingParameters, jobParameters);
 		}
 		return jobParameters;
@@ -243,25 +241,11 @@ public class JobLauncherApplicationRunner
 		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
 	}
 
-	private JobParameters getGetIdentifying(JobParameters parameters) {
-		HashMap<String, JobParameter> nonIdentifying = new LinkedHashMap<>(parameters.getParameters().size());
-		parameters.getParameters().forEach((key, value) -> {
-			if (value.isIdentifying()) {
-				nonIdentifying.put(key, value);
-			}
-		});
-		return new JobParameters(nonIdentifying);
-	}
-
 	private JobParameters merge(JobParameters parameters, JobParameters additionals) {
-		Map<String, JobParameter> merged = new LinkedHashMap<>();
+		Map<String, JobParameter<?>> merged = new LinkedHashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals.getParameters());
 		return new JobParameters(merged);
-	}
-
-	private String[] jobsToRun() {
-		return this.jobNames.split(",");
 	}
 
 }

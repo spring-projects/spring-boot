@@ -16,13 +16,16 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -31,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.unit.DataSize;
@@ -44,6 +47,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Verónica Vásquez
+ * @author Scott Frederick
  */
 class RSocketServerAutoConfigurationTests {
 
@@ -135,6 +139,32 @@ class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled
+	void shouldUseSslWhenRocketServerSslIsConfiguredWithSslBundle() {
+		reactiveWebContextRunner()
+			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:rsocket/test.jks",
+					"spring.ssl.bundle.jks.test-bundle.key.password=password")
+			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
+				.hasSingleBean(RSocketServerBootstrap.class)
+				.hasSingleBean(RSocketServerCustomizer.class)
+				.getBean(RSocketServerFactory.class)
+				.hasFieldOrPropertyWithValue("sslBundle.details.keyStore", "classpath:rsocket/test.jks")
+				.hasFieldOrPropertyWithValue("sslBundle.details.keyPassword", "password"));
+	}
+
+	@Test
+	void shouldFailWhenSslIsConfiguredWithMissingBundle() {
+		reactiveWebContextRunner()
+			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).hasRootCauseInstanceOf(NoSuchSslBundleException.class)
+					.withFailMessage("SSL bundle name 'test-bundle' is not valid");
+			});
+	}
+
+	@Test
 	void shouldUseCustomServerBootstrap() {
 		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class)
 			.run((context) -> assertThat(context).getBeanNames(RSocketServerBootstrap.class)
@@ -164,7 +194,7 @@ class RSocketServerAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner reactiveWebContextRunner() {
 		return new ReactiveWebApplicationContextRunner().withUserConfiguration(BaseConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class, SslAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

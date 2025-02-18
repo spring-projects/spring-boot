@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,41 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.internal.CharacterIndex;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link ValueObjectBinder}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class ValueObjectBinderTests {
 
@@ -171,9 +167,9 @@ class ValueObjectBinderTests {
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
 		ExampleValueBean bean = this.binder.bind("foo", Bindable.of(ExampleValueBean.class)).get();
-		assertThat(bean.getIntValue()).isEqualTo(0);
-		assertThat(bean.getLongValue()).isEqualTo(0);
-		assertThat(bean.isBooleanValue()).isEqualTo(false);
+		assertThat(bean.getIntValue()).isZero();
+		assertThat(bean.getLongValue()).isZero();
+		assertThat(bean.isBooleanValue()).isFalse();
 		assertThat(bean.getStringValue()).isEqualTo("foo");
 	}
 
@@ -201,7 +197,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 			.get();
-		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
+		assertThat(bean.getDate()).hasToString("2014-04-01");
 	}
 
 	@Test
@@ -211,7 +207,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 			.get();
-		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
+		assertThat(bean.getDate()).hasToString("2019-05-10");
 	}
 
 	@Test
@@ -228,9 +224,9 @@ class ValueObjectBinderTests {
 	@Test
 	void createShouldReturnCreatedValue() {
 		ExampleValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleValueBean.class));
-		assertThat(value.getIntValue()).isEqualTo(0);
-		assertThat(value.getLongValue()).isEqualTo(0);
-		assertThat(value.isBooleanValue()).isEqualTo(false);
+		assertThat(value.getIntValue()).isZero();
+		assertThat(value.getLongValue()).isZero();
+		assertThat(value.isBooleanValue()).isFalse();
 		assertThat(value.getStringValue()).isNull();
 		assertThat(value.getEnumValue()).isNull();
 	}
@@ -238,7 +234,7 @@ class ValueObjectBinderTests {
 	@Test
 	void createWithNestedShouldReturnCreatedValue() {
 		ExampleNestedBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleNestedBean.class));
-		assertThat(value.getValueBean()).isEqualTo(null);
+		assertThat(value.getValueBean()).isNull();
 	}
 
 	@Test
@@ -253,7 +249,7 @@ class ValueObjectBinderTests {
 	void createWithDefaultValuesAndAnnotationsShouldReturnCreatedWithDefaultValues() {
 		ConverterAnnotatedExampleBean bean = this.binder.bindOrCreate("foo",
 				Bindable.of(ConverterAnnotatedExampleBean.class));
-		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
+		assertThat(bean.getDate()).hasToString("2019-05-10");
 	}
 
 	@Test
@@ -277,7 +273,7 @@ class ValueObjectBinderTests {
 			.bind("foo", Bindable
 				.<GenericValue<Map<String, String>>>of(ResolvableType.forClassWithGenerics(GenericValue.class, type)))
 			.get();
-		assertThat(bean.getValue().get("bar")).isEqualTo("baz");
+		assertThat(bean.getValue()).containsEntry("bar", "baz");
 	}
 
 	@Test
@@ -307,6 +303,13 @@ class ValueObjectBinderTests {
 	void bindWhenMapParametersWithEmptyDefaultValueShouldReturnEmptyInstance() {
 		NestedConstructorBeanWithEmptyDefaultValueForMapTypes bound = this.binder.bindOrCreate("foo",
 				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForMapTypes.class));
+		assertThat(bound.getMapValue()).isEmpty();
+	}
+
+	@Test
+	void bindWhenEnumMapParametersWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes.class));
 		assertThat(bound.getMapValue()).isEmpty();
 	}
 
@@ -365,37 +368,77 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	void bindToAnnotationNamedParameter() {
+	void bindToAnnotationNamedConstructorParameter() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.import", "test");
 		this.sources.add(source);
-		Bindable<NamedParameter> target = Bindable.of(NamedParameter.class);
-		NamedParameter bound = this.binder.bindOrCreate("test", target);
+		Bindable<NamedConstructorParameter> target = Bindable.of(NamedConstructorParameter.class);
+		NamedConstructorParameter bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getImportName()).isEqualTo("test");
 	}
 
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_16)
-	void bindToRecordWithDefaultValue(@TempDir File tempDir) throws IOException, ClassNotFoundException {
+	void bindToAnnotationNamedRecordComponent() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.import", "test");
+		this.sources.add(source);
+		Bindable<NamedRecordComponent> target = Bindable.of(NamedRecordComponent.class);
+		NamedRecordComponent bound = this.binder.bindOrCreate("test", target);
+		assertThat(bound.importName()).isEqualTo("test");
+	}
+
+	@Test
+	void bindToRecordWithDefaultValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.record.property1", "value-from-config-1");
 		this.sources.add(source);
-		File recordProperties = new File(tempDir, "RecordProperties.java");
-		try (PrintWriter writer = new PrintWriter(new FileWriter(recordProperties))) {
-			writer.println("public record RecordProperties(");
-			writer.println(
-					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-1\") String property1,");
-			writer.println(
-					"@org.springframework.boot.context.properties.bind.DefaultValue(\"default-value-2\") String property2");
-			writer.println(") {");
-			writer.println("}");
-		}
-		TestCompiler compiler = new TestCompiler(tempDir);
-		compiler.getTask(Arrays.asList(recordProperties)).call();
-		ClassLoader ucl = new URLClassLoader(new URL[] { tempDir.toURI().toURL() });
-		Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, ucl)).get();
-		assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
-			.hasFieldOrPropertyWithValue("property2", "default-value-2");
+		String recordProperties = """
+				public record RecordProperties(
+					@org.springframework.boot.context.properties.bind.DefaultValue("default-value-1") String property1,
+					@org.springframework.boot.context.properties.bind.DefaultValue("default-value-2") String property2) {
+				}
+				""";
+		TestCompiler.forSystem().withSources(SourceFile.of(recordProperties)).compile((compiled) -> {
+			try {
+				ClassLoader cl = compiled.getClassLoader();
+				Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, cl)).get();
+				assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
+					.hasFieldOrPropertyWithValue("property2", "default-value-2");
+			}
+			catch (ClassNotFoundException ex) {
+				fail("Expected generated class 'RecordProperties' not found", ex);
+			}
+		});
+	}
+
+	@Test // gh-38201
+	void bindWhenNonExtractableParameterNamesOnPropertyAndNonIterablePropertySource() throws Exception {
+		verifyJsonPathParametersCannotBeResolved();
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.value", "test");
+		this.sources.add(source.nonIterable());
+		Bindable<NonExtractableParameterName> target = Bindable.of(NonExtractableParameterName.class);
+		NonExtractableParameterName bound = this.binder.bindOrCreate("test", target);
+		assertThat(bound.getValue()).isEqualTo("test");
+	}
+
+	@Test
+	void createWhenNonExtractableParameterNamesOnPropertyAndNonIterablePropertySource() throws Exception {
+		assertThat(new DefaultParameterNameDiscoverer()
+			.getParameterNames(CharacterIndex.class.getDeclaredConstructor(CharSequence.class))).isNull();
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		this.sources.add(source.nonIterable());
+		Bindable<CharacterIndex> target = Bindable.of(CharacterIndex.class).withBindMethod(BindMethod.VALUE_OBJECT);
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bindOrCreate("test", target))
+			.withStackTraceContaining("Ensure that the compiler uses the '-parameters' flag");
+	}
+
+	private void verifyJsonPathParametersCannotBeResolved() throws NoSuchFieldException {
+		Class<?> jsonPathClass = NonExtractableParameterName.class.getDeclaredField("jsonPath").getType();
+		Constructor<?>[] constructors = jsonPathClass.getDeclaredConstructors();
+		assertThat(constructors).hasSize(1);
+		constructors[0].setAccessible(true);
+		assertThat(new DefaultParameterNameDiscoverer().getParameterNames(constructors[0])).isNull();
 	}
 
 	private void noConfigurationProperty(BindException ex) {
@@ -572,8 +615,8 @@ class ValueObjectBinderTests {
 		private final Object value;
 
 		ExampleFailingConstructorBean(String name, String value) {
-			Objects.requireNonNull(name, "'name' must be not null.");
-			Objects.requireNonNull(value, "'value' must be not null.");
+			Assert.notNull(name, "'name' must be not null.");
+			Assert.notNull(value, "'value' must be not null.");
 			this.name = name;
 			this.value = value;
 		}
@@ -631,7 +674,7 @@ class ValueObjectBinderTests {
 		private final String bar;
 
 		ValidatingConstructorBean(String foo, String bar) {
-			Assert.notNull(foo, "Foo must not be null");
+			Assert.notNull(foo, "'foo' must not be null");
 			this.foo = foo;
 			this.bar = bar;
 		}
@@ -755,6 +798,20 @@ class ValueObjectBinderTests {
 
 	}
 
+	static class NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes {
+
+		private final EnumMap<ExampleEnum, String> mapValue;
+
+		NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes(@DefaultValue EnumMap<ExampleEnum, String> mapValue) {
+			this.mapValue = mapValue;
+		}
+
+		EnumMap<ExampleEnum, String> getMapValue() {
+			return this.mapValue;
+		}
+
+	}
+
 	static class NestedConstructorBeanWithEmptyDefaultValueForArrayTypes {
 
 		private final String[] arrayValue;
@@ -785,7 +842,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForEnumTypes {
 
-		private Foo foo;
+		private final Foo foo;
 
 		NestedConstructorBeanWithEmptyDefaultValueForEnumTypes(@DefaultValue Foo foo) {
 			this.foo = foo;
@@ -805,7 +862,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes {
 
-		private int intValue;
+		private final int intValue;
 
 		NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes(@DefaultValue int intValue) {
 			this.intValue = intValue;
@@ -838,16 +895,43 @@ class ValueObjectBinderTests {
 
 	}
 
-	static class NamedParameter {
+	static class NamedConstructorParameter {
 
 		private final String importName;
 
-		NamedParameter(@Name("import") String importName) {
+		NamedConstructorParameter(@Name("import") String importName) {
 			this.importName = importName;
 		}
 
 		String getImportName() {
 			return this.importName;
+		}
+
+	}
+
+	record NamedRecordComponent(@Name("import") String importName) {
+	}
+
+	static class NonExtractableParameterName {
+
+		private String value;
+
+		private JsonPath jsonPath;
+
+		String getValue() {
+			return this.value;
+		}
+
+		void setValue(String value) {
+			this.value = value;
+		}
+
+		JsonPath getJsonPath() {
+			return this.jsonPath;
+		}
+
+		void setJsonPath(JsonPath jsonPath) {
+			this.jsonPath = jsonPath;
 		}
 
 	}

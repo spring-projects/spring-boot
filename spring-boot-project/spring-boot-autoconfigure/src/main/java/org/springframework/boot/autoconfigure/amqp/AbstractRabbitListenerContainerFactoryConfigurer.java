@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
@@ -45,17 +46,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
-	private RabbitProperties rabbitProperties;
+	private final RabbitProperties rabbitProperties;
 
-	/**
-	 * Creates a new configurer.
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties)}
-	 */
-	@Deprecated
-	protected AbstractRabbitListenerContainerFactoryConfigurer() {
-
-	}
+	private Executor taskExecutor;
 
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
@@ -92,14 +85,12 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	}
 
 	/**
-	 * Set the {@link RabbitProperties} to use.
-	 * @param rabbitProperties the {@link RabbitProperties}
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties)}
+	 * Set the task executor to use.
+	 * @param taskExecutor the task executor
+	 * @since 3.2.0
 	 */
-	@Deprecated
-	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
-		this.rabbitProperties = rabbitProperties;
+	public void setTaskExecutor(Executor taskExecutor) {
+		this.taskExecutor = taskExecutor;
 	}
 
 	protected final RabbitProperties getRabbitProperties() {
@@ -117,9 +108,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	protected void configure(T factory, ConnectionFactory connectionFactory,
 			RabbitProperties.AmqpContainer configuration) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		Assert.notNull(configuration, "Configuration must not be null");
+		Assert.notNull(factory, "'factory' must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
+		Assert.notNull(configuration, "'configuration' must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);
@@ -139,6 +130,11 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		}
 		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		factory.setDeBatchingEnabled(configuration.isDeBatchingEnabled());
+		factory.setForceStop(configuration.isForceStop());
+		if (this.taskExecutor != null) {
+			factory.setTaskExecutor(this.taskExecutor);
+		}
+		factory.setObservationEnabled(configuration.isObservationEnabled());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()

@@ -1,0 +1,43 @@
+name: Sync to Maven Central
+description: 'Syncs a release to Maven Central and waits for it to be available for use'
+inputs:
+  jfrog-cli-config-token:
+    description: 'Config token for the JFrog CLI'
+    required: true
+  ossrh-s01-staging-profile:
+    description: 'Staging profile to use when syncing to Central'
+    required: true
+  ossrh-s01-token-password:
+    description: 'Password for authentication with s01.oss.sonatype.org'
+    required: true
+  ossrh-s01-token-username:
+    description: 'Username for authentication with s01.oss.sonatype.org'
+    required: true
+  spring-boot-version:
+    description: 'Version of Spring Boot that is being synced to Central'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set Up JFrog CLI
+      uses: jfrog/setup-jfrog-cli@f748a0599171a192a2668afee8d0497f7c1069df # v4.5.6
+      env:
+        JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
+    - name: Download Release Artifacts
+      shell: bash
+      run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.spring-boot-version) }};buildNumber=${{ github.run_number }}'
+    - name: Sync
+      uses: spring-io/nexus-sync-action@42477a2230a2f694f9eaa4643fa9e76b99b7ab84 # v0.0.1
+      with:
+        close: true
+        create: true
+        generate-checksums: true
+        password: ${{ inputs.ossrh-s01-token-password }}
+        release: true
+        staging-profile-name: ${{ inputs.ossrh-s01-staging-profile }}
+        upload: true
+        username: ${{ inputs.ossrh-s01-token-username }}
+    - name: Await
+      uses: ./.github/actions/await-http-resource
+      with:
+        url: ${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot/{0}/spring-boot-{0}.jar', inputs.spring-boot-version) }}

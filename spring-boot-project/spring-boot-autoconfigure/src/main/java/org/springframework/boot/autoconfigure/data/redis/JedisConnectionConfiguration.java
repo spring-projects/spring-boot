@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import javax.net.ssl.SSLParameters;
+
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -24,15 +26,22 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
@@ -42,41 +51,58 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
 @ConditionalOnMissingBean(RedisConnectionFactory.class)
-@ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "jedis", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "jedis", matchIfMissing = true)
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
-		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration);
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails,
+			ObjectProvider<SslBundles> sslBundles) {
+		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
+				clusterConfiguration, sslBundles);
 	}
 
 	@Bean
+	@ConditionalOnThreading(Threading.PLATFORM)
 	JedisConnectionFactory redisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		return createJedisConnectionFactory(builderCustomizers);
 	}
 
+	@Bean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	JedisConnectionFactory redisConnectionFactoryVirtualThreads(
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+		JedisConnectionFactory factory = createJedisConnectionFactory(builderCustomizers);
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("redis-");
+		executor.setVirtualThreads(true);
+		factory.setExecutor(executor);
+		return factory;
+	}
+
 	private JedisConnectionFactory createJedisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
-		if (getSentinelConfig() != null) {
-			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
-		}
-		if (getClusterConfiguration() != null) {
-			return new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
-		}
-		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
+		return switch (this.mode) {
+			case STANDALONE -> new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
+			case CLUSTER -> new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
+			case SENTINEL -> new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
+		};
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
+		applySslIfNeeded(builder);
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (isPoolEnabled(pool)) {
 			applyPooling(pool, builder);
@@ -90,11 +116,25 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(getProperties().isSsl()).whenTrue().toCall(builder::useSsl);
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
 		return builder;
+	}
+
+	private void applySslIfNeeded(JedisClientConfigurationBuilder builder) {
+		SslBundle sslBundle = getSslBundle();
+		if (sslBundle == null) {
+			return;
+		}
+		JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
+		sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
+		SslOptions sslOptions = sslBundle.getOptions();
+		SSLParameters sslParameters = new SSLParameters();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
+		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
+		sslBuilder.sslParameters(sslParameters);
 	}
 
 	private void applyPooling(RedisProperties.Pool pool,
@@ -117,8 +157,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
+		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
 	}

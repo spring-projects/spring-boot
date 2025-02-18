@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,8 @@ import org.springframework.session.SaveMode;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.session.redis")
+@ConfigurationProperties("spring.session.redis")
 public class RedisSessionProperties {
-
-	private static final String DEFAULT_CLEANUP_CRON = "0 * * * * *";
 
 	/**
 	 * Namespace for keys used to store sessions.
@@ -38,7 +36,7 @@ public class RedisSessionProperties {
 
 	/**
 	 * Sessions flush mode. Determines when session changes are written to the session
-	 * store.
+	 * store. Not supported with a reactive session repository.
 	 */
 	private FlushMode flushMode = FlushMode.ON_SAVE;
 
@@ -49,15 +47,22 @@ public class RedisSessionProperties {
 	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	/**
-	 * The configure action to apply when no user defined ConfigureRedisAction bean is
-	 * present.
+	 * The configure action to apply when no user-defined ConfigureRedisAction or
+	 * ConfigureReactiveRedisAction bean is present.
 	 */
 	private ConfigureAction configureAction = ConfigureAction.NOTIFY_KEYSPACE_EVENTS;
 
 	/**
-	 * Cron expression for expired session cleanup job.
+	 * Cron expression for expired session cleanup job. Only supported when
+	 * repository-type is set to indexed. Not supported with a reactive session
+	 * repository.
 	 */
-	private String cleanupCron = DEFAULT_CLEANUP_CRON;
+	private String cleanupCron;
+
+	/**
+	 * Type of Redis session repository to configure.
+	 */
+	private RepositoryType repositoryType = RepositoryType.DEFAULT;
 
 	public String getNamespace() {
 		return this.namespace;
@@ -99,6 +104,14 @@ public class RedisSessionProperties {
 		this.configureAction = configureAction;
 	}
 
+	public RepositoryType getRepositoryType() {
+		return this.repositoryType;
+	}
+
+	public void setRepositoryType(RepositoryType repositoryType) {
+		this.repositoryType = repositoryType;
+	}
+
 	/**
 	 * Strategies for configuring and validating Redis.
 	 */
@@ -114,6 +127,24 @@ public class RedisSessionProperties {
 		 * No not attempt to apply any custom Redis configuration.
 		 */
 		NONE
+
+	}
+
+	/**
+	 * Type of Redis session repository to auto-configure.
+	 */
+	public enum RepositoryType {
+
+		/**
+		 * Auto-configure a RedisSessionRepository or ReactiveRedisSessionRepository.
+		 */
+		DEFAULT,
+
+		/**
+		 * Auto-configure a RedisIndexedSessionRepository or
+		 * ReactiveRedisIndexedSessionRepository.
+		 */
+		INDEXED
 
 	}
 

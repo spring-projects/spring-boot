@@ -22,21 +22,20 @@ import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.http.converter.HttpMessageNotWritableException
 import java.io.IOException
-import kotlin.jvm.Throws
 
 open class AdditionalHttpMessageConverter : AbstractHttpMessageConverter<Any>() {
 
-	override fun supports(clazz: Class<*>): Boolean {
+	override fun supports(type: Class<*>): Boolean {
 		return false
 	}
 
 	@Throws(IOException::class, HttpMessageNotReadableException::class)
-	override fun readInternal(clazz: Class<*>, inputMessage: HttpInputMessage): Any {
+	override fun readInternal(type: Class<*>, inputMessage: HttpInputMessage): Any {
 		return Any()
 	}
 
 	@Throws(IOException::class, HttpMessageNotWritableException::class)
-	override fun writeInternal(t: Any, outputMessage: HttpOutputMessage) {
+	override fun writeInternal(instance: Any, outputMessage: HttpOutputMessage) {
 	}
 
 }

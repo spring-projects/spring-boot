@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,28 +77,28 @@ class DelayedLiveReloadTriggerTests {
 	void liveReloadServerMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
-			.withMessageContaining("LiveReloadServer must not be null");
+			.withMessageContaining("'liveReloadServer' must not be null");
 	}
 
 	@Test
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
-			.withMessageContaining("RequestFactory must not be null");
+			.withMessageContaining("'requestFactory' must not be null");
 	}
 
 	@Test
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
-			.withMessageContaining("URL must not be empty");
+			.withMessageContaining("'url' must not be empty");
 	}
 
 	@Test
 	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
-			.withMessageContaining("URL must not be empty");
+			.withMessageContaining("'url' must not be empty");
 	}
 
 	@Test

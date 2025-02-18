@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	 * @since 2.0.0
 	 */
 	protected AbstractHealthIndicator(Function<Exception, String> healthCheckFailedMessage) {
-		Assert.notNull(healthCheckFailedMessage, "HealthCheckFailedMessage must not be null");
+		Assert.notNull(healthCheckFailedMessage, "'healthCheckFailedMessage' must not be null");
 		this.healthCheckFailedMessage = healthCheckFailedMessage;
 	}
 
@@ -88,10 +88,10 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 		return builder.build();
 	}
 
-	private void logExceptionIfPresent(Throwable ex) {
-		if (ex != null && this.logger.isWarnEnabled()) {
-			String message = (ex instanceof Exception) ? this.healthCheckFailedMessage.apply((Exception) ex) : null;
-			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);
+	private void logExceptionIfPresent(Throwable throwable) {
+		if (throwable != null && this.logger.isWarnEnabled()) {
+			String message = (throwable instanceof Exception ex) ? this.healthCheckFailedMessage.apply(ex) : null;
+			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, throwable);
 		}
 	}
 

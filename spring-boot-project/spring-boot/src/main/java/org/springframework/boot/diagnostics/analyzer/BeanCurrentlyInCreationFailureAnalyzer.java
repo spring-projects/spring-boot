@@ -41,8 +41,8 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 	private final AbstractAutowireCapableBeanFactory beanFactory;
 
 	BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
-		if (beanFactory != null && beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-			this.beanFactory = (AbstractAutowireCapableBeanFactory) beanFactory;
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			this.beanFactory = autowireCapableBeanFactory;
 		}
 		else {
 			this.beanFactory = null;
@@ -157,10 +157,10 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
-			if (!(ex instanceof UnsatisfiedDependencyException)) {
-				return null;
+			if (ex instanceof UnsatisfiedDependencyException unsatisfiedDependencyException) {
+				return unsatisfiedDependencyException.getInjectionPoint();
 			}
-			return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
+			return null;
 		}
 
 		@Override
@@ -185,8 +185,8 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		static BeanInCycle get(Throwable ex) {
-			if (ex instanceof BeanCreationException) {
-				return get((BeanCreationException) ex);
+			if (ex instanceof BeanCreationException beanCreationException) {
+				return get(beanCreationException);
 			}
 			return null;
 		}

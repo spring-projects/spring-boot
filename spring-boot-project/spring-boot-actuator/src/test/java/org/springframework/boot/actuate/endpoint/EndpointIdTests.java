@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,42 +37,43 @@ class EndpointIdTests {
 	@Test
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void ofWhenEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("")).withMessage("Value must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(""))
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void ofWhenContainsSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo/bar"))
-			.withMessage("Value must only contain valid chars");
+			.withMessage("'value' must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenContainsBackslashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo\\bar"))
-			.withMessage("Value must only contain valid chars");
+			.withMessage("'value' must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenHasBadCharThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
-			.withMessage("Value must only contain valid chars");
+			.withMessage("'value' must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenStartsWithNumberThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("1foo"))
-			.withMessage("Value must not start with a number");
+			.withMessage("'value' must not start with a number");
 	}
 
 	@Test
 	void ofWhenStartsWithUppercaseLetterThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("Foo"))
-			.withMessage("Value must not start with an uppercase letter");
+			.withMessage("'value' must not start with an uppercase letter");
 	}
 
 	@Test
@@ -80,7 +81,7 @@ class EndpointIdTests {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo.bar");
-		assertThat(endpointId.toString()).isEqualTo("foo.bar");
+		assertThat(endpointId).hasToString("foo.bar");
 	}
 
 	@Test
@@ -88,7 +89,7 @@ class EndpointIdTests {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo-bar");
-		assertThat(endpointId.toString()).isEqualTo("foo-bar");
+		assertThat(endpointId).hasToString("foo-bar");
 	}
 
 	@Test
@@ -102,21 +103,21 @@ class EndpointIdTests {
 	@Test
 	void ofWhenMigratingLegacyNameRemovesDots(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one.two.three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test
 	void ofWhenMigratingLegacyNameRemovesHyphens(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one-two-three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test
 	void ofWhenMigratingLegacyNameRemovesMixOfDashAndDot(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one.two-three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
@@ -135,7 +136,7 @@ class EndpointIdTests {
 		EndpointId four = EndpointId.of("foo.bar1");
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
-		assertThat(one.hashCode()).isEqualTo(two.hashCode());
+		assertThat(one).hasSameHashCodeAs(two);
 		assertThat(one).isEqualTo(one)
 			.isEqualTo(two)
 			.isEqualTo(three)
@@ -151,7 +152,7 @@ class EndpointIdTests {
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(EndpointId.of("fooBar").toString()).isEqualTo("fooBar");
+		assertThat(EndpointId.of("fooBar")).hasToString("fooBar");
 	}
 
 	@Test

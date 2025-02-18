@@ -1,0 +1,18 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot Pulsar smoke test"
+
+dependencies {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:pulsar")
+
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-pulsar"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-pulsar-reactive"))
+}

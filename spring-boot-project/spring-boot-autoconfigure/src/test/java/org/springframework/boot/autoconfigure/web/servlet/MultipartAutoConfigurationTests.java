@@ -17,15 +17,20 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.net.URI;
+import java.util.stream.Stream;
 
-import javax.servlet.MultipartConfigElement;
-
+import jakarta.servlet.MultipartConfigElement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -43,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -60,7 +64,9 @@ import static org.mockito.Mockito.mock;
  * @author Josh Long
  * @author Ivan Sopov
  * @author Toshiaki Maki
+ * @author Yanming Zhou
  */
+@DirtiesUrlFactories
 class MultipartAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
@@ -83,69 +89,39 @@ class MultipartAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
 	}
 
-	@Test
-	void webServerWithNoMultipartJettyConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithNoMultipartJetty.class,
-				BaseConfiguration.class);
-		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertThat(servlet.getMultipartResolver()).isNotNull();
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("webServerWithNoMultipartConfigurationArguments")
+	@ForkedClassPath
+	void webServerWithNoMultipartConfiguration(String server, Class<?> configuration) {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(configuration, BaseConfiguration.class);
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
 		verifyServletWorks();
-	}
-
-	@Test
-	void webServerWithNoMultipartUndertowConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithNoMultipartUndertow.class,
-				BaseConfiguration.class);
-		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		verifyServletWorks();
-		assertThat(servlet.getMultipartResolver()).isNotNull();
-		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
-	}
-
-	@Test
-	void webServerWithNoMultipartTomcatConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithNoMultipartTomcat.class,
-				BaseConfiguration.class);
-		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertThat(servlet.getMultipartResolver()).isNull();
-		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
-		verifyServletWorks();
-	}
-
-	@Test
-	void webServerWithAutomatedMultipartJettyConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithEverythingJetty.class,
-				BaseConfiguration.class);
-		this.context.getBean(MultipartConfigElement.class);
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
 			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
-		verifyServletWorks();
 	}
 
-	@Test
-	void webServerWithAutomatedMultipartTomcatConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithEverythingTomcat.class,
-				BaseConfiguration.class);
-		new RestTemplate().getForObject("http://localhost:" + this.context.getWebServer().getPort() + "/",
-				String.class);
-		this.context.getBean(MultipartConfigElement.class);
-		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
-			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
-		verifyServletWorks();
+	static Stream<Arguments> webServerWithNoMultipartConfigurationArguments() {
+		return Stream.of(Arguments.of("Jetty", WebServerWithNoMultipartJetty.class),
+				Arguments.of("Tomcat", WebServerWithNoMultipartTomcat.class),
+				Arguments.of("Undertow", WebServerWithNoMultipartUndertow.class));
 	}
 
-	@Test
-	void webServerWithAutomatedMultipartUndertowConfiguration() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithEverythingUndertow.class,
-				BaseConfiguration.class);
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("webServerWithAutomatedMultipartConfigurationArguments")
+	@ForkedClassPath
+	void webServerWithAutomatedMultipartConfiguration(String server, Class<?> configuration) {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(configuration, BaseConfiguration.class);
 		this.context.getBean(MultipartConfigElement.class);
 		verifyServletWorks();
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
 			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+	}
+
+	static Stream<Arguments> webServerWithAutomatedMultipartConfigurationArguments() {
+		return Stream.of(Arguments.of("Jetty", WebServerWithEverythingJetty.class),
+				Arguments.of("Tomcat", WebServerWithEverythingTomcat.class),
+				Arguments.of("Undertow", WebServerWithEverythingUndertow.class));
 	}
 
 	@Test
@@ -189,15 +165,6 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	void containerWithCommonsMultipartResolver() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ContainerWithCommonsMultipartResolver.class, BaseConfiguration.class);
-		MultipartResolver multipartResolver = this.context.getBean(MultipartResolver.class);
-		assertThat(multipartResolver).isInstanceOf(CommonsMultipartResolver.class);
-		assertThat(this.context.getBeansOfType(MultipartConfigElement.class)).hasSize(0);
-	}
-
-	@Test
 	void configureResolveLazily() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		TestPropertyValues.of("spring.servlet.multipart.resolve-lazily=true").applyTo(this.context);
@@ -206,6 +173,17 @@ class MultipartAutoConfigurationTests {
 		StandardServletMultipartResolver multipartResolver = this.context
 			.getBean(StandardServletMultipartResolver.class);
 		assertThat(multipartResolver).hasFieldOrPropertyWithValue("resolveLazily", true);
+	}
+
+	@Test
+	void configureStrictServletCompliance() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		TestPropertyValues.of("spring.servlet.multipart.strict-servlet-compliance=true").applyTo(this.context);
+		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		StandardServletMultipartResolver multipartResolver = this.context
+			.getBean(StandardServletMultipartResolver.class);
+		assertThat(multipartResolver).hasFieldOrPropertyWithValue("strictServletCompliance", true);
 	}
 
 	@Test
@@ -238,8 +216,9 @@ class MultipartAutoConfigurationTests {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		ClientHttpRequest request = requestFactory
 			.createRequest(new URI("http://localhost:" + this.context.getWebServer().getPort() + "/"), HttpMethod.GET);
-		ClientHttpResponse response = request.execute();
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		try (ClientHttpResponse response = request.execute()) {
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	private void verifyServletWorks() {
@@ -402,16 +381,6 @@ class MultipartAutoConfigurationTests {
 		@Bean
 		MultipartResolver multipartResolver() {
 			return mock(MultipartResolver.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ContainerWithCommonsMultipartResolver {
-
-		@Bean
-		CommonsMultipartResolver multipartResolver() {
-			return mock(CommonsMultipartResolver.class);
 		}
 
 	}

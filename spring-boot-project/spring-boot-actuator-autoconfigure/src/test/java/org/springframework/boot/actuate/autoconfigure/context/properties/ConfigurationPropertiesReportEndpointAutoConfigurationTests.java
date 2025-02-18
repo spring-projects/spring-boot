@@ -17,13 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +35,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +53,7 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(Config.class)
 			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
-			.run(validateTestProperties("******", "654321"));
+			.run(validateTestProperties("******", "******"));
 	}
 
 	@Test
@@ -60,24 +63,43 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+	@SuppressWarnings("unchecked")
+	void rolesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
-			.withPropertyValues("management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
+			.withPropertyValues("management.endpoint.configprops.roles: test")
 			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
-			.run(validateTestProperties("******", "******"));
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpointWebExtension endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
+				assertThat(roles).contains("test");
+			});
 	}
 
 	@Test
-	void additionalKeysToSanitizeCanBeConfiguredViaTheEnvironment() {
+	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
-			.withPropertyValues("management.endpoint.configprops.additional-keys-to-sanitize: property")
+			.withPropertyValues("management.endpoint.configprops.show-values: WHEN_AUTHORIZED")
 			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
-			.run(validateTestProperties("******", "******"));
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpointWebExtension webExtension = context
+					.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
+				assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
+				Show showValues = (Show) ReflectionTestUtils.getField(endpoint, "showValues");
+				assertThat(showValues).isEqualTo(Show.WHEN_AUTHORIZED);
+			});
 	}
 
 	@Test
 	void customSanitizingFunctionsAreAppliedInOrder() {
-		this.contextRunner.withUserConfiguration(Config.class, SanitizingFunctionConfiguration.class)
+		this.contextRunner.withPropertyValues("management.endpoint.configprops.show-values: ALWAYS")
+			.withUserConfiguration(Config.class, SanitizingFunctionConfiguration.class)
 			.withPropertyValues("management.endpoints.web.exposure.include=configprops", "test.my-test-property=abc")
 			.run(validateTestProperties("$$$111$$$", "$$$222$$$"));
 	}
@@ -94,15 +116,15 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties properties = endpoint.configurationProperties();
+			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
 			Map<String, Object> nestedProperties = properties.getContexts()
 				.get(context.getId())
 				.getBeans()
 				.get("testProperties")
 				.getProperties();
 			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
+			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
+			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);
 		};
 	}
 

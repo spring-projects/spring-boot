@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.util.ClassUtils;
@@ -123,13 +124,15 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public final class Builder {
 
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		private PersistenceManagedTypes managedTypes;
 
 		private String[] packagesToScan;
 
 		private String persistenceUnit;
 
-		private Map<String, Object> properties = new HashMap<>();
+		private final Map<String, Object> properties = new HashMap<>();
 
 		private String[] mappingResources;
 
@@ -140,9 +143,21 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
+		 * The persistence managed types, providing both the managed entities and packages
+		 * the entity manager should consider.
+		 * @param managedTypes managed types.
+		 * @return the builder for fluent usage
+		 */
+		public Builder managedTypes(PersistenceManagedTypes managedTypes) {
+			this.managedTypes = managedTypes;
+			return this;
+		}
+
+		/**
 		 * The names of packages to scan for {@code @Entity} annotations.
 		 * @param packagesToScan packages to scan
 		 * @return the builder for fluent usage
+		 * @see #managedTypes(PersistenceManagedTypes)
 		 */
 		public Builder packages(String... packagesToScan) {
 			this.packagesToScan = packagesToScan;
@@ -153,6 +168,7 @@ public class EntityManagerFactoryBuilder {
 		 * The classes whose packages should be scanned for {@code @Entity} annotations.
 		 * @param basePackageClasses the classes to use
 		 * @return the builder for fluent usage
+		 * @see #managedTypes(PersistenceManagedTypes)
 		 */
 		public Builder packages(Class<?>... basePackageClasses) {
 			Set<String> packages = new HashSet<>();
@@ -233,7 +249,12 @@ public class EntityManagerFactoryBuilder {
 			else {
 				entityManagerFactoryBean.setDataSource(this.dataSource);
 			}
-			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
+			if (this.managedTypes != null) {
+				entityManagerFactoryBean.setManagedTypes(this.managedTypes);
+			}
+			else {
+				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
+			}
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(EntityManagerFactoryBuilder.this.jpaProperties);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			if (!ObjectUtils.isEmpty(this.mappingResources)) {

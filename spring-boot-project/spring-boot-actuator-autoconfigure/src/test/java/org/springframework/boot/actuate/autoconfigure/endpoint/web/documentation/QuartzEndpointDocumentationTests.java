@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -51,27 +52,33 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.json.JsonWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.scheduling.quartz.DelegatingJob;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link QuartzEndpoint}.
@@ -129,10 +136,10 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.withInterval(1, IntervalUnit.HOUR))
 		.build();
 
-	private static final List<FieldDescriptor> triggerSummary = Arrays.asList(previousFireTime(""), nextFireTime(""),
+	private static final List<FieldDescriptor> triggerSummary = List.of(previousFireTime(""), nextFireTime(""),
 			priority(""));
 
-	private static final List<FieldDescriptor> cronTriggerSummary = Arrays.asList(
+	private static final List<FieldDescriptor> cronTriggerSummary = List.of(
 			fieldWithPath("expression").description("Cron expression to use."),
 			fieldWithPath("timeZone").type(JsonFieldType.STRING)
 				.optional()
@@ -157,8 +164,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				fieldWithPath("timeZone").type(JsonFieldType.STRING)
 					.description("Time zone within which time calculations will be performed, if any."));
 
-	private static final List<FieldDescriptor> customTriggerSummary = Collections.singletonList(
-			fieldWithPath("trigger").description("A toString representation of the custom trigger instance."));
+	private static final List<FieldDescriptor> customTriggerSummary = List
+		.of(fieldWithPath("trigger").description("A toString representation of the custom trigger instance."));
 
 	private static final FieldDescriptor[] commonCronDetails = new FieldDescriptor[] {
 			fieldWithPath("group").description("Name of the group."),
@@ -178,16 +185,15 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				.type(JsonFieldType.OBJECT)
 				.description("Job data map keyed by name, if any.") };
 
-	@MockBean
+	@MockitoBean
 	private Scheduler scheduler;
 
 	@Test
 	void quartzReport() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
 		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
-		this.mockMvc.perform(get("/actuator/quartz"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/report",
+		assertThat(this.mvc.get().uri("/actuator/quartz")).hasStatusOk()
+			.apply(document("quartz/report",
 					responseFields(fieldWithPath("jobs.groups").description("An array of job group names."),
 							fieldWithPath("triggers.groups").description("An array of trigger group names."))));
 	}
@@ -195,9 +201,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzJobs() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
-		this.mockMvc.perform(get("/actuator/quartz/jobs"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/jobs",
+		assertThat(this.mvc.get().uri("/actuator/quartz/jobs")).hasStatusOk()
+			.apply(document("quartz/jobs",
 					responseFields(fieldWithPath("groups").description("Job groups keyed by name."),
 							fieldWithPath("groups.*.jobs").description("An array of job names."))));
 	}
@@ -205,9 +210,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggers() throws Exception {
 		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/triggers",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers")).hasStatusOk()
+			.apply(document("quartz/triggers",
 					responseFields(fieldWithPath("groups").description("Trigger groups keyed by name."),
 							fieldWithPath("groups.*.paused").description("Whether this trigger group is paused."),
 							fieldWithPath("groups.*.triggers").description("An array of trigger names."))));
@@ -216,9 +220,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzJobGroup() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
-		this.mockMvc.perform(get("/actuator/quartz/jobs/samples"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/job-group", responseFields(fieldWithPath("group").description("Name of the group."),
+		assertThat(this.mvc.get().uri("/actuator/quartz/jobs/samples")).hasStatusOk()
+			.apply(document("quartz/job-group", responseFields(fieldWithPath("group").description("Name of the group."),
 					fieldWithPath("jobs").description("Job details keyed by name."),
 					fieldWithPath("jobs.*.className").description("Fully qualified name of the job implementation."))));
 	}
@@ -249,9 +252,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		given(customTrigger.getPreviousFireTime()).willReturn(fromUtc("2020-07-14T16:00:00Z"));
 		given(customTrigger.getNextFireTime()).willReturn(fromUtc("2021-07-14T16:00:00Z"));
 		mockTriggers(cron, simple, calendarInterval, tueThuTrigger, customTrigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/tests"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-group",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/tests")).hasStatusOk()
+			.apply(document("quartz/trigger-group",
 					responseFields(fieldWithPath("group").description("Name of the group."),
 							fieldWithPath("paused").description("Whether the group is paused."),
 							fieldWithPath("triggers.cron").description("Cron triggers keyed by name, if any."),
@@ -279,10 +281,9 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setPreviousNextFireTime(secondTrigger, "2020-12-04T03:00:00Z", "2020-12-04T12:00:00Z");
 		mockTriggers(firstTrigger, secondTrigger);
 		given(this.scheduler.getTriggersOfJob(jobOne.getKey()))
-			.willAnswer((invocation) -> Arrays.asList(firstTrigger, secondTrigger));
-		this.mockMvc.perform(get("/actuator/quartz/jobs/samples/jobOne"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/job-details", responseFields(
+			.willAnswer((invocation) -> List.of(firstTrigger, secondTrigger));
+		assertThat(this.mvc.get().uri("/actuator/quartz/jobs/samples/jobOne")).hasStatusOk()
+			.apply(document("quartz/job-details", responseFields(
 					fieldWithPath("group").description("Name of the group."),
 					fieldWithPath("name").description("Name of the job."),
 					fieldWithPath("description").description("Description of the job, if any."),
@@ -300,9 +301,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerCommon() throws Exception {
 		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-common", responseFields(commonCronDetails).and(subsectionWithPath(
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-common", responseFields(commonCronDetails).and(subsectionWithPath(
 					"calendarInterval")
 				.description(
 						"Calendar time interval trigger details, if any. Present when `type` is `calendarInterval`.")
@@ -329,9 +329,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerCron() throws Exception {
 		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-cron",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-cron",
 					relaxedResponseFields(fieldWithPath("cron").description("Cron trigger specific details."))
 						.andWithPrefix("cron.", cronTriggerSummary)));
 	}
@@ -339,9 +338,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerSimple() throws Exception {
 		setupTriggerDetails(simpleTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-simple",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-simple",
 					relaxedResponseFields(fieldWithPath("simple").description("Simple trigger specific details."))
 						.andWithPrefix("simple.", simpleTriggerSummary)
 						.and(repeatCount("simple."), timesTriggered("simple."))));
@@ -350,9 +348,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerCalendarInterval() throws Exception {
 		setupTriggerDetails(calendarIntervalTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-calendar-interval",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-calendar-interval",
 					relaxedResponseFields(fieldWithPath("calendarInterval")
 						.description("Calendar interval trigger specific details."))
 						.andWithPrefix("calendarInterval.", calendarIntervalTriggerSummary)
@@ -367,9 +364,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerDailyTimeInterval() throws Exception {
 		setupTriggerDetails(dailyTimeIntervalTrigger.getTriggerBuilder(), TriggerState.PAUSED);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-daily-time-interval",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-daily-time-interval",
 					relaxedResponseFields(fieldWithPath("dailyTimeInterval")
 						.description("Daily time interval trigger specific details."))
 						.andWithPrefix("dailyTimeInterval.", dailyTimeIntervalTriggerSummary)
@@ -390,14 +386,30 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		given(trigger.getNextFireTime()).willReturn(fromUtc("2020-12-07T03:00:00Z"));
 		given(this.scheduler.getTriggerState(trigger.getKey())).willReturn(TriggerState.NORMAL);
 		mockTriggers(trigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
-			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-custom",
+		assertThat(this.mvc.get().uri("/actuator/quartz/triggers/samples/example")).hasStatusOk()
+			.apply(document("quartz/trigger-details-custom",
 					relaxedResponseFields(fieldWithPath("custom").description("Custom trigger specific details."))
 						.andWithPrefix("custom.", customTriggerSummary)));
 	}
 
-	private <T extends Trigger> T setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
+	@Test
+	void quartzTriggerJob() throws Exception {
+		mockJobs(jobOne);
+		String json = JsonWriter.standard().writeToString(Map.of("state", "running"));
+		assertThat(this.mvc.post()
+			.content(json)
+			.contentType(MediaType.APPLICATION_JSON)
+			.uri("/actuator/quartz/jobs/samples/jobOne"))
+			.hasStatusOk()
+			.apply(document("quartz/trigger-job", preprocessRequest(), preprocessResponse(prettyPrint()),
+					requestFields(fieldWithPath("state").description("The desired state of the job.")),
+					responseFields(fieldWithPath("group").description("Name of the group."),
+							fieldWithPath("name").description("Name of the job."),
+							fieldWithPath("className").description("Fully qualified name of the job implementation."),
+							fieldWithPath("triggerTime").description("Time the job is triggered."))));
+	}
+
+	private <T extends Trigger> void setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
 			throws SchedulerException {
 		T trigger = builder.withIdentity("example", "samples")
 			.withDescription("Example trigger")
@@ -408,7 +420,6 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setPreviousNextFireTime(trigger, "2020-12-04T03:00:00Z", "2020-12-07T03:00:00Z");
 		given(this.scheduler.getTriggerState(trigger.getKey())).willReturn(state);
 		mockTriggers(trigger);
-		return trigger;
 	}
 
 	private static FieldDescriptor startTime(String prefix) {
@@ -480,7 +491,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		}
 	}
 
-	private <T extends Trigger> T setPreviousNextFireTime(T trigger, String previousFireTime, String nextFireTime) {
+	private <T extends Trigger> void setPreviousNextFireTime(T trigger, String previousFireTime, String nextFireTime) {
 		OperableTrigger operableTrigger = (OperableTrigger) trigger;
 		if (previousFireTime != null) {
 			operableTrigger.setPreviousFireTime(fromUtc(previousFireTime));
@@ -488,7 +499,6 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		if (nextFireTime != null) {
 			operableTrigger.setNextFireTime(fromUtc(nextFireTime));
 		}
-		return trigger;
 	}
 
 	private static Date fromUtc(String utcTime) {
@@ -501,12 +511,12 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 		@Bean
 		QuartzEndpoint endpoint(Scheduler scheduler) {
-			return new QuartzEndpoint(scheduler);
+			return new QuartzEndpoint(scheduler, Collections.emptyList());
 		}
 
 		@Bean
 		QuartzEndpointWebExtension endpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint);
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 	}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::exclude-dependency[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeTools>false</includeTools>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::exclude-dependency[] -->
+

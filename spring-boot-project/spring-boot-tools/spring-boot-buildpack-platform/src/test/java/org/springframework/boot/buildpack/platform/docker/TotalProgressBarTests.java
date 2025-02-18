@@ -36,12 +36,11 @@ class TotalProgressBarTests {
 		TotalProgressBar bar = new TotalProgressBar("prefix:", '#', true, out);
 		assertThat(out).hasToString("prefix: [ ");
 		bar.accept(new TotalProgressEvent(10));
-		assertThat(out.toString()).isEqualTo("prefix: [ #####");
+		assertThat(out).hasToString("prefix: [ #####");
 		bar.accept(new TotalProgressEvent(50));
-		assertThat(out.toString()).isEqualTo("prefix: [ #########################");
+		assertThat(out).hasToString("prefix: [ #########################");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString())
-			.isEqualTo(String.format("prefix: [ ################################################## ]%n"));
+		assertThat(out).hasToString(String.format("prefix: [ ################################################## ]%n"));
 	}
 
 	@Test
@@ -50,11 +49,11 @@ class TotalProgressBarTests {
 		TotalProgressBar bar = new TotalProgressBar(null, '#', true, out);
 		assertThat(out).hasToString("[ ");
 		bar.accept(new TotalProgressEvent(10));
-		assertThat(out.toString()).isEqualTo("[ #####");
+		assertThat(out).hasToString("[ #####");
 		bar.accept(new TotalProgressEvent(50));
-		assertThat(out.toString()).isEqualTo("[ #########################");
+		assertThat(out).hasToString("[ #########################");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString()).isEqualTo(String.format("[ ################################################## ]%n"));
+		assertThat(out).hasToString(String.format("[ ################################################## ]%n"));
 	}
 
 	@Test
@@ -63,11 +62,11 @@ class TotalProgressBarTests {
 		TotalProgressBar bar = new TotalProgressBar("", '.', false, out);
 		assertThat(out).hasToString("");
 		bar.accept(new TotalProgressEvent(10));
-		assertThat(out.toString()).isEqualTo(".....");
+		assertThat(out).hasToString(".....");
 		bar.accept(new TotalProgressEvent(50));
-		assertThat(out.toString()).isEqualTo(".........................");
+		assertThat(out).hasToString(".........................");
 		bar.accept(new TotalProgressEvent(100));
-		assertThat(out.toString()).isEqualTo(String.format("..................................................%n"));
+		assertThat(out).hasToString(String.format("..................................................%n"));
 	}
 
 	static class TestPrintStream extends PrintStream {

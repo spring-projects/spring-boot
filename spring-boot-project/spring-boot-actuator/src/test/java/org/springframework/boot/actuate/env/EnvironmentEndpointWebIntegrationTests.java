@@ -16,11 +16,13 @@
 
 package org.springframework.boot.actuate.env;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -106,24 +108,6 @@ class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
-	void nestedPathWithSensitivePlaceholderShouldSanitize() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("my.foo", "${my.password}");
-		map.put("my.password", "hello");
-		this.context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("placeholder", map));
-		this.client.get()
-			.uri("/actuator/env/my.foo")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("property.value")
-			.isEqualTo("******")
-			.jsonPath(forPropertyEntry("placeholder"))
-			.isEqualTo("******");
-	}
-
-	@WebEndpointTest
 	void nestedPathForUnknownKeyShouldReturn404() {
 		this.client.get().uri("/actuator/env/this.does.not.exist").exchange().expectStatus().isNotFound();
 	}
@@ -145,22 +129,6 @@ class EnvironmentEndpointWebIntegrationTests {
 			.isEqualTo("${my.bar}");
 	}
 
-	@WebEndpointTest
-	void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("my.foo", "${my.password}");
-		map.put("my.password", "hello");
-		this.context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("placeholder", map));
-		this.client.get()
-			.uri("/actuator/env?pattern=my.*")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath(forProperty("placeholder", "my.foo"))
-			.isEqualTo("******");
-	}
-
 	private String forProperty(String source, String name) {
 		return "propertySources[?(@.name=='" + source + "')].properties.['" + name + "'].value";
 	}
@@ -174,12 +142,12 @@ class EnvironmentEndpointWebIntegrationTests {
 
 		@Bean
 		EnvironmentEndpoint endpoint(Environment environment) {
-			return new EnvironmentEndpoint(environment);
+			return new EnvironmentEndpoint(environment, Collections.emptyList(), Show.ALWAYS);
 		}
 
 		@Bean
 		EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint endpoint) {
-			return new EnvironmentEndpointWebExtension(endpoint);
+			return new EnvironmentEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 	}

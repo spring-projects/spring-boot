@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -40,53 +35,44 @@ import org.springframework.util.ObjectUtils;
  */
 public class ApplicationPid {
 
-	private static final Log logger = LogFactory.getLog(ApplicationPid.class);
-
 	private static final PosixFilePermission[] WRITE_PERMISSIONS = { PosixFilePermission.OWNER_WRITE,
 			PosixFilePermission.GROUP_WRITE, PosixFilePermission.OTHERS_WRITE };
 
-	private static final long JVM_NAME_RESOLVE_THRESHOLD = 200;
-
-	private final String pid;
+	private final Long pid;
 
 	public ApplicationPid() {
-		this.pid = getPid();
+		this.pid = currentProcessPid();
 	}
 
-	protected ApplicationPid(String pid) {
+	protected ApplicationPid(Long pid) {
 		this.pid = pid;
 	}
 
-	private String getPid() {
+	private Long currentProcessPid() {
 		try {
-			String jvmName = resolveJvmName();
-			return jvmName.split("@")[0];
+			return ProcessHandle.current().pid();
 		}
 		catch (Throwable ex) {
 			return null;
 		}
 	}
 
-	private String resolveJvmName() {
-		long startTime = System.currentTimeMillis();
-		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-		long elapsed = System.currentTimeMillis() - startTime;
-		if (elapsed > JVM_NAME_RESOLVE_THRESHOLD) {
-			logger.warn(LogMessage.of(() -> {
-				StringBuilder warning = new StringBuilder();
-				warning.append("ManagementFactory.getRuntimeMXBean().getName() took ");
-				warning.append(elapsed);
-				warning.append(" milliseconds to respond.");
-				warning.append(" This may be due to slow host name resolution.");
-				warning.append(" Please verify your network configuration");
-				if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-					warning.append(" (macOS machines may need to add entries to /etc/hosts)");
-				}
-				warning.append(".");
-				return warning;
-			}));
-		}
-		return jvmName;
+	/**
+	 * Return if the application PID is available.
+	 * @return {@code true} if the PID is available
+	 * @since 3.4.0
+	 */
+	public boolean isAvailable() {
+		return this.pid != null;
+	}
+
+	/**
+	 * Return the application PID as a {@link Long}.
+	 * @return the application PID or {@code null}
+	 * @since 3.4.0
+	 */
+	public Long toLong() {
+		return this.pid;
 	}
 
 	@Override
@@ -94,8 +80,8 @@ public class ApplicationPid {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ApplicationPid) {
-			return ObjectUtils.nullSafeEquals(this.pid, ((ApplicationPid) obj).pid);
+		if (obj instanceof ApplicationPid other) {
+			return ObjectUtils.nullSafeEquals(this.pid, other.pid);
 		}
 		return false;
 	}
@@ -107,7 +93,7 @@ public class ApplicationPid {
 
 	@Override
 	public String toString() {
-		return (this.pid != null) ? this.pid : "???";
+		return (this.pid != null) ? String.valueOf(this.pid) : "???";
 	}
 
 	/**
@@ -123,7 +109,7 @@ public class ApplicationPid {
 			assertCanOverwrite(file);
 		}
 		try (FileWriter writer = new FileWriter(file)) {
-			writer.append(this.pid);
+			writer.append(String.valueOf(this.pid));
 		}
 	}
 
@@ -136,7 +122,7 @@ public class ApplicationPid {
 
 	private void assertCanOverwrite(File file) throws IOException {
 		if (!file.canWrite() || !canWritePosixFile(file)) {
-			throw new FileNotFoundException(file.toString() + " (permission denied)");
+			throw new FileNotFoundException(file + " (permission denied)");
 		}
 	}
 

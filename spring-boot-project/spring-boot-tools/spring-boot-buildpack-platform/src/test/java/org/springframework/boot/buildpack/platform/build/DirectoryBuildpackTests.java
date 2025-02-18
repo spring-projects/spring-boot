@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.mock;
 
@@ -89,8 +89,7 @@ class DirectoryBuildpackTests {
 	void resolveWhenDirectoryWithoutBuildpackTomlThrowsException() throws Exception {
 		Files.createDirectories(this.buildpackDir.toPath());
 		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
 			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
 			.withMessageContaining(this.buildpackDir.getAbsolutePath());
 	}
@@ -128,10 +127,10 @@ class DirectoryBuildpackTests {
 		byte[] content = layers.get(0).toByteArray();
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
 			List<TarArchiveEntry> entries = new ArrayList<>();
-			TarArchiveEntry entry = tar.getNextTarEntry();
+			TarArchiveEntry entry = tar.getNextEntry();
 			while (entry != null) {
 				entries.add(entry);
-				entry = tar.getNextTarEntry();
+				entry = tar.getNextEntry();
 			}
 			assertThat(entries).extracting("name", "mode")
 				.containsExactlyInAnyOrder(tuple("/cnb/", 0755), tuple("/cnb/buildpacks/", 0755),

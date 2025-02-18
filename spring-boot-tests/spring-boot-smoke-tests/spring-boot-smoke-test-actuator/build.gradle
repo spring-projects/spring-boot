@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot Actuator smoke test"
@@ -11,11 +10,10 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation"))
+	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testRuntimeOnly("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }

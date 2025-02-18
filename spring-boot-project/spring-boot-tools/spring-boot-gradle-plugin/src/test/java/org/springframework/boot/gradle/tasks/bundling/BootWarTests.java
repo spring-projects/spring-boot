@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.util.jar.JarFile;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.JavaVersion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,11 +35,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
+@ClassPathExclusions("kotlin-daemon-client-*")
 class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	BootWarTests() {
-		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/",
+		super(BootWar.class, "org.springframework.boot.loader.launch.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/",
 				"WEB-INF/");
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.getTask().getTargetJavaVersion().set(JavaVersion.VERSION_17);
 	}
 
 	@Test
@@ -115,7 +124,8 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
-					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
 					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
@@ -127,19 +137,23 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 				.isEqualTo("WEB-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
-					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",
+					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
+					"- \"WEB-INF/lib/first-project-library.jar\"",
 					"- \"WEB-INF/lib/second-project-library-SNAPSHOT.jar\"");
+		}
+	}
+
+	@Test
+	void javaVersionIsWrittenToManifest() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
+				.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
 		}
 	}
 
 	@Override
 	protected void executeTask() {
 		getTask().copy();
-	}
-
-	@Override
-	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override

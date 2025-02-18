@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,26 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.net.InetAddress;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
+import org.springframework.boot.context.properties.bind.MapBinderTests.CustomMapWithoutDefaultCtor.CustomMap;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
@@ -49,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
@@ -76,9 +80,12 @@ class MapBinderTests {
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable.mapOf(String.class,
 			String[].class);
 
+	private static final Bindable<EnumMap<ExampleEnum, String>> EXAMPLE_ENUM_STRING_ENUM_MAP = Bindable
+		.of(ResolvableType.forClassWithGenerics(EnumMap.class, ExampleEnum.class, String.class));
+
 	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder = new Binder(this.sources);
+	private final Binder binder = new Binder(this.sources);
 
 	@Test
 	void bindToMapShouldReturnPopulatedMap() {
@@ -186,9 +193,9 @@ class MapBinderTests {
 		source.put("foo", "bar");
 		this.sources.add(source);
 		Map<String, Object> result = this.binder.bind("", Bindable.mapOf(String.class, Object.class)).get();
-		assertThat(result.get("commit")).isEqualTo(Collections.singletonMap("id", "abcdefg"));
-		assertThat(result.get("branch")).isEqualTo("master");
-		assertThat(result.get("foo")).isEqualTo("bar");
+		assertThat(result).containsEntry("commit", Collections.singletonMap("id", "abcdefg"));
+		assertThat(result).containsEntry("branch", "master");
+		assertThat(result).containsEntry("foo", "bar");
 	}
 
 	@Test
@@ -315,15 +322,13 @@ class MapBinderTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "foo=boo");
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource("foo.aaa.bbb.ccc", "baz-${foo}");
 		this.sources.add(source);
-		this.binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
-		Map<String, ExampleEnum> result = this.binder.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class))
-			.get();
+		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
+		Map<String, ExampleEnum> result = binder.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class)).get();
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.BAZ_BOO);
 	}
 
 	@Test
 	void bindToMapWithNoPropertiesShouldReturnUnbound() {
-		this.binder = new Binder(this.sources);
 		BindResult<Map<String, ExampleEnum>> result = this.binder.bind("foo",
 				Bindable.mapOf(String.class, ExampleEnum.class));
 		assertThat(result.isBound()).isFalse();
@@ -348,11 +353,9 @@ class MapBinderTests {
 		Bindable<Map<String, String[]>> target = STRING_ARRAY_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
-		ArgumentCaptor<String[]> array = ArgumentCaptor.forClass(String[].class);
 		ordered.verify(handler)
 			.onSuccess(eq(ConfigurationPropertyName.of("foo.bar")), eq(Bindable.of(String[].class)), any(),
-					array.capture());
-		assertThat(array.getValue()).containsExactly("a", "b", "c");
+					assertArg((array) -> assertThat((String[]) array).containsExactly("a", "b", "c")));
 		ordered.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Map.class));
 	}
 
@@ -366,7 +369,7 @@ class MapBinderTests {
 		source.put("foo.bar[2].value", "c");
 		this.sources.add(source);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = map.get("bar").stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 
 	}
@@ -431,7 +434,7 @@ class MapBinderTests {
 		mockSource.put("foo.bar.baz[2].value", "c");
 		this.sources.add(mockSource);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 	}
 
@@ -505,8 +508,8 @@ class MapBinderTests {
 		source.put("foo", "a,b");
 		this.sources.add(source);
 		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
-		assertThat(map.get("a")).isNotNull();
-		assertThat(map.get("b")).isNotNull();
+		assertThat(map).containsKey("a");
+		assertThat(map).containsKey("b");
 	}
 
 	@Test
@@ -521,8 +524,8 @@ class MapBinderTests {
 		source.put("foo.b", "b");
 		this.sources.add(source);
 		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
-		assertThat(map.get("a")).isEqualTo("a");
-		assertThat(map.get("b")).isEqualTo("b");
+		assertThat(map).containsEntry("a", "a");
+		assertThat(map).containsEntry("b", "b");
 	}
 
 	@Test
@@ -612,6 +615,42 @@ class MapBinderTests {
 			.containsExactly("127.0.0.1", "127.0.0.2");
 	}
 
+	@Test
+	void bindToMapWithPlaceholdersShouldResolve() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		StandardEnvironment environment = new StandardEnvironment();
+		Binder binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment),
+				conversionService, null, null);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=bc");
+		this.sources.add(new MockConfigurationPropertySource("foo", "a${bar},${bar}d"));
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map).containsKey("abc");
+		assertThat(map).containsKey("bcd");
+	}
+
+	@Test
+	void bindToCustomMapWithoutCtorAndConverterShouldResolve() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new CustomMapConverter());
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.custom-map", "value");
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, conversionService, null);
+		CustomMapWithoutDefaultCtor result = binder.bind("foo", Bindable.of(CustomMapWithoutDefaultCtor.class)).get();
+		assertThat(result.getCustomMap().getSource()).isEqualTo("value");
+	}
+
+	@Test
+	void bindToEnumMapShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("props.foo-bar", "value");
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, null, null);
+		EnumMap<ExampleEnum, String> result = binder.bind("props", EXAMPLE_ENUM_STRING_ENUM_MAP).get();
+		assertThat(result).hasSize(1).containsEntry(ExampleEnum.FOO_BAR, "value");
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
 		return Bindable.of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
@@ -652,7 +691,7 @@ class MapBinderTests {
 
 	static class NestableFoo {
 
-		private Map<String, NestableFoo> foos = new LinkedHashMap<>();
+		private final Map<String, NestableFoo> foos = new LinkedHashMap<>();
 
 		private String value;
 
@@ -704,7 +743,7 @@ class MapBinderTests {
 
 	static class ExampleCustomWithDefaultConstructorBean {
 
-		private MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
+		private final MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
 
 		MyCustomWithDefaultConstructorMap getItems() {
 			return this.items;
@@ -745,6 +784,48 @@ class MapBinderTests {
 
 		void setAddresses(Map<String, ? extends List<? extends InetAddress>> addresses) {
 			this.addresses = addresses;
+		}
+
+	}
+
+	static class CustomMapWithoutDefaultCtor {
+
+		private final CustomMap customMap;
+
+		CustomMapWithoutDefaultCtor(CustomMap customMap) {
+			this.customMap = customMap;
+		}
+
+		CustomMap getCustomMap() {
+			return this.customMap;
+		}
+
+		static final class CustomMap extends AbstractMap<String, Object> {
+
+			private final String source;
+
+			CustomMap(String source) {
+				this.source = source;
+			}
+
+			@Override
+			public Set<Entry<String, Object>> entrySet() {
+				return Collections.emptySet();
+			}
+
+			String getSource() {
+				return this.source;
+			}
+
+		}
+
+	}
+
+	private static final class CustomMapConverter implements Converter<String, CustomMap> {
+
+		@Override
+		public CustomMap convert(String source) {
+			return new CustomMap(source);
 		}
 
 	}

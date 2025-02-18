@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,13 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration.Dynamic;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,11 +52,13 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -69,7 +72,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootServletInitializerTests {
 
-	private ServletContext servletContext = new MockServletContext();
+	private final ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
 
@@ -117,7 +120,8 @@ class SpringBootServletInitializerTests {
 		new WithConfigurationAnnotation().onStartup(this.servletContext);
 		assertThat(this.servletContext.getAttribute(LoggingApplicationListener.REGISTER_SHUTDOWN_HOOK_PROPERTY))
 			.isEqualTo(false);
-		assertThat(this.application).hasFieldOrPropertyWithValue("registerShutdownHook", false);
+		Object properties = ReflectionTestUtils.getField(this.application, "properties");
+		assertThat(properties).hasFieldOrPropertyWithValue("registerShutdownHook", false);
 	}
 
 	@Test
@@ -125,7 +129,7 @@ class SpringBootServletInitializerTests {
 		WebServer webServer = new UndertowServletWebServerFactory(0).getWebServer((servletContext) -> {
 			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 				.createRootApplicationContext(servletContext)) {
-				assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+				assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 			}
 		});
 		try {
@@ -182,13 +186,14 @@ class SpringBootServletInitializerTests {
 	@Test
 	void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
 		try (ConfigurableApplicationContext context = new SpringApplication(ExecutableWar.class).run()) {
-			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 		}
 	}
 
 	@Test
 	void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames())
 			.willReturn(Collections.enumeration(Collections.singletonList("spring.profiles.active")));
 		given(servletContext.getInitParameter("spring.profiles.active")).willReturn("from-servlet-context");
@@ -202,6 +207,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void whenServletContextIsDestroyedThenJdbcDriversAreDeregistered() throws ServletException {
 		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
 		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
 		AtomicBoolean driversDeregistered = new AtomicBoolean();
@@ -222,6 +228,32 @@ class SpringBootServletInitializerTests {
 		then(servletContext).should().addListener(captor.capture());
 		captor.getValue().contextDestroyed(new ServletContextEvent(servletContext));
 		assertThat(driversDeregistered).isTrue();
+	}
+
+	@Test
+	void whenServletContextIsDestroyedThenReactorSchedulersAreShutDown() throws ServletException {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
+		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
+		AtomicBoolean schedulersShutDown = new AtomicBoolean();
+		new SpringBootServletInitializer() {
+
+			@Override
+			protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+				return builder.sources(Config.class);
+			}
+
+			@Override
+			protected void shutDownSharedReactorSchedulers(ServletContext servletContext) {
+				schedulersShutDown.set(true);
+			}
+
+		}.onStartup(servletContext);
+		ArgumentCaptor<ServletContextListener> captor = ArgumentCaptor.forClass(ServletContextListener.class);
+		then(servletContext).should().addListener(captor.capture());
+		captor.getValue().contextDestroyed(new ServletContextEvent(servletContext));
+		assertThat(schedulersShutDown).isTrue();
 	}
 
 	static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
@@ -248,7 +280,7 @@ class SpringBootServletInitializerTests {
 
 	}
 
-	private class CustomSpringBootServletInitializer extends MockSpringBootServletInitializer {
+	private final class CustomSpringBootServletInitializer extends MockSpringBootServletInitializer {
 
 		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
 

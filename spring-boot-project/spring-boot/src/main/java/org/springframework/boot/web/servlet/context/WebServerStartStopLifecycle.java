@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.servlet.context;
 
+import org.springframework.boot.web.context.WebServerGracefulShutdownLifecycle;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.SmartLifecycle;
 
@@ -59,7 +60,7 @@ class WebServerStartStopLifecycle implements SmartLifecycle {
 
 	@Override
 	public int getPhase() {
-		return Integer.MAX_VALUE - 1;
+		return WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE - 1024;
 	}
 
 }

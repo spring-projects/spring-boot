@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 @ExtendWith(MavenBuildExtension.class)
 class WarIntegrationTests extends AbstractArchiveIntegrationTests {
@@ -57,11 +57,11 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl")
-				.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-4")
-				.hasEntryWithName("org/springframework/boot/loader/WarLauncher.class")
+				.hasEntryWithNameStartingWith("WEB-INF/lib-provided/jakarta.servlet-api-6")
+				.hasEntryWithName("org/springframework/boot/loader/launch/WarLauncher.class")
 				.hasEntryWithName("WEB-INF/classes/org/test/SampleApplication.class")
 				.hasEntryWithName("index.html")
-				.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.WarLauncher")
+				.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.launch.WarLauncher")
 					.hasStartClass("org.test.SampleApplication")
 					.hasAttribute("Not-Used", "Foo")));
 	}
@@ -104,7 +104,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				List<String> unreproducibleEntries = jar.stream()
 					.filter((entry) -> entry.getLastModifiedTime().toMillis() != offsetExpectedModified)
 					.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
-					.collect(Collectors.toList());
+					.toList();
 				assertThat(unreproducibleEntries).isEmpty();
 				warHash.set(FileUtils.sha1Hash(repackaged));
 				FileSystemUtils.deleteRecursively(project);
@@ -123,11 +123,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			List<String> sortedLibs = Arrays.asList(
 					// these libraries are copied from the original war, sorted when
 					// packaged by Maven
-					"WEB-INF/lib/spring-aop", "WEB-INF/lib/spring-beans", "WEB-INF/lib/spring-context",
-					"WEB-INF/lib/spring-core", "WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-jcl",
+					"WEB-INF/lib/micrometer-commons", "WEB-INF/lib/micrometer-observation", "WEB-INF/lib/spring-aop",
+					"WEB-INF/lib/spring-beans", "WEB-INF/lib/spring-context", "WEB-INF/lib/spring-core",
+					"WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-jcl",
 					// these libraries are contributed by Spring Boot repackaging, and
 					// sorted separately
-					"WEB-INF/lib/spring-boot-jarmode-layertools");
+					"WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
 			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/")
 				.zipSatisfy(sortedLibs,
 						(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
@@ -150,8 +151,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith(
-						"WEB-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getCoordinates().getArtifactId());
+				.hasEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
 			try (JarFile jarFile = new JarFile(repackaged)) {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
 				assertThat(layerIndex.keySet()).containsExactly("dependencies", "spring-boot-loader",
@@ -167,6 +167,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 					.anyMatch((dependency) -> dependency.startsWith("WEB-INF/lib-provided/"));
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		});
 	}
@@ -178,20 +179,20 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.doesNotHaveEntryWithName("WEB-INF/layers.idx")
-				.doesNotHaveEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
+				.hasEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId())
+				.doesNotHaveEntryWithName("WEB-INF/layers.idx");
 		});
 	}
 
 	@TestTemplate
-	void whenWarIsRepackagedWithTheLayersEnabledAndLayerToolsExcluded(MavenBuild mavenBuild) {
-		mavenBuild.project("war-layered-no-layer-tools").execute((project) -> {
-			File repackaged = new File(project, "war/target/war-layered-0.0.1.BUILD-SNAPSHOT.war");
+	void whenWarIsRepackagedWithToolsExclude(MavenBuild mavenBuild) {
+		mavenBuild.project("war-no-tools").execute((project) -> {
+			File repackaged = new File(project, "war/target/war-no-tools-0.0.1.BUILD-SNAPSHOT.war");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("WEB-INF/layers.idx")
-				.doesNotHaveEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
+				.doesNotHaveEntryWithNameStartingWith(
+						"WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
 		});
 	}
 

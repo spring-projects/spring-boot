@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,7 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ChangedFiles) {
-			ChangedFiles other = (ChangedFiles) obj;
+		if (obj instanceof ChangedFiles other) {
 			return this.sourceDirectory.equals(other.sourceDirectory) && this.files.equals(other.files);
 		}
 		return super.equals(obj);

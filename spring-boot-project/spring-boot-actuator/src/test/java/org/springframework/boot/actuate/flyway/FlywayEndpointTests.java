@@ -70,7 +70,7 @@ class FlywayEndpointTests {
 					.get(context.getId())
 					.getFlywayBeans();
 				assertThat(flywayBeans).hasSize(1);
-				assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
+				assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(4);
 			});
 	}
 

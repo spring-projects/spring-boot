@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
-import org.springframework.boot.logging.DeferredLog;
+import org.springframework.boot.logging.DeferredLogs;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Sijun Yang
  */
 class StandardConfigDataLocationResolverTests {
 
@@ -61,7 +62,7 @@ class StandardConfigDataLocationResolverTests {
 	void setup() {
 		this.environment = new MockEnvironment();
 		this.environmentBinder = Binder.get(this.environment);
-		this.resolver = new StandardConfigDataLocationResolver(new DeferredLog(), this.environmentBinder,
+		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
 				this.resourceLoader);
 	}
 
@@ -74,7 +75,7 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationIsDirectoryResolvesAllMatchingFilesInDirectory() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 			.containsExactly("class path resource [configdata/properties/application.properties]");
 	}
@@ -84,7 +85,7 @@ class StandardConfigDataLocationResolverTests {
 		ConfigDataLocation location = ConfigDataLocation
 			.of("file:src/test/resources/configdata/properties/application.properties");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 			.containsExactly(
 					filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
@@ -97,6 +98,16 @@ class StandardConfigDataLocationResolverTests {
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
 			.withMessageStartingWith("Unable to load config data from")
 			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
+	}
+
+	@Test
+	void resolveWhenLocationHasUnknownPrefixAndNoMatchingLoaderThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation
+			.of("typo:src/test/resources/configdata/properties/application.unknown");
+		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
+			.withMessageStartingWith("Unable to load config data from")
+			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith(
+					"Incorrect ConfigDataLocationResolver chosen or file extension is not known to any PropertySourceLoader"));
 	}
 
 	@Test
@@ -118,7 +129,8 @@ class StandardConfigDataLocationResolverTests {
 	void createWhenConfigNameHasWildcardThrowsException() {
 		this.environment.setProperty("spring.config.name", "*/application");
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader))
+			.isThrownBy(() -> new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
+					this.resourceLoader))
 			.withMessageStartingWith("Config name '")
 			.withMessageEndingWith("' cannot contain '*'");
 	}
@@ -135,9 +147,10 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationIsWildcardDirectoriesRestrictsToOneLevelDeep() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/config/*/");
 		this.environment.setProperty("spring.config.name", "testproperties");
-		this.resolver = new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader);
+		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
+				this.resourceLoader);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(3);
+		assertThat(locations).hasSize(3);
 		assertThat(locations).extracting(Object::toString)
 			.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
 			.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
@@ -148,7 +161,8 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationIsWildcardDirectoriesSortsAlphabeticallyBasedOnAbsolutePath() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/config/*/");
 		this.environment.setProperty("spring.config.name", "testproperties");
-		this.resolver = new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader);
+		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
+				this.resourceLoader);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations).extracting(Object::toString)
 			.containsExactly(filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
@@ -167,7 +181,7 @@ class StandardConfigDataLocationResolverTests {
 		ConfigDataLocation location = ConfigDataLocation
 			.of("file:src/test/resources/config/*/testproperties.properties");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(3);
+		assertThat(locations).hasSize(3);
 		assertThat(locations).extracting(Object::toString)
 			.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
 			.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
@@ -179,7 +193,7 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationIsRelativeAndFileResolves() {
 		this.environment.setProperty("spring.config.name", "other");
 		ConfigDataLocation location = ConfigDataLocation.of("other.properties");
-		this.resolver = new StandardConfigDataLocationResolver(new DeferredLog(), this.environmentBinder,
+		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
 				this.resourceLoader);
 		StandardConfigDataReference parentReference = new StandardConfigDataReference(
 				ConfigDataLocation.of("classpath:configdata/properties/application.properties"), null,
@@ -189,7 +203,7 @@ class StandardConfigDataLocationResolverTests {
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 			.contains("class path resource [configdata/properties/other.properties]");
 	}
@@ -198,7 +212,7 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationIsRelativeAndDirectoryResolves() {
 		this.environment.setProperty("spring.config.name", "testproperties");
 		ConfigDataLocation location = ConfigDataLocation.of("nested/3-third/");
-		this.resolver = new StandardConfigDataLocationResolver(new DeferredLog(), this.environmentBinder,
+		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
 				this.resourceLoader);
 		StandardConfigDataReference parentReference = new StandardConfigDataReference(
 				ConfigDataLocation.of("optional:classpath:configdata/"), null, "classpath:config/specific", null,
@@ -207,7 +221,7 @@ class StandardConfigDataLocationResolverTests {
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 			.contains("class path resource [config/nested/3-third/testproperties.properties]");
 	}
@@ -230,7 +244,7 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationUsesOptionalExtensionSyntaxResolves() throws Exception {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/application-props-no-extension[.properties]");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		StandardConfigDataResource resolved = locations.get(0);
 		assertThat(resolved.getResource().getFilename()).endsWith("application-props-no-extension");
 		ConfigData loaded = new StandardConfigDataLoader().load(null, resolved);
@@ -241,11 +255,11 @@ class StandardConfigDataLocationResolverTests {
 	@Test
 	void resolveProfileSpecificReturnsProfileSpecificFiles() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
-		Profiles profiles = mock(Profiles.class);
-		given(profiles.iterator()).willReturn(Collections.singletonList("dev").iterator());
+		this.environment.setActiveProfiles("dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		List<StandardConfigDataResource> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 			.containsExactly("class path resource [configdata/properties/application-dev.properties]");
 	}
@@ -271,7 +285,6 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenOptionalAndLoaderIsUnknownAndExtensionIsUnknownShouldNotFail() {
 		ConfigDataLocation location = ConfigDataLocation
 			.of("optional:some-unknown-loader:dummy.some-unknown-extension");
-		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 
@@ -279,6 +292,83 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenOptionalAndExtensionIsUnknownShouldNotFail() {
 		ConfigDataLocation location = ConfigDataLocation.of("optional:file:dummy.some-unknown-extension");
 		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileIsValidShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWithNonAsciiCharactersShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-테스트_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWithAdditionalValidProfilesShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, List.of("prod-test", "stage-test"));
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithDashThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("-dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '-dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("_dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '_dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithDashThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev-': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev_");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev_': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileContainsInvalidCharactersThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev*test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev*test': must contain only letters, digits, '-', or '_'");
 	}
 
 	private String filePath(String... components) {

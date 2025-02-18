@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package org.springframework.boot.web.servlet;
 
 import java.util.EventListener;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextListener;
-
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -68,7 +67,7 @@ class ServletListenerRegistrationBeanTests {
 			.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
 			}))
-			.withMessageContaining("Listener is not of a supported type");
+			.withMessageContaining("'listener' is not of a supported type");
 	}
 
 }

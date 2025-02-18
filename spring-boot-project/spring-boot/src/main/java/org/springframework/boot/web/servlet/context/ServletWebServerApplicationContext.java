@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -147,9 +146,15 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			WebServer webServer = this.webServer;
-			if (webServer != null) {
-				webServer.stop();
+			try {
+				WebServer webServer = this.webServer;
+				if (webServer != null) {
+					webServer.stop();
+					webServer.destroy();
+				}
+			}
+			catch (RuntimeException stopOrDestroyEx) {
+				ex.addSuppressed(stopOrDestroyEx);
 			}
 			throw ex;
 		}
@@ -172,13 +177,17 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
 		}
 		super.doClose();
+		WebServer webServer = this.webServer;
+		if (webServer != null) {
+			webServer.destroy();
+		}
 	}
 
 	private void createWebServer() {
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
-			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
+			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			ServletWebServerFactory factory = getWebServerFactory();
 			createWebServer.tag("factory", factory.getClass().toString());
 			this.webServer = factory.getWebServer(getSelfInitializer());
@@ -233,8 +242,8 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		prepareWebApplicationContext(servletContext);
 		registerApplicationScope(servletContext);
 		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(), servletContext);
-		for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
-			beans.onStartup(servletContext);
+		for (ServletContextInitializer initializerBean : getServletContextInitializerBeans()) {
+			initializerBean.onStartup(servletContext);
 		}
 	}
 

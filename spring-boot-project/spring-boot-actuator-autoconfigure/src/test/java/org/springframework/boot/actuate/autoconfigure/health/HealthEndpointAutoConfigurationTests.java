@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,15 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointReactiveWebExtensionConfiguration.WebFluxAdditionalHealthEndpointPathsConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration.JerseyAdditionalHealthEndpointPathsConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration.MvcAdditionalHealthEndpointPathsConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.DefaultReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.Health;
@@ -48,12 +53,16 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -139,6 +148,41 @@ class HealthEndpointAutoConfigurationTests {
 			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupIncludesContributorThatDoesNotExist() {
+		this.contextRunner.withUserConfiguration(CompositeHealthIndicatorConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.ready.include=composite/b/c,nope")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+					.hasMessage("Included health contributor 'nope' in group 'ready' does not exist");
+			});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupExcludesContributorThatDoesNotExist() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.group.ready.exclude=composite/b/d",
+					"management.endpoint.health.group.ready.include=*")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+					.hasMessage("Excluded health contributor 'composite/b/d' in group 'ready' does not exist");
+			});
+	}
+
+	@Test
+	void runCreatesHealthEndpointGroupThatIncludesContributorThatDoesNotExistWhenValidationIsDisabled() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.validate-group-membership=false",
+					"management.endpoint.health.group.ready.include=nope")
+			.run((context) -> {
+				HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+				assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
+				assertThat(groups.getNames()).containsOnly("ready");
+			});
 	}
 
 	@Test
@@ -300,6 +344,47 @@ class HealthEndpointAutoConfigurationTests {
 				}));
 	}
 
+	@Test
+	void additionalHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
+		this.contextRunner
+			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MvcAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
+	}
+
+	@Test
+	void additionalJerseyHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
+		this.contextRunner
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JerseyAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
+	}
+
+	@Test
+	void additionalReactiveHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
+		this.reactiveContextRunner
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(WebFluxAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HealthIndicatorsConfiguration {
 
@@ -316,6 +401,17 @@ class HealthEndpointAutoConfigurationTests {
 		@Bean
 		ReactiveHealthIndicator reactiveHealthIndicator() {
 			return () -> Mono.just(Health.up().build());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CompositeHealthIndicatorConfiguration {
+
+		@Bean
+		CompositeHealthContributor compositeHealthIndicator() {
+			return CompositeHealthContributor.fromMap(Map.of("a", (HealthIndicator) () -> Health.up().build(), "b",
+					CompositeHealthContributor.fromMap(Map.of("c", (HealthIndicator) () -> Health.up().build()))));
 		}
 
 	}

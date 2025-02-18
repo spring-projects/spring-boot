@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public interface OperationArgumentResolver {
 	 * @return an {@link OperationArgumentResolver} instance
 	 */
 	static <T> OperationArgumentResolver of(Class<T> type, Supplier<? extends T> supplier) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.notNull(supplier, "Supplier must not be null");
+		Assert.notNull(type, "'type' must not be null");
+		Assert.notNull(supplier, "'supplier' must not be null");
 		return new OperationArgumentResolver() {
 
 			@Override

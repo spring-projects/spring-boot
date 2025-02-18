@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 
-import javax.servlet.DispatcherType;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -31,6 +29,8 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.servlet.DispatcherType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +42,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetrics
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
-import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.web.client.HttpClientObservationsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.web.reactive.WebFluxObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.web.servlet.WebMvcObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -70,6 +70,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.filter.ServerHttpObservationFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.waitAtMost;
@@ -99,6 +100,11 @@ class MetricsIntegrationTests {
 	@Autowired
 	private MeterRegistry registry;
 
+	@BeforeEach
+	void setUp() {
+		this.registry.clear();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	void restTemplateIsInstrumented() {
@@ -107,14 +113,14 @@ class MetricsIntegrationTests {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess("{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class)).containsKey("message");
-		assertThat(this.registry.get("http.client.requests").timer().count()).isEqualTo(1);
+		assertThat(this.registry.get("http.client.requests").timer().count()).isOne();
 	}
 
 	@Test
 	void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
 		waitAtMost(Duration.ofSeconds(5))
-			.untilAsserted(() -> assertThat(this.registry.get("http.server.requests").timer().count()).isEqualTo(1));
+			.untilAsserted(() -> assertThat(this.registry.get("http.server.requests").timer().count()).isOne());
 
 	}
 
@@ -130,23 +136,23 @@ class MetricsIntegrationTests {
 	void metricsFilterRegisteredForAsyncDispatches() {
 		Map<String, FilterRegistrationBean> filterRegistrations = this.context
 			.getBeansOfType(FilterRegistrationBean.class);
-		assertThat(filterRegistrations).containsKey("webMvcMetricsFilter");
-		FilterRegistrationBean registration = filterRegistrations.get("webMvcMetricsFilter");
-		assertThat(registration.getFilter()).isInstanceOf(WebMvcMetricsFilter.class);
+		assertThat(filterRegistrations).containsKey("webMvcObservationFilter");
+		FilterRegistrationBean registration = filterRegistrations.get("webMvcObservationFilter");
+		assertThat(registration.getFilter()).isInstanceOf(ServerHttpObservationFilter.class);
 		assertThat((Set<DispatcherType>) ReflectionTestUtils.getField(registration, "dispatcherTypes"))
 			.containsExactlyInAnyOrder(DispatcherType.REQUEST, DispatcherType.ASYNC);
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
-			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
-			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
-			DataSourcePoolMetricsAutoConfiguration.class, HibernateMetricsAutoConfiguration.class,
-			HttpClientMetricsAutoConfiguration.class, WebFluxMetricsAutoConfiguration.class,
-			WebMvcMetricsAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-			ServletWebServerFactoryAutoConfiguration.class })
+	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
+			JvmMetricsAutoConfiguration.class, LogbackMetricsAutoConfiguration.class,
+			SystemMetricsAutoConfiguration.class, RabbitMetricsAutoConfiguration.class,
+			CacheMetricsAutoConfiguration.class, DataSourcePoolMetricsAutoConfiguration.class,
+			HibernateMetricsAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class,
+			WebFluxObservationAutoConfiguration.class, WebMvcObservationAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			RestTemplateAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class })
 	@Import(PersonController.class)
 	static class MetricsApp {
 

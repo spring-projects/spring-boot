@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Driver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -28,6 +29,7 @@ import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.aot.Neo4jManagedTypes;
 import org.springframework.data.neo4j.core.DatabaseSelection;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -36,6 +38,7 @@ import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.convert.Neo4jConversions;
 import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.TransactionManager;
@@ -109,7 +112,7 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldReuseExistingNeo4jClient() {
-		this.contextRunner.withBean("myCustomClient", Neo4jClient.class, () -> mock(Neo4jClient.class))
+		this.contextRunner.withUserConfiguration(Neo4jClientConfig.class)
 			.run((context) -> assertThat(context).hasSingleBean(Neo4jClient.class).hasBean("myCustomClient"));
 	}
 
@@ -161,6 +164,29 @@ class Neo4jDataAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldProvideManagedTypes() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Neo4jManagedTypes.class);
+			assertThat(context.getBean(Neo4jMappingContext.class))
+				.extracting((mappingContext) -> ReflectionTestUtils.getField(mappingContext, "managedTypes"))
+				.isEqualTo(context.getBean(Neo4jManagedTypes.class));
+		});
+	}
+
+	@Test
+	void shouldReuseExistingManagedTypes() {
+		Neo4jManagedTypes managedTypes = Neo4jManagedTypes.from();
+		this.contextRunner.withBean("customManagedTypes", Neo4jManagedTypes.class, () -> managedTypes)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Neo4jManagedTypes.class);
+				assertThat(context).doesNotHaveBean("neo4jManagedTypes");
+				assertThat(context.getBean(Neo4jMappingContext.class))
+					.extracting((mappingContext) -> ReflectionTestUtils.getField(mappingContext, "managedTypes"))
+					.isSameAs(managedTypes);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomDatabaseSelectionProviderConfiguration {
 
@@ -174,6 +200,16 @@ class Neo4jDataAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(TestPersistent.class)
 	static class EntityScanConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Neo4jClientConfig {
+
+		@Bean
+		Neo4jClient myCustomClient(Driver driver) {
+			return Neo4jClient.create(driver);
+		}
 
 	}
 

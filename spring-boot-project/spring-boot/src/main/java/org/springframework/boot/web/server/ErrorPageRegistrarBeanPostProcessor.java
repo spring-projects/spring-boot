@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,15 +45,14 @@ public class ErrorPageRegistrarBeanPostProcessor implements BeanPostProcessor, B
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
-		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
-				"ErrorPageRegistrarBeanPostProcessor can only be used with a ListableBeanFactory");
+		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory, "'beanFactory' must be a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof ErrorPageRegistry) {
-			postProcessBeforeInitialization((ErrorPageRegistry) bean);
+		if (bean instanceof ErrorPageRegistry errorPageRegistry) {
+			postProcessBeforeInitialization(errorPageRegistry);
 		}
 		return bean;
 	}

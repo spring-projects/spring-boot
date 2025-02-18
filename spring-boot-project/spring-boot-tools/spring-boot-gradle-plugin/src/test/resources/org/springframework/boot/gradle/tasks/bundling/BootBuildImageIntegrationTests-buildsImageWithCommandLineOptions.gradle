@@ -1,6 +1,0 @@
-import org.gradle.util.GradleVersion
-
-plugins {
-	id 'java'
-	id 'org.springframework.boot' version '{version}'
-}

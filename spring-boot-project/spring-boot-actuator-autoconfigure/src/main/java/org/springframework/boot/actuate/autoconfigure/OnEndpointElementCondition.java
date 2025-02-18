@@ -78,18 +78,6 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	 * @since 2.6.0
 	 */
 	protected ConditionOutcome getDefaultOutcome(ConditionContext context, AnnotationAttributes annotationAttributes) {
-		return getDefaultEndpointsOutcome(context);
-	}
-
-	/**
-	 * Return the default outcome that should be used.
-	 * @param context the condition context
-	 * @return the default outcome
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #getDefaultOutcome(ConditionContext, AnnotationAttributes)}
-	 */
-	@Deprecated
-	protected ConditionOutcome getDefaultEndpointsOutcome(ConditionContext context) {
 		boolean match = Boolean
 			.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
 		return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)

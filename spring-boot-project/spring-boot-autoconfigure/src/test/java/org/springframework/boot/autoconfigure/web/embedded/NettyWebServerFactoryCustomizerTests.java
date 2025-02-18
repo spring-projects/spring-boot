@@ -131,7 +131,7 @@ class NettyWebServerFactoryCustomizerTests {
 	void setHttp2MaxRequestHeaderSize() {
 		DataSize headerSize = DataSize.ofKilobytes(24);
 		this.serverProperties.getHttp2().setEnabled(true);
-		this.serverProperties.setMaxHttpHeaderSize(headerSize);
+		this.serverProperties.setMaxHttpRequestHeaderSize(headerSize);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyHttp2MaxHeaderSize(factory, headerSize.toBytes());
@@ -140,11 +140,10 @@ class NettyWebServerFactoryCustomizerTests {
 	@Test
 	void configureHttpRequestDecoder() {
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-		this.serverProperties.setMaxHttpHeaderSize(DataSize.ofKilobytes(24));
+		this.serverProperties.setMaxHttpRequestHeaderSize(DataSize.ofKilobytes(24));
 		nettyProperties.setValidateHeaders(false);
 		nettyProperties.setInitialBufferSize(DataSize.ofBytes(512));
 		nettyProperties.setH2cMaxContentLength(DataSize.ofKilobytes(1));
-		nettyProperties.setMaxChunkSize(DataSize.ofKilobytes(16));
 		nettyProperties.setMaxInitialLineLength(DataSize.ofKilobytes(32));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -153,10 +152,9 @@ class NettyWebServerFactoryCustomizerTests {
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
 		assertThat(decoder.validateHeaders()).isFalse();
-		assertThat(decoder.maxHeaderSize()).isEqualTo(this.serverProperties.getMaxHttpHeaderSize().toBytes());
+		assertThat(decoder.maxHeaderSize()).isEqualTo(this.serverProperties.getMaxHttpRequestHeaderSize().toBytes());
 		assertThat(decoder.initialBufferSize()).isEqualTo(nettyProperties.getInitialBufferSize().toBytes());
 		assertThat(decoder.h2cMaxContentLength()).isEqualTo(nettyProperties.getH2cMaxContentLength().toBytes());
-		assertThat(decoder.maxChunkSize()).isEqualTo(nettyProperties.getMaxChunkSize().toBytes());
 		assertThat(decoder.maxInitialLineLength()).isEqualTo(nettyProperties.getMaxInitialLineLength().toBytes());
 	}
 

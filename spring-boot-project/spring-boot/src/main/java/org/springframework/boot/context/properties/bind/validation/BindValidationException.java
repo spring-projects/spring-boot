@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class BindValidationException extends RuntimeException {
 
 	BindValidationException(ValidationErrors validationErrors) {
 		super(getMessage(validationErrors));
-		Assert.notNull(validationErrors, "ValidationErrors must not be null");
+		Assert.notNull(validationErrors, "'validationErrors' must not be null");
 		this.validationErrors = validationErrors;
 	}
 

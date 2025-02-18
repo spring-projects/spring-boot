@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,17 +216,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent) {
-			onApplicationStartingEvent((ApplicationStartingEvent) event);
+		if (event instanceof ApplicationStartingEvent startingEvent) {
+			onApplicationStartingEvent(startingEvent);
 		}
-		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+		else if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
 		}
-		else if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		else if (event instanceof ApplicationPreparedEvent preparedEvent) {
+			onApplicationPreparedEvent(preparedEvent);
 		}
-		else if (event instanceof ContextClosedEvent) {
-			onContextClosedEvent((ContextClosedEvent) event);
+		else if (event instanceof ContextClosedEvent contextClosedEvent) {
+			onContextClosedEvent(contextClosedEvent);
 		}
 		else if (event instanceof ApplicationFailedEvent) {
 			onApplicationFailedEvent();
@@ -322,7 +322,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
-		String logConfig = StringUtils.trimWhitespace(environment.getProperty(CONFIG_PROPERTY));
+		String logConfig = environment.getProperty(CONFIG_PROPERTY);
+		if (StringUtils.hasLength(logConfig)) {
+			logConfig = logConfig.strip();
+		}
 		try {
 			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 			if (ignoreLogConfig(logConfig)) {
@@ -332,7 +335,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				system.initialize(initializationContext, logConfig, logFile);
 			}
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			Throwable exceptionToReport = ex;
 			while (exceptionToReport != null && !(exceptionToReport instanceof FileNotFoundException)) {
 				exceptionToReport = exceptionToReport.getCause();
@@ -454,7 +457,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		this.parseArgs = parseArgs;
 	}
 
-	private class Lifecycle implements SmartLifecycle {
+	private final class Lifecycle implements SmartLifecycle {
 
 		private volatile boolean running;
 

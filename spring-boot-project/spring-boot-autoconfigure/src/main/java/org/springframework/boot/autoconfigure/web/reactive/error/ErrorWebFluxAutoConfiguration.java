@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,7 +65,7 @@ public class ErrorWebFluxAutoConfiguration {
 			ServerCodecConfigurer serverCodecConfigurer, ApplicationContext applicationContext) {
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				webProperties.getResources(), this.serverProperties.getError(), applicationContext);
-		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().collect(Collectors.toList()));
+		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().toList());
 		exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
 		exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
 		return exceptionHandler;

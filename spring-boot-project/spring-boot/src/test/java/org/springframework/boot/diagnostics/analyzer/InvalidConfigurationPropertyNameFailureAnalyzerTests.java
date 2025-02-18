@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 
-	private InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
+	private final InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
 
 	@Test
 	void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {

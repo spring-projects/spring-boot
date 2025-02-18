@@ -1,20 +1,33 @@
+import org.gradle.plugins.ide.eclipse.EclipsePlugin
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.Library
+
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
-	id "org.asciidoctor.jvm.convert"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.antora-contributor"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Gradle Plugin"
+description = "Spring Boot Gradle Plugins"
 
 configurations {
-	documentation
+	"testCompileClasspath" {
+		// Downgrade SLF4J is required for tests to run in Eclipse
+		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
+	}
 }
 
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(gradleTestKit())
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -22,18 +35,39 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
+	optional("org.graalvm.buildtools:native-gradle-plugin")
+	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
+		exclude(group: "org.apache.maven", module: "maven-core")
+	}
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
+	testImplementation("net.java.dev.jna:jna-platform")
+	testImplementation("org.apache.commons:commons-compress")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.graalvm.buildtools:native-gradle-plugin")
+	testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.tomlj:tomlj:1.0.0")
+}
+
+repositories {
+	gradlePluginPortal() {
+		content {
+			includeGroup("org.cyclonedx")
+		}
+	}
 }
 
 gradlePlugin {
@@ -43,6 +77,12 @@ gradlePlugin {
 			displayName = "Spring Boot Gradle Plugin"
 			description = "Spring Boot Gradle Plugin"
 			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootPlugin"
+		}
+		springBootAotPlugin {
+			id = "org.springframework.boot.aot"
+			displayName = "Spring Boot AOT Gradle Plugin"
+			description = "Spring Boot AOT Gradle Plugin"
+			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootAotPlugin"
 		}
 	}
 }
@@ -59,32 +99,8 @@ validatePlugins {
 	enableStricterValidation = true
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	dependsOn dependencyVersions
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
-	doFirst {
-		attributes "dependency-management-plugin-version": dependencyVersions.versionConstraints["io.spring.gradle:dependency-management-plugin"]
-	}
-}
-
 tasks.named('test') {
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
-}
-
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
+	inputs.dir('src/docs/antora/modules/gradle-plugin/examples').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 }
 
 javadoc {
@@ -97,30 +113,48 @@ javadoc {
 		splitIndex = true
 		use = true
 		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
-		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc/"
-		links "https://docs.oracle.com/javase/8/docs/api/"
+		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc"
+		links "https://docs.oracle.com/en/java/javase/17/docs/api"
 	}
 }
 
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		rename "index.pdf", "${project.name}-reference.pdf"
-	}
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
-	from(javadoc) {
-		into "api"
+antoraContributions {
+	'gradle-plugin' {
+		catalogContent {
+			from(javadoc) {
+				into("api/java")
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
 	}
 }
 
-artifacts {
-	"documentation" zip
+tasks.named("generateAntoraPlaybook") {
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.whenMerged { content ->
+				if (content instanceof Classpath) {
+					content.entries.each { entry ->
+						if (entry instanceof Library && (entry.path.contains("gradle-api-") || entry.path.contains("groovy-"))) {
+							entry.entryAttributes.remove("test")
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(18)
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.function.Function;
 
 import org.springframework.util.Assert;
@@ -106,10 +106,10 @@ public final class VolumeName {
 	 */
 	public static <S> VolumeName basedOn(S source, Function<S, String> nameExtractor, String prefix, String suffix,
 			int digestLength) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(nameExtractor, "NameExtractor must not be null");
-		Assert.notNull(prefix, "Prefix must not be null");
-		Assert.notNull(suffix, "Suffix must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(nameExtractor, "'nameExtractor' must not be null");
+		Assert.notNull(prefix, "'prefix' must not be null");
+		Assert.notNull(suffix, "'suffix' must not be null");
 		return of(prefix + getDigest(nameExtractor.apply(source), digestLength) + suffix);
 	}
 
@@ -125,10 +125,8 @@ public final class VolumeName {
 
 	private static String asHexString(byte[] digest, int digestLength) {
 		Assert.isTrue(digestLength <= digest.length,
-				() -> "DigestLength must be less than or equal to " + digest.length);
-		byte[] shortDigest = new byte[6];
-		System.arraycopy(digest, 0, shortDigest, 0, shortDigest.length);
-		return String.format("%0" + digestLength + "x", new BigInteger(1, shortDigest));
+				() -> "'digestLength' must be less than or equal to " + digest.length);
+		return HexFormat.of().formatHex(digest, 0, digestLength);
 	}
 
 	/**
@@ -137,7 +135,7 @@ public final class VolumeName {
 	 * @return a new {@link VolumeName} instance
 	 */
 	public static VolumeName of(String value) {
-		Assert.notNull(value, "Value must not be null");
+		Assert.notNull(value, "'value' must not be null");
 		return new VolumeName(value);
 	}
 

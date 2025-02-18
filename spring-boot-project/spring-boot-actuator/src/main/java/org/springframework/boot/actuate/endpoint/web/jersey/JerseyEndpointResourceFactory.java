@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.glassfish.jersey.process.Inflector;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Resource;
@@ -44,6 +43,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -55,6 +55,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -189,8 +190,10 @@ public class JerseyEndpointResourceFactory {
 		}
 
 		@SuppressWarnings("unchecked")
-		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
-			Map<String, Object> entity = ((ContainerRequest) data).readEntity(Map.class);
+		private Map<String, String> extractBodyArguments(ContainerRequestContext data) {
+			Map<String, String> entity = ((ContainerRequest) data).readEntity(Map.class,
+					new ParameterizedTypeReference<Map<String, String>>() {
+					}.getType());
 			return (entity != null) ? entity : Collections.emptyMap();
 		}
 
@@ -244,10 +247,9 @@ public class JerseyEndpointResourceFactory {
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			return Response.status(webEndpointResponse.getStatus())
 				.header("Content-Type", webEndpointResponse.getContentType())
 				.entity(convertIfNecessary(webEndpointResponse.getBody()))
@@ -329,16 +331,17 @@ public class JerseyEndpointResourceFactory {
 		public Response apply(ContainerRequestContext request) {
 			Map<String, Link> links = this.linksResolver
 				.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
-			return Response.ok(Collections.singletonMap("_links", links)).build();
+			Map<String, Map<String, Link>> entity = OperationResponseBody.of(Collections.singletonMap("_links", links));
+			return Response.ok(entity).build();
 		}
 
 	}
 
 	private static final class JerseySecurityContext implements SecurityContext {
 
-		private final javax.ws.rs.core.SecurityContext securityContext;
+		private final jakarta.ws.rs.core.SecurityContext securityContext;
 
-		private JerseySecurityContext(javax.ws.rs.core.SecurityContext securityContext) {
+		private JerseySecurityContext(jakarta.ws.rs.core.SecurityContext securityContext) {
 			this.securityContext = securityContext;
 		}
 

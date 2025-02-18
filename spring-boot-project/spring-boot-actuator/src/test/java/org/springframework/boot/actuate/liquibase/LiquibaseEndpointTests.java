@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBean;
+import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBeanDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -59,7 +59,7 @@ class LiquibaseEndpointTests {
 	@Test
 	void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+			Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 				.liquibaseBeans()
 				.getContexts()
 				.get(context.getId())
@@ -72,7 +72,7 @@ class LiquibaseEndpointTests {
 	void liquibaseReportIsReturnedForContextHierarchy() {
 		this.contextRunner.withUserConfiguration().run((parent) -> {
 			this.contextRunner.withUserConfiguration(Config.class).withParent(parent).run((context) -> {
-				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 					.liquibaseBeans()
 					.getContexts()
 					.get(parent.getId())
@@ -87,7 +87,7 @@ class LiquibaseEndpointTests {
 		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
 			.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA")
 			.run((context) -> {
-				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 					.liquibaseBeans()
 					.getContexts()
 					.get(context.getId())
@@ -102,7 +102,7 @@ class LiquibaseEndpointTests {
 			.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
 					"spring.liquibase.database-change-log-table=liquibase_database_changelog")
 			.run((context) -> {
-				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 					.liquibaseBeans()
 					.getContexts()
 					.get(context.getId())
@@ -125,7 +125,7 @@ class LiquibaseEndpointTests {
 	void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
 		this.contextRunner.withUserConfiguration(Config.class, MultipleDataSourceLiquibaseConfiguration.class)
 			.run((context) -> {
-				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 					.liquibaseBeans()
 					.getContexts()
 					.get(context.getId())

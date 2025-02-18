@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +58,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(9);
 		assertThat(lines.get(0))
 			.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
 		assertThat(lines.get(3)).startsWith("|  one defined in " + InnerInnerConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
@@ -79,7 +78,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(9);
 		assertThat(lines.get(0))
 			.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
 		assertThat(lines.get(3)).startsWith("|  three defined in " + BeanThreeConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
@@ -98,7 +97,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(12);
 		assertThat(lines.get(0))
 			.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).contains("refererOne (field " + RefererTwo.class.getName());
 		assertThat(lines.get(3)).isEqualTo("      ↓");
 		assertThat(lines.get(4)).contains("refererTwo (field " + BeanOne.class.getName());
@@ -122,7 +121,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(5);
 		assertThat(lines.get(0))
 			.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌──->──┐");
 		assertThat(lines.get(3)).startsWith("|  bean defined in " + SelfReferenceBeanConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("└──<-──┘");
@@ -148,7 +147,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 
 	private List<String> readDescriptionLines(FailureAnalysis analysis) throws IOException {
 		try (BufferedReader reader = new BufferedReader(new StringReader(analysis.getDescription()))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 	}
 

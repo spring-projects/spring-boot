@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
 import org.springframework.integration.file.FileReadingMessageSource;
@@ -74,7 +73,7 @@ public class SampleParentContextApplication {
 
 		@Bean
 		public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
-			return IntegrationFlows.from(fileReader(), new FixedRatePoller())
+			return IntegrationFlow.from(fileReader(), new FixedRatePoller())
 				.channel(inputChannel())
 				.handle(endpoint)
 				.channel(outputChannel())
@@ -82,7 +81,7 @@ public class SampleParentContextApplication {
 				.get();
 		}
 
-		private static class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
+		private static final class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {
 
 			@Override
 			public void accept(SourcePollingChannelAdapterSpec spec) {

@@ -1,0 +1,38 @@
+[[integrationgraph]]
+= Spring Integration Graph (`integrationgraph`)
+
+The `integrationgraph` endpoint exposes a graph containing all Spring Integration components.
+
+
+
+[[integrationgraph.retrieving]]
+== Retrieving the Spring Integration Graph
+
+To retrieve the information about the application, make a `GET` request to `/actuator/integrationgraph`, as shown in the following curl-based example:
+
+include::partial$rest/actuator/integrationgraph/graph/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::partial$rest/actuator/integrationgraph/graph/http-response.adoc[]
+
+
+
+[[integrationgraph.retrieving.response-structure]]
+=== Response Structure
+
+The response contains all Spring Integration components used within the application, as well as the links between them.
+More information about the structure can be found in the {url-spring-integration-docs}/graph.html[reference documentation].
+
+
+
+[[integrationgraph.rebuilding]]
+== Rebuilding the Spring Integration Graph
+
+To rebuild the exposed graph, make a `POST` request to `/actuator/integrationgraph`, as shown in the following curl-based example:
+
+include::partial$rest/actuator/integrationgraph/rebuild/curl-request.adoc[]
+
+This will result in a `204 - No Content` response:
+
+include::partial$rest/actuator/integrationgraph/rebuild/http-response.adoc[]

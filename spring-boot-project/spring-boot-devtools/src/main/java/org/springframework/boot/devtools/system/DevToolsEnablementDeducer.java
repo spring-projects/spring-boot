@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.boot.SpringApplicationAotProcessor;
+import org.springframework.core.NativeDetector;
+
 /**
  * Utility to deduce if DevTools should be enabled in the current context.
  *
@@ -35,6 +38,7 @@ public final class DevToolsEnablementDeducer {
 		skipped.add("org.junit.runners.");
 		skipped.add("org.junit.platform.");
 		skipped.add("org.springframework.boot.test.");
+		skipped.add(SpringApplicationAotProcessor.class.getName());
 		skipped.add("cucumber.runtime.");
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
@@ -44,11 +48,15 @@ public final class DevToolsEnablementDeducer {
 
 	/**
 	 * Checks if a specific {@link StackTraceElement} in the current thread's stacktrace
-	 * should cause devtools to be disabled.
+	 * should cause devtools to be disabled. Devtools will also be disabled if running in
+	 * a native image.
 	 * @param thread the current thread
 	 * @return {@code true} if devtools should be enabled
 	 */
 	public static boolean shouldEnable(Thread thread) {
+		if (NativeDetector.inNativeImage()) {
+			return false;
+		}
 		for (StackTraceElement element : thread.getStackTrace()) {
 			if (isSkippedStackElement(element)) {
 				return false;

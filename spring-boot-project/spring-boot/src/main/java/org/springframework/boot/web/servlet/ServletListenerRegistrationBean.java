@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRequestAttributeListener;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.http.HttpSessionAttributeListener;
+import jakarta.servlet.http.HttpSessionIdListener;
+import jakarta.servlet.http.HttpSessionListener;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -84,8 +84,8 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 	 * @param listener the listener to register
 	 */
 	public ServletListenerRegistrationBean(T listener) {
-		Assert.notNull(listener, "Listener must not be null");
-		Assert.isTrue(isSupportedType(listener), "Listener is not of a supported type");
+		Assert.notNull(listener, "'listener' must not be null");
+		Assert.isTrue(isSupportedType(listener), "'listener' is not of a supported type");
 		this.listener = listener;
 	}
 
@@ -94,8 +94,8 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 	 * @param listener the listener to register
 	 */
 	public void setListener(T listener) {
-		Assert.notNull(listener, "Listener must not be null");
-		Assert.isTrue(isSupportedType(listener), "Listener is not of a supported type");
+		Assert.notNull(listener, "'listener' must not be null");
+		Assert.isTrue(isSupportedType(listener), "'listener' is not of a supported type");
 		this.listener = listener;
 	}
 
@@ -109,7 +109,7 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 
 	@Override
 	protected String getDescription() {
-		Assert.notNull(this.listener, "Listener must not be null");
+		Assert.notNull(this.listener, "'listener' must not be null");
 		return "listener " + this.listener;
 	}
 

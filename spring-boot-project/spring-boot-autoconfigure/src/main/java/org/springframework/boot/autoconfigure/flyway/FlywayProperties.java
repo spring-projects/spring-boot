@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Chris Bono
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.flyway")
+@ConfigurationProperties("spring.flyway")
 public class FlywayProperties {
 
 	/**
@@ -74,12 +74,12 @@ public class FlywayProperties {
 	 * duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration connectRetriesInterval;
+	private Duration connectRetriesInterval = Duration.ofSeconds(120);
 
 	/**
 	 * Maximum number of retries when trying to obtain a lock.
 	 */
-	private Integer lockRetryCount;
+	private int lockRetryCount = 50;
 
 	/**
 	 * Default schema name managed by Flyway (case-sensitive).
@@ -142,7 +142,7 @@ public class FlywayProperties {
 	/**
 	 * Separator of default placeholders.
 	 */
-	private String placeholderSeparator;
+	private String placeholderSeparator = ":";
 
 	/**
 	 * Perform placeholder replacement in migration scripts.
@@ -172,7 +172,7 @@ public class FlywayProperties {
 	/**
 	 * Target version up to which migrations should be considered.
 	 */
-	private String target;
+	private String target = "latest";
 
 	/**
 	 * Login user of the database to migrate.
@@ -209,7 +209,7 @@ public class FlywayProperties {
 	/**
 	 * Whether to disable cleaning of the database.
 	 */
-	private boolean cleanDisabled;
+	private boolean cleanDisabled = true;
 
 	/**
 	 * Whether to automatically call clean when a validation error occurs.
@@ -221,30 +221,6 @@ public class FlywayProperties {
 	 * applying them.
 	 */
 	private boolean group;
-
-	/**
-	 * Whether to ignore missing migrations when reading the schema history table.
-	 */
-	@Deprecated
-	private boolean ignoreMissingMigrations;
-
-	/**
-	 * Whether to ignore ignored migrations when reading the schema history table.
-	 */
-	@Deprecated
-	private boolean ignoreIgnoredMigrations;
-
-	/**
-	 * Whether to ignore pending migrations when reading the schema history table.
-	 */
-	@Deprecated
-	private boolean ignorePendingMigrations;
-
-	/**
-	 * Whether to ignore future migrations when reading the schema history table.
-	 */
-	@Deprecated
-	private boolean ignoreFutureMigrations = true;
 
 	/**
 	 * Whether to allow mixing transactional and non-transactional statements within the
@@ -279,6 +255,26 @@ public class FlywayProperties {
 	private boolean validateOnMigrate = true;
 
 	/**
+	 * Prefix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderPrefix = "FP__";
+
+	/**
+	 * Suffix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderSuffix = "__";
+
+	/**
+	 * Whether Flyway should execute SQL within a transaction.
+	 */
+	private boolean executeInTransaction = true;
+
+	/**
+	 * Loggers Flyway should use.
+	 */
+	private String[] loggers = { "slf4j" };
+
+	/**
 	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
 	 */
 	private Boolean batch;
@@ -296,36 +292,9 @@ public class FlywayProperties {
 	private String[] errorOverrides;
 
 	/**
-	 * Licence key for Flyway Teams.
-	 */
-	private String licenseKey;
-
-	/**
-	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Teams.
-	 */
-	private Boolean oracleSqlplus;
-
-	/**
-	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
-	 * SQL*Plus statement is encountered. Requires Flyway Teams.
-	 */
-	private Boolean oracleSqlplusWarn;
-
-	/**
 	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
 	 */
 	private Boolean stream;
-
-	/**
-	 * File name prefix for undo SQL migrations. Requires Flyway Teams.
-	 */
-	private String undoSqlMigrationPrefix;
-
-	/**
-	 * Migrations that Flyway should consider when migrating or undoing. When empty all
-	 * available migrations are considered. Requires Flyway Teams.
-	 */
-	private String[] cherryPick;
 
 	/**
 	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
@@ -338,26 +307,10 @@ public class FlywayProperties {
 	private String kerberosConfigFile;
 
 	/**
-	 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
-	 */
-	private String oracleKerberosCacheFile;
-
-	/**
-	 * Location of the Oracle Wallet, used to sign in to the database automatically.
-	 * Requires Flyway Teams.
-	 */
-	private String oracleWalletLocation;
-
-	/**
 	 * Whether Flyway should output a table with the results of queries when executing
 	 * migrations. Requires Flyway Teams.
 	 */
 	private Boolean outputQueryResults;
-
-	/**
-	 * Path to the SQL Server Kerberos login file. Requires Flyway Teams.
-	 */
-	private String sqlServerKerberosLoginFile;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
@@ -366,8 +319,8 @@ public class FlywayProperties {
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * Ignore migrations that match this comma-separated list of patterns when validating
-	 * migrations. Requires Flyway Teams.
+	 * List of patterns that identify migrations to ignore when performing validation.
+	 * Requires Flyway Teams.
 	 */
 	private List<String> ignoreMigrationPatterns;
 
@@ -378,19 +331,15 @@ public class FlywayProperties {
 	private Boolean detectEncoding;
 
 	/**
-	 * Filename prefix for baseline migrations. Requires Flyway Teams.
+	 * Whether to enable community database support.
 	 */
-	private String baselineMigrationPrefix;
+	private Boolean communityDbSupportEnabled;
 
-	/**
-	 * Prefix of placeholders in migration scripts.
-	 */
-	private String scriptPlaceholderPrefix;
+	private final Oracle oracle = new Oracle();
 
-	/**
-	 * Suffix of placeholders in migration scripts.
-	 */
-	private String scriptPlaceholderSuffix;
+	private final Postgresql postgresql = new Postgresql();
+
+	private final Sqlserver sqlserver = new Sqlserver();
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -440,7 +389,7 @@ public class FlywayProperties {
 		this.connectRetriesInterval = connectRetriesInterval;
 	}
 
-	public Integer getLockRetryCount() {
+	public int getLockRetryCount() {
 		return this.lockRetryCount;
 	}
 
@@ -648,10 +597,13 @@ public class FlywayProperties {
 		this.cleanDisabled = cleanDisabled;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18 and removed in Flyway 11.0")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public void setCleanOnValidationError(boolean cleanOnValidationError) {
 		this.cleanOnValidationError = cleanOnValidationError;
 	}
@@ -662,50 +614,6 @@ public class FlywayProperties {
 
 	public void setGroup(boolean group) {
 		this.group = group;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
-	public boolean isIgnoreMissingMigrations() {
-		return this.ignoreMissingMigrations;
-	}
-
-	@Deprecated
-	public void setIgnoreMissingMigrations(boolean ignoreMissingMigrations) {
-		this.ignoreMissingMigrations = ignoreMissingMigrations;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
-	public boolean isIgnoreIgnoredMigrations() {
-		return this.ignoreIgnoredMigrations;
-	}
-
-	@Deprecated
-	public void setIgnoreIgnoredMigrations(boolean ignoreIgnoredMigrations) {
-		this.ignoreIgnoredMigrations = ignoreIgnoredMigrations;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
-	public boolean isIgnorePendingMigrations() {
-		return this.ignorePendingMigrations;
-	}
-
-	@Deprecated
-	public void setIgnorePendingMigrations(boolean ignorePendingMigrations) {
-		this.ignorePendingMigrations = ignorePendingMigrations;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.ignore-migration-patterns")
-	public boolean isIgnoreFutureMigrations() {
-		return this.ignoreFutureMigrations;
-	}
-
-	@Deprecated
-	public void setIgnoreFutureMigrations(boolean ignoreFutureMigrations) {
-		this.ignoreFutureMigrations = ignoreFutureMigrations;
 	}
 
 	public boolean isMixed() {
@@ -756,6 +664,38 @@ public class FlywayProperties {
 		this.validateOnMigrate = validateOnMigrate;
 	}
 
+	public String getScriptPlaceholderPrefix() {
+		return this.scriptPlaceholderPrefix;
+	}
+
+	public void setScriptPlaceholderPrefix(String scriptPlaceholderPrefix) {
+		this.scriptPlaceholderPrefix = scriptPlaceholderPrefix;
+	}
+
+	public String getScriptPlaceholderSuffix() {
+		return this.scriptPlaceholderSuffix;
+	}
+
+	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
+		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
+	}
+
+	public boolean isExecuteInTransaction() {
+		return this.executeInTransaction;
+	}
+
+	public void setExecuteInTransaction(boolean executeInTransaction) {
+		this.executeInTransaction = executeInTransaction;
+	}
+
+	public String[] getLoggers() {
+		return this.loggers;
+	}
+
+	public void setLoggers(String[] loggers) {
+		this.loggers = loggers;
+	}
+
 	public Boolean getBatch() {
 		return this.batch;
 	}
@@ -780,36 +720,37 @@ public class FlywayProperties {
 		this.errorOverrides = errorOverrides;
 	}
 
-	public String getLicenseKey() {
-		return this.licenseKey;
-	}
-
-	public void setLicenseKey(String licenseKey) {
-		this.licenseKey = licenseKey;
-	}
-
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.sqlplus", since = "3.2.0")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Boolean getOracleSqlplus() {
-		return this.oracleSqlplus;
+		return getOracle().getSqlplus();
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setOracleSqlplus(Boolean oracleSqlplus) {
-		this.oracleSqlplus = oracleSqlplus;
+		getOracle().setSqlplus(oracleSqlplus);
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.sqlplus-warn", since = "3.2.0")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Boolean getOracleSqlplusWarn() {
-		return this.oracleSqlplusWarn;
+		return getOracle().getSqlplusWarn();
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setOracleSqlplusWarn(Boolean oracleSqlplusWarn) {
-		this.oracleSqlplusWarn = oracleSqlplusWarn;
+		getOracle().setSqlplusWarn(oracleSqlplusWarn);
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.wallet-location", since = "3.2.0")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public String getOracleWalletLocation() {
-		return this.oracleWalletLocation;
+		return getOracle().getWalletLocation();
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setOracleWalletLocation(String oracleWalletLocation) {
-		this.oracleWalletLocation = oracleWalletLocation;
+		getOracle().setWalletLocation(oracleWalletLocation);
 	}
 
 	public Boolean getStream() {
@@ -818,22 +759,6 @@ public class FlywayProperties {
 
 	public void setStream(Boolean stream) {
 		this.stream = stream;
-	}
-
-	public String getUndoSqlMigrationPrefix() {
-		return this.undoSqlMigrationPrefix;
-	}
-
-	public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
-		this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
-	}
-
-	public String[] getCherryPick() {
-		return this.cherryPick;
-	}
-
-	public void setCherryPick(String[] cherryPick) {
-		this.cherryPick = cherryPick;
 	}
 
 	public Map<String, String> getJdbcProperties() {
@@ -852,23 +777,15 @@ public class FlywayProperties {
 		this.kerberosConfigFile = kerberosConfigFile;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.kerberos-cache-file", since = "3.2.0")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public String getOracleKerberosCacheFile() {
-		return this.oracleKerberosCacheFile;
+		return getOracle().getKerberosCacheFile();
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setOracleKerberosCacheFile(String oracleKerberosCacheFile) {
-		this.oracleKerberosCacheFile = oracleKerberosCacheFile;
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.kerberos-config-file")
-	@Deprecated
-	public String getOracleKerberosConfigFile() {
-		return getKerberosConfigFile();
-	}
-
-	@Deprecated
-	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
-		setKerberosConfigFile(oracleKerberosConfigFile);
+		getOracle().setKerberosCacheFile(oracleKerberosCacheFile);
 	}
 
 	public Boolean getOutputQueryResults() {
@@ -879,12 +796,15 @@ public class FlywayProperties {
 		this.outputQueryResults = outputQueryResults;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.flyway.sqlserver.kerberos-login-file")
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public String getSqlServerKerberosLoginFile() {
-		return this.sqlServerKerberosLoginFile;
+		return getSqlserver().getKerberosLoginFile();
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public void setSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
-		this.sqlServerKerberosLoginFile = sqlServerKerberosLoginFile;
+		getSqlserver().setKerberosLoginFile(sqlServerKerberosLoginFile);
 	}
 
 	public Boolean getSkipExecutingMigrations() {
@@ -911,28 +831,126 @@ public class FlywayProperties {
 		this.detectEncoding = detectEncoding;
 	}
 
-	public String getBaselineMigrationPrefix() {
-		return this.baselineMigrationPrefix;
+	public Boolean getCommunityDbSupportEnabled() {
+		return this.communityDbSupportEnabled;
 	}
 
-	public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
-		this.baselineMigrationPrefix = baselineMigrationPrefix;
+	public void setCommunityDbSupportEnabled(Boolean communityDbSupportEnabled) {
+		this.communityDbSupportEnabled = communityDbSupportEnabled;
 	}
 
-	public String getScriptPlaceholderPrefix() {
-		return this.scriptPlaceholderPrefix;
+	public Oracle getOracle() {
+		return this.oracle;
 	}
 
-	public void setScriptPlaceholderPrefix(String scriptPlaceholderPrefix) {
-		this.scriptPlaceholderPrefix = scriptPlaceholderPrefix;
+	public Postgresql getPostgresql() {
+		return this.postgresql;
 	}
 
-	public String getScriptPlaceholderSuffix() {
-		return this.scriptPlaceholderSuffix;
+	public Sqlserver getSqlserver() {
+		return this.sqlserver;
 	}
 
-	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
-		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
+	/**
+	 * {@code OracleConfigurationExtension} properties.
+	 */
+	public static class Oracle {
+
+		/**
+		 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Teams.
+		 */
+		private Boolean sqlplus;
+
+		/**
+		 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
+		 * SQL*Plus statement is encountered. Requires Flyway Teams.
+		 */
+		private Boolean sqlplusWarn;
+
+		/**
+		 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
+		 */
+		private String kerberosCacheFile;
+
+		/**
+		 * Location of the Oracle Wallet, used to sign in to the database automatically.
+		 * Requires Flyway Teams.
+		 */
+		private String walletLocation;
+
+		public Boolean getSqlplus() {
+			return this.sqlplus;
+		}
+
+		public void setSqlplus(Boolean sqlplus) {
+			this.sqlplus = sqlplus;
+		}
+
+		public Boolean getSqlplusWarn() {
+			return this.sqlplusWarn;
+		}
+
+		public void setSqlplusWarn(Boolean sqlplusWarn) {
+			this.sqlplusWarn = sqlplusWarn;
+		}
+
+		public String getKerberosCacheFile() {
+			return this.kerberosCacheFile;
+		}
+
+		public void setKerberosCacheFile(String kerberosCacheFile) {
+			this.kerberosCacheFile = kerberosCacheFile;
+		}
+
+		public String getWalletLocation() {
+			return this.walletLocation;
+		}
+
+		public void setWalletLocation(String walletLocation) {
+			this.walletLocation = walletLocation;
+		}
+
+	}
+
+	/**
+	 * {@code PostgreSQLConfigurationExtension} properties.
+	 */
+	public static class Postgresql {
+
+		/**
+		 * Whether transactional advisory locks should be used. If set to false,
+		 * session-level locks are used instead.
+		 */
+		private Boolean transactionalLock;
+
+		public Boolean getTransactionalLock() {
+			return this.transactionalLock;
+		}
+
+		public void setTransactionalLock(Boolean transactionalLock) {
+			this.transactionalLock = transactionalLock;
+		}
+
+	}
+
+	/**
+	 * {@code SQLServerConfigurationExtension} properties.
+	 */
+	public static class Sqlserver {
+
+		/**
+		 * Path to the SQL Server Kerberos login file. Requires Flyway Teams.
+		 */
+		private String kerberosLoginFile;
+
+		public String getKerberosLoginFile() {
+			return this.kerberosLoginFile;
+		}
+
+		public void setKerberosLoginFile(String kerberosLoginFile) {
+			this.kerberosLoginFile = kerberosLoginFile;
+		}
+
 	}
 
 }

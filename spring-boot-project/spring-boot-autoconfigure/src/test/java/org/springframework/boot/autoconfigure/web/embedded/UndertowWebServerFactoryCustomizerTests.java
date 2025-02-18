@@ -86,20 +86,20 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customMaxHttpHeaderSize() {
-		bind("server.max-http-header-size=2048");
+	void customMaxHttpRequestHeaderSize() {
+		bind("server.max-http-request-header-size=2048");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isEqualTo(2048);
 	}
 
 	@Test
-	void customMaxHttpHeaderSizeIgnoredIfNegative() {
-		bind("server.max-http-header-size=-1");
+	void customMaxHttpRequestHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-request-header-size=-1");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
 	}
 
 	@Test
-	void customMaxHttpHeaderSizeIgnoredIfZero() {
-		bind("server.max-http-header-size=0");
+	void customMaxHttpRequestHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-request-header-size=0");
 		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
 	}
 
@@ -150,10 +150,16 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "3.0.3")
 	void allowEncodedSlashes() {
 		bind("server.undertow.allow-encoded-slash=true");
 		assertThat(boundServerOption(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();
+	}
+
+	@Test
+	void enableSlashDecoding() {
+		bind("server.undertow.decode-slash=true");
+		assertThat(boundServerOption(UndertowOptions.DECODE_SLASH)).isTrue();
 	}
 
 	@Test
@@ -250,10 +256,8 @@ class UndertowWebServerFactoryCustomizerTests {
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		willAnswer((invocation) -> {
 			Object argument = invocation.getArgument(0);
-			Arrays
-				.stream((argument instanceof UndertowBuilderCustomizer)
-						? new UndertowBuilderCustomizer[] { (UndertowBuilderCustomizer) argument }
-						: (UndertowBuilderCustomizer[]) argument)
+			Arrays.stream((argument instanceof UndertowBuilderCustomizer undertowCustomizer)
+					? new UndertowBuilderCustomizer[] { undertowCustomizer } : (UndertowBuilderCustomizer[]) argument)
 				.forEach((customizer) -> customizer.customize(builder));
 			return null;
 		}).given(factory).addBuilderCustomizers(any());

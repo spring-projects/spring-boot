@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.micrometer.prometheus.HistogramFlavor;
-
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -33,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.prometheus")
+@ConfigurationProperties("management.prometheus.metrics.export")
 public class PrometheusProperties {
 
 	/**
@@ -54,9 +52,9 @@ public class PrometheusProperties {
 	private final Pushgateway pushgateway = new Pushgateway();
 
 	/**
-	 * Histogram type for backing DistributionSummary and Timer.
+	 * Additional properties to pass to the Prometheus client.
 	 */
-	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+	private final Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -69,14 +67,6 @@ public class PrometheusProperties {
 
 	public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
-	}
-
-	public HistogramFlavor getHistogramFlavor() {
-		return this.histogramFlavor;
-	}
-
-	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
-		this.histogramFlavor = histogramFlavor;
 	}
 
 	public Duration getStep() {
@@ -99,6 +89,10 @@ public class PrometheusProperties {
 		return this.pushgateway;
 	}
 
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
 	/**
 	 * Configuration options for push-based interaction with Prometheus.
 	 */
@@ -110,9 +104,14 @@ public class PrometheusProperties {
 		private Boolean enabled = false;
 
 		/**
-		 * Base URL for the Pushgateway.
+		 * Address (host:port) for the Pushgateway.
 		 */
-		private String baseUrl = "http://localhost:9091";
+		private String address = "localhost:9091";
+
+		/**
+		 * Scheme to use when pushing metrics.
+		 */
+		private Scheme scheme = Scheme.HTTP;
 
 		/**
 		 * Login user of the Prometheus Pushgateway.
@@ -123,6 +122,16 @@ public class PrometheusProperties {
 		 * Login password of the Prometheus Pushgateway.
 		 */
 		private String password;
+
+		/**
+		 * Token to use for authentication with the Prometheus Pushgateway.
+		 */
+		private String token;
+
+		/**
+		 * Format to use when pushing metrics.
+		 */
+		private Format format = Format.PROTOBUF;
 
 		/**
 		 * Frequency with which to push metrics.
@@ -152,12 +161,12 @@ public class PrometheusProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBaseUrl() {
-			return this.baseUrl;
+		public String getAddress() {
+			return this.address;
 		}
 
-		public void setBaseUrl(String baseUrl) {
-			this.baseUrl = baseUrl;
+		public void setAddress(String address) {
+			this.address = address;
 		}
 
 		public String getUsername() {
@@ -206,6 +215,58 @@ public class PrometheusProperties {
 
 		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
 			this.shutdownOperation = shutdownOperation;
+		}
+
+		public Scheme getScheme() {
+			return this.scheme;
+		}
+
+		public void setScheme(Scheme scheme) {
+			this.scheme = scheme;
+		}
+
+		public String getToken() {
+			return this.token;
+		}
+
+		public void setToken(String token) {
+			this.token = token;
+		}
+
+		public Format getFormat() {
+			return this.format;
+		}
+
+		public void setFormat(Format format) {
+			this.format = format;
+		}
+
+		public enum Format {
+
+			/**
+			 * Push metrics in text format.
+			 */
+			TEXT,
+
+			/**
+			 * Push metrics in protobuf format.
+			 */
+			PROTOBUF
+
+		}
+
+		public enum Scheme {
+
+			/**
+			 * Use HTTP to push metrics.
+			 */
+			HTTP,
+
+			/**
+			 * Use HTTPS to push metrics.
+			 */
+			HTTPS
+
 		}
 
 	}

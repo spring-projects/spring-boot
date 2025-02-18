@@ -36,9 +36,9 @@ import static org.mockito.Mockito.mock;
  */
 class StandardConfigDataLoaderTests {
 
-	private StandardConfigDataLoader loader = new StandardConfigDataLoader();
+	private final StandardConfigDataLoader loader = new StandardConfigDataLoader();
 
-	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@Test
 	void loadWhenLocationResultsInMultiplePropertySourcesAddsAllToConfigData() throws IOException {
@@ -48,7 +48,7 @@ class StandardConfigDataLoaderTests {
 				"classpath:configdata/yaml/application", null, "yml", new YamlPropertySourceLoader());
 		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
-		assertThat(configData.getPropertySources().size()).isEqualTo(2);
+		assertThat(configData.getPropertySources()).hasSize(2);
 		PropertySource<?> source1 = configData.getPropertySources().get(0);
 		PropertySource<?> source2 = configData.getPropertySources().get(1);
 		assertThat(source1.getName())
@@ -69,7 +69,7 @@ class StandardConfigDataLoaderTests {
 				"config/0-empty/testproperties", null, "properties", new PropertiesPropertySourceLoader());
 		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
-		assertThat(configData.getPropertySources().size()).isEqualTo(0);
+		assertThat(configData.getPropertySources()).isEmpty();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.flywaydb.core.api.MigrationState;
-import org.flywaydb.core.api.MigrationType;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.flyway.FlywayEndpoint;
@@ -37,10 +35,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link FlywayEndpoint}.
@@ -50,10 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void flyway() throws Exception {
-		this.mockMvc.perform(get("/actuator/flyway"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("flyway",
+	void flyway() {
+		assertThat(this.mvc.get().uri("/actuator/flyway")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("flyway",
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 							fieldWithPath("contexts.*.flywayBeans.*.migrations")
 								.description("Migrations performed by the Flyway instance, keyed by Flyway bean name."))
@@ -62,7 +58,7 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	}
 
 	private List<FieldDescriptor> migrationFieldDescriptors() {
-		return Arrays.asList(fieldWithPath("checksum").description("Checksum of the migration, if any.").optional(),
+		return List.of(fieldWithPath("checksum").description("Checksum of the migration, if any.").optional(),
 				fieldWithPath("description").description("Description of the migration, if any.").optional(),
 				fieldWithPath("executionTime").description("Execution time in milliseconds of an applied migration.")
 					.optional(),
@@ -78,8 +74,7 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 					.optional(),
 				fieldWithPath("state")
 					.description("State of the migration. (" + describeEnumValues(MigrationState.class) + ")"),
-				fieldWithPath("type")
-					.description("Type of the migration. (" + describeEnumValues(MigrationType.class) + ")"),
+				fieldWithPath("type").description("Type of the migration."),
 				fieldWithPath("version").description("Version of the database after applying the migration, if any.")
 					.optional());
 	}

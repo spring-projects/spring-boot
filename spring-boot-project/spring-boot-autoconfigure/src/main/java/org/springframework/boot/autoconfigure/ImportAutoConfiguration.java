@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,9 @@ public @interface ImportAutoConfiguration {
 	/**
 	 * The auto-configuration classes that should be imported. When empty, the classes are
 	 * specified using a file in {@code META-INF/spring} where the file name is the
-	 * fully-qualified name of the annotated class, suffixed with '.imports'.
+	 * fully-qualified name of the annotated class, suffixed with {@code .imports}. An
+	 * entry in the file may be prefixed with {@code optional:} to indicate that the
+	 * imported class should be ignored if it is not on the classpath.
 	 * @return the classes to import
 	 */
 	@AliasFor("value")

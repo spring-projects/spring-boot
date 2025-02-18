@@ -33,7 +33,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -161,7 +160,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenActiveProfilesDoesNotLoadDefault() {
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofilesdocument",
-				"--spring.profiles.default=thedefault", "--spring.profiles.active=other");
+				"--spring.config.location=classpath:configdata/profiles/", "--spring.profiles.default=thedefault",
+				"--spring.profiles.active=other");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromotherprofile");
 	}
@@ -232,7 +232,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenHasLocalFileLoadsWithLocalFileTakingPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
-		assertThat(localFile.exists()).isFalse();
+		assertThat(localFile).doesNotExist();
 		try {
 			Properties properties = new Properties();
 			properties.put("my.property", "fromlocalfile");
@@ -593,7 +593,6 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	@Disabled("Disabled until spring.profiles suppport is dropped")
 	void runWhenUsingInvalidPropertyThrowsException() {
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
 			.isThrownBy(() -> this.application.run("--spring.config.location=classpath:invalidproperty.properties"));
@@ -817,7 +816,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
-		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
+		return new Condition<>("environment containing property source " + sourceName) {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
@@ -878,7 +877,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				map.put("spring", "boot");
 			}
 			String suffix = (!resource.isProfileSpecific()) ? "" : ":ps";
-			map.put(resource.toString() + suffix, "true");
+			map.put(resource + suffix, "true");
 			MapPropertySource propertySource = new MapPropertySource("loaded" + suffix, map);
 			return new ConfigData(Collections.singleton(propertySource));
 		}
@@ -889,7 +888,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 		private final ConfigDataLocation location;
 
-		private boolean profileSpecific;
+		private final boolean profileSpecific;
 
 		TestConfigDataResource(ConfigDataLocation location, boolean profileSpecific) {
 			super(location.toString().contains("optionalresult"));

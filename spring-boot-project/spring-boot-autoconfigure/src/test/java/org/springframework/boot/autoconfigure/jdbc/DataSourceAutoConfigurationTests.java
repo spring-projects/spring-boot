@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.r2dbc.spi.ConnectionFactory;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -60,6 +61,9 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DataSourceAutoConfigurationTests {
 
@@ -148,10 +152,10 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void oracleUcpValidatesConnectionByDefault() {
+	void oracleUcpDoesNotValidateConnectionByDefault() {
 		assertDataSource(PoolDataSourceImpl.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"), (dataSource) -> {
-					assertThat(dataSource.getValidateConnectionOnBorrow()).isTrue();
+					assertThat(dataSource.getValidateConnectionOnBorrow()).isFalse();
 					// Use an internal ping when using an Oracle JDBC driver
 					assertThat(dataSource.getSQLForValidateConnection()).isNull();
 				});
@@ -244,6 +248,53 @@ class DataSourceAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesJdbcConnectionDetails.class));
+	}
+
+	@Test
+	void dbcp2UsesCustomConnectionDetailsWhenDefined() {
+		ApplicationContextRunner runner = new ApplicationContextRunner()
+			.withPropertyValues("spring.datasource.type=org.apache.commons.dbcp2.BasicDataSource",
+					"spring.datasource.dbcp2.url=jdbc:broken", "spring.datasource.dbcp2.username=alice",
+					"spring.datasource.dbcp2.password=secret")
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new);
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+				.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
+			DataSource dataSource = context.getBean(DataSource.class);
+			assertThat(dataSource).asInstanceOf(InstanceOfAssertFactories.type(BasicDataSource.class))
+				.satisfies((dbcp2) -> {
+					assertThat(dbcp2.getUserName()).isEqualTo("user-1");
+					assertThat(dbcp2).extracting("password").isEqualTo("password-1");
+					assertThat(dbcp2.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+					assertThat(dbcp2.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
+				});
+		});
+	}
+
+	@Test
+	void genericUsesCustomJdbcConnectionDetailsWhenAvailable() {
+		ApplicationContextRunner runner = new ApplicationContextRunner()
+			.withPropertyValues("spring.datasource.type=" + TestDataSource.class.getName())
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new);
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+				.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
+			DataSource dataSource = context.getBean(DataSource.class);
+			assertThat(dataSource).isInstanceOf(TestDataSource.class);
+			TestDataSource source = (TestDataSource) dataSource;
+			assertThat(source.getUsername()).isEqualTo("user-1");
+			assertThat(source.getPassword()).isEqualTo("password-1");
+			assertThat(source.getDriver().getClass().getName())
+				.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+			assertThat(source.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
+		});
+	}
+
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
 		return (runner) -> runner.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
 				"org.apache.commons.dbcp2", "oracle.ucp.jdbc", "com.mchange"));
@@ -257,6 +308,16 @@ class DataSourceAutoConfigurationTests {
 			assertThat(bean).isInstanceOf(expectedType);
 			consumer.accept(expectedType.cast(bean));
 		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JdbcConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails sqlJdbcConnectionDetails() {
+			return new TestJdbcConnectionDetails();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

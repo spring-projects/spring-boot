@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
@@ -51,6 +50,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
+import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -66,8 +66,6 @@ class ConfigurationPropertiesBinder {
 
 	private static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
-	private static final String FACTORY_BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinderFactory";
-
 	private static final String VALIDATOR_BEAN_NAME = EnableConfigurationProperties.VALIDATOR_BEAN_NAME;
 
 	private final ApplicationContext applicationContext;
@@ -78,7 +76,7 @@ class ConfigurationPropertiesBinder {
 
 	private final boolean jsr303Present;
 
-	private volatile Validator jsr303Validator;
+	private volatile List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors;
 
 	private volatile Binder binder;
 
@@ -130,6 +128,18 @@ class ConfigurationPropertiesBinder {
 		return handler;
 	}
 
+	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
+		List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors = this.bindHandlerAdvisors;
+		if (bindHandlerAdvisors == null) {
+			bindHandlerAdvisors = this.applicationContext
+				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+				.orderedStream()
+				.toList();
+			this.bindHandlerAdvisors = bindHandlerAdvisors;
+		}
+		return bindHandlerAdvisors;
+	}
+
 	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
 		return (bound != null)
@@ -143,7 +153,7 @@ class ConfigurationPropertiesBinder {
 			validators.add(this.configurationPropertiesValidator);
 		}
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
-			validators.add(getJsr303Validator());
+			validators.add(getJsr303Validator(target.getType().resolve()));
 		}
 		Validator selfValidator = getSelfValidator(target);
 		if (selfValidator != null) {
@@ -155,33 +165,23 @@ class ConfigurationPropertiesBinder {
 	private Validator getSelfValidator(Bindable<?> target) {
 		if (target.getValue() != null) {
 			Object value = target.getValue().get();
-			return (value instanceof Validator) ? (Validator) value : null;
+			return (value instanceof Validator validator) ? validator : null;
 		}
 		Class<?> type = target.getType().resolve();
-		if (Validator.class.isAssignableFrom(type)) {
+		if (type != null && Validator.class.isAssignableFrom(type)) {
 			return new SelfValidatingConstructorBoundBindableValidator(type);
 		}
 		return null;
 	}
 
-	private Validator getJsr303Validator() {
-		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
-		}
-		return this.jsr303Validator;
-	}
-
-	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
-			.orderedStream()
-			.collect(Collectors.toList());
+	private Validator getJsr303Validator(Class<?> type) {
+		return new ConfigurationPropertiesJsr303Validator(this.applicationContext, type);
 	}
 
 	private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
-					getConversionServices(), getPropertyEditorInitializer(), null,
-					ConfigurationPropertiesBindConstructorProvider.INSTANCE);
+					getConversionServices(), getPropertyEditorInitializer(), null, null);
 		}
 		return this.binder;
 	}
@@ -199,55 +199,24 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
-		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
+		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
+			return configurableContext.getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
 	}
 
 	static void register(BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
-			BeanDefinition definition = BeanDefinitionBuilder
-				.rootBeanDefinition(ConfigurationPropertiesBinder.Factory.class)
-				.getBeanDefinition();
-			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
-		}
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-				.rootBeanDefinition(ConfigurationPropertiesBinder.class,
-						() -> ((BeanFactory) registry)
-							.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class)
-							.create())
+				.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
 				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 	}
 
 	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
 		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
-	}
-
-	/**
-	 * Factory bean used to create the {@link ConfigurationPropertiesBinder}. The bean
-	 * needs to be {@link ApplicationContextAware} since we can't directly inject an
-	 * {@link ApplicationContext} into the constructor without causing eager
-	 * {@link FactoryBean} initialization.
-	 */
-	static class Factory implements ApplicationContextAware {
-
-		private ApplicationContext applicationContext;
-
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-			this.applicationContext = applicationContext;
-		}
-
-		ConfigurationPropertiesBinder create() {
-			return new ConfigurationPropertiesBinder(this.applicationContext);
-		}
-
 	}
 
 	/**
@@ -268,6 +237,32 @@ class ConfigurationPropertiesBinder {
 
 		private boolean isConfigurationProperties(Class<?> target) {
 			return target != null && MergedAnnotations.from(target).isPresent(ConfigurationProperties.class);
+		}
+
+	}
+
+	/**
+	 * {@link FactoryBean} to create the {@link ConfigurationPropertiesBinder}.
+	 */
+	static class ConfigurationPropertiesBinderFactory
+			implements FactoryBean<ConfigurationPropertiesBinder>, ApplicationContextAware {
+
+		private ConfigurationPropertiesBinder binder;
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			this.binder = (this.binder != null) ? this.binder : new ConfigurationPropertiesBinder(applicationContext);
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ConfigurationPropertiesBinder.class;
+		}
+
+		@Override
+		public ConfigurationPropertiesBinder getObject() throws Exception {
+			Assert.state(this.binder != null, "Binder was not created due to missing setApplicationContext call");
+			return this.binder;
 		}
 
 	}

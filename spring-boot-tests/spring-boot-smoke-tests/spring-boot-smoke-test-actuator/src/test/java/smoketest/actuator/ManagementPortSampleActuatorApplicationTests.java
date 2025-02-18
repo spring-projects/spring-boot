@@ -62,7 +62,7 @@ class ManagementPortSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				new TestRestTemplate("user", "password").getForEntity("http://localhost:" + this.port, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class ManagementPortSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
 			.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("status")).isEqualTo(999);
+		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class ManagementPortSampleActuatorApplicationTests {
 			.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
 		assertThat(this.errorAttributes.securityContext.getAuthentication()).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(entity.getBody().get("status")).isEqualTo(404);
+		assertThat(entity.getBody()).containsEntry("status", 404);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.mongo;
+
+import java.util.List;
 
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
@@ -33,9 +35,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Nasko Vasilev
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Safeer Ansari
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.mongodb")
+@ConfigurationProperties("spring.data.mongodb")
 public class MongoProperties {
 
 	/**
@@ -57,6 +60,13 @@ public class MongoProperties {
 	 * Mongo server port. Cannot be set with URI.
 	 */
 	private Integer port = null;
+
+	/**
+	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.
+	 * Additional hosts will use the default mongo port of 27017. If you want to use a
+	 * different port you can use the "host:port" syntax.
+	 */
+	private List<String> additionalHosts;
 
 	/**
 	 * Mongo database URI. Overrides host, port, username, and password.
@@ -99,6 +109,8 @@ public class MongoProperties {
 	 * Representation to use when converting a UUID to a BSON binary value.
 	 */
 	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+
+	private final Ssl ssl = new Ssl();
 
 	/**
 	 * Whether to enable auto-index creation.
@@ -208,6 +220,18 @@ public class MongoProperties {
 		this.autoIndexCreation = autoIndexCreation;
 	}
 
+	public List<String> getAdditionalHosts() {
+		return this.additionalHosts;
+	}
+
+	public void setAdditionalHosts(List<String> additionalHosts) {
+		this.additionalHosts = additionalHosts;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public static class Gridfs {
 
 		/**
@@ -234,6 +258,37 @@ public class MongoProperties {
 
 		public void setBucket(String bucket) {
 			this.bucket = bucket;
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

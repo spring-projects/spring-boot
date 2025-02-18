@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
+import reactor.netty.resources.LoopResources;
 
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
@@ -42,6 +43,7 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.util.Assert;
 
@@ -74,19 +76,32 @@ public class NettyWebServer implements WebServer {
 
 	private final GracefulShutdown gracefulShutdown;
 
+	private final ReactorResourceFactory resourceFactory;
+
 	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
 
 	private volatile DisposableServer disposableServer;
 
+	/**
+	 * Creates a new {@code NettyWebServer} instance.
+	 * @param httpServer the HTTP server
+	 * @param handlerAdapter the handler adapter
+	 * @param lifecycleTimeout the lifecycle timeout, may be {@code null}
+	 * @param shutdown the shutdown, may be {@code null}
+	 * @param resourceFactory the factory for the server's {@link LoopResources loop
+	 * resources}, may be {@code null}
+	 * @since 3.2.0
+	 */
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
-			Shutdown shutdown) {
-		Assert.notNull(httpServer, "HttpServer must not be null");
-		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
+			Shutdown shutdown, ReactorResourceFactory resourceFactory) {
+		Assert.notNull(httpServer, "'httpServer' must not be null");
+		Assert.notNull(handlerAdapter, "'handlerAdapter' must not be null");
 		this.lifecycleTimeout = lifecycleTimeout;
 		this.handler = handlerAdapter;
 		this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));
 		this.gracefulShutdown = (shutdown == Shutdown.GRACEFUL) ? new GracefulShutdown(() -> this.disposableServer)
 				: null;
+		this.resourceFactory = resourceFactory;
 	}
 
 	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
@@ -108,7 +123,7 @@ public class NettyWebServer implements WebServer {
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			if (this.disposableServer != null) {
-				logger.info("Netty started" + getStartedOnMessage(this.disposableServer));
+				logger.info(getStartedOnMessage(this.disposableServer));
 			}
 			startDaemonAwaitThread(this.disposableServer);
 		}
@@ -116,18 +131,24 @@ public class NettyWebServer implements WebServer {
 
 	private String getStartedOnMessage(DisposableServer server) {
 		StringBuilder message = new StringBuilder();
-		tryAppend(message, "port %s", server::port);
+		tryAppend(message, "port %s", () -> server.port()
+				+ ((this.httpServer.configuration().sslProvider() != null) ? " (https)" : " (http)"));
 		tryAppend(message, "path %s", server::path);
-		return (message.length() > 0) ? " on " + message : "";
+		return (!message.isEmpty()) ? "Netty started on " + message : "Netty started";
+	}
+
+	protected String getStartedLogMessage() {
+		return getStartedOnMessage(this.disposableServer);
 	}
 
 	private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
 		try {
 			Object value = supplier.get();
-			message.append((message.length() != 0) ? " " : "");
+			message.append((!message.isEmpty()) ? " " : "");
 			message.append(String.format(format, value));
 		}
 		catch (UnsupportedOperationException ex) {
+			// Ignore
 		}
 	}
 
@@ -139,6 +160,11 @@ public class NettyWebServer implements WebServer {
 		else {
 			server = server.route(this::applyRouteProviders);
 		}
+		if (this.resourceFactory != null) {
+			LoopResources resources = this.resourceFactory.getLoopResources();
+			Assert.state(resources != null, "No LoopResources: is ReactorResourceFactory not initialized yet?");
+			server = server.runOn(resources);
+		}
 		if (this.lifecycleTimeout != null) {
 			return server.bindNow(this.lifecycleTimeout);
 		}
@@ -147,15 +173,23 @@ public class NettyWebServer implements WebServer {
 
 	private boolean isPermissionDenied(Throwable bindExceptionCause) {
 		try {
-			if (bindExceptionCause instanceof NativeIoException) {
-				return ((NativeIoException) bindExceptionCause).expectedErr() == ERROR_NO_EACCES;
+			if (bindExceptionCause instanceof NativeIoException nativeException) {
+				return nativeException.expectedErr() == ERROR_NO_EACCES;
 			}
 		}
-		catch (Throwable ex) {
+		catch (Throwable ignore) {
 		}
 		return false;
 	}
 
+	/**
+	 * Initiates a graceful shutdown of the Netty web server. Handling of new requests is
+	 * prevented and the given {@code callback} is invoked at the end of the attempt. The
+	 * attempt can be explicitly ended by invoking {@link #stop}.
+	 * <p>
+	 * Once shutdown has been initiated Netty will reject any new connections. Requests +
+	 * on existing idle connections will also be rejected.
+	 */
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {

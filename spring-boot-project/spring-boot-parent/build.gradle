@@ -1,7 +1,5 @@
 plugins {
 	id "org.springframework.boot.bom"
-	id "org.springframework.boot.conventions"
-	id "org.springframework.boot.deployed"
 }
 
 description = "Spring Boot Parent"
@@ -27,14 +25,29 @@ bom {
 			]
 		}
 	}
-	library("C3P0", "0.9.5.5") {
-		group("com.mchange") {
+	library("AWS Advanced JDBC Wrapper", "2.5.4") {
+		group("software.amazon.jdbc") {
 			modules = [
-					"c3p0"
+				"aws-advanced-jdbc-wrapper"
 			]
 		}
 	}
-	library("Commons Compress", "1.21") {
+	library("C3P0", "0.9.5.5") {
+		group("com.mchange") {
+			modules = [
+				"c3p0"
+			]
+		}
+	}
+	library("ClickHouse", "0.6.5") {
+		group("com.clickhouse") {
+			modules = [
+				"clickhouse-jdbc",
+				"clickhouse-r2dbc"
+			]
+		}
+	}
+	library("Commons Compress", "1.25.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-compress"
@@ -48,10 +61,17 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Inject", "1.0.5") {
-		group("jakarta.inject") {
+	library("CycloneDX Gradle Plugin", "1.10.0") {
+		group("org.cyclonedx") {
 			modules = [
-				"jakarta.inject-api"
+				"cyclonedx-gradle-plugin"
+			]
+		}
+	}
+	library("Janino", "3.1.10") {
+		group("org.codehaus.janino") {
+			imports = [
+				"janino"
 			]
 		}
 	}
@@ -66,7 +86,7 @@ bom {
 			]
 		}
 	}
-	library("JNA", "5.7.0") {
+	library("JNA", "5.13.0") {
 		group("net.java.dev.jna") {
 			modules = [
 				"jna-platform"
@@ -83,13 +103,14 @@ bom {
 	library("Maven", "${mavenVersion}") {
 		group("org.apache.maven") {
 			modules = [
+				"maven-core",
+				"maven-model-builder",
 				"maven-plugin-api",
-				"maven-resolver-provider",
-				"maven-settings-builder"
+				"maven-resolver-provider"
 			]
 		}
 	}
-	library("Maven Common Artifact Filters", "3.2.0") {
+	library("Maven Common Artifact Filters", "3.3.2") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-common-artifact-filters"
@@ -103,7 +124,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Plugin Tools", "3.6.0") {
+	library("Maven Plugin Tools", "3.9.0") {
 		group("org.apache.maven.plugin-tools") {
 			modules = [
 				"maven-plugin-annotations"
@@ -123,10 +144,17 @@ bom {
 			]
 		}
 	}
-	library("Maven Shade Plugin", "3.2.4") {
+	library("Maven Shade Plugin", "3.5.0") {
 		group("org.apache.maven.plugins") {
 			modules = [
 				"maven-shade-plugin"
+			]
+		}
+	}
+	library("Micrometer Context Propagation", "1.0.5") {
+		group("io.micrometer") {
+			modules = [
+				"context-propagation"
 			]
 		}
 	}
@@ -134,6 +162,27 @@ bom {
 		group("io.mockk") {
 			modules = [
 				"mockk"
+			]
+		}
+	}
+	library("Native Gradle Plugin", "${nativeBuildToolsVersion}") {
+		group("org.graalvm.buildtools") {
+			modules = [
+				"native-gradle-plugin"
+			]
+		}
+	}
+	library("OkHttp", "4.12.0") {
+		group("com.squareup.okhttp3") {
+			modules = [
+				"mockwebserver"
+			]
+		}
+	}
+	library("OpenTelemetry Logback Appender", "2.7.0-alpha") {
+		group("io.opentelemetry.instrumentation") {
+			modules = [
+				"opentelemetry-logback-appender-1.0"
 			]
 		}
 	}
@@ -165,18 +214,10 @@ bom {
 			]
 		}
 	}
-	library("SnakeYAML", "1.32") {
-		group("org.yaml") {
-			modules = [
-				"snakeyaml"
-			]
-		}
-	}
-	library("Spock Framework", "2.3-groovy-3.0") {
+	library("Spock Framework", "2.3-groovy-4.0") {
 		group("org.spockframework") {
 			modules = [
-				"spock-core",
-				"spock-spring"
+				"spock-core"
 			]
 		}
 	}
@@ -184,21 +225,6 @@ bom {
 		group("org.testng") {
 			modules = [
 				"testng"
-			]
-		}
-	}
-	library("Spring Asciidoctor Extensions", "0.6.3") {
-		group("io.spring.asciidoctor") {
-			modules = [
-				"spring-asciidoctor-extensions-spring-boot",
-				"spring-asciidoctor-extensions-section-ids"
-			]
-		}
-	}
-	library("Testcontainers", "1.18.3") {
-		group("org.testcontainers") {
-			imports = [
-				"testcontainers-bom"
 			]
 		}
 	}

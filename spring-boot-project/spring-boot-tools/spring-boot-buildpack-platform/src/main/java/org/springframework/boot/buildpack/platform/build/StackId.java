@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.build;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A Stack ID.
@@ -48,6 +47,10 @@ class StackId {
 		return this.value.equals(((StackId) obj).value);
 	}
 
+	boolean hasId() {
+		return this.value != null;
+	}
+
 	@Override
 	public int hashCode() {
 		return this.value.hashCode();
@@ -64,7 +67,7 @@ class StackId {
 	 * @return the extracted stack ID
 	 */
 	static StackId fromImage(Image image) {
-		Assert.notNull(image, "Image must not be null");
+		Assert.notNull(image, "'image' must not be null");
 		return fromImageConfig(image.getConfig());
 	}
 
@@ -75,7 +78,6 @@ class StackId {
 	 */
 	private static StackId fromImageConfig(ImageConfig imageConfig) {
 		String value = imageConfig.getLabels().get(LABEL_NAME);
-		Assert.state(StringUtils.hasText(value), () -> "Missing '" + LABEL_NAME + "' stack label");
 		return new StackId(value);
 	}
 
@@ -85,7 +87,7 @@ class StackId {
 	 * @return a new stack ID instance
 	 */
 	static StackId of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		return new StackId(value);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,26 @@
 package org.springframework.boot.jackson;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.jackson.scan.a.RenameMixInClass;
 import org.springframework.boot.jackson.scan.b.RenameMixInAbstractClass;
 import org.springframework.boot.jackson.scan.c.RenameMixInInterface;
 import org.springframework.boot.jackson.scan.d.EmptyMixInClass;
+import org.springframework.boot.jackson.scan.f.EmptyMixIn;
 import org.springframework.boot.jackson.types.Name;
 import org.springframework.boot.jackson.types.NameAndAge;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JsonMixinModule}.
@@ -55,9 +55,11 @@ class JsonMixinModuleTests {
 	}
 
 	@Test
-	void createWhenContextIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new JsonMixinModule(null, Collections.emptyList()))
-			.withMessageContaining("Context must not be null");
+	void jsonWithModuleEmptyMixInWithEmptyTypesShouldFail() {
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> load(EmptyMixIn.class))
+			.withMessageContaining("Error creating bean with name 'jsonMixinModule'")
+			.withStackTraceContaining("@JsonMixin annotation on class "
+					+ "'org.springframework.boot.jackson.scan.f.EmptyMixIn' does not specify any types");
 	}
 
 	@Test
@@ -92,12 +94,18 @@ class JsonMixinModuleTests {
 
 	private void load(Class<?>... basePackageClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		List<String> basePackages = Arrays.stream(basePackageClasses)
-			.map(ClassUtils::getPackageName)
-			.collect(Collectors.toList());
-		context.registerBean(JsonMixinModule.class, () -> new JsonMixinModule(context, basePackages));
+		context.registerBean(JsonMixinModule.class, () -> createJsonMixinModule(context, basePackageClasses));
 		context.refresh();
 		this.context = context;
+	}
+
+	private JsonMixinModule createJsonMixinModule(AnnotationConfigApplicationContext context,
+			Class<?>... basePackageClasses) {
+		List<String> basePackages = Arrays.stream(basePackageClasses).map(ClassUtils::getPackageName).toList();
+		JsonMixinModuleEntries entries = JsonMixinModuleEntries.scan(context, basePackages);
+		JsonMixinModule jsonMixinModule = new JsonMixinModule();
+		jsonMixinModule.registerEntries(entries, context.getClassLoader());
+		return jsonMixinModule;
 	}
 
 	private void assertMixIn(Module module, Name value, String expectedJson) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.web.servlet.server;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.Cookie;
-
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -40,14 +39,14 @@ class CookieSameSiteSupplierTests {
 	void whenHasNameWhenNameIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasName((String) null))
-			.withMessage("Name must not be empty");
+			.withMessage("'name' must not be empty");
 	}
 
 	@Test
 	void whenHasNameWhenNameIsEmptyThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasName(""))
-			.withMessage("Name must not be empty");
+			.withMessage("'name' must not be empty");
 	}
 
 	@Test
@@ -66,7 +65,7 @@ class CookieSameSiteSupplierTests {
 	void whenHasSuppliedNameWhenNameIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasName((Supplier<String>) null))
-			.withMessage("NameSupplier must not be empty");
+			.withMessage("'nameSupplier' must not be null");
 	}
 
 	@Test
@@ -85,14 +84,14 @@ class CookieSameSiteSupplierTests {
 	void whenHasNameMatchingRegexWhenRegexIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasNameMatching((String) null))
-			.withMessage("Regex must not be empty");
+			.withMessage("'regex' must not be empty");
 	}
 
 	@Test
 	void whenHasNameMatchingRegexWhenRegexIsEmptyThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasNameMatching(""))
-			.withMessage("Regex must not be empty");
+			.withMessage("'regex' must not be empty");
 	}
 
 	@Test
@@ -111,7 +110,7 @@ class CookieSameSiteSupplierTests {
 	void whenHasNameMatchingPatternWhenPatternIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasNameMatching((Pattern) null))
-			.withMessage("Pattern must not be null");
+			.withMessage("'pattern' must not be null");
 	}
 
 	@Test
@@ -131,7 +130,7 @@ class CookieSameSiteSupplierTests {
 	void whenWhenPredicateIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.when(null))
-			.withMessage("Predicate must not be null");
+			.withMessage("'predicate' must not be null");
 	}
 
 	@Test
@@ -166,7 +165,7 @@ class CookieSameSiteSupplierTests {
 	@Test
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> CookieSameSiteSupplier.of(null))
-			.withMessage("SameSite must not be null");
+			.withMessage("'sameSite' must not be null");
 	}
 
 	@Test

@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Metadata generation tests for types defined by {@code @Bean} methods.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -65,7 +66,7 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 	@Test
 	void privateMethodConfig() {
 		ConfigurationMetadata metadata = compile(PrivateMethodConfig.class);
-		assertThat(metadata).doesNotHave(Metadata.withGroup("foo"));
+		assertThat(metadata).isNull();
 	}
 
 	@Test
@@ -113,11 +114,11 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
 			.fromSource(DeprecatedMethodConfig.Foo.class)
-			.withDeprecation(null, null));
+			.withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
 			.withDefaultValue(false)
 			.fromSource(DeprecatedMethodConfig.Foo.class)
-			.withDeprecation(null, null));
+			.withDeprecation());
 	}
 
 	@Test
@@ -128,11 +129,11 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
 			.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
-			.withDeprecation(null, null));
+			.withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
 			.withDefaultValue(false)
 			.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
-			.withDeprecation(null, null));
+			.withDeprecation());
 	}
 
 }

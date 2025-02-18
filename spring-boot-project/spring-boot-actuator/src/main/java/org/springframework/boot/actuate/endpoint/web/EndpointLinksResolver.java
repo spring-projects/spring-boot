@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,9 @@ public class EndpointLinksResolver {
 	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints, String basePath) {
 		this.endpoints = endpoints;
 		if (logger.isInfoEnabled()) {
-			logger.info("Exposing " + endpoints.size() + " endpoint(s) beneath base path '" + basePath + "'");
+			String suffix = (endpoints.size() == 1) ? "" : "s";
+			logger
+				.info("Exposing " + endpoints.size() + " endpoint" + suffix + " beneath base path '" + basePath + "'");
 		}
 	}
 
@@ -70,11 +72,11 @@ public class EndpointLinksResolver {
 		Map<String, Link> links = new LinkedHashMap<>();
 		links.put("self", new Link(normalizedUrl));
 		for (ExposableEndpoint<?> endpoint : this.endpoints) {
-			if (endpoint instanceof ExposableWebEndpoint) {
-				collectLinks(links, (ExposableWebEndpoint) endpoint, normalizedUrl);
+			if (endpoint instanceof ExposableWebEndpoint exposableWebEndpoint) {
+				collectLinks(links, exposableWebEndpoint, normalizedUrl);
 			}
-			else if (endpoint instanceof PathMappedEndpoint) {
-				String rootPath = ((PathMappedEndpoint) endpoint).getRootPath();
+			else if (endpoint instanceof PathMappedEndpoint pathMappedEndpoint) {
+				String rootPath = pathMappedEndpoint.getRootPath();
 				Link link = createLink(normalizedUrl, rootPath);
 				links.put(endpoint.getEndpointId().toLowerCaseString(), link);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.launch.FakeJarLauncher;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class MainMethodTests {
 
-	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
+	private static final ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;
 
@@ -46,7 +47,7 @@ class MainMethodTests {
 	@Test
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
-			.withMessageContaining("Thread must not be null");
+			.withMessageContaining("'thread' must not be null");
 	}
 
 	@Test
@@ -62,6 +63,15 @@ class MainMethodTests {
 		Method nestedMain = Nested.class.getMethod("main", String[].class);
 		assertThat(method.getMethod()).isEqualTo(nestedMain);
 		assertThat(method.getDeclaringClassName()).isEqualTo(nestedMain.getDeclaringClass().getName());
+	}
+
+	@Test // gh-39733
+	void viaJarLauncher() throws Exception {
+		FakeJarLauncher.action = (args) -> Valid.main(args);
+		MainMethod method = new TestThread(FakeJarLauncher::main).test();
+		Method expectedMain = Valid.class.getMethod("main", String[].class);
+		assertThat(method.getMethod()).isEqualTo(expectedMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(expectedMain.getDeclaringClass().getName());
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.hazelcast")
+@ConfigurationProperties("spring.hazelcast")
 public class HazelcastProperties {
 
 	/**
@@ -52,7 +52,7 @@ public class HazelcastProperties {
 		if (this.config == null) {
 			return null;
 		}
-		Assert.isTrue(this.config.exists(),
+		Assert.state(this.config.exists(),
 				() -> "Hazelcast configuration does not exist '" + this.config.getDescription() + "'");
 		return this.config;
 	}

@@ -35,14 +35,14 @@ class TestConfigurationTests {
 	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 			.getMergedAnnotationAttributes(DefaultTestConfiguration.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
+		assertThat(attributes).containsEntry("proxyBeanMethods", true);
 	}
 
 	@Test
 	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 			.getMergedAnnotationAttributes(NoBeanMethodProxyingTestConfiguration.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
+		assertThat(attributes).containsEntry("proxyBeanMethods", false);
 	}
 
 	@TestConfiguration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
@@ -45,6 +45,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ContextLoaderListener;
@@ -70,10 +71,14 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 2.0.0
  * @see #configure(SpringApplicationBuilder)
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
+
+	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent("reactor.core.scheduler.Schedulers",
+			SpringBootServletInitializer.class.getClassLoader());
 
 	protected Log logger; // Don't initialize early
 
@@ -123,6 +128,20 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 					// Continue
 				}
 			}
+		}
+	}
+
+	/**
+	 * Shuts down the reactor {@link Schedulers} that were initialized by
+	 * {@code Schedulers.boundedElastic()} (or similar). The default implementation
+	 * {@link Schedulers#shutdownNow()} schedulers if they were initialized on this web
+	 * application's class loader.
+	 * @param servletContext the web application's servlet context
+	 * @since 3.4.0
+	 */
+	protected void shutDownSharedReactorSchedulers(ServletContext servletContext) {
+		if (Schedulers.class.getClassLoader() == servletContext.getClassLoader()) {
+			Schedulers.shutdownNow();
 		}
 	}
 
@@ -177,8 +196,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
 		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-		if (context instanceof ApplicationContext) {
-			return (ApplicationContext) context;
+		if (context instanceof ApplicationContext applicationContext) {
+			return applicationContext;
 		}
 		return null;
 	}
@@ -198,7 +217,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	/**
 	 * {@link ApplicationListener} to trigger
-	 * {@link ConfigurableWebEnvironment#initPropertySources(ServletContext, javax.servlet.ServletConfig)}.
+	 * {@link ConfigurableWebEnvironment#initPropertySources(ServletContext, jakarta.servlet.ServletConfig)}.
 	 */
 	private static final class WebEnvironmentPropertySourceInitializer
 			implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
@@ -212,8 +231,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			ConfigurableEnvironment environment = event.getEnvironment();
-			if (environment instanceof ConfigurableWebEnvironment) {
-				((ConfigurableWebEnvironment) environment).initPropertySources(this.servletContext, null);
+			if (environment instanceof ConfigurableWebEnvironment configurableWebEnvironment) {
+				configurableWebEnvironment.initPropertySources(this.servletContext, null);
 			}
 		}
 
@@ -249,6 +268,10 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			finally {
 				// Use original context so that the classloader can be accessed
 				deregisterJdbcDrivers(this.servletContext);
+				// Shut down shared reactor schedulers tied to this classloader
+				if (REACTOR_PRESENT) {
+					shutDownSharedReactorSchedulers(this.servletContext);
+				}
 			}
 		}
 

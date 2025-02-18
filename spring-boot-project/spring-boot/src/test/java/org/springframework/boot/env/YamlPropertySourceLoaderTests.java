@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class YamlPropertySourceLoaderTests {
 
-	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
 	void load() throws Exception {

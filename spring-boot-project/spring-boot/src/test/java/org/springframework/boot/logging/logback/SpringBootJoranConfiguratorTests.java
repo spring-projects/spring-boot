@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -65,8 +66,7 @@ class SpringBootJoranConfiguratorTests {
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
 		this.configurator = new SpringBootJoranConfigurator(this.initializationContext);
-		StaticLoggerBinder binder = StaticLoggerBinder.getSingleton();
-		this.context = (LoggerContext) binder.getLoggerFactory();
+		this.context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		this.logger = this.context.getLogger(getClass());
 	}
 
@@ -74,12 +74,21 @@ class SpringBootJoranConfiguratorTests {
 	void reset() {
 		this.context.stop();
 		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
+		this.context.start();
 	}
 
 	@Test
 	void profileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
+		this.logger.trace("Hello");
+		assertThat(this.output).contains("Hello");
+	}
+
+	@Test
+	void profileInIncludeActive() throws Exception {
+		this.environment.setActiveProfiles("production");
+		initialize("profile-in-include.xml");
 		this.logger.trace("Hello");
 		assertThat(this.output).contains("Hello");
 	}
@@ -190,6 +199,46 @@ class SpringBootJoranConfiguratorTests {
 		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
+	@Test
+	void springPropertyInIfWhenTrue() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=true");
+		initialize("property-in-if.xml");
+		assertThat(this.context.getProperty("MYCHECK")).isEqualTo("i-was-included");
+	}
+
+	@Test
+	void springPropertyInIfWhenFalse() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=false");
+		initialize("property-in-if.xml");
+		assertThat(this.context.getProperty("MYCHECK")).isNull();
+	}
+
+	@Test
+	void springPropertyInInclude() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=test");
+		initialize("property-in-include.xml");
+		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
+	}
+
+	@Test
+	void addsAotContributionToContextDuringAotProcessing() throws Exception {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> {
+			initialize("property.xml");
+			Object contribution = this.context.getObject(BeanFactoryInitializationAotContribution.class.getName());
+			assertThat(contribution).isNotNull();
+		});
+	}
+
+	private void withSystemProperty(String name, String value, Action action) throws Exception {
+		System.setProperty(name, value);
+		try {
+			action.perform();
+		}
+		finally {
+			System.clearProperty(name);
+		}
+	}
+
 	private void doTestNestedProfile(boolean expected, String... profiles) throws JoranException {
 		this.environment.setActiveProfiles(profiles);
 		initialize("nested.xml");
@@ -206,6 +255,12 @@ class SpringBootJoranConfiguratorTests {
 	private void initialize(String config) throws JoranException {
 		this.configurator.setContext(this.context);
 		this.configurator.doConfigure(getClass().getResourceAsStream(config));
+	}
+
+	private interface Action {
+
+		void perform() throws Exception;
+
 	}
 
 }

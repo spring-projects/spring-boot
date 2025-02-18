@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,17 +62,10 @@ import org.springframework.web.context.WebApplicationContext;
  * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
  * random} port.</li>
- * </ul>
- * <p>
- * Can register the following beans for web tests that are using a fully running web
- * server:
- * <ul>
- * <li>{@link org.springframework.boot.test.web.client.TestRestTemplate
- * TestRestTemplate}</li>
- * <li>{@link org.springframework.test.web.reactive.server.WebTestClient
- * WebTestClient}</li>
- * <li>{@link org.springframework.graphql.test.tester.HttpGraphQlTester
- * HttpGraphQlTester}</li>
+ * <li>Registers a {@link org.springframework.boot.test.web.client.TestRestTemplate
+ * TestRestTemplate} and/or
+ * {@link org.springframework.test.web.reactive.server.WebTestClient WebTestClient} bean
+ * for use in web tests that are using a fully running web server.</li>
  * </ul>
  *
  * @author Phillip Webb
@@ -133,6 +126,14 @@ public @interface SpringBootTest {
 	WebEnvironment webEnvironment() default WebEnvironment.MOCK;
 
 	/**
+	 * The type of main method usage to employ when creating the {@link SpringApplication}
+	 * under test.
+	 * @return the type of main method usage
+	 * @since 3.0.0
+	 */
+	UseMainMethod useMainMethod() default UseMainMethod.NEVER;
+
+	/**
 	 * An enumeration web environment modes.
 	 */
 	enum WebEnvironment {
@@ -179,6 +180,38 @@ public @interface SpringBootTest {
 		public boolean isEmbedded() {
 			return this.embedded;
 		}
+
+	}
+
+	/**
+	 * Enumeration of how the main method of the
+	 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class is used
+	 * when creating and running the {@link SpringApplication} under test.
+	 *
+	 * @since 3.0.0
+	 */
+	enum UseMainMethod {
+
+		/**
+		 * Always use the {@code main} method. A failure will occur if there is no
+		 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class or
+		 * that class does not have a main method.
+		 */
+		ALWAYS,
+
+		/**
+		 * Never use the {@code main} method, creating a test-specific
+		 * {@link SpringApplication} instead.
+		 */
+		NEVER,
+
+		/**
+		 * Use the {@code main} method when it is available. If there is no
+		 * {@link SpringBootConfiguration @SpringBootConfiguration}-annotated class or
+		 * that class does not have a main method, a test-specific
+		 * {@link SpringApplication} will be used.
+		 */
+		WHEN_AVAILABLE
 
 	}
 

@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
 }
 
@@ -13,9 +12,7 @@ configurations {
 dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	intTestImplementation("org.apache.httpcomponents:httpasyncclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
 	intTestImplementation("org.awaitility:awaitility")
 	intTestImplementation("org.springframework:spring-web")
 
@@ -32,7 +29,7 @@ dependencies {
 }
 
 task syncTestRepository(type: Sync) {
-	destinationDir = file("${buildDir}/test-repository")
+	destinationDir = file(layout.buildDirectory.dir("test-repository"))
 	from {
 		configurations.testRepository
 	}
@@ -40,12 +37,12 @@ task syncTestRepository(type: Sync) {
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-server-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-server-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-server-tests-app"))
 }
 
 task buildApps(type: GradleBuild) {
 	dependsOn syncAppSource, syncTestRepository
-	dir = "${buildDir}/spring-boot-server-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-server-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks = [
 		"jettyBootJar",
@@ -59,13 +56,14 @@ task buildApps(type: GradleBuild) {
 
 intTest {
 	inputs.files(
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.war")
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.war")
+	)
 		.withPropertyName("applicationArchives")
 		.withPathSensitivity(PathSensitivity.RELATIVE)
 		.withNormalizer(ClasspathNormalizer)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.web.mappings;
-
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -45,14 +43,13 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = MappingsEndpoint.class)
+@ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
 public class MappingsEndpointAutoConfiguration {
 
 	@Bean
 	public MappingsEndpoint mappingsEndpoint(ApplicationContext applicationContext,
 			ObjectProvider<MappingDescriptionProvider> descriptionProviders) {
-		return new MappingsEndpoint(descriptionProviders.orderedStream().collect(Collectors.toList()),
-				applicationContext);
+		return new MappingsEndpoint(descriptionProviders.orderedStream().toList(), applicationContext);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -22,8 +22,10 @@ import javax.sql.XADataSource;
 import com.ibm.db2.jcc.DB2XADataSource;
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.jupiter.api.Test;
+import org.postgresql.xa.PGXADataSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,12 +36,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link XADataSourceAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 class XADataSourceAutoConfigurationTests {
 
@@ -88,6 +93,37 @@ class XADataSourceAutoConfigurationTests {
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
 		assertThat(dataSource).isNotNull();
 		assertThat(dataSource.getLoginTimeout()).isEqualTo(123);
+	}
+
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
+			.withUserConfiguration(FromProperties.class)
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesJdbcConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
+		JdbcConnectionDetails connectionDetails = mock(JdbcConnectionDetails.class);
+		given(connectionDetails.getUsername()).willReturn("user-1");
+		given(connectionDetails.getPassword()).willReturn("password-1");
+		given(connectionDetails.getJdbcUrl()).willReturn("jdbc:postgresql://postgres.example.com:12345/database-1");
+		given(connectionDetails.getDriverClassName()).willReturn(DatabaseDriver.POSTGRESQL.getDriverClassName());
+		given(connectionDetails.getXaDataSourceClassName())
+			.willReturn(DatabaseDriver.POSTGRESQL.getXaDataSourceClassName());
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
+			.withUserConfiguration(FromProperties.class)
+			.withBean(JdbcConnectionDetails.class, () -> connectionDetails)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
+				MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+				PGXADataSource dataSource = (PGXADataSource) wrapper.getXaDataSource();
+				assertThat(dataSource).isNotNull();
+				assertThat(dataSource.getUrl()).startsWith("jdbc:postgresql://postgres.example.com:12345/database-1");
+				assertThat(dataSource.getUser()).isEqualTo("user-1");
+				assertThat(dataSource.getPassword()).isEqualTo("password-1");
+			});
 	}
 
 	private ApplicationContext createContext(Class<?> configuration, String... env) {

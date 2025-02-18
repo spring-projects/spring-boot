@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+repositories {
+	flatDir {
+		dirs 'repository'
+	}
+}
+
+dependencies {
+	implementation(name: "standard")
+	implementation(name: "starter")
+}

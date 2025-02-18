@@ -21,7 +21,7 @@ import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 
 /**
- * Utility class that can be used change a UTC time based on the
+ * Utility class that can be used to change a UTC time based on the
  * {@link java.util.TimeZone#getDefault() default TimeZone}. This is required because
  * {@link ZipEntry#setTime(long)} expects times in the default timezone and not UTC.
  *

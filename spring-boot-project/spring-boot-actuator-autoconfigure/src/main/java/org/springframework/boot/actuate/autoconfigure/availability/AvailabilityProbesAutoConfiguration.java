@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,6 +90,9 @@ public class AvailabilityProbesAutoConfiguration {
 			}
 			if (CloudPlatform.getActive(environment) == CloudPlatform.KUBERNETES) {
 				return ConditionOutcome.match(message.because("running on Kubernetes"));
+			}
+			if (CloudPlatform.getActive(environment) == CloudPlatform.CLOUD_FOUNDRY) {
+				return ConditionOutcome.match(message.because("running on Cloud Foundry"));
 			}
 			return ConditionOutcome.noMatch(message.because("not running on a supported cloud platform"));
 		}

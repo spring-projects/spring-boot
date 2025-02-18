@@ -89,7 +89,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
-		if (value == null || value instanceof CharSequence && ((CharSequence) value).length() == 0) {
+		if (value == null || (value instanceof CharSequence charSequence && charSequence.isEmpty())) {
 			return;
 		}
 		Object aggregate = convert(value, aggregateType, target.getAnnotations());
@@ -116,10 +116,10 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationPropertyName> children = new LinkedMultiValueMap<>();
-		if (!(source instanceof IterableConfigurationPropertySource)) {
+		if (!(source instanceof IterableConfigurationPropertySource iterableSource)) {
 			return children;
 		}
-		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source.filter(root::isAncestorOf)) {
+		for (ConfigurationPropertyName name : iterableSource.filter(root::isAncestorOf)) {
 			ConfigurationPropertyName choppedName = name.chop(root.getNumberOfElements() + 1);
 			if (choppedName.isLastElementIndexed()) {
 				String key = choppedName.getLastElement(Form.UNIFORM);

@@ -20,8 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,9 +65,9 @@ class DefaultErrorViewResolverTests {
 
 	private Resources resourcesProperties;
 
-	private Map<String, Object> model = new HashMap<>();
+	private final Map<String, Object> model = new HashMap<>();
 
-	private HttpServletRequest request = new MockHttpServletRequest();
+	private final HttpServletRequest request = new MockHttpServletRequest();
 
 	@BeforeEach
 	void setup() {
@@ -84,14 +83,14 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultErrorViewResolver(null, new Resources()))
-			.withMessageContaining("ApplicationContext must not be null");
+			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
 	void createWhenResourcePropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), (Resources) null))
-			.withMessageContaining("Resources must not be null");
+			.withMessageContaining("'resources' must not be null");
 	}
 
 	@Test

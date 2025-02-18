@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,41 +24,41 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRegistration.Dynamic;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.HttpClients;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRegistration.Dynamic;
+import org.apache.hc.client5.http.HttpHostConnectException;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee10.webapp.Configuration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ClassMatcher;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import org.eclipse.jetty.webapp.AbstractConfiguration;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -68,6 +68,7 @@ import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -75,7 +76,9 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -86,12 +89,23 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Henri Kerola
+ * @author Moritz Halbritter
+ * @author Onur Kagan Ozcan
  */
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
 	protected JettyServletWebServerFactory getFactory() {
-		return new JettyServletWebServerFactory(0);
+		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
+		factory.addServerCustomizers((server) -> {
+			for (Connector connector : server.getConnectors()) {
+				if (connector instanceof ServerConnector serverConnector) {
+					// TODO Set the shutdown idle timeout in main code?
+					serverConnector.setShutdownIdleTimeout(10000);
+				}
+			}
+		});
+		return factory;
 	}
 
 	@Override
@@ -140,6 +154,19 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	@Override
+	@Disabled("Jetty 12 does not support User-Agent-based compression")
+	protected void noCompressionForUserAgent() {
+	}
+
+	@Test
+	@Override
+	@Disabled("Jetty 12 does not support SSL session tracking")
+	protected void sslSessionTracking() {
+
+	}
+
+	@Test
 	void contextPathIsLoggedOnStartupWhenCompressionIsEnabled(CapturedOutput output) {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setContextPath("/custom");
@@ -152,18 +179,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	protected void correctVersionOfJettyUsed() {
-		String jettyVersion = ErrorHandler.class.getPackage().getImplementationVersion();
-		Matcher matcher = Pattern.compile("[0-9]+.[0-9]+.([0-9]+)[\\.-].*").matcher(jettyVersion);
-		assertThat(matcher.find()).isTrue();
-		assertThat(Integer.valueOf(matcher.group(1))).isGreaterThan(19);
-	}
-
-	@Test
-	protected void jettyConfigurations() throws Exception {
+	void jettyConfigurations() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
-		Configuration[] configurations = new Configuration[4];
-		Arrays.setAll(configurations, (i) -> mock(Configuration.class));
+		Configuration[] configurations = new Configuration[] { mockConfiguration(Configuration1.class),
+				mockConfiguration(Configuration2.class), mockConfiguration(Configuration3.class),
+				mockConfiguration(Configuration4.class) };
 		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
@@ -171,6 +191,14 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		for (Configuration configuration : configurations) {
 			ordered.verify(configuration).configure(any(WebAppContext.class));
 		}
+	}
+
+	Configuration mockConfiguration(Class<? extends Configuration> type) {
+		Configuration mock = mock(type);
+		ClassMatcher classMatcher = new ClassMatcher();
+		given(mock.getProtectedClasses()).willReturn(classMatcher);
+		given(mock.getHiddenClasses()).willReturn(classMatcher);
+		return mock;
 	}
 
 	@Test
@@ -224,10 +252,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void stopCalledWithoutStart() {
+	void destroyCalledWithoutStart() {
 		JettyServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.stop();
+		this.webServer.destroy();
 		Server server = ((JettyWebServer) this.webServer).getServer();
 		assertThat(server.isStopped()).isTrue();
 	}
@@ -256,6 +284,19 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
 		SslContextFactory sslContextFactory = extractSslContextFactory(connectionFactory);
 		assertThat(sslContextFactory.getIncludeProtocols()).containsExactly("TLSv1.1");
+	}
+
+	@Test
+	void sslServerNameBundlesConfigurationThrowsException() {
+		Ssl ssl = new Ssl();
+		ssl.setBundle("test");
+		List<ServerNameSslBundle> bundles = List.of(new ServerNameSslBundle("first", "test1"),
+				new ServerNameSslBundle("second", "test2"));
+		ssl.setServerNameBundles(bundles);
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		assertThatIllegalStateException().isThrownBy(() -> this.webServer = factory.getWebServer())
+			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
 	}
 
 	private SslContextFactory extractSslContextFactory(SslConnectionFactory connectionFactory) {
@@ -312,7 +353,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		blockingServlet.admitOne();
 		Object response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
 		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNull();
 		this.webServer.shutDownGracefully((result) -> {
 		});
@@ -321,7 +362,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		blockingServlet.admitOne();
 		response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
 		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull()
 			.extracting(Header::getValue)
 			.isEqualTo("close");
@@ -375,11 +416,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setServerCustomizers(Collections.singletonList((server) -> {
 			Handler handler = server.getHandler();
-			HandlerWrapper wrapper = new HandlerWrapper();
+			Handler.Wrapper wrapper = new Handler.Wrapper();
 			wrapper.setHandler(handler);
-			HandlerCollection collection = new HandlerCollection();
-			collection.addHandler(wrapper);
-			server.setHandler(collection);
+			server.setHandler(wrapper);
 		}));
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -497,7 +536,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	@Test
 	void errorHandlerCanBeOverridden() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.addConfigurations(new AbstractConfiguration() {
+		factory.addConfigurations(new AbstractConfiguration(new AbstractConfiguration.Builder()) {
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
@@ -510,21 +549,66 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		assertThat(context.getErrorHandler()).isInstanceOf(CustomErrorHandler.class);
 	}
 
+	@Test
+	void shouldApplyMaxConnections() {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).isNotNull();
+		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Test
+	void shouldApplyMaxConnectionsToConnectors() {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer();
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		assertThat(server.getConnectors()).isEmpty();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).extracting("_connectors")
+			.asInstanceOf(InstanceOfAssertFactories.list(AbstractConnector.class))
+			.hasSize(1);
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((JettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
 	private WebAppContext findWebAppContext(JettyWebServer webServer) {
 		return findWebAppContext(webServer.getServer().getHandler());
 	}
 
 	private WebAppContext findWebAppContext(Handler handler) {
-		if (handler instanceof WebAppContext) {
-			return (WebAppContext) handler;
+		if (handler instanceof WebAppContext webAppContext) {
+			return webAppContext;
 		}
-		if (handler instanceof HandlerWrapper) {
-			return findWebAppContext(((HandlerWrapper) handler).getHandler());
+		if (handler instanceof Handler.Wrapper wrapper) {
+			return findWebAppContext(wrapper.getHandler());
 		}
 		throw new IllegalStateException("No WebAppContext found");
 	}
 
-	private static class CustomErrorHandler extends ErrorPageErrorHandler {
+	private static final class CustomErrorHandler extends ErrorPageErrorHandler {
+
+	}
+
+	interface Configuration1 extends Configuration {
+
+	}
+
+	interface Configuration2 extends Configuration {
+
+	}
+
+	interface Configuration3 extends Configuration {
+
+	}
+
+	interface Configuration4 extends Configuration {
 
 	}
 

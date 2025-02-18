@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,6 @@ public class MetricsProperties {
 
 	private final Data data = new Data();
 
-	private final Graphql graphql = new Graphql();
-
 	private final System system = new System();
 
 	private final Distribution distribution = new Distribution();
@@ -92,10 +90,6 @@ public class MetricsProperties {
 		return this.data;
 	}
 
-	public Graphql getGraphql() {
-		return this.graphql;
-	}
-
 	public System getSystem() {
 		return this.system;
 	}
@@ -120,8 +114,6 @@ public class MetricsProperties {
 
 		public static class Client {
 
-			private final ClientRequest request = new ClientRequest();
-
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
 			 * tag values is reached, metrics with additional tag values are denied by
@@ -129,51 +121,18 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public ClientRequest getRequest() {
-				return this.request;
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
-			}
-
-			public static class ClientRequest {
-
-				/**
-				 * Name of the metric for sent requests.
-				 */
-				private String metricName = "http.client.requests";
-
-				/**
-				 * Auto-timed request settings.
-				 */
-				@NestedConfigurationProperty
-				private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-				public AutoTimeProperties getAutotime() {
-					return this.autotime;
-				}
-
-				public String getMetricName() {
-					return this.metricName;
-				}
-
-				public void setMetricName(String metricName) {
-					this.metricName = metricName;
-				}
-
 			}
 
 		}
 
 		public static class Server {
 
-			private final ServerRequest request = new ServerRequest();
-
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
 			 * tag values is reached, metrics with additional tag values are denied by
@@ -181,56 +140,12 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public ServerRequest getRequest() {
-				return this.request;
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
-			}
-
-			public static class ServerRequest {
-
-				/**
-				 * Name of the metric for received requests.
-				 */
-				private String metricName = "http.server.requests";
-
-				/**
-				 * Whether the trailing slash should be ignored when recording metrics.
-				 */
-				private boolean ignoreTrailingSlash = true;
-
-				/**
-				 * Auto-timed request settings.
-				 */
-				@NestedConfigurationProperty
-				private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-				public AutoTimeProperties getAutotime() {
-					return this.autotime;
-				}
-
-				public String getMetricName() {
-					return this.metricName;
-				}
-
-				public void setMetricName(String metricName) {
-					this.metricName = metricName;
-				}
-
-				public boolean isIgnoreTrailingSlash() {
-					return this.ignoreTrailingSlash;
-				}
-
-				public void setIgnoreTrailingSlash(boolean ignoreTrailingSlash) {
-					this.ignoreTrailingSlash = ignoreTrailingSlash;
-				}
-
 			}
 
 		}
@@ -274,20 +189,6 @@ public class MetricsProperties {
 
 	}
 
-	public static class Graphql {
-
-		/**
-		 * Auto-timed queries settings.
-		 */
-		@NestedConfigurationProperty
-		private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-		public AutoTimeProperties getAutotime() {
-			return this.autotime;
-		}
-
-	}
-
 	public static class System {
 
 		private final Diskspace diskspace = new Diskspace();
@@ -299,7 +200,7 @@ public class MetricsProperties {
 		public static class Diskspace {
 
 			/**
-			 * Comma-separated list of paths to report disk metrics for.
+			 * List of paths to report disk metrics for.
 			 */
 			private List<File> paths = new ArrayList<>(Collections.singletonList(new File(".")));
 

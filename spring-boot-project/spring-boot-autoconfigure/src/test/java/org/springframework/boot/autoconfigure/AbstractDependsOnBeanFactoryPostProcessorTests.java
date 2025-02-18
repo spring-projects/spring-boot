@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class AbstractDependsOnBeanFactoryPostProcessorTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test
@@ -77,7 +77,7 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	@Test
 	void postProcessorHasADefaultOrderOfZero() {
-		assertThat(new FooDependsOnBarTypePostProcessor().getOrder()).isEqualTo(0);
+		assertThat(new FooDependsOnBarTypePostProcessor().getOrder()).isZero();
 	}
 
 	private void assertThatFooDependsOnBar(AssertableApplicationContext context) {
@@ -93,8 +93,8 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
+			if (parentBeanFactory instanceof ConfigurableListableBeanFactory configurableListableBeanFactory) {
+				return getBeanDefinition(beanName, configurableListableBeanFactory);
 			}
 			throw ex;
 		}

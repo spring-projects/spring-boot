@@ -52,7 +52,7 @@ class ArrayBinderTests {
 
 	private static final Bindable<Integer[]> INTEGER_ARRAY = Bindable.of(Integer[].class);
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private final Binder binder = new Binder(this.sources);
 
@@ -144,9 +144,9 @@ class ArrayBinderTests {
 			.satisfies((ex) -> {
 				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
 					.getUnboundProperties();
-				assertThat(unbound.size()).isEqualTo(1);
+				assertThat(unbound).hasSize(1);
 				ConfigurationProperty property = unbound.iterator().next();
-				assertThat(property.getName().toString()).isEqualTo("foo[3]");
+				assertThat(property.getName()).hasToString("foo[3]");
 				assertThat(property.getValue()).isEqualTo("3");
 			});
 	}
@@ -254,7 +254,7 @@ class ArrayBinderTests {
 		source.put("foo", "");
 		this.sources.add(source);
 		String[] result = this.binder.bind("foo", Bindable.of(String[].class)).get();
-		assertThat(result).isNotNull().isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test

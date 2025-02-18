@@ -68,7 +68,7 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 
 	@Test
 	void runAndTestHttpEndpoint() {
-		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
+		assertThat(this.port).isNotEqualTo(8080).isNotZero();
 		WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + this.port)
 			.responseTimeout(Duration.ofMinutes(5))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,20 +122,20 @@ class ElasticsearchRestClientHealthIndicatorTests {
 				entry("active_primary_shards", 0), entry("active_shards", 0), entry("relocating_shards", 0),
 				entry("initializing_shards", 0), entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
 				entry("number_of_pending_tasks", 0), entry("number_of_in_flight_fetch", 0),
-				entry("task_max_waiting_in_queue_millis", 0), entry("active_shards_percent_as_number", 100.0));
+				entry("task_max_waiting_in_queue_millis", 0), entry("active_shards_percent_as_number", 100.0),
+				entry("unassigned_primary_shards", 10));
 	}
 
 	private String createJsonResult(int responseCode, String status) {
 		if (responseCode == 200) {
-			return String.format(
-					"{\"cluster_name\":\"elasticsearch\","
-							+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
-							+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
-							+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
-							+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
-							+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
-							+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
-					status);
+			return String.format("{\"cluster_name\":\"elasticsearch\","
+					+ "\"status\":\"%s\",\"timed_out\":false,\"number_of_nodes\":1,"
+					+ "\"number_of_data_nodes\":1,\"active_primary_shards\":0,"
+					+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
+					+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
+					+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
+					+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0,"
+					+ "\"unassigned_primary_shards\": 10 }", status);
 		}
 		return "{\n  \"error\": \"Server Error\",\n  \"status\": " + responseCode + "\n}";
 	}

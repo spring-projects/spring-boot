@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 
@@ -46,10 +48,12 @@ public interface BuildLog {
 	/**
 	 * Log that an image is being pulled.
 	 * @param imageReference the image reference
+	 * @param platform the platform of the image
 	 * @param imageType the image type
 	 * @return a consumer for progress update events
 	 */
-	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType);
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
+			ImageType imageType);
 
 	/**
 	 * Log that an image has been pulled.
@@ -80,6 +84,14 @@ public interface BuildLog {
 	void executingLifecycle(BuildRequest request, LifecycleVersion version, VolumeName buildCacheVolume);
 
 	/**
+	 * Log that the lifecycle is executing.
+	 * @param request the build request
+	 * @param version the lifecycle version
+	 * @param buildCache the build cache in use
+	 */
+	void executingLifecycle(BuildRequest request, LifecycleVersion version, Cache buildCache);
+
+	/**
 	 * Log that a specific phase is running.
 	 * @param request the build request
 	 * @param name the name of the phase
@@ -105,6 +117,21 @@ public interface BuildLog {
 	 * @param tag the tag reference
 	 */
 	void taggedImage(ImageReference tag);
+
+	/**
+	 * Log that a cache cleanup step was not completed successfully.
+	 * @param cache the cache
+	 * @param exception any exception that caused the failure
+	 * @since 3.2.6
+	 */
+	void failedCleaningWorkDir(Cache cache, Exception exception);
+
+	/**
+	 * Log that a binding with a sensitive target has been detected.
+	 * @param binding the binding
+	 * @since 3.4.0
+	 */
+	void sensitiveTargetBindingDetected(Binding binding);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

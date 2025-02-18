@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = SampleUndertowWebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
+	private static final Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
 	@LocalServerPort
 	private int port = 1234;
@@ -59,7 +59,7 @@ class SampleWebSocketsApplicationTests {
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
-		assertThat(count).isEqualTo(0);
+		assertThat(count).isZero();
 		assertThat(messagePayloadReference.get()).isEqualTo("Did you say \"Hello world!\"?");
 	}
 
@@ -72,7 +72,7 @@ class SampleWebSocketsApplicationTests {
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
-		assertThat(count).isEqualTo(0);
+		assertThat(count).isZero();
 		assertThat(messagePayloadReference.get()).isEqualTo("Reversed: !dlrow olleH");
 	}
 

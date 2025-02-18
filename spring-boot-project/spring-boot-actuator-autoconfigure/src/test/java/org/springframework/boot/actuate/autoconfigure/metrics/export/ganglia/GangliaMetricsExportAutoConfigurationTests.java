@@ -54,7 +54,7 @@ class GangliaMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.defaults.enabled=false")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(GangliaMeterRegistry.class)
 				.doesNotHaveBean(GangliaConfig.class));
 	}
@@ -62,7 +62,7 @@ class GangliaMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.ganglia.enabled=false")
+			.withPropertyValues("management.ganglia.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(GangliaMeterRegistry.class)
 				.doesNotHaveBean(GangliaConfig.class));
 	}

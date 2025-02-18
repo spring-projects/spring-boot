@@ -1,4 +1,4 @@
-# Initializers
+# ApplicationContext Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer,\
 org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener
@@ -21,21 +21,21 @@ org.springframework.boot.autoconfigure.condition.OnBeanCondition,\
 org.springframework.boot.autoconfigure.condition.OnClassCondition,\
 org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
 
-# Failure analyzers
+# Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer,\
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
-org.springframework.boot.autoconfigure.flyway.FlywayMigrationScriptMissingFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jooq.JaxbNotAvailableExceptionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MissingR2dbcPoolDependencyFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MultipleConnectionPoolConfigurationsFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.NoConnectionFactoryBeanFailureAnalyzer,\
-org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer
+org.springframework.boot.autoconfigure.ssl.BundleContentNotWatchableFailureAnalyzer
 
-# Template availability providers
+# Template Availability Providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
@@ -43,11 +43,11 @@ org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilit
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
 
-# DataSource initializer detectors
+# DataSource Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDatabaseInitializerDetector
 
-# Depends on database initialization detectors
+# Depends on Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
 org.springframework.boot.autoconfigure.batch.JobRepositoryDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.autoconfigure.quartz.SchedulerDependsOnDatabaseInitializationDetector,\

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@
 
 package org.springframework.boot.jdbc;
 
-import java.sql.DatabaseMetaData;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -75,14 +71,6 @@ public enum DatabaseDriver {
 	 * Maria DB.
 	 */
 	MARIADB("MariaDB", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1"),
-
-	/**
-	 * Google App Engine.
-	 * @deprecated since 2.7.0 for removal in 3.0.0 without replacement following the
-	 * removal of AppEngineDriver from version 2.0 of the AppEngine API SDK.
-	 */
-	@Deprecated
-	GAE(null, "com.google.appengine.api.rdbms.AppEngineDriver"),
 
 	/**
 	 * Oracle.
@@ -217,6 +205,32 @@ public enum DatabaseDriver {
 			return Collections.singleton("tc");
 		}
 
+	},
+
+	/**
+	 * ClickHouse.
+	 * @since 3.4.0
+	 */
+	CLICKHOUSE("ClickHouse", "com.clickhouse.jdbc.ClickHouseDriver", null, "SELECT 1") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Arrays.asList("ch", "clickhouse");
+		}
+
+	},
+
+	/**
+	 * AWS Advanced JDBC Wrapper.
+	 * @since 3.5.0
+	 */
+	AWS_WRAPPER(null, "software.amazon.jdbc.Driver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("aws-wrapper");
+		}
+
 	};
 
 	private final String productName;
@@ -293,7 +307,7 @@ public enum DatabaseDriver {
 	 */
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
-			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
+			Assert.isTrue(url.startsWith("jdbc"), "'url' must start with \"jdbc\"");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {
@@ -321,25 +335,6 @@ public enum DatabaseDriver {
 			}
 		}
 		return UNKNOWN;
-	}
-
-	/**
-	 * Find a {@link DatabaseDriver} for the given {@code DataSource}.
-	 * @param dataSource data source to inspect
-	 * @return the database driver of {@link #UNKNOWN} if not found
-	 * @since 2.6.0
-	 * @deprecated since 2.7.15 for removal in 3.3.0 with no replacement
-	 */
-	@Deprecated
-	public static DatabaseDriver fromDataSource(DataSource dataSource) {
-		try {
-			String productName = JdbcUtils.commonDatabaseName(
-					JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
-			return DatabaseDriver.fromProductName(productName);
-		}
-		catch (Exception ex) {
-			return DatabaseDriver.UNKNOWN;
-		}
 	}
 
 }

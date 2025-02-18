@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -48,7 +47,7 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
-			.withMessageContaining("Context class must not be null");
+			.withMessageContaining("'contextClass' must not be null");
 	}
 
 	@Test
@@ -89,7 +88,7 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<ApplicationContext>(
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
 				ApplicationContext.class) {
 
 			@Override
@@ -134,6 +133,7 @@ class ApplicationContextRequestMatcherTests {
 			thread.join(1000);
 		}
 		catch (InterruptedException ex) {
+			// Ignore
 		}
 	}
 
@@ -206,6 +206,7 @@ class ApplicationContextRequestMatcherTests {
 				Thread.sleep(200);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 			this.initialized.set(true);
 		}
@@ -218,7 +219,7 @@ class ApplicationContextRequestMatcherTests {
 
 	}
 
-	private static class AssertingUncaughtExceptionHandler implements UncaughtExceptionHandler {
+	private static final class AssertingUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
 		private volatile Throwable ex;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param objectMapper the Jackson object mapper
 	 */
 	protected JacksonTester(ObjectMapper objectMapper) {
-		Assert.notNull(objectMapper, "ObjectMapper must not be null");
+		Assert.notNull(objectMapper, "'objectMapper' must not be null");
 		this.objectMapper = objectMapper;
 	}
 
@@ -89,7 +89,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper, Class<?> view) {
 		super(resourceLoadClass, type);
-		Assert.notNull(objectMapper, "ObjectMapper must not be null");
+		Assert.notNull(objectMapper, "'objectMapper' must not be null");
 		this.objectMapper = objectMapper;
 		this.view = view;
 	}

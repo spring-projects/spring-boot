@@ -39,20 +39,19 @@ import org.springframework.boot.origin.Origin;
 class ConfigDataLocationBindHandler extends AbstractBindHandler {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
-		if (result instanceof ConfigDataLocation) {
-			return withOrigin(context, (ConfigDataLocation) result);
+		if (result instanceof ConfigDataLocation location) {
+			return withOrigin(context, location);
 		}
-		if (result instanceof List) {
-			return ((List<Object>) result).stream()
+		if (result instanceof List<?> list) {
+			return list.stream()
 				.filter(Objects::nonNull)
-				.map((element) -> (element instanceof ConfigDataLocation)
-						? withOrigin(context, (ConfigDataLocation) element) : element)
+				.map((element) -> (element instanceof ConfigDataLocation location) ? withOrigin(context, location)
+						: element)
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
-		if (result instanceof ConfigDataLocation[]) {
-			return Arrays.stream((ConfigDataLocation[]) result)
+		if (result instanceof ConfigDataLocation[] unfilteredLocations) {
+			return Arrays.stream(unfilteredLocations)
 				.filter(Objects::nonNull)
 				.map((element) -> withOrigin(context, element))
 				.toArray(ConfigDataLocation[]::new);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 
 /**
@@ -30,11 +33,23 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 public interface PathMappedEndpoint {
 
 	/**
-	 * Return the root path of the endpoint, relative to the context that exposes it. For
-	 * example, a root path of {@code example} would be exposed under the URL
-	 * "/{actuator-context}/example".
+	 * Return the root path of the endpoint (relative to the context and base path) that
+	 * exposes it. For example, a root path of {@code example} would be exposed under the
+	 * URL "/{actuator-context}/example".
 	 * @return the root path for the endpoint
+	 * @see PathMappedEndpoints#getBasePath
 	 */
 	String getRootPath();
+
+	/**
+	 * Return any additional paths (relative to the context) for the given
+	 * {@link WebServerNamespace}.
+	 * @param webServerNamespace the web server namespace
+	 * @return a list of additional paths
+	 * @since 3.4.0
+	 */
+	default List<String> getAdditionalPaths(WebServerNamespace webServerNamespace) {
+		return Collections.emptyList();
+	}
 
 }

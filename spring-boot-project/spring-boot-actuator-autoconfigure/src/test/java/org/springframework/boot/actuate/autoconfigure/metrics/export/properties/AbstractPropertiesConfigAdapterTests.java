@@ -66,7 +66,7 @@ public abstract class AbstractPropertiesConfigAdapterTests<P, A extends Properti
 			actualConfigMethodNames.addAll(Arrays.stream(currentClass.getDeclaredMethods())
 				.map(Method::getName)
 				.filter(expectedConfigMethodNames::contains)
-				.collect(Collectors.toList()));
+				.toList());
 			currentClass = currentClass.getSuperclass();
 		}
 		assertThat(actualConfigMethodNames).containsExactlyInAnyOrderElementsOf(expectedConfigMethodNames);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.TimeValue;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,11 +44,10 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
@@ -83,12 +84,21 @@ class EmbeddedServerContainerInvocationContextProvider
 			.getAnnotation(EmbeddedServletContainerTest.class);
 		return CONTAINERS.stream()
 			.map((container) -> getApplication(annotation, container))
-			.flatMap((builder) -> Stream.of(annotation.launchers())
-				.map((launcherClass) -> getAbstractApplicationLauncher(builder, launcherClass))
-				.map((launcher) -> new EmbeddedServletContainerInvocationContext(
-						StringUtils.capitalize(builder.getContainer()) + ": "
-								+ launcher.getDescription(builder.getPackaging()),
-						launcher)));
+			.flatMap((builder) -> provideTestTemplateInvocationContexts(annotation, builder));
+	}
+
+	private Stream<EmbeddedServletContainerInvocationContext> provideTestTemplateInvocationContexts(
+			EmbeddedServletContainerTest annotation, Application application) {
+		return Stream.of(annotation.launchers())
+			.map((launcherClass) -> getAbstractApplicationLauncher(application, launcherClass))
+			.map((launcher) -> provideTestTemplateInvocationContext(application, launcher));
+	}
+
+	private EmbeddedServletContainerInvocationContext provideTestTemplateInvocationContext(Application application,
+			AbstractApplicationLauncher launcher) {
+		String name = StringUtils.capitalize(application.getContainer()) + ": "
+				+ launcher.getDescription(application.getPackaging());
+		return new EmbeddedServletContainerInvocationContext(name, launcher);
 	}
 
 	@Override
@@ -105,8 +115,9 @@ class EmbeddedServerContainerInvocationContextProvider
 	private AbstractApplicationLauncher getAbstractApplicationLauncher(Application application,
 			Class<? extends AbstractApplicationLauncher> launcherClass) {
 		String cacheKey = application.getContainer() + ":" + application.getPackaging() + ":" + launcherClass.getName();
-		if (this.launcherCache.containsKey(cacheKey)) {
-			return this.launcherCache.get(cacheKey);
+		AbstractApplicationLauncher cachedLauncher = this.launcherCache.get(cacheKey);
+		if (cachedLauncher != null) {
+			return cachedLauncher;
 		}
 		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application,
 				new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
@@ -144,10 +155,7 @@ class EmbeddedServerContainerInvocationContextProvider
 			if (parameterContext.getParameter().getType().equals(AbstractApplicationLauncher.class)) {
 				return true;
 			}
-			if (parameterContext.getParameter().getType().equals(RestTemplate.class)) {
-				return true;
-			}
-			return false;
+			return parameterContext.getParameter().getType().equals(RestTemplate.class);
 		}
 
 		@Override
@@ -175,21 +183,10 @@ class EmbeddedServerContainerInvocationContextProvider
 
 		@Override
 		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(
-					HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build()));
-			rest.setErrorHandler(new ResponseErrorHandler() {
-
-				@Override
-				public boolean hasError(ClientHttpResponse response) throws IOException {
-					return false;
-				}
-
-				@Override
-				public void handleError(ClientHttpResponse response) throws IOException {
-
-				}
-
-			});
+			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+				.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+				.build()));
+			rest.setErrorHandler(new NoOpResponseErrorHandler());
 			rest.setUriTemplateHandler(new UriTemplateHandler() {
 
 				@Override

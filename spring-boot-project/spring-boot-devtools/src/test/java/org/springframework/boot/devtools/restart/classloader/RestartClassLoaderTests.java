@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,14 +104,14 @@ class RestartClassLoaderTests {
 	@Test
 	void parentMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
-			.withMessageContaining("Parent must not be null");
+			.withMessageContaining("'parent' must not be null");
 	}
 
 	@Test
 	void updatedFilesMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
-			.withMessageContaining("UpdatedFiles must not be null");
+			.withMessageContaining("'updatedFiles' must not be null");
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class RestartClassLoaderTests {
 	@Test
 	void getResourcesFiltersDuplicates() throws Exception {
 		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(resources.size()).isEqualTo(1);
+		assertThat(resources).hasSize(1);
 	}
 
 	@Test
@@ -223,13 +223,11 @@ class RestartClassLoaderTests {
 				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
 			new ApplicationContextRunner().withClassLoader(restartClassLoader)
 				.withUserConfiguration(ProxyConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasNotFailed();
-					ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
-					assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
-					assertThat(transactional.getClass().getClassLoader())
-						.isEqualTo(ExampleTransactional.class.getClassLoader());
-				});
+				.run((context) -> assertThat(context).getBean(ExampleTransactional.class)
+					.matches(AopUtils::isCglibProxy)
+					.extracting(Object::getClass)
+					.extracting(Class::getClassLoader)
+					.isEqualTo(ExampleTransactional.class.getClassLoader()));
 		}
 	}
 

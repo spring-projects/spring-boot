@@ -36,9 +36,10 @@ import static org.mockito.Mockito.mock;
  */
 class MetricsRepositoryMethodInvocationListenerBeanPostProcessorTests {
 
-	private MetricsRepositoryMethodInvocationListener listener = mock(MetricsRepositoryMethodInvocationListener.class);
+	private final MetricsRepositoryMethodInvocationListener listener = mock(
+			MetricsRepositoryMethodInvocationListener.class);
 
-	private MetricsRepositoryMethodInvocationListenerBeanPostProcessor postProcessor = new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
+	private final MetricsRepositoryMethodInvocationListenerBeanPostProcessor postProcessor = new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
 			SingletonSupplier.of(this.listener));
 
 	@Test

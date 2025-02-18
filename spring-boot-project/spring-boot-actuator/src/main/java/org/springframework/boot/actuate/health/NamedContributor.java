@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ public interface NamedContributor<C> {
 	C getContributor();
 
 	static <C> NamedContributor<C> of(String name, C contributor) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(contributor, "Contributor must not be null");
-		return new NamedContributor<C>() {
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(contributor, "'contributor' must not be null");
+		return new NamedContributor<>() {
 
 			@Override
 			public String getName() {

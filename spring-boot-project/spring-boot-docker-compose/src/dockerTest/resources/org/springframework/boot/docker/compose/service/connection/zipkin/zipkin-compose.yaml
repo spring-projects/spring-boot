@@ -1,0 +1,5 @@
+services:
+  zipkin:
+    image: '{imageName}'
+    ports:
+      - '9411'

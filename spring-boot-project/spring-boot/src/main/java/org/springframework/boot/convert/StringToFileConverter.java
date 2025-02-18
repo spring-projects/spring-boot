@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,22 @@ package org.springframework.boot.convert;
 import java.io.File;
 import java.io.IOException;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ResourceUtils;
 
 /**
  * {@link Converter} to convert from a {@link String} to a {@link File}. Supports basic
  * file conversion as well as file URLs.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class StringToFileConverter implements Converter<String, File> {
 
-	private static final ResourceLoader resourceLoader = new DefaultResourceLoader(null);
-
 	@Override
 	public File convert(String source) {
-		if (ResourceUtils.isUrl(source)) {
-			return getFile(resourceLoader.getResource(source));
-		}
-		File file = new File(source);
-		if (file.exists()) {
-			return file;
-		}
-		Resource resource = resourceLoader.getResource(source);
-		if (resource.exists()) {
-			return getFile(resource);
-		}
-		return file;
+		return getFile(ApplicationResourceLoader.get().getResource(source));
 	}
 
 	private File getFile(Resource resource) {

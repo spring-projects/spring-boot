@@ -54,7 +54,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.defaults.enabled=false")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
 				.doesNotHaveBean(KairosConfig.class));
 	}
@@ -62,7 +62,7 @@ class KairosMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.kairos.enabled=false")
+			.withPropertyValues("management.kairos.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
 				.doesNotHaveBean(KairosConfig.class));
 	}

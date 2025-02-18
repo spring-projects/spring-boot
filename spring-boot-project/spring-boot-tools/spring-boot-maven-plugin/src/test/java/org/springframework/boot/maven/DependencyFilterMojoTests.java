@@ -165,7 +165,7 @@ class DependencyFilterMojoTests {
 
 		Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
 			Set<Artifact> input = new LinkedHashSet<>(Arrays.asList(artifacts));
-			return filterDependencies(input, getFilters(this.additionalFilters));
+			return filterDependencies(input, this.additionalFilters);
 		}
 
 		@Override

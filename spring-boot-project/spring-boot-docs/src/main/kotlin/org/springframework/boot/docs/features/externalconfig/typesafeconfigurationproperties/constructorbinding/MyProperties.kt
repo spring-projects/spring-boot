@@ -17,11 +17,9 @@
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.constructorbinding
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.boot.context.properties.bind.DefaultValue
 import java.net.InetAddress
 
-@ConstructorBinding
 @ConfigurationProperties("my.service")
 class MyProperties(val enabled: Boolean, val remoteAddress: InetAddress,
 		val security: Security) {

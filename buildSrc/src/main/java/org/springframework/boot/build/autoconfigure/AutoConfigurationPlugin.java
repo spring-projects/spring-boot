@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -42,7 +41,6 @@ import org.gradle.api.tasks.SourceSet;
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.architecture.ArchitectureCheck;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
-import org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin;
 
 /**
  * {@link Plugin} for projects that define auto-configuration. When applied, the plugin
@@ -50,7 +48,6 @@ import org.springframework.boot.build.context.properties.ConfigurationProperties
  * applied it:
  *
  * <ul>
- * <li>Applies the {@link ConfigurationPropertiesPlugin}.
  * <li>Adds a dependency on the auto-configuration annotation processor.
  * <li>Defines a task that produces metadata describing the auto-configuration. The
  * metadata is made available as an artifact in the {@code autoConfigurationMetadata}
@@ -79,7 +76,6 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-			project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
 			Configuration annotationProcessors = project.getConfigurations()
 				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 			annotationProcessors.getDependencies()
@@ -90,34 +86,46 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				.add(project.getDependencies()
 					.project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
-			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
+			project.getTasks().register("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
 				SourceSet main = project.getExtensions()
 					.getByType(JavaPluginExtension.class)
 					.getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
-				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
+				task.getOutputFile()
+					.set(project.getLayout().getBuildDirectory().file("auto-configuration-metadata.properties"));
 				project.getArtifacts()
-					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
-							project.provider((Callable<File>) task::getOutputFile),
+					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME, task.getOutputFile(),
 							(artifact) -> artifact.builtBy(task));
 			});
-			project.getPlugins().withType(ArchitecturePlugin.class, (architecturePlugin) -> {
-				project.getTasks().named("checkArchitectureMain", ArchitectureCheck.class).configure((task) -> {
-					SourceSet main = project.getExtensions()
-						.getByType(JavaPluginExtension.class)
-						.getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-					File resourcesDirectory = main.getOutput().getResourcesDir();
-					task.dependsOn(main.getProcessResourcesTaskName());
-					task.getInputs().files(resourcesDirectory).optional().withPathSensitivity(PathSensitivity.RELATIVE);
-					task.getRules()
-						.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
-								autoConfigurationImports(project, resourcesDirectory)));
-				});
-			});
+			project.getPlugins()
+				.withType(ArchitecturePlugin.class, (plugin) -> configureArchitecturePluginTasks(project));
 		});
+	}
+
+	private void configureArchitecturePluginTasks(Project project) {
+		project.getTasks().configureEach((task) -> {
+			if ("checkArchitectureMain".equals(task.getName()) && task instanceof ArchitectureCheck architectureCheck) {
+				configureCheckArchitectureMain(project, architectureCheck);
+			}
+		});
+	}
+
+	private void configureCheckArchitectureMain(Project project, ArchitectureCheck architectureCheck) {
+		SourceSet main = project.getExtensions()
+			.getByType(JavaPluginExtension.class)
+			.getSourceSets()
+			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		File resourcesDirectory = main.getOutput().getResourcesDir();
+		architectureCheck.dependsOn(main.getProcessResourcesTaskName());
+		architectureCheck.getInputs()
+			.files(resourcesDirectory)
+			.optional()
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+		architectureCheck.getRules()
+			.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+					autoConfigurationImports(project, resourcesDirectory)));
 	}
 
 	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
@@ -130,7 +138,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	}
 
 	private ArchCondition<JavaClass> beListedInAutoConfigurationImports(Provider<AutoConfigurationImports> imports) {
-		return new ArchCondition<JavaClass>("be listed in " + AUTO_CONFIGURATION_IMPORTS_PATH) {
+		return new ArchCondition<>("be listed in " + AUTO_CONFIGURATION_IMPORTS_PATH) {
 
 			@Override
 			public void check(JavaClass item, ConditionEvents events) {
@@ -157,16 +165,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 		});
 	}
 
-	private static final class AutoConfigurationImports {
-
-		private final Path importsFile;
-
-		private final List<String> imports;
-
-		private AutoConfigurationImports(Path importsFile, List<String> imports) {
-			this.importsFile = importsFile;
-			this.imports = imports;
-		}
+	private record AutoConfigurationImports(Path importsFile, List<String> imports) {
 
 	}
 

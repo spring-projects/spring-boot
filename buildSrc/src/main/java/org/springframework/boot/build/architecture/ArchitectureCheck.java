@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,34 +18,27 @@ package org.springframework.boot.build.architecture;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.domain.JavaParameter;
-import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
-import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.EvaluationResult;
-import com.tngtech.archunit.lang.SimpleConditionEvent;
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
-import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
+import org.gradle.api.Transformer;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -61,6 +54,10 @@ import org.gradle.api.tasks.TaskAction;
  * {@link Task} that checks for architecture problems.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
+ * @author Scott Frederick
+ * @author Ivan Malutin
+ * @author Phillip Webb
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -68,121 +65,48 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
-		getRules().addAll(allPackagesShouldBeFreeOfTangles(),
-				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
-				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
-				noClassesShouldCallStepVerifierStepVerifyComplete(),
-				noClassesShouldConfigureDefaultStepVerifierTimeout());
-		getRuleDescriptions()
-			.set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).collect(Collectors.toList())));
+		getRules().addAll(getProhibitObjectsRequireNonNull().convention(true)
+			.map(whenTrue(ArchitectureRules::noClassesShouldCallObjectsRequireNonNull)));
+		getRules().addAll(ArchitectureRules.standard());
+		getRuleDescriptions().set(getRules().map(this::asDescriptions));
+	}
+
+	private Transformer<List<ArchRule>, Boolean> whenTrue(Supplier<List<ArchRule>> rules) {
+		return (in) -> (!in) ? Collections.emptyList() : rules.get();
+	}
+
+	private List<String> asDescriptions(List<ArchRule> rules) {
+		return rules.stream().map(ArchRule::getDescription).toList();
 	}
 
 	@TaskAction
 	void checkArchitecture() throws IOException {
-		JavaClasses javaClasses = new ClassFileImporter()
-			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
-		List<EvaluationResult> violations = getRules().get()
-			.stream()
-			.map((rule) -> rule.evaluate(javaClasses))
-			.filter(EvaluationResult::hasViolation)
-			.collect(Collectors.toList());
+		JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
+		List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
-		outputFile.getParentFile().mkdirs();
+		writeViolationReport(violations, outputFile);
 		if (!violations.isEmpty()) {
-			StringBuilder report = new StringBuilder();
-			for (EvaluationResult violation : violations) {
-				report.append(violation.getFailureReport().toString());
-				report.append(String.format("%n"));
-			}
-			Files.write(outputFile.toPath(), report.toString().getBytes(StandardCharsets.UTF_8),
-					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			throw new GradleException("Architecture check failed. See '" + outputFile + "' for details.");
 		}
-		else {
-			outputFile.createNewFile();
+	}
+
+	private List<Path> classFilesPaths() {
+		return this.classes.getFiles().stream().map(File::toPath).toList();
+	}
+
+	private Stream<EvaluationResult> evaluate(JavaClasses javaClasses) {
+		return getRules().get().stream().map((rule) -> rule.evaluate(javaClasses));
+	}
+
+	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) throws IOException {
+		outputFile.getParentFile().mkdirs();
+		StringBuilder report = new StringBuilder();
+		for (EvaluationResult violation : violations) {
+			report.append(violation.getFailureReport());
+			report.append(String.format("%n"));
 		}
-	}
-
-	private ArchRule allPackagesShouldBeFreeOfTangles() {
-		return SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
-	}
-
-	private ArchRule allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization() {
-		return ArchRuleDefinition.methods()
-			.that()
-			.areAnnotatedWith("org.springframework.context.annotation.Bean")
-			.and()
-			.haveRawReturnType(Predicates.assignableTo("org.springframework.beans.factory.config.BeanPostProcessor"))
-			.should(onlyHaveParametersThatWillNotCauseEagerInitialization())
-			.andShould()
-			.beStatic()
-			.allowEmptyShould(true);
-	}
-
-	private ArchCondition<JavaMethod> onlyHaveParametersThatWillNotCauseEagerInitialization() {
-		DescribedPredicate<CanBeAnnotated> notAnnotatedWithLazy = DescribedPredicate
-			.not(CanBeAnnotated.Predicates.annotatedWith("org.springframework.context.annotation.Lazy"));
-		DescribedPredicate<JavaClass> notOfASafeType = DescribedPredicate
-			.not(Predicates.assignableTo("org.springframework.beans.factory.ObjectProvider")
-				.or(Predicates.assignableTo("org.springframework.context.ApplicationContext"))
-				.or(Predicates.assignableTo("org.springframework.core.env.Environment")));
-		return new ArchCondition<JavaMethod>("not have parameters that will cause eager initialization") {
-
-			@Override
-			public void check(JavaMethod item, ConditionEvents events) {
-				item.getParameters()
-					.stream()
-					.filter(notAnnotatedWithLazy)
-					.filter((parameter) -> notOfASafeType.test(parameter.getRawType()))
-					.forEach((parameter) -> events.add(SimpleConditionEvent.violated(parameter,
-							parameter.getDescription() + " will cause eager initialization as it is "
-									+ notAnnotatedWithLazy.getDescription() + " and is "
-									+ notOfASafeType.getDescription())));
-			}
-
-		};
-	}
-
-	private ArchRule allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters() {
-		return ArchRuleDefinition.methods()
-			.that()
-			.areAnnotatedWith("org.springframework.context.annotation.Bean")
-			.and()
-			.haveRawReturnType(
-					Predicates.assignableTo("org.springframework.beans.factory.config.BeanFactoryPostProcessor"))
-			.should(haveNoParameters())
-			.andShould()
-			.beStatic()
-			.allowEmptyShould(true);
-	}
-
-	private ArchCondition<JavaMethod> haveNoParameters() {
-		return new ArchCondition<JavaMethod>("have no parameters") {
-
-			@Override
-			public void check(JavaMethod item, ConditionEvents events) {
-				List<JavaParameter> parameters = item.getParameters();
-				if (!parameters.isEmpty()) {
-					events
-						.add(SimpleConditionEvent.violated(item, item.getDescription() + " should have no parameters"));
-				}
-			}
-
-		};
-	}
-
-	private ArchRule noClassesShouldCallStepVerifierStepVerifyComplete() {
-		return ArchRuleDefinition.noClasses()
-			.should()
-			.callMethod("reactor.test.StepVerifier$Step", "verifyComplete")
-			.because("it can block indefinitely and expectComplete().verify(Duration) should be used instead");
-	}
-
-	private ArchRule noClassesShouldConfigureDefaultStepVerifierTimeout() {
-		return ArchRuleDefinition.noClasses()
-			.should()
-			.callMethod("reactor.test.StepVerifier", "setDefaultTimeout", "java.time.Duration")
-			.because("expectComplete().verify(Duration) should be used instead");
+		Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	public void setClasses(FileCollection classes) {
@@ -213,9 +137,10 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@Internal
 	public abstract ListProperty<ArchRule> getRules();
 
-	@Input
-	// The rules themselves can't be an input as they aren't serializable so we use their
-	// descriptions instead
+	@Internal
+	public abstract Property<Boolean> getProhibitObjectsRequireNonNull();
+
+	@Input // Use descriptions as input since rules aren't serializable
 	abstract ListProperty<String> getRuleDescriptions();
 
 }

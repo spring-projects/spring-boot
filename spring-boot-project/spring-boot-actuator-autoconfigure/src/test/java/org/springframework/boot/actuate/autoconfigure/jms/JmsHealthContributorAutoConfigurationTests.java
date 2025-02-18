@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAu
 import org.springframework.boot.actuate.jms.JmsHealthIndicator;
 import org.springframework.boot.actuate.ldap.LdapHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmsHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 				JmsHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test

@@ -1,0 +1,13 @@
+* Appendix
+
+** xref:appendix:application-properties/index.adoc[]
+** xref:appendix:auto-configuration-classes/index.adoc[]
+*** xref:appendix:auto-configuration-classes/core.adoc[]
+*** xref:appendix:auto-configuration-classes/actuator.adoc[]
+
+** xref:appendix:test-auto-configuration/index.adoc[]
+*** xref:appendix:test-auto-configuration/slices.adoc[]
+
+** xref:appendix:dependency-versions/index.adoc[]
+*** xref:appendix:dependency-versions/coordinates.adoc[]
+*** xref:appendix:dependency-versions/properties.adoc[]

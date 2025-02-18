@@ -18,15 +18,14 @@ package org.springframework.boot.actuate.mail;
 
 import java.util.Properties;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Provider;
-import javax.mail.Provider.Type;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.URLName;
-
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Provider;
+import jakarta.mail.Provider.Type;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.URLName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -82,7 +81,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails()).doesNotContainKey("location");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -105,7 +104,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails().get("location")).isEqualTo(":1234");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -114,7 +113,7 @@ class MailHealthIndicatorTests {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org");
 	}
 
 	@Test
@@ -123,10 +122,10 @@ class MailHealthIndicatorTests {
 		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -135,7 +134,7 @@ class MailHealthIndicatorTests {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:1234");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org:1234");
 	}
 
 	@Test
@@ -144,10 +143,10 @@ class MailHealthIndicatorTests {
 		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:1234");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org:1234");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	static class SuccessTransport extends Transport {

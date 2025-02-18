@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	private final List<TypeFilter> filters;
 
 	public FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
-		Assert.notNull(filters, "Filters must not be null");
+		Assert.notNull(filters, "'filters' must not be null");
 		this.classLoader = classLoader;
 		this.filters = createTypeFilters(filters);
 	}
@@ -69,29 +69,29 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 
 	@SuppressWarnings("unchecked")
 	private TypeFilter createTypeFilter(FilterType filterType, Class<?> filterClass) {
-		switch (filterType) {
-			case ANNOTATION:
+		return switch (filterType) {
+			case ANNOTATION -> {
 				Assert.isAssignable(Annotation.class, filterClass,
-						"An error occurred while processing an ANNOTATION type filter: ");
-				return new AnnotationTypeFilter((Class<Annotation>) filterClass);
-			case ASSIGNABLE_TYPE:
-				return new AssignableTypeFilter(filterClass);
-			case CUSTOM:
+						"'filterClass' must be an Annotation when 'filterType' is ANNOTATION");
+				yield new AnnotationTypeFilter((Class<Annotation>) filterClass);
+			}
+			case ASSIGNABLE_TYPE -> new AssignableTypeFilter(filterClass);
+			case CUSTOM -> {
 				Assert.isAssignable(TypeFilter.class, filterClass,
-						"An error occurred while processing a CUSTOM type filter: ");
-				return BeanUtils.instantiateClass(filterClass, TypeFilter.class);
-		}
-		throw new IllegalArgumentException("Filter type not supported with Class value: " + filterType);
+						"'filterClass' must be a TypeFilter when 'filterType' is CUSTOM");
+				yield BeanUtils.instantiateClass(filterClass, TypeFilter.class);
+			}
+			default -> throw new IllegalArgumentException("'filterClass' not supported [" + filterType + "]");
+		};
 	}
 
 	private TypeFilter createTypeFilter(FilterType filterType, String pattern) {
-		switch (filterType) {
-			case ASPECTJ:
-				return new AspectJTypeFilter(pattern, this.classLoader);
-			case REGEX:
-				return new RegexPatternTypeFilter(Pattern.compile(pattern));
-		}
-		throw new IllegalArgumentException("Filter type not supported with String pattern: " + filterType);
+		return switch (filterType) {
+			case ASPECTJ -> new AspectJTypeFilter(pattern, this.classLoader);
+			case REGEX -> new RegexPatternTypeFilter(Pattern.compile(pattern));
+			default ->
+				throw new IllegalArgumentException("Filter type not supported with String pattern: " + filterType);
+		};
 	}
 
 	@Override

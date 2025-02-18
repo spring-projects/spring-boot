@@ -7,6 +7,9 @@ initialization performed by Boot
 
 <included>
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${CONSOLE_LOG_THRESHOLD}</level>
+		</filter>
 		<encoder>
 			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
 			<charset>${CONSOLE_LOG_CHARSET}</charset>

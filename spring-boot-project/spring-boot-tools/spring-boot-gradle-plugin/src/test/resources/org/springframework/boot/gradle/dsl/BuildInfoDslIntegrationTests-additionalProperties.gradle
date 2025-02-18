@@ -9,8 +9,9 @@ version = '1.0'
 springBoot {
 	buildInfo {
 		properties {
-			additionalProperties = [
-				'a': 'alpha', 'b': 'bravo'
+			additional = [
+				'a': 'alpha',
+				'b': providers.provider({'bravo'})
 			]
 		}
 	}

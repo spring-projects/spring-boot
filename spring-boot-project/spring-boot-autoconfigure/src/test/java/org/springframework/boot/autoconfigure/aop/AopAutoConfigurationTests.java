@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,10 +90,7 @@ class AopAutoConfigurationTests {
 	void whenGlobalMethodSecurityIsEnabledAndAspectJIsNotAvailableThenClassProxyingIsStillUsedByDefault() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
 			.withUserConfiguration(ExampleController.class, EnableGlobalMethodSecurityConfiguration.class)
-			.run((context) -> {
-				ExampleController exampleController = context.getBean(ExampleController.class);
-				assertThat(AopUtils.isCglibProxy(exampleController)).isTrue();
-			});
+			.run((context) -> assertThat(context).getBean(ExampleController.class).matches(AopUtils::isCglibProxy));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> proxyTargetClassEnabled() {
@@ -169,7 +166,7 @@ class AopAutoConfigurationTests {
 
 	}
 
-	@EnableGlobalMethodSecurity(prePostEnabled = true)
+	@EnableMethodSecurity(prePostEnabled = true)
 	@Configuration(proxyBeanMethods = false)
 	static class EnableGlobalMethodSecurityConfiguration {
 

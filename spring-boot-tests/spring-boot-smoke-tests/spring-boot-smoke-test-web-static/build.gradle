@@ -1,6 +1,5 @@
 plugins {
 	id "war"
-	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot web static smoke test"

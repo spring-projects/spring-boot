@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 
 import java.time.Duration;
 
-import io.micrometer.prometheus.HistogramFlavor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
@@ -42,14 +41,6 @@ class PrometheusPropertiesConfigAdapterTests
 		PrometheusProperties properties = new PrometheusProperties();
 		properties.setDescriptions(false);
 		assertThat(new PrometheusPropertiesConfigAdapter(properties).descriptions()).isFalse();
-	}
-
-	@Test
-	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
-		PrometheusProperties properties = new PrometheusProperties();
-		properties.setHistogramFlavor(HistogramFlavor.VictoriaMetrics);
-		assertThat(new PrometheusPropertiesConfigAdapter(properties).histogramFlavor())
-			.isEqualTo(HistogramFlavor.VictoriaMetrics);
 	}
 
 	@Test

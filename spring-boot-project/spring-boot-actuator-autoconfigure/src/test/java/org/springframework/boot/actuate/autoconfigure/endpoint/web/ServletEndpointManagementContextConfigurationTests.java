@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.Collections;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.Access;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -42,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@SuppressWarnings("removal")
 class ServletEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -91,6 +94,11 @@ class ServletEndpointManagementContextConfigurationTests {
 		@Bean
 		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/jersey";
+		}
+
+		@Bean
+		EndpointAccessResolver endpointAccessResolver() {
+			return (endpointId, defaultAccess) -> Access.UNRESTRICTED;
 		}
 
 	}

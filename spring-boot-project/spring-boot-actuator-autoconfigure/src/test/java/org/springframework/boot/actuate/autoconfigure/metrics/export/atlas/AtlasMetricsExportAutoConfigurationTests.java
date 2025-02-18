@@ -54,7 +54,7 @@ class AtlasMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.defaults.enabled=false")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
 				.doesNotHaveBean(AtlasConfig.class));
 	}
@@ -62,7 +62,7 @@ class AtlasMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.atlas.enabled=false")
+			.withPropertyValues("management.atlas.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
 				.doesNotHaveBean(AtlasConfig.class));
 	}

@@ -1,0 +1,10 @@
+[
+  {
+    "directory": "org.jline/jline",
+    "module": "org.jline:jline"
+  },
+  {
+    "directory": "ch.qos.logback/logback-classic",
+    "module": "ch.qos.logback:logback-classic"
+  }
+]

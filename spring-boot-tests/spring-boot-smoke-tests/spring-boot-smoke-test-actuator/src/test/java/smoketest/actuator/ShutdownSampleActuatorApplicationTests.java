@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -52,7 +53,7 @@ class ShutdownSampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat(body).containsEntry("message", "Hello Phil");
 	}
 
 	@Test
@@ -74,7 +75,7 @@ class ShutdownSampleActuatorApplicationTests {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
+			http.csrf(CsrfConfigurer::disable);
 			return http.build();
 		}
 

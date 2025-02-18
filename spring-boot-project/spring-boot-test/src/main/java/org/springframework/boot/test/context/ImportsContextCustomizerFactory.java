@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -42,6 +43,9 @@ class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
+		if (AotDetector.useGeneratedArtifacts()) {
+			return null;
+		}
 		AnnotationDescriptor<Import> descriptor = TestContextAnnotationUtils.findAnnotationDescriptor(testClass,
 				Import.class);
 		if (descriptor != null) {

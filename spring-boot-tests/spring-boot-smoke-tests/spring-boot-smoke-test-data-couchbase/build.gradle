@@ -1,0 +1,25 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot Data Couchbase smoke test"
+
+dependencies {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation("io.projectreactor:reactor-core")
+	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("org.apache.httpcomponents.client5:httpclient5")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.junit.platform:junit-platform-engine")
+	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase-reactive"))
+}

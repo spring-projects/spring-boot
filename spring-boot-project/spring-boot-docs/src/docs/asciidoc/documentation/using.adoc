@@ -1,9 +1,0 @@
-[[documentation.using]]
-== Developing With Spring Boot
-Ready to actually start using Spring Boot? <<using#using, We have you covered>>:
-
-* *Build systems:* <<using#using.build-systems.maven, Maven>> | <<using#using.build-systems.gradle, Gradle>> | <<using#using.build-systems.ant, Ant>> | <<using#using.build-systems.starters, Starters>>
-* *Best practices:* <<using#using.structuring-your-code, Code Structure>> | <<using#using.configuration-classes, @Configuration>> | <<using#using.auto-configuration, @EnableAutoConfiguration>> | <<using#using.spring-beans-and-dependency-injection, Beans and Dependency Injection>>
-* *Running your code:* <<using#using.running-your-application.from-an-ide, IDE>> | <<using#using.running-your-application.as-a-packaged-application, Packaged>> | <<using#using.running-your-application.with-the-maven-plugin, Maven>> | <<using#using.running-your-application.with-the-gradle-plugin, Gradle>>
-* *Packaging your app:* <<using#using.packaging-for-production, Production jars>>
-* *Spring Boot CLI:* <<cli#cli, Using the CLI>>

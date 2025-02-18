@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Driver;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -104,8 +105,7 @@ class Neo4jReactiveDataAutoConfigurationTests {
 
 	@Test
 	void shouldReuseExistingReactiveNeo4jClient() {
-		this.contextRunner
-			.withBean("myCustomReactiveClient", ReactiveNeo4jClient.class, () -> mock(ReactiveNeo4jClient.class))
+		this.contextRunner.withUserConfiguration(ReactiveNeo4jClientConfig.class)
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jClient.class)
 				.hasBean("myCustomReactiveClient"));
 	}
@@ -158,6 +158,16 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(TestPersistent.class)
 	static class EntityScanConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ReactiveNeo4jClientConfig {
+
+		@Bean
+		ReactiveNeo4jClient myCustomReactiveClient(Driver driver) {
+			return ReactiveNeo4jClient.create(driver);
+		}
 
 	}
 

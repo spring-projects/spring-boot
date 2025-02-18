@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,30 @@
 package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.GenericServlet;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -50,21 +53,22 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings({ "deprecation", "removal" })
 class ServletEndpointRegistrarTests {
 
 	@Mock
 	private ServletContext servletContext;
 
 	@Mock
-	private Dynamic dynamic;
+	private ServletRegistration.Dynamic servletDynamic;
 
-	@Captor
-	private ArgumentCaptor<Servlet> servlet;
+	@Mock
+	private FilterRegistration.Dynamic filterDynamic;
 
 	@Test
 	void createWhenServletEndpointsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletEndpointRegistrar(null, null))
-			.withMessageContaining("ServletEndpoints must not be null");
+			.withMessageContaining("'servletEndpoints' must not be null");
 	}
 
 	@Test
@@ -88,41 +92,77 @@ class ServletEndpointRegistrarTests {
 	}
 
 	private void assertBasePath(String basePath, String expectedMapping) throws ServletException {
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint),
+				(endpointId, defaultAccess) -> Access.UNRESTRICTED);
 		registrar.onStartup(this.servletContext);
-		then(this.servletContext).should().addServlet(eq("test-actuator-endpoint"), this.servlet.capture());
-		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
-		then(this.dynamic).should().addMapping(expectedMapping);
+		then(this.servletContext).should()
+			.addServlet(eq("test-actuator-endpoint"),
+					(Servlet) assertArg((servlet) -> assertThat(servlet).isInstanceOf(TestServlet.class)));
+		then(this.servletDynamic).should().addMapping(expectedMapping);
+		then(this.servletContext).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
 	void onStartupWhenHasInitParametersShouldRegisterInitParameters() throws Exception {
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class).withInitParameter("a", "b"));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint),
+				(endpointId, defaultAccess) -> Access.UNRESTRICTED);
 		registrar.onStartup(this.servletContext);
-		then(this.dynamic).should().setInitParameters(Collections.singletonMap("a", "b"));
+		then(this.servletDynamic).should().setInitParameters(Collections.singletonMap("a", "b"));
 	}
 
 	@Test
 	void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup() throws Exception {
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint),
+				(endpointId, defaultAccess) -> Access.UNRESTRICTED);
 		registrar.onStartup(this.servletContext);
-		then(this.dynamic).should().setLoadOnStartup(7);
+		then(this.servletDynamic).should().setLoadOnStartup(7);
 	}
 
 	@Test
 	void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue() throws Exception {
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint),
+				(endpointId, defaultAccess) -> Access.UNRESTRICTED);
+		registrar.onStartup(this.servletContext);
+		then(this.servletDynamic).should().setLoadOnStartup(-1);
+	}
+
+	@Test
+	void onStartupWhenAccessIsDisabledShouldNotRegister() throws Exception {
+		ExposableServletEndpoint endpoint = mock(ExposableServletEndpoint.class);
+		given(endpoint.getEndpointId()).willReturn(EndpointId.of("test"));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
-		then(this.dynamic).should().setLoadOnStartup(-1);
+		then(this.servletContext).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void onStartupWhenAccessIsReadOnlyShouldRegisterServletWithFilter() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		given(endpoint.getEndpointId()).willReturn(EndpointId.of("test"));
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.servletDynamic);
+		given(this.servletContext.addFilter(any(String.class), any(Filter.class))).willReturn(this.filterDynamic);
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint),
+				(endpointId, defaultAccess) -> Access.READ_ONLY);
+		registrar.onStartup(this.servletContext);
+		then(this.servletContext).should()
+			.addServlet(eq("test-actuator-endpoint"),
+					(Servlet) assertArg((servlet) -> assertThat(servlet).isInstanceOf(TestServlet.class)));
+		then(this.servletDynamic).should().addMapping("/actuator/test/*");
+		then(this.servletContext).should()
+			.addFilter(eq("test-actuator-endpoint-access-filter"), (Filter) assertArg((filter) -> assertThat(filter)
+				.isInstanceOf(
+						org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar.ReadOnlyAccessFilter.class)));
+		then(this.filterDynamic).should()
+			.addMappingForServletNames(EnumSet.allOf(DispatcherType.class), false, "test-actuator-endpoint");
 	}
 
 	private ExposableServletEndpoint mockEndpoint(EndpointServlet endpointServlet) {

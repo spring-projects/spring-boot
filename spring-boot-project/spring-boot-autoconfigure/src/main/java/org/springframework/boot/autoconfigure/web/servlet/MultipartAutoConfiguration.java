@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,42 +16,42 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.Servlet;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for multipart uploads. Adds a
  * {@link StandardServletMultipartResolver} if none is present, and adds a
- * {@link javax.servlet.MultipartConfigElement multipartConfigElement} if none is
+ * {@link jakarta.servlet.MultipartConfigElement multipartConfigElement} if none is
  * otherwise defined. The {@link ServletWebServerApplicationContext} will associate the
  * {@link MultipartConfigElement} bean to any {@link Servlet} beans.
  * <p>
- * The {@link javax.servlet.MultipartConfigElement} is a Servlet API that's used to
+ * The {@link jakarta.servlet.MultipartConfigElement} is a Servlet API that's used to
  * configure how the server handles file uploads.
  *
  * @author Greg Turnquist
  * @author Josh Long
  * @author Toshiaki Maki
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })
-@ConditionalOnProperty(prefix = "spring.servlet.multipart", name = "enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.servlet.multipart.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
@@ -63,7 +63,7 @@ public class MultipartAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ MultipartConfigElement.class, CommonsMultipartResolver.class })
+	@ConditionalOnMissingBean
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
@@ -73,6 +73,7 @@ public class MultipartAutoConfiguration {
 	public StandardServletMultipartResolver multipartResolver() {
 		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
 		multipartResolver.setResolveLazily(this.multipartProperties.isResolveLazily());
+		multipartResolver.setStrictServletCompliance(this.multipartProperties.isStrictServletCompliance());
 		return multipartResolver;
 	}
 

@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * Reactive {@link EndpointWebExtension @EndpointWebExtension} for the
@@ -43,22 +44,11 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
+@ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
 public class ReactiveHealthEndpointWebExtension
 		extends HealthEndpointSupport<ReactiveHealthContributor, Mono<? extends HealthComponent>> {
 
 	private static final String[] NO_PATH = {};
-
-	/**
-	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
-	 * @param registry the health contributor registry
-	 * @param groups the health endpoint groups
-	 * @deprecated since 2.6.9 for removal in 3.0.0 in favor of
-	 * {@link #ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry, HealthEndpointGroups, Duration)}
-	 */
-	@Deprecated
-	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry, HealthEndpointGroups groups) {
-		super(registry, groups, null);
-	}
 
 	/**
 	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.

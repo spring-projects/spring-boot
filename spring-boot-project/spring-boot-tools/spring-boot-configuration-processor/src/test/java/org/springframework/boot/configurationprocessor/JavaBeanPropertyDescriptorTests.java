@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.configurationprocessor;
-
-import java.io.IOException;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -40,12 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 
 	@Test
-	void javaBeanSimpleProperty() throws IOException {
+	void javaBeanSimpleProperty() {
 		process(SimpleTypeProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleTypeProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "myString");
 			assertThat(property.getName()).isEqualTo("myString");
-			assertThat(property.getSource()).isSameAs(property.getGetter());
 			assertThat(property.getGetter().getSimpleName()).hasToString("getMyString");
 			assertThat(property.getSetter().getSimpleName()).hasToString("setMyString");
 			assertThat(property.isProperty(metadataEnv)).isTrue();
@@ -54,7 +51,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanCollectionProperty() throws IOException {
+	void javaBeanCollectionProperty() {
 		process(SimpleCollectionProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleCollectionProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "doubles");
@@ -67,7 +64,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanNestedPropertySameClass() throws IOException {
+	void javaBeanNestedPropertySameClass() {
 		process(InnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
@@ -80,7 +77,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanNestedPropertyWithAnnotation() throws IOException {
+	void javaBeanNestedPropertyWithAnnotation() {
 		process(InnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "third");
@@ -93,15 +90,14 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanSimplePropertyWithOnlyGetterShouldNotBeExposed() throws IOException {
+	void javaBeanSimplePropertyWithOnlyGetterShouldNotBeExposed() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			ExecutableElement getter = getMethod(ownerElement, "getSize");
 			VariableElement field = getField(ownerElement, "size");
-			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor(ownerElement, getter, getter, "size",
-					field.asType(), field, null);
+			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor("size", field.asType(), ownerElement,
+					getter, null, field, getter);
 			assertThat(property.getName()).isEqualTo("size");
-			assertThat(property.getSource()).isSameAs(property.getGetter());
 			assertThat(property.getGetter().getSimpleName()).hasToString("getSize");
 			assertThat(property.getSetter()).isNull();
 			assertThat(property.isProperty(metadataEnv)).isFalse();
@@ -110,14 +106,13 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanSimplePropertyWithOnlySetterShouldNotBeExposed() throws IOException {
+	void javaBeanSimplePropertyWithOnlySetterShouldNotBeExposed() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			VariableElement field = getField(ownerElement, "counter");
-			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor(ownerElement, null, null, "counter",
-					field.asType(), field, getMethod(ownerElement, "setCounter"));
+			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor("counter", field.asType(),
+					ownerElement, null, getMethod(ownerElement, "setCounter"), field, null);
 			assertThat(property.getName()).isEqualTo("counter");
-			assertThat(property.getSource()).isSameAs(property.getGetter());
 			assertThat(property.getGetter()).isNull();
 			assertThat(property.getSetter().getSimpleName()).hasToString("setCounter");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
@@ -126,7 +121,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanMetadataSimpleProperty() throws IOException {
+	void javaBeanMetadataSimpleProperty() {
 		process(SimpleTypeProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleTypeProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "myString");
@@ -140,7 +135,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanMetadataCollectionProperty() throws IOException {
+	void javaBeanMetadataCollectionProperty() {
 		process(SimpleCollectionProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleCollectionProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "doubles");
@@ -154,7 +149,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanMetadataNestedGroup() throws IOException {
+	void javaBeanMetadataNestedGroup() {
 		process(InnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
@@ -169,19 +164,19 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanMetadataNotACandidatePropertyShouldReturnNull() throws IOException {
+	void javaBeanMetadataNotACandidatePropertyShouldReturnNull() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			VariableElement field = getField(ownerElement, "counter");
-			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor(ownerElement, null, null, "counter",
-					field.asType(), field, getMethod(ownerElement, "setCounter"));
+			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor("counter", field.asType(),
+					ownerElement, null, getMethod(ownerElement, "setCounter"), field, null);
 			assertThat(property.resolveItemMetadata("test", metadataEnv)).isNull();
 		});
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
-	void javaBeanDeprecatedPropertyOnClass() throws IOException {
+	void javaBeanDeprecatedPropertyOnClass() {
 		process(org.springframework.boot.configurationsample.simple.DeprecatedProperties.class,
 				(roundEnv, metadataEnv) -> {
 					TypeElement ownerElement = roundEnv
@@ -192,7 +187,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanMetadataDeprecatedPropertyWithAnnotation() throws IOException {
+	void javaBeanMetadataDeprecatedPropertyWithAnnotation() {
 		process(DeprecatedSingleProperty.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(DeprecatedSingleProperty.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
@@ -203,7 +198,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanDeprecatedPropertyOnGetter() throws IOException {
+	void javaBeanDeprecatedPropertyOnGetter() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "flag", "isFlag", "setFlag");
@@ -212,7 +207,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanDeprecatedPropertyOnSetter() throws IOException {
+	void javaBeanDeprecatedPropertyOnSetter() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
@@ -221,7 +216,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanPropertyWithDescription() throws IOException {
+	void javaBeanPropertyWithDescription() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
@@ -231,7 +226,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanPropertyWithDefaultValue() throws IOException {
+	void javaBeanPropertyWithDefaultValue() {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
@@ -249,7 +244,7 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		ExecutableElement getter = getMethod(ownerElement, getterName);
 		ExecutableElement setter = getMethod(ownerElement, setterName);
 		VariableElement field = getField(ownerElement, name);
-		return new JavaBeanPropertyDescriptor(ownerElement, null, getter, name, getter.getReturnType(), field, setter);
+		return new JavaBeanPropertyDescriptor(name, getter.getReturnType(), ownerElement, getter, setter, field, null);
 	}
 
 }

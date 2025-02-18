@@ -37,10 +37,11 @@ import java.lang.annotation.Target;
  * must be constant.
  *
  * @author Madhura Bhave
+ * @author Pavel Anisimov
  * @since 2.2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.PARAMETER, ElementType.RECORD_COMPONENT })
 @Documented
 public @interface DefaultValue {
 

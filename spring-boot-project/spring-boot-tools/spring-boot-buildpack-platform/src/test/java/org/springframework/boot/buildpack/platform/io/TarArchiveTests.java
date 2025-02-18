@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,18 +58,18 @@ class TarArchiveTests {
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
 			List<TarArchiveEntry> entries = new ArrayList<>();
-			TarArchiveEntry entry = tarStream.getNextTarEntry();
+			TarArchiveEntry entry = tarStream.getNextEntry();
 			while (entry != null) {
 				entries.add(entry);
-				entry = tarStream.getNextTarEntry();
+				entry = tarStream.getNextEntry();
 			}
 			assertThat(entries).hasSize(6);
 			assertThat(entries.get(0).getName()).isEqualTo("/workspace/");
 			assertThat(entries.get(0).getLongUserId()).isEqualTo(123);
 			assertThat(entries.get(0).getLongGroupId()).isEqualTo(456);
 			assertThat(entries.get(2).getName()).isEqualTo("/cnb/");
-			assertThat(entries.get(2).getLongUserId()).isEqualTo(0);
-			assertThat(entries.get(2).getLongGroupId()).isEqualTo(0);
+			assertThat(entries.get(2).getLongUserId()).isZero();
+			assertThat(entries.get(2).getLongGroupId()).isZero();
 		}
 	}
 

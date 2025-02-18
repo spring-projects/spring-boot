@@ -16,13 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.TypeUtils.TypeDescriptor;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -30,7 +27,8 @@ import org.springframework.boot.configurationprocessor.test.TestableAnnotationPr
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
 import org.springframework.boot.configurationsample.generic.AbstractIntermediateGenericProperties;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,14 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TypeUtils}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class TypeUtilsTests {
 
-	@TempDir
-	File tempDir;
-
 	@Test
-	void resolveTypeDescriptorOnConcreteClass() throws IOException {
+	void resolveTypeDescriptorOnConcreteClass() {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 				.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
@@ -59,7 +55,7 @@ class TypeUtilsTests {
 	}
 
 	@Test
-	void resolveTypeDescriptorOnIntermediateClass() throws IOException {
+	void resolveTypeDescriptorOnIntermediateClass() {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
@@ -72,7 +68,7 @@ class TypeUtilsTests {
 	}
 
 	@Test
-	void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
+	void resolveTypeDescriptorWithOnlyGenerics() {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
@@ -82,10 +78,13 @@ class TypeUtilsTests {
 		});
 	}
 
-	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) throws IOException {
+	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(consumer, TypeUtils::new);
-		TestCompiler compiler = new TestCompiler(this.tempDir);
-		compiler.getTask(target).call(processor);
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(target));
+		compiler.compile((compiled) -> {
+		});
 	}
 
 }

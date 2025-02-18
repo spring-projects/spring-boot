@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	private <T> void register(Class<T> type, InstanceSupplier<T> instanceSupplier, boolean replaceExisting) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.notNull(instanceSupplier, "InstanceSupplier must not be null");
+		Assert.notNull(type, "'type' must not be null");
+		Assert.notNull(instanceSupplier, "'instanceSupplier' must not be null");
 		synchronized (this.instanceSuppliers) {
 			boolean alreadyRegistered = this.instanceSuppliers.containsKey(type);
 			if (replaceExisting || !alreadyRegistered) {

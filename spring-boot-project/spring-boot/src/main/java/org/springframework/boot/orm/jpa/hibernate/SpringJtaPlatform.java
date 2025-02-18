@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.orm.jpa.hibernate;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.UserTransaction;
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -40,7 +39,7 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 	private final JtaTransactionManager transactionManager;
 
 	public SpringJtaPlatform(JtaTransactionManager transactionManager) {
-		Assert.notNull(transactionManager, "TransactionManager must not be null");
+		Assert.notNull(transactionManager, "'transactionManager' must not be null");
 		this.transactionManager = transactionManager;
 	}
 

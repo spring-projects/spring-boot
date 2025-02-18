@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,11 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
-import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
-import org.flywaydb.core.internal.plugin.PluginRegister;
+import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
+import org.flywaydb.database.oracle.OracleConfigurationExtension;
+import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
@@ -42,12 +44,20 @@ import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.postgresql.Driver;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
@@ -56,7 +66,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +89,7 @@ import org.springframework.stereotype.Component;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -96,6 +106,7 @@ import static org.mockito.Mockito.mock;
  * @author András Deák
  * @author Takaaki Shimbo
  * @author Chris Bono
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class FlywayAutoConfigurationTests {
@@ -132,6 +143,63 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
+			});
+	}
+
+	@Test
+	void flywayPropertiesAreUsedOverJdbcConnectionDetails() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
+					"spring.flyway.password=some-password",
+					"spring.flyway.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:flywaytest");
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("some-user");
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("some-password");
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(org.hsqldb.jdbc.JDBCDriver.class);
+			});
+	}
+
+	@Test
+	void flywayConnectionDetailsAreUsedOverFlywayProperties() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
+					"spring.flyway.password=some-password",
+					"spring.flyway.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl())
+					.isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-1");
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-1");
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
+			});
+	}
+
+	@Test
+	void shouldUseMainDataSourceWhenThereIsNoFlywaySpecificConfiguration() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.datasource.url=jdbc:hsqldb:mem:flywaytest", "spring.datasource.user=some-user",
+					"spring.datasource.password=some-password",
+					"spring.datasource.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getDataSource()).isSameAs(context.getBean(DataSource.class));
 			});
 	}
 
@@ -199,6 +267,32 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void flywayDataSourceIsUsedWhenJdbcConnectionDetailsIsAvailable() {
+		this.contextRunner
+			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
+					JdbcConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class);
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+			});
+	}
+
+	@Test
+	void flywayDataSourceIsUsedWhenFlywayConnectionDetailsIsAvailable() {
+		this.contextRunner
+			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
+					FlywayConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(FlywayConnectionDetails.class);
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+			});
+	}
+
+	@Test
 	void flywayDataSourceWithoutDataSourceAutoConfiguration() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(Flyway.class);
@@ -223,7 +317,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				FlywaySchemaManagementProvider schemaManagementProvider = context
 					.getBean(FlywaySchemaManagementProvider.class);
-				assertThat(schemaManagementProvider.getSchemaManagement(context.getBean(DataSource.class)))
+				assertThat(schemaManagementProvider
+					.getSchemaManagement(context.getBean("normalDataSource", DataSource.class)))
 					.isEqualTo(SchemaManagement.UNMANAGED);
 				assertThat(schemaManagementProvider
 					.getSchemaManagement(context.getBean("flywayDataSource", DataSource.class)))
@@ -273,7 +368,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(Arrays.asList(flyway.getConfiguration().getSchemas()).toString()).isEqualTo("[public]");
+				assertThat(Arrays.asList(flyway.getConfiguration().getSchemas())).hasToString("[public]");
 			});
 	}
 
@@ -474,10 +569,25 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void callbackAndMigrationBeansAreAppliedToConfigurationBeforeCustomizersAreCalled() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayJavaMigrationsConfiguration.class,
+					CallbackConfiguration.class)
+			.withBean(FlywayConfigurationCustomizer.class, () -> (configuration) -> {
+				assertThat(configuration.getCallbacks()).isNotEmpty();
+				assertThat(configuration.getJavaMigrations()).isNotEmpty();
+			})
+			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
 	void batchIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.batch=true")
-			.run(validateFlywayTeamsPropertyOnly("batch"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getBatch()).isTrue();
+			});
 	}
 
 	@Test
@@ -495,39 +605,114 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void licenseKeyIsCorrectlyMapped(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.license-key=<<secret>>")
-			.run((context) -> assertThat(output).contains(
-					"Flyway Teams Edition upgrade required: licenseKey is not supported by Flyway Community Edition."));
+	void oracleExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new OracleFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void oracleSqlplusIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.sqlplus=true")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplus()).isTrue());
+
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleSqlplusIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle-sqlplus=true")
-			.run(validateFlywayTeamsPropertyOnly("oracle.sqlplus"));
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplus()).isTrue());
+
 	}
 
 	@Test
 	void oracleSqlplusWarnIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.sqlplus-warn=true")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplusWarn()).isTrue());
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleSqlplusWarnIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle-sqlplus-warn=true")
-			.run(validateFlywayTeamsPropertyOnly("oracle.sqlplusWarn"));
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getSqlplusWarn()).isTrue());
+	}
+
+	@Test
+	void oracleWallerLocationIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.wallet-location=/tmp/my.wallet")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleWallerLocationIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle-wallet-location=/tmp/my.wallet")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
+	}
+
+	@Test
+	void oracleKerberosCacheFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle.kerberos-cache-file=/tmp/cache")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void oracleKerberosCacheFileIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(OracleConfigurationExtension.class)
+				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
 	}
 
 	@Test
 	void streamIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.stream=true")
-			.run(validateFlywayTeamsPropertyOnly("stream"));
-	}
-
-	@Test
-	void undoSqlMigrationPrefix() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.undo-sql-migration-prefix=undo")
-			.run(validateFlywayTeamsPropertyOnly("undoSqlMigrationPrefix"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getStream()).isTrue();
+			});
 	}
 
 	@Test
@@ -563,17 +748,16 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void cherryPickIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.cherry-pick=1.1")
-			.run(validateFlywayTeamsPropertyOnly("cherryPick"));
-	}
-
-	@Test
 	void jdbcPropertiesAreCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.jdbc-properties.prop=value")
-			.run(validateFlywayTeamsPropertyOnly("jdbcProperties"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration()
+					.getCachedResolvedEnvironments()
+					.get(flyway.getConfiguration().getCurrentEnvironmentName())
+					.getJdbcProperties()).containsEntry("prop", "value");
+			});
 	}
 
 	@Test
@@ -584,45 +768,76 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void oracleKerberosConfigFileIsCorrectlyMappedToReplacementProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config")
-			.run(validateFlywayTeamsPropertyOnly("kerberosConfigFile"));
-	}
-
-	@Test
-	void oracleKerberosCacheFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
-			.run(validateFlywayTeamsPropertyOnly("oracle.kerberosCacheFile"));
-	}
-
-	@Test
 	void outputQueryResultsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.output-query-results=false")
-			.run(validateFlywayTeamsPropertyOnly("outputQueryResults"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getOutputQueryResults()).isFalse();
+			});
+	}
+
+	@Test
+	void postgresqlExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new PostgresqlFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void postgresqlTransactionalLockIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.postgresql.transactional-lock=false")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(PostgreSQLConfigurationExtension.class)
+				.isTransactionalLock()).isFalse());
+	}
+
+	@Test
+	void sqlServerExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new SqlServerFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
-		try {
-			this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
-				.run(validateFlywayTeamsPropertyOnly("sqlserver.kerberos.login.file"));
-		}
-		finally {
-			// Reset to default value
-			PluginRegister.getPlugin(SQLServerConfigurationExtension.class).setKerberosLoginFile(null);
-		}
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.sqlserver.kerberos-login-file=/tmp/config")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(SQLServerConfigurationExtension.class)
+				.getKerberos()
+				.getLogin()
+				.getFile()).isEqualTo("/tmp/config"));
+	}
+
+	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void sqlServerKerberosLoginFileIsCorrectlyMappedWithDeprecatedProperty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(SQLServerConfigurationExtension.class)
+				.getKerberos()
+				.getLogin()
+				.getFile()).isEqualTo("/tmp/config"));
 	}
 
 	@Test
 	void skipExecutingMigrationsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.skip-executing-migrations=true")
-			.run(validateFlywayTeamsPropertyOnly("skipExecutingMigrations"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getSkipExecutingMigrations())
+					.isTrue();
+			});
 	}
 
 	@Test
@@ -657,13 +872,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void baselineMigrationPrefixIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.baseline-migration-prefix=BL")
-			.run(validateFlywayTeamsPropertyOnly("baselineMigrationPrefix"));
-	}
-
-	@Test
 	void scriptPlaceholderPrefixIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.script-placeholder-prefix=SPP")
@@ -679,11 +887,40 @@ class FlywayAutoConfigurationTests {
 				.isEqualTo("SPS"));
 	}
 
+	@Test
+	void containsResourceProviderCustomizer() {
+		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+			.run((context) -> assertThat(context).hasSingleBean(ResourceProviderCustomizer.class));
+	}
+
+	@Test
+	void loggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("slf4j"));
+	}
+
+	@Test
+	void overrideLoggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.loggers=log4j2")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("log4j2"));
+	}
+
+	@Test
+	void shouldRegisterResourceHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new FlywayAutoConfigurationRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql")).accepts(runtimeHints);
+	}
+
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
 		return (context) -> {
 			assertThat(context).hasFailed();
 			Throwable failure = context.getStartupFailure();
-			assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+			assertThat(failure).hasRootCauseInstanceOf(FlywayEditionUpgradeRequiredException.class);
 			assertThat(failure).hasMessageContaining(String.format(" %s ", propertyName));
 		};
 	}
@@ -692,13 +929,12 @@ class FlywayAutoConfigurationTests {
 	static class FlywayDataSourceConfiguration {
 
 		@Bean
-		@Primary
 		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@FlywayDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
@@ -719,7 +955,7 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@FlywayDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
@@ -1018,11 +1254,6 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@Override
-		public boolean isUndo() {
-			return false;
-		}
-
-		@Override
 		public boolean canExecuteInTransaction() {
 			return true;
 		}
@@ -1032,9 +1263,58 @@ class FlywayAutoConfigurationTests {
 
 		}
 
-		@Override
-		public boolean isBaselineMigration() {
-			return false;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JdbcConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails jdbcConnectionDetails() {
+			return new JdbcConnectionDetails() {
+
+				@Override
+				public String getJdbcUrl() {
+					return "jdbc:postgresql://database.example.com:12345/database-1";
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "secret-1";
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FlywayConnectionDetailsConfiguration {
+
+		@Bean
+		FlywayConnectionDetails flywayConnectionDetails() {
+			return new FlywayConnectionDetails() {
+
+				@Override
+				public String getJdbcUrl() {
+					return "jdbc:postgresql://database.example.com:12345/database-1";
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "secret-1";
+				}
+
+			};
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class ConventionsPluginTests {
 		File settingsFile = new File(this.projectDir, "settings.gradle");
 		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
 			out.println("plugins {");
-			out.println("    id 'com.gradle.enterprise'");
+			out.println("    id 'com.gradle.develocity'");
 			out.println("}");
 			out.println("include ':spring-boot-project:spring-boot-parent'");
 		}
@@ -76,7 +76,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test project for manifest customization'");
 			out.println("jar.archiveFileName = 'test.jar'");
 		}
@@ -93,7 +93,7 @@ class ConventionsPluginTests {
 				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 
@@ -106,7 +106,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test'");
 		}
 		runGradle("assemble");
@@ -122,7 +122,7 @@ class ConventionsPluginTests {
 				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 
@@ -135,7 +135,7 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '1.8'");
+			out.println("sourceCompatibility = '17'");
 			out.println("description 'Test'");
 		}
 		runGradle("assemble");
@@ -151,7 +151,7 @@ class ConventionsPluginTests {
 				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
-			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +60,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isFalse();
+		assertThat(file).doesNotExist();
 	}
 
 	@Test
@@ -67,7 +71,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isFalse();
+		assertThat(file).doesNotExist();
 	}
 
 	@Test
@@ -78,7 +82,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isTrue();
+		assertThat(file).exists();
 	}
 
 	@Test
@@ -87,7 +91,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isTrue();
+		assertThat(file).exists();
 	}
 
 	@Test
@@ -97,6 +101,30 @@ class FileUtilsTests {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}
 		assertThat(FileUtils.sha1Hash(file)).isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
+	}
+
+	@Test
+	void isSignedJarFileWhenSignedReturnsTrue() throws IOException {
+		Manifest manifest = new Manifest(getClass().getResourceAsStream("signed-manifest.mf"));
+		File jarFile = new File(this.tempDir, "test.jar");
+		writeTestJar(manifest, jarFile);
+		assertThat(FileUtils.isSignedJarFile(jarFile)).isTrue();
+	}
+
+	@Test
+	void isSignedJarFileWhenNotSignedReturnsFalse() throws IOException {
+		Manifest manifest = new Manifest();
+		File jarFile = new File(this.tempDir, "test.jar");
+		writeTestJar(manifest, jarFile);
+		assertThat(FileUtils.isSignedJarFile(jarFile)).isFalse();
+	}
+
+	private void writeTestJar(Manifest manifest, File jarFile) throws IOException, FileNotFoundException {
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jarFile))) {
+			out.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			manifest.write(out);
+			out.closeEntry();
+		}
 	}
 
 }

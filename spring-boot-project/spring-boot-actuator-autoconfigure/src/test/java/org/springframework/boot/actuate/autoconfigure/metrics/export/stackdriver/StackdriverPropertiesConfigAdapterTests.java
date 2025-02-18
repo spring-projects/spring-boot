@@ -70,6 +70,14 @@ class StackdriverPropertiesConfigAdapterTests
 	}
 
 	@Test
+	void whenPropertiesMetricTypePrefixIsSetAdapterMetricTypePrefixReturnsIt() {
+		StackdriverProperties properties = new StackdriverProperties();
+		properties.setMetricTypePrefix("external.googleapis.com/prometheus");
+		assertThat(new StackdriverPropertiesConfigAdapter(properties).metricTypePrefix())
+			.isEqualTo("external.googleapis.com/prometheus");
+	}
+
+	@Test
 	@Override
 	protected void adapterOverridesAllConfigMethods() {
 		adapterOverridesAllConfigMethodsExcept("credentials");

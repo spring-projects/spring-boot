@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.ws.rs.ext.ContextResolver;
-import javax.xml.bind.annotation.XmlElement;
-
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.xml.bind.annotation.XmlElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -116,7 +115,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
+	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "filter")
 	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new ServletContainer(this.config));
@@ -138,13 +137,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
 				new ServletContainer(this.config), applicationPath.getUrlMapping());
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());
 		registration.setLoadOnStartup(this.jersey.getServlet().getLoadOnStartup());
+		registration.setIgnoreRegistrationFailure(true);
 		return registration;
 	}
 
@@ -194,12 +194,12 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
+		@ConditionalOnClass({ JakartaXmlBindAnnotationIntrospector.class, XmlElement.class })
 		static class JaxbObjectMapperCustomizer {
 
 			@Autowired
 			void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
-				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
+				JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new JakartaXmlBindAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(
 						createPair(objectMapper.getSerializationConfig(), jaxbAnnotationIntrospector),
@@ -207,7 +207,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			}
 
 			private AnnotationIntrospector createPair(MapperConfig<?> config,
-					JaxbAnnotationIntrospector jaxbAnnotationIntrospector) {
+					JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
 				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(), jaxbAnnotationIntrospector);
 			}
 

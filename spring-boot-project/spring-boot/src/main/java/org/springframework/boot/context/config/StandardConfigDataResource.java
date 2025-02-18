@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	 * @param emptyDirectory if the resource is an empty directory that we know exists
 	 */
 	StandardConfigDataResource(StandardConfigDataReference reference, Resource resource, boolean emptyDirectory) {
-		Assert.notNull(reference, "Reference must not be null");
-		Assert.notNull(resource, "Resource must not be null");
+		Assert.notNull(reference, "'reference' must not be null");
+		Assert.notNull(resource, "'resource' must not be null");
 		this.reference = reference;
 		this.resource = resource;
 		this.emptyDirectory = emptyDirectory;
@@ -106,7 +106,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	}
 
 	private boolean isSameFile(File ours, File other) {
-		return (ours != null) && (other != null) && ours.equals(other);
+		return (ours != null) && ours.equals(other);
 	}
 
 	@Override
@@ -119,9 +119,10 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	public String toString() {
 		if (this.resource instanceof FileSystemResource || this.resource instanceof FileUrlResource) {
 			try {
-				return "file [" + this.resource.getFile().toString() + "]";
+				return "file [" + this.resource.getFile() + "]";
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return this.resource.toString();
@@ -131,11 +132,11 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		try {
 			if (resource instanceof ClassPathResource || resource instanceof FileSystemResource
 					|| resource instanceof FileUrlResource) {
-				File file = resource.getFile();
-				return (file != null) ? file.getAbsoluteFile() : null;
+				return resource.getFile().getAbsoluteFile();
 			}
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 		return null;
 	}

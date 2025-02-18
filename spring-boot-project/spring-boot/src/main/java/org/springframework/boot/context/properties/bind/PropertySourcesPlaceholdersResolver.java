@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,16 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 
 	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources, PropertyPlaceholderHelper helper) {
 		this.sources = sources;
-		this.helper = (helper != null) ? helper : new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
-				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true);
+		this.helper = (helper != null) ? helper
+				: new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+						SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR,
+						SystemPropertyUtils.ESCAPE_CHARACTER, true);
 	}
 
 	@Override
 	public Object resolvePlaceholders(Object value) {
-		if (value instanceof String) {
-			return this.helper.replacePlaceholders((String) value, this::resolvePlaceholder);
+		if (value instanceof String string) {
+			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
 		}
 		return value;
 	}
@@ -72,9 +74,9 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	}
 
 	private static PropertySources getSources(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment,
-				"Environment must be a ConfigurableEnvironment");
+				"'environment' must be a ConfigurableEnvironment");
 		return ((ConfigurableEnvironment) environment).getPropertySources();
 	}
 

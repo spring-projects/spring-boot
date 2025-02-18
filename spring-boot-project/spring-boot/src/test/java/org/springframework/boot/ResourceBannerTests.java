@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.core.env.AbstractPropertyResolver;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertyResolver;
@@ -70,6 +69,14 @@ class ResourceBannerTests {
 	}
 
 	@Test
+	void renderWithoutVersionsWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a} ${spring-boot.version:X.Y.Z} ${application.version:A.B.C}".getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner 1 X.Y.Z A.B.C");
+	}
+
+	@Test
 	void renderFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
@@ -80,9 +87,18 @@ class ResourceBannerTests {
 	@Test
 	void renderWithoutFormattedVersions() {
 		Resource resource = new ByteArrayResource(
-				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
+				"banner ${a} ${spring-boot.formatted-version} ${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner).startsWith("banner 1");
+		assertThat(banner).startsWith("banner 1  ");
+	}
+
+	@Test
+	void renderWithoutFormattedVersionsWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a} ${spring-boot.formatted-version:(vX.Y.Z)} ${application.formatted-version:(vA.B.C)}"
+					.getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner 1 (vX.Y.Z) (vA.B.C)");
 	}
 
 	@Test
@@ -132,6 +148,13 @@ class ResourceBannerTests {
 	}
 
 	@Test
+	void renderWithoutTitleWithDefaultValue() {
+		Resource resource = new ByteArrayResource("banner ${application.title:Default Title} ${a}".getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner Default Title 1");
+	}
+
+	@Test
 	void renderWithDefaultValues() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a:default-a} ${b:default-b} ${spring-boot.version:default-boot-version} ${application.version:default-application-version}"
@@ -143,18 +166,20 @@ class ResourceBannerTests {
 	@Test
 	void renderWithMutation() {
 		Resource resource = new ByteArrayResource("banner ${foo}".getBytes());
-		String banner = printBanner(new MutatingResourceBanner(resource, "1", "2", null));
+		String banner = printBanner(new MutatingResourceBanner(resource, "1", null), "2");
 		assertThat(banner).startsWith("banner bar");
-
 	}
 
 	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
 			String applicationTitle) {
-		return printBanner(new MockResourceBanner(resource, bootVersion, applicationVersion, applicationTitle));
+		return printBanner(new MockResourceBanner(resource, bootVersion, applicationTitle), applicationVersion);
 	}
 
-	private String printBanner(ResourceBanner banner) {
-		ConfigurableEnvironment environment = new MockEnvironment();
+	private String printBanner(ResourceBanner banner, String applicationVersion) {
+		MockEnvironment environment = new MockEnvironment();
+		if (applicationVersion != null) {
+			environment.setProperty("spring.application.version", applicationVersion);
+		}
 		Map<String, Object> source = Collections.singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -166,25 +191,17 @@ class ResourceBannerTests {
 
 		private final String bootVersion;
 
-		private final String applicationVersion;
-
 		private final String applicationTitle;
 
-		MockResourceBanner(Resource resource, String bootVersion, String applicationVersion, String applicationTitle) {
+		MockResourceBanner(Resource resource, String bootVersion, String applicationTitle) {
 			super(resource);
 			this.bootVersion = bootVersion;
-			this.applicationVersion = applicationVersion;
 			this.applicationTitle = applicationTitle;
 		}
 
 		@Override
 		protected String getBootVersion() {
 			return this.bootVersion;
-		}
-
-		@Override
-		protected String getApplicationVersion(Class<?> sourceClass) {
-			return this.applicationVersion;
 		}
 
 		@Override
@@ -196,9 +213,8 @@ class ResourceBannerTests {
 
 	static class MutatingResourceBanner extends MockResourceBanner {
 
-		MutatingResourceBanner(Resource resource, String bootVersion, String applicationVersion,
-				String applicationTitle) {
-			super(resource, bootVersion, applicationVersion, applicationTitle);
+		MutatingResourceBanner(Resource resource, String bootVersion, String applicationTitle) {
+			super(resource, bootVersion, applicationTitle);
 		}
 
 		@Override

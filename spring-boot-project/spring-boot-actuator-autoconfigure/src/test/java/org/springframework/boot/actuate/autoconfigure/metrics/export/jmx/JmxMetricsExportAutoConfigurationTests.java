@@ -53,7 +53,7 @@ class JmxMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.defaults.enabled=false")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(JmxMeterRegistry.class)
 				.doesNotHaveBean(JmxConfig.class));
 	}
@@ -61,7 +61,7 @@ class JmxMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.jmx.enabled=false")
+			.withPropertyValues("management.jmx.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(JmxMeterRegistry.class)
 				.doesNotHaveBean(JmxConfig.class));
 	}

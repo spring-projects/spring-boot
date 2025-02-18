@@ -7,5 +7,5 @@ description = "Starter for using Java Mail and Spring Framework's email sending 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework:spring-context-support")
-	api("com.sun.mail:jakarta.mail")
+	api("org.eclipse.angus:jakarta.mail")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -88,7 +86,7 @@ public final class StaticResourceRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+		Assert.notNull(locations, "'locations' must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}
 
@@ -126,7 +124,7 @@ public final class StaticResourceRequest {
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
 		public StaticResourceRequestMatcher excluding(Set<StaticResourceLocation> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+			Assert.notNull(locations, "'locations' must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceRequestMatcher(subset);
@@ -134,11 +132,11 @@ public final class StaticResourceRequest {
 
 		@Override
 		protected void initialized(Supplier<DispatcherServletPath> dispatcherServletPath) {
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()));
+			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()).toList());
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
-			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new).collect(Collectors.toList());
+		private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
+			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new);
 		}
 
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {

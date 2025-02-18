@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 
+import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

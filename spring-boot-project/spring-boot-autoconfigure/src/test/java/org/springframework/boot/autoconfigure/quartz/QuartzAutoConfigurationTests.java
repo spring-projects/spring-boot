@@ -63,7 +63,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
@@ -329,19 +328,6 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void whenTheUserDefinesTheirOwnQuartzDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
-		this.contextRunner.withUserConfiguration(CustomQuartzDataSourceInitializerConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					DataSourceTransactionManagerAutoConfiguration.class))
-			.withPropertyValues("spring.quartz.job-store-type=jdbc")
-			.run((context) -> assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
-				.hasSingleBean(QuartzDataSourceInitializer.class)
-				.hasBean("customInitializer"));
-	}
-
-	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredQuartzInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
@@ -360,7 +346,7 @@ class QuartzAutoConfigurationTests {
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_JOB_DETAILS", Integer.class))
 				.isEqualTo(2);
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class))
-				.isEqualTo(0);
+				.isZero();
 		};
 	}
 
@@ -585,22 +571,10 @@ class QuartzAutoConfigurationTests {
 
 	}
 
-	@Deprecated
-	@Configuration(proxyBeanMethods = false)
-	static class CustomQuartzDataSourceInitializerConfiguration {
-
-		@Bean
-		QuartzDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-				QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
-		}
-
-	}
-
 	static class ComponentThatUsesScheduler {
 
 		ComponentThatUsesScheduler(Scheduler scheduler) {
-			Assert.notNull(scheduler, "Scheduler must not be null");
+			Assert.notNull(scheduler, "'scheduler' must not be null");
 		}
 
 	}

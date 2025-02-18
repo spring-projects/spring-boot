@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
  */
 class ImplicitLayerResolverTests {
 
-	private Layers layers = Layers.IMPLICIT;
+	private final Layers layers = Layers.IMPLICIT;
 
 	@Test
 	void iteratorReturnsLayers() {

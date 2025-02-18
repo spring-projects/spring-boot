@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.apache.hc.core5.http.Header;
+
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -89,11 +92,19 @@ public interface HttpTransport {
 	Response delete(URI uri) throws IOException;
 
 	/**
+	 * Perform an HTTP HEAD operation.
+	 * @param uri the destination URI (excluding any host/port)
+	 * @return the operation response
+	 * @throws IOException on IO error
+	 */
+	Response head(URI uri) throws IOException;
+
+	/**
 	 * Create the most suitable {@link HttpTransport} based on the {@link DockerHost}.
 	 * @param dockerHost the Docker host information
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(DockerHost dockerHost) {
+	static HttpTransport create(DockerHostConfiguration dockerHost) {
 		ResolvedDockerHost host = ResolvedDockerHost.from(dockerHost);
 		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(host);
 		return (remote != null) ? remote : LocalHttpClientTransport.create(host);
@@ -110,6 +121,10 @@ public interface HttpTransport {
 		 * @throws IOException on IO error
 		 */
 		InputStream getContent() throws IOException;
+
+		default Header getHeader(String name) {
+			throw new UnsupportedOperationException();
+		}
 
 	}
 

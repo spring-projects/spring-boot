@@ -48,8 +48,8 @@ class EndpointsPropertiesSampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/oops", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("None");
-		assertThat(body.get("status")).isEqualTo(999);
+		assertThat(body).containsEntry("error", "None");
+		assertThat(body).containsEntry("status", 999);
 	}
 
 	@Test

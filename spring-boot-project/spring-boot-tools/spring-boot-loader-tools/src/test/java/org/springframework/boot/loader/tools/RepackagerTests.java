@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -79,7 +80,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -218,9 +219,23 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		assertThat(stopWatch.getTotalTimeMillis()).isLessThan(5000);
 	}
 
+	@Test
+	void signedJar() throws Exception {
+		Repackager packager = createPackager();
+		packager.setMainClass("a.b.C");
+		Manifest manifest = new Manifest();
+		Attributes attributes = new Attributes();
+		attributes.putValue("SHA1-Digest", "0000");
+		manifest.getEntries().put("a/b/C.class", attributes);
+		TestJarFile libJar = new TestJarFile(this.tempDir);
+		libJar.addManifest(manifest);
+		execute(packager, (callback) -> callback.library(newLibrary(libJar.getFile(), LibraryScope.COMPILE, false)));
+		assertThat(hasPackagedEntry("META-INF/BOOT.SF")).isTrue();
+	}
+
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
-				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");
+				&& hasEntry(file, "org/springframework/boot/loader/launch/JarLauncher.class");
 	}
 
 	private boolean hasEntry(File file, String name) throws IOException {

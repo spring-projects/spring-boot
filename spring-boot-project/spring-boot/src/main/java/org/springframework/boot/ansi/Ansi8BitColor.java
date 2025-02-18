@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public final class Ansi8BitColor implements AnsiElement {
 	 * @throws IllegalArgumentException if color code is not between 0 and 255.
 	 */
 	private Ansi8BitColor(String prefix, int code) {
-		Assert.isTrue(code >= 0 && code <= 255, "Code must be between 0 and 255");
+		Assert.isTrue(code >= 0 && code <= 255, "'code' must be between 0 and 255");
 		this.prefix = prefix;
 		this.code = code;
 	}

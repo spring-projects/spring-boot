@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.util.Map;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -42,6 +43,9 @@ import org.springframework.kafka.core.CleanupConfig;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
@@ -56,17 +60,19 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
-		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
+	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
+			KafkaConnectionDetails connectionDetails) {
+		Map<String, Object> properties = this.properties.buildStreamsProperties(null);
+		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
 				throw new InvalidConfigurationPropertyValueException("spring.kafka.streams.application-id", null,
 						"This property is mandatory and fallback 'spring.application.name' is not set either.");
 			}
-			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
+			properties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
 		}
-		return new KafkaStreamsConfiguration(streamsProperties);
+		return new KafkaStreamsConfiguration(properties);
 	}
 
 	@Bean
@@ -75,6 +81,14 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factoryBean));
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
+	}
+
+	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
+			KafkaConnectionDetails connectionDetails) {
+		KafkaConnectionDetails.Configuration streams = connectionDetails.getStreams();
+		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, streams.getBootstrapServers());
+		KafkaAutoConfiguration.applySecurityProtocol(properties, streams.getSecurityProtocol());
+		KafkaAutoConfiguration.applySslBundle(properties, streams.getSslBundle());
 	}
 
 	// Separate class required to avoid BeanCurrentlyInCreationException

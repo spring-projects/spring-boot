@@ -19,7 +19,5 @@ dependencies {
 }
 
 bootWar {
-	layered {
-		enabled = false
-	}
+	includeTools = false
 }

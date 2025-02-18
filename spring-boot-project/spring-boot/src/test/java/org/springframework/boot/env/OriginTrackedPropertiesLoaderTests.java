@@ -329,7 +329,7 @@ class OriginTrackedPropertiesLoaderTests {
 	void existingCommentsAreNotTreatedAsMultiDoc() throws Exception {
 		this.resource = new ClassPathResource("existing-non-multi-document.properties", getClass());
 		this.documents = new OriginTrackedPropertiesLoader(this.resource).load();
-		assertThat(this.documents.size()).isEqualTo(1);
+		assertThat(this.documents).hasSize(1);
 	}
 
 	@Test

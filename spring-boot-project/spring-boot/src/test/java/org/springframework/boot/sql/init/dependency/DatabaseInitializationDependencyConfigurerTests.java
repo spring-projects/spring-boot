@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -170,6 +169,35 @@ class DatabaseInitializationDependencyConfigurerTests {
 				});
 	}
 
+	@Test
+	void whenInAnAotProcessedContextDependsOnDatabaseInitializationPostProcessorDoesNothing() {
+		withAotEnabled(() -> {
+			BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+			BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+			performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
+					MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
+						context.registerBeanDefinition("alpha", alpha);
+						context.registerBeanDefinition("bravo", bravo);
+						context.register(DependencyConfigurerConfiguration.class);
+						context.refresh();
+						assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
+						assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
+						then(MockDatabaseInitializerDetector.instance).shouldHaveNoInteractions();
+						assertThat(bravo.getDependsOn()).isNull();
+					});
+		});
+	}
+
+	private void withAotEnabled(Runnable action) {
+		System.setProperty("spring.aot.enabled", "true");
+		try {
+			action.run();
+		}
+		finally {
+			System.clearProperty("spring.aot.enabled");
+		}
+	}
+
 	private void performDetection(Collection<Class<?>> detectors,
 			Consumer<AnnotationConfigApplicationContext> contextCallback) {
 		DetectorSpringFactoriesClassLoader detectorSpringFactories = new DetectorSpringFactoriesClassLoader(this.temp);
@@ -220,7 +248,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class MockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -237,7 +265,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class OrderedLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -253,7 +281,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class OrderedNearLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -269,7 +297,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class MockedDependsOnDatabaseInitializationDetector implements DependsOnDatabaseInitializationDetector {
 
-		private static DependsOnDatabaseInitializationDetector instance = mock(
+		private static final DependsOnDatabaseInitializationDetector instance = mock(
 				DependsOnDatabaseInitializationDetector.class);
 
 		@Override
@@ -311,13 +339,10 @@ class DatabaseInitializationDependencyConfigurerTests {
 				return super.findResources(name);
 			}
 			Properties properties = new Properties();
-			properties.put(DatabaseInitializerDetector.class.getName(), String.join(",",
-					this.databaseInitializerDetectors.stream().map(Class::getName).collect(Collectors.toList())));
-			properties.put(DependsOnDatabaseInitializationDetector.class.getName(),
-					String.join(",",
-							this.dependsOnDatabaseInitializationDetectors.stream()
-								.map(Class::getName)
-								.collect(Collectors.toList())));
+			properties.put(DatabaseInitializerDetector.class.getName(),
+					String.join(",", this.databaseInitializerDetectors.stream().map(Class::getName).toList()));
+			properties.put(DependsOnDatabaseInitializationDetector.class.getName(), String.join(",",
+					this.dependsOnDatabaseInitializationDetectors.stream().map(Class::getName).toList()));
 			File springFactories = new File(this.temp, "spring.factories");
 			try (FileWriter writer = new FileWriter(springFactories)) {
 				properties.store(writer, "");

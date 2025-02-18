@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class DefaultGraphQlSchemaConditionTests {
 				didMatch(context);
 				assertThat(conditionReportMessage(context)).contains(
 						"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
-					.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCuystomizer");
+					.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCustomizer");
 			});
 	}
 
@@ -98,7 +98,7 @@ class DefaultGraphQlSchemaConditionTests {
 	static class CustomCustomizerConfiguration {
 
 		@Bean
-		GraphQlSourceBuilderCustomizer myBuilderCuystomizer() {
+		GraphQlSourceBuilderCustomizer myBuilderCustomizer() {
 			return (builder) -> {
 
 			};

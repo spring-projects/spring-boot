@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -101,13 +101,15 @@ class HibernateMetricsAutoConfigurationTests {
 	@Test
 	void allEntityManagerFactoriesCanBeInstrumented() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.generate_statistics:true")
-			.withUserConfiguration(TwoEntityManagerFactoriesConfiguration.class)
+			.withUserConfiguration(MultipleEntityManagerFactoriesConfiguration.class)
 			.run((context) -> {
 				context.getBean("firstEntityManagerFactory", EntityManagerFactory.class).unwrap(SessionFactory.class);
-				context.getBean("secondOne", EntityManagerFactory.class).unwrap(SessionFactory.class);
+				context.getBean("nonDefault", EntityManagerFactory.class).unwrap(SessionFactory.class);
+				context.getBean("nonAutowire", EntityManagerFactory.class).unwrap(SessionFactory.class);
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				registry.get("hibernate.statements").tags("entityManagerFactory", "first").meter();
-				registry.get("hibernate.statements").tags("entityManagerFactory", "secondOne").meter();
+				assertThat(registry.find("hibernate.statements").meters())
+					.map((meter) -> meter.getId().getTag("entityManagerFactory"))
+					.containsOnly("first", "nonDefault");
 			});
 	}
 
@@ -145,7 +147,7 @@ class HibernateMetricsAutoConfigurationTests {
 					() -> (builder) -> builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor()))
 			.run((context) -> {
 				JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(DataSource.class));
-				assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+				assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isOne();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				registry.get("hibernate.statements").tags("entityManagerFactory", "entityManagerFactory").meter();
 			});
@@ -171,7 +173,7 @@ class HibernateMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TwoEntityManagerFactoriesConfiguration {
+	static class MultipleEntityManagerFactoriesConfiguration {
 
 		private static final Class<?>[] PACKAGE_CLASSES = new Class<?>[] { MyEntity.class };
 
@@ -181,8 +183,13 @@ class HibernateMetricsAutoConfigurationTests {
 			return createSessionFactory(ds);
 		}
 
-		@Bean
-		LocalContainerEntityManagerFactoryBean secondOne(DataSource ds) {
+		@Bean(defaultCandidate = false)
+		LocalContainerEntityManagerFactoryBean nonDefault(DataSource ds) {
+			return createSessionFactory(ds);
+		}
+
+		@Bean(autowireCandidate = false)
+		LocalContainerEntityManagerFactoryBean nonAutowire(DataSource ds) {
 			return createSessionFactory(ds);
 		}
 

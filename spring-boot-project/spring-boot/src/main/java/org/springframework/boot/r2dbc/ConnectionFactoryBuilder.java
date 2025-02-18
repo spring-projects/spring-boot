@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.r2dbc;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -43,6 +45,7 @@ import org.springframework.util.ClassUtils;
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 2.5.0
  */
 public final class ConnectionFactoryBuilder {
@@ -62,6 +65,8 @@ public final class ConnectionFactoryBuilder {
 
 	private final Builder optionsBuilder;
 
+	private final List<ConnectionFactoryDecorator> decorators = new ArrayList<>();
+
 	private ConnectionFactoryBuilder(Builder optionsBuilder) {
 		this.optionsBuilder = optionsBuilder;
 	}
@@ -73,7 +78,7 @@ public final class ConnectionFactoryBuilder {
 	 * @see EmbeddedDatabaseConnection#getUrl(String)
 	 */
 	public static ConnectionFactoryBuilder withUrl(String url) {
-		Assert.hasText(url, () -> "Url must not be null");
+		Assert.hasText(url, () -> "'url' must not be null");
 		return withOptions(ConnectionFactoryOptions.parse(url).mutate());
 	}
 
@@ -169,12 +174,40 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	/**
+	 * Add a {@link ConnectionFactoryDecorator decorator}.
+	 * @param decorator the decorator to add
+	 * @return this for method chaining
+	 * @since 3.2.0
+	 */
+	public ConnectionFactoryBuilder decorator(ConnectionFactoryDecorator decorator) {
+		this.decorators.add(decorator);
+		return this;
+	}
+
+	/**
+	 * Add {@link ConnectionFactoryDecorator decorators}.
+	 * @param decorators the decorators to add
+	 * @return this for method chaining
+	 * @since 3.2.0
+	 */
+	public ConnectionFactoryBuilder decorators(Iterable<ConnectionFactoryDecorator> decorators) {
+		for (ConnectionFactoryDecorator decorator : decorators) {
+			this.decorators.add(decorator);
+		}
+		return this;
+	}
+
+	/**
 	 * Build a {@link ConnectionFactory} based on the state of this builder.
 	 * @return a connection factory
 	 */
 	public ConnectionFactory build() {
 		ConnectionFactoryOptions options = buildOptions();
-		return optionsCapableWrapper.buildAndWrap(options);
+		ConnectionFactory connectionFactory = optionsCapableWrapper.buildAndWrap(options);
+		for (ConnectionFactoryDecorator decorator : this.decorators) {
+			connectionFactory = decorator.decorate(connectionFactory);
+		}
+		return connectionFactory;
 	}
 
 	/**
@@ -212,7 +245,7 @@ public final class ConnectionFactoryBuilder {
 
 		private ConnectionFactoryOptions delegateFactoryOptions(ConnectionFactoryOptions options) {
 			String protocol = toString(options.getRequiredValue(ConnectionFactoryOptions.PROTOCOL));
-			if (protocol.trim().length() == 0) {
+			if (protocol.trim().isEmpty()) {
 				throw new IllegalArgumentException(String.format("Protocol %s is not valid.", protocol));
 			}
 			String[] protocols = protocol.split(COLON, 2);
@@ -304,8 +337,8 @@ public final class ConnectionFactoryBuilder {
 			if (type.isInstance(object)) {
 				return type.cast(object);
 			}
-			if (object instanceof String) {
-				return converter.apply((String) object);
+			if (object instanceof String string) {
+				return converter.apply(string);
 			}
 			throw new IllegalArgumentException("Cannot convert '" + object + "' to " + type.getName());
 		}

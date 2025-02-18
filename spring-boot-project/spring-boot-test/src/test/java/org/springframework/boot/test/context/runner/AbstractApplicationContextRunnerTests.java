@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.test.context.runner;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,6 +30,8 @@ import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
+import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,6 +44,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
@@ -46,6 +52,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -69,20 +76,20 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 		get().withSystemProperties(key + "=value")
 			.run((context) -> assertThat(System.getProperties()).containsEntry(key, "value"));
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test
 	void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 		get().withSystemProperties(key + "=value")
 			.withUserConfiguration(FailingConfig.class)
 			.run((context) -> assertThat(context).hasFailed());
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test
@@ -135,6 +142,38 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithConfigurationsShouldRegisterConfigurations() {
 		get().withUserConfiguration(FooConfig.class).run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	void runWithUserConfigurationsRegistersDefaultBeanName() {
+		get().withUserConfiguration(FooConfig.class)
+			.run((context) -> assertThat(context).hasBean("abstractApplicationContextRunnerTests.FooConfig"));
+	}
+
+	@Test
+	void runWithUserConfigurationsWhenHasSameShortClassNamedRegistersWithoutBeanName() {
+		get()
+			.withUserConfiguration(org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class,
+					org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class)
+			.run((context) -> assertThat(context.getStartupFailure())
+				.isInstanceOf(BeanDefinitionOverrideException.class));
+	}
+
+	@Test
+	void runFullyQualifiedNameConfigurationsRegistersFullyQualifiedBeanName() {
+		get().withConfiguration(FullyQualifiedNameConfigurations.of(FooConfig.class))
+			.run((context) -> assertThat(context).hasBean(FooConfig.class.getName()));
+	}
+
+	@Test
+	void runWithFullyQualifiedNameConfigurationsWhenHasSameShortClassNamedRegistersWithFullyQualifiedBeanName() {
+		get()
+			.withConfiguration(FullyQualifiedNameConfigurations.of(
+					org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class,
+					org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class))
+			.run((context) -> assertThat(context)
+				.hasSingleBean(org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class)
+				.hasSingleBean(org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class));
 	}
 
 	@Test
@@ -239,7 +278,32 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 			});
 	}
 
+	@Test
+	void changesMadeByInitializersShouldBeVisibleToRegisteredClasses() {
+		get().withInitializer((context) -> context.getEnvironment().setActiveProfiles("test"))
+			.withUserConfiguration(ProfileConfig.class)
+			.run((context) -> assertThat(context).hasSingleBean(ProfileConfig.class));
+	}
+
+	@Test
+	void prepareDoesNotRefreshContext() {
+		get().withUserConfiguration(FooConfig.class).prepare((context) -> {
+			assertThatIllegalStateException().isThrownBy(() -> context.getBean(String.class))
+				.withMessageContaining("not been refreshed");
+			context.getSourceApplicationContext().refresh();
+			assertThat(context.getBean(String.class)).isEqualTo("foo");
+		});
+	}
+
+	@Test
+	void getWirhAdditionalContextInterfaceHasCorrectInstanceOf() {
+		getWithAdditionalContextInterface()
+			.run((context) -> assertThat(context).isInstanceOf(AdditionalContextInterface.class));
+	}
+
 	protected abstract T get();
+
+	protected abstract T getWithAdditionalContextInterface();
 
 	private static void throwCheckedException(String message) throws IOException {
 		throw new IOException(message);
@@ -347,6 +411,29 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		ExampleConfigurer configurer() {
 			return (example) -> {
 			};
+		}
+
+	}
+
+	@Profile("test")
+	@Configuration(proxyBeanMethods = false)
+	static class ProfileConfig {
+
+	}
+
+	static class FullyQualifiedNameConfigurations extends Configurations {
+
+		protected FullyQualifiedNameConfigurations(Collection<Class<?>> classes) {
+			super(null, classes, Class::getName);
+		}
+
+		@Override
+		protected Configurations merge(Set<Class<?>> mergedClasses) {
+			return new FullyQualifiedNameConfigurations(mergedClasses);
+		}
+
+		static FullyQualifiedNameConfigurations of(Class<?>... classes) {
+			return new FullyQualifiedNameConfigurations(List.of(classes));
 		}
 
 	}

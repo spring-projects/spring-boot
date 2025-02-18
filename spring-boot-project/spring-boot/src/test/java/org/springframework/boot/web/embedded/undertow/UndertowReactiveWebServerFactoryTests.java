@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.MediaType;
@@ -62,7 +63,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 	void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setBuilderCustomizers(null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -70,7 +71,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -135,7 +136,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		factory.setAccessLogSuffix(suffix);
 		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles()).isEmpty();
+		assertThat(accessLogDirectory).isEmptyDirectory();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		WebClient client = getWebClient(this.webServer.getPort()).build();
@@ -153,6 +154,17 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 
 	private void awaitFile(File file) {
 		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(file::exists, is(true));
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((UndertowWebServer) this.webServer).getStartLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		((UndertowReactiveWebServerFactory) factory)
+			.addBuilderCustomizers((builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
 
 }

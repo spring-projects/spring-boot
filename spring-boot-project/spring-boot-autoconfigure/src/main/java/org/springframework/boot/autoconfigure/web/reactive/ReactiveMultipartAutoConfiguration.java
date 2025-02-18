@@ -31,6 +31,7 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
+import org.springframework.http.codec.multipart.PartEventHttpMessageReader;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
@@ -52,8 +53,7 @@ public class ReactiveMultipartAutoConfiguration {
 	@Order(0)
 	CodecCustomizer defaultPartHttpMessageReaderCustomizer(ReactiveMultipartProperties multipartProperties) {
 		return (configurer) -> configurer.defaultCodecs().configureDefaultCodec((codec) -> {
-			if (codec instanceof DefaultPartHttpMessageReader) {
-				DefaultPartHttpMessageReader defaultPartHttpMessageReader = (DefaultPartHttpMessageReader) codec;
+			if (codec instanceof DefaultPartHttpMessageReader defaultPartHttpMessageReader) {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(multipartProperties::getMaxInMemorySize)
 					.asInt(DataSize::toBytes)
@@ -65,11 +65,24 @@ public class ReactiveMultipartAutoConfiguration {
 					.as(DataSize::toBytes)
 					.to(defaultPartHttpMessageReader::setMaxDiskUsagePerPart);
 				map.from(multipartProperties::getMaxParts).to(defaultPartHttpMessageReader::setMaxParts);
-				map.from(multipartProperties::getStreaming).to(defaultPartHttpMessageReader::setStreaming);
 				map.from(multipartProperties::getFileStorageDirectory)
 					.as(Paths::get)
 					.to((dir) -> configureFileStorageDirectory(defaultPartHttpMessageReader, dir));
 				map.from(multipartProperties::getHeadersCharset).to(defaultPartHttpMessageReader::setHeadersCharset);
+			}
+			else if (codec instanceof PartEventHttpMessageReader partEventHttpMessageReader) {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(multipartProperties::getMaxInMemorySize)
+					.asInt(DataSize::toBytes)
+					.to(partEventHttpMessageReader::setMaxInMemorySize);
+				map.from(multipartProperties::getMaxHeadersSize)
+					.asInt(DataSize::toBytes)
+					.to(partEventHttpMessageReader::setMaxHeadersSize);
+				map.from(multipartProperties::getMaxDiskUsagePerPart)
+					.as(DataSize::toBytes)
+					.to(partEventHttpMessageReader::setMaxPartSize);
+				map.from(multipartProperties::getMaxParts).to(partEventHttpMessageReader::setMaxParts);
+				map.from(multipartProperties::getHeadersCharset).to(partEventHttpMessageReader::setHeadersCharset);
 			}
 		});
 	}

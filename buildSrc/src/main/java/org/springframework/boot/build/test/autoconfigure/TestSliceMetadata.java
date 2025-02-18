@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,23 @@ import java.util.List;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
@@ -59,44 +66,62 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class TestSliceMetadata extends DefaultTask {
+public abstract class TestSliceMetadata extends DefaultTask {
 
-	private SourceSet sourceSet;
+	private final ObjectFactory objectFactory;
 
-	private File outputFile;
+	private FileCollection classpath;
 
-	public TestSliceMetadata() {
-		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir())
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("resources");
-		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
-		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs())
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("classes");
+	private FileCollection importsFiles;
+
+	private FileCollection classesDirs;
+
+	@Inject
+	public TestSliceMetadata(ObjectFactory objectFactory) {
+		this.objectFactory = objectFactory;
+		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
+		getProject().afterEvaluate((evaluated) -> evaluated.getArtifacts()
+			.add(testSliceMetadata.getName(), getOutputFile(), (artifact) -> artifact.builtBy(this)));
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
-		this.sourceSet = sourceSet;
+		this.classpath = sourceSet.getRuntimeClasspath();
+		this.importsFiles = this.objectFactory.fileTree()
+			.from(new File(sourceSet.getOutput().getResourcesDir(), "META-INF/spring"));
+		this.importsFiles.filter((file) -> file.getName().endsWith(".imports"));
+		getSpringFactories().set(new File(sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
+		this.classesDirs = sourceSet.getOutput().getClassesDirs();
 	}
 
 	@OutputFile
-	public File getOutputFile() {
-		return this.outputFile;
+	public abstract RegularFileProperty getOutputFile();
+
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
+	abstract RegularFileProperty getSpringFactories();
+
+	@Classpath
+	FileCollection getClasspath() {
+		return this.classpath;
 	}
 
-	public void setOutputFile(File outputFile) {
-		this.outputFile = outputFile;
-		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
-		getProject().getArtifacts()
-			.add(testSliceMetadata.getName(), getProject().provider((Callable<File>) this::getOutputFile),
-					(artifact) -> artifact.builtBy(this));
+	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	FileCollection getImportFiles() {
+		return this.importsFiles;
+	}
+
+	@Classpath
+	FileCollection getClassesDirs() {
+		return this.classesDirs;
 	}
 
 	@TaskAction
 	void documentTestSlices() throws IOException {
 		Properties testSlices = readTestSlices();
-		getOutputFile().getParentFile().mkdirs();
-		try (FileWriter writer = new FileWriter(getOutputFile())) {
+		File outputFile = getOutputFile().getAsFile().get();
+		outputFile.getParentFile().mkdirs();
+		try (FileWriter writer = new FileWriter(outputFile)) {
 			testSlices.store(writer, null);
 		}
 	}
@@ -104,15 +129,11 @@ public class TestSliceMetadata extends DefaultTask {
 	private Properties readTestSlices() throws IOException {
 		Properties testSlices = CollectionFactory.createSortedProperties(true);
 		try (URLClassLoader classLoader = new URLClassLoader(
-				StreamSupport.stream(this.sourceSet.getRuntimeClasspath().spliterator(), false)
-					.map(this::toURL)
-					.toArray(URL[]::new))) {
+				StreamSupport.stream(this.classpath.spliterator(), false).map(this::toURL).toArray(URL[]::new))) {
 			MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory(classLoader);
-			Properties springFactories = readSpringFactories(
-					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
-			readTestSlicesDirectory(springFactories,
-					new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring/"));
-			for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
+			Properties springFactories = readSpringFactories(getSpringFactories().getAsFile().get());
+			readImportsFiles(springFactories, this.importsFiles);
+			for (File classesDir : this.classesDirs) {
 				addTestSlices(testSlices, classesDir, metadataReaderFactory, springFactories);
 			}
 		}
@@ -120,18 +141,14 @@ public class TestSliceMetadata extends DefaultTask {
 	}
 
 	/**
-	 * Reads files from the given directory and puts them in springFactories. The key is
-	 * the file name, the value is the file contents, split by line, delimited with comma.
-	 * This is done to mimic the spring.factories structure.
+	 * Reads the given imports files and puts them in springFactories. The key is the file
+	 * name, the value is the file contents, split by line, delimited with a comma. This
+	 * is done to mimic the spring.factories structure.
 	 * @param springFactories spring.factories parsed as properties
-	 * @param directory directory to scan
+	 * @param importsFiles the imports files to read
 	 */
-	private void readTestSlicesDirectory(Properties springFactories, File directory) {
-		File[] files = directory.listFiles((dir, name) -> name.endsWith(".imports"));
-		if (files == null) {
-			return;
-		}
-		for (File file : files) {
+	private void readImportsFiles(Properties springFactories, FileCollection importsFiles) {
+		for (File file : importsFiles.getFiles()) {
 			try {
 				List<String> lines = removeComments(Files.readAllLines(file.toPath()));
 				String fileNameWithoutExtension = file.getName()

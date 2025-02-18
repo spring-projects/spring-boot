@@ -19,10 +19,19 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +40,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Olga Maciaszek-Sharma
  */
 class HikariDataSourceConfigurationTests {
+
+	private static final String PREFIX = "spring.datasource.hikari.";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -49,8 +64,7 @@ class HikariDataSourceConfigurationTests {
 	@Test
 	void testDataSourcePropertiesOverridden() {
 		this.contextRunner
-			.withPropertyValues("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
-					"spring.datasource.hikari.max-lifetime=1234")
+			.withPropertyValues(PREFIX + "jdbc-url=jdbc:foo//bar/spam", "spring.datasource.hikari.max-lifetime=1234")
 			.run((context) -> {
 				HikariDataSource ds = context.getBean(HikariDataSource.class);
 				assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
@@ -61,8 +75,7 @@ class HikariDataSourceConfigurationTests {
 	@Test
 	void testDataSourceGenericPropertiesOverridden() {
 		this.contextRunner
-			.withPropertyValues(
-					"spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource")
+			.withPropertyValues(PREFIX + "data-source-properties.dataSourceClassName=org.h2.JDBCDataSource")
 			.run((context) -> {
 				HikariDataSource ds = context.getBean(HikariDataSource.class);
 				assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
@@ -90,12 +103,102 @@ class HikariDataSourceConfigurationTests {
 
 	@Test
 	void poolNameTakesPrecedenceOverName() {
-		this.contextRunner
-			.withPropertyValues("spring.datasource.name=myDS", "spring.datasource.hikari.pool-name=myHikariDS")
+		this.contextRunner.withPropertyValues("spring.datasource.name=myDS", PREFIX + "pool-name=myHikariDS")
 			.run((context) -> {
 				HikariDataSource ds = context.getBean(HikariDataSource.class);
 				assertThat(ds.getPoolName()).isEqualTo("myHikariDS");
 			});
+	}
+
+	@Test
+	void usesCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
+			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
+				DataSource dataSource = context.getBean(DataSource.class);
+				assertThat(dataSource).asInstanceOf(InstanceOfAssertFactories.type(HikariDataSource.class))
+					.satisfies((hikari) -> {
+						assertThat(hikari.getUsername()).isEqualTo("user-1");
+						assertThat(hikari.getPassword()).isEqualTo("password-1");
+						assertThat(hikari.getDriverClassName()).isEqualTo("org.postgresql.Driver");
+						assertThat(hikari.getJdbcUrl())
+							.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
+					});
+			});
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableAndDataSourceHasBeenWrappedHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withUserConfiguration(DataSourceWrapperConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	void whenCheckpointRestoreIsNotAvailableHikariAutoConfigDoesNotRegisterLifecycleBean() {
+		this.contextRunner
+			.run((context) -> assertThat(context).doesNotHaveBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableAndDataSourceIsFromUserConfigurationHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withUserConfiguration(UserDataSourceConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails sqlConnectionDetails() {
+			return new TestJdbcConnectionDetails();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DataSourceWrapperConfiguration {
+
+		@Bean
+		static BeanPostProcessor dataSourceWrapper() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof DataSource dataSource) {
+						return new DelegatingDataSource(dataSource);
+					}
+					return bean;
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDataSourceConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			return DataSourceBuilder.create()
+				.driverClassName("org.postgresql.Driver")
+				.url("jdbc:postgresql://localhost:5432/database")
+				.username("user")
+				.password("password")
+				.build();
+		}
+
 	}
 
 }

@@ -16,19 +16,48 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import javax.websocket.server.ServerContainer;
+import java.io.IOException;
+import java.util.Map;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpoint;
+import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,45 +66,121 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DirtiesUrlFactories
 class WebSocketServletAutoConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
-
-	@BeforeEach
-	void createContext() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext();
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	@ForkedClassPath
+	void serverContainerIsAvailableFromTheServletContext(String server, Class<?>... configuration) {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				configuration)) {
+			Object serverContainer = context.getServletContext()
+				.getAttribute("jakarta.websocket.server.ServerContainer");
+			assertThat(serverContainer).isInstanceOf(ServerContainer.class);
+		}
 	}
 
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	@ForkedClassPath
+	void webSocketUpgradeDoesNotPreventAFilterFromRejectingTheRequest(String server, Class<?>... configuration)
+			throws DeploymentException {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				configuration)) {
+			ServerContainer serverContainer = (ServerContainer) context.getServletContext()
+				.getAttribute("jakarta.websocket.server.ServerContainer");
+			serverContainer.addEndpoint(TestEndpoint.class);
+			WebServer webServer = context.getWebServer();
+			int port = webServer.getPort();
+			TestRestTemplate rest = new TestRestTemplate();
+			RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port)
+				.header("Upgrade", "websocket")
+				.header("Connection", "upgrade")
+				.header("Sec-WebSocket-Version", "13")
+				.header("Sec-WebSocket-Key", "key")
+				.build();
+			ResponseEntity<Void> response = rest.exchange(request, Void.class);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
 	@Test
-	void tomcatServerContainerIsAvailableFromTheServletContext() {
-		serverContainerIsAvailableFromTheServletContext(TomcatConfiguration.class,
-				WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration.class);
+	void jettyWebSocketUpgradeFilterIsAddedToServletContextOfJettyServer() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				JettyConfiguration.class, WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class)) {
+			assertThat(context.getServletContext().getFilterRegistration(WebSocketUpgradeFilter.class.getName()))
+				.isNotNull();
+		}
 	}
 
 	@Test
-	void jettyServerContainerIsAvailableFromTheServletContext() {
-		serverContainerIsAvailableFromTheServletContext(JettyConfiguration.class,
-				WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class);
+	void jettyWebSocketUpgradeFilterIsNotAddedToServletContextOfTomcatServer() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				TomcatConfiguration.class, WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class)) {
+			assertThat(context.getServletContext().getFilterRegistration(WebSocketUpgradeFilter.class.getName()))
+				.isNull();
+		}
 	}
 
-	private void serverContainerIsAvailableFromTheServletContext(Class<?>... configuration) {
-		this.context.register(configuration);
-		this.context.refresh();
-		Object serverContainer = this.context.getServletContext()
-			.getAttribute("javax.websocket.server.ServerContainer");
-		assertThat(serverContainer).isInstanceOf(ServerContainer.class);
+	@Test
+	@SuppressWarnings("rawtypes")
+	void jettyWebSocketUpgradeFilterIsNotExposedAsABean() {
+		new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(JettyConfiguration.class,
+					WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class))
+			.run((context) -> {
+				Map<String, Filter> filters = context.getBeansOfType(Filter.class);
+				assertThat(filters.values()).noneMatch(WebSocketUpgradeFilter.class::isInstance);
+				Map<String, AbstractFilterRegistrationBean> filterRegistrations = context
+					.getBeansOfType(AbstractFilterRegistrationBean.class);
+				assertThat(filterRegistrations.values()).extracting(AbstractFilterRegistrationBean::getFilter)
+					.noneMatch(WebSocketUpgradeFilter.class::isInstance);
+			});
+	}
 
+	@Test
+	void jettyWebSocketUpgradeFilterServletContextInitializerBacksOffWhenBeanWithSameNameIsDefined() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				JettyConfiguration.class, CustomWebSocketUpgradeFilterServletContextInitializerConfiguration.class,
+				WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class)) {
+			BeanDefinition definition = context.getBeanFactory()
+				.getBeanDefinition("websocketUpgradeFilterServletContextInitializer");
+			assertThat(definition.getFactoryBeanName())
+				.contains("CustomWebSocketUpgradeFilterServletContextInitializerConfiguration");
+		}
+	}
+
+	static Stream<Arguments> testConfiguration() {
+		String response = "Tomcat";
+		return Stream.of(
+				Arguments.of("Jetty",
+						new Class<?>[] { JettyConfiguration.class, DispatcherServletAutoConfiguration.class,
+								WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class }),
+				Arguments.of(response,
+						new Class<?>[] { TomcatConfiguration.class, DispatcherServletAutoConfiguration.class,
+								WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration.class }));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class CommonConfiguration {
+
+		@Bean
+		FilterRegistrationBean<Filter> unauthorizedFilter() {
+			FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(new Filter() {
+
+				@Override
+				public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+						throws IOException, ServletException {
+					((HttpServletResponse) response).sendError(HttpStatus.UNAUTHORIZED.value());
+				}
+
+			});
+			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			registration.addUrlPatterns("/*");
+			registration.setDispatcherTypes(DispatcherType.REQUEST);
+			return registration;
+		}
 
 		@Bean
 		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
@@ -105,6 +210,23 @@ class WebSocketServletAutoConfigurationTests {
 			JettyServletWebServerFactory.setPort(0);
 			return JettyServletWebServerFactory;
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomWebSocketUpgradeFilterServletContextInitializerConfiguration {
+
+		@Bean
+		ServletContextInitializer websocketUpgradeFilterServletContextInitializer() {
+			return (servletContext) -> {
+
+			};
+		}
+
+	}
+
+	@ServerEndpoint("/")
+	public static class TestEndpoint {
 
 	}
 

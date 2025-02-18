@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,23 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
+import org.springframework.http.codec.multipart.PartEventHttpMessageReader;
 import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ConfigurationProperties Configuration properties} for configuring multipart
- * support in Spring Webflux. Used to configure the {@link DefaultPartHttpMessageReader}.
+ * support in Spring Webflux. Used to configure the {@link DefaultPartHttpMessageReader}
+ * and the {@link PartEventHttpMessageReader}.
  *
  * @author Chris Bono
  * @since 2.6.0
  */
-@ConfigurationProperties(prefix = "spring.webflux.multipart")
+@ConfigurationProperties("spring.webflux.multipart")
 public class ReactiveMultipartProperties {
 
 	/**
 	 * Maximum amount of memory allowed per part before it's written to disk. Set to -1 to
-	 * store all contents in memory. Ignored when streaming is enabled.
+	 * store all contents in memory.
 	 */
 	private DataSize maxInMemorySize = DataSize.ofKilobytes(256);
 
@@ -47,7 +49,7 @@ public class ReactiveMultipartProperties {
 
 	/**
 	 * Maximum amount of disk space allowed per part. Default is -1 which enforces no
-	 * limits. Ignored when streaming is enabled.
+	 * limits.
 	 */
 	private DataSize maxDiskUsagePerPart = DataSize.ofBytes(-1);
 
@@ -58,15 +60,9 @@ public class ReactiveMultipartProperties {
 	private Integer maxParts = -1;
 
 	/**
-	 * Whether to stream directly from the parsed input buffer stream without storing in
-	 * memory nor file. Default is non-streaming.
-	 */
-	private Boolean streaming = Boolean.FALSE;
-
-	/**
 	 * Directory used to store file parts larger than 'maxInMemorySize'. Default is a
 	 * directory named 'spring-multipart' created under the system temporary directory.
-	 * Ignored when streaming is enabled.
+	 * Ignored when using the PartEvent streaming support.
 	 */
 	private String fileStorageDirectory;
 
@@ -105,14 +101,6 @@ public class ReactiveMultipartProperties {
 
 	public void setMaxParts(Integer maxParts) {
 		this.maxParts = maxParts;
-	}
-
-	public Boolean getStreaming() {
-		return this.streaming;
-	}
-
-	public void setStreaming(Boolean streaming) {
-		this.streaming = streaming;
 	}
 
 	public String getFileStorageDirectory() {

@@ -29,12 +29,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Integration tests for a secure reactive application with custom security.
@@ -165,7 +166,7 @@ class SampleSecureWebFluxCustomSecurityTests {
 				exchanges.pathMatchers("/login").permitAll();
 				exchanges.anyExchange().authenticated();
 			});
-			http.httpBasic(Customizer.withDefaults());
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

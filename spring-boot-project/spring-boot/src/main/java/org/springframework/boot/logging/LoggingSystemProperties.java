@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -26,6 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility to set system properties that can later be used by log configuration files.
@@ -36,59 +38,11 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  * @since 2.0.0
+ * @see LoggingSystemProperty
  */
 public class LoggingSystemProperties {
-
-	/**
-	 * The name of the System property that contains the process ID.
-	 */
-	public static final String PID_KEY = "PID";
-
-	/**
-	 * The name of the System property that contains the exception conversion word.
-	 */
-	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
-
-	/**
-	 * The name of the System property that contains the log file.
-	 */
-	public static final String LOG_FILE = "LOG_FILE";
-
-	/**
-	 * The name of the System property that contains the log path.
-	 */
-	public static final String LOG_PATH = "LOG_PATH";
-
-	/**
-	 * The name of the System property that contains the console log pattern.
-	 */
-	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
-
-	/**
-	 * The name of the System property that contains the console log charset.
-	 */
-	public static final String CONSOLE_LOG_CHARSET = "CONSOLE_LOG_CHARSET";
-
-	/**
-	 * The name of the System property that contains the file log pattern.
-	 */
-	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
-
-	/**
-	 * The name of the System property that contains the file log charset.
-	 */
-	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
-
-	/**
-	 * The name of the System property that contains the log level pattern.
-	 */
-	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
-
-	/**
-	 * The name of the System property that contains the log date-format pattern.
-	 */
-	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
 	private static final BiConsumer<String, String> systemPropertySetter = (name, value) -> {
 		if (System.getProperty(name) == null && value != null) {
@@ -98,6 +52,8 @@ public class LoggingSystemProperties {
 
 	private final Environment environment;
 
+	private final Function<String, String> defaultValueResolver;
+
 	private final BiConsumer<String, String> setter;
 
 	/**
@@ -105,20 +61,34 @@ public class LoggingSystemProperties {
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
-		this(environment, systemPropertySetter);
+		this(environment, null);
 	}
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
-	 * @param setter setter used to apply the property
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
 	 * @since 2.4.2
 	 */
 	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(setter, "Setter must not be null");
+		this(environment, null, setter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param defaultValueResolver function used to resolve default values or {@code null}
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
+	 * @since 3.2.0
+	 */
+	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
+			BiConsumer<String, String> setter) {
+		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
-		this.setter = setter;
+		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
+		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
 	protected Charset getDefaultCharset() {
@@ -134,42 +104,88 @@ public class LoggingSystemProperties {
 		apply(logFile, resolver);
 	}
 
-	protected void apply(LogFile logFile, PropertyResolver resolver) {
-		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD, "logging.exception-conversion-word");
-		setSystemProperty(PID_KEY, new ApplicationPid().toString());
-		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "logging.pattern.console");
-		setSystemProperty(resolver, CONSOLE_LOG_CHARSET, "logging.charset.console", getDefaultCharset().name());
-		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "logging.pattern.dateformat");
-		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
-		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
-		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
-	}
-
 	private PropertyResolver getPropertyResolver() {
-		if (this.environment instanceof ConfigurableEnvironment) {
+		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
-					((ConfigurableEnvironment) this.environment).getPropertySources());
-			resolver.setConversionService(((ConfigurableEnvironment) this.environment).getConversionService());
+					configurableEnvironment.getPropertySources());
+			resolver.setConversionService(configurableEnvironment.getConversionService());
 			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;
 		}
 		return this.environment;
 	}
 
-	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName) {
-		setSystemProperty(resolver, systemPropertyName, propertyName, null);
+	protected void apply(LogFile logFile, PropertyResolver resolver) {
+		String defaultCharsetName = getDefaultCharset().name();
+		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
+		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
+		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
+		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
+		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
+		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
+		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN, resolver);
+		setSystemProperty(LoggingSystemProperty.FILE_PATTERN, resolver);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT, resolver);
+		setSystemProperty(LoggingSystemProperty.FILE_STRUCTURED_FORMAT, resolver);
+		setSystemProperty(LoggingSystemProperty.LEVEL_PATTERN, resolver);
+		setSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN, resolver);
+		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
+		}
 	}
 
-	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName,
-			String defaultValue) {
-		String value = resolver.getProperty(propertyName);
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
+		setSystemProperty(property, resolver, Function.identity());
+	}
+
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver,
+			Function<String, String> mapper) {
+		setSystemProperty(property, resolver, null, mapper);
+	}
+
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue) {
+		setSystemProperty(property, resolver, defaultValue, Function.identity());
+	}
+
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue,
+			Function<String, String> mapper) {
+		if (property.getIncludePropertyName() != null) {
+			if (!resolver.getProperty(property.getIncludePropertyName(), Boolean.class, Boolean.TRUE)) {
+				return;
+			}
+		}
+		String value = (property.getApplicationPropertyName() != null)
+				? resolver.getProperty(property.getApplicationPropertyName()) : null;
+		value = (value != null) ? value : this.defaultValueResolver.apply(property.getApplicationPropertyName());
 		value = (value != null) ? value : defaultValue;
-		setSystemProperty(systemPropertyName, value);
+		value = mapper.apply(value);
+		setSystemProperty(property.getEnvironmentVariableName(), value);
+		if (property == LoggingSystemProperty.APPLICATION_NAME && StringUtils.hasText(value)) {
+			// LOGGED_APPLICATION_NAME is deprecated for removal in 3.6.0
+			setSystemProperty("LOGGED_APPLICATION_NAME", "[%s] ".formatted(value));
+		}
 	}
 
+	private void setSystemProperty(LoggingSystemProperty property, String value) {
+		setSystemProperty(property.getEnvironmentVariableName(), value);
+	}
+
+	private String thresholdMapper(String input) {
+		// YAML converts an unquoted OFF to false
+		if ("false".equals(input)) {
+			return "OFF";
+		}
+		return input;
+	}
+
+	/**
+	 * Set a system property.
+	 * @param name the property name
+	 * @param value the value
+	 */
 	protected final void setSystemProperty(String name, String value) {
 		this.setter.accept(name, value);
 	}

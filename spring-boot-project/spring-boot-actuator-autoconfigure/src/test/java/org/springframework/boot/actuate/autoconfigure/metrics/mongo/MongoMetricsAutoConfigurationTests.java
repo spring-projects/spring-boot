@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -60,9 +61,9 @@ class MongoMetricsAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MongoMetricsCommandListener.class);
-				assertThat(getActualMongoClientSettingsUsedToConstructClient(context)).isNotNull()
+				assertThat(getActualMongoClientSettingsUsedToConstructClient(context))
 					.extracting(MongoClientSettings::getCommandListeners)
-					.asList()
+					.asInstanceOf(InstanceOfAssertFactories.LIST)
 					.containsExactly(context.getBean(MongoMetricsCommandListener.class));
 				assertThat(getMongoCommandTagsProviderUsedToConstructListener(context))
 					.isInstanceOf(DefaultMongoCommandTagsProvider.class);
@@ -166,9 +167,9 @@ class MongoMetricsAutoConfigurationTests {
 	private ContextConsumer<AssertableApplicationContext> assertThatMetricsCommandListenerNotAdded() {
 		return (context) -> {
 			assertThat(context).doesNotHaveBean(MongoMetricsCommandListener.class);
-			assertThat(getActualMongoClientSettingsUsedToConstructClient(context)).isNotNull()
+			assertThat(getActualMongoClientSettingsUsedToConstructClient(context))
 				.extracting(MongoClientSettings::getCommandListeners)
-				.asList()
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
 				.isEmpty();
 		};
 	}

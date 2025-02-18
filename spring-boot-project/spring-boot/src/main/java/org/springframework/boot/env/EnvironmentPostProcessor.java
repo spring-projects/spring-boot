@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.env;
-
-import org.apache.commons.logging.Log;
 
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
@@ -42,8 +40,6 @@ import org.springframework.core.env.Environment;
  * <li>{@link DeferredLogFactory} - A factory that can be used to create loggers with
  * output deferred until the application has been fully prepared (allowing the environment
  * itself to configure logging levels).</li>
- * <li>{@link Log} - A log with output deferred until the application has been fully
- * prepared (allowing the environment itself to configure logging levels).</li>
  * <li>{@link ConfigurableBootstrapContext} - A bootstrap context that can be used to
  * store objects that may be expensive to create, or need to be shared
  * ({@link BootstrapContext} or {@link BootstrapRegistry} may also be used).</li>

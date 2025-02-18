@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConf
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -50,13 +51,14 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Olga Maciaszek-Sharma
  * @since 1.0.0
  */
 @AutoConfiguration(before = SqlInitializationAutoConfiguration.class)
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import(DataSourcePoolMetadataProvidersConfiguration.class)
+@Import({ DataSourcePoolMetadataProvidersConfiguration.class, DataSourceCheckpointRestoreConfiguration.class })
 public class DataSourceAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -75,6 +77,12 @@ public class DataSourceAutoConfiguration {
 			DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class })
 	protected static class PooledDataSourceConfiguration {
 
+		@Bean
+		@ConditionalOnMissingBean(JdbcConnectionDetails.class)
+		PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+			return new PropertiesJdbcConnectionDetails(properties);
+		}
+
 	}
 
 	/**
@@ -87,7 +95,7 @@ public class DataSourceAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		@ConditionalOnProperty("spring.datasource.type")
 		static class ExplicitType {
 
 		}
@@ -149,6 +157,7 @@ public class DataSourceAutoConfiguration {
 					return StringUtils.hasText(environment.getProperty(DATASOURCE_URL_PROPERTY));
 				}
 				catch (IllegalArgumentException ex) {
+					// NOTE: This should be PlaceholderResolutionException
 					// Ignore unresolvable placeholder errors
 				}
 			}

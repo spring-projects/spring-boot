@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.info.Info.Builder;
+import org.springframework.boot.actuate.info.JavaInfoContributor.JavaInfoContributorRuntimeHints;
 import org.springframework.boot.info.JavaInfo;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * An {@link InfoContributor} that exposes {@link JavaInfo}.
@@ -25,6 +30,7 @@ import org.springframework.boot.info.JavaInfo;
  * @author Jonatan Ivanov
  * @since 2.6.0
  */
+@ImportRuntimeHints(JavaInfoContributorRuntimeHints.class)
 public class JavaInfoContributor implements InfoContributor {
 
 	private final JavaInfo javaInfo;
@@ -36,6 +42,17 @@ public class JavaInfoContributor implements InfoContributor {
 	@Override
 	public void contribute(Builder builder) {
 		builder.withDetail("java", this.javaInfo);
+	}
+
+	static class JavaInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), JavaInfo.class);
+		}
+
 	}
 
 }

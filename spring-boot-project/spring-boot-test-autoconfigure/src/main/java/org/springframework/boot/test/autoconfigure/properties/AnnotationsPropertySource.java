@@ -91,7 +91,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return;
 		}
 		Optional<Object> value = annotation.getValue(attribute.getName());
-		if (!value.isPresent()) {
+		if (value.isEmpty()) {
 			return;
 		}
 		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
@@ -113,7 +113,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private String toKebabCase(String name) {
 		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		while (matcher.find()) {
 			matcher.appendReplacement(result, matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
 		}
@@ -136,8 +136,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 				putProperties(name + "[" + i + "]", defaultSkip, array[i], properties);
 			}
 		}
-		else if (value instanceof MergedAnnotation<?>) {
-			MergedAnnotation<?> annotation = (MergedAnnotation<?>) value;
+		else if (value instanceof MergedAnnotation<?> annotation) {
 			for (Method attribute : annotation.getType().getDeclaredMethods()) {
 				collectProperties(name, defaultSkip, (MergedAnnotation<?>) value, attribute, properties);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,38 +33,36 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.endpoints.web.cors")
+@ConfigurationProperties("management.endpoints.web.cors")
 public class CorsEndpointProperties {
 
 	/**
-	 * Comma-separated list of origins to allow. '*' allows all origins. When credentials
-	 * are allowed, '*' cannot be used and origin patterns should be configured instead.
-	 * When no allowed origins or allowed origin patterns are set, CORS support is
-	 * disabled.
+	 * List of origins to allow. '*' allows all origins. When credentials are allowed, '*'
+	 * cannot be used and origin patterns should be configured instead. When no allowed
+	 * origins or allowed origin patterns are set, CORS support is disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of origin patterns to allow. Unlike allowed origins which only
-	 * supports '*', origin patterns are more flexible (for example
-	 * 'https://*.example.com') and can be used when credentials are allowed. When no
-	 * allowed origin patterns or allowed origins are set, CORS support is disabled.
+	 * List of origin patterns to allow. Unlike allowed origins which only supports '*',
+	 * origin patterns are more flexible (for example 'https://*.example.com') and can be
+	 * used when credentials are allowed. When no allowed origin patterns or allowed
+	 * origins are set, CORS support is disabled.
 	 */
 	private List<String> allowedOriginPatterns = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of methods to allow. '*' allows all methods. When not set,
-	 * defaults to GET.
+	 * List of methods to allow. '*' allows all methods. When not set, defaults to GET.
 	 */
 	private List<String> allowedMethods = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of headers to allow in a request. '*' allows all headers.
+	 * List of headers to allow in a request. '*' allows all headers.
 	 */
 	private List<String> allowedHeaders = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of headers to include in a response.
+	 * List of headers to include in a response.
 	 */
 	private List<String> exposedHeaders = new ArrayList<>();
 

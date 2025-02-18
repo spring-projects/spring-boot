@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -38,7 +39,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -47,21 +47,17 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.artifacts.LenientConfiguration;
-import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvableDependencies;
-import org.gradle.api.artifacts.ResolvedArtifact;
-import org.gradle.api.artifacts.ResolvedConfiguration;
-import org.gradle.api.artifacts.ResolvedModuleVersion;
-import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
-import org.gradle.api.internal.file.archive.ZipCopyAction;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.internal.file.archive.ZipEntryConstants;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -69,6 +65,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,6 +80,7 @@ import static org.mockito.Mockito.mock;
  * @param <T> the type of the concrete BootArchive implementation
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
@@ -117,7 +116,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		projectDir.mkdirs();
 		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
 		this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
-		this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
+		this.task = this.project.getTasks().register("testArchive", this.taskClass, this::configure).get();
 	}
 
 	@Test
@@ -131,6 +130,42 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				.isEqualTo(this.classesPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(this.libPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Version")).isNotNull();
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Title"))
+				.isEqualTo(this.project.getName());
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version")).isNull();
+		}
+	}
+
+	@Test
+	void whenImplementationNameIsCustomizedItShouldAppearInArchiveManifest() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getManifest().getAttributes().put("Implementation-Title", "Customized");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Title"))
+				.isEqualTo("Customized");
+		}
+	}
+
+	@Test
+	void whenProjectVersionIsSetThenImplementationVersionShouldAppearInArchiveManifest() throws IOException {
+		this.project.setVersion("1.0.0");
+		this.task.getMainClass().set("com.example.Main");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version")).isEqualTo("1.0.0");
+		}
+	}
+
+	@Test
+	void whenImplementationVersionIsCustomizedItShouldAppearInArchiveManifest() throws IOException {
+		this.project.setVersion("1.0.0");
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getManifest().getAttributes().put("Implementation-Version", "Customized");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version"))
+				.isEqualTo("Customized");
 		}
 	}
 
@@ -222,7 +257,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.getMainClass().set("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/launch/LaunchedClassLoader.class"))
+				.isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 		// gh-16698
@@ -237,7 +273,21 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	void loaderIsWrittenToTheRootOfTheJarWhenUsingThePropertiesLauncher() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		executeTask();
-		this.task.getManifest().getAttributes().put("Main-Class", "org.springframework.boot.loader.PropertiesLauncher");
+		this.task.getManifest()
+			.getAttributes()
+			.put("Main-Class", "org.springframework.boot.loader.launch.PropertiesLauncher");
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/launch/LaunchedClassLoader.class"))
+				.isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
+		}
+	}
+
+	@Test
+	void loaderIsWrittenToTheRootOfTheJarWhenUsingClassicLoader() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getLoaderImplementation().set(LoaderImplementation.CLASSIC);
+		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
@@ -296,11 +346,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	void customLaunchScriptCanBePrepended() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		File customScript = new File(this.temp, "custom.script");
-		Files.write(customScript.toPath(), Arrays.asList("custom script"), StandardOpenOption.CREATE);
+		Files.writeString(customScript.toPath(), "custom script", StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		executeTask();
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
-			.startsWith("custom script".getBytes());
+		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
+		assertThat(Files.readString(path, StandardCharsets.ISO_8859_1)).startsWith("custom script");
 	}
 
 	@Test
@@ -312,10 +362,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			configuration.getProperties().put("initInfoDescription", "description");
 		});
 		executeTask();
-		byte[] bytes = Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath());
-		assertThat(bytes).containsSequence("Provides:          provides".getBytes());
-		assertThat(bytes).containsSequence("Short-Description: short description".getBytes());
-		assertThat(bytes).containsSequence("Description:       description".getBytes());
+		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
+		String content = Files.readString(path, StandardCharsets.ISO_8859_1);
+		assertThat(content).containsSequence("Provides:          provides");
+		assertThat(content).containsSequence("Short-Description: short description");
+		assertThat(content).containsSequence("Description:       description");
 	}
 
 	@Test
@@ -328,7 +379,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Main-Class"))
 				.isEqualTo("com.example.CustomLauncher");
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class")).isEqualTo("com.example.Main");
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/launch/LaunchedClassLoader.class")).isNull();
 		}
 	}
 
@@ -364,7 +415,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	void constantTimestampMatchesGradleInternalTimestamp() {
 		assertThat(DefaultTimeZoneOffset.INSTANCE.removeFrom(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES))
-			.isEqualTo(ZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			.isEqualTo(ZipEntryConstants.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 	}
 
 	@Test
@@ -446,14 +497,15 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(this.libPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
 				.isEqualTo(this.indexPath + "layers.idx");
-			assertThat(getEntryNames(jarFile)).contains(this.libPath + JarModeLibrary.LAYER_TOOLS.getName());
+			assertThat(getEntryNames(jarFile)).contains(this.libPath + JarModeLibrary.TOOLS.getName());
 		}
 	}
 
 	@Test
 	void jarWhenLayersDisabledShouldNotContainLayersIndex() throws IOException {
-		List<String> entryNames = getEntryNames(createLayeredJar((configuration) -> configuration.setEnabled(false)));
-		assertThat(entryNames).doesNotContain(this.indexPath + "layers.idx");
+		List<String> entryNames = getEntryNames(
+				createLayeredJar((configuration) -> configuration.getEnabled().set(false)));
+		assertThat(entryNames).isNotEmpty().doesNotContain(this.indexPath + "layers.idx");
 	}
 
 	@Test
@@ -479,11 +531,12 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"dependencies\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
+			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
 			if (!layerToolsJar.contains("SNAPSHOT")) {
 				expected.add("  - \"" + layerToolsJar + "\"");
@@ -519,7 +572,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				dependencies.intoLayer("my-internal-deps", (spec) -> spec.include("com.example:*:*"));
 				dependencies.intoLayer("my-deps");
 			});
-			layered.setLayerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
+			layered.getLayerOrder()
+				.set(List.of("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application"));
 		});
 		try (JarFile jarFile = new JarFile(jar)) {
 			List<String> entryNames = getEntryNames(jar);
@@ -531,13 +585,14 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
 					"resources", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"my-deps\":");
 			expected.add("  - \"" + layerToolsJar + "\"");
 			expected.add("- \"my-internal-deps\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
+			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
 			expected.add("- \"my-snapshot-deps\":");
 			expected.add("  - \"" + this.libPath + "second-project-library-SNAPSHOT.jar\"");
@@ -560,15 +615,24 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	void whenArchiveIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
 		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames).contains(this.libPath + JarModeLibrary.LAYER_TOOLS.getName());
+		assertThat(entryNames).contains(this.libPath + JarModeLibrary.TOOLS.getName());
 	}
 
 	@Test
-	void whenArchiveIsLayeredAndIncludeLayerToolsIsFalseThenLayerToolsAreNotAddedToTheJar() throws IOException {
-		List<String> entryNames = getEntryNames(
-				createLayeredJar((configuration) -> configuration.setIncludeLayerTools(false)));
-		assertThat(entryNames)
-			.doesNotContain(this.indexPath + "layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
+	void shouldAddToolsToTheJar() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		executeTask();
+		List<String> entryNames = getEntryNames(this.task.getArchiveFile().get().getAsFile());
+		assertThat(entryNames).isNotEmpty().contains(this.libPath + JarModeLibrary.TOOLS.getName());
+	}
+
+	@Test
+	void whenIncludeToolsIsFalseThenToolsAreNotAddedToTheJar() throws IOException {
+		this.task.getIncludeTools().set(false);
+		this.task.getMainClass().set("com.example.Main");
+		executeTask();
+		List<String> entryNames = getEntryNames(this.task.getArchiveFile().get().getAsFile());
+		assertThat(entryNames).isNotEmpty().doesNotContain(this.libPath + JarModeLibrary.TOOLS.getName());
 	}
 
 	protected File jarFile(String name) throws IOException {
@@ -618,27 +682,43 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	File createLayeredJar() throws IOException {
-		return createLayeredJar((spec) -> {
+		return createLayeredJar(false);
+	}
+
+	File createLayeredJar(boolean addReachabilityProperties) throws IOException {
+		return createLayeredJar(addReachabilityProperties, (spec) -> {
 		});
 	}
 
 	File createLayeredJar(Action<LayeredSpec> action) throws IOException {
+		return createLayeredJar(false, action);
+	}
+
+	File createLayeredJar(boolean addReachabilityProperties, Action<LayeredSpec> action) throws IOException {
 		applyLayered(action);
-		addContent();
+		addContent(addReachabilityProperties);
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
 	File createPopulatedJar() throws IOException {
-		addContent();
+		return createPopulatedJar(false);
+	}
+
+	File createPopulatedJar(boolean addReachabilityProperties) throws IOException {
+		addContent(addReachabilityProperties);
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
 	abstract void applyLayered(Action<LayeredSpec> action);
 
-	@SuppressWarnings("unchecked")
 	void addContent() throws IOException {
+		addContent(false);
+	}
+
+	@SuppressWarnings("unchecked")
+	void addContent(boolean addReachabilityProperties) throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
@@ -652,25 +732,29 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		staticResources.mkdir();
 		File css = new File(staticResources, "test.css");
 		css.createNewFile();
+		if (addReachabilityProperties) {
+			createReachabilityProperties(resourcesMain, "com.example", "first-library", "1.0.0", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "second-library", "1.0.0", "true");
+			createReachabilityProperties(resourcesMain, "com.example", "fourth-library", "1.0.0", "false");
+		}
 		this.task.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
-				jarFile("third-library-SNAPSHOT.jar"), jarFile("first-project-library.jar"),
-				jarFile("second-project-library-SNAPSHOT.jar"));
-		Set<ResolvedArtifact> artifacts = new LinkedHashSet<>();
-		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
-		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
-		artifacts
-			.add(mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
-		artifacts
-			.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
-		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example",
+				jarFile("third-library-SNAPSHOT.jar"), jarFile("fourth-library.jar"),
+				jarFile("first-project-library.jar"), jarFile("second-project-library-SNAPSHOT.jar"));
+		Set<ResolvedArtifactResult> resolvedArtifacts = new LinkedHashSet<>();
+		resolvedArtifacts.add(mockArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
+		resolvedArtifacts.add(mockArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
+		resolvedArtifacts
+			.add(mockArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
+		resolvedArtifacts.add(mockArtifact("fourth-library.jar", "com.example", "fourth-library", "1.0.0"));
+		resolvedArtifacts
+			.add(mockArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
+		resolvedArtifacts.add(mockArtifact("second-project-library-SNAPSHOT.jar", "com.example",
 				"second-project-library", "1.0.0.SNAPSHOT"));
-		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
-		LenientConfiguration lenientConfiguration = mock(LenientConfiguration.class);
-		given(resolvedConfiguration.getLenientConfiguration()).willReturn(lenientConfiguration);
-		given(lenientConfiguration.getArtifacts()).willReturn(artifacts);
-		Configuration configuration = mock(Configuration.class);
-		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
+		ArtifactCollection artifacts = mock(ArtifactCollection.class);
+		given(artifacts.getResolvedArtifacts()).willReturn(this.project.provider(() -> resolvedArtifacts));
 		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
+		given(resolvableDependencies.getArtifacts()).willReturn(artifacts);
+		Configuration configuration = mock(Configuration.class);
 		given(configuration.getIncoming()).willReturn(resolvableDependencies);
 		DependencySet dependencies = mock(DependencySet.class);
 		DomainObjectSet<ProjectDependency> projectDependencies = mock(DomainObjectSet.class);
@@ -684,44 +768,37 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		populateResolvedDependencies(configuration);
 	}
 
-	abstract void populateResolvedDependencies(Configuration configuration);
-
-	private ResolvedArtifact mockLibraryArtifact(String fileName, String group, String module, String version) {
-		ModuleComponentIdentifier moduleComponentIdentifier = mock(ModuleComponentIdentifier.class);
-		ComponentArtifactIdentifier libraryArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(libraryArtifactId.getComponentIdentifier()).willReturn(moduleComponentIdentifier);
-		ResolvedArtifact libraryArtifact = mockArtifact(fileName, group, module, version);
-		given(libraryArtifact.getId()).willReturn(libraryArtifactId);
-		return libraryArtifact;
+	protected void createReachabilityProperties(File directory, String groupId, String artifactId, String version,
+			String override) throws IOException {
+		File targetDirectory = new File(directory,
+				"META-INF/native-image/%s/%s/%s".formatted(groupId, artifactId, version));
+		File target = new File(targetDirectory, "reachability-metadata.properties");
+		targetDirectory.mkdirs();
+		FileCopyUtils.copy("override=%s\n".formatted(override).getBytes(StandardCharsets.ISO_8859_1), target);
 	}
 
-	private ResolvedArtifact mockProjectArtifact(String fileName, String group, String module, String version) {
-		ProjectComponentIdentifier projectComponentIdentifier = mock(ProjectComponentIdentifier.class);
-		ComponentArtifactIdentifier projectArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(projectArtifactId.getComponentIdentifier()).willReturn(projectComponentIdentifier);
-		ResolvedArtifact projectArtifact = mockArtifact(fileName, group, module, version);
-		given(projectArtifact.getId()).willReturn(projectArtifactId);
-		return projectArtifact;
+	private void populateResolvedDependencies(Configuration configuration) {
+		getTask().resolvedArtifacts(configuration.getIncoming().getArtifacts().getResolvedArtifacts());
 	}
 
-	private ResolvedArtifact mockArtifact(String fileName, String group, String module, String version) {
-		ModuleVersionIdentifier moduleVersionIdentifier = mock(ModuleVersionIdentifier.class);
-		given(moduleVersionIdentifier.getGroup()).willReturn(group);
-		given(moduleVersionIdentifier.getName()).willReturn(module);
-		given(moduleVersionIdentifier.getVersion()).willReturn(version);
-		ResolvedModuleVersion moduleVersion = mock(ResolvedModuleVersion.class);
-		given(moduleVersion.getId()).willReturn(moduleVersionIdentifier);
-		ResolvedArtifact libraryArtifact = mock(ResolvedArtifact.class);
+	private ResolvedArtifactResult mockArtifact(String fileName, String group, String module, String version) {
+		ModuleComponentArtifactIdentifier moduleId = mock(ModuleComponentArtifactIdentifier.class);
+		ModuleComponentIdentifier componentId = mock(ModuleComponentIdentifier.class);
+		given(moduleId.getComponentIdentifier()).willReturn(componentId);
+		given(componentId.getGroup()).willReturn(group);
+		given(componentId.getModule()).willReturn(module);
+		given(componentId.getVersion()).willReturn(version);
+		ResolvedArtifactResult libraryArtifact = mock(ResolvedArtifactResult.class);
 		File file = new File(this.temp, fileName).getAbsoluteFile();
 		given(libraryArtifact.getFile()).willReturn(file);
-		given(libraryArtifact.getModuleVersion()).willReturn(moduleVersion);
+		given(libraryArtifact.getId()).willReturn(moduleId);
 		return libraryArtifact;
 	}
 
 	List<String> entryLines(JarFile jarFile, String entryName) throws IOException {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(jarFile.getInputStream(jarFile.getEntry(entryName))))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 	}
 

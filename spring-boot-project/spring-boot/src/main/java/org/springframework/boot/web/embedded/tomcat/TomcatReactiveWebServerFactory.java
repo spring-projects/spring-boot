@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Executor;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
@@ -35,6 +36,8 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
@@ -44,6 +47,7 @@ import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.TomcatHttpHandlerAdapter;
@@ -56,10 +60,14 @@ import org.springframework.util.StringUtils;
  *
  * @author Brian Clozel
  * @author HaiTao Zhang
+ * @author Moritz Halbritter
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableTomcatWebServerFactory {
+
+	private static final Log logger = LogFactory.getLog(TomcatReactiveWebServerFactory.class);
 
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -74,7 +82,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
+	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
 
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
@@ -129,14 +137,22 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
+		registerConnectorExecutor(tomcat, connector);
 		tomcat.getHost().setAutoDeploy(false);
 		configureEngine(tomcat.getEngine());
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
+			registerConnectorExecutor(tomcat, additionalConnector);
 		}
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
 		prepareContext(tomcat.getHost(), servlet);
 		return getTomcatWebServer(tomcat);
+	}
+
+	private void registerConnectorExecutor(Tomcat tomcat, Connector connector) {
+		if (connector.getProtocolHandler().getExecutor() instanceof Executor executor) {
+			tomcat.getService().addExecutor(executor);
+		}
 	}
 
 	private void configureEngine(Engine engine) {
@@ -152,10 +168,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new Tomcat.FixContextListener());
-		context.setParentClassLoader(ClassUtils.getDefaultClassLoader());
+		ClassLoader parentClassLoader = ClassUtils.getDefaultClassLoader();
+		context.setParentClassLoader(parentClassLoader);
 		skipAllTldScanning(context);
 		WebappLoader loader = new WebappLoader();
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		Tomcat.addServlet(context, "httpHandlerServlet", servlet).setAsyncSupported(true);
@@ -186,19 +203,17 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (StringUtils.hasText(getServerHeader())) {
 			connector.setProperty("server", getServerHeader());
 		}
-		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
+		if (connector.getProtocolHandler() instanceof AbstractProtocol<?> abstractProtocol) {
+			customizeProtocol(abstractProtocol);
 		}
 		invokeProtocolHandlerCustomizers(connector.getProtocolHandler());
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
-		// Don't bind to the socket prematurely if ApplicationContext is slow to start
-		connector.setProperty("bindOnInit", "false");
 		if (getHttp2() != null && getHttp2().isEnabled()) {
 			connector.addUpgradeProtocol(new Http2Protocol());
 		}
-		if (getSsl() != null && getSsl().isEnabled()) {
+		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(connector);
 		}
 		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(getCompression());
@@ -222,7 +237,19 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	private void customizeSsl(Connector connector) {
-		new SslConnectorCustomizer(getSsl(), getOrCreateSslStoreProvider()).customize(connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, connector, getSsl().getClientAuth());
+		customizer.customize(getSslBundle(), getServerNameSslBundles());
+		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
+		getSsl().getServerNameBundles()
+			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
+					serverNameSslBundle.bundle(), customizer));
+	}
+
+	private void addBundleUpdateHandler(String serverName, String sslBundleName, SslConnectorCustomizer customizer) {
+		if (StringUtils.hasText(sslBundleName)) {
+			getSslBundles().addBundleUpdateHandler(sslBundleName,
+					(sslBundle) -> customizer.update(serverName, sslBundle));
+		}
 	}
 
 	@Override
@@ -241,7 +268,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers = new LinkedHashSet<>(tomcatContextCustomizers);
 	}
 
@@ -261,7 +288,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
@@ -272,7 +299,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
@@ -283,7 +310,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addConnectorCustomizers(TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
 	}
 
@@ -304,7 +331,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers) {
-		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizers, "'tomcatProtocolHandlerCustomizers' must not be null");
 		this.tomcatProtocolHandlerCustomizers = new LinkedHashSet<>(tomcatProtocolHandlerCustomizers);
 	}
 
@@ -316,7 +343,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addProtocolHandlerCustomizers(TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers) {
-		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizers, "'tomcatProtocolHandlerCustomizers' must not be null");
 		this.tomcatProtocolHandlerCustomizers.addAll(Arrays.asList(tomcatProtocolHandlerCustomizers));
 	}
 
@@ -339,7 +366,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @since 2.2.0
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
-		Assert.notNull(connectors, "Connectors must not be null");
+		Assert.notNull(connectors, "'connectors' must not be null");
 		this.additionalTomcatConnectors.addAll(Arrays.asList(connectors));
 	}
 
@@ -355,7 +382,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	@Override
 	public void addEngineValves(Valve... engineValves) {
-		Assert.notNull(engineValves, "Valves must not be null");
+		Assert.notNull(engineValves, "'engineValves' must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));
 	}
 
@@ -392,7 +419,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(Collection<? extends LifecycleListener> contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners = new ArrayList<>(contextLifecycleListeners);
 	}
 
@@ -410,7 +437,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param contextLifecycleListeners the listeners to add
 	 */
 	public void addContextLifecycleListeners(LifecycleListener... contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 
@@ -431,7 +458,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
-		Assert.hasLength(protocol, "Protocol must not be empty");
+		Assert.hasLength(protocol, "'protocol' must not be empty");
 		this.protocol = protocol;
 	}
 

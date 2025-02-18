@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -78,12 +78,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		OutcomesResolver outcomesResolver = new StandardOutcomesResolver(autoConfigurationClasses, start, end,
 				autoConfigurationMetadata, getBeanClassLoader());
-		try {
-			return new ThreadedOutcomesResolver(outcomesResolver);
-		}
-		catch (AccessControlException ex) {
-			return outcomesResolver;
-		}
+		return new ThreadedOutcomesResolver(outcomesResolver);
 	}
 
 	@Override
@@ -148,8 +143,17 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 		private volatile ConditionOutcome[] outcomes;
 
+		private volatile Throwable failure;
+
 		private ThreadedOutcomesResolver(OutcomesResolver outcomesResolver) {
-			this.thread = new Thread(() -> this.outcomes = outcomesResolver.resolveOutcomes());
+			this.thread = new Thread(() -> {
+				try {
+					this.outcomes = outcomesResolver.resolveOutcomes();
+				}
+				catch (Throwable ex) {
+					this.failure = ex;
+				}
+			});
 			this.thread.start();
 		}
 
@@ -161,7 +165,12 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			return this.outcomes;
+			Throwable failure = this.failure;
+			if (failure != null) {
+				ReflectionUtils.rethrowRuntimeException(failure);
+			}
+			ConditionOutcome[] outcomes = this.outcomes;
+			return (outcomes != null) ? outcomes : new ConditionOutcome[0];
 		}
 
 	}

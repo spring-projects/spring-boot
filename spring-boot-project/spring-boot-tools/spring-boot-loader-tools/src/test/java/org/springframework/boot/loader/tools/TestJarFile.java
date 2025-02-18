@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,15 @@ public class TestJarFile {
 	}
 
 	public void addFile(String filename, File fileToCopy) throws IOException {
+		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
+			addFile(filename, inputStream);
+		}
+	}
+
+	public void addFile(String filename, InputStream inputStream) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
-		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
-			copyToFile(inputStream, file);
-		}
+		copyToFile(inputStream, file);
 		this.entries.add(new FileSource(filename, file));
 	}
 
@@ -86,7 +90,7 @@ public class TestJarFile {
 	}
 
 	private File getFilePath(String filename) {
-		String[] paths = filename.split("\\/");
+		String[] paths = filename.split("/");
 		File file = this.jarSource;
 		for (String path : paths) {
 			file = new File(file, path);

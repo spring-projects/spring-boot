@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import javax.jms.ConnectionFactory;
-
+import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
@@ -41,6 +40,7 @@ import static org.mockito.Mockito.mockingDetails;
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 class ActiveMQAutoConfigurationTests {
 
@@ -234,6 +234,27 @@ class ActiveMQAutoConfigurationTests {
 				.doesNotHaveBean("jmsConnectionFactory"));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context)
+			.hasSingleBean(ActiveMQAutoConfiguration.PropertiesActiveMQConnectionDetails.class));
+	}
+
+	@Test
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+			.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=false")
+			.withUserConfiguration(TestConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ActiveMQConnectionDetails.class)
+					.doesNotHaveBean(ActiveMQAutoConfiguration.PropertiesActiveMQConnectionDetails.class);
+				ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+				assertThat(connectionFactory.getBrokerURL()).isEqualTo("tcp://localhost:12345");
+				assertThat(connectionFactory.getUserName()).isEqualTo("springuser");
+				assertThat(connectionFactory.getPassword()).isEqualTo("spring");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
@@ -257,6 +278,33 @@ class ActiveMQAutoConfigurationTests {
 			return (factory) -> {
 				factory.setBrokerURL("vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConnectionDetailsConfiguration {
+
+		@Bean
+		ActiveMQConnectionDetails activemqConnectionDetails() {
+			return new ActiveMQConnectionDetails() {
+
+				@Override
+				public String getBrokerUrl() {
+					return "tcp://localhost:12345";
+				}
+
+				@Override
+				public String getUser() {
+					return "springuser";
+				}
+
+				@Override
+				public String getPassword() {
+					return "spring";
+				}
+
 			};
 		}
 

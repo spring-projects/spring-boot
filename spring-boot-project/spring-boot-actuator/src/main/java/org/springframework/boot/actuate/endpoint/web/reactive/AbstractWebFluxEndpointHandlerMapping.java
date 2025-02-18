@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -30,6 +31,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
@@ -44,14 +49,15 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.AbstractWebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -78,8 +84,10 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  */
+@ImportRuntimeHints(AbstractWebFluxEndpointHandlerMappingRuntimeHints.class)
 public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
@@ -172,16 +180,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = this.endpointMapping.createSubPath(predicate.getPath());
+		List<String> paths = new ArrayList<>();
+		paths.add(path);
+		if (!StringUtils.hasText(path)) {
+			paths.add("/");
+		}
 		RequestMethod method = RequestMethod.valueOf(predicate.getHttpMethod().name());
 		String[] consumes = StringUtils.toStringArray(predicate.getConsumes());
 		String[] produces = StringUtils.toStringArray(predicate.getProduces());
-		return RequestMappingInfo.paths(path).methods(method).consumes(consumes).produces(produces).build();
+		return RequestMappingInfo.paths(paths.toArray(new String[0]))
+			.methods(method)
+			.consumes(consumes)
+			.produces(produces)
+			.build();
 	}
 
 	private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
+		String linksPath = StringUtils.hasLength(path) ? path : "/";
 		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
-		RequestMappingInfo mapping = RequestMappingInfo.paths(path)
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath)
 			.methods(RequestMethod.GET)
 			.produces(produces)
 			.build();
@@ -244,6 +262,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	}
 
+	protected static final class ExceptionCapturingInvoker implements OperationInvoker {
+
+		private final OperationInvoker invoker;
+
+		public ExceptionCapturingInvoker(OperationInvoker invoker) {
+			this.invoker = invoker;
+		}
+
+		@Override
+		public Object invoke(InvocationContext context) {
+			try {
+				return this.invoker.invoke(context);
+			}
+			catch (Exception ex) {
+				return Mono.error(ex);
+			}
+		}
+
+	}
+
 	/**
 	 * Reactive handler providing actuator links at the root endpoint.
 	 */
@@ -287,9 +325,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private OperationInvoker getInvoker(WebOperation operation) {
 			OperationInvoker invoker = operation::invoke;
 			if (operation.isBlocking()) {
-				invoker = new ElasticSchedulerInvoker(invoker);
+				return new ElasticSchedulerInvoker(invoker);
 			}
-			return invoker;
+			return new ExceptionCapturingInvoker(invoker);
 		}
 
 		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
@@ -379,10 +417,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			MediaType contentType = (webEndpointResponse.getContentType() != null)
 					? new MediaType(webEndpointResponse.getContentType()) : null;
 			return ResponseEntity.status(webEndpointResponse.getStatus())
@@ -409,6 +446,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(exchange, body);
@@ -433,6 +471,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
 		}
@@ -465,12 +504,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	private static final class ReactiveSecurityContext implements SecurityContext {
 
-		private final RoleVoter roleVoter = new RoleVoter();
+		private static final String ROLE_PREFIX = "ROLE_";
 
 		private final Authentication authentication;
 
 		ReactiveSecurityContext(Authentication authentication) {
 			this.authentication = authentication;
+		}
+
+		private Authentication getAuthentication() {
+			return this.authentication;
 		}
 
 		@Override
@@ -480,11 +523,22 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public boolean isUserInRole(String role) {
-			if (!role.startsWith(this.roleVoter.getRolePrefix())) {
-				role = this.roleVoter.getRolePrefix() + role;
-			}
-			return this.roleVoter.vote(this.authentication, null,
-					Collections.singletonList(new SecurityConfig(role))) == AccessDecisionVoter.ACCESS_GRANTED;
+			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
+			AuthorizationResult result = AuthorityAuthorizationManager.hasAuthority(authority)
+				.authorize(this::getAuthentication, null);
+			return result != null && result.isGranted();
+		}
+
+	}
+
+	static class AbstractWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.reflectiveRegistrar.registerRuntimeHints(hints, WriteOperationHandler.class,
+					ReadOperationHandler.class);
 		}
 
 	}

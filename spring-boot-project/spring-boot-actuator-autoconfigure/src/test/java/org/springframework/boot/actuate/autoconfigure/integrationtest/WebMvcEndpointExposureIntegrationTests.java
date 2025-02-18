@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,20 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -75,10 +71,10 @@ class WebMvcEndpointExposureIntegrationTests {
 				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				HttpTraceAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+				HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
-				HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
+				HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
 		.withPropertyValues("server.port:0");
 
 	@Test
@@ -96,7 +92,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isFalse();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isFalse();
 		});
 	}
 
@@ -117,7 +113,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isTrue();
 		});
 	}
 
@@ -138,7 +134,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isFalse();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isFalse();
 		});
 	}
 
@@ -159,7 +155,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isTrue();
 		});
 	}
 
@@ -190,7 +186,8 @@ class WebMvcEndpointExposureIntegrationTests {
 				String.format("Unexpected %s HTTP status for endpoint %s", result.getStatus(), path));
 	}
 
-	@RestControllerEndpoint(id = "custommvc")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "custommvc")
+	@SuppressWarnings("removal")
 	static class CustomMvcEndpoint {
 
 		@GetMapping("/")
@@ -200,12 +197,14 @@ class WebMvcEndpointExposureIntegrationTests {
 
 	}
 
-	@ServletEndpoint(id = "customservlet")
-	static class CustomServletEndpoint implements Supplier<EndpointServlet> {
+	@org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint(id = "customservlet")
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class CustomServletEndpoint
+			implements Supplier<org.springframework.boot.actuate.endpoint.web.EndpointServlet> {
 
 		@Override
-		public EndpointServlet get() {
-			return new EndpointServlet(new HttpServlet() {
+		public org.springframework.boot.actuate.endpoint.web.EndpointServlet get() {
+			return new org.springframework.boot.actuate.endpoint.web.EndpointServlet(new HttpServlet() {
 
 				@Override
 				protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -218,11 +217,11 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class HttpTraceRepositoryConfiguration {
+	static class HttpExchangeRepositoryConfiguration {
 
 		@Bean
-		InMemoryHttpTraceRepository httpTraceRepository() {
-			return new InMemoryHttpTraceRepository();
+		InMemoryHttpExchangeRepository httpExchangeRepository() {
+			return new InMemoryHttpExchangeRepository();
 		}
 
 	}

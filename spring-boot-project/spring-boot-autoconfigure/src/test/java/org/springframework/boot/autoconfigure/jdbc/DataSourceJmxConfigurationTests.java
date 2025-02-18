@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,8 @@ class DataSourceJmxConfigurationTests {
 				hikariDataSource.getConnection().close();
 				// We can't rely on the number of MBeans so we're checking that the
 				// pool and pool config MBeans were registered
-				assertThat(mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null).size())
-					.isEqualTo(existingInstances.size() + 2);
+				assertThat(mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null))
+					.hasSize(existingInstances.size() + 2);
 			});
 	}
 
@@ -149,7 +149,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatAutoConfiguredCanExposeMBeanPool() {
 		this.contextRunner
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");
@@ -162,7 +162,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatProxiedCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");
@@ -173,7 +173,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatDelegateCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.origin.Origin;
@@ -40,8 +43,8 @@ import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -102,8 +105,10 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 	private ConfigTreePropertySource(String name, Path sourceDirectory, Set<Option> options) {
 		super(name, sourceDirectory);
-		Assert.isTrue(Files.exists(sourceDirectory), () -> "Directory '" + sourceDirectory + "' does not exist");
-		Assert.isTrue(Files.isDirectory(sourceDirectory), () -> "File '" + sourceDirectory + "' is not a directory");
+		Assert.isTrue(Files.exists(sourceDirectory),
+				() -> "'sourceDirectory' [%s] must exist".formatted(sourceDirectory));
+		Assert.isTrue(Files.isDirectory(sourceDirectory),
+				() -> "'sourceDirectory' [%s] must be a directory".formatted(sourceDirectory));
 		this.propertyFiles = PropertyFile.findAll(sourceDirectory, options);
 		this.options = options;
 		this.names = StringUtils.toStringArray(this.propertyFiles.keySet());
@@ -173,7 +178,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final Path path;
 
-		private final PathResource resource;
+		private final FileSystemResource resource;
 
 		private final Origin origin;
 
@@ -183,7 +188,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private PropertyFile(Path path, Set<Option> options) {
 			this.path = path;
-			this.resource = new PathResource(path);
+			this.resource = new FileSystemResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
 			this.autoTrimTrailingNewLine = options.contains(Option.AUTO_TRIM_TRAILING_NEW_LINE);
 			this.cachedContent = options.contains(Option.ALWAYS_READ) ? null
@@ -204,16 +209,18 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile, FileVisitOption.FOLLOW_LINKS)
-					.forEach((path) -> {
+				try (Stream<Path> pathStream = Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile,
+						FileVisitOption.FOLLOW_LINKS)) {
+					pathStream.forEach((path) -> {
 						String name = getName(sourceDirectory.relativize(path));
 						if (StringUtils.hasText(name)) {
 							if (options.contains(Option.USE_LOWERCASE_NAMES)) {
-								name = name.toLowerCase();
+								name = name.toLowerCase(Locale.getDefault());
 							}
 							propertyFiles.put(name, new PropertyFile(path, options));
 						}
 					});
+				}
 				return Collections.unmodifiableMap(propertyFiles);
 			}
 			catch (IOException ex) {
@@ -226,9 +233,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		}
 
 		private static boolean hasHiddenPathElement(Path path) {
-			Iterator<Path> iterator = path.iterator();
-			while (iterator.hasNext()) {
-				if (iterator.next().toString().startsWith("..")) {
+			for (Path element : path) {
+				if (element.toString().startsWith("..")) {
 					return true;
 				}
 			}
@@ -256,6 +262,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	private static final class PropertyFileContent implements Value, OriginProvider {
 
 		private final Path path;
+
+		private final Lock resourceLock = new ReentrantLock();
 
 		private final Resource resource;
 
@@ -340,10 +348,14 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 				}
 				if (this.content == null) {
 					assertStillExists();
-					synchronized (this.resource) {
+					this.resourceLock.lock();
+					try {
 						if (this.content == null) {
 							this.content = FileCopyUtils.copyToByteArray(this.resource.getInputStream());
 						}
+					}
+					finally {
+						this.resourceLock.unlock();
 					}
 				}
 				return this.content;

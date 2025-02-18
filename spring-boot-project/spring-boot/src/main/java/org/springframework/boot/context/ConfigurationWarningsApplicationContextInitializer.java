@@ -73,7 +73,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	protected static final class ConfigurationWarningsPostProcessor
 			implements PriorityOrdered, BeanDefinitionRegistryPostProcessor {
 
-		private Check[] checks;
+		private final Check[] checks;
 
 		public ConfigurationWarningsPostProcessor(Check[] checks) {
 			this.checks = checks;
@@ -152,8 +152,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
-				if (definition instanceof AnnotatedBeanDefinition) {
-					AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
+				if (definition instanceof AnnotatedBeanDefinition annotatedDefinition) {
 					addComponentScanningPackages(packages, annotatedDefinition.getMetadata());
 				}
 			}

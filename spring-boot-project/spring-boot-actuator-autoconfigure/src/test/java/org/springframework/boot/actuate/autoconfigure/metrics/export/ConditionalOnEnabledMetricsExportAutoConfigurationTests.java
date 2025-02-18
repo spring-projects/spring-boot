@@ -39,21 +39,21 @@ class ConditionalOnEnabledMetricsExportAutoConfigurationTests {
 
 	@Test
 	void exporterCanBeSpecificallyDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.export.simple.enabled=false")
+		this.contextRunner.withPropertyValues("management.simple.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean("simpleMeterRegistry"));
 	}
 
 	@Test
 	void exporterCanBeGloballyDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.export.defaults.enabled=false")
+		this.contextRunner.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean("simpleMeterRegistry"));
 	}
 
 	@Test
 	void exporterCanBeGloballyDisabledWithSpecificOverride() {
 		this.contextRunner
-			.withPropertyValues("management.metrics.export.defaults.enabled=false",
-					"management.metrics.export.simple.enabled=true")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false",
+					"management.simple.metrics.export.enabled=true")
 			.run((context) -> assertThat(context).hasBean("simpleMeterRegistry"));
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
-import javax.activation.MimeType;
-import javax.mail.internet.MimeMessage;
+import jakarta.activation.MimeType;
+import jakarta.mail.internet.MimeMessage;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -57,12 +57,12 @@ public class MailSenderAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.mail", name = "host")
+		@ConditionalOnProperty("spring.mail.host")
 		static class HostProperty {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
+		@ConditionalOnProperty("spring.mail.jndi-name")
 		static class JndiNameProperty {
 
 		}

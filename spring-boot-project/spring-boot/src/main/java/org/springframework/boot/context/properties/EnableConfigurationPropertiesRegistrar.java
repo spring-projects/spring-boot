@@ -65,8 +65,8 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	static void registerMethodValidationExcludeFilter(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-				.genericBeanDefinition(MethodValidationExcludeFilter.class,
-						() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class))
+				.rootBeanDefinition(MethodValidationExcludeFilter.class, "byAnnotation")
+				.addConstructorArgValue(ConfigurationProperties.class)
 				.setRole(BeanDefinition.ROLE_INFRASTRUCTURE)
 				.getBeanDefinition();
 			registry.registerBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME, definition);

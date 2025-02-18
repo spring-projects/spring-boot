@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
@@ -40,8 +40,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 @AutoConfiguration(after = R2dbcDataAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, R2dbcRepository.class })
 @ConditionalOnBean(DatabaseClient.class)
-@ConditionalOnProperty(prefix = "spring.data.r2dbc.repositories", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.data.r2dbc.repositories.enabled", matchIfMissing = true)
 @ConditionalOnMissingBean(R2dbcRepositoryFactoryBean.class)
 @Import(R2dbcRepositoriesAutoConfigureRegistrar.class)
 public class R2dbcRepositoriesAutoConfiguration {

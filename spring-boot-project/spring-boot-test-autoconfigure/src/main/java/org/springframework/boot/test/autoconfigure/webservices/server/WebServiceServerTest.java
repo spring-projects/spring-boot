@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Annotation that can be used for a typical Spring web service server test. Can be used
  * when a test focuses <strong>only</strong> on Spring WS endpoints.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Web Service server tests (i.e. {@code Endpoint} and
- * {@code EndpointInterceptor} beans but not {@code @Component}, {@code @Service} or
- * {@code @Repository} beans).
+ * Using this annotation only enables auto-configuration that is relevant to Web Service
+ * Server tests. Similarly, component scanning is limited to beans annotated with:
+ * <ul>
+ * <li>{@code @Endpoint}</li>
+ * </ul>
+ * <p>
+ * as well as beans that implement:
+ * <ul>
+ * <li>{@code EndpointInterceptor}</li>
+ * </ul>
  * <p>
  * Typically {@code WebServiceServerTest} is used in combination with
  * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or

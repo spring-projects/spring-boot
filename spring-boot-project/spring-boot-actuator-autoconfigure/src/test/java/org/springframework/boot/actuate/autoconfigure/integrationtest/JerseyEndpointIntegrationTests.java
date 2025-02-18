@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +30,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
@@ -43,6 +42,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the Jersey actuator endpoints.
@@ -93,7 +94,25 @@ class JerseyEndpointIntegrationTests {
 				.build();
 			client.get().uri("/actuator").exchange().expectStatus().isUnauthorized();
 		});
+	}
 
+	@Test
+	void endpointObjectMapperCanBeApplied() {
+		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
+				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
+		contextRunner.run((context) -> {
+			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+				.getWebServer()
+				.getPort();
+			WebTestClient client = WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + port)
+				.responseTimeout(Duration.ofMinutes(5))
+				.build();
+			client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody().consumeWith((result) -> {
+				String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+				assertThat(json).contains("\"scope\":\"notelgnis\"");
+			});
+		});
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
@@ -139,12 +158,14 @@ class JerseyEndpointIntegrationTests {
 		return autoconfigurations.toArray(new Class<?>[0]);
 	}
 
-	@ControllerEndpoint(id = "controller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint(id = "controller")
+	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
-	@RestControllerEndpoint(id = "restcontroller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "restcontroller")
+	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 
 	}

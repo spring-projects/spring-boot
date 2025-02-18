@@ -6,5 +6,5 @@ description = "Starter for building MVC web applications using Groovy Templates 
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	api("org.codehaus.groovy:groovy-templates")
+	api("org.apache.groovy:groovy-templates")
 }

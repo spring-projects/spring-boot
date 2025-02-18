@@ -1,16 +1,13 @@
-# DefaultTestExecutionListenersPostProcessors
-org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
-org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener$PostProcessor
-
-# Spring Test ContextCustomizerFactories
+# Spring Test Context Customizer Factories
 org.springframework.test.context.ContextCustomizerFactory=\
+org.springframework.boot.test.autoconfigure.OnFailureConditionReportContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory,\
+org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
 
-# Test Execution Listeners
+# Spring Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\

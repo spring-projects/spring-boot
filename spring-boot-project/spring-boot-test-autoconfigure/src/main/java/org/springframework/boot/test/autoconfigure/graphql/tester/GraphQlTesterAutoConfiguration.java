@@ -47,13 +47,14 @@ public class GraphQlTesterAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
+	@SuppressWarnings("removal")
 	public ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService,
 			ObjectProvider<ObjectMapper> objectMapperProvider) {
 		ExecutionGraphQlServiceTester.Builder<?> builder = ExecutionGraphQlServiceTester.builder(graphQlService);
 		objectMapperProvider.ifAvailable((objectMapper) -> {
-			MediaType[] mediaTypes = new MediaType[] { MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL };
-			builder.encoder(new Jackson2JsonEncoder(objectMapper, mediaTypes));
-			builder.decoder(new Jackson2JsonDecoder(objectMapper, mediaTypes));
+			builder.encoder(new Jackson2JsonEncoder(objectMapper, MediaType.APPLICATION_GRAPHQL_RESPONSE,
+					MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL));
+			builder.decoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
 		});
 		return builder.build();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package smoketest.security.method;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -24,8 +26,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,8 +37,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @SpringBootApplication
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	@Override
@@ -71,8 +76,12 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
-			http.authorizeRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.csrf(CsrfConfigurer::disable);
+			http.authorizeHttpRequests((requests) -> {
+				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
+			http.httpBasic(withDefaults());
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));
 			return http.build();
@@ -86,10 +95,10 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Bean
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
-			http.csrf().disable();
-			http.requestMatcher(EndpointRequest.toAnyEndpoint());
-			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-			http.httpBasic();
+			http.csrf(CsrfConfigurer::disable);
+			http.securityMatcher(EndpointRequest.toAnyEndpoint());
+			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

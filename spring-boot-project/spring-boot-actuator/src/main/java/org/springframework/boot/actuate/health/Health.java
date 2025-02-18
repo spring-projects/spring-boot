@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public final class Health extends HealthComponent {
 	 * @param builder the Builder to use
 	 */
 	private Health(Builder builder) {
-		Assert.notNull(builder, "Builder must not be null");
+		Assert.notNull(builder, "'builder' must not be null");
 		this.status = builder.status;
 		this.details = Collections.unmodifiableMap(builder.details);
 	}
@@ -106,8 +106,7 @@ public final class Health extends HealthComponent {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof Health) {
-			Health other = (Health) obj;
+		if (obj instanceof Health other) {
 			return this.status.equals(other.status) && this.details.equals(other.details);
 		}
 		return false;
@@ -146,7 +145,7 @@ public final class Health extends HealthComponent {
 	 * @param ex the exception
 	 * @return a new {@link Builder} instance
 	 */
-	public static Builder down(Exception ex) {
+	public static Builder down(Throwable ex) {
 		return down().withException(ex);
 	}
 
@@ -208,7 +207,7 @@ public final class Health extends HealthComponent {
 		 * @param status the {@link Status} to use
 		 */
 		public Builder(Status status) {
-			Assert.notNull(status, "Status must not be null");
+			Assert.notNull(status, "'status' must not be null");
 			this.status = status;
 			this.details = new LinkedHashMap<>();
 		}
@@ -220,21 +219,21 @@ public final class Health extends HealthComponent {
 		 * @param details the details {@link Map} to use
 		 */
 		public Builder(Status status, Map<String, ?> details) {
-			Assert.notNull(status, "Status must not be null");
-			Assert.notNull(details, "Details must not be null");
+			Assert.notNull(status, "'status' must not be null");
+			Assert.notNull(details, "'details' must not be null");
 			this.status = status;
 			this.details = new LinkedHashMap<>(details);
 		}
 
 		/**
 		 * Record detail for given {@link Exception}.
-		 * @param ex the exception
+		 * @param exception the exception
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withException(Throwable ex) {
-			Assert.notNull(ex, "Exception must not be null");
-			this.exception = ex;
-			return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
+		public Builder withException(Throwable exception) {
+			Assert.notNull(exception, "'exception' must not be null");
+			this.exception = exception;
+			return withDetail("error", exception.getClass().getName() + ": " + exception.getMessage());
 		}
 
 		/**
@@ -244,8 +243,8 @@ public final class Health extends HealthComponent {
 		 * @return this {@link Builder} instance
 		 */
 		public Builder withDetail(String key, Object value) {
-			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(value, "Value must not be null");
+			Assert.notNull(key, "'key' must not be null");
+			Assert.notNull(value, "'value' must not be null");
 			this.details.put(key, value);
 			return this;
 		}
@@ -258,7 +257,7 @@ public final class Health extends HealthComponent {
 		 * @since 2.1.0
 		 */
 		public Builder withDetails(Map<String, ?> details) {
-			Assert.notNull(details, "Details must not be null");
+			Assert.notNull(details, "'details' must not be null");
 			this.details.putAll(details);
 			return this;
 		}

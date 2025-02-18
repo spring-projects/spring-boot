@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,9 @@ import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.util.StringUtils;
 
 /**
  * Repackage existing JAR and WAR archives so that they can be executed from the command
@@ -106,7 +108,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private boolean attach = true;
 
 	/**
-	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * A list of the libraries that must be unpacked from uber jars in order to run.
 	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
 	 * {@code <artifactId>} and they will be unpacked at runtime.
 	 * @since 1.1.0
@@ -162,6 +164,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private LayoutType layout;
 
 	/**
+	 * The loader implementation that should be used.
+	 * @since 3.2.0
+	 */
+	@Parameter
+	private LoaderImplementation loaderImplementation;
+
+	/**
 	 * The layout factory that will be used to create the executable archive if no
 	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
 	 * parties.
@@ -178,6 +187,11 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	@Override
 	protected LayoutType getLayout() {
 		return this.layout;
+	}
+
+	@Override
+	protected LoaderImplementation getLoaderImplementation() {
+		return this.loaderImplementation;
 	}
 
 	/**
@@ -207,6 +221,10 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private void repackage() throws MojoExecutionException {
 		Artifact source = getSourceArtifact(this.classifier);
 		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
+		if (source.getFile() == null) {
+			throw new MojoExecutionException(
+					"Source file is not available, make sure 'package' runs as part of the same lifecycle");
+		}
 		Repackager repackager = getRepackager(source.getFile());
 		Libraries libraries = getLibraries(this.requiresUnpack);
 		try {
@@ -258,7 +276,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && !candidate.isEmpty()) {
+				if (StringUtils.hasLength(candidate)) {
 					properties.put(key, candidate);
 					return;
 				}
@@ -268,7 +286,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 
 	private void updateArtifact(Artifact source, File target, File original) {
 		if (this.attach) {
-			attachArtifact(source, target);
+			attachArtifact(source, target, original);
 		}
 		else if (source.getFile().equals(target) && original.exists()) {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
@@ -281,7 +299,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private void attachArtifact(Artifact source, File target) {
+	private void attachArtifact(Artifact source, File target, File original) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
 			getLog().info("Attaching repackaged archive " + target + " with classifier " + this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, target);
@@ -289,7 +307,10 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		else {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
 					: "main artifact";
-			getLog().info("Replacing " + artifactId + " with repackaged archive");
+			getLog()
+				.info(String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
+						artifactId, source.getFile()));
+			getLog().info("The original artifact has been renamed to " + original);
 			source.setFile(target);
 		}
 	}

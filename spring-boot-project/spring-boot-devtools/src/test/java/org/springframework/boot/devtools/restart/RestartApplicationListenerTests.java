@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -117,7 +116,7 @@ class RestartApplicationListenerTests {
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartingEvent(bootstrapContext, application, ARGS));
-		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
+		assertThat(Restarter.getInstance()).isNotNull();
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
 		listener.onApplicationEvent(new ApplicationPreparedEvent(application, ARGS, context));
 		if (failed) {
@@ -128,7 +127,7 @@ class RestartApplicationListenerTests {
 		}
 	}
 
-	private static class ImplicitlyEnabledRestartApplicationListener extends RestartApplicationListener {
+	private static final class ImplicitlyEnabledRestartApplicationListener extends RestartApplicationListener {
 
 		@Override
 		boolean implicitlyEnableRestart() {

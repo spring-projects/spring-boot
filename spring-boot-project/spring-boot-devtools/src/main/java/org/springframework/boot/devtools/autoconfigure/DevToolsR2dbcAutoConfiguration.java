@@ -119,8 +119,8 @@ public class DevToolsR2dbcAutoConfiguration {
 				return ConditionOutcome.noMatch(message.didNotFind("a single ConnectionFactory bean").atAll());
 			}
 			BeanDefinition beanDefinition = context.getRegistry().getBeanDefinition(beanNames[0]);
-			if (beanDefinition instanceof AnnotatedBeanDefinition
-					&& isAutoConfigured((AnnotatedBeanDefinition) beanDefinition)) {
+			if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition
+					&& isAutoConfigured(annotatedBeanDefinition)) {
 				return ConditionOutcome.match(message.foundExactly("auto-configured ConnectionFactory"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured ConnectionFactory").atAll());

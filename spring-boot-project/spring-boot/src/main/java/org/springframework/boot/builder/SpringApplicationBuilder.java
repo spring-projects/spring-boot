@@ -76,7 +76,7 @@ public class SpringApplicationBuilder {
 
 	private final SpringApplication application;
 
-	private ConfigurableApplicationContext context;
+	private volatile ConfigurableApplicationContext context;
 
 	private SpringApplicationBuilder parent;
 
@@ -100,20 +100,6 @@ public class SpringApplicationBuilder {
 
 	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
 		this.application = createSpringApplication(resourceLoader, sources);
-	}
-
-	/**
-	 * Creates a new {@link SpringApplication} instance from the given sources. Subclasses
-	 * may override in order to provide a custom subclass of {@link SpringApplication}.
-	 * @param sources the sources
-	 * @return the {@link SpringApplication} instance
-	 * @since 1.1.0
-	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
-	 * {@link #createSpringApplication(ResourceLoader, Class...)}
-	 */
-	@Deprecated
-	protected SpringApplication createSpringApplication(Class<?>... sources) {
-		return new SpringApplication(sources);
 	}
 
 	/**
@@ -159,10 +145,8 @@ public class SpringApplicationBuilder {
 		}
 		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
-			synchronized (this.running) {
-				// If not already running copy the sources over and then run.
-				this.context = build().run(args);
-			}
+			// If not already running copy the sources over and then run.
+			this.context = build().run(args);
 		}
 		return this.context;
 	}

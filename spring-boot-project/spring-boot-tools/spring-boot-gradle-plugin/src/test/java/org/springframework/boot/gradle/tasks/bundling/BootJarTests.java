@@ -19,10 +19,10 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.JavaVersion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -41,8 +41,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	BootJarTests() {
-		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/",
+		super(BootJar.class, "org.springframework.boot.loader.launch.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/",
 				"BOOT-INF/");
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.getTask().getTargetJavaVersion().set(JavaVersion.VERSION_17);
 	}
 
 	@Test
@@ -70,14 +75,11 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void jarsInLibAreStored() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
-				.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod())
-				.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod())
-				.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod()).isZero();
 		}
 	}
 
@@ -86,7 +88,8 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
 					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
-					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/first-project-library.jar\"",
+					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/fourth-library.jar\"",
+					"- \"BOOT-INF/lib/first-project-library.jar\"",
 					"- \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
@@ -98,7 +101,8 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 				.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
 					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
-					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/first-project-library.jar\"",
+					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/fourth-library.jar\"",
+					"- \"BOOT-INF/lib/first-project-library.jar\"",
 					"- \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
@@ -181,17 +185,35 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/services/com.example.Service")).isNotNull();
 			assertThat(jarFile.getEntry("META-INF/services/com.example.Service")).isNull();
 		}
+	}
 
+	@Test
+	void nativeImageArgFileWithExcludesIsWritten() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar(true))) {
+			assertThat(entryLines(jarFile, "META-INF/native-image/argfile")).containsExactly("--exclude-config",
+					"\\Qfirst-library.jar\\E", "^/META-INF/native-image/.*", "--exclude-config",
+					"\\Qsecond-library.jar\\E", "^/META-INF/native-image/.*");
+		}
+	}
+
+	@Test
+	void nativeImageArgFileIsNotWrittenWhenExcludesAreEmpty() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar(false))) {
+			assertThat(jarFile.getEntry("META-INF/native-image/argfile")).isNull();
+		}
+	}
+
+	@Test
+	void javaVersionIsWrittenToManifest() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
+				.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
+		}
 	}
 
 	@Override
 	void applyLayered(Action<LayeredSpec> action) {
 		getTask().layered(action);
-	}
-
-	@Override
-	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override

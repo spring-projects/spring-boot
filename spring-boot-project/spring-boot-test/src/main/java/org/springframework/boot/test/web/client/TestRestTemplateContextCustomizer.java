@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.web.client;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -52,6 +53,9 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
+		if (AotDetector.useGeneratedArtifacts()) {
+			return;
+		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils
 			.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
@@ -61,8 +65,8 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 	private void registerTestRestTemplate(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerTestRestTemplate((BeanDefinitionRegistry) beanFactory);
+		if (beanFactory instanceof BeanDefinitionRegistry registry) {
+			registerTestRestTemplate(registry);
 		}
 	}
 
@@ -103,6 +107,9 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+			if (AotDetector.useGeneratedArtifacts()) {
+				return;
+			}
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
 					TestRestTemplate.class, false, false).length == 0) {
 				registry.registerBeanDefinition(TestRestTemplate.class.getName(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
  * @author Parviz Rozikov
+ * @author Moritz Halbritter
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -177,43 +178,79 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customMaxHttpHeaderSize() {
-		bind("server.max-http-header-size=1KB");
+	void defaultMaxHttpRequestHeaderSize() {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
-					.getMaxHttpHeaderSize())
-			.isEqualTo(DataSize.ofKilobytes(1).toBytes()));
-	}
-
-	@Test
-	void customMaxHttpHeaderSizeWithHttp2() {
-		bind("server.max-http-header-size=1KB", "server.http2.enabled=true");
-		customizeAndRunServer((server) -> {
-			AbstractHttp11Protocol<?> protocolHandler = (AbstractHttp11Protocol<?>) server.getTomcat()
-				.getConnector()
-				.getProtocolHandler();
-			long expectedSize = DataSize.ofKilobytes(1).toBytes();
-			assertThat(protocolHandler.getMaxHttpHeaderSize()).isEqualTo(expectedSize);
-			assertThat(((Http2Protocol) protocolHandler.getUpgradeProtocol("h2c")).getMaxHeaderSize())
-				.isEqualTo(expectedSize);
-		});
-	}
-
-	@Test
-	void customMaxHttpHeaderSizeIgnoredIfNegative() {
-		bind("server.max-http-header-size=-1");
-		customizeAndRunServer((server) -> assertThat(
-				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
-					.getMaxHttpHeaderSize())
+					.getMaxHttpRequestHeaderSize())
 			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
 	}
 
 	@Test
-	void customMaxHttpHeaderSizeIgnoredIfZero() {
-		bind("server.max-http-header-size=0");
+	void customMaxHttpRequestHeaderSize() {
+		bind("server.max-http-request-header-size=10MB");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
-					.getMaxHttpHeaderSize())
+					.getMaxHttpRequestHeaderSize())
+			.isEqualTo(DataSize.ofMegabytes(10).toBytes()));
+	}
+
+	@Test
+	void customMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count=100");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
+	}
+
+	@Test
+	void customMaxRequestHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-request-header-size=-1");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpRequestHeaderSize())
+			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	void customMaxRequestHttpHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-request-header-size=0");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpRequestHeaderSize())
+			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	void defaultMaxHttpResponseHeaderSize() {
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpResponseHeaderSize())
+			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	void customMaxHttpResponseHeaderSize() {
+		bind("server.tomcat.max-http-response-header-size=10MB");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpResponseHeaderSize())
+			.isEqualTo(DataSize.ofMegabytes(10).toBytes()));
+	}
+
+	@Test
+	void customMaxResponseHttpHeaderSizeIgnoredIfNegative() {
+		bind("server.tomcat.max-http-response-header-size=-1");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpResponseHeaderSize())
+			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
+	}
+
+	@Test
+	void customMaxResponseHttpHeaderSizeIgnoredIfZero() {
+		bind("server.tomcat.max-http-response-header-size=0");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+					.getMaxHttpResponseHeaderSize())
 			.isEqualTo(DataSize.ofKilobytes(8).toBytes()));
 	}
 
@@ -233,7 +270,8 @@ class TomcatWebServerFactoryCustomizerTests {
 				"server.tomcat.remoteip.internal-proxies=192.168.0.1",
 				"server.tomcat.remoteip.host-header=x-my-forward-host",
 				"server.tomcat.remoteip.port-header=x-my-forward-port",
-				"server.tomcat.remoteip.protocol-header-https-value=On");
+				"server.tomcat.remoteip.protocol-header-https-value=On",
+				"server.tomcat.remoteip.trusted-proxies=proxy1|proxy2");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).hasSize(1);
 		Valve valve = factory.getEngineValves().iterator().next();
@@ -245,6 +283,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getHostHeader()).isEqualTo("x-my-forward-host");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+		assertThat(remoteIpValve.getTrustedProxies()).isEqualTo("proxy1|proxy2");
 	}
 
 	@Test
@@ -294,7 +333,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	void defaultUseForwardHeaders() {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(0);
+		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test
@@ -308,7 +347,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		this.environment.setProperty("DYNO", "-");
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(0);
+		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test
@@ -365,24 +404,12 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	void testCustomizeRejectIllegalHeader() {
-		bind("server.tomcat.reject-illegal-header=false");
-		customizeAndRunServer((server) -> assertThat(
-				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
-					.getRejectIllegalHeader())
-			.isFalse());
-	}
-
-	@Test
 	void errorReportValveIsConfiguredToNotReportStackTraces() {
 		TomcatWebServer server = customizeAndGetServer();
 		Valve[] valves = server.getTomcat().getHost().getPipeline().getValves();
 		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
 		for (Valve valve : valves) {
-			if (valve instanceof ErrorReportValve) {
-				ErrorReportValve errorReportValve = (ErrorReportValve) valve;
+			if (valve instanceof ErrorReportValve errorReportValve) {
 				assertThat(errorReportValve.isShowReport()).isFalse();
 				assertThat(errorReportValve.isShowServerInfo()).isFalse();
 			}
@@ -543,6 +570,18 @@ class TomcatWebServerFactoryCustomizerTests {
 		WebServer server = factory.getWebServer();
 		server.start();
 		server.stop();
+	}
+
+	@Test
+	void configureExecutor() {
+		bind("server.tomcat.threads.max=10", "server.tomcat.threads.min-spare=2",
+				"server.tomcat.threads.max-queue-capacity=20");
+		customizeAndRunServer((server) -> {
+			AbstractProtocol<?> protocol = (AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler();
+			assertThat(protocol.getMaxThreads()).isEqualTo(10);
+			assertThat(protocol.getMinSpareThreads()).isEqualTo(2);
+			assertThat(protocol.getMaxQueueSize()).isEqualTo(20);
+		});
 	}
 
 	private void bind(String... inlinedProperties) {

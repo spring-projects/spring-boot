@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 class AdditionalHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
 
 	@Override
-	protected boolean supports(Class<?> clazz) {
+	protected boolean supports(Class<?> type) {
 		return false;
 	}
 
 	@Override
-	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
+	protected Object readInternal(Class<?> type, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException {
 		return null;
 	}
 
 	@Override
-	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
+	protected void writeInternal(Object instance, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 	}
 

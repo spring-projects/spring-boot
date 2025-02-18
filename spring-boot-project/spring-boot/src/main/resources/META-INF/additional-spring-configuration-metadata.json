@@ -104,6 +104,20 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.include-application-group",
+      "type": "java.lang.Boolean",
+      "description": "Whether to include the application group in the logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": true
+    },
+    {
+      "name": "logging.include-application-name",
+      "type": "java.lang.Boolean",
+      "description": "Whether to include the application name in the logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": true
+    },
+    {
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
@@ -161,28 +175,32 @@
     {
       "name": "logging.pattern.console",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to the console. Supported only with the default Logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+      "description": "Appender pattern for output to the console. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.pattern.correlation",
+      "type": "java.lang.String",
+      "description": "Appender pattern for log correlation. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.dateformat",
       "type": "java.lang.String",
-      "description": "Appender pattern for log date format. Supported only with the default Logback setup.",
+      "description": "Appender pattern for log date format.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "yyyy-MM-dd HH:mm:ss.SSS"
+      "defaultValue": "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     },
     {
       "name": "logging.pattern.file",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to a file. Supported only with the default Logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+      "description": "Appender pattern for output to a file. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.level",
       "type": "java.lang.String",
-      "description": "Appender pattern for log level. Supported only with the default Logback setup.",
+      "description": "Appender pattern for log level.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "%5p"
     },
@@ -204,6 +222,118 @@
       "defaultValue": true
     },
     {
+      "name": "logging.structured.ecs.service.environment",
+      "type": "java.lang.String",
+      "description": "Structured ECS service environment."
+    },
+    {
+      "name": "logging.structured.ecs.service.name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service name (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.ecs.service.node-name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service node name."
+    },
+    {
+      "name": "logging.structured.ecs.service.version",
+      "type": "java.lang.String",
+      "description": "Structured ECS service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.format.console",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to the console. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.format.file",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.gelf.host",
+      "type": "java.lang.String",
+      "description": "Structured GELF host (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.gelf.service.version",
+      "type": "java.lang.String",
+      "description": "Structured GELF service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.json.add",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional members that should be added to structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.customizer",
+      "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
+      "description": "Fully qualified class names of StructuredLoggingJsonMembersCustomizer implementations"
+    },
+    {
+      "name": "logging.structured.json.exclude",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be excluded from structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.include",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be included in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.rename",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.stacktrace.include-common-frames",
+      "type": "java.lang.Boolean",
+      "description": "Whether common frames should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.include-hashes",
+      "type": "java.lang.Boolean",
+      "description": "Whether stack trace hashes should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-length",
+      "type": "java.lang.Integer",
+      "description": "Maximum length to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-throwable-depth",
+      "type": "java.lang.Integer",
+      "description": "Maximum throwable depth to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.printer",
+      "type": "java.lang.String",
+      "description": "Name of the printer to use. Can be 'standard', 'logging-system', or the fully-qualified class name of a StackTracePrinter. When not specified 'logging-system' or 'standard' will be used depending if other properties are set."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.root",
+      "type": "org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace.Root",
+      "description": "Root ordering (root first or root last)."
+    },
+    {
+      "name": "logging.threshold.console",
+      "type": "java.lang.String",
+      "description": "Log level threshold for console output.",
+      "defaultValue": "TRACE"
+    },
+    {
+      "name": "logging.threshold.file",
+      "type": "java.lang.String",
+      "description": "Log level threshold for file output.",
+      "defaultValue": "TRACE"
+    },
+    {
+      "name": "spring.application.group",
+      "type": "java.lang.String",
+      "description": "Application group."
+    },
+    {
       "name": "spring.application.index",
       "type": "java.lang.Integer",
       "description": "Application index.",
@@ -219,6 +349,11 @@
       "description": "Application name."
     },
     {
+      "name": "spring.application.version",
+      "type": "java.lang.String",
+      "description": "Application version (defaults to 'Implementation-Version' from the manifest)."
+    },
+    {
       "name": "spring.banner.charset",
       "type": "java.nio.charset.Charset",
       "description": "Banner file encoding.",
@@ -227,43 +362,58 @@
     {
       "name": "spring.banner.image.bitdepth",
       "type": "java.lang.Integer",
-      "description": "Bit depth to use for ANSI colors. Supported values are 4 (16 color) or 8 (256 color).",
-      "defaultValue": 4
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.height",
       "type": "java.lang.Integer",
-      "description": "Height of the banner image in chars (default based on image height)."
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.invert",
       "type": "java.lang.Boolean",
-      "description": "Whether images should be inverted for dark terminal themes.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.location",
       "type": "org.springframework.core.io.Resource",
-      "description": "Banner image file location (jpg or png can also be used).",
-      "defaultValue": "classpath:banner.gif"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.margin",
       "type": "java.lang.Integer",
-      "description": "Left hand image margin in chars.",
-      "defaultValue": 2
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.pixelmode",
       "type": "org.springframework.boot.ImageBanner$PixelMode",
-      "description": "Pixel mode to use when rendering the image.",
-      "defaultValue": "TEXT"
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.image.width",
       "type": "java.lang.Integer",
-      "description": "Width of the banner image in chars.",
-      "defaultValue": 76
+      "deprecation": {
+        "level": "error",
+        "reason": "Support for image banners has been removed."
+      }
     },
     {
       "name": "spring.banner.location",
@@ -316,495 +466,10 @@
       "defaultValue": "application"
     },
     {
-      "name": "spring.config.use-legacy-processing",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable configuration data processing legacy mode.",
-      "defaultValue": false
-    },
-    {
       "name": "spring.jpa.defer-datasource-initialization",
       "type": "java.lang.Boolean",
       "description": "Whether to defer DataSource initialization until after any EntityManagerFactory beans have been created and initialized.",
       "defaultValue": false
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.borrow-connection-timeout",
-      "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for borrowing connections from the pool.",
-      "defaultValue": 30
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag",
-      "type": "java.lang.Boolean",
-      "description": "Whether to ignore the transacted flag when creating session.",
-      "defaultValue": true
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.local-transaction-mode",
-      "type": "java.lang.Boolean",
-      "description": "Whether local transactions are desired.",
-      "defaultValue": false
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.maintenance-interval",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, between runs of the pool's maintenance thread.",
-      "defaultValue": 60
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.max-idle-time",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
-      "defaultValue": 60
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.max-lifetime",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.",
-      "defaultValue": 0
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.max-pool-size",
-      "type": "java.lang.Integer",
-      "description": "Maximum size of the pool.",
-      "defaultValue": 1
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.min-pool-size",
-      "type": "java.lang.Integer",
-      "description": "Minimum size of the pool.",
-      "defaultValue": 1
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.reap-timeout",
-      "type": "java.lang.Integer",
-      "description": "Reap timeout, in seconds, for borrowed connections. 0 denotes no limit.",
-      "defaultValue": 0
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.unique-resource-name",
-      "type": "java.lang.String",
-      "description": "Unique name used to identify the resource during recovery.",
-      "defaultValue": "jmsConnectionFactory"
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.xa-connection-factory-class-name",
-      "type": "java.lang.String",
-      "description": "Vendor-specific implementation of XAConnectionFactory."
-    },
-    {
-      "name": "spring.jta.atomikos.connectionfactory.xa-properties",
-      "type": "java.util.Properties",
-      "description": "Vendor-specific XA properties."
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.borrow-connection-timeout",
-      "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for borrowing connections from the pool.",
-      "defaultValue": 30
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.concurrent-connection-validation",
-      "type": "java.lang.Boolean",
-      "description": "Whether to use concurrent connection validation.",
-      "defaultValue": true
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.default-isolation-level",
-      "type": "java.lang.Integer",
-      "description": "Default isolation level of connections provided by the pool."
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.login-timeout",
-      "type": "java.lang.Integer",
-      "description": "Timeout, in seconds, for establishing a database connection.",
-      "defaultValue": 0
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.maintenance-interval",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, between runs of the pool's maintenance thread.",
-      "defaultValue": 60
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.max-idle-time",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, after which connections are cleaned up from the pool.",
-      "defaultValue": 60
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.max-lifetime",
-      "type": "java.lang.Integer",
-      "description": "Time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.",
-      "defaultValue": 0
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.max-pool-size",
-      "type": "java.lang.Integer",
-      "description": "Maximum size of the pool.",
-      "defaultValue": 1
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.min-pool-size",
-      "type": "java.lang.Integer",
-      "description": "Minimum size of the pool.",
-      "defaultValue": 1
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.reap-timeout",
-      "type": "java.lang.Integer",
-      "description": "Reap timeout, in seconds, for borrowed connections. 0 denotes no limit.",
-      "defaultValue": 0
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.test-query",
-      "type": "java.lang.String",
-      "description": "SQL query or statement used to validate a connection before returning it."
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.unique-resource-name",
-      "type": "java.lang.String",
-      "description": "Unique name used to identify the resource during recovery.",
-      "defaultValue": "dataSource"
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.xa-data-source-class-name",
-      "type": "java.lang.String",
-      "description": "Vendor-specific implementation of XAConnectionFactory."
-    },
-    {
-      "name": "spring.jta.atomikos.datasource.xa-properties",
-      "type": "java.util.Properties",
-      "description": "Vendor-specific XA properties."
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.acquire-increment",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.acquisition-interval",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.acquisition-timeout",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.allow-local-transactions",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.apply-transaction-timeout",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.automatic-enlisting-enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.cache-producers-consumers",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.class-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.defer-connection-release",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.disabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.driver-properties",
-      "type": "java.util.Properties",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.ignore-recovery-failures",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.max-idle-time",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.max-pool-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.min-pool-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.password",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.share-transaction-connections",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.test-connections",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.two-pc-ordering-position",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.unique-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.use-tm-join",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.connectionfactory.user",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.acquire-increment",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.acquisition-interval",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.acquisition-timeout",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.allow-local-transactions",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.apply-transaction-timeout",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.automatic-enlisting-enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.class-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.cursor-holdability",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.defer-connection-release",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.disabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.driver-properties",
-      "type": "java.util.Properties",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.enable-jdbc4-connection-test",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.ignore-recovery-failures",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.isolation-level",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.local-auto-commit",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.login-timeout",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.max-idle-time",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.max-pool-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.min-pool-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.prepared-statement-cache-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.share-transaction-connections",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.test-query",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.two-pc-ordering-position",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.unique-name",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.jta.bitronix.datasource.use-tm-join",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
     },
     {
       "name": "spring.main.allow-bean-definition-overriding",
@@ -824,13 +489,19 @@
       "name": "spring.main.banner-mode",
       "type": "org.springframework.boot.Banner$Mode",
       "sourceType": "org.springframework.boot.SpringApplication",
-      "description": "Mode used to display the banner when the application runs.",
-      "defaultValue": "console"
+      "description": "Mode used to display the banner when the application runs. Defaults to 'off' if structured logging is enabled or to 'console' otherwise"
     },
     {
       "name": "spring.main.cloud-platform",
       "type": "org.springframework.boot.cloud.CloudPlatform",
       "description": "Override the Cloud Platform auto-detection."
+    },
+    {
+      "name": "spring.main.keep-alive",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.SpringApplication",
+      "description": "Whether to keep the application alive even if there are no more non-daemon threads.",
+      "defaultValue": false
     },
     {
       "name": "spring.main.lazy-initialization",
@@ -909,16 +580,6 @@
       "sourceType": "org.springframework.boot.context.ApplicationPidFileWriter"
     },
     {
-      "name": "spring.profiles",
-      "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.Profiles",
-      "description": "Comma-separated list of profile expressions that at least one should match for the document to be included.",
-      "deprecation": {
-        "replacement": "spring.config.activate.on-profile",
-        "level": "warning"
-      }
-    },
-    {
       "name": "spring.profiles.active",
       "type": "java.util.List<java.lang.String>",
       "sourceType": "org.springframework.boot.context.config.Profiles",
@@ -946,7 +607,7 @@
     {
       "name": "spring.reactor.debug-agent.enabled",
       "type": "java.lang.Boolean",
-      "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+      "sourceType": "org.springframework.boot.reactor.ReactorEnvironmentPostProcessor",
       "description": "Whether the Reactor Debug Agent should be enabled when reactor-tools is present.",
       "defaultValue": true
     },
@@ -1020,6 +681,69 @@
       "providers": [
         {
           "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.console",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "gelf"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.file",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "gelf"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+ 	{
+      "name": "logging.structured.json.stacktrace.printer",
+      "values": [
+        {
+          "value": "standard"
+        },
+        {
+          "value": "logging-system"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class<org.springframework.boot.logging.StackTracePrinter>"
+          }
         }
       ]
     },

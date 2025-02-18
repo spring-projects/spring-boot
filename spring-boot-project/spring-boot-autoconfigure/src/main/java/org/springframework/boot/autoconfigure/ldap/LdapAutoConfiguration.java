@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.ldap.LdapProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.convert.ConverterUtils;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.odm.core.ObjectDirectoryMapper;
+import org.springframework.ldap.odm.core.impl.DefaultObjectDirectoryMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for LDAP.
@@ -47,28 +51,47 @@ import org.springframework.ldap.core.support.LdapContextSource;
 public class LdapAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(LdapConnectionDetails.class)
+	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties,
+			Environment environment) {
+		return new PropertiesLdapConnectionDetails(properties, environment);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment,
+	public LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
 		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
-		propertyMapper.from(properties.getPassword()).to(source::setPassword);
+		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
+		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
-		propertyMapper.from(properties.getBase()).to(source::setBase);
-		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
+		propertyMapper.from(connectionDetails.getBase()).to(source::setBase);
+		propertyMapper.from(connectionDetails.getUrls()).to(source::setUrls);
 		propertyMapper.from(properties.getBaseEnvironment())
 			.to((baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	public ObjectDirectoryMapper objectDirectoryMapper() {
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		ConverterUtils.addDefaultConverters(conversionService);
+		DefaultObjectDirectoryMapper objectDirectoryMapper = new DefaultObjectDirectoryMapper();
+		objectDirectoryMapper.setConversionService(conversionService);
+		return objectDirectoryMapper;
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(LdapOperations.class)
-	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource) {
+	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
+			ObjectDirectoryMapper objectDirectoryMapper) {
 		Template template = properties.getTemplate();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
+		ldapTemplate.setObjectDirectoryMapper(objectDirectoryMapper);
 		propertyMapper.from(template.isIgnorePartialResultException())
 			.to(ldapTemplate::setIgnorePartialResultException);
 		propertyMapper.from(template.isIgnoreNameNotFoundException()).to(ldapTemplate::setIgnoreNameNotFoundException);

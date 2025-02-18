@@ -53,7 +53,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
+			.withPropertyValues("management.datadog.metrics.export.api-key=abcde")
 			.run((context) -> assertThat(context).hasSingleBean(DatadogMeterRegistry.class)
 				.hasSingleBean(DatadogConfig.class));
 	}
@@ -61,7 +61,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.defaults.enabled=false")
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(DatadogMeterRegistry.class)
 				.doesNotHaveBean(DatadogConfig.class));
 	}
@@ -69,7 +69,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.datadog.enabled=false")
+			.withPropertyValues("management.datadog.metrics.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(DatadogMeterRegistry.class)
 				.doesNotHaveBean(DatadogConfig.class));
 	}
@@ -85,7 +85,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-			.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
+			.withPropertyValues("management.datadog.metrics.export.api-key=abcde")
 			.run((context) -> assertThat(context).hasSingleBean(DatadogMeterRegistry.class)
 				.hasBean("customRegistry")
 				.hasSingleBean(DatadogConfig.class));
@@ -94,7 +94,7 @@ class DatadogMetricsExportAutoConfigurationTests {
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
+			.withPropertyValues("management.datadog.metrics.export.api-key=abcde")
 			.run((context) -> {
 				DatadogMeterRegistry registry = context.getBean(DatadogMeterRegistry.class);
 				assertThat(registry.isClosed()).isFalse();

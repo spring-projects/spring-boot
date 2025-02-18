@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -66,10 +65,18 @@ class DispatcherServletAutoConfigurationTests {
 		});
 	}
 
-	// If a DispatcherServlet instance is registered with a name different
-	// from the default one, we're registering one anyway
 	@Test
-	void registrationOverrideWithDispatcherServletWrongName() {
+	void registrationOverrideWithDefaultDispatcherServletNameResultsInSingleDispatcherServlet() {
+		this.contextRunner.withUserConfiguration(CustomDispatcherServletSameName.class).run((context) -> {
+			ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
+			assertThat(registration.getUrlMappings()).containsExactly("/");
+			assertThat(registration.getServletName()).isEqualTo("dispatcherServlet");
+			assertThat(context).getBeanNames(DispatcherServlet.class).hasSize(1);
+		});
+	}
+
+	@Test
+	void registrationOverrideWithNonDefaultDispatcherServletNameResultsInTwoDispatcherServlets() {
 		this.contextRunner
 			.withUserConfiguration(CustomDispatcherServletDifferentName.class, CustomDispatcherServletPath.class)
 			.run((context) -> {
@@ -142,7 +149,6 @@ class DispatcherServletAutoConfigurationTests {
 	void dispatcherServletDefaultConfig() {
 		this.contextRunner.run((context) -> {
 			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").isEqualTo(false);
@@ -153,14 +159,21 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void dispatcherServletThrowExceptionIfNoHandlerFoundDefaultConfig() {
+		this.contextRunner.run((context) -> {
+			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
+			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
+		});
+	}
+
+	@Test
 	void dispatcherServletCustomConfig() {
 		this.contextRunner
-			.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
-					"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+			.withPropertyValues("spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
 					"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
 			.run((context) -> {
 				DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-				assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
 				assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
 				assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
 				assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);

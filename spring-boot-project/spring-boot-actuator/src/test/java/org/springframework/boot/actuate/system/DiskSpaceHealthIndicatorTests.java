@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,14 @@ class DiskSpaceHealthIndicatorTests {
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
-		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
-		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
-		assertThat(health.getDetails().get("exists")).isEqualTo(true);
+		assertThat(health.getDetails()).containsEntry("threshold", THRESHOLD.toBytes());
+		assertThat(health.getDetails()).containsEntry("free", freeSpace);
+		assertThat(health.getDetails()).containsEntry("total", TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails()).containsEntry("path", "/absolute-path");
+		assertThat(health.getDetails()).containsEntry("exists", true);
 	}
 
 	@Test
@@ -75,21 +77,23 @@ class DiskSpaceHealthIndicatorTests {
 		long freeSpace = THRESHOLD.toBytes() - 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
+		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("threshold")).isEqualTo(THRESHOLD.toBytes());
-		assertThat(health.getDetails().get("free")).isEqualTo(freeSpace);
-		assertThat(health.getDetails().get("total")).isEqualTo(TOTAL_SPACE.toBytes());
-		assertThat(health.getDetails().get("exists")).isEqualTo(true);
+		assertThat(health.getDetails()).containsEntry("threshold", THRESHOLD.toBytes());
+		assertThat(health.getDetails()).containsEntry("free", freeSpace);
+		assertThat(health.getDetails()).containsEntry("total", TOTAL_SPACE.toBytes());
+		assertThat(health.getDetails()).containsEntry("path", "/absolute-path");
+		assertThat(health.getDetails()).containsEntry("exists", true);
 	}
 
 	@Test
 	void whenPathDoesNotExistDiskSpaceIsDown() {
 		Health health = new DiskSpaceHealthIndicator(new File("does/not/exist"), THRESHOLD).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("free")).isEqualTo(0L);
-		assertThat(health.getDetails().get("total")).isEqualTo(0L);
-		assertThat(health.getDetails().get("exists")).isEqualTo(false);
+		assertThat(health.getDetails()).containsEntry("free", 0L);
+		assertThat(health.getDetails()).containsEntry("total", 0L);
+		assertThat(health.getDetails()).containsEntry("exists", false);
 	}
 
 }

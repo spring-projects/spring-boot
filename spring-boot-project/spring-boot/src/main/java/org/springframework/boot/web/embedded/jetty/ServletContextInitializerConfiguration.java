@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import javax.servlet.ServletException;
-
-import org.eclipse.jetty.webapp.AbstractConfiguration;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.WebAppContext;
+import jakarta.servlet.ServletException;
+import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee10.webapp.Configuration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
@@ -42,7 +41,8 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	 * @since 1.2.1
 	 */
 	public ServletContextInitializerConfiguration(ServletContextInitializer... initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+		super(new AbstractConfiguration.Builder());
+		Assert.notNull(initializers, "'initializers' must not be null");
 		this.initializers = initializers;
 	}
 
@@ -60,22 +60,13 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 
 	private void callInitializers(WebAppContext context) throws ServletException {
 		try {
-			setExtendedListenerTypes(context, true);
+			context.getContext().setExtendedListenerTypes(true);
 			for (ServletContextInitializer initializer : this.initializers) {
 				initializer.onStartup(context.getServletContext());
 			}
 		}
 		finally {
-			setExtendedListenerTypes(context, false);
-		}
-	}
-
-	private void setExtendedListenerTypes(WebAppContext context, boolean extended) {
-		try {
-			context.getServletContext().setExtendedListenerTypes(extended);
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on Jetty 8
+			context.getContext().setExtendedListenerTypes(false);
 		}
 	}
 

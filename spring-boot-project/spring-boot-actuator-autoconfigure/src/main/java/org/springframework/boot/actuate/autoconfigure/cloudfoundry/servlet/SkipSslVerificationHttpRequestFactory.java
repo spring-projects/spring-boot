@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFacto
 
 	@Override
 	protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-		if (connection instanceof HttpsURLConnection) {
-			prepareHttpsConnection((HttpsURLConnection) connection);
+		if (connection instanceof HttpsURLConnection httpsURLConnection) {
+			prepareHttpsConnection(httpsURLConnection);
 		}
 		super.prepareConnection(connection, httpMethod);
 	}
@@ -62,7 +62,7 @@ class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFacto
 		return context.getSocketFactory();
 	}
 
-	private static class SkipHostnameVerifier implements HostnameVerifier {
+	private static final class SkipHostnameVerifier implements HostnameVerifier {
 
 		@Override
 		public boolean verify(String s, SSLSession sslSession) {
@@ -71,7 +71,7 @@ class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFacto
 
 	}
 
-	private static class SkipX509TrustManager implements X509TrustManager {
+	private static final class SkipX509TrustManager implements X509TrustManager {
 
 		@Override
 		public X509Certificate[] getAcceptedIssuers() {

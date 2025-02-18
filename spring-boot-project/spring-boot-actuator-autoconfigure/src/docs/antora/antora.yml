@@ -1,0 +1,7 @@
+name: boot
+version: true
+ext:
+  zip_contents_collector:
+    include:
+    - name: actuator-rest-api
+      classifier: aggregate-content

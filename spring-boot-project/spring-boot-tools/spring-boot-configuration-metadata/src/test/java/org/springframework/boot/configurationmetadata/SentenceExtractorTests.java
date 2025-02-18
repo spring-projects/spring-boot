@@ -29,7 +29,7 @@ class SentenceExtractorTests {
 
 	private static final String NEW_LINE = System.lineSeparator();
 
-	private SentenceExtractor extractor = new SentenceExtractor();
+	private final SentenceExtractor extractor = new SentenceExtractor();
 
 	@Test
 	void extractFirstSentence() {

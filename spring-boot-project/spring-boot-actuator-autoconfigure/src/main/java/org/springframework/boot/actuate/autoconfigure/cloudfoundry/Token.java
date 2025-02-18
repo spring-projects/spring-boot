@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,7 +60,7 @@ public class Token {
 
 	private Map<String, Object> parseJson(String base64) {
 		try {
-			byte[] bytes = Base64Utils.decodeFromUrlSafeString(base64);
+			byte[] bytes = Base64.getUrlDecoder().decode(base64);
 			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, StandardCharsets.UTF_8));
 		}
 		catch (RuntimeException ex) {
@@ -73,7 +73,7 @@ public class Token {
 	}
 
 	public byte[] getSignature() {
-		return Base64Utils.decodeFromUrlSafeString(this.signature);
+		return Base64.getUrlDecoder().decode(this.signature);
 	}
 
 	public String getSignatureAlgorithm() {

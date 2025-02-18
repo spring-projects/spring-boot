@@ -1,0 +1,18 @@
+[[using.spring-beans-and-dependency-injection]]
+= Spring Beans and Dependency Injection
+
+You are free to use any of the standard Spring Framework techniques to define your beans and their injected dependencies.
+We generally recommend using constructor injection to wire up dependencies and javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] to find beans.
+
+If you structure your code as suggested above (locating your application class in a top package), you can add javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] without any arguments or use the javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotation which implicitly includes it.
+All of your application components (`@Component`, javadoc:org.springframework.stereotype.Service[format=annotation], javadoc:org.springframework.stereotype.Repository[format=annotation], javadoc:org.springframework.stereotype.Controller[format=annotation], and others) are automatically registered as Spring Beans.
+
+The following example shows a javadoc:org.springframework.stereotype.Service[format=annotation] Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
+
+include-code::singleconstructor/MyAccountService[]
+
+If a bean has more than one constructor, you will need to mark the one you want Spring to use with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation]:
+
+include-code::multipleconstructors/MyAccountService[]
+
+TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as `final`, indicating that it cannot be subsequently changed.

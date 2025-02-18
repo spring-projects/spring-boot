@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.endpoints.web")
+@ConfigurationProperties("management.endpoints.web")
 public class WebEndpointProperties {
 
 	private final Exposure exposure = new Exposure();
@@ -62,7 +62,7 @@ public class WebEndpointProperties {
 	}
 
 	public void setBasePath(String basePath) {
-		Assert.isTrue(basePath.isEmpty() || basePath.startsWith("/"), "Base path must start with '/' or be empty");
+		Assert.isTrue(basePath.isEmpty() || basePath.startsWith("/"), "'basePath' must start with '/' or be empty");
 		this.basePath = cleanBasePath(basePath);
 	}
 

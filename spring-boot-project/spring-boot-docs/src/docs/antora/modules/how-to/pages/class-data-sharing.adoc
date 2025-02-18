@@ -1,0 +1,33 @@
+[[howto.class-data-sharing]]
+= Class Data Sharing
+
+This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
+For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
+
+
+
+[[howto.class-data-sharing.buildpacks]]
+== Packaging an Application Using CDS and Buildpacks
+
+Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing a CDS-optimized application.
+
+To enable CDS optimization in a generated Docker image, the buildpack environment variable `BP_JVM_CDS_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
+This will cause the buildpack to do a training run of the application, save the CDS archive in the image, and use the CDS archive when launching the application.
+
+The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
+
+
+
+[[howto.class-data-sharing.dockerfiles]]
+== Packaging an Application Using CDS and Dockerfiles
+
+If you don't want to use Cloud Native Buildpacks, it is also possible to use CDS with a `Dockerfile`.
+For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles reference documentation].
+
+
+
+[[howto.class-data-sharing.training-run-configuration]]
+== Preventing Remote Services Interaction During the Training Run
+
+When performing the training run, it may be needed to customize the Spring Boot application configuration to prevent connections to remote services that may happen before the Spring lifecycle is started.
+This can typically happen with early database interactions and can be handled via related configuration that can be applied by default to your application (or specifically to the training run) to prevent such interactions, see https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/README.adoc#training-run-configuration[related documentation].

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,6 +31,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 
 /**
@@ -46,9 +45,6 @@ class DefaultPropertiesPropertySourceTests {
 
 	@Mock
 	private Consumer<DefaultPropertiesPropertySource> action;
-
-	@Captor
-	private ArgumentCaptor<DefaultPropertiesPropertySource> captor;
 
 	@Test
 	void nameIsDefaultProperties() {
@@ -95,8 +91,8 @@ class DefaultPropertiesPropertySourceTests {
 	@Test
 	void ifNotEmptyHasValueCallsAction() {
 		DefaultPropertiesPropertySource.ifNotEmpty(Collections.singletonMap("spring", "boot"), this.action);
-		then(this.action).should().accept(this.captor.capture());
-		assertThat(this.captor.getValue().getProperty("spring")).isEqualTo("boot");
+		then(this.action).should()
+			.accept(assertArg((properties) -> assertThat(properties.getProperty("spring")).isEqualTo("boot")));
 	}
 
 	@Test

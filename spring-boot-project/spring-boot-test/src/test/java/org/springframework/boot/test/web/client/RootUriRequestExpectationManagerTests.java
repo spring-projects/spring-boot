@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -39,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -53,15 +52,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(MockitoExtension.class)
 class RootUriRequestExpectationManagerTests {
 
-	private String uri = "https://example.com";
+	private final String uri = "https://example.com";
 
 	@Mock
 	private RequestExpectationManager delegate;
 
 	private RootUriRequestExpectationManager manager;
-
-	@Captor
-	private ArgumentCaptor<ClientHttpRequest> requestCaptor;
 
 	@BeforeEach
 	void setup() {
@@ -71,13 +67,13 @@ class RootUriRequestExpectationManagerTests {
 	@Test
 	void createWhenRootUriIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
-			.withMessageContaining("RootUri must not be null");
+			.withMessageContaining("'rootUri' must not be null");
 	}
 
 	@Test
 	void createWhenExpectationManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
-			.withMessageContaining("ExpectationManager must not be null");
+			.withMessageContaining("'expectationManager' must not be null");
 	}
 
 	@Test
@@ -101,10 +97,14 @@ class RootUriRequestExpectationManagerTests {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(request.getURI()).willReturn(new URI(this.uri + "/hello"));
 		this.manager.validateRequest(request);
-		then(this.delegate).should().validateRequest(this.requestCaptor.capture());
-		HttpRequestWrapper actual = (HttpRequestWrapper) this.requestCaptor.getValue();
-		assertThat(actual.getRequest()).isSameAs(request);
-		assertThat(actual.getURI()).isEqualTo(new URI("/hello"));
+		URI expectedURI = new URI("/hello");
+		then(this.delegate).should()
+			.validateRequest(assertArg((actual) -> assertThat(actual).isInstanceOfSatisfying(HttpRequestWrapper.class,
+					(requestWrapper) -> {
+						assertThat(requestWrapper.getRequest()).isSameAs(request);
+						assertThat(requestWrapper.getURI()).isEqualTo(expectedURI);
+					})));
+
 	}
 
 	@Test

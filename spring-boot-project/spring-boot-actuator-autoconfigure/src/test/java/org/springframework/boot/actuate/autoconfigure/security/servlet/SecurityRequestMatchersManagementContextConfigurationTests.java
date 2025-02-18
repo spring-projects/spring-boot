@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
-import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -61,7 +59,7 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 	void registersRequestMatcherProviderIfMvcPresent() {
 		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class).run((context) -> {
 			AntPathRequestMatcherProvider matcherProvider = context.getBean(AntPathRequestMatcherProvider.class);
-			RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
+			RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example", null);
 			assertThat(requestMatcher).extracting("pattern").isEqualTo("/custom/example");
 		});
 	}
@@ -72,7 +70,7 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 			.withUserConfiguration(TestJerseyConfiguration.class)
 			.run((context) -> {
 				AntPathRequestMatcherProvider matcherProvider = context.getBean(AntPathRequestMatcherProvider.class);
-				RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
+				RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example", null);
 				assertThat(requestMatcher).extracting("pattern").isEqualTo("/admin/example");
 			});
 	}

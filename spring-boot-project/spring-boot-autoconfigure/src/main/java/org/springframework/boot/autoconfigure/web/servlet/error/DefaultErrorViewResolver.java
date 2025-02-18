@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
@@ -66,7 +66,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		SERIES_VIEWS = Collections.unmodifiableMap(views);
 	}
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	private final Resources resources;
 
@@ -81,8 +81,8 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 * @since 2.4.0
 	 */
 	public DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resources) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(resources, "Resources must not be null");
+		Assert.notNull(applicationContext, "'applicationContext' must not be null");
+		Assert.notNull(resources, "'resources' must not be null");
 		this.applicationContext = applicationContext;
 		this.resources = resources;
 		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
@@ -126,6 +126,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -145,7 +146,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 */
 	private static class HtmlResourceView implements View {
 
-		private Resource resource;
+		private final Resource resource;
 
 		HtmlResourceView(Resource resource) {
 			this.resource = resource;

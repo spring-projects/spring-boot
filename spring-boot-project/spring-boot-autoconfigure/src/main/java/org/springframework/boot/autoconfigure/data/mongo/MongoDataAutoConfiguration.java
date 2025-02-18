@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,18 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import com.mongodb.client.MongoClient;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -52,5 +58,12 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 @Import({ MongoDataConfiguration.class, MongoDatabaseFactoryConfiguration.class,
 		MongoDatabaseFactoryDependentConfiguration.class })
 public class MongoDataAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(MongoConnectionDetails.class)
+	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesMongoConnectionDetails(properties, sslBundles.getIfAvailable());
+	}
 
 }

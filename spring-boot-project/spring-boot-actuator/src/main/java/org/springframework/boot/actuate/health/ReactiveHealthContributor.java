@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import org.springframework.util.Assert;
 public interface ReactiveHealthContributor {
 
 	static ReactiveHealthContributor adapt(HealthContributor healthContributor) {
-		Assert.notNull(healthContributor, "HealthContributor must not be null");
-		if (healthContributor instanceof HealthIndicator) {
-			return new HealthIndicatorReactiveAdapter((HealthIndicator) healthContributor);
+		Assert.notNull(healthContributor, "'healthContributor' must not be null");
+		if (healthContributor instanceof HealthIndicator healthIndicator) {
+			return new HealthIndicatorReactiveAdapter(healthIndicator);
 		}
-		if (healthContributor instanceof CompositeHealthContributor) {
-			return new CompositeHealthContributorReactiveAdapter((CompositeHealthContributor) healthContributor);
+		if (healthContributor instanceof CompositeHealthContributor compositeHealthContributor) {
+			return new CompositeHealthContributorReactiveAdapter(compositeHealthContributor);
 		}
 		throw new IllegalStateException("Unknown HealthContributor type");
 	}

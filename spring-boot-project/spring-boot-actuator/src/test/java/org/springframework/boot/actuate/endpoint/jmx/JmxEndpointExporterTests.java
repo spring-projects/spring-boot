@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import javax.management.ObjectName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
@@ -55,21 +54,15 @@ import static org.mockito.BDDMockito.willThrow;
 @ExtendWith(MockitoExtension.class)
 class JmxEndpointExporterTests {
 
+	private final JmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
+
+	private final List<ExposableJmxEndpoint> endpoints = new ArrayList<>();
+
 	@Mock
 	private MBeanServer mBeanServer;
 
 	@Spy
 	private EndpointObjectNameFactory objectNameFactory = new TestEndpointObjectNameFactory();
-
-	private JmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
-
-	private List<ExposableJmxEndpoint> endpoints = new ArrayList<>();
-
-	@Captor
-	private ArgumentCaptor<Object> objectCaptor;
-
-	@Captor
-	private ArgumentCaptor<ObjectName> objectNameCaptor;
 
 	private JmxEndpointExporter exporter;
 
@@ -84,21 +77,21 @@ class JmxEndpointExporterTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
 					() -> new JmxEndpointExporter(null, this.objectNameFactory, this.responseMapper, this.endpoints))
-			.withMessageContaining("MBeanServer must not be null");
+			.withMessageContaining("'mBeanServer' must not be null");
 	}
 
 	@Test
 	void createWhenObjectNameFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper, this.endpoints))
-			.withMessageContaining("ObjectNameFactory must not be null");
+			.withMessageContaining("'objectNameFactory' must not be null");
 	}
 
 	@Test
 	void createWhenResponseMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, null, this.endpoints))
-			.withMessageContaining("ResponseMapper must not be null");
+			.withMessageContaining("'responseMapper' must not be null");
 	}
 
 	@Test
@@ -106,16 +99,16 @@ class JmxEndpointExporterTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
 					() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, this.responseMapper, null))
-			.withMessageContaining("Endpoints must not be null");
+			.withMessageContaining("'endpoints' must not be null");
 	}
 
 	@Test
 	void afterPropertiesSetShouldRegisterMBeans() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
-		then(this.mBeanServer).should().registerMBean(this.objectCaptor.capture(), this.objectNameCaptor.capture());
-		assertThat(this.objectCaptor.getValue()).isInstanceOf(EndpointMBean.class);
-		assertThat(this.objectNameCaptor.getValue().getKeyProperty("name")).isEqualTo("test");
+		then(this.mBeanServer).should()
+			.registerMBean(assertArg((object) -> assertThat(object).isInstanceOf(EndpointMBean.class)),
+					assertArg((objectName) -> assertThat(objectName.getKeyProperty("name")).isEqualTo("test")));
 	}
 
 	@Test
@@ -144,12 +137,20 @@ class JmxEndpointExporterTests {
 	}
 
 	@Test
+	void registerWhenEndpointHasNoOperationsShouldNotCreateMBean() {
+		this.endpoints.add(new TestExposableJmxEndpoint());
+		this.exporter.afterPropertiesSet();
+		then(this.mBeanServer).shouldHaveNoInteractions();
+	}
+
+	@Test
 	void destroyShouldUnregisterMBeans() throws Exception {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		this.exporter.destroy();
-		then(this.mBeanServer).should().unregisterMBean(this.objectNameCaptor.capture());
-		assertThat(this.objectNameCaptor.getValue().getKeyProperty("name")).isEqualTo("test");
+		then(this.mBeanServer).should()
+			.unregisterMBean(
+					assertArg((objectName) -> assertThat(objectName.getKeyProperty("name")).isEqualTo("test")));
 	}
 
 	@Test

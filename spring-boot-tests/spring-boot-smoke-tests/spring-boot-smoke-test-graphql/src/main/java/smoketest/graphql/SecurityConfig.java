@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package smoketest.graphql;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -30,15 +31,15 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
 	@Bean
 	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf((csrf) -> csrf.disable())
+		return http.csrf(CsrfConfigurer::disable)
 			// Demonstrate that method security works
 			// Best practice to use both for defense in depth
-			.authorizeRequests((requests) -> requests.anyRequest().permitAll())
+			.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
 			.httpBasic(withDefaults())
 			.build();
 	}

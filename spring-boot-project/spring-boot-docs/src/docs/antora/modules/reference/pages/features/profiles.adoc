@@ -1,0 +1,126 @@
+[[features.profiles]]
+= Profiles
+
+Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
+Any javadoc:org.springframework.stereotype.Component[format=annotation], javadoc:org.springframework.context.annotation.Configuration[format=annotation] or javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] can be marked with javadoc:org.springframework.context.annotation.Profile[format=annotation] to limit when it is loaded, as shown in the following example:
+
+include-code::ProductionConfiguration[]
+
+NOTE: If javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are registered through javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] instead of automatic scanning, the javadoc:org.springframework.context.annotation.Profile[format=annotation] annotation needs to be specified on the javadoc:org.springframework.context.annotation.Configuration[format=annotation] class that has the javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] annotation.
+In the case where javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] are scanned, javadoc:org.springframework.context.annotation.Profile[format=annotation] can be specified on the javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] class itself.
+
+You can use a configprop:spring.profiles.active[] javadoc:org.springframework.core.env.Environment[] property to specify which profiles are active.
+You can specify the property in any of the ways described earlier in this chapter.
+For example, you could include it in your `application.properties`, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  profiles:
+    active: "dev,hsqldb"
+----
+
+You could also specify it on the command line by using the following switch: `--spring.profiles.active=dev,hsqldb`.
+
+If no profile is active, a default profile is enabled.
+The name of the default profile is `default` and it can be tuned using the configprop:spring.profiles.default[] javadoc:org.springframework.core.env.Environment[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  profiles:
+    default: "none"
+----
+
+`spring.profiles.active` and `spring.profiles.default` can only be used in non-profile-specific documents.
+This means they cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
+
+For example, the second document configuration is invalid:
+
+[configprops,yaml]
+----
+# this document is valid
+spring:
+  profiles:
+    active: "prod"
+---
+# this document is invalid
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+  profiles:
+    active: "metrics"
+----
+
+
+
+[[features.profiles.adding-active-profiles]]
+== Adding Active Profiles
+
+The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest javadoc:org.springframework.core.env.PropertySource[] wins.
+This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
+
+Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
+The `spring.profiles.include` property can be used to add active profiles on top of those activated by the configprop:spring.profiles.active[] property.
+The javadoc:org.springframework.boot.SpringApplication[] entry point also has a Java API for setting additional profiles.
+See the `setAdditionalProfiles()` method in javadoc:org.springframework.boot.SpringApplication[].
+
+For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the `--spring.profiles.active` switch:
+
+[configprops,yaml]
+----
+spring:
+  profiles:
+    include:
+      - "common"
+      - "local"
+----
+
+WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile-specific documents.
+This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
+
+Profile groups, which are described in the xref:features/profiles.adoc#features.profiles.groups[next section] can also be used to add active profiles if a given profile is active.
+
+
+
+[[features.profiles.groups]]
+== Profile Groups
+
+Occasionally the profiles that you define and use in your application are too fine-grained and become cumbersome to use.
+For example, you might have `proddb` and `prodmq` profiles that you use to enable database and messaging features independently.
+
+To help with this, Spring Boot lets you define profile groups.
+A profile group allows you to define a logical name for a related group of profiles.
+
+For example, we can create a `production` group that consists of our `proddb` and `prodmq` profiles.
+
+[configprops,yaml]
+----
+spring:
+  profiles:
+    group:
+      production:
+      - "proddb"
+      - "prodmq"
+----
+
+Our application can now be started using `--spring.profiles.active=production` to activate the `production`, `proddb` and `prodmq` profiles in one hit.
+
+WARNING: Similar to `spring.profiles.active` and `spring.profiles.include`, `spring.profiles.group` can only be used in non-profile-specific documents.
+This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
+
+
+[[features.profiles.programmatically-setting-profiles]]
+== Programmatically Setting Profiles
+
+You can programmatically set active profiles by calling `SpringApplication.setAdditionalProfiles(...)` before your application runs.
+It is also possible to activate profiles by using Spring's javadoc:org.springframework.core.env.ConfigurableEnvironment[] interface.
+
+
+
+[[features.profiles.profile-specific-configuration-files]]
+== Profile-specific Configuration Files
+
+Profile-specific variants of both `application.properties` (or `application.yaml`) and files referenced through javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] are considered as files and loaded.
+See xref:features/external-config.adoc#features.external-config.files.profile-specific[] for details.

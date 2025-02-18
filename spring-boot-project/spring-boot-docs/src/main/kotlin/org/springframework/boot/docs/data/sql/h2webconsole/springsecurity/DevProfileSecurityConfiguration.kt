@@ -33,14 +33,14 @@ class DevProfileSecurityConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	fun h2ConsoleSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		return http.authorizeHttpRequests(yourCustomAuthorization())
-			.csrf().disable()
-			.headers().frameOptions().sameOrigin().and()
+			.csrf { csrf -> csrf.disable() }
+			.headers { headers -> headers.frameOptions { frameOptions -> frameOptions.sameOrigin() } }
 			.build()
 	}
 
 	// tag::customizer[]
 	private fun <T> yourCustomAuthorization(): Customizer<T> {
-		return Customizer.withDefaults<T>()
+		return Customizer.withDefaults()
 	}
 	// end::customizer[]
 

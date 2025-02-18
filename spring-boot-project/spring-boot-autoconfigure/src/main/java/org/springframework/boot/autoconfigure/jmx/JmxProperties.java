@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jmx;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.jmx.support.RegistrationPolicy;
 
 /**
  * Configuration properties for JMX.
@@ -24,11 +25,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Scott Frederick
  * @since 2.7.0
  */
-@ConfigurationProperties(prefix = "spring.jmx")
+@ConfigurationProperties("spring.jmx")
 public class JmxProperties {
 
 	/**
-	 * Expose management beans to the JMX domain.
+	 * Expose Spring's management beans to the JMX domain.
 	 */
 	private boolean enabled = false;
 
@@ -47,7 +48,12 @@ public class JmxProperties {
 	 */
 	private String defaultDomain;
 
-	public boolean getEnabled() {
+	/**
+	 * JMX Registration policy.
+	 */
+	private RegistrationPolicy registrationPolicy = RegistrationPolicy.FAIL_ON_EXISTING;
+
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
@@ -77,6 +83,14 @@ public class JmxProperties {
 
 	public void setDefaultDomain(String defaultDomain) {
 		this.defaultDomain = defaultDomain;
+	}
+
+	public RegistrationPolicy getRegistrationPolicy() {
+		return this.registrationPolicy;
+	}
+
+	public void setRegistrationPolicy(RegistrationPolicy registrationPolicy) {
+		this.registrationPolicy = registrationPolicy;
 	}
 
 }

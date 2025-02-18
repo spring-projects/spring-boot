@@ -39,7 +39,7 @@ class RedisAutoConfigurationLettuceWithoutCommonsPool2Tests {
 
 	@Test
 	void poolWithoutCommonsPool2IsDisabledByDefault() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.data.redis.host:foo").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("foo");
 			assertThat(cf.getClientConfiguration()).isNotInstanceOf(LettucePoolingClientConfiguration.class);

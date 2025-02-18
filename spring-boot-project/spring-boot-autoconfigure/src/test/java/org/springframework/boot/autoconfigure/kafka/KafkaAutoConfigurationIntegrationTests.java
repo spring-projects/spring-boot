@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Tomaz Fernandes
+ * @author Andy Wilkinson
  */
 @DisabledOnOs(OS.WINDOWS)
 @EmbeddedKafka(topics = KafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
@@ -91,7 +94,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
 		Producer producer = producerFactory.createProducer();
-		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
+		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC)).hasSize(10);
 		producer.close();
 	}
 
@@ -105,7 +108,7 @@ class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
 		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
-			.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
+			.containsExactly(0L, 100L, 200L, 300L, 0L);
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
 		RetryListener listener = this.context.getBean(RetryListener.class);
@@ -113,10 +116,10 @@ class KafkaAutoConfigurationIntegrationTests {
 		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived)
 			.containsExactly("foo", "bar");
 		assertThat(listener).extracting(RetryListener::getTopics)
-			.asList()
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
 			.hasSize(5)
 			.containsSequence("testRetryTopic", "testRetryTopic-retry-0", "testRetryTopic-retry-1",
-					"testRetryTopic-retry-2", "testRetryTopic-retry-3");
+					"testRetryTopic-retry-2");
 	}
 
 	@Test
@@ -133,6 +136,7 @@ class KafkaAutoConfigurationIntegrationTests {
 	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
+		applicationContext.register(SslAutoConfiguration.class);
 		applicationContext.register(KafkaAutoConfiguration.class);
 		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
@@ -184,7 +188,7 @@ class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+		void listen(String foo, @Header(KafkaHeaders.RECEIVED_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();
@@ -203,7 +207,7 @@ class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_RETRY_TOPIC)
-		void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key,
+		void listen(String foo, @Header(KafkaHeaders.RECEIVED_KEY) String key,
 				@Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
 			this.received = foo;
 			this.key = key;

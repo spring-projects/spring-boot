@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.PushGateway;
+import io.prometheus.metrics.exporter.pushgateway.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,76 +44,60 @@ public class PrometheusPushGatewayManager {
 
 	private final PushGateway pushGateway;
 
-	private final CollectorRegistry registry;
-
-	private final String job;
-
-	private final Map<String, String> groupingKey;
-
 	private final ShutdownOperation shutdownOperation;
 
 	private final TaskScheduler scheduler;
 
-	private ScheduledFuture<?> scheduled;
-
-	/**
-	 * Create a new {@link PrometheusPushGatewayManager} instance using a single threaded
-	 * {@link TaskScheduler}.
-	 * @param pushGateway the source push gateway
-	 * @param registry the collector registry to push
-	 * @param pushRate the rate at which push operations occur
-	 * @param job the job ID for the operation
-	 * @param groupingKeys an optional set of grouping keys for the operation
-	 * @param shutdownOperation the shutdown operation that should be performed when
-	 * context is closed.
-	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, Duration pushRate,
-			String job, Map<String, String> groupingKeys, ShutdownOperation shutdownOperation) {
-		this(pushGateway, registry, new PushGatewayTaskScheduler(), pushRate, job, groupingKeys, shutdownOperation);
-	}
+	private final ScheduledFuture<?> scheduled;
 
 	/**
 	 * Create a new {@link PrometheusPushGatewayManager} instance.
 	 * @param pushGateway the source push gateway
-	 * @param registry the collector registry to push
-	 * @param scheduler the scheduler used for operations
 	 * @param pushRate the rate at which push operations occur
-	 * @param job the job ID for the operation
-	 * @param groupingKey an optional set of grouping keys for the operation
 	 * @param shutdownOperation the shutdown operation that should be performed when
-	 * context is closed.
+	 * context is closed
+	 * @since 3.5.0
 	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, TaskScheduler scheduler,
-			Duration pushRate, String job, Map<String, String> groupingKey, ShutdownOperation shutdownOperation) {
-		Assert.notNull(pushGateway, "PushGateway must not be null");
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(scheduler, "Scheduler must not be null");
-		Assert.notNull(pushRate, "PushRate must not be null");
-		Assert.hasLength(job, "Job must not be empty");
-		this.pushGateway = pushGateway;
-		this.registry = registry;
-		this.job = job;
-		this.groupingKey = groupingKey;
-		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation : ShutdownOperation.NONE;
-		this.scheduler = scheduler;
-		this.scheduled = this.scheduler.scheduleAtFixedRate(this::push, pushRate);
+	public PrometheusPushGatewayManager(PushGateway pushGateway, Duration pushRate,
+			ShutdownOperation shutdownOperation) {
+		this(pushGateway, new PushGatewayTaskScheduler(), pushRate, shutdownOperation);
 	}
 
-	private void push() {
+	PrometheusPushGatewayManager(PushGateway pushGateway, TaskScheduler scheduler, Duration pushRate,
+			ShutdownOperation shutdownOperation) {
+		Assert.notNull(pushGateway, "'pushGateway' must not be null");
+		Assert.notNull(scheduler, "'scheduler' must not be null");
+		Assert.notNull(pushRate, "'pushRate' must not be null");
+		this.pushGateway = pushGateway;
+		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation : ShutdownOperation.NONE;
+		this.scheduler = scheduler;
+		this.scheduled = this.scheduler.scheduleAtFixedRate(this::post, pushRate);
+	}
+
+	private void post() {
 		try {
-			this.pushGateway.pushAdd(this.registry, this.job, this.groupingKey);
+			this.pushGateway.pushAdd();
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while pushing metrics to Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown by POST of metrics to Prometheus Pushgateway", ex);
+		}
+	}
+
+	private void put() {
+		try {
+			this.pushGateway.push();
+		}
+		catch (Throwable ex) {
+			logger.warn("Unexpected exception thrown by PUT of metrics to Prometheus Pushgateway", ex);
 		}
 	}
 
 	private void delete() {
 		try {
-			this.pushGateway.delete(this.job, this.groupingKey);
+			this.pushGateway.delete();
 		}
 		catch (Throwable ex) {
-			logger.warn("Unexpected exception thrown while deleting metrics from Prometheus Pushgateway", ex);
+			logger.warn("Unexpected exception thrown by DELETE of metrics from Prometheus Pushgateway", ex);
 		}
 	}
 
@@ -127,17 +109,14 @@ public class PrometheusPushGatewayManager {
 	}
 
 	private void shutdown(ShutdownOperation shutdownOperation) {
-		if (this.scheduler instanceof PushGatewayTaskScheduler) {
-			((PushGatewayTaskScheduler) this.scheduler).shutdown();
+		if (this.scheduler instanceof PushGatewayTaskScheduler pushGatewayTaskScheduler) {
+			pushGatewayTaskScheduler.shutdown();
 		}
 		this.scheduled.cancel(false);
 		switch (shutdownOperation) {
-			case PUSH:
-				push();
-				break;
-			case DELETE:
-				delete();
-				break;
+			case POST -> post();
+			case PUT -> put();
+			case DELETE -> delete();
 		}
 	}
 
@@ -152,12 +131,17 @@ public class PrometheusPushGatewayManager {
 		NONE,
 
 		/**
-		 * Perform a 'push' before shutdown.
+		 * Perform a POST before shutdown.
 		 */
-		PUSH,
+		POST,
 
 		/**
-		 * Perform a 'delete' before shutdown.
+		 * Perform a PUT before shutdown.
+		 */
+		PUT,
+
+		/**
+		 * Perform a DELETE before shutdown.
 		 */
 		DELETE
 

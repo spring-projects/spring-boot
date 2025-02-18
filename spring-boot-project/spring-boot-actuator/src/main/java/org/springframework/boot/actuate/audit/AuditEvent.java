@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ public class AuditEvent implements Serializable {
 	 * @param data the event data
 	 */
 	public AuditEvent(Instant timestamp, String principal, String type, Map<String, Object> data) {
-		Assert.notNull(timestamp, "Timestamp must not be null");
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(timestamp, "'timestamp' must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		this.timestamp = timestamp;
 		this.principal = (principal != null) ? principal : "";
 		this.type = type;

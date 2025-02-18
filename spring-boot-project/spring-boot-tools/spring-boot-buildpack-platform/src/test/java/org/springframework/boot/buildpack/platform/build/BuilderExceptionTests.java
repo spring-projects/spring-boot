@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class BuilderExceptionTests {
 	void create() {
 		BuilderException exception = new BuilderException("detector", 1);
 		assertThat(exception.getOperation()).isEqualTo("detector");
-		assertThat(exception.getStatusCode()).isEqualTo(1);
+		assertThat(exception.getStatusCode()).isOne();
 		assertThat(exception.getMessage()).isEqualTo("Builder lifecycle 'detector' failed with status code 1");
 	}
 
@@ -39,7 +39,7 @@ class BuilderExceptionTests {
 	void createWhenOperationIsNull() {
 		BuilderException exception = new BuilderException(null, 1);
 		assertThat(exception.getOperation()).isNull();
-		assertThat(exception.getStatusCode()).isEqualTo(1);
+		assertThat(exception.getStatusCode()).isOne();
 		assertThat(exception.getMessage()).isEqualTo("Builder failed with status code 1");
 	}
 

@@ -24,13 +24,17 @@ import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfiguration {
@@ -54,18 +58,21 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests((requests) -> {
-			requests.mvcMatchers("/actuator/beans").hasRole("BEANS");
+	SecurityFilterChain configure(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector)
+			throws Exception {
+		http.authorizeHttpRequests((requests) -> {
+			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/actuator/beans"))
+				.hasRole("BEANS");
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-			requests.antMatchers("/foo").permitAll();
-			requests.antMatchers("/**").hasRole("USER");
+			requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
+			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/error")).permitAll();
+			requests.requestMatchers(new AntPathRequestMatcher("/**")).hasRole("USER");
 		});
-		http.cors(Customizer.withDefaults());
-		http.httpBasic();
+		http.cors(withDefaults());
+		http.httpBasic(withDefaults());
 		return http.build();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,25 +54,37 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.TaskProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.RepositoryTransformersExtension;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
+import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 
 /**
  * DSL extensions for {@link BomPlugin}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class BomExtension {
+
+	private final Project project;
+
+	private final UpgradeHandler upgradeHandler;
 
 	private final Map<String, DependencyVersion> properties = new LinkedHashMap<>();
 
@@ -80,16 +92,9 @@ public class BomExtension {
 
 	private final List<Library> libraries = new ArrayList<>();
 
-	private final UpgradeHandler upgradeHandler;
-
-	private final DependencyHandler dependencyHandler;
-
-	private final Project project;
-
-	public BomExtension(DependencyHandler dependencyHandler, Project project) {
-		this.dependencyHandler = dependencyHandler;
-		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class);
+	public BomExtension(Project project) {
 		this.project = project;
+		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class, project);
 	}
 
 	public List<Library> getLibraries() {
@@ -101,60 +106,88 @@ public class BomExtension {
 	}
 
 	public Upgrade getUpgrade() {
-		return new Upgrade(this.upgradeHandler.upgradePolicy, new GitHub(this.upgradeHandler.gitHub.organization,
-				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
+		GitHubHandler gitHub = this.upgradeHandler.gitHub;
+		return new Upgrade(this.upgradeHandler.upgradePolicy,
+				new GitHub(gitHub.organization, gitHub.repository, gitHub.issueLabels));
 	}
 
 	public void library(String name, Action<LibraryHandler> action) {
-		this.library(name, null, action);
+		library(name, null, action);
 	}
 
 	public void library(String name, String version, Action<LibraryHandler> action) {
 		ObjectFactory objects = this.project.getObjects();
-		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
+		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, this.project,
+				(version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
+		VersionAlignment versionAlignment = (libraryHandler.alignWith.version != null)
+				? new VersionAlignment(libraryHandler.alignWith.version.from,
+						libraryHandler.alignWith.version.managedBy, this.project, this.libraries, libraryHandler.groups)
+				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots));
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
+				libraryHandler.alignWith.dependencyManagementDeclaredIn, libraryHandler.linkRootName,
+				libraryHandler.links));
 	}
 
 	public void effectiveBomArtifact() {
 		Configuration effectiveBomConfiguration = this.project.getConfigurations().create("effectiveBom");
+		RepositoryTransformersExtension repositoryTransformers = this.project.getExtensions()
+			.getByType(RepositoryTransformersExtension.class);
 		this.project.getTasks()
 			.matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
 			.all((task) -> {
-				Sync syncBom = this.project.getTasks().create("syncBom", Sync.class);
-				syncBom.dependsOn(task);
-				File generatedBomDir = new File(this.project.getBuildDir(), "generated/bom");
-				syncBom.setDestinationDir(generatedBomDir);
-				syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
-				try {
-					String settingsXmlContent = FileCopyUtils
-						.copyToString(new InputStreamReader(
-								getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
-								StandardCharsets.UTF_8))
-						.replace("localRepositoryPath",
-								new File(this.project.getBuildDir(), "local-m2-repository").getAbsolutePath());
-					syncBom.from(this.project.getResources().getText().fromString(settingsXmlContent),
-							(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
-				}
-				catch (IOException ex) {
-					throw new GradleException("Failed to prepare settings.xml", ex);
-				}
-				MavenExec generateEffectiveBom = this.project.getTasks()
-					.create("generateEffectiveBom", MavenExec.class);
-				generateEffectiveBom.setProjectDir(generatedBomDir);
-				File effectiveBom = new File(this.project.getBuildDir(),
-						"generated/effective-bom/" + this.project.getName() + "-effective-bom.xml");
-				generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
-						"-Doutput=" + effectiveBom);
-				generateEffectiveBom.dependsOn(syncBom);
-				generateEffectiveBom.getOutputs().file(effectiveBom);
-				generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
+				File generatedBomDir = this.project.getLayout()
+					.getBuildDirectory()
+					.dir("generated/bom")
+					.get()
+					.getAsFile();
+				TaskProvider<Sync> syncBom = this.project.getTasks().register("syncBom", Sync.class, (sync) -> {
+					sync.dependsOn(task);
+					sync.setDestinationDir(generatedBomDir);
+					sync.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
+					sync.from(this.project.getResources().getText().fromString(loadSettingsXml()), (settingsXml) -> {
+						settingsXml.rename((name) -> "settings.xml");
+						settingsXml.filter(repositoryTransformers.mavenSettings());
+					});
+				});
+				File effectiveBom = this.project.getLayout()
+					.getBuildDirectory()
+					.file("generated/effective-bom/" + this.project.getName() + "-effective-bom.xml")
+					.get()
+					.getAsFile();
+				TaskProvider<MavenExec> generateEffectiveBom = this.project.getTasks()
+					.register("generateEffectiveBom", MavenExec.class, (maven) -> {
+						maven.getProjectDir().set(generatedBomDir);
+						maven.args("--settings", "settings.xml", "help:effective-pom", "-Doutput=" + effectiveBom);
+						maven.dependsOn(syncBom);
+						maven.getOutputs().file(effectiveBom);
+						maven.doLast(new StripUnrepeatableOutputAction(effectiveBom));
+					});
 				this.project.getArtifacts()
 					.add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 			});
+	}
+
+	private String loadSettingsXml() {
+		try {
+			return FileCopyUtils
+				.copyToString(new InputStreamReader(
+						getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
+						StandardCharsets.UTF_8))
+				.replace("localRepositoryPath",
+						this.project.getLayout()
+							.getBuildDirectory()
+							.dir("local-m2-repository")
+							.get()
+							.getAsFile()
+							.getAbsolutePath());
+		}
+		catch (IOException ex) {
+			throw new GradleException("Failed to prepare settings.xml", ex);
+		}
 	}
 
 	private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
@@ -185,6 +218,7 @@ public class BomExtension {
 	}
 
 	private void addLibrary(Library library) {
+		DependencyHandler dependencies = this.project.getDependencies();
 		this.libraries.add(library);
 		String versionProperty = library.getVersionProperty();
 		if (versionProperty != null) {
@@ -192,21 +226,28 @@ public class BomExtension {
 		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
-				putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
-				this.dependencyHandler.getConstraints()
-					.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, createDependencyNotation(group.getId(),
-							module.getName(), library.getVersion().getVersion()));
+				addModule(library, dependencies, versionProperty, group, module);
 			}
 			for (String bomImport : group.getBoms()) {
-				putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
-				String bomDependency = createDependencyNotation(group.getId(), bomImport,
-						library.getVersion().getVersion());
-				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
-						this.dependencyHandler.platform(bomDependency));
-				this.dependencyHandler.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME,
-						this.dependencyHandler.enforcedPlatform(bomDependency));
+				addBomImport(library, dependencies, versionProperty, group, bomImport);
 			}
 		}
+	}
+
+	private void addModule(Library library, DependencyHandler dependencies, String versionProperty, Group group,
+			Module module) {
+		putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
+		String constraint = createDependencyNotation(group.getId(), module.getName(),
+				library.getVersion().getVersion());
+		dependencies.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME, constraint);
+	}
+
+	private void addBomImport(Library library, DependencyHandler dependencies, String versionProperty, Group group,
+			String bomImport) {
+		putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
+		String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion().getVersion());
+		dependencies.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, dependencies.platform(bomDependency));
+		dependencies.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME, dependencies.enforcedPlatform(bomDependency));
 	}
 
 	public static class LibraryHandler {
@@ -215,15 +256,22 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
+		private final AlignWithHandler alignWith;
+
 		private boolean considerSnapshots = false;
 
 		private String version;
 
 		private String calendarName;
 
+		private String linkRootName;
+
+		private final Map<String, List<Link>> links = new HashMap<>();
+
 		@Inject
-		public LibraryHandler(String version) {
+		public LibraryHandler(Project project, String version) {
 			this.version = version;
+			this.alignWith = project.getObjects().newInstance(AlignWithHandler.class);
 		}
 
 		public void version(String version) {
@@ -250,6 +298,21 @@ public class BomExtension {
 			action.execute(handler);
 			this.prohibitedVersions.add(new ProhibitedVersion(handler.versionRange, handler.startsWith,
 					handler.endsWith, handler.contains, handler.reason));
+		}
+
+		public void alignWith(Action<AlignWithHandler> action) {
+			action.execute(this.alignWith);
+		}
+
+		public void links(Action<LinksHandler> action) {
+			links(null, action);
+		}
+
+		public void links(String linkRootName, Action<LinksHandler> action) {
+			LinksHandler handler = new LinksHandler();
+			action.execute(handler);
+			this.linkRootName = linkRootName;
+			this.links.putAll(handler.links);
 		}
 
 		public static class ProhibitedHandler {
@@ -319,8 +382,8 @@ public class BomExtension {
 
 			public void setModules(List<Object> modules) {
 				this.modules = modules.stream()
-					.map((input) -> (input instanceof Module) ? (Module) input : new Module((String) input))
-					.collect(Collectors.toList());
+					.map((input) -> (input instanceof Module module) ? module : new Module((String) input))
+					.toList();
 			}
 
 			public void setImports(List<String> imports) {
@@ -332,11 +395,9 @@ public class BomExtension {
 			}
 
 			public Object methodMissing(String name, Object args) {
-				if (args instanceof Object[] && ((Object[]) args).length == 1) {
-					Object arg = ((Object[]) args)[0];
-					if (arg instanceof Closure) {
+				if (args instanceof Object[] argsArray && argsArray.length == 1) {
+					if (argsArray[0] instanceof Closure<?> closure) {
 						ModuleHandler moduleHandler = new ModuleHandler();
-						Closure<?> closure = (Closure<?>) arg;
 						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
 						closure.setDelegate(moduleHandler);
 						closure.call(moduleHandler);
@@ -370,13 +431,134 @@ public class BomExtension {
 
 		}
 
+		public static class AlignWithHandler {
+
+			private VersionHandler version;
+
+			private String dependencyManagementDeclaredIn;
+
+			public void version(Action<VersionHandler> action) {
+				this.version = new VersionHandler();
+				action.execute(this.version);
+			}
+
+			public void dependencyManagementDeclaredIn(String bomCoordinates) {
+				this.dependencyManagementDeclaredIn = bomCoordinates;
+			}
+
+			public static class VersionHandler {
+
+				private String from;
+
+				private String managedBy;
+
+				public void from(String from) {
+					this.from = from;
+				}
+
+				public void managedBy(String managedBy) {
+					this.managedBy = managedBy;
+				}
+
+			}
+
+		}
+
+	}
+
+	public static class LinksHandler {
+
+		private final Map<String, List<Link>> links = new HashMap<>();
+
+		public void site(String linkTemplate) {
+			site(asFactory(linkTemplate));
+		}
+
+		public void site(Function<LibraryVersion, String> linkFactory) {
+			add("site", linkFactory);
+		}
+
+		public void github(String linkTemplate) {
+			github(asFactory(linkTemplate));
+		}
+
+		public void github(Function<LibraryVersion, String> linkFactory) {
+			add("github", linkFactory);
+		}
+
+		public void docs(String linkTemplate) {
+			docs(asFactory(linkTemplate));
+		}
+
+		public void docs(Function<LibraryVersion, String> linkFactory) {
+			add("docs", linkFactory);
+		}
+
+		public void javadoc(String linkTemplate) {
+			javadoc(asFactory(linkTemplate));
+		}
+
+		public void javadoc(String linkTemplate, String... packages) {
+			javadoc(asFactory(linkTemplate), packages);
+		}
+
+		public void javadoc(Function<LibraryVersion, String> linkFactory) {
+			add("javadoc", linkFactory);
+		}
+
+		public void javadoc(Function<LibraryVersion, String> linkFactory, String... packages) {
+			add("javadoc", linkFactory, packages);
+		}
+
+		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
+			add(rootName, "javadoc", linkFactory, packages);
+		}
+
+		public void releaseNotes(String linkTemplate) {
+			releaseNotes(asFactory(linkTemplate));
+		}
+
+		public void releaseNotes(Function<LibraryVersion, String> linkFactory) {
+			add("releaseNotes", linkFactory);
+		}
+
+		public void add(String name, String linkTemplate) {
+			add(name, asFactory(linkTemplate));
+		}
+
+		public void add(String name, Function<LibraryVersion, String> linkFactory) {
+			add(name, linkFactory, null);
+		}
+
+		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
+			add(null, name, linkFactory, packages);
+		}
+
+		private void add(String rootName, String name, Function<LibraryVersion, String> linkFactory,
+				String[] packages) {
+			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
+			this.links.computeIfAbsent(name, (key) -> new ArrayList<>()).add(link);
+		}
+
+		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
+			return (version) -> {
+				PlaceholderResolver resolver = (name) -> "version".equals(name) ? version.toString() : null;
+				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);
+			};
+		}
+
 	}
 
 	public static class UpgradeHandler {
 
 		private UpgradePolicy upgradePolicy;
 
-		private final GitHubHandler gitHub = new GitHubHandler();
+		private final GitHubHandler gitHub;
+
+		@Inject
+		public UpgradeHandler(Project project) {
+			this.gitHub = new GitHubHandler(project);
+		}
 
 		public void setPolicy(UpgradePolicy upgradePolicy) {
 			this.upgradePolicy = upgradePolicy;
@@ -411,11 +593,17 @@ public class BomExtension {
 
 	public static class GitHubHandler {
 
-		private String organization = "spring-projects";
+		private String organization;
 
-		private String repository = "spring-boot";
+		private String repository;
 
 		private List<String> issueLabels;
+
+		public GitHubHandler(Project project) {
+			BuildProperties buildProperties = BuildProperties.get(project);
+			this.organization = buildProperties.gitHub().organization();
+			this.repository = buildProperties.gitHub().repository();
+		}
 
 		public void setOrganization(String organization) {
 			this.organization = organization;
@@ -433,9 +621,9 @@ public class BomExtension {
 
 	public static final class GitHub {
 
-		private String organization = "spring-projects";
+		private final String organization;
 
-		private String repository = "spring-boot";
+		private final String repository;
 
 		private final List<String> issueLabels;
 

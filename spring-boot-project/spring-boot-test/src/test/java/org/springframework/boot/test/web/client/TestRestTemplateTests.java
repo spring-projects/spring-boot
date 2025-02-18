@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.util.Base64;
+import java.util.stream.Stream;
 
-import org.apache.http.client.config.RequestConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -38,15 +43,15 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -67,6 +72,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Yanming Zhou
  */
 class TestRestTemplateTests {
 
@@ -87,15 +93,15 @@ class TestRestTemplateTests {
 
 	@Test
 	void doNotReplaceCustomRequestFactory() {
-		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(OkHttp3ClientHttpRequestFactory.class);
+		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(TestClientHttpRequestFactory.class);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
-			.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+			.isInstanceOf(TestClientHttpRequestFactory.class);
 	}
 
 	@Test
 	void useTheSameRequestFactoryClassWithBasicAuth() {
-		OkHttp3ClientHttpRequestFactory customFactory = new OkHttp3ClientHttpRequestFactory();
+		TestClientHttpRequestFactory customFactory = new TestClientHttpRequestFactory();
 		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(() -> customFactory);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder).withBasicAuth("test", "test");
 		RestTemplate restTemplate = testRestTemplate.getRestTemplate();
@@ -121,7 +127,7 @@ class TestRestTemplateTests {
 
 	@Test
 	void getRootUriRootUriNotSet() {
-		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
+		assertThat(new TestRestTemplate().getRootUri()).isEmpty();
 	}
 
 	@Test
@@ -132,12 +138,81 @@ class TestRestTemplateTests {
 
 	@Test
 	void options() {
-		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
+		RequestConfig config = getRequestConfig(
+				new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS, HttpClientOption.ENABLE_COOKIES));
+		assertThat(config.isRedirectsEnabled()).isTrue();
+		assertThat(config.getCookieSpec()).isEqualTo("strict");
+	}
+
+	@Test
+	void jdkBuilderCanBeSpecifiedWithSpecificRedirects() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk());
+		TestRestTemplate templateWithRedirects = new TestRestTemplate(builder.redirects(Redirects.FOLLOW));
+		assertThat(getJdkHttpClient(templateWithRedirects).followRedirects()).isEqualTo(Redirect.NORMAL);
+		TestRestTemplate templateWithoutRedirects = new TestRestTemplate(builder.redirects(Redirects.DONT_FOLLOW));
+		assertThat(getJdkHttpClient(templateWithoutRedirects).followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
+		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(null, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(builder, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW)).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS)
+			.isRedirectsEnabled()).isTrue();
+	}
+
+	@Test
+	void withRequestFactorySettingsRedirectsForHttpComponents() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRequestConfig(template).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(template
+			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW)))
+			.isRedirectsEnabled()).isTrue();
+	}
+
+	@Test
+	void withRequestFactorySettingsRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void withRequestFactorySettingsUpdateRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(
+				template.withRequestFactorySettings((settings) -> settings.withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	private RequestConfig getRequestConfig(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
+		builder = (builder != null) ? builder : new RestTemplateBuilder();
+		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
+		return getRequestConfig(template);
+	}
+
+	private RequestConfig getRequestConfig(TestRestTemplate template) {
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 			.getRestTemplate()
 			.getRequestFactory();
-		RequestConfig config = factory.getRequestConfig();
-		assertThat(config.isRedirectsEnabled()).isTrue();
+		return factory.createRequestConfig();
+	}
+
+	private HttpClient getJdkHttpClient(TestRestTemplate template) {
+		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) template.getRestTemplate()
+			.getRequestFactory();
+		return (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
 	}
 
 	@Test
@@ -205,7 +280,7 @@ class TestRestTemplateTests {
 	void withBasicAuthAddsBasicAuthWhenNotAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate();
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
-		assertThat(getConverterClasses(original)).containsExactlyElementsOf(getConverterClasses(basicAuth));
+		assertThat(getConverterClasses(original)).containsExactlyElementsOf(getConverterClasses(basicAuth).toList());
 		assertThat(basicAuth.getRestTemplate().getInterceptors()).isEmpty();
 		assertBasicAuthorizationCredentials(original, null, null);
 		assertBasicAuthorizationCredentials(basicAuth, "user", "password");
@@ -215,27 +290,22 @@ class TestRestTemplateTests {
 	void withBasicAuthReplacesBasicAuthWhenAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate("foo", "bar").withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
-		assertThat(getConverterClasses(basicAuth)).containsExactlyElementsOf(getConverterClasses(original));
+		assertThat(getConverterClasses(basicAuth)).containsExactlyElementsOf(getConverterClasses(original).toList());
 		assertBasicAuthorizationCredentials(original, "replace", "replace");
 		assertBasicAuthorizationCredentials(basicAuth, "user", "password");
 	}
 
-	private List<Class<?>> getConverterClasses(TestRestTemplate testRestTemplate) {
-		return testRestTemplate.getRestTemplate()
-			.getMessageConverters()
-			.stream()
-			.map(Object::getClass)
-			.collect(Collectors.toList());
+	private Stream<Class<?>> getConverterClasses(TestRestTemplate testRestTemplate) {
+		return testRestTemplate.getRestTemplate().getMessageConverters().stream().map(Object::getClass);
 	}
 
 	@Test
-	void withBasicAuthShouldUseNoOpErrorHandler() throws Exception {
+	void withBasicAuthShouldUseNoOpErrorHandler() {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
 		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user", "password");
-		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isInstanceOf(
-				Class.forName("org.springframework.boot.test.web.client.TestRestTemplate$NoOpResponseErrorHandler"));
+		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isInstanceOf(NoOpResponseErrorHandler.class);
 	}
 
 	@Test
@@ -276,13 +346,13 @@ class TestRestTemplateTests {
 	@Test
 	void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
 	void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
 			}));
 	}
 
@@ -379,8 +449,8 @@ class TestRestTemplateTests {
 		}
 		else {
 			assertThat(request.getHeaders()).containsKeys(HttpHeaders.AUTHORIZATION);
-			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly(
-					"Basic " + Base64Utils.encodeToString(String.format("%s:%s", username, password).getBytes()));
+			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic "
+					+ Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
 		}
 
 	}
@@ -388,6 +458,10 @@ class TestRestTemplateTests {
 	interface TestRestTemplateCallback {
 
 		void doWithTestRestTemplate(TestRestTemplate testRestTemplate, URI relativeUri);
+
+	}
+
+	static class TestClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
 	}
 

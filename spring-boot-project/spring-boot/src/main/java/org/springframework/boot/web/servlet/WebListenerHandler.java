@@ -18,7 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import java.util.Map;
 
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebListener;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

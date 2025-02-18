@@ -1,6 +1,5 @@
 plugins {
 	id "war"
-	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot traditional deployment smoke test"
@@ -19,7 +18,5 @@ dependencies {
 	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -32,8 +35,9 @@ import org.springframework.context.annotation.Conditional;
  * must be met for the condition to match, but they do not have to be met by the same
  * bean.
  * <p>
- * When placed on a {@code @Bean} method, the bean class defaults to the return type of
- * the factory method:
+ * When placed on a {@link Bean @Bean} method and none of {@link #value}, {@link #type},
+ * {@link #name}, or {@link #annotation} has been specified, the bean type to match
+ * defaults to the return type of the {@code @Bean} method:
  *
  * <pre class="code">
  * &#064;Configuration
@@ -66,22 +70,38 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The class types of beans that should be checked. The condition matches when beans
-	 * of all classes specified are contained in the {@link BeanFactory}.
+	 * of all classes specified are contained in the {@link BeanFactory}. Beans that are
+	 * not autowire candidates or that are not default candidates are ignored.
 	 * @return the class types of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<?>[] value() default {};
 
 	/**
 	 * The class type names of beans that should be checked. The condition matches when
-	 * beans of all classes specified are contained in the {@link BeanFactory}.
+	 * beans of all classes specified are contained in the {@link BeanFactory}. Beans that
+	 * are not autowire candidates or that are not default candidates are ignored.
 	 * @return the class type names of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	String[] type() default {};
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when all the annotations specified are defined on beans in the {@link BeanFactory}.
+	 * Beans that are not autowire candidates or that are not default candidates are
+	 * ignored.
 	 * @return the class-level annotation types to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 

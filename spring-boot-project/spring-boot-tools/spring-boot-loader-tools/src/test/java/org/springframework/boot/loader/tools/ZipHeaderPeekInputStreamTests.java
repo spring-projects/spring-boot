@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ class ZipHeaderPeekInputStreamTests {
 	void readIndividualBytes() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
-			assertThat(in.read()).isEqualTo(0);
-			assertThat(in.read()).isEqualTo(1);
+			assertThat(in.read()).isZero();
+			assertThat(in.read()).isOne();
 			assertThat(in.read()).isEqualTo(2);
 			assertThat(in.read()).isEqualTo(3);
 			assertThat(in.read()).isEqualTo(4);
@@ -99,7 +99,7 @@ class ZipHeaderPeekInputStreamTests {
 	void readMoreThanEntireStreamWhenStreamLengthIsLessThanZipHeaderLength() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(new ByteArrayInputStream(new byte[] { 10 }))) {
 			byte[] bytes = new byte[8];
-			assertThat(in.read(bytes)).isEqualTo(1);
+			assertThat(in.read(bytes)).isOne();
 			assertThat(bytes).containsExactly(10, 0, 0, 0, 0, 0, 0, 0);
 		}
 	}

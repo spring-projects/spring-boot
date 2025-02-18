@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,24 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.LinkedHashMap;
 
-import javax.servlet.DispatcherType;
-
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+import jakarta.servlet.DispatcherType;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring6.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
@@ -58,6 +56,7 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -130,7 +129,7 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebMvcConfiguration {
 
 		@Bean
@@ -144,6 +143,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(AbstractCachingViewResolver.class)
 		static class ThymeleafViewResolverConfiguration {
 
 			@Bean
@@ -182,7 +182,7 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
 
 		@Bean
@@ -251,18 +251,6 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean
 		SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Java8TimeDialect.class)
-	static class ThymeleafJava8TimeDialect {
-
-		@Bean
-		@ConditionalOnMissingBean
-		Java8TimeDialect java8TimeDialect() {
-			return new Java8TimeDialect();
 		}
 
 	}

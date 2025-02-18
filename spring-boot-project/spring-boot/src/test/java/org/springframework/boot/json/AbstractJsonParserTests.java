@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.util.StreamUtils;
@@ -45,30 +46,30 @@ abstract class AbstractJsonParserTests {
 	void simpleMap() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1}");
 		assertThat(map).hasSize(2);
-		assertThat(map.get("foo")).isEqualTo("bar");
-		assertThat(((Number) map.get("spam")).longValue()).isEqualTo(1L);
+		assertThat(map).containsEntry("foo", "bar");
+		assertThat(((Number) map.get("spam")).longValue()).isOne();
 	}
 
 	@Test
 	void doubleValue() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1.23}");
 		assertThat(map).hasSize(2);
-		assertThat(map.get("foo")).isEqualTo("bar");
-		assertThat(map.get("spam")).isEqualTo(1.23d);
+		assertThat(map).containsEntry("foo", "bar");
+		assertThat(map).containsEntry("spam", 1.23d);
 	}
 
 	@Test
 	void stringContainingNumber() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"123\"}");
 		assertThat(map).hasSize(1);
-		assertThat(map.get("foo")).isEqualTo("123");
+		assertThat(map).containsEntry("foo", "123");
 	}
 
 	@Test
 	void stringContainingComma() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar1,bar2\"}");
 		assertThat(map).hasSize(1);
-		assertThat(map.get("foo")).isEqualTo("bar1,bar2");
+		assertThat(map).containsEntry("foo", "bar1,bar2");
 	}
 
 	@Test
@@ -105,7 +106,7 @@ abstract class AbstractJsonParserTests {
 			.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,7 +116,7 @@ abstract class AbstractJsonParserTests {
 			.parseMap(" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
-		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
+		assertThat(map.get("foo")).asInstanceOf(InstanceOfAssertFactories.LIST).allMatch(Map.class::isInstance);
 	}
 
 	@Test
@@ -159,7 +160,7 @@ abstract class AbstractJsonParserTests {
 	void mapWithLeadingWhitespace() {
 		Map<String, Object> map = this.parser.parseMap("\n\t{\"foo\":\"bar\"}");
 		assertThat(map).hasSize(1);
-		assertThat(map.get("foo")).isEqualTo("bar");
+		assertThat(map).containsEntry("foo", "bar");
 	}
 
 	@Test
@@ -176,7 +177,7 @@ abstract class AbstractJsonParserTests {
 	void escapeDoubleQuote() {
 		String input = "{\"foo\": \"\\\"bar\\\"\"}";
 		Map<String, Object> map = this.parser.parseMap(input);
-		assertThat(map.get("foo")).isEqualTo("\"bar\"");
+		assertThat(map).containsEntry("foo", "\"bar\"");
 	}
 
 	@Test
