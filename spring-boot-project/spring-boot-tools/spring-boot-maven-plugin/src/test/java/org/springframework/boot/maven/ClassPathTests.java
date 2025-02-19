@@ -85,6 +85,14 @@ class ClassPathTests {
 		assertThat(classPath.args(true)).containsExactly("-cp", path1 + File.pathSeparator + path2);
 	}
 
+	@Test
+	void toStringShouldReturnClassPath(@TempDir Path temp) throws Exception {
+		Path path1 = temp.resolve("test1.jar");
+		Path path2 = temp.resolve("test2.jar");
+		ClassPath classPath = ClassPath.of(onLinux(), List.of(path1.toUri().toURL(), path2.toUri().toURL()));
+		assertThat(classPath.toString()).isEqualTo(path1 + File.pathSeparator + path2);
+	}
+
 	private UnaryOperator<String> onWindows() {
 		return Map.of("os.name", "windows")::get;
 	}
