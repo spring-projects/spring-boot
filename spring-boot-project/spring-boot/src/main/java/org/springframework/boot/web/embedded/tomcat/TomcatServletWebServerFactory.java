@@ -240,7 +240,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		WebResourceRoot resourceRoot = (documentRoot != null) ? new LoaderHidingResourceRoot(context)
 				: new StandardRoot(context);
-		resourceRoot.setReadOnly(true);
+		ignoringNoSuchMethodError(() -> resourceRoot.setReadOnly(true));
 		context.setResources(resourceRoot);
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
@@ -253,12 +253,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.setParentClassLoader(parentClassLoader);
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
-		try {
-			context.setCreateUploadTargets(true);
-		}
-		catch (NoSuchMethodError ex) {
-			// Tomcat is < 8.5.39. Continue.
-		}
+		ignoringNoSuchMethodError(() -> context.setCreateUploadTargets(true));
 		configureTldPatterns(context);
 		WebappLoader loader = new WebappLoader();
 		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
@@ -276,6 +271,14 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		host.addChild(context);
 		configureContext(context, initializersToUse);
 		postProcessContext(context);
+	}
+
+	private void ignoringNoSuchMethodError(Runnable method) {
+		try {
+			method.run();
+		}
+		catch (NoSuchMethodError ex) {
+		}
 	}
 
 	/**
