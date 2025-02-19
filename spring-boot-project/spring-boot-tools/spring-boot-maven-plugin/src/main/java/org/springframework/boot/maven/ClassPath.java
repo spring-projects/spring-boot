@@ -79,6 +79,11 @@ final class ClassPath {
 		return this.path;
 	}
 
+	@Override
+	public String toString() {
+		return this.path;
+	}
+
 	private Path createArgFile() throws IOException {
 		Path argFile = Files.createTempFile("spring-boot-", ".argfile");
 		argFile.toFile().deleteOnExit();
@@ -121,9 +126,8 @@ final class ClassPath {
 	 * @return a new {@link ClassPath} instance
 	 */
 	static ClassPath of(UnaryOperator<String> getSystemProperty, List<URL> urls) {
-		boolean preferrArgFile = urls.size() > 1 && isWindows(getSystemProperty);
-		return new ClassPath(preferrArgFile,
-				urls.stream().map(ClassPath::toPathString).collect(JOIN_BY_PATH_SEPARATOR));
+		boolean preferArgFile = urls.size() > 1 && isWindows(getSystemProperty);
+		return new ClassPath(preferArgFile, urls.stream().map(ClassPath::toPathString).collect(JOIN_BY_PATH_SEPARATOR));
 	}
 
 	private static boolean isWindows(UnaryOperator<String> getSystemProperty) {
