@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName()).hasToString("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-noble-java-tiny");
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-java-tiny");
 		assertThat(request.isTrustBuilder()).isTrue();
 		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
@@ -109,7 +109,7 @@ class ImageTests {
 		Image image = new Image();
 		image.trustBuilder = false;
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
-		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-noble-java-tiny");
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-java-tiny");
 		assertThat(request.isTrustBuilder()).isFalse();
 	}
 

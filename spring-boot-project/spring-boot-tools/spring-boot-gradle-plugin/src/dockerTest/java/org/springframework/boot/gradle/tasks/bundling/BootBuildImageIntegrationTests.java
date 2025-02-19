@@ -161,8 +161,8 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT",
-				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2",
-				"--trustBuilder", "--runImage=paketobuildpacks/run-noble-tiny", "--createdDate=2020-07-01T12:34:56Z",
+				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1",
+				"--trustBuilder", "--runImage=paketobuildpacks/run-jammy-tiny", "--createdDate=2020-07-01T12:34:56Z",
 				"--applicationDirectory=/application");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
@@ -412,9 +412,9 @@ class BootBuildImageIntegrationTests {
 	void buildsImageOnLinuxArmWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
-		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
@@ -440,9 +440,9 @@ class BootBuildImageIntegrationTests {
 	void failsWhenBuildingOnLinuxAmdWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
-		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
