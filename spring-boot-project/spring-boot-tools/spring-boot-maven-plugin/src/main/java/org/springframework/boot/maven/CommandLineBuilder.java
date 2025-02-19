@@ -80,10 +80,7 @@ final class CommandLineBuilder {
 		if (!this.options.isEmpty()) {
 			commandLine.addAll(this.options);
 		}
-		if (!this.classpathElements.isEmpty()) {
-			commandLine.add("-cp");
-			commandLine.add(ClasspathBuilder.forURLs(this.classpathElements).build().argument());
-		}
+		commandLine.addAll(ClassPath.of(this.classpathElements).args(true));
 		commandLine.add(this.mainClass);
 		if (!this.arguments.isEmpty()) {
 			commandLine.addAll(this.arguments);
