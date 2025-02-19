@@ -23,8 +23,8 @@ import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +54,7 @@ abstract class ObservationFilterConfigurations {
 	static class TracingHeaderObservation {
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.observations.http.server.requests", name = "write-trace-header")
+		@ConditionalOnBooleanProperty("management.observations.http.server.requests.write-trace-header")
 		@ConditionalOnBean(Tracer.class)
 		@ConditionalOnMissingFilterBean({ ServerHttpObservationFilter.class, TraceHeaderObservationFilter.class })
 		FilterRegistrationBean<TraceHeaderObservationFilter> webMvcObservationFilter(ObservationRegistry registry,

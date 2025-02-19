@@ -48,7 +48,7 @@ public class TraceHeaderObservationFilter extends ServerHttpObservationFilter {
 	 */
 	public TraceHeaderObservationFilter(Tracer tracer, ObservationRegistry observationRegistry) {
 		super(observationRegistry);
-		Assert.notNull(tracer, "Tracer must not be null");
+		Assert.notNull(tracer, "'tracer' must not be null");
 		this.tracer = tracer;
 	}
 
@@ -62,7 +62,7 @@ public class TraceHeaderObservationFilter extends ServerHttpObservationFilter {
 	public TraceHeaderObservationFilter(Tracer tracer, ObservationRegistry observationRegistry,
 			ServerRequestObservationConvention observationConvention) {
 		super(observationRegistry, observationConvention);
-		Assert.notNull(tracer, "Tracer must not be null");
+		Assert.notNull(tracer, "'tracer' must not be null");
 		this.tracer = tracer;
 	}
 
