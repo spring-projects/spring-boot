@@ -2377,7 +2377,7 @@ bom {
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 		}
 	}
-	library("Testcontainers Redis Module", "2.2.3") {
+	library("Testcontainers Redis Module", "2.2.4") {
 		group("com.redis") {
 			modules = [
 				"testcontainers-redis"
