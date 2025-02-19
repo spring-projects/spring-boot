@@ -39,7 +39,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.maven.ClasspathBuilder.Classpath;
 
 /**
  * Base class to run a Spring Boot application.
@@ -58,6 +57,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The Maven project.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
@@ -65,6 +65,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The current Maven session. This is used for toolchain manager API calls.
+	 *
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true)
@@ -72,17 +73,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The toolchain manager to use to locate a custom JDK.
+	 *
 	 * @since 2.3.0
 	 */
 	@Component
 	private ToolchainManager toolchainManager;
 
 	/**
-	 * Add maven resources to the classpath directly, this allows live in-place editing of
-	 * resources. Duplicate resources are removed from {@code target/classes} to prevent
-	 * them from appearing twice if {@code ClassLoader.getResources()} is called. Please
-	 * consider adding {@code spring-boot-devtools} to your project instead as it provides
-	 * this feature and many more.
+	 * Add maven resources to the classpath directly, this allows live in-place
+	 * editing of resources. Duplicate resources are removed from
+	 * {@code target/classes} to prevent them from appearing twice if
+	 * {@code ClassLoader.getResources()} is called. Please consider adding
+	 * {@code spring-boot-devtools} to your project instead as it provides this
+	 * feature and many more.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
@@ -90,6 +94,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Path to agent jars.
+	 *
 	 * @since 2.2.0
 	 */
 	@Parameter(property = "spring-boot.run.agents")
@@ -97,22 +102,26 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Flag to say that the agent requires -noverify.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.noverify")
 	private boolean noverify = false;
 
 	/**
-	 * Current working directory to use for the application. If not specified, basedir
-	 * will be used.
+	 * Current working directory to use for the application. If not specified,
+	 * basedir will be used.
+	 *
 	 * @since 1.5.0
 	 */
 	@Parameter(property = "spring-boot.run.workingDirectory")
 	private File workingDirectory;
 
 	/**
-	 * JVM arguments that should be associated with the forked process used to run the
-	 * application. On command line, make sure to wrap multiple values between quotes.
+	 * JVM arguments that should be associated with the forked process used to run
+	 * the application. On command line, make sure to wrap multiple values between
+	 * quotes.
+	 *
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.run.jvmArguments")
@@ -120,14 +129,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * List of JVM system properties to pass to the process.
+	 *
 	 * @since 2.1.0
 	 */
 	@Parameter
 	private Map<String, String> systemPropertyVariables;
 
 	/**
-	 * List of Environment variables that should be associated with the forked process
-	 * used to run the application.
+	 * List of Environment variables that should be associated with the forked
+	 * process used to run the application.
+	 *
 	 * @since 2.1.0
 	 */
 	@Parameter
@@ -135,6 +146,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Arguments that should be passed to the application.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter
@@ -142,8 +154,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Arguments from the command line that should be passed to the application. Use
-	 * spaces to separate multiple arguments and make sure to wrap multiple values between
-	 * quotes. When specified, takes precedence over {@link #arguments}.
+	 * spaces to separate multiple arguments and make sure to wrap multiple values
+	 * between quotes. When specified, takes precedence over {@link #arguments}.
+	 *
 	 * @since 2.2.3
 	 */
 	@Parameter(property = "spring-boot.run.arguments")
@@ -151,32 +164,36 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The spring profiles to activate. Convenience shortcut of specifying the
-	 * 'spring.profiles.active' argument. On command line use commas to separate multiple
-	 * profiles.
+	 * 'spring.profiles.active' argument. On command line use commas to separate
+	 * multiple profiles.
+	 *
 	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.profiles")
 	private String[] profiles;
 
 	/**
-	 * The name of the main class. If not specified the first compiled class found that
-	 * contains a 'main' method will be used.
+	 * The name of the main class. If not specified the first compiled class found
+	 * that contains a 'main' method will be used.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
 
 	/**
-	 * Additional classpath elements that should be added to the classpath. An element can
-	 * be a directory with classes and resources or a jar file.
+	 * Additional classpath elements that should be added to the classpath. An
+	 * element can be a directory with classes and resources or a jar file.
+	 *
 	 * @since 3.2.0
 	 */
 	@Parameter(property = "spring-boot.run.additional-classpath-elements")
 	private String[] additionalClasspathElements;
 
 	/**
-	 * Directory containing the classes and resource files that should be used to run the
-	 * application.
+	 * Directory containing the classes and resource files that should be used to
+	 * run the application.
+	 *
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
@@ -184,6 +201,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Skip the execution.
+	 *
 	 * @since 1.3.2
 	 */
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
@@ -206,9 +224,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	/**
-	 * Returns the directories that contain the application's classes and resources. When
-	 * the application's main class has not been configured, each directory is searched in
-	 * turn for an appropriate main class.
+	 * Returns the directories that contain the application's classes and resources.
+	 * When the application's main class has not been configured, each directory is
+	 * searched in turn for an appropriate main class.
+	 *
 	 * @return the directories that contain the application's classes and resources
 	 * @since 3.1.0
 	 */
@@ -237,6 +256,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Run the application.
+	 *
 	 * @param processExecutor the {@link JavaProcessExecutor} to use
 	 * @param workingDirectory the working directory of the forked JVM
 	 * @param args the arguments (JVM arguments and application arguments)
@@ -250,6 +270,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Resolve the application arguments to use.
+	 *
 	 * @return a {@link RunArguments} defining the application arguments
 	 */
 	protected RunArguments resolveApplicationArguments() {
@@ -261,6 +282,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Resolve the environment variables to use.
+	 *
 	 * @return an {@link EnvVariables} defining the environment variables
 	 */
 	protected EnvVariables resolveEnvVariables() {
@@ -281,15 +303,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Resolve the JVM arguments to use.
+	 *
 	 * @return a {@link RunArguments} defining the JVM arguments
 	 */
 	protected RunArguments resolveJvmArguments() {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (this.systemPropertyVariables != null) {
-			stringBuilder.append(this.systemPropertyVariables.entrySet()
-				.stream()
-				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-				.collect(Collectors.joining(" ")));
+			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
+					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+					.collect(Collectors.joining(" ")));
 		}
 		if (this.jvmArguments != null) {
 			stringBuilder.append(" ").append(this.jvmArguments);
@@ -333,14 +355,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addClasspath(List<String> args) throws MojoExecutionException {
 		try {
-			Classpath classpath = ClasspathBuilder.forURLs(getClassPathUrls()).build();
+			ClassPath classpath = ClassPath.of(getClassPathUrls());
 			if (getLog().isDebugEnabled()) {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
-			args.add("-cp");
-			args.add(classpath.argument());
-		}
-		catch (Exception ex) {
+			args.addAll(classpath.args(true));
+		} catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
 	}
@@ -353,8 +373,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			addProjectClasses(urls);
 			addDependencies(urls);
 			return urls.toArray(new URL[0]);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new MojoExecutionException("Unable to build classpath", ex);
 		}
 	}
