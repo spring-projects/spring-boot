@@ -1080,6 +1080,11 @@ public class KafkaProperties {
 		 */
 		private boolean observationEnabled;
 
+		/**
+		 * Time between retries after authentication exceptions.
+		 */
+		private Duration authExceptionRetryInterval;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1230,6 +1235,14 @@ public class KafkaProperties {
 
 		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
+		}
+
+		public Duration getAuthExceptionRetryInterval() {
+			return this.authExceptionRetryInterval;
+		}
+
+		public void setAuthExceptionRetryInterval(Duration authExceptionRetryInterval) {
+			this.authExceptionRetryInterval = authExceptionRetryInterval;
 		}
 
 	}

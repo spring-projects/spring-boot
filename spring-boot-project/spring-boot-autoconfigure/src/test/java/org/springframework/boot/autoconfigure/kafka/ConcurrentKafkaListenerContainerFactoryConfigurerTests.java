@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.time.Duration;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -78,6 +79,14 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 		this.configurer.setListenerTaskExecutor(executor);
 		this.configurer.configure(this.factory, this.consumerFactory);
 		assertThat(this.factory.getContainerProperties().getListenerTaskExecutor()).isEqualTo(executor);
+	}
+
+	@Test
+	void shouldApplyAuthExceptionRetryInterval() {
+		this.properties.getListener().setAuthExceptionRetryInterval(Duration.ofSeconds(10));
+		this.configurer.configure(this.factory, this.consumerFactory);
+		assertThat(this.factory.getContainerProperties().getAuthExceptionRetryInterval())
+			.isEqualTo(Duration.ofSeconds(10));
 	}
 
 }
