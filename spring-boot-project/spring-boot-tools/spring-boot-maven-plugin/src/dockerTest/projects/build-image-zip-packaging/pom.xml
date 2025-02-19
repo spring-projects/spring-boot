@@ -26,7 +26,7 @@
 				<configuration>
 					<layout>ZIP</layout>
 					<image>
-						<builder>ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1</builder>
+						<builder>ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2</builder>
 					</image>
 				</configuration>
 			</plugin>

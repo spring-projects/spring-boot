@@ -39,6 +39,6 @@ application {
 
 bootBuildImage {
 	archiveFile = bootDistZip.archiveFile
-	builder = "paketobuildpacks/builder-jammy-base:latest"
+	builder = "paketobuildpacks/builder-noble-java-tiny:latest"
 	environment = ['BP_JVM_VERSION': java.targetCompatibility.getMajorVersion()]
 }
