@@ -1344,7 +1344,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-assembly-plugin/releases/tag/maven-assembly-plugin-{version}")
 		}
 	}
-	library("Maven Clean Plugin", "3.4.0") {
+	library("Maven Clean Plugin", "3.4.1") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
