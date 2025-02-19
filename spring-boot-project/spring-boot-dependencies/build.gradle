@@ -1285,7 +1285,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-assembly-plugin/releases/tag/maven-assembly-plugin-{version}")
 		}
 	}
-	library("Maven Clean Plugin", "3.4.0") {
+	library("Maven Clean Plugin", "3.4.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-clean-plugin"
