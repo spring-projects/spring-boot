@@ -16,8 +16,8 @@
 
 package org.springframework.boot.logging;
 
+import java.io.Console;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -91,8 +91,12 @@ public class LoggingSystemProperties {
 		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
+	protected Console getConsole() {
+		return System.console();
+	}
+
 	protected Charset getDefaultCharset() {
-		return StandardCharsets.UTF_8;
+		return Charset.defaultCharset();
 	}
 
 	public final void apply() {
@@ -116,12 +120,11 @@ public class LoggingSystemProperties {
 	}
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
-		String defaultCharsetName = getDefaultCharset().name();
 		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
 		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
-		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
-		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, getConsoleCharset().name());
+		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, getDefaultCharset().name());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
@@ -135,6 +138,11 @@ public class LoggingSystemProperties {
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
+	}
+
+	private Charset getConsoleCharset() {
+		Console console = getConsole();
+		return (console != null) ? console.charset() : getDefaultCharset();
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
