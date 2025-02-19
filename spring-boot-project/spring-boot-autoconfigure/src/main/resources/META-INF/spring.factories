@@ -5,7 +5,7 @@ org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingL
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.autoconfigure.BackgroundPreinitializer
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializingApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
@@ -20,6 +20,16 @@ org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
 org.springframework.boot.autoconfigure.condition.OnBeanCondition,\
 org.springframework.boot.autoconfigure.condition.OnClassCondition,\
 org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
+
+# Background Preinitializers
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
+org.springframework.boot.autoconfigure.preinitialize.CharsetsBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.ConversionServiceBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.JacksonBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.JakartaValidationBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.MessageConverterBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.TomcatBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.preinitialize.ZoneIdBackgroundPreinitializer
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
