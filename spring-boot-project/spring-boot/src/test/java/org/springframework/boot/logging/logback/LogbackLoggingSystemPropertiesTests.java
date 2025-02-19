@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.Console;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +33,9 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link LogbackLoggingSystemProperties}.
@@ -102,9 +107,27 @@ class LogbackLoggingSystemPropertiesTests {
 
 	@Test
 	void consoleCharsetWhenNoPropertyUsesDefault() {
-		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		LogbackLoggingSystemProperties logbackLoggingSystemProperties = spy(
+				new LogbackLoggingSystemProperties(new MockEnvironment(), null, null));
+		given(logbackLoggingSystemProperties.getConsole()).willReturn(null);
+
+		logbackLoggingSystemProperties.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_CHARSET.getEnvironmentVariableName()))
 			.isEqualTo(Charset.defaultCharset().name());
+	}
+
+	@Test
+	void consoleCharsetWhenNoPropertyUsesSystemConsoleCharsetWhenAvailable() {
+		LogbackLoggingSystemProperties logbackLoggingSystemProperties = spy(
+				new LogbackLoggingSystemProperties(new MockEnvironment(), null, null));
+
+		Console console = mock(Console.class);
+		given(console.charset()).willReturn(StandardCharsets.UTF_16BE);
+		given(logbackLoggingSystemProperties.getConsole()).willReturn(console);
+
+		logbackLoggingSystemProperties.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_CHARSET.getEnvironmentVariableName()))
+			.isEqualTo(StandardCharsets.UTF_16BE.name());
 	}
 
 	@Test
