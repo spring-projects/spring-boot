@@ -2333,7 +2333,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "3.3.6-SNAPSHOT") {
+	library("Spring Session", "3.3.6") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
