@@ -87,6 +87,13 @@ class PropertiesMongoConnectionDetailsTests {
 	}
 
 	@Test
+	void protocolCanBeConfigured() {
+		this.properties.setProtocol("mongodb+srv");
+		ConnectionString connectionString = this.connectionDetails.getConnectionString();
+		assertThat(connectionString.getConnectionString()).startsWith("mongodb+srv://");
+	}
+
+	@Test
 	void authenticationDatabaseCanBeConfigured() {
 		this.properties.setUsername("user");
 		this.properties.setDatabase("db");
