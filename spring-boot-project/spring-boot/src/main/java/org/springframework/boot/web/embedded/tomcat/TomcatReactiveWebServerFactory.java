@@ -36,6 +36,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
@@ -165,6 +166,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
 		File docBase = createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		StandardRoot resourcesRoot = new StandardRoot();
+		resourcesRoot.setReadOnly(true);
+		context.setResources(resourcesRoot);
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new Tomcat.FixContextListener());

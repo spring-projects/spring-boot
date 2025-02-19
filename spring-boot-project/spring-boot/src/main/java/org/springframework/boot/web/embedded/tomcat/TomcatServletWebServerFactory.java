@@ -238,9 +238,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
-		if (documentRoot != null) {
-			context.setResources(new LoaderHidingResourceRoot(context));
-		}
+		WebResourceRoot resourceRoot = (documentRoot != null) ? new LoaderHidingResourceRoot(context)
+				: new StandardRoot(context);
+		resourceRoot.setReadOnly(true);
+		context.setResources(resourceRoot);
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
@@ -814,7 +815,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		@Override
 		public void lifecycleEvent(LifecycleEvent event) {
-			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+			if (event.getType().equals(Lifecycle.BEFORE_INIT_EVENT)) {
 				addResourceJars(getUrlsOfJarsWithMetaInfResources());
 			}
 		}
@@ -833,6 +834,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 				else {
 					addResourceSet(url.toString());
 				}
+			}
+			for (WebResourceSet resources : this.context.getResources().getJarResources()) {
+				resources.setReadOnly(true);
 			}
 		}
 
