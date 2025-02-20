@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
+import org.apache.logging.log4j.status.StatusListener;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -467,6 +469,42 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
 		assertThat(environment).isSameAs(this.environment);
+	}
+
+	@Test
+	void initializeRegisterStatusListenerAndAttachToLoggerContext() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		StatusListener statusListener = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener);
+	}
+
+	@Test
+	void statusListenerIsUpdatedUponReinitialization() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		// listener should be registered
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		StatusListener statusListener = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener);
+
+		this.loggingSystem.cleanUp();
+		// listener should be removed from context and StatusLogger
+		assertThat(StatusLogger.getLogger().getListeners()).doesNotContain(statusListener);
+		assertThat(loggerContext.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY)).isNull();
+
+		// a new listener should be registered
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		StatusListener statusListener1 = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener1).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener1);
 	}
 
 	@Test
