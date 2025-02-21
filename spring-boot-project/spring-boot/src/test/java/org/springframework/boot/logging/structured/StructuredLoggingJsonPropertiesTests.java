@@ -184,7 +184,6 @@ class StructuredLoggingJsonPropertiesTests {
 			StackTracePrinter printer = properties.createPrinter();
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualTo("RuntimeExceptionroot!	at org.springfr...");
-
 		}
 
 		@Test
