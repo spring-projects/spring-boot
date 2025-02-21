@@ -39,6 +39,7 @@ import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.ldap.LLdapContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -144,6 +145,11 @@ public enum TestImage {
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	CONFLUENT_KAFKA_DEPRECATED("confluentinc/cp-kafka", "7.4.0",
 			() -> org.testcontainers.containers.KafkaContainer.class),
+
+	/**
+	 * A container image suitable for testing LLDAP.
+	 */
+	LLDAP("lldap/lldap", "v0.6.1-alpine", () -> LLdapContainer.class),
 
 	/**
 	 * A container image suitable for testing OpenLDAP.

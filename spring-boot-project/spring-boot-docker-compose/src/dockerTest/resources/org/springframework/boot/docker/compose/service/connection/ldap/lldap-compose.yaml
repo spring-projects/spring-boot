@@ -1,0 +1,8 @@
+services:
+  ldap:
+    image: '{imageName}'
+    environment:
+      - 'LLDAP_LDAP_BASE_DN=dc=springframework,dc=org'
+      - 'LLDAP_LDAP_USER_PASS=somepassword'
+    ports:
+      - "3890"
