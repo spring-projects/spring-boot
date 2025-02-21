@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -37,6 +38,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 
@@ -207,6 +209,25 @@ class ApplicationResourceLoaderTests {
 			.isEqualTo(new File("src/main/resources/a-file").getAbsoluteFile());
 		ResourceLoader regularLoader = ApplicationResourceLoader.get(servletContextResourceLoader, false);
 		assertThat(regularLoader.getResource("src/main/resources/a-file")).isInstanceOf(ServletContextResource.class);
+	}
+
+	@Test
+	void getResourceWhenFilteredReactiveWebContextResourceWithPreferFileResolution() throws Exception {
+		ResourceLoader resourceLoader = ApplicationResourceLoader
+			.get(new AnnotationConfigReactiveWebApplicationContext(), true);
+		Resource resource = resourceLoader.getResource("src/main/resources/a-file");
+		assertThat(resource).isInstanceOf(FileSystemResource.class);
+		assertThat(resource.getFile().getAbsoluteFile())
+			.isEqualTo(new File("src/main/resources/a-file").getAbsoluteFile());
+	}
+
+	@Test
+	void getResourceWhenFilteredReactiveWebContextResource() {
+		ResourceLoader resourceLoader = ApplicationResourceLoader
+			.get(new AnnotationConfigReactiveWebApplicationContext(), false);
+		Resource resource = resourceLoader.getResource("src/main/resources/a-file");
+		assertThat(resource).isInstanceOf(ClassUtils.resolveClassName(
+				"org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResource", null));
 	}
 
 	@Test
