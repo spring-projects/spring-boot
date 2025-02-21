@@ -46,7 +46,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	private static final ToIntFunction<StackTraceElement> DEFAULT_FRAME_HASHER = (frame) -> Objects
 		.hash(frame.getClassName(), frame.getMethodName(), frame.getLineNumber());
 
-	private static final int UNLIMTED = Integer.MAX_VALUE;
+	private static final int UNLIMITED = Integer.MAX_VALUE;
 
 	private final EnumSet<Option> options;
 
@@ -286,7 +286,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), UNLIMTED, null, null, null, null, null,
+		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), UNLIMITED, null, null, null, null, null,
 				null);
 	}
 
@@ -296,7 +296,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), UNLIMTED, null, null, null, null, null,
+		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), UNLIMITED, null, null, null, null, null,
 				null);
 	}
 
@@ -385,7 +385,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	/**
 	 * Holds the stacktrace for a specific throwable and caches things that are expensive
-	 * to calcualte.
+	 * to calculate.
 	 */
 	private static final class StackTrace {
 
