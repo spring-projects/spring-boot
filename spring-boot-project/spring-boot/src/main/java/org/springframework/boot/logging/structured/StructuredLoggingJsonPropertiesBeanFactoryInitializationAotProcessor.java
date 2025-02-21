@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.structured;
 
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.aot.generate.GenerationContext;
@@ -58,10 +57,8 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 	}
 
 	private static String getCustomStackTracePrinter(StructuredLoggingJsonProperties properties) {
-		return Optional.ofNullable(properties.stackTrace())
-			.filter(StackTrace::hasCustomPrinter)
-			.map(StackTrace::printer)
-			.orElse(null);
+		StackTrace stackTrace = properties.stackTrace();
+		return (stackTrace != null && stackTrace.hasCustomPrinter()) ? stackTrace.printer() : null;
 	}
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {
