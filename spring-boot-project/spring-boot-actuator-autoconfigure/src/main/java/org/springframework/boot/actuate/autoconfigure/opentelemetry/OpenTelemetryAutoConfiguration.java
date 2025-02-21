@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
+import java.util.Map;
+
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.OpenTelemetrySdkBuilder;
@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
@@ -54,10 +53,6 @@ public class OpenTelemetryAutoConfiguration {
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
-	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
-
-	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_GROUP = AttributeKey.stringKey("service.group");
-
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
 	OpenTelemetrySdk openTelemetry(ObjectProvider<SdkTracerProvider> tracerProvider,
@@ -74,20 +69,26 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
-		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		String applicationGroup = environment.getProperty("spring.application.group");
-		Resource resource = Resource.getDefault()
-			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)));
-		if (StringUtils.hasLength(applicationGroup)) {
-			resource = resource.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_GROUP, applicationGroup)));
-		}
-		return resource.merge(toResource(properties));
+		Resource resource = Resource.getDefault();
+		return resource.merge(toResource(environment, properties));
 	}
 
-	private static Resource toResource(OpenTelemetryProperties properties) {
+	private Resource toResource(Environment environment, OpenTelemetryProperties properties) {
 		ResourceBuilder builder = Resource.builder();
-		properties.getResourceAttributes().forEach(builder::put);
+		Map<String, String> attributes = new OpenTelemetryResourceAttributes(properties.getResourceAttributes())
+			.asMap();
+		attributes.computeIfAbsent("service.name", (key) -> getApplicationName(environment));
+		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup(environment));
+		attributes.forEach(builder::put);
 		return builder.build();
+	}
+
+	private String getApplicationName(Environment environment) {
+		return environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+	}
+
+	private String getApplicationGroup(Environment environment) {
+		return environment.getProperty("spring.application.group");
 	}
 
 }
