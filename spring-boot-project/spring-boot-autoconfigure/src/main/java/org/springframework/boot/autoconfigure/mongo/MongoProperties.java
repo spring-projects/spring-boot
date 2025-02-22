@@ -52,19 +52,19 @@ public class MongoProperties {
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
 
 	/**
-	 * Mongo server host. Ignored if Mongo 'uri' is specified.
+	 * Mongo server host. Ignored if 'uri' is set.
 	 */
 	private String host;
 
 	/**
-	 * Mongo server port. Ignored if Mongo 'uri' is specified.
+	 * Mongo server port. Ignored if 'uri' is set.
 	 */
 	private Integer port = null;
 
 	/**
-	 * Additional server hosts. Ignored if a Mongo 'uri' is provided or if 'host' is
-	 * omitted. Additional hosts will use the default mongo port of 27017. If you want to
-	 * use a different port you can use the "host:port" syntax.
+	 * Additional server hosts. Ignored if 'uri' is set or if 'host' is omitted.
+	 * Additional hosts will use the default mongo port of 27017. If you want to use a
+	 * different port you can use the "host:port" syntax.
 	 */
 	private List<String> additionalHosts;
 
@@ -86,17 +86,17 @@ public class MongoProperties {
 	private final Gridfs gridfs = new Gridfs();
 
 	/**
-	 * Login user of the mongo server. Ignored if Mongo 'uri' is specified.
+	 * Login user of the mongo server. Ignored if 'uri' is set.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the mongo server. Ignored if Mongo 'uri' is specified.
+	 * Login password of the mongo server. Ignored if 'uri' is set.
 	 */
 	private char[] password;
 
 	/**
-	 * Required replica set name for the cluster. Ignored if Mongo 'uri' is specified.
+	 * Required replica set name for the cluster. Ignored if 'uri' is set.
 	 */
 	private String replicaSetName;
 
