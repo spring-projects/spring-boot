@@ -51,11 +51,11 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	@Override
 	public ConnectionString getConnectionString() {
-		// mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
+		// protocol://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
 		if (this.properties.getUri() != null) {
 			return new ConnectionString(this.properties.getUri());
 		}
-		StringBuilder builder = new StringBuilder("mongodb://");
+		StringBuilder builder = new StringBuilder(getProtocol()).append("://");
 		if (this.properties.getUsername() != null) {
 			builder.append(encode(this.properties.getUsername()));
 			builder.append(":");
@@ -81,6 +81,14 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append(String.join("&", options));
 		}
 		return new ConnectionString(builder.toString());
+	}
+
+	private String getProtocol() {
+		String protocol = this.properties.getProtocol();
+		if (StringUtils.hasText(protocol)) {
+			return protocol;
+		}
+		return "mongodb";
 	}
 
 	private String encode(String input) {
