@@ -152,12 +152,11 @@ class StructuredLoggingJsonPropertiesTests {
 				.withLineSeparator("\n");
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualToNormalizingNewlines("""
-					java.lang.RuntimeException: exception
-						at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:NN)
-						at org.springframework.boot.logging.TestException.createException(TestException.java:NN)
-						... 2 filtered
-						Suppressed: java.lang.RuntimeException: supressed
-							at o...""");
+					java.lang.RuntimeException: root
+						at org.springframework.boot.logging.TestException.createTestException(TestException.java:NN)
+						at org.springframework.boot.logging.TestException$CreatorThread.run(TestException.java:NN)
+					Wrapped by: java.lang.RuntimeException: cause
+						at org.springframework.boot.log...""");
 		}
 
 		@Test
@@ -184,8 +183,7 @@ class StructuredLoggingJsonPropertiesTests {
 					true, null);
 			StackTracePrinter printer = properties.createPrinter();
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
-			assertThat(actual).isEqualTo("RuntimeExceptionexception!	at org.spr...");
-
+			assertThat(actual).isEqualTo("RuntimeExceptionroot!	at org.springfr...");
 		}
 
 		@Test
