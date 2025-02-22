@@ -22,6 +22,7 @@ org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerCon
 org.springframework.boot.testcontainers.service.connection.kafka.ApacheKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.ConfluentKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.DeprecatedConfluentKafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.ldap.LLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.ldap.OpenLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
