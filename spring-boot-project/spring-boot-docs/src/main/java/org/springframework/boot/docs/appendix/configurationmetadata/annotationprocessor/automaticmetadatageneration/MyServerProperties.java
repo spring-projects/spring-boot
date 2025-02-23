@@ -60,6 +60,6 @@ public class MyServerProperties {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	// fold:off
+	// @fold:off
 
 }
