@@ -59,6 +59,8 @@ import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -82,7 +84,7 @@ import static org.mockito.Mockito.times;
  * @author Rafael Ceccone
  * @author Moritz Halbritter
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ MockitoExtension.class, OutputCaptureExtension.class })
 class DockerApiTests {
 
 	private static final String API_URL = "/v" + DockerApi.API_VERSION;
@@ -108,7 +110,7 @@ class DockerApiTests {
 
 	@BeforeEach
 	void setup() {
-		this.dockerApi = new DockerApi(this.http);
+		this.dockerApi = new DockerApi(this.http, DockerLog.toSystemOut());
 	}
 
 	private HttpTransport http() {
@@ -732,9 +734,10 @@ class DockerApiTests {
 		}
 
 		@Test
-		void getApiVersionWithExceptionReturnsUnknownVersion() throws Exception {
+		void getApiVersionWithExceptionReturnsUnknownVersion(CapturedOutput output) throws Exception {
 			given(http().head(eq(new URI(PING_URL)))).willThrow(new IOException("simulated error"));
 			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
+			assertThat(output).contains("Warning: Failed to determine Docker API version: simulated error");
 		}
 
 	}
