@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.DockerLogger;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.Owner;
@@ -265,7 +266,8 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 			DockerConfiguration dockerConfiguration = (this.docker != null)
 					? this.docker.asDockerConfiguration(request.isPublish())
 					: new Docker().asDockerConfiguration(request.isPublish());
-			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
+			Builder builder = new Builder(new MojoBuildLog(this::getLog), new MojoDockerLogger(this::getLog),
+					dockerConfiguration);
 			builder.build(request);
 		}
 		catch (IOException ex) {
@@ -362,6 +364,21 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 			request = request.withCreator(Creator.withVersion(springBootVersion));
 		}
 		return request;
+	}
+
+	private static class MojoDockerLogger implements DockerLogger {
+
+		private final Supplier<Log> log;
+
+		MojoDockerLogger(Supplier<Log> log) {
+			this.log = log;
+		}
+
+		@Override
+		public void log(String message) {
+			this.log.get().info(message);
+		}
+
 	}
 
 	/**

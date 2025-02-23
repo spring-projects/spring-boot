@@ -87,7 +87,7 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(HttpTransport.create(null));
+		this(HttpTransport.create(null), DockerLogger.toSystemOut());
 	}
 
 	/**
@@ -96,21 +96,34 @@ public class DockerApi {
 	 * @since 2.4.0
 	 */
 	public DockerApi(DockerHostConfiguration dockerHost) {
-		this(HttpTransport.create(dockerHost));
+		this(HttpTransport.create(dockerHost), DockerLogger.toSystemOut());
+	}
+
+	/**
+	 * Create a new {@link DockerApi} instance.
+	 * @param dockerHost the Docker daemon host information
+	 * @param logger a logger used to record output
+	 * @since 3.5.0
+	 */
+	public DockerApi(DockerHostConfiguration dockerHost, DockerLogger logger) {
+		this(HttpTransport.create(dockerHost), logger);
 	}
 
 	/**
 	 * Create a new {@link DockerApi} instance backed by a specific {@link HttpTransport}
 	 * implementation.
 	 * @param http the http implementation
+	 * @param logger a logger used to record output
 	 */
-	DockerApi(HttpTransport http) {
+	DockerApi(HttpTransport http, DockerLogger logger) {
+		Assert.notNull(http, "'http' must not be null");
+		Assert.notNull(logger, "'logger' must not be null");
 		this.http = http;
 		this.jsonStream = new JsonStream(SharedObjectMapper.get());
 		this.image = new ImageApi();
 		this.container = new ContainerApi();
 		this.volume = new VolumeApi();
-		this.system = new SystemApi();
+		this.system = new SystemApi(logger);
 	}
 
 	private HttpTransport http() {
@@ -485,7 +498,10 @@ public class DockerApi {
 	 */
 	class SystemApi {
 
-		SystemApi() {
+		private final DockerLogger logger;
+
+		SystemApi(DockerLogger logger) {
+			this.logger = logger;
 		}
 
 		/**
@@ -502,6 +518,7 @@ public class DockerApi {
 					}
 				}
 				catch (Exception ex) {
+					this.logger.log("Warning: Failed to determine Docker API version: " + ex.getMessage());
 					// fall through to return default value
 				}
 				return UNKNOWN_API_VERSION;
