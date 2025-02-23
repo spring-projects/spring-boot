@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
+import org.springframework.boot.buildpack.platform.docker.DockerLogger;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
@@ -86,6 +87,19 @@ public class Builder {
 	 */
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
 		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null),
+				dockerConfiguration);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param buildLog a logger used to record {@link Builder} output
+	 * @param dockerLogger a logger used to record {@link DockerApi} output
+	 * @param dockerConfiguration the docker configuration
+	 * @since 3.5.0
+	 */
+	public Builder(BuildLog buildLog, DockerLogger dockerLogger, DockerConfiguration dockerConfiguration) {
+		this(buildLog,
+				new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null, dockerLogger),
 				dockerConfiguration);
 	}
 
