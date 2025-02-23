@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
+import org.springframework.boot.buildpack.platform.docker.DockerLog;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
@@ -75,7 +76,7 @@ public class Builder {
 	 * @param log a logger used to record output
 	 */
 	public Builder(BuildLog log) {
-		this(log, new DockerApi(), null);
+		this(log, new DockerApi(null, BuildLogDockerLogDelegate.get(log)), null);
 	}
 
 	/**
@@ -85,8 +86,8 @@ public class Builder {
 	 * @since 2.4.0
 	 */
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
-		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null),
-				dockerConfiguration);
+		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null,
+				BuildLogDockerLogDelegate.get(log)), dockerConfiguration);
 	}
 
 	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
@@ -258,6 +259,41 @@ public class Builder {
 				this.defaultPlatform = ImagePlatform.from(image);
 			}
 			return image;
+		}
+
+	}
+
+	/**
+	 * A {@link DockerLog} implementation that delegates logging to a provided
+	 * {@link AbstractBuildLog}.
+	 */
+	static final class BuildLogDockerLogDelegate implements DockerLog {
+
+		private final AbstractBuildLog log;
+
+		private BuildLogDockerLogDelegate(AbstractBuildLog log) {
+			this.log = log;
+		}
+
+		@Override
+		public void log(String message) {
+			this.log.log(message);
+		}
+
+		/**
+		 * Creates{@link DockerLog} instance based on the provided {@link BuildLog}.
+		 * <p>
+		 * If the provided {@link BuildLog} instance is an {@link AbstractBuildLog}, the
+		 * method returns a {@link BuildLogDockerLogDelegate}, otherwise it returns a
+		 * default {@link DockerLog#toSystemOut()}.
+		 * @param log the {@link BuildLog} instance to delegate
+		 * @return a {@link DockerLog} instance for logging
+		 */
+		static DockerLog get(BuildLog log) {
+			if (log instanceof AbstractBuildLog) {
+				return new BuildLogDockerLogDelegate(((AbstractBuildLog) log));
+			}
+			return DockerLog.toSystemOut();
 		}
 
 	}

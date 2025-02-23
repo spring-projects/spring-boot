@@ -25,10 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
+import org.springframework.boot.buildpack.platform.build.Builder.BuildLogDockerLogDelegate;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.DockerLog;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
@@ -73,6 +75,26 @@ class BuilderTests {
 	void createWithDockerConfiguration() {
 		Builder builder = new Builder(BuildLog.toSystemOut());
 		assertThat(builder).isNotNull();
+	}
+
+	@Test
+	void createDockerApiWithLogDockerLogDelegate() {
+		Builder builder = new Builder(BuildLog.toSystemOut());
+		assertThat(builder).isNotNull();
+		assertThat(builder).extracting("docker")
+			.extracting("system")
+			.extracting("log")
+			.isInstanceOf(BuildLogDockerLogDelegate.class);
+	}
+
+	@Test
+	void createDockerApiWithLogDockerSystemOutDelegate() {
+		Builder builder = new Builder(mock(BuildLog.class));
+		assertThat(builder).isNotNull();
+		assertThat(builder).extracting("docker")
+			.extracting("system")
+			.extracting("log")
+			.isInstanceOf(DockerLog.toSystemOut().getClass());
 	}
 
 	@Test
