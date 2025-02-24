@@ -77,7 +77,7 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 
 	@Bean
 	@ConditionalOnEnabledResourceChain
-	@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
+	@ConditionalOnMissingFilterBean
 	FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 		FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 				new ResourceUrlEncodingFilter());

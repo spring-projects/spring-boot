@@ -775,8 +775,8 @@ See the {url-spring-framework-docs}/integration/observability.html#observability
 To add to the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that extends javadoc:org.springframework.http.server.observation.DefaultServerRequestObservationConvention[] from the `org.springframework.http.server.observation` package.
 To replace the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.http.server.observation.ServerRequestObservationConvention[].
 
-If the application is using xref:actuator/tracing.adoc#actuator.micrometer-tracing[Tracing], you can configure the HTTP server observations to print an `X-Trace-Id`
-HTTP response header containing the current trace Id. For that, you will need to enable the following configuration property: configprop:management.observations.http.server.requests.write-trace-header[].
+If the application is using xref:actuator/tracing.adoc#actuator.micrometer-tracing[tracing], you can configure the HTTP server observations to include an `X-Trace-Id`
+HTTP response header containing the current trace ID. For that, you will need to enable the following configuration property: configprop:management.observations.http.server.requests.write-trace-header[].
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
 Applications can opt in and record exceptions by xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling[setting handled exceptions as request attributes].
