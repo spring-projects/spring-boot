@@ -48,7 +48,7 @@ public interface DockerLog {
 	 * @return {@link DockerLog} instance that logs to the given print stream
 	 */
 	static DockerLog to(PrintStream out) {
-		return new PrintStreamDockerLog(out);
+		return out::println;
 	}
 
 }

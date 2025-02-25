@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
-import org.springframework.boot.buildpack.platform.build.Builder.BuildLogDockerLogDelegate;
+import org.springframework.boot.buildpack.platform.build.Builder.BuildLogAdapter;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
@@ -84,7 +84,7 @@ class BuilderTests {
 		assertThat(builder).extracting("docker")
 			.extracting("system")
 			.extracting("log")
-			.isInstanceOf(BuildLogDockerLogDelegate.class);
+			.isInstanceOf(BuildLogAdapter.class);
 	}
 
 	@Test

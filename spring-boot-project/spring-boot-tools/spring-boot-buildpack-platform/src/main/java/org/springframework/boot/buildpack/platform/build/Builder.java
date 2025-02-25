@@ -76,7 +76,7 @@ public class Builder {
 	 * @param log a logger used to record output
 	 */
 	public Builder(BuildLog log) {
-		this(log, new DockerApi(null, BuildLogDockerLogDelegate.get(log)), null);
+		this(log, new DockerApi(null, BuildLogAdapter.get(log)), null);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class Builder {
 	 */
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
 		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null,
-				BuildLogDockerLogDelegate.get(log)), dockerConfiguration);
+				BuildLogAdapter.get(log)), dockerConfiguration);
 	}
 
 	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
@@ -264,14 +264,13 @@ public class Builder {
 	}
 
 	/**
-	 * A {@link DockerLog} implementation that delegates logging to a provided
-	 * {@link AbstractBuildLog}.
+	 * A {@link DockerLog} implementation that adapts to an {@link AbstractBuildLog}.
 	 */
-	static final class BuildLogDockerLogDelegate implements DockerLog {
+	static final class BuildLogAdapter implements DockerLog {
 
 		private final AbstractBuildLog log;
 
-		private BuildLogDockerLogDelegate(AbstractBuildLog log) {
+		private BuildLogAdapter(AbstractBuildLog log) {
 			this.log = log;
 		}
 
@@ -284,14 +283,14 @@ public class Builder {
 		 * Creates{@link DockerLog} instance based on the provided {@link BuildLog}.
 		 * <p>
 		 * If the provided {@link BuildLog} instance is an {@link AbstractBuildLog}, the
-		 * method returns a {@link BuildLogDockerLogDelegate}, otherwise it returns a
-		 * default {@link DockerLog#toSystemOut()}.
+		 * method returns a {@link BuildLogAdapter}, otherwise it returns a default
+		 * {@link DockerLog#toSystemOut()}.
 		 * @param log the {@link BuildLog} instance to delegate
 		 * @return a {@link DockerLog} instance for logging
 		 */
 		static DockerLog get(BuildLog log) {
-			if (log instanceof AbstractBuildLog) {
-				return new BuildLogDockerLogDelegate(((AbstractBuildLog) log));
+			if (log instanceof AbstractBuildLog abstractBuildLog) {
+				return new BuildLogAdapter(abstractBuildLog);
 			}
 			return DockerLog.toSystemOut();
 		}
