@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
@@ -230,9 +232,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void sslCiphersConfiguration() {
+	@WithPackageResources("test.jks")
+	void sslCiphersConfiguration(@ResourcePath("test.jks") String keyStore) {
 		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore(keyStore);
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
@@ -261,9 +264,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void sslEnabledMultiProtocolsConfiguration() {
+	@WithPackageResources("test.jks")
+	void sslEnabledMultiProtocolsConfiguration(@ResourcePath("test.jks") String keyStore) {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSslSettings("TLSv1.1", "TLSv1.2"));
+		factory.setSsl(getSslSettings(keyStore, "TLSv1.1", "TLSv1.2"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		JettyWebServer jettyWebServer = (JettyWebServer) this.webServer;
@@ -274,9 +278,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void sslEnabledProtocolsConfiguration() {
+	@WithPackageResources("test.jks")
+	void sslEnabledProtocolsConfiguration(@ResourcePath("test.jks") String keyStore) {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSslSettings("TLSv1.1"));
+		factory.setSsl(getSslSettings(keyStore, "TLSv1.1"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		JettyWebServer jettyWebServer = (JettyWebServer) this.webServer;
@@ -393,9 +398,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		assertThat(((HttpResponse) requestResult).getFirstHeader("Connection").getValue()).isEqualTo("close");
 	}
 
-	private Ssl getSslSettings(String... enabledProtocols) {
+	private Ssl getSslSettings(String keyStore, String... enabledProtocols) {
 		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore(keyStore);
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
@@ -426,6 +431,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void basicSslClasspathKeyStore() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
@@ -479,12 +485,13 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void specificIPAddressWithSslIsNotReverseResolved() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
 		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		factory.setSsl(ssl);

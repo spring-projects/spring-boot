@@ -18,6 +18,10 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,6 +66,7 @@ import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationEvent;
@@ -160,8 +165,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void overrideConfigLocation() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml");
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
@@ -178,8 +184,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void trailingWhitespaceInLoggingConfigShouldBeTrimmed() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml ");
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml ");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
@@ -226,8 +233,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void addLogFileProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml",
 				"logging.file.name=" + this.logFile);
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -248,8 +256,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void addLogPathProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml",
 				"logging.file.path=" + this.tempDir);
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -776,6 +785,24 @@ class LoggingApplicationListenerTests {
 		public int getPhase() {
 			return Integer.MAX_VALUE - 1;
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nondefault.xml", content = """
+			<configuration>
+				<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+					<encoder>
+						<pattern>%property{LOG_FILE} [%t] ${PID:-????} %c{1}: %m%n BOOTBOOT</pattern>
+					</encoder>
+				</appender>
+				<root level="INFO">
+					<appender-ref ref="CONSOLE"/>
+				</root>
+			</configuration>
+			""")
+	private @interface WithNonDefaultXmlResource {
 
 	}
 

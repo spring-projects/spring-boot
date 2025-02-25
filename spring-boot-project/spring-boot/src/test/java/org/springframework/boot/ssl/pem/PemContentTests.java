@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -51,6 +53,7 @@ class PemContentTests {
 	}
 
 	@Test
+	@WithPackageResources("test-cert-chain.pem")
 	void getCertificateReturnsCertificates() throws Exception {
 		PemContent content = PemContent.load(contentFromClasspath("/test-cert-chain.pem"),
 				new ApplicationResourceLoader());
@@ -69,9 +72,9 @@ class PemContentTests {
 	}
 
 	@Test
+	@WithPackageResources("dsa.key")
 	void getPrivateKeyReturnsPrivateKey() throws Exception {
-		PemContent content = PemContent.load(contentFromClasspath("/org/springframework/boot/web/server/pkcs8/dsa.key"),
-				new ApplicationResourceLoader());
+		PemContent content = PemContent.load(contentFromClasspath("dsa.key"), new ApplicationResourceLoader());
 		PrivateKey privateKey = content.getPrivateKey();
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
@@ -122,6 +125,7 @@ class PemContentTests {
 	}
 
 	@Test
+	@WithPackageResources("test-cert.pem")
 	void loadWithStringWhenClasspathLocationReturnsContent() throws IOException {
 		String actual = PemContent.load("classpath:test-cert.pem", new ApplicationResourceLoader()).toString();
 		String expected = contentFromClasspath("test-cert.pem");
@@ -129,21 +133,24 @@ class PemContentTests {
 	}
 
 	@Test
-	void loadWithStringWhenFileLocationReturnsContent() throws IOException {
-		String actual = PemContent.load("src/test/resources/test-cert.pem", new ApplicationResourceLoader()).toString();
+	@WithPackageResources("test-cert.pem")
+	void loadWithStringWhenFileLocationReturnsContent(@ResourcePath("test-cert.pem") String testCert)
+			throws IOException {
+		String actual = PemContent.load(testCert, new ApplicationResourceLoader()).toString();
 		String expected = contentFromClasspath("test-cert.pem");
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
-	void loadWithPathReturnsContent() throws IOException {
-		Path path = Path.of("src/test/resources/test-cert.pem");
-		String actual = PemContent.load(path).toString();
+	@WithPackageResources("test-cert.pem")
+	void loadWithPathReturnsContent(@ResourcePath("test-cert.pem") Path testCert) throws IOException {
+		String actual = PemContent.load(testCert).toString();
 		String expected = contentFromClasspath("test-cert.pem");
 		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
+	@WithPackageResources("test-cert.pem")
 	void loadWithResourceLoaderUsesResourceLoader() throws IOException {
 		ResourceLoader resourceLoader = spy(new DefaultResourceLoader());
 		PemContent.load("classpath:test-cert.pem", resourceLoader);

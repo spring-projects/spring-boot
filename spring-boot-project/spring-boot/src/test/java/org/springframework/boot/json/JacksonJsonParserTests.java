@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class JacksonJsonParserTests extends AbstractJsonParserTests {
 	@Override
 	@Disabled("Jackson's array handling is no longer stack bound so protection has been removed.")
 	// https://github.com/FasterXML/jackson-databind/commit/8238ab41d0350fb915797c89d46777b4496b74fd
-	void listWithRepeatedOpenArray() throws IOException {
+	void listWithRepeatedOpenArray(String input) {
 
 	}
 

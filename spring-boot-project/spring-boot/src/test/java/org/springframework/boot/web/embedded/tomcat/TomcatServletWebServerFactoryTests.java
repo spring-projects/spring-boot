@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -683,11 +684,12 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWithHttp11Nio2Protocol() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setProtocol(Http11Nio2Protocol.class.getName());
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(null, "password", "classpath:test.jks"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(

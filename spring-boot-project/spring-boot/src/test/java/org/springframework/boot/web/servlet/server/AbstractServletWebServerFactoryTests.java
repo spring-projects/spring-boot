@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,6 +121,8 @@ import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
@@ -426,16 +428,19 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void basicSslFromClassPath() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 	@Test
-	void basicSslFromFileSystem() throws Exception {
-		testBasicSslWithKeyStore("src/test/resources/test.jks");
+	@WithPackageResources("test.jks")
+	void basicSslFromFileSystem(@ResourcePath("test.jks") String keyStore) throws Exception {
+		testBasicSslWithKeyStore(keyStore);
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslDisabled() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
@@ -451,9 +456,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslGetScheme() throws Exception { // gh-2232
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(null, "password", "classpath:test.jks"));
 		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -463,9 +469,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslKeyAlias() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Ssl ssl = getSsl(null, "password", "test-alias", "src/test/resources/test.jks");
+		Ssl ssl = getSsl(null, "password", "test-alias", "classpath:test.jks");
 		factory.setSsl(ssl);
 		ServletRegistrationBean<ExampleServlet> registration = new ServletRegistrationBean<>(
 				new ExampleServlet(true, false), "/hello");
@@ -483,9 +490,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWithInvalidAliasFailsDuringStartup() {
 		AbstractServletWebServerFactory factory = getFactory();
-		Ssl ssl = getSsl(null, "password", "test-alias-404", "src/test/resources/test.jks");
+		Ssl ssl = getSsl(null, "password", "test-alias-404", "classpath:test.jks");
 		factory.setSsl(ssl);
 		ServletRegistrationBean<ExampleServlet> registration = new ServletRegistrationBean<>(
 				new ExampleServlet(true, false), "/hello");
@@ -499,9 +507,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(null, "password", "classpath:test.jks"));
 		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -516,10 +525,11 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void serverHeaderCanBeCustomizedWhenUsingSsl() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setServerHeader("MyServer");
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(null, "password", "classpath:test.jks"));
 		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -546,14 +556,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void pkcs12KeyStoreAndTrustStore() throws Exception {
+	@WithPackageResources("test.p12")
+	void pkcs12KeyStoreAndTrustStore(@ResourcePath("test.p12") File keyStoreFile) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, null, "classpath:test.p12", "classpath:test.p12", null, null));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "secret".toCharArray())
@@ -563,14 +574,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void pemKeyStoreAndTrustStore() throws Exception {
+	@WithPackageResources({ "test.p12", "test-cert.pem", "test-key.pem" })
+	void pemKeyStoreAndTrustStore(@ResourcePath("test.p12") File keyStoreFile) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl("classpath:test-cert.pem", "classpath:test-key.pem"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "secret".toCharArray())
@@ -580,7 +592,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void pkcs12KeyStoreAndTrustStoreFromBundle() throws Exception {
+	@WithPackageResources("test.p12")
+	void pkcs12KeyStoreAndTrustStoreFromBundle(@ResourcePath("test.p12") File keyStoreFile) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(Ssl.forBundle("test"));
@@ -589,7 +602,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "secret".toCharArray())
@@ -599,7 +612,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void pemKeyStoreAndTrustStoreFromBundle() throws Exception {
+	@WithPackageResources({ "test.p12", "test-cert.pem", "test-key.pem" })
+	void pemKeyStoreAndTrustStoreFromBundle(@ResourcePath("test.p12") File keyStoreFile) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(Ssl.forBundle("test"));
@@ -608,7 +622,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "secret".toCharArray())
@@ -618,7 +632,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	@WithPackageResources("test.jks")
+	void sslNeedsClientAuthenticationSucceedsWithClientCertificate(@ResourcePath("test.jks") File keyStoreFile)
+			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setRegisterDefaultServlet(true);
 		addTestTxtFile(factory);
@@ -626,7 +642,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.jks"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "password".toCharArray())
@@ -636,6 +652,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslNeedsClientAuthenticationFailsWithoutClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
@@ -650,7 +667,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+	@WithPackageResources("test.jks")
+	void sslWantsClientAuthenticationSucceedsWithClientCertificate(@ResourcePath("test.jks") File keyStoreFile)
+			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory
@@ -658,7 +677,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		loadStore(keyStore, new FileSystemResource("src/test/resources/test.jks"));
+		loadStore(keyStore, new FileSystemResource(keyStoreFile));
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 					.loadKeyMaterial(keyStore, "password".toCharArray())
@@ -668,6 +687,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
@@ -706,7 +726,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return getSsl(clientAuth, keyPassword, keyAlias, keyStore, null, null, null);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore, String trustStore,
+	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore, String trustStore,
 			String[] supportedProtocols, String[] ciphers) {
 		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore, supportedProtocols, ciphers);
 	}
@@ -765,17 +785,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(cert);
 		SslStoreBundle stores = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 		return SslBundle.of(stores);
-	}
-
-	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "src/test/resources/restricted.jks", null, protocols, ciphers));
-		this.webServer = factory.getWebServer(new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
-		this.webServer.start();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
-		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory)).contains("scheme=https");
 	}
 
 	protected HttpComponentsClientHttpRequestFactory createHttpComponentsRequestFactory(
@@ -949,7 +958,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AbstractServletWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
 		ssl.setEnabled(true);
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore("src/test/resources/org/springframework/boot/web/server/test.jks");
 		ssl.setKeyPassword("password");
 		factory.setSsl(ssl);
 		factory.getSession().setTrackingModes(EnumSet.of(SessionTrackingMode.SSL));

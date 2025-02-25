@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -226,19 +227,24 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "banner.txt", content = "Running a Test!")
 	void customBanner(CapturedOutput output) {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run("--spring.banner.location=classpath:test-banner.txt");
+		this.context = application.run();
 		assertThat(output).startsWith("Running a Test!");
+
 	}
 
 	@Test
+	@WithResource(name = "banner.txt", content = """
+			Running a Test!
+
+			${test.property}""")
 	void customBannerWithProperties(CapturedOutput output) {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run("--spring.banner.location=classpath:test-banner-with-placeholder.txt",
-				"--test.property=123456");
+		this.context = application.run("--test.property=123456");
 		assertThat(output).containsPattern("Running a Test!\\s+123456");
 	}
 
@@ -289,6 +295,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "bindtoapplication.properties", content = "spring.main.banner-mode=off")
 	void triggersConfigFileApplicationListenerBeforeBinding() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -540,6 +547,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "foo=bucket")
 	void propertiesFileEnhancesEnvironment() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -572,6 +580,8 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "my.property=fromapplicationproperties")
+	@WithResource(name = "application-other.properties", content = "my.property=fromotherpropertiesfile")
 	void addProfilesOrderWithProperties() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -584,6 +594,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "foo=bucket")
 	void emptyCommandLinePropertySourceNotAdded() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -814,11 +825,13 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
+	@WithResource(name = "application.properties", content = "sample.app.test.prop=*")
 	void wildcardSources() {
 		TestSpringApplication application = new TestSpringApplication();
 		application.getSources().add("classpath*:org/springframework/boot/sample-${sample.app.test.prop}.xml");
 		application.setWebApplicationType(WebApplicationType.NONE);
-		this.context = application.run();
+		this.context = application.run("--spring.config.location=classpath:/");
 	}
 
 	@Test
@@ -1139,6 +1152,8 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "application-withwebapplicationtype.yml",
+			content = "spring.main.web-application-type: reactive")
 	void environmentIsConvertedIfTypeDoesNotMatch() {
 		ConfigurableApplicationContext context = new SpringApplication(ExampleReactiveWebConfig.class)
 			.run("--spring.profiles.active=withwebapplicationtype");
@@ -1195,6 +1210,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-config/application.yml", content = "hello: world")
 	void relaxedBindingShouldWorkBeforeEnvironmentIsPrepared() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -1329,6 +1345,8 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@WithResource(name = "spring-application-config-property-source.properties",
+			content = "test.name=spring-application-config-property-source")
 	void movesConfigClassPropertySourcesToEnd() {
 		SpringApplication application = new SpringApplication(PropertySourceConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
