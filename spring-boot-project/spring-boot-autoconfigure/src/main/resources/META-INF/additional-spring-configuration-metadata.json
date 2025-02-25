@@ -2925,6 +2925,22 @@
       ]
     },
     {
+      "name": "spring.data.mongodb.protocol",
+      "values": [
+        {
+          "value": "mongodb"
+        },
+        {
+          "value": "mongodb+srv"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.data.redis.lettuce.read-from",
       "values": [
         {

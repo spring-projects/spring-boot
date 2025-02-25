@@ -52,6 +52,11 @@ public class MongoProperties {
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
 
 	/**
+	 * Protocol to be used for the MongoDB connection. Ignored if 'uri' is set.
+	 */
+	private String protocol = "mongodb";
+
+	/**
 	 * Mongo server host. Ignored if 'uri' is set.
 	 */
 	private String host;
@@ -116,6 +121,14 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getProtocol() {
+		return this.protocol;
+	}
 
 	public String getHost() {
 		return this.host;
