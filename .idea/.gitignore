@@ -1,8 +1,6 @@
 # Project name
 .name
 *.xml
-# Project icon
-icon.svg
 /modules/
 /shelf/
 /workspace.xml
