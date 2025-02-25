@@ -253,7 +253,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.setParentClassLoader(parentClassLoader);
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
-		ignoringNoSuchMethodError(() -> context.setCreateUploadTargets(true));
+		context.setCreateUploadTargets(true);
 		configureTldPatterns(context);
 		WebappLoader loader = new WebappLoader();
 		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
