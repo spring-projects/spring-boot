@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.Console;
+import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -73,6 +74,11 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	@Override
 	protected Console getConsole() {
 		return super.getConsole();
+	}
+
+	@Override
+	protected Charset getDefaultFileCharset() {
+		return Charset.defaultCharset();
 	}
 
 	@Override

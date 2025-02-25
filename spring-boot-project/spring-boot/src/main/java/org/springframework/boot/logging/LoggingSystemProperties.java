@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.Console;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -95,10 +96,6 @@ public class LoggingSystemProperties {
 		return System.console();
 	}
 
-	protected Charset getDefaultCharset() {
-		return Charset.defaultCharset();
-	}
-
 	public final void apply() {
 		apply(null);
 	}
@@ -120,11 +117,14 @@ public class LoggingSystemProperties {
 	}
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
+		Charset defaultCharset = getDefaultCharset();
+		Charset consoleCharset = (defaultCharset != null) ? defaultCharset : getDefaultConsoleCharset();
+		Charset fileCharset = (defaultCharset != null) ? defaultCharset : getDefaultFileCharset();
 		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
 		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
-		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, getConsoleCharset().name());
-		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, getDefaultCharset().name());
+		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, consoleCharset.name());
+		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, fileCharset.name());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
@@ -140,9 +140,32 @@ public class LoggingSystemProperties {
 		}
 	}
 
-	private Charset getConsoleCharset() {
+	/**
+	 * Returns the default charset.
+	 * @return the default charset
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+	 * {@link #getDefaultConsoleCharset()} and {@link #getDefaultFileCharset()}.
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	protected Charset getDefaultCharset() {
+		return null;
+	}
+
+	/**
+	 * Returns the default console charset.
+	 * @return returns the default console charset
+	 */
+	protected Charset getDefaultConsoleCharset() {
 		Console console = getConsole();
-		return (console != null) ? console.charset() : getDefaultCharset();
+		return (console != null) ? console.charset() : Charset.defaultCharset();
+	}
+
+	/**
+	 * Returns the default file charset.
+	 * @return returns the default file charset
+	 */
+	protected Charset getDefaultFileCharset() {
+		return StandardCharsets.UTF_8;
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
