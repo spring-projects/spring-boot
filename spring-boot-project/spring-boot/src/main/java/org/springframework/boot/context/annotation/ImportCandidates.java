@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Contains {@code @Configuration} import candidates, usually auto-configurations.
@@ -73,7 +74,8 @@ public final class ImportCandidates implements Iterable<String> {
 	 * Every line contains the full qualified name of the candidate class. Comments are
 	 * supported using the # character.
 	 * @param annotation annotation to load
-	 * @param classLoader class loader to use for loading
+	 * @param classLoader class loader to use for loading, or {@code null} to use the
+	 * {@link ClassUtils#getDefaultClassLoader() default class loader}
 	 * @return list of names of annotated classes
 	 */
 	public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
@@ -91,7 +93,7 @@ public final class ImportCandidates implements Iterable<String> {
 
 	private static ClassLoader decideClassloader(ClassLoader classLoader) {
 		if (classLoader == null) {
-			return ImportCandidates.class.getClassLoader();
+			return ClassUtils.getDefaultClassLoader();
 		}
 		return classLoader;
 	}
