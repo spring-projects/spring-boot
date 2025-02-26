@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -63,8 +64,8 @@ public class ResourceBanner implements Banner {
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-		try {
-			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
+		try (InputStream input = this.resource.getInputStream()) {
+			String banner = StreamUtils.copyToString(input,
 					environment.getProperty("spring.banner.charset", Charset.class, StandardCharsets.UTF_8));
 			for (PropertyResolver resolver : getPropertyResolvers(environment, sourceClass)) {
 				banner = resolver.resolvePlaceholders(banner);
