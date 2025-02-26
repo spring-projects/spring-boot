@@ -216,8 +216,7 @@ class KafkaAutoConfigurationTests {
 			assertThat(context).hasSingleBean(KafkaConnectionDetails.class);
 			DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
 			Map<String, Object> configs = consumerFactory.getConfigurationProperties();
-			assertThat(configs).containsEntry("ssl.engine.factory.class",
-					"org.springframework.boot.autoconfigure.kafka.SslBundleSslEngineFactory");
+			assertThat(configs).containsEntry("ssl.engine.factory.class", SslBundleSslEngineFactory.class);
 			assertThat(configs).containsEntry("org.springframework.boot.ssl.SslBundle", sslBundle);
 		});
 	}
@@ -310,8 +309,7 @@ class KafkaAutoConfigurationTests {
 			assertThat(context).hasSingleBean(KafkaConnectionDetails.class);
 			DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 			Map<String, Object> configs = producerFactory.getConfigurationProperties();
-			assertThat(configs).containsEntry("ssl.engine.factory.class",
-					"org.springframework.boot.autoconfigure.kafka.SslBundleSslEngineFactory");
+			assertThat(configs).containsEntry("ssl.engine.factory.class", SslBundleSslEngineFactory.class);
 			assertThat(configs).containsEntry("org.springframework.boot.ssl.SslBundle", sslBundle);
 		});
 	}
@@ -394,8 +392,7 @@ class KafkaAutoConfigurationTests {
 			assertThat(context).hasSingleBean(KafkaConnectionDetails.class);
 			KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 			Map<String, Object> configs = admin.getConfigurationProperties();
-			assertThat(configs).containsEntry("ssl.engine.factory.class",
-					"org.springframework.boot.autoconfigure.kafka.SslBundleSslEngineFactory");
+			assertThat(configs).containsEntry("ssl.engine.factory.class", SslBundleSslEngineFactory.class);
 			assertThat(configs).containsEntry("org.springframework.boot.ssl.SslBundle", sslBundle);
 		});
 	}
@@ -490,8 +487,7 @@ class KafkaAutoConfigurationTests {
 					.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class)
 					.asProperties();
-				assertThat(configs).containsEntry("ssl.engine.factory.class",
-						"org.springframework.boot.autoconfigure.kafka.SslBundleSslEngineFactory");
+				assertThat(configs).containsEntry("ssl.engine.factory.class", SslBundleSslEngineFactory.class);
 				assertThat(configs).containsEntry("org.springframework.boot.ssl.SslBundle", sslBundle);
 			});
 	}

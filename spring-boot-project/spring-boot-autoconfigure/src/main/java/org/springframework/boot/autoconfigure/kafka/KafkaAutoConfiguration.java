@@ -238,7 +238,7 @@ public class KafkaAutoConfiguration {
 
 	static void applySslBundle(Map<String, Object> properties, SslBundle sslBundle) {
 		if (sslBundle != null) {
-			properties.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, SslBundleSslEngineFactory.class.getName());
+			properties.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, SslBundleSslEngineFactory.class);
 			properties.put(SslBundle.class.getName(), sslBundle);
 		}
 	}
