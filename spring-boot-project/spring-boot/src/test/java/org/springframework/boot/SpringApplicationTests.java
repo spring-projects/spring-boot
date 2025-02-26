@@ -1588,6 +1588,11 @@ class SpringApplicationTests {
 		private InaccessibleConfiguration() {
 		}
 
+		@Bean
+		String testMessage() {
+			return "test";
+		}
+
 	}
 
 	static class SpyApplicationContext extends AnnotationConfigApplicationContext {
