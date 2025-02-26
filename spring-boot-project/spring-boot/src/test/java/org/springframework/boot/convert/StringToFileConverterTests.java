@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.Arguments;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 
@@ -52,9 +53,10 @@ class StringToFileConverterTests {
 	}
 
 	@ConversionServiceTest
+	@WithResource(name = "com/example/test-file.txt", content = "test content")
 	void convertWhenClasspathPrefixedReturnsFile(ConversionService conversionService) throws IOException {
-		String resource = new ClassPathResource("test-banner.txt", this.getClass().getClassLoader()).getURL().getFile();
-		assertThat(convert(conversionService, "classpath:test-banner.txt").getAbsoluteFile())
+		String resource = new ClassPathResource("com/example/test-file.txt").getURL().getFile();
+		assertThat(convert(conversionService, "classpath:com/example/test-file.txt").getAbsoluteFile())
 			.isEqualTo(new File(resource).getAbsoluteFile());
 	}
 

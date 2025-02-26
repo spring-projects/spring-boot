@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.UncheckedIOException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.spy;
 class LoadedPemSslStoreTests {
 
 	@Test
+	@WithPackageResources("test-key.pem")
 	void certificatesAreLoadedLazily() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
@@ -45,6 +47,7 @@ class LoadedPemSslStoreTests {
 	}
 
 	@Test
+	@WithPackageResources("test-cert.pem")
 	void privateKeyIsLoadedLazily() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:missing-test-key.pem");
@@ -53,6 +56,7 @@ class LoadedPemSslStoreTests {
 	}
 
 	@Test
+	@WithPackageResources("test-key.pem")
 	void withAliasIsLazy() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
@@ -61,6 +65,7 @@ class LoadedPemSslStoreTests {
 	}
 
 	@Test
+	@WithPackageResources("test-key.pem")
 	void withPasswordIsLazy() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
@@ -69,6 +74,7 @@ class LoadedPemSslStoreTests {
 	}
 
 	@Test
+	@WithPackageResources("test-cert.pem")
 	void usesResourceLoader() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:test-cert.pem");
 		ResourceLoader resourceLoader = spy(new DefaultResourceLoader());

@@ -1,2 +1,0 @@
-org.springframework.core.io.ProtocolResolver=\
-org.springframework.boot.io.ReverseStringProtocolResolver

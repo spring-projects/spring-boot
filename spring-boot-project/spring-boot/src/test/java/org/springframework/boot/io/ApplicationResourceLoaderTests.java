@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import java.util.function.UnaryOperator;
 import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -62,6 +64,8 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = TEST_PROTOCOL_RESOLVERS_FACTORIES,
+			content = "org.springframework.core.io.ProtocolResolver=org.springframework.boot.io.ReverseStringProtocolResolver")
 	void getWithClassPathIncludesProtocolResolvers() throws IOException {
 		ClassLoader classLoader = new TestClassLoader(this::useTestProtocolResolversFactories);
 		ResourceLoader loader = ApplicationResourceLoader.get(classLoader);
@@ -77,9 +81,11 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = TEST_PROTOCOL_RESOLVERS_FACTORIES,
+			content = "org.springframework.core.io.ProtocolResolver=org.springframework.boot.io.ReverseStringProtocolResolver")
 	void getWithClassPathAndSpringFactoriesLoaderIncludesProtocolResolvers() throws IOException {
 		SpringFactoriesLoader springFactoriesLoader = SpringFactoriesLoader
-			.forResourceLocation(TEST_PROTOCOL_RESOLVERS_FACTORIES);
+			.forResourceLocation(TEST_PROTOCOL_RESOLVERS_FACTORIES, Thread.currentThread().getContextClassLoader());
 		ResourceLoader loader = ApplicationResourceLoader.get((ClassLoader) null, springFactoriesLoader);
 		Resource resource = loader.getResource("reverse:test");
 		assertThat(contentAsString(resource)).isEqualTo("tset");
@@ -138,14 +144,17 @@ class ApplicationResourceLoaderTests {
 	@Test
 	void getResourceWhenPathIsRelative() throws IOException {
 		ResourceLoader loader = ApplicationResourceLoader.get();
-		String name = "src/test/resources/" + TEST_PROTOCOL_RESOLVERS_FACTORIES;
+		String name = "relative/path/file.txt";
 		Resource resource = loader.getResource(name);
-		assertThat(resource.getFile()).isEqualTo(new File(name));
+		File resourceFile = resource.getFile();
+		assertThat(resourceFile).isRelative();
+		assertThat(resourceFile).isEqualTo(new File(name));
 	}
 
 	@Test
-	void getResourceWhenPathIsAbsolute() throws IOException {
-		File file = new File("src/test/resources/" + TEST_PROTOCOL_RESOLVERS_FACTORIES);
+	@WithResource(name = TEST_PROTOCOL_RESOLVERS_FACTORIES,
+			content = "org.springframework.core.io.ProtocolResolver=org.springframework.boot.io.ReverseStringProtocolResolver")
+	void getResourceWhenPathIsAbsolute(@ResourcePath(TEST_PROTOCOL_RESOLVERS_FACTORIES) File file) throws IOException {
 		ResourceLoader loader = ApplicationResourceLoader.get();
 		Resource resource = loader.getResource(file.getAbsolutePath());
 		assertThat(resource.getFile()).hasSameBinaryContentAs(file);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,9 @@ import ch.qos.logback.core.rolling.RollingPolicy;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.ResourcesRoot;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -43,11 +46,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogbackConfigurationTests {
 
 	@Test
-	void consolePatternCanBeOverridden() throws JoranException {
+	@WithResource(name = "custom-console-log-pattern.xml", content = """
+			<configuration>
+				<property name="CONSOLE_LOG_PATTERN" value="foo" />
+				<include resource="org/springframework/boot/logging/logback/base.xml" />
+			</configuration>
+			""")
+	void consolePatternCanBeOverridden(@ResourcesRoot File resourcesRoot) throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
-		configurator.doConfigure(new File("src/test/resources/custom-console-log-pattern.xml"));
+		configurator.doConfigure(new File(resourcesRoot, "custom-console-log-pattern.xml"));
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("CONSOLE");
 		assertThat(appender).isInstanceOf(ConsoleAppender.class);
 		Encoder<?> encoder = ((ConsoleAppender<?>) appender).getEncoder();
@@ -56,11 +65,17 @@ class LogbackConfigurationTests {
 	}
 
 	@Test
-	void filePatternCanBeOverridden() throws JoranException {
+	@WithResource(name = "custom-file-log-pattern.xml", content = """
+			<configuration>
+				<property name="FILE_LOG_PATTERN" value="bar" />
+				<include resource="org/springframework/boot/logging/logback/base.xml" />
+			</configuration>
+			""")
+	void filePatternCanBeOverridden(@ResourcesRoot File resourcesRoot) throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
-		configurator.doConfigure(new File("src/test/resources/custom-file-log-pattern.xml"));
+		configurator.doConfigure(new File(resourcesRoot, "custom-file-log-pattern.xml"));
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
 		assertThat(appender).isInstanceOf(FileAppender.class);
 		Encoder<?> encoder = ((FileAppender<?>) appender).getEncoder();
@@ -69,11 +84,17 @@ class LogbackConfigurationTests {
 	}
 
 	@Test
-	void defaultRollingFileNamePattern() throws JoranException {
+	@WithResource(name = "custom-file-log-pattern.xml", content = """
+			<configuration>
+				<property name="FILE_LOG_PATTERN" value="bar" />
+				<include resource="org/springframework/boot/logging/logback/base.xml" />
+			</configuration>
+			""")
+	void defaultRollingFileNamePattern(@ResourcesRoot File resourcesRoot) throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
-		configurator.doConfigure(new File("src/test/resources/custom-file-log-pattern.xml"));
+		configurator.doConfigure(new File(resourcesRoot, "custom-file-log-pattern.xml"));
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
 		assertThat(appender).isInstanceOf(RollingFileAppender.class);
 		RollingPolicy rollingPolicy = ((RollingFileAppender<?>) appender).getRollingPolicy();
@@ -82,11 +103,17 @@ class LogbackConfigurationTests {
 	}
 
 	@Test
-	void customRollingFileNamePattern() throws JoranException {
+	@WithResource(name = "custom-file-log-pattern-with-fileNamePattern.xml", content = """
+			<configuration>
+				<property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="my.log.%d{yyyyMMdd}.%i.gz"/>
+				<include resource="org/springframework/boot/logging/logback/base.xml" />
+			</configuration>
+			""")
+	void customRollingFileNamePattern(@ResourcesRoot File resourcesRoot) throws JoranException {
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);
-		configurator.doConfigure(new File("src/test/resources/custom-file-log-pattern-with-fileNamePattern.xml"));
+		configurator.doConfigure(new File(resourcesRoot, "custom-file-log-pattern-with-fileNamePattern.xml"));
 		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
 		assertThat(appender).isInstanceOf(RollingFileAppender.class);
 		RollingPolicy rollingPolicy = ((RollingFileAppender<?>) appender).getRollingPolicy();

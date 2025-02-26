@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.env;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,7 @@ import org.yaml.snakeyaml.composer.ComposerException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -47,11 +52,12 @@ class OriginTrackedYamlLoaderTests {
 
 	@BeforeEach
 	void setUp() {
-		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
+		Resource resource = new ClassPathResource("test-yaml.yml");
 		this.loader = new OriginTrackedYamlLoader(resource);
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processSimpleKey() {
 		OriginTrackedValue value = getValue("name");
 		assertThat(value).hasToString("Martin D'vloper");
@@ -59,6 +65,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processMap() {
 		OriginTrackedValue perl = getValue("languages.perl");
 		OriginTrackedValue python = getValue("languages.python");
@@ -72,6 +79,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processCollection() {
 		OriginTrackedValue apple = getValue("foods[0]");
 		OriginTrackedValue orange = getValue("foods[1]");
@@ -88,6 +96,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processMultiline() {
 		OriginTrackedValue education = getValue("education");
 		assertThat(education).hasToString("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
@@ -95,6 +104,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processListOfMaps() {
 		OriginTrackedValue name = getValue("example.foo[0].name");
 		OriginTrackedValue url = getValue("example.foo[0].url");
@@ -111,6 +121,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void processEmptyAndNullValues() {
 		OriginTrackedValue empty = getValue("empty");
 		OriginTrackedValue nullValue = getValue("null-value");
@@ -124,6 +135,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithTestYamlResource
 	void emptyMapsAreDropped() {
 		Object emptyMap = getValue("emptymap");
 		assertThat(emptyMap).isNull();
@@ -138,8 +150,15 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "test-empty-yaml.yml", content = """
+			---
+			---
+
+			---
+			---
+			""")
 	void emptyDocuments() {
-		this.loader = new OriginTrackedYamlLoader(new ClassPathResource("test-empty-yaml.yml", getClass()));
+		this.loader = new OriginTrackedYamlLoader(new ClassPathResource("test-empty-yaml.yml"));
 		List<Map<String, Object>> loaded = this.loader.load();
 		assertThat(loaded).isEmpty();
 	}
@@ -165,8 +184,17 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "recursive.yml", content = """
+			&def1
+			*def1: a
+			test:
+			  a:
+			    spring: 'a'
+			  b:
+			    boot: 'b'
+			""")
 	void loadWhenRecursiveLoadsYaml() {
-		Resource resource = new ClassPathResource("recursive.yml", getClass());
+		Resource resource = new ClassPathResource("recursive.yml");
 		this.loader = new OriginTrackedYamlLoader(resource);
 		Map<String, Object> loaded = this.loader.load().get(0);
 		assertThat(loaded.get("test.a.spring")).hasToString("a");
@@ -174,8 +202,16 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "anchors.yml", content = """
+			some:
+			  path: &anchor
+			    config:
+			      key: value
+			  anotherpath:
+			    <<: *anchor
+			""")
 	void loadWhenUsingAnchors() {
-		Resource resource = new ClassPathResource("anchors.yml", getClass());
+		Resource resource = new ClassPathResource("anchors.yml");
 		this.loader = new OriginTrackedYamlLoader(resource);
 		Map<String, Object> loaded = this.loader.load().get(0);
 		assertThat(loaded.get("some.path.config.key")).hasToString("value");
@@ -204,6 +240,51 @@ class OriginTrackedYamlLoaderTests {
 
 	private String getLocation(OriginTrackedValue value) {
 		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@WithResource(name = "test-yaml.yml", content = """
+			# https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+
+			name: Martin D'vloper
+			job: Developer
+			skill: Elite
+			employed: True
+			foods:
+			    - Apple
+			    - Orange
+			    - Strawberry
+			    - Mango
+			languages:
+			    perl: Elite
+			    python: Elite
+			    pascal: Lame
+			education: |
+			    4 GCSEs
+			    3 A-Levels
+			    BSc in the Internet of Things
+			example:
+			    foo:
+			      - name: springboot
+			        url: https://springboot.example.com/
+			        bar:
+			          - bar1: baz
+			          - bar2: bling
+			empty: ""
+			null-value: null
+			emptylist: []
+			emptymap: {}
+			---
+
+			spring:
+			  profiles: development
+			name: Test Name
+
+			---
+			""")
+	private @interface WithTestYamlResource {
+
 	}
 
 }

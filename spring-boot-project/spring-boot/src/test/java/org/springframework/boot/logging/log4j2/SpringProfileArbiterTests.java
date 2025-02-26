@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,12 +36,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +97,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithProductionProfileXmlResource
 	void profileActive() {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
@@ -101,6 +106,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithMultiProfileNamesXmlResource
 	void multipleNamesFirstProfileActive() {
 		this.environment.setActiveProfiles("production");
 		initialize("multi-profile-names.xml");
@@ -109,6 +115,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithMultiProfileNamesXmlResource
 	void multipleNamesSecondProfileActive() {
 		this.environment.setActiveProfiles("test");
 		initialize("multi-profile-names.xml");
@@ -117,6 +124,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithProductionProfileXmlResource
 	void profileNotActive() {
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
@@ -124,6 +132,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionMatchFirst() {
 		this.environment.setActiveProfiles("production");
 		initialize("profile-expression.xml");
@@ -132,6 +141,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionMatchSecond() {
 		this.environment.setActiveProfiles("test");
 		initialize("profile-expression.xml");
@@ -140,6 +150,7 @@ class SpringProfileArbiterTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionNoMatch() {
 		this.environment.setActiveProfiles("development");
 		initialize("profile-expression.xml");
@@ -148,13 +159,56 @@ class SpringProfileArbiterTests {
 	}
 
 	private void initialize(String config) {
-		this.environment.setProperty("logging.log4j2.config.override", getPackageResource(config));
+		this.environment.setProperty("logging.log4j2.config.override", "classpath:" + config);
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 	}
 
-	private String getPackageResource(String fileName) {
-		String path = ClassUtils.getPackageName(getClass());
-		return "src/test/resources/" + path.replace('.', '/') + "/" + fileName;
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "multi-profile-names.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Configuration>
+				<SpringProfile name="production, test">
+					<Loggers>
+						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
+					</Loggers>
+				</SpringProfile>
+			</Configuration>
+			""")
+	private @interface WithMultiProfileNamesXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "profile-expression.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Configuration>
+				<SpringProfile name="production | test">
+					<Loggers>
+						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
+					</Loggers>
+				</SpringProfile>
+			</Configuration>
+			""")
+	private @interface WithProfileExpressionXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "production-profile.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Configuration>
+				<SpringProfile name="production">
+					<Loggers>
+						<Logger name="org.springframework.boot.logging.log4j2" level="TRACE" />
+					</Loggers>
+				</SpringProfile>
+			</Configuration>
+			""")
+	private @interface WithProductionProfileXmlResource {
+
 	}
 
 }

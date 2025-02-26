@@ -1,2 +1,0 @@
-org.springframework.boot.context.config.ConfigDataLoader=\
-org.springframework.boot.context.config.ConfigDataEnvironmentTests.SeparateClassLoaderConfigDataLoader

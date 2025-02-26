@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.ssl.MockPkcs11Security;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -77,6 +78,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreLocation() {
 		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("classpath:test.jks")
 			.withPassword("secret");
@@ -86,6 +88,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void getTrustStoreWithLocations() {
 		JksSslStoreDetails keyStoreDetails = null;
 		JksSslStoreDetails trustStoreDetails = JksSslStoreDetails.forLocation("classpath:test.jks")
@@ -95,6 +98,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreType() {
 		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
 		JksSslStoreDetails trustStoreDetails = null;
@@ -103,6 +107,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasTrustStoreType() {
 		JksSslStoreDetails keyStoreDetails = null;
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
@@ -111,6 +116,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreProvider() {
 		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
 				"classpath:test.jks", "secret");
@@ -120,6 +126,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasTrustStoreProvider() {
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
 				"classpath:test.jks", "secret");
@@ -137,6 +144,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test.p12", "test.jks" })
 	void whenLocationsAreBase64Encoded() throws IOException {
 		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(encodeFileContent("classpath:test.p12"))
 			.withPassword("secret");
@@ -169,6 +177,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void usesResourceLoader() {
 		JksSslStoreDetails keyStoreDetails = null;
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
