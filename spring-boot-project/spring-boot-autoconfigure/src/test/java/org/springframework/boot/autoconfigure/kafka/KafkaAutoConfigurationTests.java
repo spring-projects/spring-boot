@@ -45,6 +45,9 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ssl.SslBundle;
@@ -990,6 +993,15 @@ class KafkaAutoConfigurationTests {
 				Map<String, Object> configs = admin.getConfigurationProperties();
 				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 			});
+	}
+
+	@Test
+	void shouldRegisterRuntimeHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new KafkaAutoConfiguration.KafkaRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(SslBundleSslEngineFactory.class)
+			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 	private KafkaConnectionDetails kafkaConnectionDetails() {
