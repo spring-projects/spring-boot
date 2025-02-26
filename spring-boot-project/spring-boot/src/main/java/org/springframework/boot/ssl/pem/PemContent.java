@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,8 +119,8 @@ public final class PemContent {
 		if (isPresentInText(content)) {
 			return new PemContent(content);
 		}
-		try {
-			return load(resourceLoader.getResource(content).getInputStream());
+		try (InputStream in = resourceLoader.getResource(content).getInputStream()) {
+			return load(in);
 		}
 		catch (IOException | UncheckedIOException ex) {
 			throw new IOException("Error reading certificate or key from file '%s'".formatted(content), ex);
