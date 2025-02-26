@@ -120,8 +120,8 @@ public final class PemContent {
 		if (isPresentInText(content)) {
 			return new PemContent(content);
 		}
-		try {
-			return load(resourceLoader.getResource(content).getInputStream());
+		try (InputStream in = resourceLoader.getResource(content).getInputStream()) {
+			return load(in);
 		}
 		catch (IOException | UncheckedIOException ex) {
 			throw new IOException("Error reading certificate or key from file '%s'".formatted(content), ex);
