@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.nounique.TestBean;
 import org.springframework.boot.diagnostics.analyzer.nounique.TestBeanConsumer;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -39,6 +40,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
+@WithResource(name = "producer.xml",
+		content = """
+				<?xml version="1.0" encoding="UTF-8"?>
+				<beans xmlns="http://www.springframework.org/schema/beans"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+					<bean class="org.springframework.boot.diagnostics.analyzer.nounique.TestBean" name="xmlTestBean"/>
+
+				</beans>
+				""")
 class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -79,6 +91,17 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
+	@WithResource(name = "consumer.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+						<bean class="org.springframework.boot.diagnostics.analyzer.nounique.TestBeanConsumer"/>
+
+					</beans>
+					""")
 	void failureAnalysisForXmlConsumer() {
 		FailureAnalysis failureAnalysis = analyzeFailure(createFailure(XmlConsumer.class));
 		assertThat(failureAnalysis.getDescription()).startsWith("Parameter 0 of constructor in "
@@ -147,7 +170,7 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ComponentScan(basePackageClasses = TestBean.class)
-	@ImportResource("/org/springframework/boot/diagnostics/analyzer/nounique/producer.xml")
+	@ImportResource("classpath:producer.xml")
 	static class DuplicateBeansProducer {
 
 		@Bean
@@ -216,7 +239,7 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportResource("/org/springframework/boot/diagnostics/analyzer/nounique/consumer.xml")
+	@ImportResource("classpath:consumer.xml")
 	static class XmlConsumer {
 
 	}

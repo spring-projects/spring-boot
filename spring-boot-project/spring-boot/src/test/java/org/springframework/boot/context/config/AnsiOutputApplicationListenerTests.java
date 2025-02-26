@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.ansi.AnsiOutputEnabledValue;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,11 +79,9 @@ class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "spring.output.ansi.enabled=never")
 	void disabledViaApplicationProperties() {
-		ConfigurableEnvironment environment = new StandardEnvironment();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "spring.config.name=ansi");
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setEnvironment(environment);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.NEVER);

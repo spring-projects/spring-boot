@@ -61,12 +61,14 @@ class SimpleMainTests {
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
 	void xmlContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
 		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
 	void mixedContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(), "org/springframework/boot/sample-beans.xml"));
 		assertThat(output).contains(SPRING_STARTUP);

@@ -1,6 +1,0 @@
-some:
-  path: &anchor
-    config:
-      key: value
-  anotherpath:
-    <<: *anchor

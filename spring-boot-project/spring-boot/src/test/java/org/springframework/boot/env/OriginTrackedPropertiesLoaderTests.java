@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.env.OriginTrackedPropertiesLoader.Document;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -92,9 +93,10 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "malformed-unicode.properties", content = "test-malformed-unicode=properties\\u(026test")
 	void getMalformedUnicodeProperty() {
 		// gh-12716
-		ClassPathResource resource = new ClassPathResource("test-properties-malformed-unicode.properties", getClass());
+		ClassPathResource resource = new ClassPathResource("malformed-unicode.properties");
 		assertThatIllegalStateException().isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())
 			.withMessageContaining("Malformed \\uxxxx encoding");
 	}
@@ -326,8 +328,43 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "existing-non-multi-document.properties", content = """
+			#---
+			# Test
+			#---
+
+			spring=boot
+
+			#---
+			# Test
+
+			boot=bar
+
+
+			# Test
+			#---
+
+			bar=ok
+
+			!---
+			! Test
+			!---
+
+			ok=well
+
+			!---
+			! Test
+
+			well=hello
+
+			! Test
+			!---
+
+			hello=world
+
+			""")
 	void existingCommentsAreNotTreatedAsMultiDoc() throws Exception {
-		this.resource = new ClassPathResource("existing-non-multi-document.properties", getClass());
+		this.resource = new ClassPathResource("existing-non-multi-document.properties");
 		this.documents = new OriginTrackedPropertiesLoader(this.resource).load();
 		assertThat(this.documents).hasSize(1);
 	}

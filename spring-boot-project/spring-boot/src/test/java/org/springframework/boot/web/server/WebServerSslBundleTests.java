@@ -22,6 +22,8 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.ssl.MockPkcs11Security;
 import org.springframework.boot.testsupport.ssl.MockPkcs11SecurityProvider;
 
@@ -47,6 +49,7 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.p12")
 	void whenFromJksProperties() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("classpath:test.p12");
@@ -77,11 +80,12 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
-	void whenFromJksPropertiesWithPkcs11StoreType() {
+	@WithPackageResources("test.jks")
+	void whenFromJksPropertiesWithPkcs11StoreType(@ResourcePath("test.jks") String keyStorePath) {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore(keyStorePath);
 		ssl.setKeyPassword("password");
 		ssl.setClientAuth(Ssl.ClientAuth.NONE);
 		assertThatIllegalStateException().isThrownBy(() -> WebServerSslBundle.get(ssl))
@@ -108,6 +112,7 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem", "test-cert-chain.pem" })
 	void whenFromPemProperties() {
 		Ssl ssl = new Ssl();
 		ssl.setCertificate("classpath:test-cert.pem");
@@ -135,6 +140,7 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem", "test.p12" })
 	void whenPemKeyStoreAndJksTrustStoreProperties() {
 		Ssl ssl = new Ssl();
 		ssl.setCertificate("classpath:test-cert.pem");
@@ -163,6 +169,7 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test.p12", "test-cert-chain.pem" })
 	void whenJksKeyStoreAndPemTrustStoreProperties() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("classpath:test.p12");

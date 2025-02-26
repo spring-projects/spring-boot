@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 
@@ -41,9 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigDataLocationRuntimeHintsTests {
 
 	@Test
+	@WithResource(name = "application.properties", content = "")
+	@WithResource(name = "config/application.properties", content = "")
 	void registerWithDefaultSettings() {
 		RuntimeHints hints = new RuntimeHints();
-		new TestConfigDataLocationRuntimeHints().registerHints(hints, null);
+		new TestConfigDataLocationRuntimeHints().registerHints(hints, Thread.currentThread().getContextClassLoader());
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
 			.satisfies(includes("application*.properties", "application*.xml", "application*.yaml", "application*.yml",
 					"config/application*.properties", "config/application*.xml", "config/application*.yaml",
@@ -51,6 +54,8 @@ class ConfigDataLocationRuntimeHintsTests {
 	}
 
 	@Test
+	@WithResource(name = "test.properties")
+	@WithResource(name = "config/test.properties")
 	void registerWithCustomName() {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints() {
@@ -59,13 +64,15 @@ class ConfigDataLocationRuntimeHintsTests {
 				return List.of("test");
 			}
 
-		}.registerHints(hints, null);
+		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
 			.satisfies(includes("test*.properties", "test*.xml", "test*.yaml", "test*.yml", "config/test*.properties",
 					"config/test*.xml", "config/test*.yaml", "config/test*.yml"));
 	}
 
 	@Test
+	@WithResource(name = "application.properties")
+	@WithResource(name = "config/application.properties")
 	void registerWithCustomLocation() {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints() {
@@ -73,13 +80,15 @@ class ConfigDataLocationRuntimeHintsTests {
 			protected List<String> getLocations(ClassLoader classLoader) {
 				return List.of("config/");
 			}
-		}.registerHints(hints, null);
+		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
 			.satisfies(includes("config/application*.properties", "config/application*.xml", "config/application*.yaml",
 					"config/application*.yml"));
 	}
 
 	@Test
+	@WithResource(name = "application.conf")
+	@WithResource(name = "config/application.conf")
 	void registerWithCustomExtension() {
 		RuntimeHints hints = new RuntimeHints();
 		new ConfigDataLocationRuntimeHints() {
@@ -87,7 +96,7 @@ class ConfigDataLocationRuntimeHintsTests {
 			protected List<String> getExtensions(ClassLoader classLoader) {
 				return List.of(".conf");
 			}
-		}.registerHints(hints, null);
+		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
 			.satisfies(includes("application*.conf", "config/application*.conf"));
 	}
@@ -100,7 +109,7 @@ class ConfigDataLocationRuntimeHintsTests {
 			protected List<String> getLocations(ClassLoader classLoader) {
 				return List.of(UUID.randomUUID().toString());
 			}
-		}.registerHints(hints, null);
+		}.registerHints(hints, Thread.currentThread().getContextClassLoader());
 		assertThat(hints.resources().resourcePatternHints()).isEmpty();
 	}
 

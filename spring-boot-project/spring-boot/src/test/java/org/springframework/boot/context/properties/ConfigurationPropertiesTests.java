@@ -70,6 +70,7 @@ import org.springframework.boot.convert.PeriodFormat;
 import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.boot.env.RandomValuePropertySource;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -262,6 +263,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	@WithResource(name = "testProperties.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+						<bean
+							id="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties"
+							class="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties">
+							<property name="name" value="bar"/>
+						</bean>
+
+					</beans>
+					""")
 	void loadWhenBindingWithDefaultsInXmlShouldBind() {
 		removeSystemProperties();
 		load(new Class<?>[] { DefaultsInXmlConfiguration.class });
@@ -654,6 +670,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties")
 	void customProtocolResolver() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -1377,7 +1394,7 @@ class ConfigurationPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
+	@ImportResource("testProperties.xml")
 	static class DefaultsInXmlConfiguration {
 
 	}
