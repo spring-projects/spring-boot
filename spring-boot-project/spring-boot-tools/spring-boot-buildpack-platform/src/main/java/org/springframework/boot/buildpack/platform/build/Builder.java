@@ -280,7 +280,7 @@ public class Builder {
 		}
 
 		/**
-		 * Creates{@link DockerLog} instance based on the provided {@link BuildLog}.
+		 * Creates {@link DockerLog} instance based on the provided {@link BuildLog}.
 		 * <p>
 		 * If the provided {@link BuildLog} instance is an {@link AbstractBuildLog}, the
 		 * method returns a {@link BuildLogAdapter}, otherwise it returns a default

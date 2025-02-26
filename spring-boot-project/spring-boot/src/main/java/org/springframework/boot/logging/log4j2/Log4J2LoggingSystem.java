@@ -445,7 +445,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
 		markAsUninitialized(loggerContext);
-		StatusConsoleListener listener = (StatusConsoleListener) getLoggerContext().getObject(STATUS_LISTENER_KEY);
+		StatusConsoleListener listener = (StatusConsoleListener) loggerContext.getObject(STATUS_LISTENER_KEY);
 		if (listener != null) {
 			StatusLogger.getLogger().removeListener(listener);
 			loggerContext.removeObject(STATUS_LISTENER_KEY);

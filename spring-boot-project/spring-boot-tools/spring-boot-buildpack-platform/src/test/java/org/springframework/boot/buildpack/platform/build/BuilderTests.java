@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -73,14 +74,12 @@ class BuilderTests {
 
 	@Test
 	void createWithDockerConfiguration() {
-		Builder builder = new Builder(BuildLog.toSystemOut());
-		assertThat(builder).isNotNull();
+		assertThatNoException().isThrownBy(() -> new Builder(BuildLog.toSystemOut()));
 	}
 
 	@Test
 	void createDockerApiWithLogDockerLogDelegate() {
 		Builder builder = new Builder(BuildLog.toSystemOut());
-		assertThat(builder).isNotNull();
 		assertThat(builder).extracting("docker")
 			.extracting("system")
 			.extracting("log")
@@ -90,7 +89,6 @@ class BuilderTests {
 	@Test
 	void createDockerApiWithLogDockerSystemOutDelegate() {
 		Builder builder = new Builder(mock(BuildLog.class));
-		assertThat(builder).isNotNull();
 		assertThat(builder).extracting("docker")
 			.extracting("system")
 			.extracting("log")
