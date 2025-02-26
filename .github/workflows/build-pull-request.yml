@@ -17,7 +17,7 @@ jobs:
           check-latest: true
           cache: npm
       - run: npm install
-      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_PERF_LOGGING=true NX_VERBOSE_LOGGING=true npx nx-cloud start-ci-run --distribute-on="16 linux-extra-large-plus-jvm"
+      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_PERF_LOGGING=true NX_VERBOSE_LOGGING=true npx nx-cloud start-ci-run --distribute-on="4 linux-extra-large-plus-jvm"
       - name: Build
         id: build
         uses: ./.github/actions/build
