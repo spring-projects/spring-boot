@@ -46,6 +46,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -220,8 +221,10 @@ class SpringApplicationTests {
 
 	@Test
 	void sourcesMustBeAccessible() {
-		assertThatIllegalArgumentException()
+		assertThatExceptionOfType(BeanDefinitionStoreException.class)
 			.isThrownBy(() -> new SpringApplication(InaccessibleConfiguration.class).run())
+			.havingRootCause()
+			.isInstanceOf(IllegalArgumentException.class)
 			.withMessageContaining("No visible constructors");
 	}
 
