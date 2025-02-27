@@ -1,8 +1,8 @@
 {
   "installation": {
-    "version": "0.0.0-pr-29464-077bd35",
+    "version": "0.0.0-pr-29464-c4b160c",
     "plugins": {
-      "@nx/gradle": "0.0.0-pr-29464-077bd35"
+      "@nx/gradle": "0.0.0-pr-29464-c4b160c"
     }
   },
   "plugins": [
@@ -11,7 +11,8 @@
       "options": {
         "testTargetName": "test",
         "classesTargetName": "classes",
-        "buildTargetName": "build"
+        "buildTargetName": "build",
+        "ciTargetName": "ci"
       }
     }
   ],

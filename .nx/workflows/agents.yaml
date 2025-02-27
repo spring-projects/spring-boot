@@ -17,7 +17,7 @@ launch-templates:
           java -version
 
       - name: Setup gradle
-        script: ./gradlew wrapper
+        script: ./gradlew wrapper && ./gradlew --stop && ./gradlew clean
         
       - name: Restore Node Modules Cache
         uses: 'nrwl/nx-cloud-workflows/v4/workflow-steps/cache/main.yaml'
