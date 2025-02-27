@@ -85,7 +85,7 @@ public enum TestImage {
 	/**
 	 * A Docker image suitable for Elasticsearch 7.
 	 */
-	ELASTICSEARCH("docker.elastic.co/elasticsearch/elasticsearch", "7.17.5", () -> ElasticsearchContainer.class,
+	ELASTICSEARCH("docker.elastic.co/elasticsearch/elasticsearch", "7.17.28", () -> ElasticsearchContainer.class,
 			(container) -> ((ElasticsearchContainer) container).withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
 				.withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
