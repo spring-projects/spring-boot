@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -145,6 +146,30 @@ class JmsAutoConfigurationTests {
 			assertThat(container.isSubscriptionDurable()).isFalse();
 			assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 1000L);
 		});
+	}
+
+	@Test
+	void testSimpleJmsListenerConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.jms.listener.container-type=simple")
+			.run((loaded) -> {
+				assertThat(loaded).hasSingleBean(CachingConnectionFactory.class);
+				CachingConnectionFactory connectionFactory = loaded.getBean(CachingConnectionFactory.class);
+				assertThat(loaded).hasSingleBean(SimpleJmsListenerContainerFactory.class);
+				SimpleJmsListenerContainerFactory containerFactory = loaded
+					.getBean(SimpleJmsListenerContainerFactory.class);
+				SimpleJmsListenerEndpoint jmsListenerEndpoint = new SimpleJmsListenerEndpoint();
+				jmsListenerEndpoint.setMessageListener((message) -> {
+				});
+				SimpleMessageListenerContainer container = containerFactory
+					.createListenerContainer(jmsListenerEndpoint);
+				assertThat(container.getClientId()).isNull();
+				assertThat(container.getConnectionFactory()).isSameAs(connectionFactory.getTargetConnectionFactory());
+				assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.AUTO_ACKNOWLEDGE);
+				assertThat(container.isAutoStartup()).isTrue();
+				assertThat(container.isPubSubDomain()).isFalse();
+				assertThat(container.isSubscriptionDurable()).isFalse();
+			});
 	}
 
 	@Test
