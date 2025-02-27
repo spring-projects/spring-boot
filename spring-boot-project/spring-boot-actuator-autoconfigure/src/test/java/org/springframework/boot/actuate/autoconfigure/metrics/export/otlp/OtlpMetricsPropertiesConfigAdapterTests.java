@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +29,6 @@ import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetr
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link OtlpMetricsPropertiesConfigAdapter}.
@@ -74,9 +72,8 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
-		this.properties.setResourceAttributes(Map.of("service.name", "boot-service"));
+	void whenOpenTelemetryPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "boot-service"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
 	}
 
@@ -131,32 +128,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
-		this.properties.setResourceAttributes(Map.of("a", "alpha"));
-		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
-		assertThat(createAdapter().resourceAttributes()).contains(entry("b", "beta"));
-		assertThat(createAdapter().resourceAttributes()).doesNotContain(entry("a", "alpha"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
-		this.properties.setResourceAttributes(Map.of("a", "alpha"));
-		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());
-		assertThat(createAdapter().resourceAttributes()).contains(entry("a", "alpha"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
 	void serviceNameOverridesApplicationName() {
-		this.environment.setProperty("spring.application.name", "alpha");
-		this.properties.setResourceAttributes(Map.of("service.name", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
-	}
-
-	@Test
-	void serviceNameOverridesApplicationNameWhenUsingOtelProperties() {
 		this.environment.setProperty("spring.application.name", "alpha");
 		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "beta"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
@@ -174,15 +146,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void serviceGroupOverridesApplicationGroup() {
-		this.environment.setProperty("spring.application.group", "alpha");
-		this.properties.setResourceAttributes(Map.of("service.group", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");
-	}
-
-	@Test
-	void serviceGroupOverridesApplicationGroupWhenUsingOtelProperties() {
 		this.environment.setProperty("spring.application.group", "alpha");
 		this.openTelemetryProperties.setResourceAttributes(Map.of("service.group", "beta"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");

@@ -77,11 +77,10 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	@Override
-	@SuppressWarnings("removal")
 	public Map<String, String> resourceAttributes() {
 		Map<String, String> resourceAttributes = this.openTelemetryProperties.getResourceAttributes();
 		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
-				: get(OtlpMetricsProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
+				: OtlpConfig.super.resourceAttributes());
 		result.computeIfAbsent("service.name", (key) -> getApplicationName());
 		result.computeIfAbsent("service.group", (key) -> getApplicationGroup());
 		return Collections.unmodifiableMap(result);
