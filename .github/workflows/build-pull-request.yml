@@ -13,7 +13,8 @@ jobs:
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
       # Uncomment this line to enable task distribution
-      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_PERF_LOGGING=true NX_VERBOSE_LOGGING=true npx nx-cloud start-ci-run --distribute-on="8 linux-medium-jvm"
+      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_PERF_LOGGING=true NX_VERBOSE_LOGGING=true npx nx-cloud start-ci-run --distribute-on="8 linux-medium-jvm" --require-explicit-completion
+      
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
@@ -21,9 +22,15 @@ jobs:
           check-latest: true
           cache: npm
       - run: npm install
+
       - name: Build
         id: build
         uses: ./.github/actions/build
+
+      - name: Stop nx cloud agents
+        if: always()
+        run: npx nx-cloud complete-ci-run
+
       - name: Print JVM Thread Dumps When Cancelled
         if: cancelled()
         uses: ./.github/actions/print-jvm-thread-dumps
