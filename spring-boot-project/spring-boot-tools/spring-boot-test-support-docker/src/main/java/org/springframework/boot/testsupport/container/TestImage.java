@@ -125,7 +125,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Neo4j.
 	 */
-	NEO4J("neo4j", "4.4.11", () -> Neo4jContainer.class,
+	NEO4J("neo4j", "4.4.41", () -> Neo4jContainer.class,
 			(container) -> ((Neo4jContainer<?>) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
