@@ -75,6 +75,7 @@ class JmsAutoConfigurationTests {
 				.doesNotHaveBean(JmsMessagingTemplate.class)
 				.doesNotHaveBean(JmsClient.class)
 				.doesNotHaveBean(DefaultJmsListenerContainerFactoryConfigurer.class)
+				.doesNotHaveBean(SimpleJmsListenerContainerFactoryConfigurer.class)
 				.doesNotHaveBean(DefaultJmsListenerContainerFactory.class));
 	}
 
@@ -495,9 +496,10 @@ class JmsAutoConfigurationTests {
 	static class TestConfiguration6 {
 
 		@Bean
-		JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory(
+				SimpleJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 			SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
-			factory.setConnectionFactory(connectionFactory);
+			configurer.configure(factory, connectionFactory);
 			return factory;
 		}
 
