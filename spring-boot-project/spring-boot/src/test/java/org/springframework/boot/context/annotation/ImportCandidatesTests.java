@@ -47,7 +47,8 @@ class ImportCandidatesTests {
 
 			""")
 	void loadReadsFromClasspathFile() {
-		ImportCandidates candidates = ImportCandidates.load(TestAnnotation.class, null);
+		ImportCandidates candidates = ImportCandidates.load(TestAnnotation.class,
+				Thread.currentThread().getContextClassLoader());
 		assertThat(candidates).containsExactly("class1", "class2", "class3");
 	}
 
