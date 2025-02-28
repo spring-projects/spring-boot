@@ -47,6 +47,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  * @author Dan Zheng
+ * @author Yanming Zhou
  */
 class JdbcTemplateAutoConfigurationTests {
 
@@ -64,6 +65,10 @@ class JdbcTemplateAutoConfigurationTests {
 			assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
 			assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
 			assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+			assertThat(jdbcTemplate.isIgnoreWarnings()).isEqualTo(true);
+			assertThat(jdbcTemplate.isSkipResultsProcessing()).isEqualTo(false);
+			assertThat(jdbcTemplate.isSkipUndeclaredResults()).isEqualTo(false);
+			assertThat(jdbcTemplate.isResultsMapCaseInsensitive()).isEqualTo(false);
 		});
 	}
 
@@ -71,7 +76,10 @@ class JdbcTemplateAutoConfigurationTests {
 	void testJdbcTemplateWithCustomProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.jdbc.template.fetch-size:100", "spring.jdbc.template.query-timeout:60",
-					"spring.jdbc.template.max-rows:1000")
+					"spring.jdbc.template.max-rows:1000", "spring.jdbc.template.ignore-warnings:false",
+					"spring.jdbc.template.skip-results-processing:true",
+					"spring.jdbc.template.skip-undeclared-results:true",
+					"spring.jdbc.template.results-map-case-insensitive:true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JdbcOperations.class);
 				JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
@@ -79,6 +87,10 @@ class JdbcTemplateAutoConfigurationTests {
 				assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
 				assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
 				assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
+				assertThat(jdbcTemplate.isIgnoreWarnings()).isEqualTo(false);
+				assertThat(jdbcTemplate.isSkipResultsProcessing()).isEqualTo(true);
+				assertThat(jdbcTemplate.isSkipUndeclaredResults()).isEqualTo(true);
+				assertThat(jdbcTemplate.isResultsMapCaseInsensitive()).isEqualTo(true);
 			});
 	}
 
