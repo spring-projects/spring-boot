@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,8 +26,8 @@ import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryResourceAttributes;
 import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -78,12 +77,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> resourceAttributes() {
-		Map<String, String> resourceAttributes = this.openTelemetryProperties.getResourceAttributes();
-		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
-				: OtlpConfig.super.resourceAttributes());
-		result.computeIfAbsent("service.name", (key) -> getApplicationName());
-		result.computeIfAbsent("service.group", (key) -> getApplicationGroup());
-		return Collections.unmodifiableMap(result);
+		Map<String, String> attributes = new OpenTelemetryResourceAttributes(
+				this.openTelemetryProperties.getResourceAttributes())
+			.asMap();
+		attributes.computeIfAbsent("service.name", (key) -> getApplicationName());
+		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup());
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	private String getApplicationName() {
