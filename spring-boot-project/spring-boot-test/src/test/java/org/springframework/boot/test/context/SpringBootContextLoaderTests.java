@@ -25,10 +25,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader.MainMethodBeanFactoryInitializationAotProcessor;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -242,6 +248,35 @@ class SpringBootContextLoaderTests {
 		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
 			.havingCause()
 			.withMessage("UseMainMethod.ALWAYS cannot be used with @ContextHierarchy tests");
+	}
+
+	@Test
+	void whenMainMethodPresentRegisterReflectionHints() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndNoMainMethod.class)
+			.getExposedTestContext();
+		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) testContext
+			.getApplicationContext()
+			.getAutowireCapableBeanFactory();
+		BeanFactoryInitializationAotContribution aotContribution = new MainMethodBeanFactoryInitializationAotProcessor()
+			.processAheadOfTime(beanFactory);
+		assertThat(aotContribution).isNull();
+	}
+
+	@Test
+	void whenMainMethodNotAvailableReturnsNoAotContribution() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndMainMethod.class)
+			.getExposedTestContext();
+		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) testContext
+			.getApplicationContext()
+			.getAutowireCapableBeanFactory();
+		BeanFactoryInitializationAotContribution aotContribution = new MainMethodBeanFactoryInitializationAotProcessor()
+			.processAheadOfTime(beanFactory);
+		assertThat(aotContribution).isNotNull();
+		TestGenerationContext generationContext = new TestGenerationContext();
+		aotContribution.applyTo(generationContext, null);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ConfigWithMain.class, "main").invoke())
+			.accepts(runtimeHints);
 	}
 
 	@Test
