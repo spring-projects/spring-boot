@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -284,13 +285,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private Configuration load(String location, LoggerContext context) throws IOException {
 		Resource resource = ApplicationResourceLoader.get().getResource(location);
-		ConfigurationSource source = getConfigurationSource(resource);
-		return ConfigurationFactory.getInstance().getConfiguration(context, source);
-	}
-
-	private ConfigurationSource getConfigurationSource(Resource resource) throws IOException {
+		ConfigurationFactory factory = ConfigurationFactory.getInstance();
 		if (resource.isFile()) {
-			return new ConfigurationSource(resource.getInputStream(), resource.getFile());
+			try (InputStream inputStream = resource.getInputStream()) {
+				return factory.getConfiguration(context, new ConfigurationSource(inputStream, resource.getFile()));
+			}
 		}
 		URL url = resource.getURL();
 		AuthorizationProvider authorizationProvider = ConfigurationFactory
@@ -299,7 +298,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				? SslConfigurationFactory.getSslConfiguration() : null;
 		URLConnection connection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration,
 				authorizationProvider);
-		return new ConfigurationSource(connection.getInputStream(), url, connection.getLastModified());
+		try (InputStream inputStream = connection.getInputStream()) {
+			return factory.getConfiguration(context,
+					new ConfigurationSource(inputStream, url, connection.getLastModified()));
+		}
 	}
 
 	private CompositeConfiguration createComposite(List<Configuration> configurations) {
