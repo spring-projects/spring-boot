@@ -23,35 +23,25 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.testsupport.classpath.ForkedClassPath;
-import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.testcomponents.filter.TestFilter;
 import org.springframework.boot.web.servlet.testcomponents.listener.TestListener;
 import org.springframework.boot.web.servlet.testcomponents.servlet.TestMultipartServlet;
 import org.springframework.boot.web.servlet.testcomponents.servlet.TestServlet;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@DirtiesUrlFactories
 class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
@@ -75,44 +64,41 @@ class ServletComponentScanIntegrationTests {
 		}
 	}
 
-	@ParameterizedTest(name = "{0}")
-	@MethodSource("testConfiguration")
-	@ForkedClassPath
-	void componentsAreRegistered(String serverName, Class<?> configuration) {
+	@Test
+	void componentsAreRegistered() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(configuration);
-		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.register(TestConfiguration.class);
 		this.context.refresh();
-		String port = this.context.getEnvironment().getProperty("local.server.port");
-		String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
-		assertThat(response).isEqualTo("alpha bravo charlie");
+		assertThat(this.context.getServletContext().getFilterRegistrations()).hasSize(1)
+			.containsKey(TestFilter.class.getName());
+		assertThat(this.context.getServletContext().getServletRegistrations()).hasSize(2)
+			.containsKeys(TestServlet.class.getName(), TestMultipartServlet.class.getName());
+		assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getWebListenerClassNames())
+			.containsExactly(TestListener.class.getName());
 	}
 
-	@ParameterizedTest(name = "{0}")
-	@MethodSource("testConfiguration")
-	@ForkedClassPath
-	void indexedComponentsAreRegistered(String serverName, Class<?> configuration) throws IOException {
+	@Test
+	void indexedComponentsAreRegistered() throws IOException {
 		writeIndex(this.temp);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { this.temp.toURI().toURL() },
 				getClass().getClassLoader())) {
 			this.context.setClassLoader(classLoader);
-			this.context.register(configuration);
-			new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+			this.context.register(TestConfiguration.class);
 			this.context.refresh();
-			String port = this.context.getEnvironment().getProperty("local.server.port");
-			String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
-			assertThat(response).isEqualTo("alpha bravo charlie");
+			assertThat(this.context.getServletContext().getFilterRegistrations()).hasSize(1)
+				.containsKey(TestFilter.class.getName());
+			assertThat(this.context.getServletContext().getServletRegistrations()).hasSize(1)
+				.containsKeys(TestServlet.class.getName());
+			assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getWebListenerClassNames())
+				.containsExactly(TestListener.class.getName());
 		}
 	}
 
-	@ParameterizedTest(name = "{0}")
-	@MethodSource("testConfiguration")
-	@ForkedClassPath
-	void multipartConfigIsHonoured(String serverName, Class<?> configuration) {
+	@Test
+	void multipartConfigIsHonoured() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(configuration);
-		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		@SuppressWarnings("rawtypes")
 		Map<String, ServletRegistrationBean> beans = this.context.getBeansOfType(ServletRegistrationBean.class);
@@ -138,52 +124,14 @@ class ServletComponentScanIntegrationTests {
 		}
 	}
 
-	static Stream<Arguments> testConfiguration() {
-		return Stream.of(Arguments.of("Jetty", JettyTestConfiguration.class),
-				Arguments.of("Tomcat", TomcatTestConfiguration.class),
-				Arguments.of("Undertow", UndertowTestConfiguration.class));
-	}
-
 	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
-	abstract static class AbstractTestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
 		protected ServletWebServerFactory webServerFactory(ObjectProvider<WebListenerRegistrar> webListenerRegistrars) {
-			ConfigurableServletWebServerFactory factory = createWebServerFactory();
+			ConfigurableServletWebServerFactory factory = new MockServletWebServerFactory();
 			webListenerRegistrars.orderedStream().forEach((registrar) -> registrar.register(factory));
 			return factory;
-		}
-
-		abstract ConfigurableServletWebServerFactory createWebServerFactory();
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JettyTestConfiguration extends AbstractTestConfiguration {
-
-		@Override
-		ConfigurableServletWebServerFactory createWebServerFactory() {
-			return new JettyServletWebServerFactory(0);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TomcatTestConfiguration extends AbstractTestConfiguration {
-
-		@Override
-		ConfigurableServletWebServerFactory createWebServerFactory() {
-			return new TomcatServletWebServerFactory(0);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class UndertowTestConfiguration extends AbstractTestConfiguration {
-
-		@Override
-		ConfigurableServletWebServerFactory createWebServerFactory() {
-			return new UndertowServletWebServerFactory(0);
 		}
 
 	}

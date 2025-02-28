@@ -5,7 +5,7 @@ plugins {
 description = "Core starter, including auto-configuration support, logging and YAML"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-all"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 	api("jakarta.annotation:jakarta.annotation-api")
