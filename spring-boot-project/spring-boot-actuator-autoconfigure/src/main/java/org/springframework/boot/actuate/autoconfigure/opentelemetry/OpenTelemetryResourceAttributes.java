@@ -130,21 +130,21 @@ public final class OpenTelemetryResourceAttributes {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length);
 		for (int i = 0; i < bytes.length; i++) {
 			byte b = bytes[i];
-			if (b == '%') {
-				int u = decodeHex(bytes, ++i);
-				int l = decodeHex(bytes, ++i);
-				if (u >= 0 && l >= 0) {
-					bos.write((u << 4) + l);
-				}
-				else {
-					throw new IllegalArgumentException(
-							"Failed to decode percent-encoded characters at index %d in the value: '%s'"
-								.formatted(i - 2, value));
-				}
+			if (b != '%') {
+				bos.write(b);
+				continue;
+			}
+			int u = decodeHex(bytes, i + 1);
+			int l = decodeHex(bytes, i + 2);
+			if (u >= 0 && l >= 0) {
+				bos.write((u << 4) + l);
 			}
 			else {
-				bos.write(b);
+				throw new IllegalArgumentException(
+						"Failed to decode percent-encoded characters at index %d in the value: '%s'".formatted(i,
+								value));
 			}
+			i += 2;
 		}
 		return bos.toString(StandardCharsets.UTF_8);
 	}

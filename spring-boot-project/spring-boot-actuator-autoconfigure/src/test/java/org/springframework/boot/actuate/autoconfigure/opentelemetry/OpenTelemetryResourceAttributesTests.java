@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import io.opentelemetry.api.internal.PercentEscaper;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class OpenTelemetryResourceAttributesTests {
 
-	private static final Random random = new Random();
+	private static Random random;
 
 	private static final PercentEscaper escaper = PercentEscaper.create();
 
@@ -44,11 +45,17 @@ class OpenTelemetryResourceAttributesTests {
 
 	private final Map<String, String> resourceAttributes = new LinkedHashMap<>();
 
+	@BeforeAll
+	static void beforeAll() {
+		long seed = new Random().nextLong();
+		System.out.println("Seed: " + seed);
+		random = new Random(seed);
+	}
+
 	@Test
 	void otelServiceNameShouldTakePrecedenceOverOtelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.name=ignored");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "otel-service");
-
 		OpenTelemetryResourceAttributes attributes = getAttributes();
 		assertThat(attributes.asMap()).hasSize(1).containsEntry("service.name", "otel-service");
 	}
@@ -57,7 +64,6 @@ class OpenTelemetryResourceAttributesTests {
 	void otelServiceNameWhenEmptyShouldTakePrecedenceOverOtelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.name=ignored");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "");
-
 		OpenTelemetryResourceAttributes attributes = getAttributes();
 		assertThat(attributes.asMap()).hasSize(1).containsEntry("service.name", "");
 	}
@@ -66,7 +72,6 @@ class OpenTelemetryResourceAttributesTests {
 	void otelResourceAttributesShouldBeUsed() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES",
 				", ,,key1=value1,key2= value2, key3=value3,key4=,=value5,key6,=,key7=spring+boot,key8=ś");
-
 		OpenTelemetryResourceAttributes attributes = getAttributes();
 		assertThat(attributes.asMap()).hasSize(6)
 			.containsEntry("key1", "value1")
@@ -83,7 +88,6 @@ class OpenTelemetryResourceAttributesTests {
 		this.resourceAttributes.put("key2", "");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "custom-service");
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key1=value1,key2=value2");
-
 		OpenTelemetryResourceAttributes attributes = getAttributes();
 		assertThat(attributes.asMap()).hasSize(4)
 			.containsEntry("service.name", "custom-service")
@@ -99,7 +103,6 @@ class OpenTelemetryResourceAttributesTests {
 		this.resourceAttributes.put(null, "value");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "custom-service");
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key1=value1,key2=value2");
-
 		OpenTelemetryResourceAttributes attributes = getAttributes();
 		assertThat(attributes.asMap()).hasSize(3)
 			.containsEntry("service.name", "custom-service")

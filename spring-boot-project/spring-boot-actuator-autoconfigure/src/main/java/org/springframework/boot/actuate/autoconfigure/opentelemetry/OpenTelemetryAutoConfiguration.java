@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
@@ -88,7 +89,8 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	private String getApplicationGroup(Environment environment) {
-		return environment.getProperty("spring.application.group");
+		String applicationGroup = environment.getProperty("spring.application.group");
+		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 }

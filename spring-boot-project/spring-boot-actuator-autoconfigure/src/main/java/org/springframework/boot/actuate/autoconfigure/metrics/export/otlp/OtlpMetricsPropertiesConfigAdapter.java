@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryResourceAttributes;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter to convert {@link OtlpMetricsProperties} to an {@link OtlpConfig}.
@@ -80,7 +82,7 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 			.asMap();
 		attributes.computeIfAbsent("service.name", (key) -> getApplicationName());
 		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup());
-		return attributes;
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	private String getApplicationName() {
@@ -88,7 +90,8 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	private String getApplicationGroup() {
-		return this.environment.getProperty("spring.application.group");
+		String applicationGroup = this.environment.getProperty("spring.application.group");
+		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 	@Override
