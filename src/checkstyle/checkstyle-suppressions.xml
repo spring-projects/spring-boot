@@ -21,10 +21,10 @@
 	<suppress files="OrderedWebFilter\.java" checks="InterfaceIsType" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocPackage|JavadocType|JavadocVariable|SpringDeprecatedCheck" />

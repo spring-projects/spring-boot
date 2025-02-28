@@ -64,7 +64,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 
-	dokkatoo(project(path: ":spring-boot-project:spring-boot"))
+	dokkatoo(project(path: ":spring-boot-project:spring-boot-all"))
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
