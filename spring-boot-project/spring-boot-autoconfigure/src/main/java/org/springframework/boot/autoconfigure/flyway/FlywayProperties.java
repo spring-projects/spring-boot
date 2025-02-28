@@ -275,7 +275,7 @@ public class FlywayProperties {
 	private String[] loggers = { "slf4j" };
 
 	/**
-	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
+	 * Whether to batch SQL statements when executing them.
 	 */
 	private Boolean batch;
 
@@ -292,12 +292,12 @@ public class FlywayProperties {
 	private String[] errorOverrides;
 
 	/**
-	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
+	 * Whether to stream SQL migrations when executing them.
 	 */
 	private Boolean stream;
 
 	/**
-	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
+	 * Properties to pass to the JDBC driver.
 	 */
 	private Map<String, String> jdbcProperties = new HashMap<>();
 
@@ -308,25 +308,23 @@ public class FlywayProperties {
 
 	/**
 	 * Whether Flyway should output a table with the results of queries when executing
-	 * migrations. Requires Flyway Teams.
+	 * migrations.
 	 */
 	private Boolean outputQueryResults;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
-	 * the schema history table. Requires Flyway teams.
+	 * the schema history table.
 	 */
 	private Boolean skipExecutingMigrations;
 
 	/**
 	 * List of patterns that identify migrations to ignore when performing validation.
-	 * Requires Flyway Teams.
 	 */
 	private List<String> ignoreMigrationPatterns;
 
 	/**
-	 * Whether to attempt to automatically detect SQL migration file encoding. Requires
-	 * Flyway Teams.
+	 * Whether to attempt to automatically detect SQL migration file encoding.
 	 */
 	private Boolean detectEncoding;
 
