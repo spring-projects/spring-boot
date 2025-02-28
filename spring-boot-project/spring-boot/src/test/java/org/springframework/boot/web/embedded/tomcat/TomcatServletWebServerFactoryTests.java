@@ -662,12 +662,12 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@WithPackageResources({ "1.crt", "1.key", "2.crt", "2.key" })
 	void shouldUpdateSslWhenReloadingSslBundles() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test",
-				createPemSslBundle("classpath:org/springframework/boot/web/embedded/tomcat/1.crt",
-						"classpath:org/springframework/boot/web/embedded/tomcat/1.key"));
+				createPemSslBundle("classpath:1.crt", "classpath:1.key"));
 		factory.setSslBundles(bundles);
 		factory.setSsl(Ssl.forBundle("test"));
 		this.webServer = factory.getWebServer();
@@ -679,8 +679,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 		assertThat(verifier.getLastPrincipal()).isEqualTo("CN=1");
 		requestFactory = createHttpComponentsRequestFactory(tlsSocketStrategy);
-		bundles.updateBundle("test", createPemSslBundle("classpath:org/springframework/boot/web/embedded/tomcat/2.crt",
-				"classpath:org/springframework/boot/web/embedded/tomcat/2.key"));
+		bundles.updateBundle("test", createPemSslBundle("classpath:2.crt", "classpath:2.key"));
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 		assertThat(verifier.getLastPrincipal()).isEqualTo("CN=2");
 	}
