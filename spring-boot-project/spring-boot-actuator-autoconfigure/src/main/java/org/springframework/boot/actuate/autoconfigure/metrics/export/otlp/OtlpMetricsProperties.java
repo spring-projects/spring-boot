@@ -39,7 +39,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	/**
 	 * URI of the OTLP server.
 	 */
-	private String url = "http://localhost:4318/v1/metrics";
+	private String url;
 
 	/**
 	 * Aggregation temporality of sums. It defines the way additive values are expressed.
