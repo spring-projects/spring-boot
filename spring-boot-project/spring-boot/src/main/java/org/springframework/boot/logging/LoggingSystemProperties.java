@@ -92,6 +92,11 @@ public class LoggingSystemProperties {
 		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
+	/**
+	 * Returns the {@link Console} to use.
+	 * @return the {@link Console} to use
+	 * @since 3.5.0
+	 */
 	protected Console getConsole() {
 		return System.console();
 	}
@@ -153,7 +158,8 @@ public class LoggingSystemProperties {
 
 	/**
 	 * Returns the default console charset.
-	 * @return returns the default console charset
+	 * @return the default console charset
+	 * @since 3.5.0
 	 */
 	protected Charset getDefaultConsoleCharset() {
 		Console console = getConsole();
@@ -162,7 +168,8 @@ public class LoggingSystemProperties {
 
 	/**
 	 * Returns the default file charset.
-	 * @return returns the default file charset
+	 * @return the default file charset
+	 * @since 3.5.0
 	 */
 	protected Charset getDefaultFileCharset() {
 		return StandardCharsets.UTF_8;
