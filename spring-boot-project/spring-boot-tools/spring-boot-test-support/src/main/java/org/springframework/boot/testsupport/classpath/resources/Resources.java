@@ -54,8 +54,7 @@ class Resources {
 		this.root = root;
 	}
 
-	Resources addPackage(Package root, String[] resourceNames) {
-		String packageName = root.getName();
+	Resources addPackage(String packageName, String[] resourceNames) {
 		Set<String> unmatchedNames = new HashSet<>(Arrays.asList(resourceNames));
 		withPathsForPackage(packageName, (packagePath) -> {
 			for (String resourceName : resourceNames) {

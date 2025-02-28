@@ -20,7 +20,7 @@ configurations.all {
 }
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-all"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))

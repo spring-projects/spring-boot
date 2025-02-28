@@ -1,4 +1,4 @@
 module sampleApp {
-	requires spring.context;
 	requires spring.boot;
+	requires spring.context;
 }
