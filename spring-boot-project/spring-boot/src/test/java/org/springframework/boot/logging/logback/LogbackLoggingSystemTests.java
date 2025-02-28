@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.Console;
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -597,7 +598,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		expectedProperties.add("CONSOLE_LOG_STRUCTURED_FORMAT");
 		expectedProperties.add("FILE_LOG_STRUCTURED_FORMAT");
 		assertThat(properties).containsOnlyKeys(expectedProperties);
-		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", Charset.defaultCharset().name());
+		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", getConsoleCharset());
 	}
 
 	@Test
@@ -1154,6 +1155,11 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.getSystemProperties((ConfigurableEnvironment) context.getEnvironment()).apply(logFile);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(context, configLocation, logFile);
+	}
+
+	private static String getConsoleCharset() {
+		Console console = System.console();
+		return (console != null) ? console.charset().name() : Charset.defaultCharset().name();
 	}
 
 	private static Logger getRootLogger() {
