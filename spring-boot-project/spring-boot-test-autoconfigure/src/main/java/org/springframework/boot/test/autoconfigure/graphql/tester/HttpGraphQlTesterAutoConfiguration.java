@@ -43,7 +43,7 @@ public class HttpGraphQlTesterAutoConfiguration {
 	@ConditionalOnBean(WebTestClient.class)
 	@ConditionalOnMissingBean
 	public HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
-		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getPath()).build();
+		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getHttp().getPath()).build();
 		return HttpGraphQlTester.create(mutatedWebTestClient);
 	}
 

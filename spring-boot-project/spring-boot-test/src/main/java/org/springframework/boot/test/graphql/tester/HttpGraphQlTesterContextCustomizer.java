@@ -171,7 +171,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		}
 
 		private String findConfiguredGraphQlPath() {
-			String configuredPath = this.applicationContext.getEnvironment().getProperty("spring.graphql.path");
+			String configuredPath = this.applicationContext.getEnvironment().getProperty("spring.graphql.http.path");
 			return StringUtils.hasText(configuredPath) ? configuredPath : "/graphql";
 		}
 

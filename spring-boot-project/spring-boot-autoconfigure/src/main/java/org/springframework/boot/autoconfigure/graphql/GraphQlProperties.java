@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 
 /**
@@ -31,31 +32,35 @@ import org.springframework.core.io.Resource;
 @ConfigurationProperties("spring.graphql")
 public class GraphQlProperties {
 
-	/**
-	 * Path at which to expose a GraphQL request HTTP endpoint.
-	 */
-	private String path = "/graphql";
+	private final Http http = new Http();
 
 	private final Graphiql graphiql = new Graphiql();
 
+	private final Rsocket rsocket = new Rsocket();
+
 	private final Schema schema = new Schema();
+
+	private final DeprecatedSse sse = new DeprecatedSse(this.http.getSse());
 
 	private final Websocket websocket = new Websocket();
 
-	private final Rsocket rsocket = new Rsocket();
-
-	private final Sse sse = new Sse();
+	public Http getHttp() {
+		return this.http;
+	}
 
 	public Graphiql getGraphiql() {
 		return this.graphiql;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.graphql.http.path", since = "3.5.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public String getPath() {
-		return this.path;
+		return getHttp().getPath();
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setPath(String path) {
-		this.path = path;
+		getHttp().setPath(path);
 	}
 
 	public Schema getSchema() {
@@ -70,8 +75,31 @@ public class GraphQlProperties {
 		return this.rsocket;
 	}
 
-	public Sse getSse() {
+	public DeprecatedSse getSse() {
 		return this.sse;
+	}
+
+	public static class Http {
+
+		/**
+		 * Path at which to expose a GraphQL request HTTP endpoint.
+		 */
+		private String path = "/graphql";
+
+		private final Sse sse = new Sse();
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
+		}
+
+		public Sse getSse() {
+			return this.sse;
+		}
+
 	}
 
 	public static class Schema {
@@ -178,7 +206,7 @@ public class GraphQlProperties {
 
 			/**
 			 * Whether the endpoint that prints the schema is enabled. Schema is available
-			 * under spring.graphql.path + "/schema".
+			 * under spring.graphql.http.path + "/schema".
 			 */
 			private boolean enabled = false;
 
@@ -298,6 +326,27 @@ public class GraphQlProperties {
 
 		public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
+		}
+
+	}
+
+	public static class DeprecatedSse {
+
+		private final Sse sse;
+
+		public DeprecatedSse(Sse sse) {
+			this.sse = sse;
+		}
+
+		@DeprecatedConfigurationProperty(replacement = "spring.graphql.http.sse.timeout", since = "3.5.0")
+		@Deprecated(since = "3.5.0", forRemoval = true)
+		public Duration getTimeout() {
+			return this.sse.getTimeout();
+		}
+
+		@Deprecated(since = "3.5.0", forRemoval = true)
+		public void setTimeout(Duration timeout) {
+			this.sse.setTimeout(timeout);
 		}
 
 	}

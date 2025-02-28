@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlCorsProperties;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Sse;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -99,8 +98,7 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
-		Sse sse = properties.getSse();
-		return new GraphQlSseHandler(webGraphQlHandler, sse.getTimeout());
+		return new GraphQlSseHandler(webGraphQlHandler, properties.getHttp().getSse().getTimeout());
 	}
 
 	@Bean
@@ -113,8 +111,9 @@ public class GraphQlWebMvcAutoConfiguration {
 	@Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
-			GraphQlSseHandler sseHandler, GraphQlSource graphQlSource, GraphQlProperties properties) {
-		String path = properties.getPath();
+			GraphQlSseHandler sseHandler, ObjectProvider<GraphQlSource> graphQlSourceProvider,
+			GraphQlProperties properties) {
+		String path = properties.getHttp().getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
@@ -125,7 +124,8 @@ public class GraphQlWebMvcAutoConfiguration {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
 		}
-		if (properties.getSchema().getPrinter().isEnabled()) {
+		GraphQlSource graphQlSource = graphQlSourceProvider.getIfAvailable();
+		if (properties.getSchema().getPrinter().isEnabled() && graphQlSource != null) {
 			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
@@ -164,7 +164,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		public void addCorsMappings(CorsRegistry registry) {
 			CorsConfiguration configuration = this.corsProperties.toCorsConfiguration();
 			if (configuration != null) {
-				registry.addMapping(this.graphQlProperties.getPath()).combine(configuration);
+				registry.addMapping(this.graphQlProperties.getHttp().getPath()).combine(configuration);
 			}
 		}
 
