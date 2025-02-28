@@ -18,9 +18,8 @@ package org.springframework.boot.logging.log4j2;
 
 import java.io.IOException;
 
-import com.mchange.v1.lang.ClassUtils;
-
 import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.util.ClassUtils;
 
 /**
  * Simple {@link StackTracePrinter} used for testing.
@@ -31,7 +30,7 @@ class SimpleStackTracePrinter implements StackTracePrinter {
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
-		out.append("stacktrace:" + ClassUtils.simpleClassName(throwable.getClass()));
+		out.append("stacktrace:" + ClassUtils.getShortName(throwable.getClass()));
 	}
 
 }
