@@ -62,7 +62,7 @@ class ResourcesTests {
 
 	@Test
 	void whenAddPackageThenNamedResourcesFromPackageAreCreated() {
-		new Resources(this.root).addPackage(getClass().getPackage(),
+		new Resources(this.root).addPackage(getClass().getPackage().getName(),
 				new String[] { "resource-1.txt", "sub/resource-3.txt" });
 		assertThat(this.root.resolve("resource-1.txt")).hasContent("one");
 		assertThat(this.root.resolve("resource-2.txt")).doesNotExist();
@@ -81,7 +81,7 @@ class ResourcesTests {
 	@Test
 	void whenAddPackageAndDeleteThenResourcesDoNotExist() {
 		Resources resources = new Resources(this.root);
-		resources.addPackage(getClass().getPackage(),
+		resources.addPackage(getClass().getPackage().getName(),
 				new String[] { "resource-1.txt", "resource-2.txt", "sub/resource-3.txt" });
 		assertThat(this.root.resolve("resource-1.txt")).hasContent("one");
 		assertThat(this.root.resolve("resource-2.txt")).hasContent("two");

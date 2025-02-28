@@ -9,7 +9,7 @@ plugins {
 description = "Spring Boot Actuator"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-all"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))

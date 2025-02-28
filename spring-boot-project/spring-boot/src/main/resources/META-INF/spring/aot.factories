@@ -5,23 +5,16 @@ org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataPropertiesRuntimeHints,\
 org.springframework.boot.env.PropertySourceRuntimeHints,\
-org.springframework.boot.http.client.ClientHttpRequestFactoryRuntimeHints,\
-org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints,\
 org.springframework.boot.json.JacksonRuntimeHints,\
-org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
-org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.logging.structured.ElasticCommonSchemaProperties.ElasticCommonSchemaPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties.GraylogExtendedLogFormatPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StructuredLoggingJsonPropertiesRuntimeHints,\
-org.springframework.boot.web.server.undertow.UndertowWebServer.UndertowWebServerRuntimeHints,\
 org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor,\
 org.springframework.boot.env.EnvironmentPostProcessorApplicationListener.EnvironmentBeanFactoryInitializationAotProcessor,\
-org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFactoryInitializationAotProcessor,\
 org.springframework.boot.logging.structured.StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor,\
-org.springframework.boot.jackson.JsonMixinModuleEntriesBeanRegistrationAotProcessor
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor

@@ -1,0 +1,27 @@
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer
+
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
+org.springframework.boot.web.server.tomcat.ConnectorStartFailureAnalyzer
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
+org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
+org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
+org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector

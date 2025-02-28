@@ -31,7 +31,7 @@ final class SslSource {
 		.of("src/main/java/org/springframework/boot/buildpack/platform/docker/ssl");
 
 	private static final Path SPRINGBOOT_LOCATION = Path
-		.of("../../spring-boot/src/main/java/org/springframework/boot/ssl/pem");
+		.of("../../spring-boot-core/src/main/java/org/springframework/boot/ssl/pem");
 
 	private SslSource() {
 	}

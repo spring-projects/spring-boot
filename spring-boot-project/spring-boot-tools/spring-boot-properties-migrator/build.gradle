@@ -6,7 +6,7 @@ plugins {
 description = "Spring Boot Properties Migrator"
 
 dependencies {
-	implementation(project(":spring-boot-project:spring-boot"))
+	implementation(project(":spring-boot-project:spring-boot-all"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

@@ -18,8 +18,6 @@ package org.springframework.boot.logging.structured;
 
 import java.nio.charset.Charset;
 
-import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
-
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.core.env.Environment;
 
@@ -35,7 +33,7 @@ import org.springframework.core.env.Environment;
  * When using Logback, implementing classes can also use the following parameter types in
  * the constructor:
  * <ul>
- * <li>{@link ThrowableProxyConverter}</li>
+ * <li>{@code ch.qos.logback.classic.pattern.ThrowableProxyConverter}</li>
  * </ul>
  *
  * @param <E> the log event type

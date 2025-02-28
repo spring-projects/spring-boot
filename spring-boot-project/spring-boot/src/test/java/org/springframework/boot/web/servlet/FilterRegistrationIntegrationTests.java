@@ -20,7 +20,7 @@ import jakarta.servlet.Filter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.mock.MockFilter;
 import org.springframework.context.annotation.Bean;
@@ -65,8 +65,8 @@ class FilterRegistrationIntegrationTests {
 	static class ContainerConfiguration {
 
 		@Bean
-		TomcatServletWebServerFactory webServerFactory() {
-			return new TomcatServletWebServerFactory(0);
+		MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 	}

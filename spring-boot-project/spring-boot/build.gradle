@@ -1,6 +1,7 @@
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java-library"
+	id 'java-test-fixtures'
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -9,12 +10,6 @@ plugins {
 
 description = "Spring Boot"
 
-def tomcatConfigProperties = layout.buildDirectory.dir("tomcat-config-properties")
-
-configurations {
-	tomcatDistribution
-}
-
 dependencies {
 	annotationProcessor("org.apache.logging.log4j:log4j-core")
 
@@ -22,138 +17,59 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.clickhouse:clickhouse-jdbc")
 	optional("com.fasterxml.jackson.core:jackson-databind")
-	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")
-	optional("com.mchange:c3p0")
-	optional("com.oracle.database.jdbc:ucp11")
-	optional("com.oracle.database.jdbc:ojdbc11")
-	optional("com.samskivert:jmustache")
-	optional("com.zaxxer:HikariCP")
-	optional("io.netty:netty-tcnative-boringssl-static")
-	optional("io.projectreactor:reactor-tools")
-	optional("io.projectreactor.netty:reactor-netty-http")
-	optional("io.r2dbc:r2dbc-pool")
-	optional("io.rsocket:rsocket-core")
-	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet")
-	optional("jakarta.jms:jakarta.jms-api")
-	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
-	optional("jakarta.transaction:jakarta.transaction-api")
-	optional("junit:junit")
-	optional("org.apache.commons:commons-dbcp2") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
-	optional("org.apache.httpcomponents.client5:httpclient5")
+	optional("jakarta.validation:jakarta.validation-api")
+	optional("org.apache.groovy:groovy")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.apache.logging.log4j:log4j-jul")
-	optional("org.apache.tomcat.embed:tomcat-embed-core")
-	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
-	optional("org.apache.tomcat:tomcat-jdbc")
-	optional("org.assertj:assertj-core")
-	optional("org.apache.groovy:groovy")
-	optional("org.apache.groovy:groovy-xml")
 	optional("org.crac:crac")
-	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
-	optional("org.eclipse.jetty:jetty-client")
-	optional("org.eclipse.jetty:jetty-util")
-	optional("org.eclipse.jetty.ee10:jetty-ee10-servlets")
-	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
-	optional("org.eclipse.jetty.http2:jetty-http2-server")
-	optional("org.flywaydb:flyway-core")
-	optional("org.hamcrest:hamcrest-library")
-	optional("org.hibernate.orm:hibernate-core")
-	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jooq:jooq") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
-	optional("org.liquibase:liquibase-core") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
-	optional("org.messaginghub:pooled-jms") {
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-	}
-	optional("org.postgresql:postgresql")
-	optional("org.slf4j:jul-to-slf4j")
-	optional("org.slf4j:slf4j-api")
-	optional("org.springframework:spring-messaging")
-	optional("org.springframework:spring-orm")
-	optional("org.springframework:spring-jms")
-	optional("org.springframework:spring-oxm")
-	optional("org.springframework:spring-r2dbc")
-	optional("org.springframework:spring-test")
-	optional("org.springframework:spring-web")
-	optional("org.springframework:spring-webflux")
-	optional("org.springframework:spring-webmvc")
-	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework.ws:spring-ws-core") {
-		exclude group: "com.sun.mail", module: "jakarta.mail"
-		exclude group: "jakarta.platform", module: "jakarta.jakartaee-api"
-		exclude group: "org.eclipse.jetty", module: "jetty-server"
-		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
-		exclude group: "jakarta.mail", module: "jakarta.mail-api"
-	}
-	optional("org.vibur:vibur-dbcp")
-	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
-	optional("software.amazon.jdbc:aws-advanced-jdbc-wrapper") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.slf4j:jul-to-slf4j")
+	optional("org.springframework:spring-test")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework:spring-webmvc")
+	optional("org.yaml:snakeyaml")
+
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesImplementation("io.projectreactor:reactor-test")
+	testFixturesImplementation("io.projectreactor.netty:reactor-netty-http")
+	testFixturesImplementation("org.apache.httpcomponents.client5:httpclient5")
+	testFixturesImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
+	testFixturesImplementation("org.assertj:assertj-core")
+	testFixturesImplementation("org.awaitility:awaitility")
+	testFixturesImplementation("org.eclipse.jetty.http2:jetty-http2-client")
+	testFixturesImplementation("org.eclipse.jetty.http2:jetty-http2-client-transport")
+	testFixturesImplementation("org.junit.jupiter:junit-jupiter")
+	testFixturesImplementation("org.mockito:mockito-core")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.springframework:spring-core-test")
-	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
-	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
-	testImplementation("com.mysql:mysql-connector-j")
-	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
-	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("io.projectreactor.netty:reactor-netty-http")
+	testImplementation("jakarta.annotation:jakarta.annotation-api")
 	testImplementation("jakarta.inject:jakarta.inject-api")
-	testImplementation("jakarta.xml.ws:jakarta.xml.ws-api")
-	testImplementation("net.sourceforge.jtds:jtds")
-	testImplementation("org.apache.derby:derby")
-	testImplementation("org.apache.derby:derbytools")
+	testImplementation("org.apache.groovy:groovy-xml")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+	testImplementation("org.apache.tomcat:tomcat-jdbc")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
+	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.codehaus.janino:janino")
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client-transport")
-	testImplementation("org.firebirdsql.jdbc:jaybird") {
-		exclude group: "javax.resource", module: "connector-api"
-	}
-	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.hibernate.validator:hibernate-validator")
+	testImplementation("org.jboss.logging:jboss-logging")
 	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
-	testImplementation("org.springframework:spring-context-support")
 	testImplementation("org.springframework:spring-core-test")
-	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.data:spring-data-r2dbc")
-	testImplementation("org.xerial:sqlite-jdbc")
-
-	testRuntimeOnly("org.testcontainers:jdbc") {
-		exclude group: "javax.annotation", module: "javax.annotation-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
-
-	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
-}
-
-task extractTomcatConfigProperties(type: Sync) {
-	destinationDir = file(tomcatConfigProperties)
-	from {
-		zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {
-			include '**/conf/catalina.properties'
-		}.singleFile
-	}
 }
 
 def syncJavaTemplates = tasks.register("syncJavaTemplates", Sync) {
@@ -184,11 +100,4 @@ sourceSets {
 			srcDirs syncJavaTemplates
 		}
 	}
-	test {
-		output.dir(tomcatConfigProperties, builtBy: "extractTomcatConfigProperties")
-	}
-}
-
-test {
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

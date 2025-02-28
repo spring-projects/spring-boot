@@ -78,8 +78,8 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
-import org.springframework.boot.web.server.reactive.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
+import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -1736,8 +1736,8 @@ class SpringApplicationTests {
 	static class ExampleWebConfig {
 
 		@Bean
-		TomcatServletWebServerFactory webServer() {
-			return new TomcatServletWebServerFactory(0);
+		MockServletWebServerFactory webServer() {
+			return new MockServletWebServerFactory();
 		}
 
 	}
@@ -1746,8 +1746,8 @@ class SpringApplicationTests {
 	static class ExampleReactiveWebConfig {
 
 		@Bean
-		NettyReactiveWebServerFactory webServerFactory() {
-			return new NettyReactiveWebServerFactory(0);
+		MockReactiveWebServerFactory webServerFactory() {
+			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean

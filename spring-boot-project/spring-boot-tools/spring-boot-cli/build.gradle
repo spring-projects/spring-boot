@@ -19,7 +19,7 @@ configurations {
 }
 
 dependencies {
-	compileOnlyProject(project(":spring-boot-project:spring-boot"))
+	compileOnlyProject(project(":spring-boot-project:spring-boot-all"))
 
 	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
@@ -39,7 +39,7 @@ dependencies {
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
-	testImplementation(project(":spring-boot-project:spring-boot"))
+	testImplementation(project(":spring-boot-project:spring-boot-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("org.assertj:assertj-core")

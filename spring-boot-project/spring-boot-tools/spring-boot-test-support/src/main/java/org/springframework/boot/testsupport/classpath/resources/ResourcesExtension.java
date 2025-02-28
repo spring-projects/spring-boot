@@ -66,7 +66,7 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 		resourcesOf(testMethod).forEach((resource) -> resources.addResource(resource.name(), resource.content()));
 		resourceDirectoriesOf(testMethod).forEach((directory) -> resources.addDirectory(directory.value()));
 		packageResourcesOf(testMethod).forEach((withPackageResources) -> resources
-			.addPackage(testMethod.getDeclaringClass().getPackage(), withPackageResources.value()));
+			.addPackage(testMethod.getDeclaringClass().getPackage().getName(), withPackageResources.value()));
 		ResourcesClassLoader classLoader = new ResourcesClassLoader(context.getRequiredTestClass().getClassLoader(),
 				resources);
 		store.put(TCCL_KEY, Thread.currentThread().getContextClassLoader());
