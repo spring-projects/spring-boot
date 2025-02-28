@@ -21,6 +21,7 @@ dependencies {
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:junit-jupiter")
 	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:oracle-xe")
