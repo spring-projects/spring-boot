@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.Console;
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -71,7 +72,12 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	@Override
-	protected Charset getDefaultCharset() {
+	protected Console getConsole() {
+		return super.getConsole();
+	}
+
+	@Override
+	protected Charset getDefaultFileCharset() {
 		return Charset.defaultCharset();
 	}
 
