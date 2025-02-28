@@ -34,7 +34,7 @@ configurations {
 }
 
 dependencies {
-	compileOnlyProject(project(":spring-boot-project:spring-boot"))
+	compileOnlyProject(project(":spring-boot-project:spring-boot-all"))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("com.vaadin.external.google:android-json")
@@ -49,7 +49,7 @@ dependencies {
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
-	testImplementation(project(":spring-boot-project:spring-boot"))
+	testImplementation(project(":spring-boot-project:spring-boot-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 }
