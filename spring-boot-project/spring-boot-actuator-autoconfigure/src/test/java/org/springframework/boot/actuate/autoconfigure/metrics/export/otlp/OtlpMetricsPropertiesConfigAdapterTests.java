@@ -23,6 +23,7 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.org.webcompere.systemstubs.SystemStubs;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
@@ -52,6 +53,23 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
 		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties);
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetAdapterUrlReturnsDefault() {
+		assertThat(createAdapter().url()).isEqualTo("http://localhost:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetAndOtelExporterOtlpEndpointIsSetAdapterUrlUsesIt() throws Exception {
+		SystemStubs.withEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT", "https://my-endpoint")
+			.execute(() -> assertThat(createAdapter().url()).isEqualTo("https://my-endpoint/v1/metrics"));
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetAndOtelExporterOtlpMetricsEndpointIsSetAdapterUrlUsesIt() throws Exception {
+		SystemStubs.withEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT", "https://my-endpoint")
+			.execute(() -> assertThat(createAdapter().url()).isEqualTo("https://my-endpoint/v1/metrics"));
 	}
 
 	@Test
