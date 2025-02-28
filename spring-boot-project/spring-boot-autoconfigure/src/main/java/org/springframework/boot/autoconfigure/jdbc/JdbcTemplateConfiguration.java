@@ -31,6 +31,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
  * Configuration for {@link JdbcTemplateConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(JdbcOperations.class)
@@ -47,6 +48,10 @@ class JdbcTemplateConfiguration {
 		if (template.getQueryTimeout() != null) {
 			jdbcTemplate.setQueryTimeout((int) template.getQueryTimeout().getSeconds());
 		}
+		jdbcTemplate.setIgnoreWarnings(template.isIgnoreWarnings());
+		jdbcTemplate.setSkipResultsProcessing(template.isSkipResultsProcessing());
+		jdbcTemplate.setSkipUndeclaredResults(template.isSkipUndeclaredResults());
+		jdbcTemplate.setResultsMapCaseInsensitive(template.isResultsMapCaseInsensitive());
 		sqlExceptionTranslator.ifUnique(jdbcTemplate::setExceptionTranslator);
 		return jdbcTemplate;
 	}
