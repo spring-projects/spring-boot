@@ -23,7 +23,7 @@ artifacts {
 }
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-all"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))

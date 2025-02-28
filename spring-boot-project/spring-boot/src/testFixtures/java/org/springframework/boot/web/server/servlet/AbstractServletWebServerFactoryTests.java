@@ -952,11 +952,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	protected void sslSessionTracking() {
 		ConfigurableServletWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
 		ssl.setEnabled(true);
-		ssl.setKeyStore("src/test/resources/org/springframework/boot/web/server/test.jks");
+		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		factory.setSsl(ssl);
 		factory.getSettings().getSession().setTrackingModes(EnumSet.of(SessionTrackingMode.SSL));

@@ -58,6 +58,10 @@ public class MockServletWebServer implements WebServer {
 
 	private final List<RegisteredFilter> registeredFilters = new ArrayList<>();
 
+	private final Map<String, FilterRegistration> filterRegistrations = new HashMap<>();
+
+	private final Map<String, ServletRegistration> servletRegistrations = new HashMap<>();
+
 	private final int port;
 
 	MockServletWebServer(ServletContextInitializers initializers, int port) {
@@ -72,17 +76,20 @@ public class MockServletWebServer implements WebServer {
 		initialize();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initialize() {
 		try {
 			this.servletContext = mock(ServletContext.class);
 			lenient().doAnswer((invocation) -> {
 				RegisteredServlet registeredServlet = new RegisteredServlet(invocation.getArgument(1));
 				MockServletWebServer.this.registeredServlets.add(registeredServlet);
+				this.servletRegistrations.put(invocation.getArgument(0), registeredServlet.getRegistration());
 				return registeredServlet.getRegistration();
 			}).when(this.servletContext).addServlet(anyString(), any(Servlet.class));
 			lenient().doAnswer((invocation) -> {
 				RegisteredFilter registeredFilter = new RegisteredFilter(invocation.getArgument(1));
 				MockServletWebServer.this.registeredFilters.add(registeredFilter);
+				this.filterRegistrations.put(invocation.getArgument(0), registeredFilter.getRegistration());
 				return registeredFilter.getRegistration();
 			}).when(this.servletContext).addFilter(anyString(), any(Filter.class));
 			final SessionCookieConfig sessionCookieConfig = new MockSessionCookieConfig();
@@ -98,6 +105,10 @@ public class MockServletWebServer implements WebServer {
 				.when(this.servletContext)
 				.getInitParameter(anyString());
 			given(this.servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
+			lenient().when((Map<String, FilterRegistration>) this.servletContext.getFilterRegistrations())
+				.thenReturn(this.filterRegistrations);
+			lenient().when((Map<String, ServletRegistration>) this.servletContext.getServletRegistrations())
+				.thenReturn(this.servletRegistrations);
 			for (Initializer initializer : this.initializers) {
 				initializer.onStartup(this.servletContext);
 			}
@@ -115,6 +126,8 @@ public class MockServletWebServer implements WebServer {
 	public void stop() {
 		this.servletContext = null;
 		this.registeredServlets.clear();
+		this.filterRegistrations.clear();
+		this.registeredFilters.clear();
 	}
 
 	public ServletContext getServletContext() {
