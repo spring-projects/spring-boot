@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.testkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,9 +34,12 @@ import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.util.GradleVersion;
+import org.jetbrains.kotlin.buildtools.api.jvm.ClassSnapshotGranularity;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin;
+import org.jetbrains.kotlin.konan.target.HostManager;
 import org.jetbrains.kotlin.project.model.LanguageSettings;
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion;
 import org.tomlj.Toml;
@@ -55,6 +59,8 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
  */
 public class PluginClasspathGradleBuild extends GradleBuild {
 
+	private static final GradleVersion GRADLE_VERSION_8_10 = GradleVersion.version("8.10");
+
 	public PluginClasspathGradleBuild() {
 		super();
 	}
@@ -69,6 +75,15 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 	}
 
 	private List<File> pluginClasspath() {
+		List<File> pluginClasspath = new ArrayList<>(basePluginClasspath());
+		if (this.getGradleVersion() == null
+				|| GradleVersion.version(this.getGradleVersion()).compareTo(GRADLE_VERSION_8_10) > 0) {
+			pluginClasspath.addAll(classpathAdditionsForGradleVersionsWithEmbeddedKotlin2());
+		}
+		return pluginClasspath;
+	}
+
+	private List<File> basePluginClasspath() {
 		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
 				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
 				new File(pathOfJarContaining(ClassVisitor.class)),
@@ -92,6 +107,12 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 				new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")),
 				new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")),
 				new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
+	}
+
+	private List<File> classpathAdditionsForGradleVersionsWithEmbeddedKotlin2() {
+		return Arrays.asList(new File(pathOfJarContaining(ClassSnapshotGranularity.class)),
+				new File(pathOfJarContaining("org.jetbrains.kotlin.build.report.metrics.GradleBuildTime")),
+				new File(pathOfJarContaining(HostManager.class)));
 	}
 
 	private String pathOfJarContaining(String className) {

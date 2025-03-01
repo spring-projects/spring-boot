@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
@@ -303,6 +305,26 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	output = layout.buildDirectory.file("example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
+}
+
+// To avoid a redeclaration error with Kotlin compiler
+tasks.withType(KotlinCompile) {
+	javaSources.from = [
+			"src/main/java/org/springframework/boot/docs/data/nosql/cassandra/connecting/User.java",
+			"src/main/java/org/springframework/boot/docs/features/devservices/testcontainers/atdevelopmenttime/importingcontainerdeclarations/MyContainers.java",
+			"src/main/java/org/springframework/boot/docs/features/externalconfig/typesafeconfigurationproperties/usingannotatedtypes/Server.java",
+			"src/main/java/org/springframework/boot/docs/features/springapplication/applicationavailability/managing/CacheCompletelyBrokenException.java",
+			"src/main/java/org/springframework/boot/docs/packaging/nativeimage/advanced/nestedconfigurationproperties/Nested.java",
+			"src/main/java/org/springframework/boot/docs/using/springbeansanddependencyinjection/multipleconstructors/AccountService.java",
+			"src/main/java/org/springframework/boot/docs/using/springbeansanddependencyinjection/multipleconstructors/RiskAssessor.java",
+			"src/main/java/org/springframework/boot/docs/using/springbeansanddependencyinjection/singleconstructor/AccountService.java",
+			"src/main/java/org/springframework/boot/docs/using/springbeansanddependencyinjection/singleconstructor/RiskAssessor.java",
+			"src/main/java/org/springframework/boot/docs/using/usingthespringbootapplicationannotation/individualannotations/AnotherConfiguration.java",
+			"src/main/java/org/springframework/boot/docs/using/usingthespringbootapplicationannotation/individualannotations/SomeConfiguration.java",
+			"src/main/java/org/springframework/boot/docs/web/servlet/springmvc/errorhandling/MyErrorBody.java",
+			"src/main/java/org/springframework/boot/docs/web/servlet/springmvc/errorhandling/MyException.java",
+			"src/main/java/org/springframework/boot/docs/web/servlet/springmvc/errorhandling/SomeController.java",
+	]
 }
 
 def getRelativeExamplesPath(var outputs) {

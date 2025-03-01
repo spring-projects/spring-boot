@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class KotlinPluginAction implements PluginApplicationAction {
 	private void enableJavaParametersOption(Project project) {
 		project.getTasks()
 			.withType(KotlinCompile.class)
-			.configureEach((compile) -> compile.getKotlinOptions().setJavaParameters(true));
+			.configureEach((compile) -> compile.getCompilerOptions().getJavaParameters().set(true));
 	}
 
 	@Override

@@ -1193,8 +1193,9 @@ bom {
 	}
 	library("Kotlin", "${kotlinVersion}") {
 		prohibit {
-			versionRange "[2.0.0-Beta1,)"
-			because "it exceeds our baseline"
+			contains "-Beta"
+			contains "-RC"
+			because "we don't want betas or release candidates"
 		}
 		group("org.jetbrains.kotlin") {
 			imports = [

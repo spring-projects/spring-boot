@@ -35,6 +35,9 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * When the {@link AntoraPlugin} is applied, the conventions in {@link AntoraConventions}
  * are applied.
  *
+ * When the {@code org.jetbrains.kotlin.jvm} plugin is applied, the conventions in
+ * {@link KotlinConventions} are applied.
+ *
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson

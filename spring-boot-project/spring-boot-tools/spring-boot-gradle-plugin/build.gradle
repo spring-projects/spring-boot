@@ -54,7 +54,6 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.graalvm.buildtools:native-gradle-plugin")
 	testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-	testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter")
