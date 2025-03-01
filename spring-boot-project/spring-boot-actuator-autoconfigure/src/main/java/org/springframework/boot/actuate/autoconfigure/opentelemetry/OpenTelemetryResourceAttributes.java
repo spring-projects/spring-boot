@@ -21,16 +21,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * OpenTelemetryResourceAttributes retrieves information from the
+ * {@link OpenTelemetryResourceAttributes} retrieves information from the
  * {@code OTEL_RESOURCE_ATTRIBUTES} and {@code OTEL_SERVICE_NAME} environment variables
- * and merges it with the resource attributes provided by the user.
- * <p>
- * <b>User-provided resource attributes take precedence.</b>
+ * and merges it with the resource attributes provided by the user. User-provided resource
+ * attributes take precedence. Additionally, {@code spring.application.*} related
+ * properties can be applied as defaults.
  * <p>
  * <a href= "https://opentelemetry.io/docs/specs/otel/resource/sdk/">OpenTelemetry
  * Resource Specification</a>
@@ -40,47 +43,72 @@ import org.springframework.util.StringUtils;
  */
 public final class OpenTelemetryResourceAttributes {
 
+	/**
+	 * Default value for service name if {@code service.name} is not set.
+	 */
+	private static final String DEFAULT_SERVICE_NAME = "unknown_service";
+
+	private final Environment environment;
+
 	private final Map<String, String> resourceAttributes;
 
 	private final Function<String, String> getEnv;
 
 	/**
 	 * Creates a new instance of {@link OpenTelemetryResourceAttributes}.
+	 * @param environment the environment
 	 * @param resourceAttributes user provided resource attributes to be used
 	 */
-	public OpenTelemetryResourceAttributes(Map<String, String> resourceAttributes) {
-		this(resourceAttributes, null);
+	public OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes) {
+		this(environment, resourceAttributes, null);
 	}
 
 	/**
 	 * Creates a new {@link OpenTelemetryResourceAttributes} instance.
+	 * @param environment the environment
 	 * @param resourceAttributes user provided resource attributes to be used
 	 * @param getEnv a function to retrieve environment variables by name
 	 */
-	OpenTelemetryResourceAttributes(Map<String, String> resourceAttributes, Function<String, String> getEnv) {
+	OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes,
+			Function<String, String> getEnv) {
+		Assert.notNull(environment, "'environment' must not be null");
+		this.environment = environment;
 		this.resourceAttributes = (resourceAttributes != null) ? resourceAttributes : Collections.emptyMap();
 		this.getEnv = (getEnv != null) ? getEnv : System::getenv;
 	}
 
 	/**
-	 * Returns resource attributes by combining attributes from environment variables and
-	 * user-defined resource attributes. The final resource contains all attributes from
-	 * both sources.
+	 * Applies resource attributes to the provided BiConsumer after being combined from
+	 * environment variables and user-defined resource attributes.
 	 * <p>
 	 * If a key exists in both environment variables and user-defined resources, the value
 	 * from the user-defined resource takes precedence, even if it is empty.
 	 * <p>
-	 * <b>Null keys and values are ignored.</b>
-	 * @return the resource attributes
+	 * Additionally, {@code spring.application.name} or {@code unknown_service} will be
+	 * used as the default for {@code service.name}, and {@code spring.application.group}
+	 * will serve as the default for {@code service.group}.
+	 * @param consumer the {@link BiConsumer} to apply
 	 */
-	public Map<String, String> asMap() {
+	public void applyTo(BiConsumer<String, String> consumer) {
+		Assert.notNull(consumer, "'consumer' must not be null");
 		Map<String, String> attributes = getResourceAttributesFromEnv();
 		this.resourceAttributes.forEach((name, value) -> {
-			if (name != null && value != null) {
+			if (StringUtils.hasLength(name) && value != null) {
 				attributes.put(name, value);
 			}
 		});
-		return attributes;
+		attributes.computeIfAbsent("service.name", (k) -> getApplicationName());
+		attributes.computeIfAbsent("service.group", (k) -> getApplicationGroup());
+		attributes.forEach(consumer);
+	}
+
+	private String getApplicationName() {
+		return this.environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
+	}
+
+	private String getApplicationGroup() {
+		String applicationGroup = this.environment.getProperty("spring.application.group");
+		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 	/**
@@ -122,7 +150,7 @@ public final class OpenTelemetryResourceAttributes {
 	 * @param value value to decode
 	 * @return the decoded string
 	 */
-	public static String decode(String value) {
+	private static String decode(String value) {
 		if (value.indexOf('%') < 0) {
 			return value;
 		}
