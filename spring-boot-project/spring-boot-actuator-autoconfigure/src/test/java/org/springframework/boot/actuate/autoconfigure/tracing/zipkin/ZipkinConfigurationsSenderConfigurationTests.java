@@ -21,10 +21,8 @@ import java.net.http.HttpClient;
 import org.junit.jupiter.api.Test;
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.HttpEndpointSupplier;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
-
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.HttpClientSenderConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.UrlConnectionSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,26 +42,23 @@ import static org.mockito.Mockito.mock;
 class ZipkinConfigurationsSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	@Test
 	void shouldSupplyDefaultHttpClientSenderBean() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
-			assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 		});
 	}
 
 	@Test
-	void shouldUseUrlConnectionSenderIfHttpClientIsNotAvailable() {
-		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> {
-				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
-				assertThat(context).hasSingleBean(BytesMessageSender.class);
-				assertThat(context).hasSingleBean(URLConnectionSender.class);
-			});
+	void shouldNotProvideHttpClientSenderIfHttpClientIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(HttpClientSenderConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(HttpClient.class))
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
+				});
 	}
 
 	@Test
@@ -77,12 +72,11 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> {
-				URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
-				assertThat(urlConnectionSender).extracting("delegate.endpointSupplier")
-					.isInstanceOf(CustomHttpEndpointSupplier.class);
-			});
+				.run((context) -> {
+					ZipkinHttpClientSender httpClientSender = context.getBean(ZipkinHttpClientSender.class);
+					assertThat(httpClientSender).extracting("endpointSupplier")
+							.isInstanceOf(CustomHttpEndpointSupplier.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
