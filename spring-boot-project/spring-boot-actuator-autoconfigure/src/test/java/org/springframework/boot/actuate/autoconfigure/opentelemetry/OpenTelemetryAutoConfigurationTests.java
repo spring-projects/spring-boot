@@ -107,6 +107,22 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldApplyServiceNamespaceIfApplicationGroupIsSet() {
+		this.runner.withPropertyValues("spring.application.group=my-group").run((context) -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap()).containsEntry(AttributeKey.stringKey("service.namespace"), "my-group");
+		});
+	}
+
+	@Test
+	void shouldNOtApplyServiceNamespaceIfApplicationGroupIsNotSet() {
+		this.runner.run((context -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap()).doesNotContainKey(AttributeKey.stringKey("service.namespace"));
+		}));
+	}
+
+	@Test
 	void shouldFallbackToDefaultApplicationNameIfSpringApplicationNameIsNotSet() {
 		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);

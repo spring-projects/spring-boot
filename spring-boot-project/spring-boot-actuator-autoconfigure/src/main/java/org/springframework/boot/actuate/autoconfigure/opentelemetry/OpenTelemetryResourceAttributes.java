@@ -99,6 +99,7 @@ public final class OpenTelemetryResourceAttributes {
 		});
 		attributes.computeIfAbsent("service.name", (k) -> getApplicationName());
 		attributes.computeIfAbsent("service.group", (k) -> getApplicationGroup());
+		attributes.computeIfAbsent("service.namespace", (key) -> getServiceNamespace());
 		attributes.forEach(consumer);
 	}
 
@@ -106,9 +107,16 @@ public final class OpenTelemetryResourceAttributes {
 		return this.environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	// See https://github.com/spring-projects/spring-boot/issues/44411 for potential
+	// information about deprecation of "service.group" attribute
 	private String getApplicationGroup() {
 		String applicationGroup = this.environment.getProperty("spring.application.group");
 		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
+	}
+
+	private String getServiceNamespace() {
+		return this.environment.getProperty("spring.application.group");
 	}
 
 	/**
