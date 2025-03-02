@@ -16,17 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.net.http.HttpClient;
-
 import org.junit.jupiter.api.Test;
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.HttpEndpointSupplier;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.UrlConnectionSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,19 +46,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
-			assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 		});
-	}
-
-	@Test
-	void shouldUseUrlConnectionSenderIfHttpClientIsNotAvailable() {
-		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> {
-				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
-				assertThat(context).hasSingleBean(BytesMessageSender.class);
-				assertThat(context).hasSingleBean(URLConnectionSender.class);
-			});
 	}
 
 	@Test
@@ -74,42 +57,12 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		});
 	}
 
-	@Test
-	void shouldUseCustomHttpEndpointSupplierFactory() {
-		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> {
-				URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
-				assertThat(urlConnectionSender).extracting("delegate.endpointSupplier")
-					.isInstanceOf(CustomHttpEndpointSupplier.class);
-			});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	private static final class CustomConfiguration {
 
 		@Bean
 		BytesMessageSender customSender() {
 			return mock(BytesMessageSender.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static final class CustomHttpEndpointSupplierFactoryConfiguration {
-
-		@Bean
-		HttpEndpointSupplier.Factory httpEndpointSupplier() {
-			return new CustomHttpEndpointSupplierFactory();
-		}
-
-	}
-
-	private static final class CustomHttpEndpointSupplierFactory implements HttpEndpointSupplier.Factory {
-
-		@Override
-		public HttpEndpointSupplier create(String endpoint) {
-			return new CustomHttpEndpointSupplier(endpoint);
 		}
 
 	}
