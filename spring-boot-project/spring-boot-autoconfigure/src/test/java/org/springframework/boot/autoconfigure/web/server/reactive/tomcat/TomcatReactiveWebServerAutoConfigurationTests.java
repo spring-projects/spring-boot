@@ -25,14 +25,14 @@ import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.server.reactive.AbstractReactiveWebServerAutoConfigurationTests;
+import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatProtocolHandlerCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

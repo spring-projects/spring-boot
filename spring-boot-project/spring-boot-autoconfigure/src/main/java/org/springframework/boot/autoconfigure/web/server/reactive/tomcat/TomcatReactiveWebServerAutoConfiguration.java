@@ -28,11 +28,11 @@ import org.springframework.boot.autoconfigure.web.server.reactive.ReactiveWebSer
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatWebServerConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
-import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ReactiveHttpInputMessage;
@@ -45,7 +45,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ ReactiveHttpInputMessage.class, Tomcat.class })
+@ConditionalOnClass({ ReactiveHttpInputMessage.class, Tomcat.class, TomcatReactiveWebServerFactory.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ TomcatWebServerConfiguration.class, ReactiveWebServerConfiguration.class })

@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.web.server.tomcat;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.tomcat.util.threads.VirtualThreadExecutor;
 
+import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.core.Ordered;
 
 /**

@@ -22,9 +22,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

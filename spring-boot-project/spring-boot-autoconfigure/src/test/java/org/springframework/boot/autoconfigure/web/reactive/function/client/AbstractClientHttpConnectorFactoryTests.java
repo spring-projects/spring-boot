@@ -22,10 +22,10 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
