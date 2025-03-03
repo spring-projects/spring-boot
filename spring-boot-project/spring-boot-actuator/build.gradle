@@ -23,6 +23,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}

@@ -116,6 +116,8 @@ dependencies {
 		exclude group: "org.opensaml", module: "opensaml-saml-impl"
 	}
 	testImplementation("org.thymeleaf:thymeleaf")
+
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-tomcat"))
 }
 
 configurations {

@@ -33,10 +33,10 @@ import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatSe
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
