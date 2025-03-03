@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.web.servlet.embeddedcontainer.customizing.programmatic
 
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory
 import org.springframework.stereotype.Component
 import java.time.Duration
 

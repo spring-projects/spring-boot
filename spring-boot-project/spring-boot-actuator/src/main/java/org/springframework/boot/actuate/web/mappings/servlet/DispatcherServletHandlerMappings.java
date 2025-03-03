@@ -26,10 +26,11 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardWrapper;
 
+import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServer;
-import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
@@ -42,6 +43,10 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Andy Wilkinson
  */
 final class DispatcherServletHandlerMappings {
+
+	private static final boolean TOMCAT_WEB_SERVER_PRESENT = ClassUtils.isPresent(
+			"org.springframework.boot.web.server.tomcat.TomcatWebServer",
+			DispatcherServletHandlerMappings.class.getClassLoader());
 
 	private final String name;
 
@@ -73,7 +78,7 @@ final class DispatcherServletHandlerMappings {
 		if (webServer instanceof UndertowServletWebServer undertowServletWebServer) {
 			new UndertowServletInitializer(undertowServletWebServer).initializeServlet(this.name);
 		}
-		else if (webServer instanceof TomcatWebServer tomcatWebServer) {
+		else if (TOMCAT_WEB_SERVER_PRESENT && webServer instanceof TomcatWebServer tomcatWebServer) {
 			new TomcatServletInitializer(tomcatWebServer).initializeServlet(this.name);
 		}
 	}

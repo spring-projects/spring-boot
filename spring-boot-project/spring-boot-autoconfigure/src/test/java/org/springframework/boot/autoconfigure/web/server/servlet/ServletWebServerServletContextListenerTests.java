@@ -26,10 +26,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;

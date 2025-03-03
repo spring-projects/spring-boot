@@ -75,7 +75,6 @@ import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.boot.web.server.servlet.ServletContextInitializers;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.ServletWebServerSettings;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.undertow.HttpHandlerFactory;
 import org.springframework.boot.web.server.undertow.UndertowWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;

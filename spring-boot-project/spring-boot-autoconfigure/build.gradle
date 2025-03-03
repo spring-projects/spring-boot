@@ -39,6 +39,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:pulsar")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
