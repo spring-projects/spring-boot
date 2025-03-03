@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.jdbc;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Andy Wilkinson
  */
-class DataJdbcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataJdbcTest dataJdbcTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataJdbcTest.class);
-		return (dataJdbcTest != null) ? dataJdbcTest.properties() : null;
-	}
+class DataJdbcTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataJdbcTest> {
 
 }

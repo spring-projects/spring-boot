@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.mongo;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class DataMongoTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataMongoTest dataMongoTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataMongoTest.class);
-		return (dataMongoTest != null) ? dataMongoTest.properties() : null;
-	}
+class DataMongoTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataMongoTest> {
 
 }
