@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -113,6 +114,10 @@ class JsonValueWriter {
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
+		}
+		// https://github.com/spring-projects/spring-boot/issues/44502
+		else if (value instanceof Path p) {
+			writeString(p.toString());
 		}
 		else if (value instanceof Iterable<?> iterable) {
 			writeArray(iterable::forEach);
