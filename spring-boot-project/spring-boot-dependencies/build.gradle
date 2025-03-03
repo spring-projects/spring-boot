@@ -2054,7 +2054,8 @@ bom {
 				"spring-boot-starter-websocket",
 				"spring-boot-test",
 				"spring-boot-test-autoconfigure",
-				"spring-boot-testcontainers"
+				"spring-boot-testcontainers",
+				"spring-boot-tomcat"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

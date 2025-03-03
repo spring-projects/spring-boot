@@ -22,11 +22,11 @@ import org.apache.catalina.connector.Connector;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.server.servlet.AbstractServletWebServerAutoConfigurationTests;
+import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

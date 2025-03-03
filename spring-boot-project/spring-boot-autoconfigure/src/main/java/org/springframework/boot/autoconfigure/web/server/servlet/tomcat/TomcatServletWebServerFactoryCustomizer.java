@@ -17,9 +17,9 @@
 package org.springframework.boot.autoconfigure.web.server.servlet.tomcat;
 
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
+import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
 

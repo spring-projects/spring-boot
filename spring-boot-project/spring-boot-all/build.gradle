@@ -25,17 +25,10 @@ plugins {
 
 description = "Spring Boot All"
 
-def tomcatConfigProperties = layout.buildDirectory.dir("tomcat-config-properties")
-
-configurations {
-	tomcatDistribution
-}
-
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-core")
 	api("org.springframework:spring-context")
-
 	optional("ch.qos.logback:logback-classic")
 	optional("com.clickhouse:clickhouse-jdbc")
 	optional("com.fasterxml.jackson.core:jackson-databind")
@@ -66,7 +59,6 @@ dependencies {
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.apache.logging.log4j:log4j-jul")
-	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.assertj:assertj-core")
@@ -118,6 +110,7 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("com.ibm.db2:jcc")
@@ -151,17 +144,6 @@ dependencies {
 	testRuntimeOnly("org.testcontainers:jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}
-
-	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
-}
-
-task extractTomcatConfigProperties(type: Sync) {
-	destinationDir = file(tomcatConfigProperties)
-	from {
-		zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {
-			include '**/conf/catalina.properties'
-		}.singleFile
-	}
 }
 
 def syncJavaTemplates = tasks.register("syncJavaTemplates", Sync) {
@@ -191,9 +173,6 @@ sourceSets {
 		java {
 			srcDirs syncJavaTemplates
 		}
-	}
-	test {
-		output.dir(tomcatConfigProperties, builtBy: "extractTomcatConfigProperties")
 	}
 }
 

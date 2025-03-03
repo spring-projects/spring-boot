@@ -35,11 +35,11 @@ import org.springframework.boot.autoconfigure.web.server.servlet.ServletWebServe
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatWebServerConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.web.server.tomcat.TomcatProtocolHandlerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Import;
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ ServletRequest.class, Tomcat.class, UpgradeProtocol.class })
+@ConditionalOnClass({ ServletRequest.class, Tomcat.class, UpgradeProtocol.class, TomcatServletWebServerFactory.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ ServletWebServerConfiguration.class, TomcatWebServerConfiguration.class })
