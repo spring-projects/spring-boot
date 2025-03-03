@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.couchbase;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -26,13 +25,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Eddú Meléndez
  */
-class DataCouchbaseTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataCouchbaseTest dataCouchbaseTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
-				DataCouchbaseTest.class);
-		return (dataCouchbaseTest != null) ? dataCouchbaseTest.properties() : null;
-	}
+class DataCouchbaseTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataCouchbaseTest> {
 
 }

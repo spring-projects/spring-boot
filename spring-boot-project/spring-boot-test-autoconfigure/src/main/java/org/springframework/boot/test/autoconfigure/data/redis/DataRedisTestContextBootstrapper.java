@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataRedisTest dataRedisTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataRedisTest.class);
-		return (dataRedisTest != null) ? dataRedisTest.properties() : null;
-	}
+class DataRedisTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataRedisTest> {
 
 }

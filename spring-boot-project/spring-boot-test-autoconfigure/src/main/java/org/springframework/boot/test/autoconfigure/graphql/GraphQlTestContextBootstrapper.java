@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.graphql;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Brian Clozel
  */
-class GraphQlTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		GraphQlTest graphQlTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, GraphQlTest.class);
-		return (graphQlTest != null) ? graphQlTest.properties() : null;
-	}
+class GraphQlTestContextBootstrapper extends TestSliceTestContextBootstrapper<GraphQlTest> {
 
 }

@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -26,13 +25,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class DataCassandraTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataCassandraTest dataCassandraTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
-				DataCassandraTest.class);
-		return (dataCassandraTest != null) ? dataCassandraTest.properties() : null;
-	}
+class DataCassandraTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataCassandraTest> {
 
 }

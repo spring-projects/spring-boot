@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.webservices.client;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -26,13 +25,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Dmytro Nosan
  */
-class WebServiceClientTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		WebServiceClientTest webServiceClientTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
-				WebServiceClientTest.class);
-		return (webServiceClientTest != null) ? webServiceClientTest.properties() : null;
-	}
+class WebServiceClientTestContextBootstrapper extends TestSliceTestContextBootstrapper<WebServiceClientTest> {
 
 }
