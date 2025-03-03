@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -406,6 +407,17 @@ class CassandraAutoConfigurationTests {
 			assertThat(driverConfig.getProfile("first").getDuration(DefaultDriverOption.REQUEST_TIMEOUT))
 				.isEqualTo(Duration.ofMillis(100));
 		});
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableCassandraAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CassandraSessionLifecycle.class));
+	}
+
+	@Test
+	void whenCheckpointRestoreIsNotAvailableCassandraAutoConfigDoesNotRegisterLifecycleBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(CassandraSessionLifecycle.class));
 	}
 
 	private CassandraConnectionDetails cassandraConnectionDetails() {

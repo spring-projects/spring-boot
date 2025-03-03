@@ -56,6 +56,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
@@ -80,12 +81,14 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnClass(CqlSession.class)
 @EnableConfigurationProperties(CassandraProperties.class)
+@Import({ CassandraCheckpointRestoreConfiguration.class })
 public class CassandraAutoConfiguration {
 
 	private static final Config SPRING_BOOT_DEFAULTS;
 	static {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		options.add(DefaultDriverOption.CONTACT_POINTS, Collections.singletonList("127.0.0.1:9042"));
+		options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, "default-datacenter");
 		options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, "none");
 		options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, (int) Duration.ofSeconds(5).toMillis());
 		SPRING_BOOT_DEFAULTS = options.build();
