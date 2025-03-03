@@ -104,6 +104,7 @@ abstract class AbstractDeploymentTests {
 			try {
 				Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
 					try {
+						System.out.println(this.container.getLogs());
 						consumer.accept(rest);
 						return true;
 					}

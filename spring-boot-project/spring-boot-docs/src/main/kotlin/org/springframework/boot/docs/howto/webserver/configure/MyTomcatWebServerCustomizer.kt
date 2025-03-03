@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.howto.webserver.configure
 
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory
 import org.springframework.stereotype.Component
 
 @Component

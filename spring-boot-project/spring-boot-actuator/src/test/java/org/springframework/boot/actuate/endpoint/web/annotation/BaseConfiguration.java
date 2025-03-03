@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.boot.web.server.tomcat.TomcatEmbeddedWebappClassLoader;
+import org.springframework.boot.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

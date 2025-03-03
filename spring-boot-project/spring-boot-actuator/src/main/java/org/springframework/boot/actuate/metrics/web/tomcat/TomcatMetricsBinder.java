@@ -27,9 +27,9 @@ import org.apache.catalina.Manager;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 
