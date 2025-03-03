@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
-import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
