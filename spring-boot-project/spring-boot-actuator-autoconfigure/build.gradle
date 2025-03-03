@@ -17,6 +17,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
+	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional("ch.qos.logback:logback-classic")
 	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"

@@ -8,8 +8,7 @@ org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
-org.springframework.boot.web.server.tomcat.ConnectorStartFailureAnalyzer
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
 
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
