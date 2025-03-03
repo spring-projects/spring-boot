@@ -52,8 +52,9 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.session:spring-session-core")
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.zaxxer:HikariCP")

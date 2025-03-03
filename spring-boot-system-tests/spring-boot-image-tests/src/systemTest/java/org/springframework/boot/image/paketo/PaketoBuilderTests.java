@@ -383,6 +383,7 @@ class PaketoBuilderTests {
 				return buildImage(imageName, arguments);
 			}
 			catch (Exception ex) {
+				ex.printStackTrace();
 				if (Duration.ofNanos(System.nanoTime() - start).toMinutes() > 6) {
 					throw ex;
 				}

@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.web.server.reactive.tomcat;
 
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
+import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
 
 /**
  * {@link WebServerFactoryCustomizer} to apply {@link TomcatServerProperties} to Tomcat

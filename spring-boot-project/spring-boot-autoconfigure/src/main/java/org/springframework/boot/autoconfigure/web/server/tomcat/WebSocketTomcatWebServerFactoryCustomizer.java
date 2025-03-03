@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web.server.tomcat;
 
 import org.apache.tomcat.websocket.server.WsSci;
 
+import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
 
 /**
  * {@link WebServerFactoryCustomizer} that configures Tomcat's WebSocket support.

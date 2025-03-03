@@ -71,6 +71,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tomcat"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
