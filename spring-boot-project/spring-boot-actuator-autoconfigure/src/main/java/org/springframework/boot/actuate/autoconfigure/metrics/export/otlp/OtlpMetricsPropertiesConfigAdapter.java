@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryResourceAttributes;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * Adapter to convert {@link OtlpMetricsProperties} to an {@link OtlpConfig}.
@@ -39,11 +39,6 @@ import org.springframework.util.StringUtils;
  */
 class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpMetricsProperties>
 		implements OtlpConfig {
-
-	/**
-	 * Default value for application name if {@code spring.application.name} is not set.
-	 */
-	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
 	private final OpenTelemetryProperties openTelemetryProperties;
 
@@ -77,21 +72,10 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> resourceAttributes() {
-		Map<String, String> attributes = new OpenTelemetryResourceAttributes(
-				this.openTelemetryProperties.getResourceAttributes())
-			.asMap();
-		attributes.computeIfAbsent("service.name", (key) -> getApplicationName());
-		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup());
-		return Collections.unmodifiableMap(attributes);
-	}
-
-	private String getApplicationName() {
-		return this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-	}
-
-	private String getApplicationGroup() {
-		String applicationGroup = this.environment.getProperty("spring.application.group");
-		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
+		Map<String, String> resourceAttributes = new LinkedHashMap<>();
+		new OpenTelemetryResourceAttributes(this.environment, this.openTelemetryProperties.getResourceAttributes())
+			.applyTo(resourceAttributes::put);
+		return Collections.unmodifiableMap(resourceAttributes);
 	}
 
 	@Override

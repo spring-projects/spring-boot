@@ -27,6 +27,8 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.mock.env.MockEnvironment;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -41,6 +43,8 @@ class OpenTelemetryResourceAttributesTests {
 
 	private static final PercentEscaper escaper = PercentEscaper.create();
 
+	private final MockEnvironment environment = new MockEnvironment();
+
 	private final Map<String, String> environmentVariables = new LinkedHashMap<>();
 
 	private final Map<String, String> resourceAttributes = new LinkedHashMap<>();
@@ -48,7 +52,7 @@ class OpenTelemetryResourceAttributesTests {
 	@BeforeAll
 	static void beforeAll() {
 		long seed = new Random().nextLong();
-		System.out.println("Seed: " + seed);
+		System.out.println(OpenTelemetryResourceAttributesTests.class.getSimpleName() + " seed: " + seed);
 		random = new Random(seed);
 	}
 
@@ -56,40 +60,37 @@ class OpenTelemetryResourceAttributesTests {
 	void otelServiceNameShouldTakePrecedenceOverOtelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.name=ignored");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "otel-service");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).hasSize(1).containsEntry("service.name", "otel-service");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "otel-service");
 	}
 
 	@Test
 	void otelServiceNameWhenEmptyShouldTakePrecedenceOverOtelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.name=ignored");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).hasSize(1).containsEntry("service.name", "");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "");
 	}
 
 	@Test
-	void otelResourceAttributesShouldBeUsed() {
+	void otelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES",
 				", ,,key1=value1,key2= value2, key3=value3,key4=,=value5,key6,=,key7=spring+boot,key8=ś");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).hasSize(6)
+		assertThat(getAttributes()).hasSize(7)
 			.containsEntry("key1", "value1")
 			.containsEntry("key2", "value2")
 			.containsEntry("key3", "value3")
 			.containsEntry("key4", "")
 			.containsEntry("key7", "spring+boot")
-			.containsEntry("key8", "ś");
+			.containsEntry("key8", "ś")
+			.containsEntry("service.name", "unknown_service");
 	}
 
 	@Test
-	void resourceAttributesShouldBeMergedWithEnvironmentVariables() {
+	void resourceAttributesShouldBeMergedWithEnvironmentVariablesAndTakePrecedence() {
 		this.resourceAttributes.put("service.group", "custom-group");
 		this.resourceAttributes.put("key2", "");
 		this.environmentVariables.put("OTEL_SERVICE_NAME", "custom-service");
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key1=value1,key2=value2");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).hasSize(4)
+		assertThat(getAttributes()).hasSize(4)
 			.containsEntry("service.name", "custom-service")
 			.containsEntry("service.group", "custom-group")
 			.containsEntry("key1", "value1")
@@ -97,27 +98,20 @@ class OpenTelemetryResourceAttributesTests {
 	}
 
 	@Test
-	void resourceAttributesWithNullKeyOrValueShouldBeIgnored() {
-		this.resourceAttributes.put("service.group", null);
-		this.resourceAttributes.put("service.name", null);
-		this.resourceAttributes.put(null, "value");
-		this.environmentVariables.put("OTEL_SERVICE_NAME", "custom-service");
-		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key1=value1,key2=value2");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).hasSize(3)
-			.containsEntry("service.name", "custom-service")
-			.containsEntry("key1", "value1")
-			.containsEntry("key2", "value2");
+	void invalidResourceAttributesShouldBeIgnored() {
+		this.resourceAttributes.put("", "empty-key");
+		this.resourceAttributes.put(null, "null-key");
+		this.resourceAttributes.put("null-value", null);
+		this.resourceAttributes.put("empty-value", "");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("empty-value", "");
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void systemGetEnvShouldBeUsedAsDefaultEnvFunctionAndResourceAttributesAreEmpty() {
-		OpenTelemetryResourceAttributes attributes = new OpenTelemetryResourceAttributes(null);
-		assertThat(attributes).extracting("resourceAttributes")
-			.asInstanceOf(InstanceOfAssertFactories.MAP)
-			.isNotNull()
-			.isEmpty();
+	void systemGetEnvShouldBeUsedAsDefaultEnvFunction() {
+		OpenTelemetryResourceAttributes attributes = new OpenTelemetryResourceAttributes(this.environment, null);
 		Function<String, String> getEnv = assertThat(attributes).extracting("getEnv")
 			.asInstanceOf(InstanceOfAssertFactories.type(Function.class))
 			.actual();
@@ -125,38 +119,98 @@ class OpenTelemetryResourceAttributesTests {
 	}
 
 	@Test
-	void shouldDecodeOtelResourceAttributeValues() {
+	void otelResourceAttributeValuesShouldBePercentDecoded() {
 		Stream.generate(this::generateRandomString).limit(10000).forEach((value) -> {
-			String key = "key";
-			this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", key + "=" + escaper.escape(value));
-			OpenTelemetryResourceAttributes attributes = getAttributes();
-			assertThat(attributes.asMap()).hasSize(1).containsEntry(key, value);
+			this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=" + escaper.escape(value));
+			assertThat(getAttributes()).hasSize(2)
+				.containsEntry("service.name", "unknown_service")
+				.containsEntry("key", value);
 		});
 	}
 
 	@Test
-	void shouldThrowIllegalArgumentExceptionWhenDecodingPercentIllegalHexChar() {
+	void illegalArgumentExceptionShouldBeThrownWhenDecodingIllegalHexCharPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=abc%ß");
-		assertThatIllegalArgumentException().isThrownBy(() -> getAttributes().asMap())
+		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
 			.withMessage("Failed to decode percent-encoded characters at index 3 in the value: 'abc%ß'");
 	}
 
 	@Test
-	void shouldUseReplacementCharWhenDecodingNonUtf8Character() {
+	void replacementCharShouldBeUsedWhenDecodingNonUtf8Character() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%a3%3e");
-		OpenTelemetryResourceAttributes attributes = getAttributes();
-		assertThat(attributes.asMap()).containsEntry("key", "\ufffd>");
+		assertThat(getAttributes()).containsEntry("key", "\ufffd>");
 	}
 
 	@Test
-	void shouldThrowIllegalArgumentExceptionWhenDecodingPercent() {
+	void illegalArgumentExceptionShouldBeThrownWhenDecodingInvalidPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%");
-		assertThatIllegalArgumentException().isThrownBy(() -> getAttributes().asMap())
+		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
 			.withMessage("Failed to decode percent-encoded characters at index 0 in the value: '%'");
 	}
 
-	private OpenTelemetryResourceAttributes getAttributes() {
-		return new OpenTelemetryResourceAttributes(this.resourceAttributes, this.environmentVariables::get);
+	@Test
+	void unknownServiceShouldBeUsedAsDefaultServiceName() {
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "unknown_service");
+	}
+
+	@Test
+	void springApplicationGroupNameShouldBeUsedAsDefaultServiceGroup() {
+		this.environment.setProperty("spring.application.group", "spring-boot");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("service.group", "spring-boot");
+	}
+
+	@Test
+	void springApplicationNameShouldBeUsedAsDefaultServiceName() {
+		this.environment.setProperty("spring.application.name", "spring-boot-app");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "spring-boot-app");
+	}
+
+	@Test
+	void resourceAttributesShouldTakePrecedenceOverSpringApplicationName() {
+		this.resourceAttributes.put("service.name", "spring-boot");
+		this.environment.setProperty("spring.application.name", "spring-boot-app");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "spring-boot");
+	}
+
+	@Test
+	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationName() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.name=spring-boot");
+		this.environment.setProperty("spring.application.name", "spring-boot-app");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "spring-boot");
+	}
+
+	@Test
+	void otelServiceNameShouldTakePrecedenceOverSpringApplicationName() {
+		this.environmentVariables.put("OTEL_SERVICE_NAME", "spring-boot");
+		this.environment.setProperty("spring.application.name", "spring-boot-app");
+		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "spring-boot");
+	}
+
+	@Test
+	void resourceAttributesShouldTakePrecedenceOverSpringApplicationGroupName() {
+		this.resourceAttributes.put("service.group", "spring-boot-app");
+		this.environment.setProperty("spring.application.group", "spring-boot");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("service.group", "spring-boot-app");
+	}
+
+	@Test
+	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupName() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.group=spring-boot");
+		this.environment.setProperty("spring.application.group", "spring-boot-app");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("service.group", "spring-boot");
+	}
+
+	private Map<String, String> getAttributes() {
+		Map<String, String> attributes = new LinkedHashMap<>();
+		new OpenTelemetryResourceAttributes(this.environment, this.resourceAttributes, this.environmentVariables::get)
+			.applyTo(attributes::put);
+		return attributes;
 	}
 
 	private String generateRandomString() {

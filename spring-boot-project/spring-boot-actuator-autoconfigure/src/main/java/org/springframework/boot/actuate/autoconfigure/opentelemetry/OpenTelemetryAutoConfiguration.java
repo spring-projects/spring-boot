@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
-import java.util.Map;
-
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -36,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
@@ -48,11 +45,6 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(OpenTelemetrySdk.class)
 @EnableConfigurationProperties(OpenTelemetryProperties.class)
 public class OpenTelemetryAutoConfiguration {
-
-	/**
-	 * Default value for application name if {@code spring.application.name} is not set.
-	 */
-	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
@@ -76,21 +68,8 @@ public class OpenTelemetryAutoConfiguration {
 
 	private Resource toResource(Environment environment, OpenTelemetryProperties properties) {
 		ResourceBuilder builder = Resource.builder();
-		Map<String, String> attributes = new OpenTelemetryResourceAttributes(properties.getResourceAttributes())
-			.asMap();
-		attributes.computeIfAbsent("service.name", (key) -> getApplicationName(environment));
-		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup(environment));
-		attributes.forEach(builder::put);
+		new OpenTelemetryResourceAttributes(environment, properties.getResourceAttributes()).applyTo(builder::put);
 		return builder.build();
-	}
-
-	private String getApplicationName(Environment environment) {
-		return environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-	}
-
-	private String getApplicationGroup(Environment environment) {
-		String applicationGroup = environment.getProperty("spring.application.group");
-		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 }
