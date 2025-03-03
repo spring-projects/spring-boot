@@ -52,6 +52,7 @@ class OpenTelemetryResourceAttributesTests {
 	@BeforeAll
 	static void beforeAll() {
 		long seed = new Random().nextLong();
+		System.out.println(OpenTelemetryResourceAttributesTests.class.getSimpleName() + " seed: " + seed);
 		random = new Random(seed);
 	}
 
