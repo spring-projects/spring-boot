@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,15 @@
 package smoketest.webservices;
 
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import smoketest.webservices.service.HumanResourceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.RequestCreators;
@@ -43,9 +38,9 @@ import static org.mockito.BDDMockito.then;
  * {@link MockWebServiceClient}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @WebServiceServerTest
-@ExtendWith(OutputCaptureExtension.class)
 class WebServiceServerTestSampleWsApplicationTests {
 
 	@MockitoBean
@@ -55,17 +50,22 @@ class WebServiceServerTestSampleWsApplicationTests {
 	private MockWebServiceClient client;
 
 	@Test
-	void testSendingHolidayRequest(CapturedOutput output) throws ParseException {
-		String request = "<hr:HolidayRequest xmlns:hr=\"https://company.example.com/hr/schemas\">"
-				+ "   <hr:Holiday>      <hr:StartDate>2013-10-20</hr:StartDate>"
-				+ "      <hr:EndDate>2013-11-22</hr:EndDate>   </hr:Holiday>   <hr:Employee>"
-				+ "      <hr:Number>1</hr:Number>      <hr:FirstName>John</hr:FirstName>"
-				+ "      <hr:LastName>Doe</hr:LastName>   </hr:Employee></hr:HolidayRequest>";
+	void testSendingHolidayRequest() {
+		String request = """
+				<hr:HolidayRequest xmlns:hr="https://company.example.com/hr/schemas">
+					<hr:Holiday>
+						<hr:StartDate>2013-10-20</hr:StartDate>
+						<hr:EndDate>2013-11-22</hr:EndDate>
+					</hr:Holiday>
+					<hr:Employee>
+						<hr:Number>1</hr:Number>
+						<hr:FirstName>John</hr:FirstName>
+						<hr:LastName>Doe</hr:LastName>
+					</hr:Employee>
+				</hr:HolidayRequest>""";
 		StreamSource source = new StreamSource(new StringReader(request));
 		this.client.sendRequest(RequestCreators.withPayload(source)).andExpect(ResponseMatchers.noFault());
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		then(this.service).should()
-			.bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"), "John Doe");
+		then(this.service).should().bookHoliday(LocalDate.of(2013, 10, 20), LocalDate.of(2013, 11, 22), "John Doe");
 	}
 
 }
