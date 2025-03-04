@@ -16,4 +16,4 @@ You can use the `httpexchanges` endpoint to obtain information about the request
 
 To customize the items that are included in each recorded exchange, use the configprop:management.httpexchanges.recording.include[] configuration property.
 
-To disable recoding entirely, set configprop:management.httpexchanges.recording.enabled[] to `false`.
+To disable recording entirely, set configprop:management.httpexchanges.recording.enabled[] to `false`.
