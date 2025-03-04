@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package smoketest.webservices.endpoint;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -54,10 +53,9 @@ public class HolidayEndpoint {
 	}
 
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "HolidayRequest")
-	public void handleHolidayRequest(@RequestPayload Element holidayRequest) throws Exception {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
-		Date endDate = dateFormat.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
+	public void handleHolidayRequest(@RequestPayload Element holidayRequest) {
+		LocalDate startDate = LocalDate.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
+		LocalDate endDate = LocalDate.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
 		String name = this.nameExpression.evaluateFirst(holidayRequest);
 		this.humanResourceService.bookHoliday(startDate, endDate, name);
 	}
