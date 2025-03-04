@@ -100,7 +100,7 @@ For example, to run your application with a profile named `dev` active the follo
 $ ./gradlew bootRun --args='--spring.profiles.active=dev'
 ----
 
-See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
+See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString(java.lang.String)[the javadoc for `JavaExec.setArgsString`] for further details.
 
 
 
