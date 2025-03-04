@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,8 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -284,13 +286,13 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("custom-schema.sql")
 	void testRenamePrefix() {
 		this.contextRunner
 			.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 					HibernateJpaAutoConfiguration.class)
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
-					"spring.batch.jdbc.schema:classpath:batch/custom-schema.sql",
-					"spring.batch.jdbc.tablePrefix:PREFIX_")
+					"spring.batch.jdbc.schema:classpath:custom-schema.sql", "spring.batch.jdbc.tablePrefix:PREFIX_")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JobLauncher.class);
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
@@ -392,6 +394,7 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/changelog/db.changelog-master.yaml", content = "databaseChangeLog:")
 	void jobRepositoryBeansDependOnLiquibase() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.withUserConfiguration(LiquibaseAutoConfiguration.class)

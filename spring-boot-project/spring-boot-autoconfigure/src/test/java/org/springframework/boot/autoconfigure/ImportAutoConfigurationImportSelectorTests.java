@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -74,6 +75,12 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	@WithResource(
+			name = "META-INF/spring/org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$FromImportsFile.imports",
+			content = """
+					org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration
+					org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration
+					""")
 	void importsAreSelectedFromImportsFile() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(FromImportsFile.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
@@ -83,9 +90,15 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	@WithResource(
+			name = "META-INF/spring/org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$FromImportsFile.imports",
+			content = """
+					optional:org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration
+					optional:org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration
+					org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$AnotherImportedAutoConfiguration
+					""")
 	void importsSelectedFromImportsFileIgnoreMissingOptionalClasses() throws Exception {
-		AnnotationMetadata annotationMetadata = getAnnotationMetadata(
-				FromImportsFileIgnoresMissingOptionalClasses.class);
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(FromImportsFile.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(
 				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration",

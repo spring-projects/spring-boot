@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -126,30 +127,32 @@ class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void shouldUseSslWhenRocketServerSslIsConfigured() {
 		reactiveWebContextRunner()
-			.withPropertyValues("spring.rsocket.server.ssl.keyStore=classpath:rsocket/test.jks",
+			.withPropertyValues("spring.rsocket.server.ssl.keyStore=classpath:test.jks",
 					"spring.rsocket.server.ssl.keyPassword=password", "spring.rsocket.server.port=0")
 			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
 				.hasSingleBean(RSocketServerBootstrap.class)
 				.hasSingleBean(RSocketServerCustomizer.class)
 				.getBean(RSocketServerFactory.class)
-				.hasFieldOrPropertyWithValue("ssl.keyStore", "classpath:rsocket/test.jks")
+				.hasFieldOrPropertyWithValue("ssl.keyStore", "classpath:test.jks")
 				.hasFieldOrPropertyWithValue("ssl.keyPassword", "password"));
 	}
 
 	@Test
 	@Disabled
+	@WithPackageResources("test.jks")
 	void shouldUseSslWhenRocketServerSslIsConfiguredWithSslBundle() {
 		reactiveWebContextRunner()
 			.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.ssl.bundle=test-bundle",
-					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:rsocket/test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
 					"spring.ssl.bundle.jks.test-bundle.key.password=password")
 			.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
 				.hasSingleBean(RSocketServerBootstrap.class)
 				.hasSingleBean(RSocketServerCustomizer.class)
 				.getBean(RSocketServerFactory.class)
-				.hasFieldOrPropertyWithValue("sslBundle.details.keyStore", "classpath:rsocket/test.jks")
+				.hasFieldOrPropertyWithValue("sslBundle.details.keyStore", "classpath:test.jks")
 				.hasFieldOrPropertyWithValue("sslBundle.details.keyPassword", "password"));
 	}
 

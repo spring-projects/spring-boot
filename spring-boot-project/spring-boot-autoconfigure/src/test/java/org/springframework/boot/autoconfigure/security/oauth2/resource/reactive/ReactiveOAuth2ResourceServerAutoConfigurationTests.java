@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
@@ -49,6 +53,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.JwtConver
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -173,6 +178,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingSingleJwsAlgorithm() {
 		this.contextRunner
 			.withPropertyValues(
@@ -186,6 +192,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void autoConfigurationUsingPublicKeyValueWithMultipleJwsAlgorithmsShouldFail() {
 		this.contextRunner
 			.withPropertyValues(
@@ -284,6 +291,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void autoConfigurationShouldConfigureResourceServerUsingPublicKeyValue() {
 		this.contextRunner
 			.withPropertyValues(
@@ -539,6 +547,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void autoConfigurationShouldConfigureAudienceValidatorIfPropertyProvidedAndPublicKey() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
@@ -888,6 +897,20 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			converter.setPrincipalClaimName(PRINCIPAL_CLAIM);
 			return converter;
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "public-key-location", content = """
+			-----BEGIN PUBLIC KEY-----
+			MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDdlatRjRjogo3WojgGHFHYLugd
+			UWAY9iR3fy4arWNA1KoS8kVw33cJibXr8bvwUAUparCwlvdbH6dvEOfou0/gCFQs
+			HUfQrSDv+MuSUMAe8jzKE4qW+jK+xQU9a03GUnKHkkle+Q0pX/g6jXZ7r1/xAK5D
+			o2kQ+X5xK9cipRgEKwIDAQAB
+			-----END PUBLIC KEY-----
+			""")
+	@interface WithPublicKeyResource {
 
 	}
 

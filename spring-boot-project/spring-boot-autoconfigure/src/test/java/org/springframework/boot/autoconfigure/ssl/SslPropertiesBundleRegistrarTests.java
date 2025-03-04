@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +67,9 @@ class SslPropertiesBundleRegistrarTests {
 	void shouldWatchJksBundles() {
 		JksSslBundleProperties jks = new JksSslBundleProperties();
 		jks.setReloadOnUpdate(true);
-		jks.getKeystore().setLocation("classpath:test.jks");
+		jks.getKeystore().setLocation("classpath:org/springframework/boot/autoconfigure/ssl/test.jks");
 		jks.getKeystore().setPassword("secret");
-		jks.getTruststore().setLocation("classpath:test.jks");
+		jks.getTruststore().setLocation("classpath:org/springframework/boot/autoconfigure/ssl/test.jks");
 		jks.getTruststore().setPassword("secret");
 		this.properties.getBundle().getJks().put("bundle1", jks);
 		this.registrar.registerBundles(this.registry);

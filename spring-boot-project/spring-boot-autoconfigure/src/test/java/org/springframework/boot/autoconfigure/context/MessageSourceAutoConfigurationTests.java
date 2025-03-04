@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Disabled;
@@ -28,6 +32,7 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +62,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void propertiesBundleWithSlashIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
@@ -65,6 +71,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void propertiesBundleWithDotIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
@@ -73,6 +80,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestSwedishPropertiesResource
 	void testEncodingWorks() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/swedish")
 			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
@@ -80,6 +88,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testCacheDurationNoUnit() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=10")
@@ -87,6 +96,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testCacheDurationWithUnit() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=1m")
@@ -101,6 +111,8 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
+	@WithTestMessages2PropertiesResource
 	void testMultipleMessageSourceCreated() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages,test/messages2")
 			.run((context) -> {
@@ -110,13 +122,16 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	@Disabled("Expected to fail per gh-1075")
+	@WithResource(name = "application-switch-messages.properties", content = "spring.messages.basename:test/messages")
 	void testMessageSourceFromPropertySourceAnnotation() {
 		this.contextRunner.withUserConfiguration(Config.class)
 			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar"));
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testFallbackDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
@@ -124,6 +139,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testFallbackTurnOff() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename:test/messages",
@@ -133,6 +149,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testFormatMessageDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
@@ -140,6 +157,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testFormatMessageOn() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename:test/messages",
@@ -149,6 +167,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testUseCodeAsDefaultMessageDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
@@ -156,6 +175,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void testUseCodeAsDefaultMessageOn() {
 		this.contextRunner
 			.withPropertyValues("spring.messages.basename:test/messages",
@@ -171,6 +191,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void existingMessageSourceInParentIsIgnored() {
 		this.contextRunner.run((parent) -> this.contextRunner.withParent(parent)
 			.withPropertyValues("spring.messages.basename:test/messages")
@@ -178,6 +199,7 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
 	void messageSourceWithNonStandardBeanNameIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
@@ -235,6 +257,27 @@ class MessageSourceAutoConfigurationTests {
 		public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
 			return resolvable.getCodes()[0];
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "test/messages.properties", content = "foo=bar")
+	@interface WithTestMessagesPropertiesResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "test/messages2.properties", content = "foo-foo=bar-bar")
+	@interface WithTestMessages2PropertiesResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "test/swedish.properties", content = "foo=Some text with some swedish öäå!")
+	@interface WithTestSwedishPropertiesResource {
 
 	}
 

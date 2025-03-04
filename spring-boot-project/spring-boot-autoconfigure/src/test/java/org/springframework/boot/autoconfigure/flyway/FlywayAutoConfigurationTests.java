@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.io.Serializable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,6 +30,10 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
@@ -68,6 +77,8 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -410,7 +421,9 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void failOnMissingLocationsAllExist() {
+	@WithResource(name = "db/changelog/V1.1__refine.sql")
+	@WithResource(name = "db/migration/V1__init.sql", content = "DROP TABLE IF EXISTS TEST")
+	void failOnMissingLocationsDoesNotFailWhenAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
 			.withPropertyValues("spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
@@ -418,6 +431,8 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/changelog/V1.1__refine.sql")
+	@WithResource(name = "db/migration/V1__init.sql", content = "DROP TABLE IF EXISTS TEST")
 	void failOnMissingLocationsAllExistWithImplicitClasspathPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
@@ -426,10 +441,11 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void failOnMissingLocationsAllExistWithFilesystemPrefix() {
+	@WithResource(name = "db/migration/V1__init.sql", content = "DROP TABLE IF EXISTS TEST")
+	void failOnMissingLocationsFilesystemPrefixDoesNotFailWhenAllExist(@ResourcePath("db/migration") String migration) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.fail-on-missing-locations=true")
-			.withPropertyValues("spring.flyway.locations:filesystem:src/test/resources/db/migration")
+			.withPropertyValues("spring.flyway.locations:filesystem:" + migration)
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
@@ -465,6 +481,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void customFlywayWithJpa() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJpaConfiguration.class)
@@ -479,6 +496,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void customFlywayMigrationInitializerWithJpa() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
@@ -517,6 +535,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/vendors/h2/V1__init.sql", content = "DROP TABLE IF EXISTS TEST;")
 	void useVendorDirectory() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog")
@@ -529,6 +548,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/vendors/h2/V1__init.sql", content = "DROP TABLE IF EXISTS TEST;")
 	void useOneLocationWithVendorDirectory() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.locations=classpath:db/vendors/{vendor}")
@@ -1332,6 +1352,76 @@ class FlywayAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/persistence.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence https://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+						<persistence-unit name="manually-configured">
+							<class>org.springframework.boot.autoconfigure.flyway.FlywayAutoConfigurationTests$City</class>
+							<exclude-unlisted-classes>true</exclude-unlisted-classes>
+						</persistence-unit>
+					</persistence>
+					""")
+	@interface WithMetaInfPersistenceXmlResource {
+
+	}
+
+	@Entity
+	public static class City implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		@Id
+		@GeneratedValue
+		private Long id;
+
+		@Column(nullable = false)
+		private String name;
+
+		@Column(nullable = false)
+		private String state;
+
+		@Column(nullable = false)
+		private String country;
+
+		@Column(nullable = false)
+		private String map;
+
+		protected City() {
+		}
+
+		City(String name, String state, String country, String map) {
+			this.name = name;
+			this.state = state;
+			this.country = country;
+			this.map = map;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getState() {
+			return this.state;
+		}
+
+		public String getCountry() {
+			return this.country;
+		}
+
+		public String getMap() {
+			return this.map;
+		}
+
+		@Override
+		public String toString() {
+			return getName() + "," + getState() + "," + getCountry();
 		}
 
 	}
