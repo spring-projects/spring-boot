@@ -19,19 +19,13 @@ package org.springframework.boot.test.context;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.ExecutableMode;
-import org.springframework.aot.hint.ReflectionHints;
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.ConfigurableBootstrapContext;
@@ -113,28 +107,33 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
-		return loadContext(mergedConfig, Mode.STANDARD, null);
+		return loadContext(mergedConfig, Mode.STANDARD, null, null);
 	}
 
 	@Override
-	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig) throws Exception {
-		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null);
+	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig,
+			RuntimeHints runtimeHints) throws Exception {
+		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null, runtimeHints);
 	}
 
 	@Override
 	public ApplicationContext loadContextForAotRuntime(MergedContextConfiguration mergedConfig,
 			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
-		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer);
+		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer, null);
 	}
 
 	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
-			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer, RuntimeHints runtimeHints)
+			throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
 		UseMainMethod useMainMethod = annotation.getUseMainMethod();
 		Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
 		if (mainMethod != null) {
+			if (runtimeHints != null) {
+				runtimeHints.reflection().registerMethod(mainMethod, ExecutableMode.INVOKE);
+			}
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
 			return hook.runMain(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
@@ -581,41 +580,6 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			Assert.state(!rootContexts.isEmpty(), "No root application context located");
 			Assert.state(rootContexts.size() == 1, "No unique root application context located");
 			return rootContexts.get(0);
-		}
-
-	}
-
-	static class MainMethodBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
-
-		@Override
-		public BeanFactoryInitializationAotContribution processAheadOfTime(
-				ConfigurableListableBeanFactory beanFactory) {
-			List<Method> mainMethods = new ArrayList<>();
-			for (String beanName : beanFactory.getBeanDefinitionNames()) {
-				Class<?> beanType = beanFactory.getType(beanName);
-				Method mainMethod = findMainMethod(beanType);
-				if (mainMethod != null) {
-					mainMethods.add(mainMethod);
-				}
-			}
-			return !mainMethods.isEmpty() ? new AotContribution(mainMethods) : null;
-		}
-
-		static class AotContribution implements BeanFactoryInitializationAotContribution {
-
-			private final Collection<Method> mainMethods;
-
-			AotContribution(Collection<Method> mainMethods) {
-				this.mainMethods = mainMethods;
-			}
-
-			@Override
-			public void applyTo(GenerationContext generationContext,
-					BeanFactoryInitializationCode beanFactoryInitializationCode) {
-				ReflectionHints reflectionHints = generationContext.getRuntimeHints().reflection();
-				this.mainMethods.forEach((method) -> reflectionHints.registerMethod(method, ExecutableMode.INVOKE));
-			}
-
 		}
 
 	}

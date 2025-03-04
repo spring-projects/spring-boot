@@ -27,14 +27,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootContextLoader.MainMethodBeanFactoryInitializationAotProcessor;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -47,6 +43,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ApplicationContextFailureProcessor;
+import org.springframework.test.context.BootstrapUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -59,6 +56,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringBootContextLoader}
@@ -251,30 +250,24 @@ class SpringBootContextLoaderTests {
 	}
 
 	@Test
-	void whenMainMethodPresentRegisterReflectionHints() {
-		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndNoMainMethod.class)
-			.getExposedTestContext();
-		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) testContext
-			.getApplicationContext()
-			.getAutowireCapableBeanFactory();
-		BeanFactoryInitializationAotContribution aotContribution = new MainMethodBeanFactoryInitializationAotProcessor()
-			.processAheadOfTime(beanFactory);
-		assertThat(aotContribution).isNull();
+	void whenMainMethodNotAvailableReturnsNoAotContribution() throws Exception {
+		SpringBootContextLoader contextLoader = new SpringBootContextLoader();
+		MergedContextConfiguration contextConfiguration = BootstrapUtils
+			.resolveTestContextBootstrapper(UseMainMethodWhenAvailableAndNoMainMethod.class)
+			.buildMergedContextConfiguration();
+		RuntimeHints runtimeHints = mock(RuntimeHints.class);
+		contextLoader.loadContextForAotProcessing(contextConfiguration, runtimeHints);
+		then(runtimeHints).shouldHaveNoInteractions();
 	}
 
 	@Test
-	void whenMainMethodNotAvailableReturnsNoAotContribution() {
-		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndMainMethod.class)
-			.getExposedTestContext();
-		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) testContext
-			.getApplicationContext()
-			.getAutowireCapableBeanFactory();
-		BeanFactoryInitializationAotContribution aotContribution = new MainMethodBeanFactoryInitializationAotProcessor()
-			.processAheadOfTime(beanFactory);
-		assertThat(aotContribution).isNotNull();
-		TestGenerationContext generationContext = new TestGenerationContext();
-		aotContribution.applyTo(generationContext, null);
-		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
+	void whenMainMethodPresentRegisterReflectionHints() throws Exception {
+		SpringBootContextLoader contextLoader = new SpringBootContextLoader();
+		MergedContextConfiguration contextConfiguration = BootstrapUtils
+			.resolveTestContextBootstrapper(UseMainMethodWhenAvailableAndMainMethod.class)
+			.buildMergedContextConfiguration();
+		RuntimeHints runtimeHints = new RuntimeHints();
+		contextLoader.loadContextForAotProcessing(contextConfiguration, runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(ConfigWithMain.class, "main").invoke())
 			.accepts(runtimeHints);
 	}
