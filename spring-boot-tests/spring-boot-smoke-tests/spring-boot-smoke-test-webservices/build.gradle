@@ -10,9 +10,7 @@ dependencies {
 
 	runtimeOnly("jaxen:jaxen")
 	runtimeOnly("wsdl4j:wsdl4j")
-	runtimeOnly("jakarta.activation:jakarta.activation-api")
-	runtimeOnly("org.glassfish.jaxb:jaxb-runtime")
-
+	
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation("org.springframework.ws:spring-ws-test")
 }
