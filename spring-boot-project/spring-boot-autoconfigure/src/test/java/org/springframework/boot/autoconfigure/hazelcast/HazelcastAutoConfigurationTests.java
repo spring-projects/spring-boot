@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,39 @@ class HazelcastAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
-	void defaultConfigFile() {
+	@WithResource(name = "hazelcast.xml", content = """
+			<hazelcast
+				xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-5.0.xsd"
+				xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<instance-name>default-instance</instance-name>
+				<map name="defaultCache" />
+				<network>
+					<join>
+						<auto-detection enabled="false" />
+						<multicast enabled="false" />
+					</join>
+				</network>
+			</hazelcast>
+			""")
+	@WithResource(name = "hazelcast.yml", content = """
+			hazelcast:
+			  network:
+			    join:
+			      auto-detection:
+			        enabled: false
+			      multicast:
+			        enabled: false
+			""")
+	@WithResource(name = "hazelcast.yaml", content = """
+			hazelcast:
+			  network:
+			    join:
+			      auto-detection:
+			        enabled: false
+			      multicast:
+			        enabled: false
+			""")
+	void defaultConfigFileIsHazelcastXml() {
 		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
 		// this also asserts that XML has priority over YAML
 		// as hazelcast.yaml, hazelcast.yml, and hazelcast.xml are available.

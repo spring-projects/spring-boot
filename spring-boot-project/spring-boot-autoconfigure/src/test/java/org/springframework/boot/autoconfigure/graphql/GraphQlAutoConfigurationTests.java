@@ -35,10 +35,13 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
@@ -59,6 +62,25 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link GraphQlAutoConfiguration}.
  */
+@WithResource(name = "graphql/types/book.graphqls", content = """
+		type Book {
+		    id: ID
+		    name: String
+		    pageCount: Int
+		    author: String
+		}
+		""")
+@WithResource(name = "graphql/schema.graphqls", content = """
+		type Query {
+		    greeting(name: String! = "Spring"): String!
+		    bookById(id: ID): Book
+		    books: BookConnection
+		}
+
+		type Subscription {
+		    booksOnSale(minPages: Int) : Book!
+		}
+		""")
 @ExtendWith(OutputCaptureExtension.class)
 class GraphQlAutoConfigurationTests {
 
@@ -67,11 +89,12 @@ class GraphQlAutoConfigurationTests {
 
 	@Test
 	void shouldContributeDefaultBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
-			.hasSingleBean(BatchLoaderRegistry.class)
-			.hasSingleBean(ExecutionGraphQlService.class)
-			.hasSingleBean(AnnotatedControllerConfigurer.class)
-			.hasSingleBean(EncodingCursorStrategy.class));
+		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
+				.hasSingleBean(BatchLoaderRegistry.class)
+				.hasSingleBean(ExecutionGraphQlService.class)
+				.hasSingleBean(AnnotatedControllerConfigurer.class)
+				.hasSingleBean(EncodingCursorStrategy.class));
 	}
 
 	@Test
@@ -99,6 +122,12 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "graphql/types/person.custom", content = """
+			type Person {
+			    id: ID
+			    name: String
+			}
+			""")
 	void shouldScanLocationsWithCustomExtension() {
 		this.contextRunner.withPropertyValues("spring.graphql.schema.file-extensions:.graphqls,.custom")
 			.run((context) -> {
@@ -111,6 +140,12 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "graphql/types/person.custom", content = """
+			type Person {
+			    id: ID
+			    name: String
+			}
+			""")
 	void shouldConfigureAdditionalSchemaFiles() {
 		this.contextRunner
 			.withPropertyValues("spring.graphql.schema.additional-files=classpath:graphql/types/person.custom")

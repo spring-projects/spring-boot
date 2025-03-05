@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
+@WithResource(name = "welcome-page/index.html", content = "welcome-page-static")
 class WelcomePageRouterFunctionFactoryTests {
 
 	private StaticApplicationContext applicationContext;

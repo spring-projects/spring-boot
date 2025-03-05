@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.ResourcePatternHint;
 import org.springframework.aot.hint.ResourcePatternHints;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@WithResource(name = "web/custom-resource.txt")
 class WebResourcesRuntimeHintsTests {
 
 	@Test
@@ -71,12 +72,12 @@ class WebResourcesRuntimeHintsTests {
 		};
 	}
 
-	private static class TestClassLoader extends URLClassLoader {
+	private static class TestClassLoader extends ClassLoader {
 
 		private final List<String> availableResources;
 
 		TestClassLoader(List<String> availableResources) {
-			super(new URL[0], TestClassLoader.class.getClassLoader());
+			super(Thread.currentThread().getContextClassLoader());
 			this.availableResources = availableResources;
 		}
 

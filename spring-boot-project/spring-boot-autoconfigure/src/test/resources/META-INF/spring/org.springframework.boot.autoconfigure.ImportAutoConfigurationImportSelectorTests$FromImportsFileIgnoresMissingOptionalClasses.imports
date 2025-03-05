@@ -1,3 +1,0 @@
-optional:org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration
-optional:org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration
-org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$AnotherImportedAutoConfiguration

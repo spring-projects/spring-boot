@@ -51,6 +51,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -635,6 +636,7 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void testRedisConfigurationWithSslBundle() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.ssl.bundle:test-bundle",

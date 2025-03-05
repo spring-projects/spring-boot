@@ -166,6 +166,8 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	@WithTestAutoConfigurationImportsResource
+	@WithTestAutoConfigurationReplacementsResource
 	void removedExclusionsAreApplied() {
 		TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector(
 				TestAutoConfiguration.class);
@@ -234,7 +236,9 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	void soringConsidersReplacements() {
+	@WithTestAutoConfigurationImportsResource
+	@WithTestAutoConfigurationReplacementsResource
+	void sortingConsidersReplacements() {
 		TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector(
 				TestAutoConfiguration.class);
 		setupImportSelector(importSelector);
@@ -394,6 +398,30 @@ class AutoConfigurationImportSelectorTests {
 
 	@AutoConfiguration
 	static class SeventhAutoConfiguration {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(
+			name = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$TestAutoConfiguration.imports",
+			content = """
+					org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$AfterDeprecatedAutoConfiguration
+					org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$ReplacementAutoConfiguration
+					""")
+	@interface WithTestAutoConfigurationImportsResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(
+			name = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$TestAutoConfiguration.replacements",
+			content = """
+					org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$DeprecatedAutoConfiguration=\
+					org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$ReplacementAutoConfiguration
+					""")
+	@interface WithTestAutoConfigurationReplacementsResource {
 
 	}
 

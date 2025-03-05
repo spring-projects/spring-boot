@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,7 @@ class ConditionalOnResourceTests {
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
+	@WithResource(name = "schema.sql")
 	void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
@@ -43,6 +45,7 @@ class ConditionalOnResourceTests {
 	}
 
 	@Test
+	@WithResource(name = "schema.sql")
 	void testResourceExistsWithPlaceholder() {
 		TestPropertyValues.of("schema=schema.sql").applyTo(this.context);
 		this.context.register(PlaceholderConfiguration.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,16 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	/**
+	 * Create a {@link FilteredClassLoader} with the given {@code parent} that hides the
+	 * given classes.
+	 * @param parent the parent class loader
+	 * @param hiddenClasses the classes to hide
+	 */
+	public FilteredClassLoader(ClassLoader parent, Class<?>... hiddenClasses) {
+		this(parent, Collections.singleton(ClassFilter.of(hiddenClasses)), Collections.emptyList());
+	}
+
+	/**
 	 * Create a {@link FilteredClassLoader} that hides classes from the given packages.
 	 * @param hiddenPackages the packages to hide
 	 */
@@ -86,7 +96,12 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 
 	private FilteredClassLoader(Collection<Predicate<String>> classesFilters,
 			Collection<Predicate<String>> resourcesFilters) {
-		super(new URL[0], FilteredClassLoader.class.getClassLoader());
+		this(FilteredClassLoader.class.getClassLoader(), classesFilters, resourcesFilters);
+	}
+
+	private FilteredClassLoader(ClassLoader parent, Collection<Predicate<String>> classesFilters,
+			Collection<Predicate<String>> resourcesFilters) {
+		super(new URL[0], parent);
 		this.classesFilters = classesFilters;
 		this.resourcesFilters = resourcesFilters;
 	}

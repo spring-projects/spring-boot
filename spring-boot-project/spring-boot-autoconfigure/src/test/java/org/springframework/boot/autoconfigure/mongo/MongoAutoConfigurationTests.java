@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -86,6 +87,7 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void configuresSslWithBundle() {
 		this.contextRunner
 			.withPropertyValues("spring.data.mongodb.ssl.bundle=test-bundle",

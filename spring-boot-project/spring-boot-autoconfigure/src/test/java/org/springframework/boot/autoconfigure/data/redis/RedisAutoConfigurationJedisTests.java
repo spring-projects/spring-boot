@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -255,6 +256,7 @@ class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void testRedisConfigurationWithSslBundle() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.ssl.bundle:test-bundle",

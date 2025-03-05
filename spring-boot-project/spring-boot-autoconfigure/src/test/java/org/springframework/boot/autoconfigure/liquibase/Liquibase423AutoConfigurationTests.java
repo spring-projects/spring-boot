@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +44,7 @@ class Liquibase423AutoConfigurationTests {
 		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
+	@WithResource(name = "db/changelog/db.changelog-master.yaml", content = "databaseChangeLog:")
 	void defaultSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.run(assertLiquibase((liquibase) -> {

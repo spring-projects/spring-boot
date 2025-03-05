@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
@@ -83,6 +84,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.tpl", content = "yield 'home'")
 	void defaultViewResolution() throws Exception {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
@@ -92,6 +94,11 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/includes.tpl", content = """
+			yield 'include'
+			include template: 'included.tpl'
+			""")
+	@WithResource(name = "templates/included.tpl", content = "yield 'here'")
 	void includesViewResolution() throws Exception {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes");
@@ -108,6 +115,11 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/includes.tpl", content = """
+			yield 'include'
+			include template: 'included.tpl'
+			""")
+	@WithResource(name = "templates/included_fr.tpl", content = "yield 'voila'")
 	void localeViewResolution() throws Exception {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes", Locale.FRENCH);
@@ -117,6 +129,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.tpl", content = "yield 'home'")
 	void customContentType() throws Exception {
 		registerAndRefreshContext("spring.groovy.template.contentType:application/json");
 		MockHttpServletResponse response = render("home");
@@ -126,6 +139,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/prefix/prefixed.tpl", content = "yield \"prefixed\"")
 	void customPrefix() throws Exception {
 		registerAndRefreshContext("spring.groovy.template.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
@@ -134,6 +148,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/suffixed.groovytemplate", content = "yield \"suffixed\"")
 	void customSuffix() throws Exception {
 		registerAndRefreshContext("spring.groovy.template.suffix:.groovytemplate");
 		MockHttpServletResponse response = render("suffixed");
@@ -142,6 +157,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-templates/custom.tpl", content = "yield \"custom\"")
 	void customTemplateLoaderPath() throws Exception {
 		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
@@ -156,6 +172,7 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/message.tpl", content = "yield \"Message: ${greeting}\"")
 	void renderTemplate() throws Exception {
 		registerAndRefreshContext();
 		GroovyMarkupConfig config = this.context.getBean(GroovyMarkupConfig.class);

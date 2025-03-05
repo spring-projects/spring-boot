@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
@@ -62,6 +63,7 @@ abstract class AbstractClientHttpConnectorFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void secureConnection() throws Exception {
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		Ssl ssl = new Ssl();
