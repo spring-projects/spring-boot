@@ -214,7 +214,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	@WithResource(name = "templates/security-dialect.html",
-			content = "<html><body><div sec:authentication=\"name\"></div></body></html>\n")
+			content = "<html><body><div sec:authentication=\"name\"></div></body></html>")
 	void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
@@ -225,7 +225,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 			WebContext attrs = new WebContext(SpringWebFluxWebApplication.buildApplication(null)
 				.buildExchange(exchange, Locale.US, MediaType.TEXT_HTML, StandardCharsets.UTF_8));
 			String result = engine.process("security-dialect", attrs);
-			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>");
 		});
 	}
 

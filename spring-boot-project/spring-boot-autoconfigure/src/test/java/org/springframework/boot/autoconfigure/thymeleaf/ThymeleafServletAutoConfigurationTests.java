@@ -239,7 +239,7 @@ class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	@WithResource(name = "templates/security-dialect.html",
-			content = "<html><body><div sec:authentication=\"name\"></div></body></html>\n")
+			content = "<html><body><div sec:authentication=\"name\"></div></body></html>")
 	void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -251,7 +251,7 @@ class ThymeleafServletAutoConfigurationTests {
 				SecurityContextHolder
 					.setContext(new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
 				String result = engine.process("security-dialect", attrs);
-				assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
+				assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>");
 			}
 			finally {
 				SecurityContextHolder.clearContext();
