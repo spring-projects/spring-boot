@@ -18,6 +18,7 @@ package org.springframework.boot.testsupport.classpath.resources;
 
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -34,99 +35,122 @@ class ResourcesTests {
 	@TempDir
 	private Path root;
 
+	private Resources resources;
+
+	@BeforeEach
+	void setUp() {
+		this.resources = new Resources(this.root);
+	}
+
 	@Test
-	void whenAddResourceThenResourceIsCreated() {
-		new Resources(this.root).addResource("test", "test-content");
+	void whenAddResourceThenResourceIsCreatedAndCanBeFound() {
+		this.resources.addResource("test", "test-content", true);
 		assertThat(this.root.resolve("test")).hasContent("test-content");
+		assertThat(this.resources.find("test")).isNotNull();
 	}
 
 	@Test
 	void whenAddResourceHasContentReferencingResourceRootThenResourceIsCreatedWithReferenceToRoot() {
-		new Resources(this.root).addResource("test", "*** ${resourceRoot} ***");
+		this.resources.addResource("test", "*** ${resourceRoot} ***", true);
 		assertThat(this.root.resolve("test")).hasContent("*** " + this.root + " ***");
 	}
 
 	@Test
-	void whenAddResourceWithPathThenResourceIsCreated() {
-		new Resources(this.root).addResource("a/b/c/test", "test-content");
+	void whenAddResourceWithPathThenResourceIsCreatedAndItAndItsAncestorsCanBeFound() {
+		this.resources.addResource("a/b/c/test", "test-content", true);
 		assertThat(this.root.resolve("a/b/c/test")).hasContent("test-content");
+		assertThat(this.resources.find("a/b/c/test")).isNotNull();
+		assertThat(this.resources.find("a/b/c/")).isNotNull();
+		assertThat(this.resources.find("a/b/")).isNotNull();
+		assertThat(this.resources.find("a/")).isNotNull();
 	}
 
 	@Test
 	void whenAddResourceAndResourceAlreadyExistsThenResourcesIsOverwritten() {
-		Resources resources = new Resources(this.root);
-		resources.addResource("a/b/c/test", "original-content");
-		resources.addResource("a/b/c/test", "new-content");
+		this.resources.addResource("a/b/c/test", "original-content", true);
+		this.resources.addResource("a/b/c/test", "new-content", true);
 		assertThat(this.root.resolve("a/b/c/test")).hasContent("new-content");
 	}
 
 	@Test
-	void whenAddPackageThenNamedResourcesFromPackageAreCreated() {
-		new Resources(this.root).addPackage(getClass().getPackage(),
-				new String[] { "resource-1.txt", "sub/resource-3.txt" });
+	void whenAddPackageThenNamedResourcesFromPackageAreCreatedAndCanBeFound() {
+		this.resources.addPackage(getClass().getPackage(), new String[] { "resource-1.txt", "sub/resource-3.txt" });
 		assertThat(this.root.resolve("resource-1.txt")).hasContent("one");
 		assertThat(this.root.resolve("resource-2.txt")).doesNotExist();
 		assertThat(this.root.resolve("sub/resource-3.txt")).hasContent("three");
+		assertThat(this.resources.find("resource-1.txt")).isNotNull();
+		assertThat(this.resources.find("resource-2.txt")).isNull();
+		assertThat(this.resources.find("sub/resource-3.txt")).isNotNull();
+		assertThat(this.resources.find("sub/")).isNotNull();
 	}
 
 	@Test
-	void whenAddResourceAndDeleteThenResourceDoesNotExist() {
-		Resources resources = new Resources(this.root);
-		resources.addResource("test", "test-content");
+	void whenAddResourceAndDeleteThenResourceDoesNotExistAndCannotBeFound() {
+		this.resources.addResource("test", "test-content", true);
 		assertThat(this.root.resolve("test")).hasContent("test-content");
-		resources.delete();
+		assertThat(this.resources.find("test")).isNotNull();
+		this.resources.delete();
 		assertThat(this.root.resolve("test")).doesNotExist();
+		assertThat(this.resources.find("test")).isNull();
 	}
 
 	@Test
-	void whenAddPackageAndDeleteThenResourcesDoNotExist() {
-		Resources resources = new Resources(this.root);
-		resources.addPackage(getClass().getPackage(),
+	void whenAddPackageAndDeleteThenResourcesDoNotExistAndCannotBeFound() {
+		this.resources.addPackage(getClass().getPackage(),
 				new String[] { "resource-1.txt", "resource-2.txt", "sub/resource-3.txt" });
 		assertThat(this.root.resolve("resource-1.txt")).hasContent("one");
 		assertThat(this.root.resolve("resource-2.txt")).hasContent("two");
 		assertThat(this.root.resolve("sub/resource-3.txt")).hasContent("three");
-		resources.delete();
+		assertThat(this.resources.find("resource-1.txt")).isNotNull();
+		assertThat(this.resources.find("resource-2.txt")).isNotNull();
+		assertThat(this.resources.find("sub/resource-3.txt")).isNotNull();
+		assertThat(this.resources.find("sub/")).isNotNull();
+		this.resources.delete();
 		assertThat(this.root.resolve("resource-1.txt")).doesNotExist();
 		assertThat(this.root.resolve("resource-2.txt")).doesNotExist();
 		assertThat(this.root.resolve("sub/resource-3.txt")).doesNotExist();
 		assertThat(this.root.resolve("sub")).doesNotExist();
+		assertThat(this.resources.find("resource-1.txt")).isNull();
+		assertThat(this.resources.find("resource-2.txt")).isNull();
+		assertThat(this.resources.find("sub/resource-3.txt")).isNull();
+		assertThat(this.resources.find("sub/")).isNull();
 	}
 
 	@Test
-	void whenAddDirectoryThenDirectoryIsCreated() {
-		Resources resources = new Resources(this.root);
-		resources.addDirectory("dir");
+	void whenAddDirectoryThenDirectoryIsCreatedAndCanBeFound() {
+		this.resources.addDirectory("dir");
 		assertThat(this.root.resolve("dir")).isDirectory();
+		assertThat(this.resources.find("dir/")).isNotNull();
 	}
 
 	@Test
-	void whenAddDirectoryWithPathThenDirectoryIsCreated() {
-		Resources resources = new Resources(this.root);
-		resources.addDirectory("one/two/three/dir");
+	void whenAddDirectoryWithPathThenDirectoryIsCreatedAndItAndItsAncestorsCanBeFound() {
+		this.resources.addDirectory("one/two/three/dir");
 		assertThat(this.root.resolve("one/two/three/dir")).isDirectory();
+		assertThat(this.resources.find("one/two/three/dir/")).isNotNull();
+		assertThat(this.resources.find("one/two/three/")).isNotNull();
+		assertThat(this.resources.find("one/two/")).isNotNull();
+		assertThat(this.resources.find("one/")).isNotNull();
 	}
 
 	@Test
 	void whenAddDirectoryAndDirectoryAlreadyExistsThenDoesNotThrow() {
-		Resources resources = new Resources(this.root);
-		resources.addDirectory("one/two/three/dir");
-		resources.addDirectory("one/two/three/dir");
+		this.resources.addDirectory("one/two/three/dir");
+		this.resources.addDirectory("one/two/three/dir");
 		assertThat(this.root.resolve("one/two/three/dir")).isDirectory();
 	}
 
 	@Test
 	void whenAddDirectoryAndResourceAlreadyExistsThenIllegalStateExceptionIsThrown() {
-		Resources resources = new Resources(this.root);
-		resources.addResource("one/two/three/", "content");
-		assertThatIllegalStateException().isThrownBy(() -> resources.addDirectory("one/two/three"));
+		this.resources.addResource("one/two/three/", "content", true);
+		assertThatIllegalStateException().isThrownBy(() -> this.resources.addDirectory("one/two/three"));
 	}
 
 	@Test
 	void whenAddResourceAndDirectoryAlreadyExistsThenIllegalStateExceptionIsThrown() {
-		Resources resources = new Resources(this.root);
-		resources.addDirectory("one/two/three");
-		assertThatIllegalStateException().isThrownBy(() -> resources.addResource("one/two/three", "content"));
+		this.resources.addDirectory("one/two/three");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resources.addResource("one/two/three", "content", true));
 	}
 
 }
