@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.io.File;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +51,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -209,6 +214,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanUsingBuilder() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.a=b")
 			.withUserConfiguration(TestConfigurationWithEntityManagerFactoryBuilder.class)
@@ -221,6 +227,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
 		this.contextRunner.withUserConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
 			.run((context) -> {
@@ -232,6 +239,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
 		this.contextRunner.withUserConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class)
 			.run((context) -> {
@@ -498,6 +506,22 @@ abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/persistence.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence https://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+						<persistence-unit name="manually-configured">
+							<class>org.springframework.boot.autoconfigure.orm.jpa.test.City</class>
+							<exclude-unlisted-classes>true</exclude-unlisted-classes>
+						</persistence-unit>
+					</persistence>
+					""")
+	@interface WithMetaInfPersistenceXmlResource {
 
 	}
 

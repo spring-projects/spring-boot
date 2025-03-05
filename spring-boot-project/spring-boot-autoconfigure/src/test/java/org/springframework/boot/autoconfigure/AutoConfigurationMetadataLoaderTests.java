@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,6 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@WithResource(name = "metadata.properties", content = """
+		test=
+		test.string=abc
+		test.int=123
+		test.set=a,b,b,c
+		""")
 class AutoConfigurationMetadataLoaderTests {
 
 	@Test
@@ -90,8 +98,8 @@ class AutoConfigurationMetadataLoaderTests {
 	}
 
 	private AutoConfigurationMetadata load() {
-		return AutoConfigurationMetadataLoader.loadMetadata(null,
-				"META-INF/AutoConfigurationMetadataLoaderTests.properties");
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		return AutoConfigurationMetadataLoader.loadMetadata(classLoader, "metadata.properties");
 	}
 
 }

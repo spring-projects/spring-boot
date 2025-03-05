@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,10 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@WithResource(
+		name = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfigurationReplacementsTests$TestAutoConfigurationReplacements.replacements",
+		content = """
+				com.example.A1=com.example.A2
+				com.example.B1=com.example.B2
+				""")
 class AutoConfigurationReplacementsTests {
 
-	private final AutoConfigurationReplacements replacements = AutoConfigurationReplacements
-		.load(TestAutoConfigurationReplacements.class, null);
+	private AutoConfigurationReplacements replacements;
+
+	@BeforeEach
+	void loadReplacements() {
+		this.replacements = AutoConfigurationReplacements.load(TestAutoConfigurationReplacements.class,
+				Thread.currentThread().getContextClassLoader());
+	}
 
 	@Test
 	void replaceWhenMatchReplacesClassName() {

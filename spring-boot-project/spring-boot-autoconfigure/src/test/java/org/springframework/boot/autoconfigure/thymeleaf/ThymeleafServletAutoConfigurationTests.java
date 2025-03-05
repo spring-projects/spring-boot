@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
@@ -89,6 +90,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/template.html", content = "<html th:text=\"${foo}\">foo</html>")
 	void createFromConfigClass() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.mode:HTML", "spring.thymeleaf.suffix:")
 			.run((context) -> {
@@ -184,6 +186,19 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/view.html",
+			content = """
+					<html xmlns:th="https://www.thymeleaf.org" xmlns:layout="https://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
+					  <head>
+					    <title layout:fragment="title">Content</title>
+					  </head>
+					  <body>
+					    <div layout:fragment="content">
+					    	<span th:text="${foo}">foo</span>
+					    </div>
+					  </body>
+					</html>
+					""")
 	void createLayoutFromConfigClass() {
 		this.contextRunner.run((context) -> {
 			ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class)
@@ -200,6 +215,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/data-dialect.html", content = "<html><body data:foo=\"${foo}\"></body></html>")
 	void useDataDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -210,6 +226,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/java8time-dialect.html",
+			content = "<html><body th:text=\"${#temporals.create('2015','11','24')}\"></body></html>")
 	void useJava8TimeDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -220,6 +238,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/security-dialect.html",
+			content = "<html><body><div sec:authentication=\"name\"></div></body></html>\n")
 	void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -246,6 +266,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.html", content = "<html><body th:text=\"${foo}\">Home</body></html>")
 	void renderTemplate() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -256,6 +277,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/message.html",
+			content = "<html><body>Message: <span th:text=\"${greeting}\">Hello</span></body></html>")
 	void renderNonWebAppTemplate() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class))
 			.run((context) -> {

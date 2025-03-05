@@ -54,6 +54,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -119,6 +120,8 @@ class KafkaAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
+	@WithResource(name = "ksLoc")
+	@WithResource(name = "tsLoc")
 	void consumerProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
 				"spring.kafka.properties.foo=bar", "spring.kafka.properties.baz=qux",
@@ -200,6 +203,8 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "ksLocP")
+	@WithResource(name = "tsLocP")
 	void producerProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.producer.acks=all",
@@ -270,6 +275,8 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "ksLocP")
+	@WithResource(name = "tsLocP")
 	void adminProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.kafka.clientId=cid", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
@@ -330,8 +337,10 @@ class KafkaAutoConfigurationTests {
 			});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
+	@WithResource(name = "ksLocP")
+	@WithResource(name = "tsLocP")
 	void streamsProperties() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
 			.withPropertyValues("spring.kafka.client-id=cid",
