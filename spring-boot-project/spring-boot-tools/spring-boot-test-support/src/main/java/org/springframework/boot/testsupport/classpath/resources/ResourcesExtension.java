@@ -63,7 +63,8 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 		Resources resources = new Resources(Files.createTempDirectory("resources"));
 		store.put(RESOURCES_KEY, resources);
 		Method testMethod = context.getRequiredTestMethod();
-		resourcesOf(testMethod).forEach((resource) -> resources.addResource(resource.name(), resource.content()));
+		resourcesOf(testMethod)
+			.forEach((resource) -> resources.addResource(resource.name(), resource.content(), resource.additional()));
 		resourceDirectoriesOf(testMethod).forEach((directory) -> resources.addDirectory(directory.value()));
 		packageResourcesOf(testMethod).forEach((withPackageResources) -> resources
 			.addPackage(testMethod.getDeclaringClass().getPackage(), withPackageResources.value()));
@@ -148,8 +149,7 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 	private Object resolveResourcePath(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Resources resources = getResources(extensionContext);
 		Class<?> parameterType = parameterContext.getParameter().getType();
-		Path resourcePath = resources.getRoot()
-			.resolve(parameterContext.findAnnotation(ResourcePath.class).get().value());
+		Path resourcePath = resources.find(parameterContext.findAnnotation(ResourcePath.class).get().value()).path();
 		if (parameterType.isAssignableFrom(Path.class)) {
 			return resourcePath;
 		}
@@ -166,8 +166,7 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 	private Object resolveResourceContent(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Resources resources = getResources(extensionContext);
 		Class<?> parameterType = parameterContext.getParameter().getType();
-		Path resourcePath = resources.getRoot()
-			.resolve(parameterContext.findAnnotation(ResourceContent.class).get().value());
+		Path resourcePath = resources.find(parameterContext.findAnnotation(ResourceContent.class).get().value()).path();
 		if (parameterType.isAssignableFrom(String.class)) {
 			try (InputStream in = Files.newInputStream(resourcePath)) {
 				return StreamUtils.copyToString(in, StandardCharsets.UTF_8);
