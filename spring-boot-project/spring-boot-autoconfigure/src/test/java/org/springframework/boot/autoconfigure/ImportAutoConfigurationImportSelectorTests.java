@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -58,20 +56,21 @@ class ImportAutoConfigurationImportSelectorTests {
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());
+		this.importSelector.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
 	}
 
 	@Test
 	void importsAreSelected() throws Exception {
-		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarker.class);
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportImported.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
+		assertThat(imports).containsExactly(ImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void importsAreSelectedUsingClassesAttribute() throws Exception {
-		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarkerUsingClassesAttribute.class);
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportImportedUsingClassesAttribute.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
+		assertThat(imports).containsExactly(ImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -95,39 +94,39 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	@Test
 	void propertyExclusionsAreApplied() throws IOException {
-		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude", ImportedAutoConfiguration.class.getName());
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsExactly(ThymeleafAutoConfiguration.class.getName());
+		assertThat(imports).containsExactly(AnotherImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void multipleImportsAreFound() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName(),
-				ThymeleafAutoConfiguration.class.getName());
+		assertThat(imports).containsOnly(ImportedAutoConfiguration.class.getName(),
+				AnotherImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() throws IOException {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportWithSelfAnnotatingAnnotation.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsOnly(ThymeleafAutoConfiguration.class.getName());
+		assertThat(imports).containsOnly(AnotherImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void exclusionsAreApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImportsWithExclusion.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
+		assertThat(imports).containsOnly(ImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
 	void exclusionsWithoutImport() throws Exception {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ExclusionWithoutImport.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
-		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
+		assertThat(imports).containsOnly(ImportedAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -199,13 +198,13 @@ class ImportAutoConfigurationImportSelectorTests {
 		return new SimpleMetadataReaderFactory().getMetadataReader(source.getName()).getAnnotationMetadata();
 	}
 
-	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
-	static class ImportFreeMarker {
+	@ImportAutoConfiguration(ImportedAutoConfiguration.class)
+	static class ImportImported {
 
 	}
 
-	@ImportAutoConfiguration(classes = FreeMarkerAutoConfiguration.class)
-	static class ImportFreeMarkerUsingClassesAttribute {
+	@ImportAutoConfiguration(classes = ImportedAutoConfiguration.class)
+	static class ImportImportedUsingClassesAttribute {
 
 	}
 
@@ -217,13 +216,13 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	@ImportOne
 	@ImportTwo
-	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(exclude = AnotherImportedAutoConfiguration.class)
 	static class MultipleImportsWithExclusion {
 
 	}
 
 	@ImportOne
-	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(exclude = AnotherImportedAutoConfiguration.class)
 	static class ExclusionWithoutImport {
 
 	}
@@ -233,19 +232,19 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	}
 
-	@SelfAnnotating(excludeAutoConfiguration = ThymeleafAutoConfiguration.class)
+	@SelfAnnotating(excludeAutoConfiguration = AnotherImportedAutoConfiguration.class)
 	static class ImportWithSelfAnnotatingAnnotationExclude {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
+	@ImportAutoConfiguration(ImportedAutoConfiguration.class)
 	@interface ImportOne {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(AnotherImportedAutoConfiguration.class)
 	@interface ImportTwo {
 
 	}
@@ -274,25 +273,25 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	}
 
-	@ImportAutoConfiguration(classes = ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(classes = AnotherImportedAutoConfiguration.class)
 	@UnrelatedOne
 	static class ImportAutoConfigurationWithItemsOne {
 
 	}
 
-	@ImportAutoConfiguration(classes = ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(classes = AnotherImportedAutoConfiguration.class)
 	@UnrelatedTwo
 	static class ImportAutoConfigurationWithItemsTwo {
 
 	}
 
-	@MetaImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	@MetaImportAutoConfiguration(exclude = AnotherImportedAutoConfiguration.class)
 	@UnrelatedOne
 	static class ImportMetaAutoConfigurationExcludeWithUnrelatedOne {
 
 	}
 
-	@MetaImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	@MetaImportAutoConfiguration(exclude = AnotherImportedAutoConfiguration.class)
 	@UnrelatedTwo
 	static class ImportMetaAutoConfigurationExcludeWithUnrelatedTwo {
 
@@ -320,7 +319,7 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
+	@ImportAutoConfiguration(AnotherImportedAutoConfiguration.class)
 	@SelfAnnotating
 	@interface SelfAnnotating {
 
@@ -348,8 +347,8 @@ class ImportAutoConfigurationImportSelectorTests {
 		@Override
 		protected Collection<String> loadFactoryNames(Class<?> source) {
 			if (source == MetaImportAutoConfiguration.class) {
-				return Arrays.asList(ThymeleafAutoConfiguration.class.getName(),
-						FreeMarkerAutoConfiguration.class.getName());
+				return Arrays.asList(AnotherImportedAutoConfiguration.class.getName(),
+						ImportedAutoConfiguration.class.getName());
 			}
 			return super.loadFactoryNames(source);
 		}
