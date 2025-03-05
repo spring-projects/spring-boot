@@ -156,15 +156,21 @@ class OpenTelemetryResourceAttributesTests {
 	@Test
 	void springApplicationGroupNameShouldBeUsedAsDefaultServiceGroup() {
 		this.environment.setProperty("spring.application.group", "spring-boot");
-		assertThat(getAttributes()).hasSize(2)
+		assertThat(getAttributes()).hasSize(3)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "spring-boot");
+			.containsEntry("service.group", "spring-boot")
+			.containsEntry("service.namespace", "spring-boot");
 	}
 
 	@Test
 	void springApplicationNameShouldBeUsedAsDefaultServiceName() {
 		this.environment.setProperty("spring.application.name", "spring-boot-app");
 		assertThat(getAttributes()).hasSize(1).containsEntry("service.name", "spring-boot-app");
+	}
+
+	@Test
+	void serviceNamespaceShouldNotBePresentByDefault() {
+		assertThat(getAttributes()).hasSize(1).doesNotContainKey("service.namespace");
 	}
 
 	@Test
@@ -192,18 +198,50 @@ class OpenTelemetryResourceAttributesTests {
 	void resourceAttributesShouldTakePrecedenceOverSpringApplicationGroupName() {
 		this.resourceAttributes.put("service.group", "spring-boot-app");
 		this.environment.setProperty("spring.application.group", "spring-boot");
-		assertThat(getAttributes()).hasSize(2)
+		assertThat(getAttributes()).hasSize(3)
 			.containsEntry("service.name", "unknown_service")
 			.containsEntry("service.group", "spring-boot-app");
+	}
+
+	@Test
+	void resourceAttributesShouldTakePrecedenceOverApplicationGroupNameForPopulatingServiceNamespace() {
+		this.resourceAttributes.put("service.namespace", "spring-boot-app");
+		this.environment.setProperty("spring.application.group", "overriden");
+		assertThat(getAttributes()).hasSize(3)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("service.group", "overriden")
+			.containsEntry("service.namespace", "spring-boot-app");
 	}
 
 	@Test
 	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupName() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.group=spring-boot");
 		this.environment.setProperty("spring.application.group", "spring-boot-app");
-		assertThat(getAttributes()).hasSize(2)
+		assertThat(getAttributes()).hasSize(3)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "spring-boot");
+			.containsEntry("service.group", "spring-boot")
+			.containsEntry("service.namespace", "spring-boot-app");
+	}
+
+	@Test
+	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupNameForServiceNamespace() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.namespace=spring-boot");
+		this.environment.setProperty("spring.application.group", "overriden");
+		;
+		assertThat(getAttributes()).hasSize(3)
+			.containsEntry("service.group", "overriden")
+			.containsEntry("service.namespace", "spring-boot");
+	}
+
+	@Test
+	void shouldUseServiceGroupForServiceNamespaceIfServiceGroupIsSet() {
+		this.environment.setProperty("spring.application.group", "alpha");
+		assertThat(getAttributes()).containsEntry("service.namespace", "alpha");
+	}
+
+	@Test
+	void shouldNotSetServiceNamespaceIfServiceGroupIsNotSet() {
+		assertThat(getAttributes()).doesNotContainKey("service.namespace");
 	}
 
 	private Map<String, String> getAttributes() {
