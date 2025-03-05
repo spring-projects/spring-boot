@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(FromImportsFile.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(
-				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
+				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration",
 				"org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration");
 	}
 
@@ -89,8 +89,8 @@ class ImportAutoConfigurationImportSelectorTests {
 				FromImportsFileIgnoresMissingOptionalClasses.class);
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(
-				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
-				"org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration");
+				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration",
+				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$AnotherImportedAutoConfiguration");
 	}
 
 	@Test
@@ -353,6 +353,16 @@ class ImportAutoConfigurationImportSelectorTests {
 			}
 			return super.loadFactoryNames(source);
 		}
+
+	}
+
+	@AutoConfiguration
+	static class ImportedAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	static class AnotherImportedAutoConfiguration {
 
 	}
 
