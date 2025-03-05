@@ -19,11 +19,9 @@ package org.springframework.boot.testsupport.classpath.resources;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 
 /**
  * A {@link ClassLoader} that provides access to {@link Resources resources}.
@@ -40,23 +38,32 @@ class ResourcesClassLoader extends ClassLoader {
 	}
 
 	@Override
-	protected URL findResource(String name) {
-		Path resource = this.resources.getRoot().resolve(name);
-		if (Files.exists(resource)) {
-			try {
-				return resource.toUri().toURL();
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+	public URL getResource(String name) {
+		Resource resource = this.resources.find(name);
+		return (resource != null) ? urlOf(resource) : getParent().getResource(name);
+	}
+
+	private URL urlOf(Resource resource) {
+		try {
+			return resource.path().toUri().toURL();
 		}
-		return null;
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	@Override
-	protected Enumeration<URL> findResources(String name) throws IOException {
-		URL resourceUrl = findResource(name);
-		return (resourceUrl != null) ? Collections.enumeration(List.of(resourceUrl)) : Collections.emptyEnumeration();
+	public Enumeration<URL> getResources(String name) throws IOException {
+		Resource resource = this.resources.find(name);
+		ArrayList<URL> urls = new ArrayList<>();
+		if (resource != null) {
+			URL resourceUrl = urlOf(resource);
+			urls.add(resourceUrl);
+		}
+		if (resource == null || resource.additional()) {
+			urls.addAll(Collections.list(getParent().getResources(name)));
+		}
+		return Collections.enumeration(urls);
 	}
 
 }

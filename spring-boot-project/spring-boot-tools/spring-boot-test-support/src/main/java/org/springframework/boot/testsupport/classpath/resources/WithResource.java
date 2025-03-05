@@ -54,4 +54,11 @@ public @interface WithResource {
 	 */
 	String content() default "";
 
+	/**
+	 * Whether the resource should be available in addition to those that are already on
+	 * the classpath are instead of any existing resources with the same name.
+	 * @return whether this is an additional resource
+	 */
+	boolean additional() default true;
+
 }
