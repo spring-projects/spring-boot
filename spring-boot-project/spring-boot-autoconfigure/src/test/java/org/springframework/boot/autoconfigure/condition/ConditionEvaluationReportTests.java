@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +29,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.condition.config.UniqueShortNameAutoConfiguration;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -185,24 +184,6 @@ class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	void duplicateOutcomes() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DuplicateConfig.class);
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
-		String autoconfigKey = MultipartAutoConfiguration.class.getName();
-		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(autoconfigKey);
-		assertThat(outcomes).isNotNull();
-		assertThat(outcomes).hasSize(2);
-		List<String> messages = new ArrayList<>();
-		for (ConditionAndOutcome outcome : outcomes) {
-			messages.add(outcome.getOutcome().getMessage());
-		}
-		assertThat(messages).anyMatch((message) -> message.contains("@ConditionalOnClass found required classes "
-				+ "'jakarta.servlet.Servlet', 'org.springframework.web.multipart."
-				+ "support.StandardServletMultipartResolver', 'jakarta.servlet.MultipartConfigElement'"));
-		context.close();
-	}
-
-	@Test
 	void negativeOuterPositiveInnerBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("test.present=true").applyTo(context);
@@ -220,13 +201,13 @@ class ConditionEvaluationReportTests {
 	@Test
 	void reportWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(WebMvcAutoConfiguration.class,
+		context.register(UniqueShortNameAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
 		context.refresh();
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource()).containsKeys(
-				"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
+				"org.springframework.boot.autoconfigure.condition.config.UniqueShortNameAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
 		context.close();
@@ -235,17 +216,17 @@ class ConditionEvaluationReportTests {
 	@Test
 	void reportMessageWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(WebMvcAutoConfiguration.class,
+		context.register(UniqueShortNameAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
 				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
 		context.refresh();
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		String reportMessage = new ConditionEvaluationReportMessage(report).toString();
-		assertThat(reportMessage).contains("WebMvcAutoConfiguration",
+		assertThat(reportMessage).contains("UniqueShortNameAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
 		assertThat(reportMessage)
-			.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+			.doesNotContain("org.springframework.boot.autoconfigure.condition.config.UniqueShortNameAutoConfiguration");
 		context.close();
 	}
 
