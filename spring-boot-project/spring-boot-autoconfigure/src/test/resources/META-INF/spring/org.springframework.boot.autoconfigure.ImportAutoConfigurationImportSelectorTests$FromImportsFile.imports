@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelectorTests$ImportedAutoConfiguration
 org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration
