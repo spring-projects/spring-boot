@@ -2070,7 +2070,7 @@ bom {
 			releaseNotes("https://github.com/sendgrid/sendgrid-java/releases/tag/{version}")
 		}
 	}
-	library("SLF4J", "2.0.16") {
+	library("SLF4J", "2.0.17") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
