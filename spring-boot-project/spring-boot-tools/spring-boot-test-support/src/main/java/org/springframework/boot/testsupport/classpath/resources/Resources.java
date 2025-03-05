@@ -113,13 +113,14 @@ class Resources {
 	}
 
 	private void register(String name, Resource resource) {
-		this.resources.put(name, resource);
+		String normalized = name.replace("\\", "/");
+		this.resources.put(normalized, resource);
 		if (Files.isDirectory(resource.path())) {
-			if (name.endsWith("/")) {
-				this.resources.put(name.substring(0, name.length() - 1), resource);
+			if (normalized.endsWith("/")) {
+				this.resources.put(normalized.substring(0, normalized.length() - 1), resource);
 			}
 			else {
-				this.resources.put(name + "/", resource);
+				this.resources.put(normalized + "/", resource);
 			}
 		}
 	}
