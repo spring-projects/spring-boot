@@ -1,0 +1,15 @@
+{
+  "message": "test message",
+  "errors": [
+    {
+      "code": "TEST1",
+      "message": "Test One",
+      "detail": 123
+    },
+    {
+      "code": "TEST2",
+      "message": "Test Two",
+      "detail": "fail"
+    }
+  ]
+}
