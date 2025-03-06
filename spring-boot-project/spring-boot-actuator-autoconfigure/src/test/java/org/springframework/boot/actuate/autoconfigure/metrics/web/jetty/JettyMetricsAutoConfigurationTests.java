@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactor
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -132,13 +133,14 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 					ServletWebServerFactoryAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.withPropertyValues("server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
+					"server.ssl.key-store-password=secret", "server.ssl.key-password=password")
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class);
@@ -148,13 +150,14 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 					ReactiveWebServerFactoryAutoConfiguration.class))
 			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
-			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.withPropertyValues("server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
+					"server.ssl.key-store-password=secret", "server.ssl.key-password=password")
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
@@ -163,14 +166,15 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void allowsCustomJettySslHandshakeMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 					ServletWebServerFactoryAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettySslHandshakeMetricsBinder.class,
 					MeterRegistryConfiguration.class)
-			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.withPropertyValues("server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
+					"server.ssl.key-store-password=secret", "server.ssl.key-password=password")
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
