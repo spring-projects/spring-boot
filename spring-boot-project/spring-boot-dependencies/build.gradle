@@ -90,7 +90,7 @@ bom {
 			releaseNotes("https://github.com/assertj/assertj/releases/tag/assertj-build-{version}")
 		}
 	}
-	library("Awaitility", "4.2.2") {
+	library("Awaitility", "4.3.0") {
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
