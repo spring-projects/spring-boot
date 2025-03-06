@@ -26,7 +26,7 @@ plugins {
 description = "Spring Boot Testcontainers Support"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	api("org.testcontainers:testcontainers")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))

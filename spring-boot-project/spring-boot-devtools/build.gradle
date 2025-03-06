@@ -40,11 +40,11 @@ artifacts {
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-all"))
-	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 
 	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")

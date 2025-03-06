@@ -27,7 +27,7 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot-all"))
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
@@ -104,7 +104,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
 
-	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-observation-test")

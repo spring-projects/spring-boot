@@ -46,7 +46,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 
-	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("com.hazelcast:hazelcast")
 	optional("io.r2dbc:r2dbc-spi")
