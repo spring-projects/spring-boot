@@ -1798,7 +1798,7 @@ bom {
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
-	library("Pulsar", "4.0.2") {
+	library("Pulsar", "4.0.3") {
 		group("org.apache.pulsar") {
 			imports = [
 				"pulsar-bom"
