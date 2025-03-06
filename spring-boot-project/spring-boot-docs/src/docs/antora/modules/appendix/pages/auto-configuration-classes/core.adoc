@@ -4,3 +4,7 @@
 The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
 
 include::partial$/auto-configuration-classes/spring-boot-autoconfigure.adoc[]
+
+The following auto-configuration classes are from the `spring-boot-autoconfigure-all` module:
+
+include::partial$/auto-configuration-classes/spring-boot-autoconfigure-all.adoc[]

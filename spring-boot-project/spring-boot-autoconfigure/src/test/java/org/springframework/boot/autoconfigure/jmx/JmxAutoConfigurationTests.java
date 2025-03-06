@@ -19,14 +19,11 @@ package org.springframework.boot.autoconfigure.jmx;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
-import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -118,23 +115,6 @@ class JmxAutoConfigurationTests {
 				.withConfiguration(UserConfigurations.of(TestConfiguration.class))
 				.run((context) -> assertThat(context.isRunning()));
 		}
-	}
-
-	@Test
-	void customJmxDomain() {
-		this.contextRunner.withConfiguration(UserConfigurations.of(CustomJmxDomainConfiguration.class))
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(IntegrationMBeanExporter.class);
-				IntegrationMBeanExporter exporter = context.getBean(IntegrationMBeanExporter.class);
-				assertThat(exporter).hasFieldOrPropertyWithValue("domain", "foo.my");
-			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
-	static class CustomJmxDomainConfiguration {
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
