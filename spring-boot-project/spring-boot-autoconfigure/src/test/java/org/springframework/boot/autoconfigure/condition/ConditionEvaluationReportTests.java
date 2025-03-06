@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,12 +28,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.config.UniqueShortNameAutoConfiguration;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
-import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
@@ -163,7 +163,17 @@ class ConditionEvaluationReportTests {
 	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
 			.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
-		assertThat(report.getConditionAndOutcomesBySource()).isNotEmpty();
+		assertThat(report.getUnconditionalClasses()).containsExactly(UnconditionalAutoConfiguration.class.getName());
+		assertThat(report.getConditionAndOutcomesBySource()).containsOnlyKeys(MatchingAutoConfiguration.class.getName(),
+				NonMatchingAutoConfiguration.class.getName());
+		assertThat(report.getConditionAndOutcomesBySource().get(MatchingAutoConfiguration.class.getName()))
+			.satisfies((outcomes) -> assertThat(outcomes).extracting(ConditionAndOutcome::getOutcome)
+				.extracting(ConditionOutcome::isMatch)
+				.containsOnly(true));
+		assertThat(report.getConditionAndOutcomesBySource().get(NonMatchingAutoConfiguration.class.getName()))
+			.satisfies((outcomes) -> assertThat(outcomes).extracting(ConditionAndOutcome::getOutcome)
+				.extracting(ConditionOutcome::isMatch)
+				.containsOnly(false));
 	}
 
 	@Test
@@ -228,18 +238,6 @@ class ConditionEvaluationReportTests {
 		assertThat(reportMessage)
 			.doesNotContain("org.springframework.boot.autoconfigure.condition.config.UniqueShortNameAutoConfiguration");
 		context.close();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(WebMvcAutoConfiguration.class)
-	static class Config {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(MultipartAutoConfiguration.class)
-	static class DuplicateConfig {
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -311,6 +309,35 @@ class ConditionEvaluationReportTests {
 
 		NoMatchBeanCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN, false);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ MatchingAutoConfiguration.class, NonMatchingAutoConfiguration.class,
+			UnconditionalAutoConfiguration.class })
+	static class Config {
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnProperty(name = "com.example.property", matchIfMissing = true)
+	static class MatchingAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnBean(Duration.class)
+	static class NonMatchingAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	static class UnconditionalAutoConfiguration {
+
+		@Bean
+		String example() {
+			return "example";
 		}
 
 	}
