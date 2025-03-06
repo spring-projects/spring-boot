@@ -1,0 +1,40 @@
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.autoconfigure.integration.IntegrationPropertiesEnvironmentPostProcessor
+
+# Background Preinitializers
+org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
+org.springframework.boot.autoconfigure.http.MessageConverterBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.jackson.JacksonBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.validation.JakartaValidationBackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.web.server.tomcat.TomcatBackgroundPreinitializer
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jooq.JaxbNotAvailableExceptionFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
+org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.r2dbc.MissingR2dbcPoolDependencyFailureAnalyzer,\
+org.springframework.boot.autoconfigure.r2dbc.MultipleConnectionPoolConfigurationsFailureAnalyzer,\
+org.springframework.boot.autoconfigure.r2dbc.NoConnectionFactoryBeanFailureAnalyzer
+
+# Template Availability Providers
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
+
+# DataSource Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDatabaseInitializerDetector
+
+# Depends on Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.autoconfigure.batch.JobRepositoryDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.autoconfigure.quartz.SchedulerDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.autoconfigure.session.JdbcIndexedSessionRepositoryDependsOnDatabaseInitializationDetector
