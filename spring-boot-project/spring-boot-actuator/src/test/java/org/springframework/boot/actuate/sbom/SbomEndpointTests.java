@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,11 @@ class SbomEndpointTests {
 
 	@Test
 	void shouldListSboms() {
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
-		this.properties.getAdditional().put("alpha", sbom("classpath:sbom/cyclonedx.json"));
-		this.properties.getAdditional().put("beta", sbom("classpath:sbom/cyclonedx.json"));
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
+		this.properties.getAdditional()
+			.put("alpha", sbom("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json"));
+		this.properties.getAdditional()
+			.put("beta", sbom("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json"));
 		Sboms sboms = createEndpoint().sboms();
 		assertThat(sboms.ids()).containsExactly("alpha", "application", "beta");
 	}
@@ -58,15 +60,16 @@ class SbomEndpointTests {
 	@Test
 	void shouldFailIfDuplicateSbomIdIsRegistered() {
 		// This adds an SBOM with id 'application'
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
-		this.properties.getAdditional().put("application", sbom("classpath:sbom/cyclonedx.json"));
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
+		this.properties.getAdditional()
+			.put("application", sbom("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json"));
 		assertThatIllegalStateException().isThrownBy(this::createEndpoint)
 			.withMessage("Duplicate SBOM registration with id 'application'");
 	}
 
 	@Test
 	void shouldUseLocationFromProperties() throws IOException {
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
 		String content = createEndpoint().sbom("application").getContentAsString(StandardCharsets.UTF_8);
 		assertThat(content).contains("\"bomFormat\" : \"CycloneDX\"");
 	}

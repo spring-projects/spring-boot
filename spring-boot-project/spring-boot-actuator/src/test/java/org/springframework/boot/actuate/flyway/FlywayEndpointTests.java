@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@WithResource(name = "db/migration/V1__init.sql", content = "DROP TABLE IF EXISTS TEST;")
+@WithResource(name = "db/migration/V2__update.sql", content = "DROP TABLE IF EXISTS TEST;")
+@WithResource(name = "db/migration/V3__update.sql", content = "DROP TABLE IF EXISTS TEST;")
 class FlywayEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
