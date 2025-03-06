@@ -227,7 +227,6 @@ class OpenTelemetryResourceAttributesTests {
 	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupNameForServiceNamespace() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.namespace=spring-boot");
 		this.environment.setProperty("spring.application.group", "overriden");
-		;
 		assertThat(getAttributes()).hasSize(3)
 			.containsEntry("service.group", "overriden")
 			.containsEntry("service.namespace", "spring-boot");
