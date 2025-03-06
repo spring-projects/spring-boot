@@ -32,7 +32,6 @@ import zipkin2.reporter.HttpEndpointSuppliers;
 import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.brave.MutableSpanBytesEncoder;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
@@ -54,7 +53,7 @@ import org.springframework.context.annotation.Import;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ HttpClientSenderConfiguration.class, UrlConnectionSenderConfiguration.class })
+	@Import({ HttpClientSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -78,31 +77,6 @@ class ZipkinConfigurations {
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
 			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
 					httpClientBuilder.build(), properties.getReadTimeout());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(URLConnectionSender.class)
-	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class UrlConnectionSenderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(BytesMessageSender.class)
-		URLConnectionSender urlConnectionSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
-				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
-			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
-			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
-			builder.readTimeout((int) properties.getReadTimeout().toMillis());
-			builder.endpointSupplierFactory(endpointSupplierFactory);
-			builder.endpoint(connectionDetails.getSpanEndpoint());
-			builder.encoding(encoding);
-			return builder.build();
 		}
 
 	}

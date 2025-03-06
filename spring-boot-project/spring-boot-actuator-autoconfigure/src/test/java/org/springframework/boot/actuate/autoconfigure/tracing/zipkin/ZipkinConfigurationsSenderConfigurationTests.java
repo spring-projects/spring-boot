@@ -21,10 +21,9 @@ import java.net.http.HttpClient;
 import org.junit.jupiter.api.Test;
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.HttpEndpointSupplier;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.HttpClientSenderConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.UrlConnectionSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -40,7 +39,6 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Wick Dynex
  */
-@SuppressWarnings({ "deprecation", "removal" })
 class ZipkinConfigurationsSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -51,19 +49,14 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
-			assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 		});
 	}
 
 	@Test
-	void shouldUseUrlConnectionSenderIfHttpClientIsNotAvailable() {
-		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
+	void shouldNotProvideHttpClientSenderIfHttpClientIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(HttpClientSenderConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> {
-				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
-				assertThat(context).hasSingleBean(BytesMessageSender.class);
-				assertThat(context).hasSingleBean(URLConnectionSender.class);
-			});
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class));
 	}
 
 	@Test
@@ -77,16 +70,15 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
-				URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
-				assertThat(urlConnectionSender).extracting("delegate.endpointSupplier")
+				ZipkinHttpClientSender httpClientSender = context.getBean(ZipkinHttpClientSender.class);
+				assertThat(httpClientSender).extracting("endpointSupplier")
 					.isInstanceOf(CustomHttpEndpointSupplier.class);
 			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class CustomConfiguration {
+	static class CustomConfiguration {
 
 		@Bean
 		BytesMessageSender customSender() {
@@ -96,7 +88,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class CustomHttpEndpointSupplierFactoryConfiguration {
+	static class CustomHttpEndpointSupplierFactoryConfiguration {
 
 		@Bean
 		HttpEndpointSupplier.Factory httpEndpointSupplier() {
@@ -105,7 +97,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 
 	}
 
-	private static final class CustomHttpEndpointSupplierFactory implements HttpEndpointSupplier.Factory {
+	static class CustomHttpEndpointSupplierFactory implements HttpEndpointSupplier.Factory {
 
 		@Override
 		public HttpEndpointSupplier create(String endpoint) {
@@ -114,7 +106,13 @@ class ZipkinConfigurationsSenderConfigurationTests {
 
 	}
 
-	private record CustomHttpEndpointSupplier(String endpoint) implements HttpEndpointSupplier {
+	static class CustomHttpEndpointSupplier implements HttpEndpointSupplier {
+
+		private final String endpoint;
+
+		CustomHttpEndpointSupplier(String endpoint) {
+			this.endpoint = endpoint;
+		}
 
 		@Override
 		public String get() {
@@ -124,6 +122,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		@Override
 		public void close() {
 		}
+
 	}
 
 }
