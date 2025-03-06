@@ -1,18 +1,11 @@
 {
-  "installation": {
-    "version": "0.0.0-pr-29464-c4b160c",
-    "plugins": {
-      "@nx/gradle": "0.0.0-pr-29464-c4b160c"
-    }
-  },
   "plugins": [
     {
       "plugin": "@nx/gradle",
       "options": {
         "testTargetName": "test",
         "classesTargetName": "classes",
-        "buildTargetName": "build",
-        "ciTargetName": "ci"
+        "buildTargetName": "build"
       }
     }
   ],
