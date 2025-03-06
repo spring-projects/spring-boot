@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -194,9 +194,10 @@ class HibernateMetricsAutoConfigurationTests {
 		}
 
 		private LocalContainerEntityManagerFactoryBean createSessionFactory(DataSource ds) {
-			Map<String, String> jpaProperties = new HashMap<>();
-			jpaProperties.put("hibernate.generate_statistics", "true");
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), jpaProperties, null).dataSource(ds)
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Map
+				.of("hibernate.generate_statistics", "true");
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), jpaPropertiesFactory, null)
+				.dataSource(ds)
 				.packages(PACKAGE_CLASSES)
 				.build();
 		}
