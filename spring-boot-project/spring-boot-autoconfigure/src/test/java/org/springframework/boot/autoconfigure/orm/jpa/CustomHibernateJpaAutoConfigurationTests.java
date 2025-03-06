@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,8 @@ class CustomHibernateJpaAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans")
 			.run((context) -> {
 				HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
-				Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
+				Map<String, Object> hibernateProperties = jpaConfiguration
+					.getVendorProperties(context.getBean(DataSource.class));
 				assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
 						NamingStrategyConfiguration.implicitNamingStrategy);
 				assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
@@ -93,7 +94,8 @@ class CustomHibernateJpaAutoConfigurationTests {
 	void hibernatePropertiesCustomizersAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(HibernatePropertiesCustomizerConfiguration.class).run((context) -> {
 			HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
-			Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
+			Map<String, Object> hibernateProperties = jpaConfiguration
+				.getVendorProperties(context.getBean(DataSource.class));
 			assertThat(hibernateProperties).containsEntry("test.counter", 2);
 		});
 	}

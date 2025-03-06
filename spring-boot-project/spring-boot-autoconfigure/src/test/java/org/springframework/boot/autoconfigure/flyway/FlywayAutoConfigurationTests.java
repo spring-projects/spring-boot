@@ -65,11 +65,14 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.Fly
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -487,6 +490,36 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJpaConfiguration.class)
 			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	@WithMetaInfPersistenceXmlResource
+	void jpaApplyDdl() {
+		this.contextRunner
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
+			.run((context) -> {
+				Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+				assertThat(jpaProperties).doesNotContainKey("hibernate.hbm2ddl.auto");
+			});
+	}
+
+	@Test
+	@WithMetaInfPersistenceXmlResource
+	void jpaAndMultipleDataSourcesApplyDdl() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
+			.withUserConfiguration(JpaWithMultipleDataSourcesConfiguration.class)
+			.run((context) -> {
+				LocalContainerEntityManagerFactoryBean normalEntityManagerFactoryBean = context
+					.getBean("&normalEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
+				assertThat(normalEntityManagerFactoryBean.getJpaPropertyMap()).containsEntry("configured", "normal")
+					.containsEntry("hibernate.hbm2ddl.auto", "create-drop");
+				LocalContainerEntityManagerFactoryBean flywayEntityManagerFactoryBean = context
+					.getBean("&flywayEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
+				assertThat(flywayEntityManagerFactoryBean.getJpaPropertyMap()).containsEntry("configured", "flyway")
+					.doesNotContainKey("hibernate.hbm2ddl.auto");
+			});
 	}
 
 	@Test
@@ -962,6 +995,13 @@ class FlywayAutoConfigurationTests {
 		};
 	}
 
+	private static Map<String, ?> configureJpaProperties() {
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("configured", "manually");
+		properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+		return properties;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FlywayDataSourceConfiguration {
 
@@ -1057,10 +1097,8 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource) {
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("configured", "manually");
-			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), properties, null)
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), (ds) -> configureJpaProperties(),
+					null)
 				.dataSource(dataSource)
 				.build();
 		}
@@ -1083,12 +1121,50 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("configured", "manually");
-			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), properties, null)
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
+					(datasource) -> configureJpaProperties(), null)
 				.dataSource(this.dataSource)
 				.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JpaWithMultipleDataSourcesConfiguration {
+
+		@Bean
+		@Primary
+		DataSource normalDataSource() {
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.generateUniqueName(true)
+				.build();
+		}
+
+		@Bean
+		@Primary
+		LocalContainerEntityManagerFactoryBean normalEntityManagerFactory(EntityManagerFactoryBuilder builder,
+				DataSource normalDataSource) {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "normal");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return builder.dataSource(normalDataSource).properties(properties).build();
+		}
+
+		@Bean
+		@FlywayDataSource
+		DataSource flywayDataSource() {
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.generateUniqueName(true)
+				.build();
+		}
+
+		@Bean
+		LocalContainerEntityManagerFactoryBean flywayEntityManagerFactory(EntityManagerFactoryBuilder builder,
+				@FlywayDataSource DataSource flywayDataSource) {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "flyway");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return builder.dataSource(flywayDataSource).properties(properties).build();
 		}
 
 	}

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -33,6 +35,10 @@ import java.util.function.Consumer;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import liquibase.Liquibase;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
@@ -40,6 +46,7 @@ import liquibase.command.core.helpers.ShowSummaryArgument;
 import liquibase.integration.spring.Customizer;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.ui.UIServiceEnum;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -49,6 +56,7 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -56,6 +64,8 @@ import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -71,6 +81,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -551,6 +562,38 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	@WithDbChangelogMasterYamlResource
+	@WithMetaInfPersistenceXmlResource
+	void jpaApplyDdl() {
+		this.contextRunner
+			.withConfiguration(
+					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
+			.run((context) -> {
+				Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getJpaPropertyMap();
+				assertThat(jpaProperties).doesNotContainKey("hibernate.hbm2ddl.auto");
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
+	@WithMetaInfPersistenceXmlResource
+	void jpaAndMultipleDataSourcesApplyDdl() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
+			.withUserConfiguration(JpaWithMultipleDataSourcesConfiguration.class)
+			.run((context) -> {
+				LocalContainerEntityManagerFactoryBean normalEntityManagerFactoryBean = context
+					.getBean("&normalEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
+				assertThat(normalEntityManagerFactoryBean.getJpaPropertyMap()).containsEntry("configured", "normal")
+					.containsEntry("hibernate.hbm2ddl.auto", "create-drop");
+				LocalContainerEntityManagerFactoryBean liquibaseEntityManagerFactory = context
+					.getBean("&liquibaseEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
+				assertThat(liquibaseEntityManagerFactory.getJpaPropertyMap()).containsEntry("configured", "liquibase")
+					.doesNotContainKey("hibernate.hbm2ddl.auto");
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
 	void userConfigurationJdbcTemplateDependency() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class))
 			.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
@@ -645,6 +688,46 @@ class LiquibaseAutoConfigurationTests {
 			liquibase.setShouldRun(true);
 			liquibase.setDataSource(dataSource);
 			return liquibase;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JpaWithMultipleDataSourcesConfiguration {
+
+		@Bean
+		@Primary
+		DataSource normalDataSource() {
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.generateUniqueName(true)
+				.build();
+		}
+
+		@Bean
+		@Primary
+		LocalContainerEntityManagerFactoryBean normalEntityManagerFactory(EntityManagerFactoryBuilder builder,
+				DataSource normalDataSource) {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "normal");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return builder.dataSource(normalDataSource).properties(properties).build();
+		}
+
+		@Bean
+		@LiquibaseDataSource
+		DataSource liquibaseDataSource() {
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.generateUniqueName(true)
+				.build();
+		}
+
+		@Bean
+		LocalContainerEntityManagerFactoryBean liquibaseEntityManagerFactory(EntityManagerFactoryBuilder builder,
+				@LiquibaseDataSource DataSource liquibaseDataSource) {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "liquibase");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return builder.dataSource(liquibaseDataSource).properties(properties).build();
 		}
 
 	}
@@ -782,6 +865,76 @@ class LiquibaseAutoConfigurationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	@interface WithDbChangelogMasterYamlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/persistence.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence https://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+						<persistence-unit name="manually-configured">
+							<class>org.springframework.boot.autoconfigure.flyway.FlywayAutoConfigurationTests$City</class>
+							<exclude-unlisted-classes>true</exclude-unlisted-classes>
+						</persistence-unit>
+					</persistence>
+					""")
+	@interface WithMetaInfPersistenceXmlResource {
+
+	}
+
+	@Entity
+	public static class City implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		@Id
+		@GeneratedValue
+		private Long id;
+
+		@Column(nullable = false)
+		private String name;
+
+		@Column(nullable = false)
+		private String state;
+
+		@Column(nullable = false)
+		private String country;
+
+		@Column(nullable = false)
+		private String map;
+
+		protected City() {
+		}
+
+		City(String name, String state, String country, String map) {
+			this.name = name;
+			this.state = state;
+			this.country = country;
+			this.map = map;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getState() {
+			return this.state;
+		}
+
+		public String getCountry() {
+			return this.country;
+		}
+
+		public String getMap() {
+			return this.map;
+		}
+
+		@Override
+		public String toString() {
+			return getName() + "," + getState() + "," + getCountry();
+		}
 
 	}
 

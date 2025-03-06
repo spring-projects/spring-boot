@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,8 +138,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	@Override
-	protected Map<String, Object> getVendorProperties() {
-		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
+	protected Map<String, Object> getVendorProperties(DataSource dataSource) {
+		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(dataSource);
 		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
 				getProperties().getProperties(), new HibernateSettings().ddlAuto(defaultDdlMode)
 					.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
