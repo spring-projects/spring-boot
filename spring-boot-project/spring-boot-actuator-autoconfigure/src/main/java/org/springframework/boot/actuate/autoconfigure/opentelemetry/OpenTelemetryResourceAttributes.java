@@ -86,7 +86,7 @@ public final class OpenTelemetryResourceAttributes {
 	 * <p>
 	 * Additionally, {@code spring.application.name} or {@code unknown_service} will be
 	 * used as the default for {@code service.name}, and {@code spring.application.group}
-	 * will serve as the default for {@code service.group}.
+	 * will serve as the default for {@code service.group} and {@code service.namespace}.
 	 * @param consumer the {@link BiConsumer} to apply
 	 */
 	public void applyTo(BiConsumer<String, String> consumer) {
@@ -97,8 +97,9 @@ public final class OpenTelemetryResourceAttributes {
 				attributes.put(name, value);
 			}
 		});
-		attributes.computeIfAbsent("service.name", (k) -> getApplicationName());
-		attributes.computeIfAbsent("service.group", (k) -> getApplicationGroup());
+		attributes.computeIfAbsent("service.name", (key) -> getApplicationName());
+		attributes.computeIfAbsent("service.group", (key) -> getApplicationGroup());
+		attributes.computeIfAbsent("service.namespace", (key) -> getServiceNamespace());
 		attributes.forEach(consumer);
 	}
 
@@ -106,9 +107,19 @@ public final class OpenTelemetryResourceAttributes {
 		return this.environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
 	}
 
+	/**
+	 * Returns the application group.
+	 * @return the application group
+	 * @deprecated since 3.5.0 for removal in 3.7.0
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	private String getApplicationGroup() {
 		String applicationGroup = this.environment.getProperty("spring.application.group");
 		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
+	}
+
+	private String getServiceNamespace() {
+		return this.environment.getProperty("spring.application.group");
 	}
 
 	/**
