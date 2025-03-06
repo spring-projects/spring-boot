@@ -29,6 +29,8 @@ import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetr
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link OtlpMetricsPropertiesConfigAdapter}.
@@ -52,6 +54,20 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
 		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties);
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetAdapterUrlReturnsDefault() {
+		assertThat(this.properties.getUrl()).isNull();
+		assertThat(createAdapter().url()).isEqualTo("http://localhost:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetThanUseOtlpConfigUrlAsFallback() {
+		assertThat(this.properties.getUrl()).isNull();
+		OtlpMetricsPropertiesConfigAdapter adapter = spy(createAdapter());
+		given(adapter.get("management.otlp.metrics.export.url")).willReturn("https://my-endpoint/v1/metrics");
+		assertThat(adapter.url()).isEqualTo("https://my-endpoint/v1/metrics");
 	}
 
 	@Test
