@@ -18,13 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 import io.opentelemetry.api.internal.PercentEscaper;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.mock.env.MockEnvironment;
@@ -39,22 +37,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class OpenTelemetryResourceAttributesTests {
 
-	private static Random random;
-
-	private static final PercentEscaper escaper = PercentEscaper.create();
-
 	private final MockEnvironment environment = new MockEnvironment();
 
 	private final Map<String, String> environmentVariables = new LinkedHashMap<>();
 
 	private final Map<String, String> resourceAttributes = new LinkedHashMap<>();
-
-	@BeforeAll
-	static void beforeAll() {
-		long seed = new Random().nextLong();
-		System.out.println(OpenTelemetryResourceAttributesTests.class.getSimpleName() + " seed: " + seed);
-		random = new Random(seed);
-	}
 
 	@Test
 	void otelServiceNameShouldTakePrecedenceOverOtelResourceAttributes() {
@@ -73,13 +60,13 @@ class OpenTelemetryResourceAttributesTests {
 	@Test
 	void otelResourceAttributes() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES",
-				", ,,key1=value1,key2= value2, key3=value3,key4=,=value5,key6,=,key7=spring+boot,key8=ś");
+				", ,,key1=value1,key2= value2, key3=value3,key4=,=value5,key6,=,key7=%20spring+boot%20,key8=ś");
 		assertThat(getAttributes()).hasSize(7)
 			.containsEntry("key1", "value1")
 			.containsEntry("key2", "value2")
 			.containsEntry("key3", "value3")
 			.containsEntry("key4", "")
-			.containsEntry("key7", "spring+boot")
+			.containsEntry("key7", " spring+boot ")
 			.containsEntry("key8", "ś")
 			.containsEntry("service.name", "unknown_service");
 	}
@@ -120,12 +107,14 @@ class OpenTelemetryResourceAttributesTests {
 
 	@Test
 	void otelResourceAttributeValuesShouldBePercentDecoded() {
-		Stream.generate(this::generateRandomString).limit(10000).forEach((value) -> {
-			this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=" + escaper.escape(value));
-			assertThat(getAttributes()).hasSize(2)
-				.containsEntry("service.name", "unknown_service")
-				.containsEntry("key", value);
-		});
+		PercentEscaper escaper = PercentEscaper.create();
+		String value = IntStream.range(32, 127)
+			.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+			.toString();
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=" + escaper.escape(value));
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("key", value);
 	}
 
 	@Test
@@ -206,10 +195,10 @@ class OpenTelemetryResourceAttributesTests {
 	@Test
 	void resourceAttributesShouldTakePrecedenceOverApplicationGroupNameForPopulatingServiceNamespace() {
 		this.resourceAttributes.put("service.namespace", "spring-boot-app");
-		this.environment.setProperty("spring.application.group", "overriden");
+		this.environment.setProperty("spring.application.group", "overridden");
 		assertThat(getAttributes()).hasSize(3)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "overriden")
+			.containsEntry("service.group", "overridden")
 			.containsEntry("service.namespace", "spring-boot-app");
 	}
 
@@ -226,9 +215,9 @@ class OpenTelemetryResourceAttributesTests {
 	@Test
 	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupNameForServiceNamespace() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.namespace=spring-boot");
-		this.environment.setProperty("spring.application.group", "overriden");
+		this.environment.setProperty("spring.application.group", "overridden");
 		assertThat(getAttributes()).hasSize(3)
-			.containsEntry("service.group", "overriden")
+			.containsEntry("service.group", "overridden")
 			.containsEntry("service.namespace", "spring-boot");
 	}
 
@@ -248,13 +237,6 @@ class OpenTelemetryResourceAttributesTests {
 		new OpenTelemetryResourceAttributes(this.environment, this.resourceAttributes, this.environmentVariables::get)
 			.applyTo(attributes::put);
 		return attributes;
-	}
-
-	private String generateRandomString() {
-		return random.ints(32, 127)
-			.limit(64)
-			.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-			.toString();
 	}
 
 }
