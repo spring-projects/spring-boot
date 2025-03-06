@@ -23,13 +23,14 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.org.webcompere.systemstubs.SystemStubs;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link OtlpMetricsPropertiesConfigAdapter}.
@@ -57,19 +58,16 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 
 	@Test
 	void whenPropertiesUrlIsNotSetAdapterUrlReturnsDefault() {
+		assertThat(this.properties.getUrl()).isNull();
 		assertThat(createAdapter().url()).isEqualTo("http://localhost:4318/v1/metrics");
 	}
 
 	@Test
-	void whenPropertiesUrlIsNotSetAndOtelExporterOtlpEndpointIsSetAdapterUrlUsesIt() throws Exception {
-		SystemStubs.withEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT", "https://my-endpoint")
-			.execute(() -> assertThat(createAdapter().url()).isEqualTo("https://my-endpoint/v1/metrics"));
-	}
-
-	@Test
-	void whenPropertiesUrlIsNotSetAndOtelExporterOtlpMetricsEndpointIsSetAdapterUrlUsesIt() throws Exception {
-		SystemStubs.withEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT", "https://my-endpoint")
-			.execute(() -> assertThat(createAdapter().url()).isEqualTo("https://my-endpoint/v1/metrics"));
+	void whenPropertiesUrlIsNotSetThanUseOtlpConfigUrlAsFallback() {
+		assertThat(this.properties.getUrl()).isNull();
+		OtlpMetricsPropertiesConfigAdapter adapter = spy(createAdapter());
+		given(adapter.get("management.otlp.metrics.export.url")).willReturn("https://my-endpoint/v1/metrics");
+		assertThat(adapter.url()).isEqualTo("https://my-endpoint/v1/metrics");
 	}
 
 	@Test
