@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -132,13 +133,14 @@ class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources("saml-certificate")
 	void backOffIfSaml2RelyingPartyAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class))
 			.withPropertyValues(
 					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
 					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request=false",
 					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
+					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.verification.credentials[0].certificate-location=classpath:saml-certificate")
 			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}

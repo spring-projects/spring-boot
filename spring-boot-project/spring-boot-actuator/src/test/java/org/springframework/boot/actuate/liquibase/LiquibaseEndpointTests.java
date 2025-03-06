@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Leo Li
  */
+@WithResource(name = "db/changelog/db.changelog-master.yaml", content = """
+		databaseChangeLog:
+		  - changeSet:
+		      id: 1
+		      author: test
+		""")
 class LiquibaseEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -83,6 +90,7 @@ class LiquibaseEndpointTests {
 	}
 
 	@Test
+	@WithResource(name = "db/create-custom-schema.sql", content = "CREATE SCHEMA CUSTOMSCHEMA;")
 	void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
 			.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA")
@@ -122,6 +130,12 @@ class LiquibaseEndpointTests {
 	}
 
 	@Test
+	@WithResource(name = "db/changelog/db.changelog-master-backup.yaml", content = """
+			databaseChangeLog:
+			  - changeSet:
+			      id: 1
+			      author: test
+			""")
 	void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
 		this.contextRunner.withUserConfiguration(Config.class, MultipleDataSourceLiquibaseConfiguration.class)
 			.run((context) -> {
