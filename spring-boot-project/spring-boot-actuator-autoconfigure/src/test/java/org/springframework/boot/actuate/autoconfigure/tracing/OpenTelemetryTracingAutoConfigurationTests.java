@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.data.SpanData;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -172,6 +173,8 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanProcessors.class);
 			assertThat(context).hasBean("customSpanExporters");
 			assertThat(context).hasSingleBean(SpanExporters.class);
+			assertThat(context).hasBean("customBatchSpanProcessor");
+			assertThat(context).hasSingleBean(BatchSpanProcessor.class);
 		});
 	}
 
@@ -400,6 +403,11 @@ class OpenTelemetryTracingAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	private static final class CustomConfiguration {
+
+		@Bean
+		BatchSpanProcessor customBatchSpanProcessor() {
+			return mock(BatchSpanProcessor.class);
+		}
 
 		@Bean
 		SpanProcessors customSpanProcessors() {
