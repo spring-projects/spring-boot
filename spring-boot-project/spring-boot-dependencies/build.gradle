@@ -1358,7 +1358,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-clean-plugin/releases/tag/maven-clean-plugin-{version}")
 		}
 	}
-	library("Maven Compiler Plugin", "3.13.0") {
+	library("Maven Compiler Plugin", "3.14.0") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
