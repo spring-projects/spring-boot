@@ -187,7 +187,7 @@ class StructuredLoggingJsonPropertiesTests {
 		}
 
 		@Test
-		void shouldReturnFalseWhenPrinterIsEmpty() {
+		void hasCustomPrinterShouldReturnFalseWhenPrinterIsEmpty() {
 			StackTrace stackTrace = new StackTrace("", null, null, null, null, null);
 			assertThat(stackTrace.hasCustomPrinter()).isFalse();
 		}

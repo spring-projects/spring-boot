@@ -25,27 +25,27 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
-import org.springframework.boot.testcontainers.service.connection.PemTrustStore;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.Ssl;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke tests for Elasticsearch with SSL.
+ * Smoke tests for Elasticsearch 8.
  *
  * @author Moritz Halbritter
  */
 @Testcontainers(disabledWithoutDocker = true)
-@DataElasticsearchTest(
-		properties = { "spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s" })
-class SampleElasticSearchSslApplicationTests {
+@DataElasticsearchTest
+class SampleElasticsearch8ApplicationTests {
 
 	@Container
 	@ServiceConnection
-	@PemTrustStore(certificate = "classpath:ssl.crt")
-	static final ElasticsearchContainer elasticSearch = TestImage.container(SecureElasticsearchContainer.class);
+	@Ssl
+	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH_8.toString())
+		.withPassword("my-custom-password");
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;

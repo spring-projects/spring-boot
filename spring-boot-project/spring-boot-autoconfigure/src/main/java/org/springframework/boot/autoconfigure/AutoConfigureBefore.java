@@ -44,7 +44,7 @@ import org.springframework.context.annotation.DependsOn;
 public @interface AutoConfigureBefore {
 
 	/**
-	 * The auto-configure classes that should have not yet been applied.
+	 * The auto-configuration classes that should have not yet been applied.
 	 * @return the classes
 	 */
 	Class<?>[] value() default {};

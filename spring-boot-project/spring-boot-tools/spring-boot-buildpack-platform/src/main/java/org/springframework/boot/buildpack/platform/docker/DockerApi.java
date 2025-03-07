@@ -87,7 +87,7 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(HttpTransport.create(null), DockerLog.toSystemOut());
+		this(null);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class DockerApi {
 	 * @since 2.4.0
 	 */
 	public DockerApi(DockerHostConfiguration dockerHost) {
-		this(HttpTransport.create(dockerHost), DockerLog.toSystemOut());
+		this(dockerHost, DockerLog.toSystemOut());
 	}
 
 	/**

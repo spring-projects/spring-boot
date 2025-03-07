@@ -169,7 +169,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 /**
  * Base for testing classes that extends {@link AbstractServletWebServerFactory}.
@@ -1193,7 +1193,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = getFactory().getWebServer((servletContext) -> servletContext.addListener(listener));
 		this.webServer.start();
 		this.webServer.stop();
-		then(listener).should(times(0)).contextDestroyed(any(ServletContextEvent.class));
+		then(listener).should(never()).contextDestroyed(any(ServletContextEvent.class));
 	}
 
 	@Test

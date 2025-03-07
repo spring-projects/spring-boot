@@ -26,26 +26,23 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testcontainers.service.connection.Ssl;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke tests for Elasticsearch 8.
+ * Smoke tests for Elasticsearch.
  *
  * @author Moritz Halbritter
  */
 @Testcontainers(disabledWithoutDocker = true)
 @DataElasticsearchTest
-class SampleElasticSearch8ApplicationTests {
+class SampleElasticsearchApplicationTests {
 
 	@Container
 	@ServiceConnection
-	@Ssl
-	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH_8.toString())
-		.withPassword("my-custom-password");
+	static final ElasticsearchContainer elasticSearch = TestImage.container(ElasticsearchContainer.class);
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
