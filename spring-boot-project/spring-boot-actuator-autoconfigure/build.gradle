@@ -196,7 +196,7 @@ dependencies {
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
-		excludeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+		excludeTestsMatching("*DocumentationTests")
 	}
 }
 
@@ -205,7 +205,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	classpath = testing.suites.test.sources.runtimeClasspath
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
-		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+		includeTestsMatching("*DocumentationTests")
 	}
 	outputs.dir(layout.buildDirectory.dir("generated-snippets"))
 	develocity {

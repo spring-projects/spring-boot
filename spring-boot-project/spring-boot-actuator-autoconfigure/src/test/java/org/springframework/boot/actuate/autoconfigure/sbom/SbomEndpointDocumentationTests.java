@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.sbom;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.sbom.SbomEndpoint;
 import org.springframework.boot.actuate.sbom.SbomEndpointWebExtension;
 import org.springframework.boot.actuate.sbom.SbomProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 
@@ -52,7 +52,6 @@ class SbomEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
