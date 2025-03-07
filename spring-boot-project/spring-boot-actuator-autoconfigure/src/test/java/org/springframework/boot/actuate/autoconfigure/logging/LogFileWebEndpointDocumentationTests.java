@@ -56,7 +56,7 @@ class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 		LogFileWebEndpoint endpoint() {
 			MockEnvironment environment = new MockEnvironment();
 			environment.setProperty("logging.file.name",
-					"src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log");
+					"src/test/resources/org/springframework/boot/actuate/autoconfigure/logging/sample.log");
 			return new LogFileWebEndpoint(LogFile.get(environment), null);
 		}
 
