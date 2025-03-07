@@ -513,6 +513,14 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).containsPattern("Each image building cache can be configured only once");
 	}
 
+	@TestTemplate
+	void failsWithIncompatiblePlatform() throws IOException {
+		writeMainClass();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
+		assertThat(result.getOutput()).contains(
+				"Image platform mismatch detected. The configured platform 'invalid/platform' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1'. Requested platform 'invalid/platform' but got 'linux/amd64'");
+	}
+
 	private void writeMainClass() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/example");
 		examplePackage.mkdirs();
