@@ -44,9 +44,10 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Eddú Meléndez
  * @author Thomas Kåsene
  * @author Moritz Halbritter
+ * @author Dimitrii Lipiridi
  * @since 1.5.0
  */
-public class ConcurrentKafkaListenerContainerFactoryConfigurer {
+public class ConcurrentKafkaListenerContainerFactoryConfigurer<K, V> {
 
 	private KafkaProperties properties;
 
@@ -54,21 +55,21 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	private RecordMessageConverter recordMessageConverter;
 
-	private RecordFilterStrategy<Object, Object> recordFilterStrategy;
+	private RecordFilterStrategy<? super K, ? super V> recordFilterStrategy;
 
-	private KafkaTemplate<Object, Object> replyTemplate;
+	private KafkaTemplate<?, ?> replyTemplate;
 
-	private KafkaAwareTransactionManager<Object, Object> transactionManager;
+	private KafkaAwareTransactionManager<?, ?> transactionManager;
 
 	private ConsumerAwareRebalanceListener rebalanceListener;
 
 	private CommonErrorHandler commonErrorHandler;
 
-	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
+	private AfterRollbackProcessor<? super K, ? super V> afterRollbackProcessor;
 
-	private RecordInterceptor<Object, Object> recordInterceptor;
+	private RecordInterceptor<K, V> recordInterceptor;
 
-	private BatchInterceptor<Object, Object> batchInterceptor;
+	private BatchInterceptor<K, V> batchInterceptor;
 
 	private Function<MessageListenerContainer, String> threadNameSupplier;
 
@@ -102,7 +103,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link RecordFilterStrategy} to use to filter incoming records.
 	 * @param recordFilterStrategy the record filter strategy
 	 */
-	void setRecordFilterStrategy(RecordFilterStrategy<Object, Object> recordFilterStrategy) {
+	void setRecordFilterStrategy(RecordFilterStrategy<? super K, ? super V> recordFilterStrategy) {
 		this.recordFilterStrategy = recordFilterStrategy;
 	}
 
@@ -110,7 +111,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaTemplate} to use to send replies.
 	 * @param replyTemplate the reply template
 	 */
-	void setReplyTemplate(KafkaTemplate<Object, Object> replyTemplate) {
+	void setReplyTemplate(KafkaTemplate<?, ?> replyTemplate) {
 		this.replyTemplate = replyTemplate;
 	}
 
@@ -118,7 +119,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaAwareTransactionManager} to use.
 	 * @param transactionManager the transaction manager
 	 */
-	void setTransactionManager(KafkaAwareTransactionManager<Object, Object> transactionManager) {
+	void setTransactionManager(KafkaAwareTransactionManager<?, ?> transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -144,7 +145,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
-	void setAfterRollbackProcessor(AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
+	void setAfterRollbackProcessor(AfterRollbackProcessor<? super K, ? super V> afterRollbackProcessor) {
 		this.afterRollbackProcessor = afterRollbackProcessor;
 	}
 
@@ -152,7 +153,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link RecordInterceptor} to use.
 	 * @param recordInterceptor the record interceptor.
 	 */
-	void setRecordInterceptor(RecordInterceptor<Object, Object> recordInterceptor) {
+	void setRecordInterceptor(RecordInterceptor<K, V> recordInterceptor) {
 		this.recordInterceptor = recordInterceptor;
 	}
 
@@ -160,7 +161,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link BatchInterceptor} to use.
 	 * @param batchInterceptor the batch interceptor.
 	 */
-	void setBatchInterceptor(BatchInterceptor<Object, Object> batchInterceptor) {
+	void setBatchInterceptor(BatchInterceptor<K, V> batchInterceptor) {
 		this.batchInterceptor = batchInterceptor;
 	}
 
@@ -187,14 +188,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
-	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerFactory,
-			ConsumerFactory<Object, Object> consumerFactory) {
+	public void configure(ConcurrentKafkaListenerContainerFactory<K, V> listenerFactory,
+			ConsumerFactory<? super K, ? super V> consumerFactory) {
 		listenerFactory.setConsumerFactory(consumerFactory);
 		configureListenerFactory(listenerFactory);
 		configureContainer(listenerFactory.getContainerProperties());
 	}
 
-	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
+	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<K, V> factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.spy;
  */
 class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 
-	private ConcurrentKafkaListenerContainerFactoryConfigurer configurer;
+	private ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> configurer;
 
 	private ConcurrentKafkaListenerContainerFactory<Object, Object> factory;
 
@@ -50,7 +50,7 @@ class ConcurrentKafkaListenerContainerFactoryConfigurerTests {
 	@BeforeEach
 	@SuppressWarnings("unchecked")
 	void setUp() {
-		this.configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
+		this.configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer<>();
 		this.properties = new KafkaProperties();
 		this.configurer.setKafkaProperties(this.properties);
 		this.factory = spy(new ConcurrentKafkaListenerContainerFactory<>());
