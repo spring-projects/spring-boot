@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -236,14 +236,14 @@ public class Builder {
 					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
 							StringUtils.capitalize(type.getDescription()), reference, this.domain));
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
-				return pullImage(reference, type);
+				return checkPlatformMismatch(pullImage(reference, type), reference);
 			}
 			try {
-				return Builder.this.docker.image().inspect(reference);
+				return checkPlatformMismatch(Builder.this.docker.image().inspect(reference), reference);
 			}
 			catch (DockerEngineException ex) {
 				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
-					return pullImage(reference, type);
+					return checkPlatformMismatch(pullImage(reference, type), reference);
 				}
 				throw ex;
 			}
@@ -258,6 +258,26 @@ public class Builder {
 				this.defaultPlatform = ImagePlatform.from(image);
 			}
 			return image;
+		}
+
+		private Image checkPlatformMismatch(Image image, ImageReference imageReference) {
+			if (this.defaultPlatform != null) {
+				ImagePlatform imagePlatform = ImagePlatform.from(image);
+				if (!imagePlatform.equals(this.defaultPlatform)) {
+					throw new PlatformMismatchException(imageReference, this.defaultPlatform, imagePlatform);
+				}
+			}
+			return image;
+		}
+
+	}
+
+	private static final class PlatformMismatchException extends RuntimeException {
+
+		private PlatformMismatchException(ImageReference imageReference, ImagePlatform requestedPlatform,
+				ImagePlatform actualPlatform) {
+			super("Image platform mismatch detected. The configured platform '%s' is not supported by the image '%s'. Requested platform '%s' but got '%s'"
+				.formatted(requestedPlatform, imageReference, requestedPlatform, actualPlatform));
 		}
 
 	}
