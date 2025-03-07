@@ -100,6 +100,13 @@ bom {
 			]
 		}
 	}
+	library("JSR 305", "3.0.2") {
+		group("com.google.code.findbugs") {
+			modules = [
+				"jsr305"
+			]
+		}
+	}
 	library("Maven", "${mavenVersion}") {
 		group("org.apache.maven") {
 			modules = [
