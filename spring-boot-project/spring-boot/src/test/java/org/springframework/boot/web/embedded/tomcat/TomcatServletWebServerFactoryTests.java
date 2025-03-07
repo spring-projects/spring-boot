@@ -150,12 +150,20 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void defaultTomcatListeners() {
 		TomcatServletWebServerFactory factory = getFactory();
-		if (AprLifecycleListener.isAprAvailable()) {
-			assertThat(factory.getContextLifecycleListeners()).singleElement().isInstanceOf(AprLifecycleListener.class);
-		}
-		else {
-			assertThat(factory.getContextLifecycleListeners()).isEmpty();
-		}
+		assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+	}
+
+	@Test
+	void aprShouldBeOptIn() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.setUseApr(true);
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
+			.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test

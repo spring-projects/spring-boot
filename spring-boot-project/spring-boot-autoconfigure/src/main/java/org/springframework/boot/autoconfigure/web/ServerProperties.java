@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Http2;
@@ -513,6 +514,12 @@ public class ServerProperties {
 		 */
 		private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
 
+		/**
+		 * Whether to use APR. If running on Java below 24, the default value is
+		 * 'WHEN_AVAILABLE'. On Java 24 or later, the default value is 'NEVER'.
+		 */
+		private UseApr useApr;
+
 		public DataSize getMaxHttpFormPostSize() {
 			return this.maxHttpFormPostSize;
 		}
@@ -667,6 +674,18 @@ public class ServerProperties {
 
 		public void setMaxHttpResponseHeaderSize(DataSize maxHttpResponseHeaderSize) {
 			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
+		}
+
+		public UseApr getUseApr() {
+			if (this.useApr == null) {
+				return JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.TWENTY_FOUR) ? UseApr.NEVER
+						: UseApr.WHEN_AVAILABLE;
+			}
+			return this.useApr;
+		}
+
+		public void setUseApr(UseApr useApr) {
+			this.useApr = useApr;
 		}
 
 		/**
@@ -1915,6 +1934,28 @@ public class ServerProperties {
 		 * Ignore X-Forwarded-* headers.
 		 */
 		NONE
+
+	}
+
+	/**
+	 * When to use APR.
+	 */
+	public enum UseApr {
+
+		/**
+		 * Always use APR and fail if it's not available.
+		 */
+		ALWAYS,
+
+		/**
+		 * Use APR if it is available.
+		 */
+		WHEN_AVAILABLE,
+
+		/**
+		 * Never user APR.
+		 */
+		NEVER
 
 	}
 

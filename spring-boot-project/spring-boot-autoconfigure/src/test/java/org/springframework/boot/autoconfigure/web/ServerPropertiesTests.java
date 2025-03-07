@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,12 @@ import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import reactor.netty.http.HttpDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
+import org.springframework.boot.autoconfigure.web.ServerProperties.UseApr;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -69,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Chris Bono
  * @author Parviz Rozikov
  * @author Lasse Wulff
+ * @author Moritz Halbritter
  */
 @DirtiesUrlFactories
 class ServerPropertiesTests {
@@ -492,6 +496,18 @@ class ServerPropertiesTests {
 	void nettyInitialBufferSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getInitialBufferSize().toBytes())
 			.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
+	}
+
+	@Test
+	@EnabledForJreRange(max = JRE.JAVA_23)
+	void shouldDefaultAprToWhenAvailableUntilJava23() {
+		assertThat(this.properties.getTomcat().getUseApr()).isEqualTo(UseApr.WHEN_AVAILABLE);
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_24)
+	void shouldDefaultAprToNeverOnJava24AndLater() {
+		assertThat(this.properties.getTomcat().getUseApr()).isEqualTo(UseApr.NEVER);
 	}
 
 	private Connector getDefaultConnector() {

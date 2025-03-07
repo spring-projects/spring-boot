@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,8 +135,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
-
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
 	private Set<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
@@ -158,6 +156,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private int backgroundProcessorDelay;
 
 	private boolean disableMBeanRegistry = true;
+
+	private boolean useApr;
 
 	/**
 	 * Create a new {@link TomcatServletWebServerFactory} instance.
@@ -184,13 +184,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		super(contextPath, port);
 	}
 
-	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
+	private List<LifecycleListener> getDefaultServerLifecycleListeners() {
 		ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
-		if (!NativeDetector.inNativeImage()) {
-			AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
-			if (AprLifecycleListener.isAprAvailable()) {
-				lifecycleListeners.add(aprLifecycleListener);
-			}
+		if (!NativeDetector.inNativeImage() && this.useApr) {
+			lifecycleListeners.add(new AprLifecycleListener());
 		}
 		return lifecycleListeners;
 	}
@@ -203,7 +200,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
-		for (LifecycleListener listener : this.serverLifecycleListeners) {
+		for (LifecycleListener listener : getDefaultServerLifecycleListeners()) {
 			tomcat.getServer().addLifecycleListener(listener);
 		}
 		Connector connector = new Connector(this.protocol);
@@ -782,6 +779,15 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
 		this.disableMBeanRegistry = disableMBeanRegistry;
+	}
+
+	/**
+	 * Whether to use APR.
+	 * @param useApr whether to use APR
+	 * @since 3.4.4
+	 */
+	public void setUseApr(boolean useApr) {
+		this.useApr = useApr;
 	}
 
 	/**
