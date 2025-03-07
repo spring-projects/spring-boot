@@ -30,6 +30,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Artem Bilan
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties("spring.integration")
@@ -369,6 +370,11 @@ public class IntegrationProperties {
 		 */
 		private String cron;
 
+		/**
+		 * Whether to use the application TaskExecutor for default poller.
+		 */
+		private boolean useApplicationTaskExecutor;
+
 		public int getMaxMessagesPerPoll() {
 			return this.maxMessagesPerPoll;
 		}
@@ -415,6 +421,14 @@ public class IntegrationProperties {
 
 		public void setCron(String cron) {
 			this.cron = cron;
+		}
+
+		public boolean isUseApplicationTaskExecutor() {
+			return this.useApplicationTaskExecutor;
+		}
+
+		public void setUseApplicationTaskExecutor(boolean useApplicationTaskExecutor) {
+			this.useApplicationTaskExecutor = useApplicationTaskExecutor;
 		}
 
 	}

@@ -50,6 +50,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
@@ -105,6 +106,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Yong-Hyun Kim
+ * @author Yanming Zhou
  */
 class IntegrationAutoConfigurationTests {
 
@@ -495,6 +497,19 @@ class IntegrationAutoConfigurationTests {
 						assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
 						assertThat(trigger.isFixedRate()).isTrue();
 					});
+			});
+	}
+
+	@Test
+	void useApplicationTaskExecutorWhenCorrespondingPollerPropertyAreSet() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.withUserConfiguration(PollingConsumerConfiguration.class)
+			.withPropertyValues("spring.integration.poller.use-application-task-executor=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(PollerMetadata.class);
+				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+				assertThat(metadata.getTaskExecutor())
+					.isSameAs(context.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME));
 			});
 	}
 
