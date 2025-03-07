@@ -57,7 +57,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
  * @author Andy Wilkinson
  */
 @TestPropertySource(
-		properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
+		properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/env/")
 class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final FieldDescriptor activeProfiles = fieldWithPath("activeProfiles")

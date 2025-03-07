@@ -46,7 +46,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
  * @author Andy Wilkinson
  */
 @TestPropertySource(
-		properties = "spring.flyway.locations=classpath:org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation")
+		properties = "spring.flyway.locations=classpath:org/springframework/boot/actuate/autoconfigure/flyway")
 class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test

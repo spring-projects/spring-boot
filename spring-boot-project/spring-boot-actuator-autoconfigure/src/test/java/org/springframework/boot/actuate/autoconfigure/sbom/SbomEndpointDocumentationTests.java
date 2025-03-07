@@ -58,8 +58,7 @@ class SbomEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		SbomProperties sbomProperties() {
 			SbomProperties properties = new SbomProperties();
 			properties.getApplication()
-				.setLocation(
-						"classpath:org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/cyclonedx.json");
+				.setLocation("classpath:org/springframework/boot/actuate/autoconfigure/sbom/cyclonedx.json");
 			return properties;
 		}
 
