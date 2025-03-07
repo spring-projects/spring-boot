@@ -62,6 +62,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -105,6 +107,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Yong-Hyun Kim
+ * @author Yanming Zhou
  */
 class IntegrationAutoConfigurationTests {
 
@@ -541,6 +544,19 @@ class IntegrationAutoConfigurationTests {
 				.satisfies((taskScheduler) -> SimpleAsyncTaskExecutorAssert
 					.assertThat((SimpleAsyncTaskExecutor) taskScheduler)
 					.usesVirtualThreads()));
+	}
+
+	@Test
+	void pollerMetadataCanBeCustomizedViaPollerMetadataCustomizer() {
+		TaskExecutor taskExecutor = new SyncTaskExecutor();
+		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
+			.withBean(PollerMetadataCustomizer.class,
+					() -> (pollerMetadata) -> pollerMetadata.setTaskExecutor(taskExecutor))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(PollerMetadata.class);
+				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+				assertThat(metadata.getTaskExecutor()).isSameAs(taskExecutor);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
