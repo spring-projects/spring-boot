@@ -1,4 +1,5 @@
 {
+  "bustCache": 0,
   "plugins": [
     {
       "plugin": "@nx/gradle",
