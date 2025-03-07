@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.liquibase;
 
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -78,8 +79,7 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ BaseDocumentationConfiguration.class, EmbeddedDataSourceConfiguration.class,
-			LiquibaseAutoConfiguration.class })
+	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Bean

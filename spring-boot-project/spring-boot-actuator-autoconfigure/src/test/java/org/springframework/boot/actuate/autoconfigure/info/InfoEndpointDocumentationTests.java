@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.info;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -30,7 +31,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
 
@@ -69,7 +69,6 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.AbstractEndpointDocumentationTests;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider;
@@ -37,7 +38,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -170,7 +170,6 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

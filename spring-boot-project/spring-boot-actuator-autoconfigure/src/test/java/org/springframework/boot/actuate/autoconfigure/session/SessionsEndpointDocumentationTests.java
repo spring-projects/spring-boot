@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.session;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,11 +24,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -116,7 +116,6 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

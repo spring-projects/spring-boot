@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.quartz;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,13 +52,13 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -506,7 +506,6 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

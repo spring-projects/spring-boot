@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import java.util.Properties;
 
@@ -25,10 +25,10 @@ import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -72,7 +72,6 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
