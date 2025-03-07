@@ -44,6 +44,12 @@ public class JdbcProperties {
 	public static class Template {
 
 		/**
+		 * Whether to ignore JDBC statement warnings (SQLWarning). When set to false,
+		 * throw a SQLWarningException instead.
+		 */
+		private boolean ignoreWarnings = true;
+
+		/**
 		 * Number of rows that should be fetched from the database when more rows are
 		 * needed. Use -1 to use the JDBC driver's default configuration.
 		 */
@@ -60,6 +66,31 @@ public class JdbcProperties {
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration queryTimeout;
+
+		/**
+		 * Whether results processing should be skipped. Can be used to optimize callable
+		 * statement processing when we know that no results are being passed back.
+		 */
+		private boolean skipResultsProcessing;
+
+		/**
+		 * Whether undeclared results should be skipped.
+		 */
+		private boolean skipUndeclaredResults;
+
+		/**
+		 * Whether execution of a CallableStatement will return the results in a Map that
+		 * uses case-insensitive names for the parameters.
+		 */
+		private boolean resultsMapCaseInsensitive;
+
+		public boolean isIgnoreWarnings() {
+			return this.ignoreWarnings;
+		}
+
+		public void setIgnoreWarnings(boolean ignoreWarnings) {
+			this.ignoreWarnings = ignoreWarnings;
+		}
 
 		public int getFetchSize() {
 			return this.fetchSize;
@@ -83,6 +114,30 @@ public class JdbcProperties {
 
 		public void setQueryTimeout(Duration queryTimeout) {
 			this.queryTimeout = queryTimeout;
+		}
+
+		public boolean isSkipResultsProcessing() {
+			return this.skipResultsProcessing;
+		}
+
+		public void setSkipResultsProcessing(boolean skipResultsProcessing) {
+			this.skipResultsProcessing = skipResultsProcessing;
+		}
+
+		public boolean isSkipUndeclaredResults() {
+			return this.skipUndeclaredResults;
+		}
+
+		public void setSkipUndeclaredResults(boolean skipUndeclaredResults) {
+			this.skipUndeclaredResults = skipUndeclaredResults;
+		}
+
+		public boolean isResultsMapCaseInsensitive() {
+			return this.resultsMapCaseInsensitive;
+		}
+
+		public void setResultsMapCaseInsensitive(boolean resultsMapCaseInsensitive) {
+			this.resultsMapCaseInsensitive = resultsMapCaseInsensitive;
 		}
 
 	}
