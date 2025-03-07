@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @TestPropertySource(
-		properties = "spring.liquibase.change-log=classpath:org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/db.changelog-master.yaml")
+		properties = "spring.liquibase.change-log=classpath:org/springframework/boot/actuate/autoconfigure/liquibase/db.changelog-master.yaml")
 class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
