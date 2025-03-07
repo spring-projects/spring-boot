@@ -146,9 +146,11 @@ public class DockerApi {
 		verifyApiVersion(apiVersion);
 		try {
 			URIBuilder builder = new URIBuilder("/v" + apiVersion + path);
-			int param = 0;
-			while (param < params.length) {
-				builder.addParameter(Objects.toString(params[param++]), Objects.toString(params[param++]));
+			if (params != null) {
+				int param = 0;
+				while (param < params.length) {
+					builder.addParameter(Objects.toString(params[param++]), Objects.toString(params[param++]));
+				}
 			}
 			return builder.build();
 		}
