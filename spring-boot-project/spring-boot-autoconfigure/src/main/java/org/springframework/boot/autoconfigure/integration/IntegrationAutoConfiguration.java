@@ -24,6 +24,8 @@ import javax.sql.DataSource;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -40,6 +42,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,6 +54,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.config.IntegrationComponentScanRegistrar;
@@ -85,6 +89,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @author Madhura Bhave
  * @author Yong-Hyun Kim
+ * @author Yanming Zhou
  * @since 1.1.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
@@ -130,7 +135,8 @@ public class IntegrationAutoConfiguration {
 
 		@Bean(PollerMetadata.DEFAULT_POLLER)
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
-		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties) {
+		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties,
+				@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<TaskExecutor> taskExecutor) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.integration.poller.cron",
@@ -143,6 +149,9 @@ public class IntegrationAutoConfiguration {
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
 			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
+			if (poller.isUseApplicationTaskExecutor()) {
+				pollerMetadata.setTaskExecutor(taskExecutor.getObject());
+			}
 			return pollerMetadata;
 		}
 
