@@ -119,9 +119,17 @@ public class OpenTelemetryTracingAutoConfiguration {
 	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
-		BatchSpanProcessorBuilder builder = BatchSpanProcessor
-			.builder(new CompositeSpanExporter(spanExporters.list(), spanExportingPredicates.orderedStream().toList(),
-					spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
+		TracingProperties.OpenTelemetry.BatchSpanProcessor properties = this.tracingProperties.getOpentelemetry()
+			.getBatchSpanProcessor();
+		CompositeSpanExporter spanExporter = new CompositeSpanExporter(spanExporters.list(),
+				spanExportingPredicates.orderedStream().toList(), spanReporters.orderedStream().toList(),
+				spanFilters.orderedStream().toList());
+		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(spanExporter)
+			.setExporterTimeout(properties.getExporterTimeout())
+			.setExportUnsampledSpans(properties.isExportUnsampledSpans())
+			.setMaxExportBatchSize(properties.getMaxExportBatchSize())
+			.setMaxQueueSize(properties.getMaxQueueSize())
+			.setScheduleDelay(properties.getScheduleDelay());
 		meterProvider.ifAvailable(builder::setMeterProvider);
 		return builder.build();
 	}
