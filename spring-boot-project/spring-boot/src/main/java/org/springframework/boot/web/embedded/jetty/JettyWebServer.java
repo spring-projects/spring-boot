@@ -145,24 +145,23 @@ public class JettyWebServer implements WebServer {
 				return;
 			}
 			this.server.setConnectors(this.connectors);
-			if (!this.autoStart) {
-				return;
-			}
 			try {
 				this.server.start();
 				for (Handler handler : this.server.getHandlers()) {
 					handleDeferredInitialize(handler);
 				}
-				Connector[] connectors = this.server.getConnectors();
-				for (Connector connector : connectors) {
-					try {
-						connector.start();
-					}
-					catch (IOException ex) {
-						if (connector instanceof NetworkConnector networkConnector) {
-							PortInUseException.throwIfPortBindingException(ex, networkConnector::getPort);
+				if (this.autoStart) {
+					Connector[] connectors = this.server.getConnectors();
+					for (Connector connector : connectors) {
+						try {
+							connector.start();
 						}
-						throw ex;
+						catch (IOException ex) {
+							if (connector instanceof NetworkConnector networkConnector) {
+								PortInUseException.throwIfPortBindingException(ex, networkConnector::getPort);
+							}
+							throw ex;
+						}
 					}
 				}
 				this.started = true;

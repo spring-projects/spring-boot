@@ -53,6 +53,17 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/angus-mail/releases/tag/{version}")
 		}
 	}
+	library("Armeria", "1.32.0") {
+		group("com.linecorp.armeria") {
+			imports = [
+				"armeria-bom"
+			]
+		}
+		links {
+			site("https://armeria.dev")
+			releaseNotes("https://armeria.dev/release-notes/{version}")
+		}
+	}
 	library("Artemis", "2.39.0") {
 		group("org.apache.activemq") {
 			imports = [
