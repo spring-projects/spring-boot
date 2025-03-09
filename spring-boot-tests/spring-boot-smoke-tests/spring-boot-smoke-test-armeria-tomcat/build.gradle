@@ -4,14 +4,10 @@ plugins {
 
 description = "Spring Boot Armeria Tomcat smoke test"
 
-ext {
-	armeriaVersion = "1.32.0"
-}
-
 dependencies {
-	implementation("com.linecorp.armeria:armeria:$armeriaVersion")
-	implementation("com.linecorp.armeria:armeria-spring-boot3-autoconfigure:$armeriaVersion")
-	implementation("com.linecorp.armeria:armeria-tomcat10:$armeriaVersion")
+	implementation("com.linecorp.armeria:armeria")
+	implementation("com.linecorp.armeria:armeria-spring-boot3-autoconfigure")
+	implementation("com.linecorp.armeria:armeria-tomcat10")
 
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))

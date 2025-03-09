@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Configuration;
  * Configures an Armeria {@link Server} to redirect the incoming requests to the Tomcat
  * instance provided by Spring Boot. It also sets up a {@link HealthChecker} so that it
  * works well with a load balancer.
+ *
+ * @author Dogac Eldenk
  */
 @Configuration
 public class ArmeriaConfiguration {
