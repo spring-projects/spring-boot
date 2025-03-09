@@ -147,10 +147,10 @@ public class JettyWebServer implements WebServer {
 			this.server.setConnectors(this.connectors);
 			try {
 				this.server.start();
+				for (Handler handler : this.server.getHandlers()) {
+					handleDeferredInitialize(handler);
+				}
 				if (this.autoStart) {
-					for (Handler handler : this.server.getHandlers()) {
-						handleDeferredInitialize(handler);
-					}
 					Connector[] connectors = this.server.getConnectors();
 					for (Connector connector : connectors) {
 						try {
