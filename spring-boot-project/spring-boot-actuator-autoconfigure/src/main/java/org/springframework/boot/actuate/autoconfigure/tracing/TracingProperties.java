@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,11 @@ public class TracingProperties {
 	 */
 	private final Brave brave = new Brave();
 
+	/**
+	 * OpenTelemetry configuration.
+	 */
+	private final OpenTelemetry opentelemetry = new OpenTelemetry();
+
 	public Sampling getSampling() {
 		return this.sampling;
 	}
@@ -65,6 +71,10 @@ public class TracingProperties {
 
 	public Brave getBrave() {
 		return this.brave;
+	}
+
+	public OpenTelemetry getOpentelemetry() {
+		return this.opentelemetry;
 	}
 
 	public static class Sampling {
@@ -289,6 +299,89 @@ public class TracingProperties {
 
 		public void setSpanJoiningSupported(boolean spanJoiningSupported) {
 			this.spanJoiningSupported = spanJoiningSupported;
+		}
+
+	}
+
+	public static class OpenTelemetry {
+
+		/**
+		 * Batch Span Processor configuration.
+		 */
+		private final BatchSpanProcessor batchSpanProcessor = new BatchSpanProcessor();
+
+		public BatchSpanProcessor getBatchSpanProcessor() {
+			return this.batchSpanProcessor;
+		}
+
+		public static class BatchSpanProcessor {
+
+			/**
+			 * Whether unsampled spans should be exported.
+			 */
+			private boolean exportUnsampledSpans;
+
+			/**
+			 * Maximum time an export will be allowed to run before being cancelled.
+			 */
+			private Duration exporterTimeout = Duration.ofSeconds(30);
+
+			/**
+			 * Maximum batch size for each export. This must be less than or equal to
+			 * maxQueueSize.
+			 */
+			private int maxExportBatchSize = 512;
+
+			/**
+			 * Maximum number of Spans that are kept in the queue before start dropping.
+			 */
+			private int maxQueueSize = 2048;
+
+			/**
+			 * The delay interval between two consecutive exports.
+			 */
+			private Duration scheduleDelay = Duration.ofSeconds(5);
+
+			public boolean isExportUnsampledSpans() {
+				return this.exportUnsampledSpans;
+			}
+
+			public void setExportUnsampledSpans(boolean exportUnsampledSpans) {
+				this.exportUnsampledSpans = exportUnsampledSpans;
+			}
+
+			public Duration getExporterTimeout() {
+				return this.exporterTimeout;
+			}
+
+			public void setExporterTimeout(Duration exporterTimeout) {
+				this.exporterTimeout = exporterTimeout;
+			}
+
+			public int getMaxExportBatchSize() {
+				return this.maxExportBatchSize;
+			}
+
+			public void setMaxExportBatchSize(int maxExportBatchSize) {
+				this.maxExportBatchSize = maxExportBatchSize;
+			}
+
+			public int getMaxQueueSize() {
+				return this.maxQueueSize;
+			}
+
+			public void setMaxQueueSize(int maxQueueSize) {
+				this.maxQueueSize = maxQueueSize;
+			}
+
+			public Duration getScheduleDelay() {
+				return this.scheduleDelay;
+			}
+
+			public void setScheduleDelay(Duration scheduleDelay) {
+				this.scheduleDelay = scheduleDelay;
+			}
+
 		}
 
 	}
