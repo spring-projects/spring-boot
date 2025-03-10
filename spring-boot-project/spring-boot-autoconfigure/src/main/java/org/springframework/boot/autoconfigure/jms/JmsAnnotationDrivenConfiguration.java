@@ -24,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.jms.ConnectionFactoryUnwrapper;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
+import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
@@ -42,57 +44,75 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
-	private final ObjectProvider<DestinationResolver> destinationResolver;
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.jms.listener.container-type", havingValue = "default", matchIfMissing = true)
+	static class DefaultJmsListenerContainerFactoryConfiguration {
 
-	private final ObjectProvider<JtaTransactionManager> transactionManager;
+		@Bean
+		@ConditionalOnMissingBean
+		@SuppressWarnings("removal")
+		DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer(
+				ObjectProvider<DestinationResolver> destinationResolver,
+				ObjectProvider<JtaTransactionManager> transactionManager,
+				ObjectProvider<MessageConverter> messageConverter, ObjectProvider<ExceptionListener> exceptionListener,
+				ObjectProvider<ObservationRegistry> observationRegistry, JmsProperties properties) {
+			DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
+			configurer.setDestinationResolver(destinationResolver.getIfUnique());
+			configurer.setTransactionManager(transactionManager.getIfUnique());
+			configurer.setMessageConverter(messageConverter.getIfUnique());
+			configurer.setExceptionListener(exceptionListener.getIfUnique());
+			configurer.setObservationRegistry(observationRegistry.getIfUnique());
+			configurer.setJmsProperties(properties);
+			return configurer;
+		}
 
-	private final ObjectProvider<MessageConverter> messageConverter;
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
+		DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+				DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
+			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+			configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
+			return factory;
+		}
 
-	private final ObjectProvider<ExceptionListener> exceptionListener;
-
-	private final ObjectProvider<ObservationRegistry> observationRegistry;
-
-	private final JmsProperties properties;
-
-	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
-			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
-			ObjectProvider<ExceptionListener> exceptionListener,
-			ObjectProvider<ObservationRegistry> observationRegistry, JmsProperties properties) {
-		this.destinationResolver = destinationResolver;
-		this.transactionManager = transactionManager;
-		this.messageConverter = messageConverter;
-		this.exceptionListener = exceptionListener;
-		this.observationRegistry = observationRegistry;
-		this.properties = properties;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@SuppressWarnings("removal")
-	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
-		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
-		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
-		configurer.setTransactionManager(this.transactionManager.getIfUnique());
-		configurer.setMessageConverter(this.messageConverter.getIfUnique());
-		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
-		configurer.setObservationRegistry(this.observationRegistry.getIfUnique());
-		configurer.setJmsProperties(this.properties);
-		return configurer;
-	}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.jms.listener.container-type", havingValue = "simple")
+	static class SimpleJmsListenerContainerFactoryConfiguration {
 
-	@Bean
-	@ConditionalOnSingleCandidate(ConnectionFactory.class)
-	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
-	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
-			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
-		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
-		return factory;
+		@Bean
+		@ConditionalOnMissingBean
+		SimpleJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer(
+				ObjectProvider<DestinationResolver> destinationResolver,
+				ObjectProvider<MessageConverter> messageConverter, ObjectProvider<ExceptionListener> exceptionListener,
+				ObjectProvider<ObservationRegistry> observationRegistry, JmsProperties properties) {
+			SimpleJmsListenerContainerFactoryConfigurer configurer = new SimpleJmsListenerContainerFactoryConfigurer();
+			configurer.setDestinationResolver(destinationResolver.getIfUnique());
+			configurer.setMessageConverter(messageConverter.getIfUnique());
+			configurer.setExceptionListener(exceptionListener.getIfUnique());
+			configurer.setObservationRegistry(observationRegistry.getIfUnique());
+			configurer.setJmsProperties(properties);
+			return configurer;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
+		SimpleJmsListenerContainerFactory jmsListenerContainerFactory(
+				SimpleJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
+			SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
+			configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
+			return factory;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

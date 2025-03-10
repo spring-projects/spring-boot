@@ -164,36 +164,53 @@ public class JmsProperties {
 	public static class Listener {
 
 		/**
+		 * Listener container type.
+		 */
+		private ContainerType containerType = ContainerType.DEFAULT;
+
+		/**
 		 * Start the container automatically on startup.
 		 */
 		private boolean autoStartup = true;
 
 		/**
 		 * Minimum number of concurrent consumers. When max-concurrency is not specified
-		 * the minimum will also be used as the maximum.
+		 * the minimum will also be used as the maximum. Applies only to container type
+		 * `default`.
 		 */
 		private Integer minConcurrency;
 
 		/**
-		 * Maximum number of concurrent consumers.
+		 * Maximum number of concurrent consumers. Applies only to container type
+		 * `default`.
 		 */
 		private Integer maxConcurrency;
 
 		/**
 		 * Timeout to use for receive calls. Use -1 for a no-wait receive or 0 for no
 		 * timeout at all. The latter is only feasible if not running within a transaction
-		 * manager and is generally discouraged since it prevents clean shutdown.
+		 * manager and is generally discouraged since it prevents clean shutdown. Applies
+		 * only to container type `default`.
 		 */
 		private Duration receiveTimeout = Duration.ofSeconds(1);
 
 		/**
 		 * Maximum number of messages to process in one task. By default, unlimited unless
 		 * a SchedulingTaskExecutor is configured on the listener (10 messages), as it
-		 * indicates a preference for short-lived tasks.
+		 * indicates a preference for short-lived tasks. Applies only to container type
+		 * `default`.
 		 */
 		private Integer maxMessagesPerTask;
 
 		private final Session session = new Session();
+
+		public ContainerType getContainerType() {
+			return this.containerType;
+		}
+
+		public void setContainerType(ContainerType containerType) {
+			this.containerType = containerType;
+		}
 
 		public boolean isAutoStartup() {
 			return this.autoStartup;
@@ -442,6 +459,20 @@ public class JmsProperties {
 			}
 
 		}
+
+	}
+
+	public enum ContainerType {
+
+		/**
+		 * Use DefaultMessageListenerContainer.
+		 */
+		DEFAULT,
+
+		/**
+		 * Use SimpleMessageListenerContainer.
+		 */
+		SIMPLE
 
 	}
 
