@@ -1,0 +1,7 @@
+# Prevent the embedded Tomcat from opening a TCP/IP port.
+server.port: -1
+---
+armeria:
+  ports:
+    - port: 0
+      protocols: HTTP

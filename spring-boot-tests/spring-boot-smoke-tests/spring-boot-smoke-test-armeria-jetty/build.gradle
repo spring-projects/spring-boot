@@ -1,0 +1,18 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Armeria Jetty smoke test"
+
+dependencies {
+	implementation("com.linecorp.armeria:armeria")
+	implementation("com.linecorp.armeria:armeria-spring-boot3-autoconfigure")
+	implementation("com.linecorp.armeria:armeria-jetty12")
+
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}
