@@ -36,6 +36,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -514,6 +515,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	@Disabled("Docker is behaving differently on various systems")
 	void failsWithIncompatiblePlatform() throws IOException {
 		writeMainClass();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
