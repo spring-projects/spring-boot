@@ -518,7 +518,7 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.getOutput()).contains(
-				"Image platform mismatch detected. The configured platform 'invalid/platform' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1'. Requested platform 'invalid/platform' but got 'linux/amd64'");
+				"Image platform mismatch detected. The configured platform 'invalid/platform' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'invalid/platform' but got 'linux/amd64'");
 	}
 
 	private void writeMainClass() throws IOException {
