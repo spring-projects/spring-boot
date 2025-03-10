@@ -553,7 +553,7 @@ The lines immediately before and after the separator must not be same comment pr
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the xref:features/external-config.adoc#features.external-config.files.activation-properties[next section] for details.
 
-WARNING: Multi-document property files cannot be loaded by using the javadoc:org.springframework.context.annotation.PropertySource[format=annotation] or javadoc:org.springframework.test.context.TestPropertySource[format=annotation] annotations.
+WARNING: Multi-document property files cannot be loaded by using the javadoc:org.springframework.context.annotation.PropertySource[format=annotation], javadoc:org.springframework.test.context.TestPropertySource[format=annotation] or javadoc:org.springframework.boot.test.context.TestYamlPropertySource[format=annotation] annotations.
 
 
 
