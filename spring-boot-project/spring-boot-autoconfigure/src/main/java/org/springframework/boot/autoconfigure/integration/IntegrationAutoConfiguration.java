@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -85,6 +86,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @author Madhura Bhave
  * @author Yong-Hyun Kim
+ * @author Yanming Zhou
  * @since 1.1.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
@@ -130,7 +132,8 @@ public class IntegrationAutoConfiguration {
 
 		@Bean(PollerMetadata.DEFAULT_POLLER)
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
-		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties) {
+		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties,
+				ObjectProvider<PollerMetadataCustomizer> customizers) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 				entries.put("spring.integration.poller.cron",
@@ -143,6 +146,7 @@ public class IntegrationAutoConfiguration {
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
 			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(pollerMetadata));
 			return pollerMetadata;
 		}
 
