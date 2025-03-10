@@ -34,7 +34,7 @@ public interface DockerLog {
 	void log(String message);
 
 	/**
-	 * Factory method that returns a {@link DockerLog} the outputs to {@link System#out}.
+	 * Factory method that returns a {@link DockerLog} that outputs to {@link System#out}.
 	 * @return {@link DockerLog} instance that logs to system out
 	 */
 	static DockerLog toSystemOut() {
@@ -42,7 +42,7 @@ public interface DockerLog {
 	}
 
 	/**
-	 * Factory method that returns a {@link DockerLog} the outputs to a given
+	 * Factory method that returns a {@link DockerLog} that outputs to a given
 	 * {@link PrintStream}.
 	 * @param out the print stream used to output the log
 	 * @return {@link DockerLog} instance that logs to the given print stream

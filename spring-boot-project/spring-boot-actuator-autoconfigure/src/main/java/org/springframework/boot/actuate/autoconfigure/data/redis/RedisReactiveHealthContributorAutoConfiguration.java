@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.data.redis;
 
-import java.util.Map;
-
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -51,8 +49,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 public class RedisReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
 
-	RedisReactiveHealthContributorAutoConfiguration(
-			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
+	RedisReactiveHealthContributorAutoConfiguration() {
 		super(RedisReactiveHealthIndicator::new);
 	}
 

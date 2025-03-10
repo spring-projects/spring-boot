@@ -123,13 +123,11 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 		@Bean(defaultCandidate = false)
 		TestBean nonDefault() {
 			return new TestBean();
-
 		}
 
 		@Bean(autowireCandidate = false)
 		TestBean nonAutowire() {
 			return new TestBean();
-
 		}
 
 	}
@@ -145,7 +143,6 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 		@Bean(autowireCandidate = false)
 		TestBean nonAutowire() {
 			return new TestBean();
-
 		}
 
 	}

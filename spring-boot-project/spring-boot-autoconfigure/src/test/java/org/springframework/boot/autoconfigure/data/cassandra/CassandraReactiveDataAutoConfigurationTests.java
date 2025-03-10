@@ -80,7 +80,6 @@ class CassandraReactiveDataAutoConfigurationTests {
 	void userTypeResolverShouldBeSet() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(CassandraConverter.class);
-			assertThat(context).hasSingleBean(CassandraConverter.class);
 			assertThat(context.getBean(CassandraConverter.class)).extracting("userTypeResolver")
 				.isInstanceOf(SimpleUserTypeResolver.class);
 		});
