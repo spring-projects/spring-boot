@@ -25,11 +25,10 @@ import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.function.ThrowingFunction;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
@@ -165,9 +164,11 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	public static boolean isEmbedded(DataSource dataSource) {
 		try {
-			return new JdbcTemplate(dataSource).execute(new IsEmbedded());
+			try (Connection connection = dataSource.getConnection()) {
+				return new IsEmbedded().apply(connection);
+			}
 		}
-		catch (DataAccessException ex) {
+		catch (SQLException ex) {
 			// Could not connect, which means it's not embedded
 			return false;
 		}
@@ -189,12 +190,12 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * {@link ConnectionCallback} to determine if a connection is embedded.
+	 * Determine if a {@link Connection} is embedded.
 	 */
-	private static final class IsEmbedded implements ConnectionCallback<Boolean> {
+	private static final class IsEmbedded implements ThrowingFunction<Connection, Boolean> {
 
 		@Override
-		public Boolean doInConnection(Connection connection) throws SQLException, DataAccessException {
+		public Boolean applyWithException(Connection connection) throws SQLException, DataAccessException {
 			DatabaseMetaData metaData = connection.getMetaData();
 			String productName = metaData.getDatabaseProductName();
 			if (productName == null) {
