@@ -26,10 +26,10 @@ import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagem
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;

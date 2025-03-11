@@ -27,9 +27,9 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
