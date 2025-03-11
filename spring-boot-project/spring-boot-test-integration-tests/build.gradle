@@ -1,0 +1,20 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Test Integration Tests"
+
+dependencies {
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.springframework:spring-test")
+	testImplementation("org.springframework:spring-webflux")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.springframework.graphql:spring-graphql-test")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
+}
