@@ -110,7 +110,6 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
-	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("com.ibm.db2:jcc")
