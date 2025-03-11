@@ -32,8 +32,14 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-web")
 
-	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-test"))
+	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-api")
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-client-api")
+	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")

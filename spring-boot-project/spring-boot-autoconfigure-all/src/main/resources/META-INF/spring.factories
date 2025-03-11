@@ -6,8 +6,7 @@ org.springframework.boot.autoconfigure.integration.IntegrationPropertiesEnvironm
 org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
 org.springframework.boot.autoconfigure.http.MessageConverterBackgroundPreinitializer,\
 org.springframework.boot.autoconfigure.jackson.JacksonBackgroundPreinitializer,\
-org.springframework.boot.autoconfigure.validation.JakartaValidationBackgroundPreinitializer,\
-org.springframework.boot.autoconfigure.web.server.tomcat.TomcatBackgroundPreinitializer
+org.springframework.boot.autoconfigure.validation.JakartaValidationBackgroundPreinitializer
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\

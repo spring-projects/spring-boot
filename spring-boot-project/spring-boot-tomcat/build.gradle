@@ -17,6 +17,8 @@
 
 plugins {
 	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -37,14 +39,26 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
+	optional("org.apache.tomcat.embed:tomcat-embed-websocket") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	optional("org.springframework:spring-webflux")
 	
 	runtimeOnly("jakarta.annotation:jakarta.annotation-api")
 
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("io.projectreactor:reactor-test")
+	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
+	testRuntimeOnly("org.eclipse.jetty:jetty-client")
+	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client")
+	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
+
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
 }
 
