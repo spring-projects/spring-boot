@@ -14,6 +14,15 @@ dependencies {
 	
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-web")
+	
+	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-test"))
+	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-api")
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-client-api")
+	testFixturesCompileOnly("org.assertj:assertj-core")
+	testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api")
+	testFixturesCompileOnly("org.mockito:mockito-core")
+	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

@@ -55,6 +55,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tomcat", configuration: "autoConfigurationMetadata"))
 
 	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
@@ -65,6 +66,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-tomcat", configuration: "configurationPropertiesMetadata"))
 
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-all"))
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))

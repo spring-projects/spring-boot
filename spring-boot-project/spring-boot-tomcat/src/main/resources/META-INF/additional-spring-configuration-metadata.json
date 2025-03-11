@@ -1,0 +1,113 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "server.tomcat.max-http-post-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "replacement": "server.tomcat.max-http-form-post-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.tomcat.reject-illegal-header",
+      "deprecation": {
+        "level": "error"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "server.tomcat.accesslog.encoding",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.nio.charset.Charset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.accesslog.locale",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.Locale"
+          }
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.relaxed-path-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    },
+    {
+      "name": "server.tomcat.relaxed-query-chars",
+      "values": [
+        {
+          "value": "<"
+        },
+        {
+          "value": ">"
+        },
+        {
+          "value": "["
+        },
+        {
+          "value": "\\"
+        },
+        {
+          "value": "]"
+        },
+        {
+          "value": "^"
+        },
+        {
+          "value": "`"
+        },
+        {
+          "value": "{"
+        },
+        {
+          "value": "|"
+        },
+        {
+          "value": "}"
+        }
+      ]
+    }
+  ]
+}
