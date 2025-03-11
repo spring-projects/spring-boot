@@ -36,7 +36,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -515,12 +514,11 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	@Disabled("Docker is behaving differently on various systems")
 	void failsWithIncompatiblePlatform() throws IOException {
 		writeMainClass();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.getOutput()).contains(
-				"Image platform mismatch detected. The configured platform 'invalid/platform' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'invalid/platform' but got 'linux/amd64'");
+				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'");
 	}
 
 	private void writeMainClass() throws IOException {
