@@ -1,0 +1,17 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Test Integration Tests"
+
+dependencies {
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testImplementation("org.springframework:spring-webflux")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.springframework.graphql:spring-graphql-test")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
+}
