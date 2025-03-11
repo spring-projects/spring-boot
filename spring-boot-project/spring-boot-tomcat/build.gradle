@@ -35,6 +35,7 @@ dependencies {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}
 
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.springframework:spring-webflux")
 	

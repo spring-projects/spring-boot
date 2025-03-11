@@ -53,12 +53,10 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql-test")
 
-	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("io.mockk:mockk")
 	testImplementation("jakarta.json:jakarta.json-api")
-	testImplementation("ch.qos.logback:logback-classic")
-	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.apache.groovy:groovy")
 	testImplementation("org.apache.groovy:groovy-xml")
 	testImplementation("org.eclipse:yasson")
