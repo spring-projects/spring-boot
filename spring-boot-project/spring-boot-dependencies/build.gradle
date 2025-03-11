@@ -1014,14 +1014,14 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
 		}
 	}
-	library("Jetty Reactive HTTPClient", "4.0.9") {
+	library("Jetty Reactive HTTPClient", project.getProperties().get("jetty.reactive.httpclient.version","4.0.9")) {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
 			]
 		}
 	}
-	library("Jetty", "12.0.16") {
+	library("Jetty", project.getProperties().get("jetty.version","12.0.16")) {
 		prohibit {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
@@ -1037,7 +1037,7 @@ bom {
 			]
 		}
 		links {
-			site("https://eclipse.dev/jetty")
+			site("https://jetty.org/")
 			javadoc(version -> "https://javadoc.jetty.org/jetty-%s".formatted(version.major()), "org.eclipse.jetty")
 			releaseNotes("https://github.com/jetty/jetty.project/releases/tag/jetty-{version}")
 		}
