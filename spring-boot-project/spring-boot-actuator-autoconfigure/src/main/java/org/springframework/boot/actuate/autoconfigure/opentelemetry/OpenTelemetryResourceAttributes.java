@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -78,8 +77,8 @@ public final class OpenTelemetryResourceAttributes {
 	}
 
 	/**
-	 * Applies resource attributes to the provided BiConsumer after being combined from
-	 * environment variables and user-defined resource attributes.
+	 * Applies resource attributes to the provided {@link BiConsumer} after being combined
+	 * from environment variables and user-defined resource attributes.
 	 * <p>
 	 * If a key exists in both environment variables and user-defined resources, the value
 	 * from the user-defined resource takes precedence, even if it is empty.
@@ -139,7 +138,7 @@ public final class OpenTelemetryResourceAttributes {
 			if (index > 0) {
 				String key = attribute.substring(0, index);
 				String value = attribute.substring(index + 1);
-				attributes.put(key.trim(), decode(value.trim()));
+				attributes.put(key.trim(), StringUtils.uriDecode(value.trim(), StandardCharsets.UTF_8));
 			}
 		}
 		String otelServiceName = getEnv("OTEL_SERVICE_NAME");
@@ -151,45 +150,6 @@ public final class OpenTelemetryResourceAttributes {
 
 	private String getEnv(String name) {
 		return this.getEnv.apply(name);
-	}
-
-	/**
-	 * Decodes a percent-encoded string. Converts sequences like '%HH' (where HH
-	 * represents hexadecimal digits) back into their literal representations.
-	 * <p>
-	 * Inspired by {@code org.apache.commons.codec.net.PercentCodec}.
-	 * @param value value to decode
-	 * @return the decoded string
-	 */
-	private static String decode(String value) {
-		if (value.indexOf('%') < 0) {
-			return value;
-		}
-		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length);
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-			if (b != '%') {
-				bos.write(b);
-				continue;
-			}
-			int u = decodeHex(bytes, i + 1);
-			int l = decodeHex(bytes, i + 2);
-			if (u >= 0 && l >= 0) {
-				bos.write((u << 4) + l);
-			}
-			else {
-				throw new IllegalArgumentException(
-						"Failed to decode percent-encoded characters at index %d in the value: '%s'".formatted(i,
-								value));
-			}
-			i += 2;
-		}
-		return bos.toString(StandardCharsets.UTF_8);
-	}
-
-	private static int decodeHex(byte[] bytes, int index) {
-		return (index < bytes.length) ? Character.digit(bytes[index], 16) : -1;
 	}
 
 }
