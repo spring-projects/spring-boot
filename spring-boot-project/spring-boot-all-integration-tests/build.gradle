@@ -1,0 +1,24 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Integration Tests"
+
+dependencies {
+	testImplementation(project(":spring-boot-project:spring-boot-all"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.projectreactor.netty:reactor-netty-http")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+	testImplementation("org.eclipse.jetty:jetty-client")
+	testImplementation("org.springframework:spring-webmvc")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("io.undertow:undertow-servlet")
+	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-servlets")
+	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+}
+
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+}
