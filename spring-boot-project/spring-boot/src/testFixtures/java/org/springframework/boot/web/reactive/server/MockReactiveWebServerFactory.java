@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive;
+package org.springframework.boot.web.reactive.server;
 
-import java.util.Map;
-
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 
@@ -42,49 +38,6 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 
 	public MockReactiveWebServer getWebServer() {
 		return this.webServer;
-	}
-
-	static class MockReactiveWebServer implements WebServer {
-
-		private final int port;
-
-		private HttpHandler httpHandler;
-
-		private Map<String, HttpHandler> httpHandlerMap;
-
-		MockReactiveWebServer(HttpHandler httpHandler, int port) {
-			this.httpHandler = httpHandler;
-			this.port = port;
-		}
-
-		MockReactiveWebServer(Map<String, HttpHandler> httpHandlerMap, int port) {
-			this.httpHandlerMap = httpHandlerMap;
-			this.port = port;
-		}
-
-		HttpHandler getHttpHandler() {
-			return this.httpHandler;
-		}
-
-		Map<String, HttpHandler> getHttpHandlerMap() {
-			return this.httpHandlerMap;
-		}
-
-		@Override
-		public void start() {
-
-		}
-
-		@Override
-		public void stop() {
-
-		}
-
-		@Override
-		public int getPort() {
-			return this.port;
-		}
-
 	}
 
 }

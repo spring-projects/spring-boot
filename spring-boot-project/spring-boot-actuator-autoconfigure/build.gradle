@@ -137,6 +137,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
