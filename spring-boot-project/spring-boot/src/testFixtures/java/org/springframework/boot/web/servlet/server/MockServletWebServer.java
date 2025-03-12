@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.web.servlet;
+package org.springframework.boot.web.servlet.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +31,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.SessionCookieConfig;
 
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.mock.web.MockSessionCookieConfig;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -40,14 +43,12 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 /**
- * Base class for Mock {@code ServletWebServer} implementations. Reduces the amount of
- * code that would otherwise be duplicated in {@code spring-boot},
- * {@code spring-boot-autoconfigure} and {@code spring-boot-actuator}.
+ * A mock servlet {@link WebServer}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public abstract class MockServletWebServer {
+public class MockServletWebServer implements WebServer {
 
 	private ServletContext servletContext;
 
@@ -59,7 +60,13 @@ public abstract class MockServletWebServer {
 
 	private final int port;
 
-	public MockServletWebServer(Initializer[] initializers, int port) {
+	MockServletWebServer(ServletContextInitializer[] initializers, int port) {
+		this(Arrays.stream(initializers)
+			.map((initializer) -> (Initializer) initializer::onStartup)
+			.toArray(Initializer[]::new), port);
+	}
+
+	MockServletWebServer(Initializer[] initializers, int port) {
 		this.initializers = initializers;
 		this.port = port;
 		initialize();
@@ -100,6 +107,11 @@ public abstract class MockServletWebServer {
 		}
 	}
 
+	@Override
+	public void start() throws WebServerException {
+	}
+
+	@Override
 	public void stop() {
 		this.servletContext = null;
 		this.registeredServlets.clear();
@@ -131,6 +143,7 @@ public abstract class MockServletWebServer {
 		return this.registeredFilters;
 	}
 
+	@Override
 	public int getPort() {
 		return this.port;
 	}
@@ -184,7 +197,7 @@ public abstract class MockServletWebServer {
 	}
 
 	/**
-	 * Initializer (usually implement by adapting {@code Initializer}).
+	 * Initializer (usually implement by adapting {@code ServletContextInitializer}).
 	 */
 	@FunctionalInterface
 	protected interface Initializer {
