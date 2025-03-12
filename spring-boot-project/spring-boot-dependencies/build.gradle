@@ -1026,6 +1026,10 @@ bom {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
 		}
+		prohibit {
+			versionRange "[12.0.17]"
+			because "it contains a regression (https://github.com/jetty/jetty.project/issues/12882)"
+		}
 		group("org.eclipse.jetty.ee10") {
 			imports = [
 				"jetty-ee10-bom"
