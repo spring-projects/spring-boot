@@ -1,6 +1,7 @@
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -103,6 +104,10 @@ dependencies {
 	optional("software.amazon.jdbc:aws-advanced-jdbc-wrapper") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
+
+	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
+	testFixturesCompileOnly("org.mockito:mockito-core")
+	testFixturesCompileOnly("org.springframework:spring-web")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.springframework:spring-core-test")

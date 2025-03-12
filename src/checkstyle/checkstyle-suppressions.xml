@@ -22,7 +22,7 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="Javadoc*" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
