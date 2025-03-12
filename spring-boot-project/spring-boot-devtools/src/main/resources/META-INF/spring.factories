@@ -4,8 +4,8 @@ org.springframework.boot.devtools.restart.RestartScopeInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.devtools.restart.RestartApplicationListener,\
-org.springframework.boot.devtools.logger.DevToolsLogFactory.Listener
+org.springframework.boot.devtools.logger.DevToolsLogFactory$Listener,\
+org.springframework.boot.devtools.restart.RestartApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
