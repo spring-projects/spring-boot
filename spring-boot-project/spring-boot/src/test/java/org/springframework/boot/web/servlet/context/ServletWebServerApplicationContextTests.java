@@ -86,6 +86,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.withSettings;
 
@@ -236,7 +237,7 @@ class ServletWebServerApplicationContextTests {
 			.withStackTraceContaining("WebServer has failed to stop");
 		WebServer webServer = this.context.getWebServer();
 		then(webServer).should().stop();
-		then(webServer).should(times(0)).destroy();
+		then(webServer).should(never()).destroy();
 	}
 
 	@Test
