@@ -60,7 +60,7 @@ class SanitizingFunctionTests {
 	void ifLikelySensitiveFiltersExpected() {
 		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySensitive();
 		assertThat(function).satisfies(this::likelyCredentialChecks, this::likelyUriChecks,
-				this::likelySenstivePropertyChecks, this::vcapServicesChecks);
+				this::likelySensitivePropertyChecks, this::vcapServicesChecks);
 	}
 
 	@Test
@@ -103,10 +103,10 @@ class SanitizingFunctionTests {
 	@Test
 	void ifLikelySensitivePropertyFiltersExpected() {
 		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySensitiveProperty();
-		assertThat(function).satisfies(this::likelySenstivePropertyChecks);
+		assertThat(function).satisfies(this::likelySensitivePropertyChecks);
 	}
 
-	private void likelySenstivePropertyChecks(SanitizingFunction function) {
+	private void likelySensitivePropertyChecks(SanitizingFunction function) {
 		assertThatApplyingToKey(function, "sun.java.command").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spring.application.json").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING_APPLICATION_JSON").has(sanitizedValue());

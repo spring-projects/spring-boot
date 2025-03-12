@@ -142,13 +142,12 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
 			assertThat(context).hasSingleBean(ObjectDirectoryMapper.class);
 			ObjectDirectoryMapper objectDirectoryMapper = context.getBean(ObjectDirectoryMapper.class);
-			ApplicationConversionService conversionService = assertThat(objectDirectoryMapper)
-				.extracting("converterManager")
-				.extracting("conversionService")
-				.asInstanceOf(InstanceOfAssertFactories.type(ApplicationConversionService.class))
-				.actual();
-			assertThat(conversionService.canConvert(String.class, Name.class)).isTrue();
-			assertThat(conversionService.canConvert(Name.class, String.class)).isTrue();
+			assertThat(objectDirectoryMapper).extracting("converterManager")
+				.extracting("conversionService", InstanceOfAssertFactories.type(ApplicationConversionService.class))
+				.satisfies((conversionService) -> {
+					assertThat(conversionService.canConvert(String.class, Name.class)).isTrue();
+					assertThat(conversionService.canConvert(Name.class, String.class)).isTrue();
+				});
 		});
 	}
 
