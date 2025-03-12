@@ -38,8 +38,8 @@ org.springframework.boot.autoconfigure.ssl.BundleContentNotWatchableFailureAnaly
 # Template Availability Providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
-org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
 
