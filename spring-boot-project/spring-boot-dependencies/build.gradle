@@ -1054,6 +1054,10 @@ bom {
 		}
 	}
 	library("jOOQ", "3.19.21") {
+		prohibit {
+			versionRange "[3.20.0.0,)"
+			because "it requires Java 21"
+		}
 		group("org.jooq") {
 			modules = [
 				"jooq",
