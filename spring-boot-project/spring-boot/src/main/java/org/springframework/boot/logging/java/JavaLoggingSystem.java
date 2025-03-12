@@ -176,7 +176,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link JavaLoggingSystem} if possible.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(Ordered.LOWEST_PRECEDENCE - 1024)
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils.isPresent("java.util.logging.LogManager",

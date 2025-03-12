@@ -492,7 +492,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link LogbackLoggingSystem} if possible.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 1024)
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext",
