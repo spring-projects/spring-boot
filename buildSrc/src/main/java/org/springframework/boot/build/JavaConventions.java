@@ -32,6 +32,7 @@ import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
@@ -54,6 +55,8 @@ import org.gradle.external.javadoc.CoreJavadocOptions;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
+import org.springframework.boot.build.springframework.CheckAotFactories;
+import org.springframework.boot.build.springframework.CheckSpringFactories;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
 import org.springframework.boot.build.toolchain.ToolchainPlugin;
 import org.springframework.util.StringUtils;
@@ -98,6 +101,19 @@ import org.springframework.util.StringUtils;
  * <li>{@code Implementation-Version}
  * </ul>
  * <li>{@code spring-boot-parent} is used for dependency management</li>
+ * <li>Additional checks are configured:
+ * <ul>
+ * <li>For all source sets:
+ * <ul>
+ * <li>Prohibited dependencies on the compile classpath
+ * <li>Prohibited dependencies on the runtime classpath
+ * </ul>
+ * <li>For the {@code main} source set:
+ * <ul>
+ * <li>{@code META-INF/spring/aot.factories}
+ * <li>{@code META-INF/spring.factories}
+ * </ul>
+ * </ul>
  * </ul>
  *
  * <p/>
@@ -123,6 +139,7 @@ class JavaConventions {
 			configureDependencyManagement(project);
 			configureToolchain(project);
 			configureProhibitedDependencyChecks(project);
+			configureFactoriesFilesChecks(project);
 		});
 	}
 
@@ -302,6 +319,28 @@ class JavaConventions {
 			.register("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
 					CheckClasspathForProhibitedDependencies.class, (task) -> task.setClasspath(classpath));
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
+	}
+
+	private void configureFactoriesFilesChecks(Project project) {
+		SourceSetContainer sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+		sourceSets.matching((sourceSet) -> SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName()))
+			.configureEach((main) -> {
+				TaskProvider<Task> check = project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME);
+				TaskProvider<CheckAotFactories> checkAotFactories = project.getTasks()
+					.register("checkAotFactories", CheckAotFactories.class, (task) -> {
+						task.setSource(main.getResources());
+						task.setClasspath(main.getOutput().getClassesDirs());
+						task.setDescription("Checks the META-INF/spring/aot.factories file of the main source set.");
+					});
+				check.configure((task) -> task.dependsOn(checkAotFactories));
+				TaskProvider<CheckSpringFactories> checkSpringFactories = project.getTasks()
+					.register("checkSpringFactories", CheckSpringFactories.class, (task) -> {
+						task.setSource(main.getResources());
+						task.setClasspath(main.getOutput().getClassesDirs());
+						task.setDescription("Checks the META-INF/spring.factories file of the main source set.");
+					});
+				check.configure((task) -> task.dependsOn(checkSpringFactories));
+			});
 	}
 
 }
