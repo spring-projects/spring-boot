@@ -333,7 +333,8 @@ public class TracingProperties {
 			private int maxBatchSize = 512;
 
 			/**
-			 * Maximum number of Spans that are kept in the queue before start dropping.
+			 * Maximum number of spans that are kept in the queue before they will be
+			 * dropped.
 			 */
 			private int maxQueueSize = 2048;
 
