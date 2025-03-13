@@ -70,6 +70,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -321,6 +322,44 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
 			assertThat(propagator.fields()).isEmpty();
+		});
+	}
+
+	@Test
+	void batchSpanProcessorShouldBeConfiguredWithCustomProperties() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.opentelemetry.export.timeout=45s",
+					"management.tracing.opentelemetry.export.include-unsampled=true",
+					"management.tracing.opentelemetry.export.max-batch-size=256",
+					"management.tracing.opentelemetry.export.max-queue-size=4096",
+					"management.tracing.opentelemetry.export.schedule-delay=15s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(BatchSpanProcessor.class);
+				BatchSpanProcessor batchSpanProcessor = context.getBean(BatchSpanProcessor.class);
+				assertThat(batchSpanProcessor).hasFieldOrPropertyWithValue("exportUnsampledSpans", true)
+					.extracting("worker")
+					.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Duration.ofSeconds(45).toNanos())
+					.hasFieldOrPropertyWithValue("maxExportBatchSize", 256)
+					.hasFieldOrPropertyWithValue("scheduleDelayNanos", Duration.ofSeconds(15).toNanos())
+					.extracting("queue")
+					.satisfies((queue) -> assertThat(ReflectionTestUtils.<Integer>invokeMethod(queue, "capacity"))
+						.isEqualTo(4096));
+			});
+	}
+
+	@Test
+	void batchSpanProcessorShouldBeConfiguredWithDefaultProperties() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(BatchSpanProcessor.class);
+			BatchSpanProcessor batchSpanProcessor = context.getBean(BatchSpanProcessor.class);
+			assertThat(batchSpanProcessor).hasFieldOrPropertyWithValue("exportUnsampledSpans", false)
+				.extracting("worker")
+				.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Duration.ofSeconds(30).toNanos())
+				.hasFieldOrPropertyWithValue("maxExportBatchSize", 512)
+				.hasFieldOrPropertyWithValue("scheduleDelayNanos", Duration.ofSeconds(5).toNanos())
+				.extracting("queue")
+				.satisfies((queue) -> assertThat(ReflectionTestUtils.<Integer>invokeMethod(queue, "capacity"))
+					.isEqualTo(2048));
 		});
 	}
 
