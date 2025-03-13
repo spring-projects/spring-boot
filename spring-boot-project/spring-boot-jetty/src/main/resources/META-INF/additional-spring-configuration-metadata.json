@@ -1,0 +1,62 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "server.jetty.accesslog.date-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.extended-format",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.locale",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-cookies",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-latency",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.log-server",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.accesslog.time-zone",
+      "deprecation": {
+        "replacement": "server.jetty.accesslog.custom-format",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.jetty.max-http-post-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "replacement": "server.jetty.max-http-form-post-size",
+        "level": "error"
+      }
+    }
+  ]
+}
