@@ -2055,7 +2055,8 @@ bom {
 				"spring-boot-test",
 				"spring-boot-test-autoconfigure",
 				"spring-boot-testcontainers",
-				"spring-boot-tomcat"
+				"spring-boot-tomcat",
+				"spring-boot-undertow"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

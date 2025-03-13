@@ -236,6 +236,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-undertow"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("ch.qos.logback:logback-classic")

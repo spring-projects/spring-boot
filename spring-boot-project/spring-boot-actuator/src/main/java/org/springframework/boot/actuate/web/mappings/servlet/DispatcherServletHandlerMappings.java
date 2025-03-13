@@ -27,8 +27,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardWrapper;
 
 import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.undertow.servlet.UndertowServletWebServer;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -46,6 +46,10 @@ final class DispatcherServletHandlerMappings {
 
 	private static final boolean TOMCAT_WEB_SERVER_PRESENT = ClassUtils.isPresent(
 			"org.springframework.boot.tomcat.TomcatWebServer", DispatcherServletHandlerMappings.class.getClassLoader());
+
+	private static final boolean UNDERTOW_WEB_SERVER_PRESENT = ClassUtils.isPresent(
+			"org.springframework.boot.undertow.UndertowWebServer",
+			DispatcherServletHandlerMappings.class.getClassLoader());
 
 	private final String name;
 
@@ -74,7 +78,7 @@ final class DispatcherServletHandlerMappings {
 			return;
 		}
 		WebServer webServer = webServerApplicationContext.getWebServer();
-		if (webServer instanceof UndertowServletWebServer undertowServletWebServer) {
+		if (UNDERTOW_WEB_SERVER_PRESENT && webServer instanceof UndertowServletWebServer undertowServletWebServer) {
 			new UndertowServletInitializer(undertowServletWebServer).initializeServlet(this.name);
 		}
 		else if (TOMCAT_WEB_SERVER_PRESENT && webServer instanceof TomcatWebServer tomcatWebServer) {

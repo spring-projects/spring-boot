@@ -21,7 +21,7 @@ plugins {
 description = "Starter for using Undertow as the embedded servlet container. An alternative to spring-boot-starter-tomcat"
 
 dependencies {
-	api("io.undertow:undertow-core")
+	api(project(":spring-boot-project:spring-boot-undertow"))
 	api("io.undertow:undertow-servlet")
 	api("io.undertow:undertow-websockets-jsr")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
