@@ -121,7 +121,7 @@ class OpenTelemetryResourceAttributesTests {
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingIllegalHexCharPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=abc%ß");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Invalid encoded sequence \"%ß\"");
+			.withMessage("Failed to decode percent-encoded characters at index 3 in the value: 'abc%ß'");
 	}
 
 	@Test
@@ -134,7 +134,7 @@ class OpenTelemetryResourceAttributesTests {
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingInvalidPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Invalid encoded sequence \"%\"");
+			.withMessage("Failed to decode percent-encoded characters at index 0 in the value: '%'");
 	}
 
 	@Test
