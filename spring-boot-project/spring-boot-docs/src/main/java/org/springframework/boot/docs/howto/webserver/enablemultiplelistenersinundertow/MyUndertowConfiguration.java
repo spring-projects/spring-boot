@@ -18,8 +18,8 @@ package org.springframework.boot.docs.howto.webserver.enablemultiplelistenersinu
 
 import io.undertow.Undertow.Builder;
 
+import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

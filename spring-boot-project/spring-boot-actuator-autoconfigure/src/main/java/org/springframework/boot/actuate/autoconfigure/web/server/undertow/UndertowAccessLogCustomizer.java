@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
 import java.util.function.Function;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
-import org.springframework.boot.web.server.undertow.ConfigurableUndertowWebServerFactory;
+import org.springframework.boot.undertow.ConfigurableUndertowWebServerFactory;
 
 /**
  * {@link AccessLogCustomizer} for Undertow.
