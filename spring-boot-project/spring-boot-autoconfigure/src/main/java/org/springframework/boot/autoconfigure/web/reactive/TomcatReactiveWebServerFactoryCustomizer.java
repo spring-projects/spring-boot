@@ -20,7 +20,7 @@ import org.apache.catalina.core.AprLifecycleListener;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
-import org.springframework.boot.autoconfigure.web.ServerProperties.UseApr;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.util.Assert;

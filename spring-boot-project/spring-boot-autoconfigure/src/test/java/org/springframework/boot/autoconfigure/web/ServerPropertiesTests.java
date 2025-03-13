@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
-import org.springframework.boot.autoconfigure.web.ServerProperties.UseApr;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;

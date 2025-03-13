@@ -1140,6 +1140,28 @@ public class ServerProperties {
 
 		}
 
+		/**
+		 * When to use APR.
+		 */
+		public enum UseApr {
+
+			/**
+			 * Always use APR and fail if it's not available.
+			 */
+			ALWAYS,
+
+			/**
+			 * Use APR if it is available.
+			 */
+			WHEN_AVAILABLE,
+
+			/**
+			 * Never user APR.
+			 */
+			NEVER
+
+		}
+
 	}
 
 	/**
@@ -1942,28 +1964,6 @@ public class ServerProperties {
 		 * Ignore X-Forwarded-* headers.
 		 */
 		NONE
-
-	}
-
-	/**
-	 * When to use APR.
-	 */
-	public enum UseApr {
-
-		/**
-		 * Always use APR and fail if it's not available.
-		 */
-		ALWAYS,
-
-		/**
-		 * Use APR if it is available.
-		 */
-		WHEN_AVAILABLE,
-
-		/**
-		 * Never user APR.
-		 */
-		NEVER
 
 	}
 

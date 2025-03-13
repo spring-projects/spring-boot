@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import org.apache.catalina.core.AprLifecycleListener;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.UseApr;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
