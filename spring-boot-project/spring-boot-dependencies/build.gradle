@@ -2035,6 +2035,7 @@ bom {
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-jarmode-tools",
+				"spring-boot-jetty",
 				"spring-boot-loader",
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
