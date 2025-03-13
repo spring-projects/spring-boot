@@ -66,14 +66,6 @@
       }
     },
     {
-      "name": "server.undertow.buffers-per-region",
-      "type": "java.lang.Integer",
-      "description": "Number of buffer per region.",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.activemq.pool.create-connection-on-startup",
       "type": "java.lang.Boolean",
       "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",

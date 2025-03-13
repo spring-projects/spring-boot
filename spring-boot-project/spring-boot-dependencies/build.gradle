@@ -2094,7 +2094,8 @@ bom {
 				"spring-boot-starter-webflux",
 				"spring-boot-starter-websocket",
 				"spring-boot-starter-web-services",
-				"spring-boot-tomcat"
+				"spring-boot-tomcat",
+				"spring-boot-undertow"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

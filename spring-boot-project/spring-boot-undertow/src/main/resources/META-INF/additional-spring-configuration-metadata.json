@@ -1,0 +1,13 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "server.undertow.buffers-per-region",
+      "type": "java.lang.Integer",
+      "description": "Number of buffer per region.",
+      "deprecation": {
+        "level": "error"
+      }
+    }
+  ]
+}
