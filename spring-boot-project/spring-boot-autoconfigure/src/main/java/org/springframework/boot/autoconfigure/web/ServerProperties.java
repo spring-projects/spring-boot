@@ -519,6 +519,11 @@ public class ServerProperties {
 		 */
 		private int maxParameterCount = 10000;
 
+		/**
+		 * Whether to use APR.
+		 */
+		private UseApr useApr = UseApr.NEVER;
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -681,6 +686,14 @@ public class ServerProperties {
 
 		public void setMaxParameterCount(int maxParameterCount) {
 			this.maxParameterCount = maxParameterCount;
+		}
+
+		public UseApr getUseApr() {
+			return this.useApr;
+		}
+
+		public void setUseApr(UseApr useApr) {
+			this.useApr = useApr;
 		}
 
 		/**
@@ -1929,6 +1942,28 @@ public class ServerProperties {
 		 * Ignore X-Forwarded-* headers.
 		 */
 		NONE
+
+	}
+
+	/**
+	 * When to use APR.
+	 */
+	public enum UseApr {
+
+		/**
+		 * Always use APR and fail if it's not available.
+		 */
+		ALWAYS,
+
+		/**
+		 * Use APR if it is available.
+		 */
+		WHEN_AVAILABLE,
+
+		/**
+		 * Never user APR.
+		 */
+		NEVER
 
 	}
 

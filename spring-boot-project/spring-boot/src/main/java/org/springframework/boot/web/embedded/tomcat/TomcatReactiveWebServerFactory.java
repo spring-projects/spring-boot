@@ -36,6 +36,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,8 +84,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
-
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
 	private Set<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
@@ -101,6 +100,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private boolean disableMBeanRegistry = true;
 
+	private boolean useApr;
+
 	/**
 	 * Create a new {@link TomcatReactiveWebServerFactory} instance.
 	 */
@@ -116,10 +117,12 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		super(port);
 	}
 
-	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
-		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
-		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
-				: new ArrayList<>();
+	private List<LifecycleListener> getDefaultServerLifecycleListeners() {
+		ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
+		if (this.useApr) {
+			lifecycleListeners.add(new AprLifecycleListener());
+		}
+		return lifecycleListeners;
 	}
 
 	@Override
@@ -130,7 +133,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
-		for (LifecycleListener listener : this.serverLifecycleListeners) {
+		for (LifecycleListener listener : getDefaultServerLifecycleListeners()) {
 			tomcat.getServer().addLifecycleListener(listener);
 		}
 		Connector connector = new Connector(this.protocol);
@@ -171,7 +174,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.setResources(resourcesRoot);
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
-		context.addLifecycleListener(new Tomcat.FixContextListener());
+		context.addLifecycleListener(new FixContextListener());
 		ClassLoader parentClassLoader = ClassUtils.getDefaultClassLoader();
 		context.setParentClassLoader(parentClassLoader);
 		skipAllTldScanning(context);
@@ -474,6 +477,15 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
 		this.disableMBeanRegistry = disableMBeanRegistry;
+	}
+
+	/**
+	 * Whether to use APR.
+	 * @param useApr whether to use APR
+	 * @since 3.4.4
+	 */
+	public void setUseApr(boolean useApr) {
+		this.useApr = useApr;
 	}
 
 }

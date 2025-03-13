@@ -95,12 +95,20 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	@Test
 	void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		if (AprLifecycleListener.isAprAvailable()) {
-			assertThat(factory.getContextLifecycleListeners()).singleElement().isInstanceOf(AprLifecycleListener.class);
-		}
-		else {
-			assertThat(factory.getContextLifecycleListeners()).isEmpty();
-		}
+		assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+	}
+
+	@Test
+	void aprShouldBeOptIn() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		factory.setUseApr(true);
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
+			.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test

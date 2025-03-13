@@ -90,15 +90,12 @@ class LoaderIntegrationTests {
 			.withLogConsumer(this.output)
 			.withCopyFileToContainer(findApplication(name, classifier), "/app.jar")
 			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
-			.withCommand(command(javaRuntime));
+			.withCommand(command());
 	}
 
-	private String[] command(JavaRuntime javaRuntime) {
+	private String[] command() {
 		List<String> command = new ArrayList<>();
 		command.add("java");
-		if (javaRuntime.version == JavaVersion.TWENTY_FOUR) {
-			command.add("--enable-native-access=ALL-UNNAMED");
-		}
 		command.add("-jar");
 		command.add("app.jar");
 		return command.toArray(new String[0]);

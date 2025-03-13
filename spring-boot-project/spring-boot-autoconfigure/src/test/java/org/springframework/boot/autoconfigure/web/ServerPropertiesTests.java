@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
+import org.springframework.boot.autoconfigure.web.ServerProperties.UseApr;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -69,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Chris Bono
  * @author Parviz Rozikov
  * @author Lasse Wulff
+ * @author Moritz Halbritter
  */
 @DirtiesUrlFactories
 class ServerPropertiesTests {
@@ -504,6 +506,11 @@ class ServerPropertiesTests {
 	void nettyInitialBufferSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getInitialBufferSize().toBytes())
 			.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
+	}
+
+	@Test
+	void shouldDefaultAprToNever() {
+		assertThat(this.properties.getTomcat().getUseApr()).isEqualTo(UseApr.NEVER);
 	}
 
 	private Connector getDefaultConnector() {
