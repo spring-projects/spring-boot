@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.server.reactive.undertow.UndertowReactiveWebServerAutoConfiguration;
+import org.springframework.boot.undertow.autoconfigure.reactive.UndertowReactiveWebServerAutoConfiguration;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 

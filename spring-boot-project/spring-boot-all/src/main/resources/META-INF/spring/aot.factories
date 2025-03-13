@@ -1,7 +1,6 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
 org.springframework.boot.http.client.ClientHttpRequestFactoryRuntimeHints,\
-org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints,\
-org.springframework.boot.web.server.undertow.UndertowWebServer$UndertowWebServerRuntimeHints
+org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.jackson.JsonComponentModule$JsonComponentBeanFactoryInitializationAotProcessor
