@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class DataJpaTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		DataJpaTest dataJpaTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataJpaTest.class);
-		return (dataJpaTest != null) ? dataJpaTest.properties() : null;
-	}
+class DataJpaTestContextBootstrapper extends TestSliceTestContextBootstrapper<DataJpaTest> {
 
 }
