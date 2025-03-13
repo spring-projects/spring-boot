@@ -134,9 +134,7 @@ org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpCo
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.server.reactive.jetty.JettyReactiveWebServerAutoConfiguration
 org.springframework.boot.autoconfigure.web.server.reactive.netty.NettyReactiveWebServerAutoConfiguration
-org.springframework.boot.autoconfigure.web.server.reactive.undertow.UndertowReactiveWebServerAutoConfiguration
 org.springframework.boot.autoconfigure.web.server.servlet.jetty.JettyServletWebServerAutoConfiguration
-org.springframework.boot.autoconfigure.web.server.servlet.undertow.UndertowServletWebServerAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
