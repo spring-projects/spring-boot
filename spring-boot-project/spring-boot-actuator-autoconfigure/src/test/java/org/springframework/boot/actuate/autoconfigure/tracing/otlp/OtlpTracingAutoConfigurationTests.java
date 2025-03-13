@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -227,6 +228,45 @@ class OtlpTracingAutoConfigurationTests {
 					.getField(ReflectionTestUtils.getField(builder, "delegate"), "meterProviderSupplier");
 				assertThat(meterProviderSupplier).isNotNull();
 				assertThat(meterProviderSupplier.get()).isSameAs(MeterProviderConfiguration.meterProvider);
+			});
+	}
+
+	@Test
+	void shouldCustomizeHttpTransportWithOtlpHttpSpanExporterBuilderCustomizer() {
+		Duration connectTimeout = Duration.ofMinutes(20);
+		Duration timeout = Duration.ofMinutes(10);
+		this.contextRunner
+			.withBean("httpCustomizer1", OtlpHttpSpanExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setConnectTimeout(connectTimeout))
+			.withBean("httpCustomizer2", OtlpHttpSpanExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setTimeout(timeout))
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class).hasSingleBean(SpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", (int) connectTimeout.toMillis())
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", (int) timeout.toMillis());
+			});
+	}
+
+	@Test
+	void shouldCustomizeGrpcTransportWhenEnabledWithOtlpGrpcSpanExporterBuilderCustomizer() {
+		Duration timeout = Duration.ofMinutes(10);
+		Duration connectTimeout = Duration.ofMinutes(20);
+		this.contextRunner
+			.withBean("grpcCustomizer1", OtlpGrpcSpanExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setConnectTimeout(connectTimeout))
+			.withBean("grpcCustomizer2", OtlpGrpcSpanExporterBuilderCustomizer.class,
+					() -> (builder) -> builder.setTimeout(timeout))
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces",
+					"management.otlp.tracing.transport=grpc")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class).hasSingleBean(SpanExporter.class);
+				OtlpGrpcSpanExporter exporter = context.getBean(OtlpGrpcSpanExporter.class);
+				assertThat(exporter).extracting("delegate.grpcSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", (int) connectTimeout.toMillis())
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", (int) timeout.toMillis());
 			});
 	}
 

@@ -83,7 +83,8 @@ class OtlpTracingConfigurations {
 		@Bean
 		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "http", matchIfMissing = true)
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				ObjectProvider<OtlpHttpSpanExporterBuilderCustomizer> customizers) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
@@ -91,13 +92,15 @@ class OtlpTracingConfigurations {
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
 		@Bean
 		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "grpc")
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				ObjectProvider<OtlpGrpcSpanExporterBuilderCustomizer> customizers) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
@@ -105,6 +108,7 @@ class OtlpTracingConfigurations {
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
 			meterProvider.ifAvailable(builder::setMeterProvider);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
