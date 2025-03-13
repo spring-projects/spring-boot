@@ -39,6 +39,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional("org.apache.cassandra:java-driver-core") {

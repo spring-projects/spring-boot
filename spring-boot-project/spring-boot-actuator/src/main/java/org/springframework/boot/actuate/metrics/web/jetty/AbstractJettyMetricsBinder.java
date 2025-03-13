@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.metrics.web.jetty;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.jetty.JettyWebServer;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.jetty.JettyWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 

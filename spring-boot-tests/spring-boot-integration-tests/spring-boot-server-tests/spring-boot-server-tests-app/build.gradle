@@ -66,8 +66,8 @@ tasks.register("resourcesJar", Jar) { jar ->
 }
 
 dependencies {
-	compileOnly("org.eclipse.jetty.ee10:jetty-ee10-servlet")
 	compileOnly("org.springframework:spring-web")
+	compileOnly("org.springframework.boot:spring-boot-jetty")
 
 	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter")
