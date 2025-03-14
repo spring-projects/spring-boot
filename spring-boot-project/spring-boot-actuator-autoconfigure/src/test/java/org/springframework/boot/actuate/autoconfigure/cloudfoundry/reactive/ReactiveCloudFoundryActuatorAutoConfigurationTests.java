@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,8 @@ import java.util.Map;
 
 import javax.net.ssl.SSLException;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpResources;
@@ -52,13 +55,19 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -78,6 +87,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveCloudFoundryActuatorAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
@@ -300,53 +310,63 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	void skipSslValidation() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
-			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-					"vcap.application.cf_api:https://my-cloud-controller.com",
-					"management.cloudfoundry.skip-ssl-validation:true")
-			.run((context) -> {
-				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-						"cloudFoundrySecurityService");
-				WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService, "webClient");
-				doesNotFailWithSslException(() -> webClient.get()
-					.uri("https://self-signed.badssl.com/")
-					.retrieve()
-					.toBodilessEntity()
-					.block(Duration.ofSeconds(30)));
-			});
-	}
-
-	private static void doesNotFailWithSslException(Runnable action) {
-		try {
-			action.run();
-		}
-		catch (RuntimeException ex) {
-			assertThat(findCause(ex, SSLException.class)).isNull();
+	@WithPackageResources("test.jks")
+	void skipSslValidation() throws IOException {
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("JKS", null, "classpath:test.jks", "secret");
+		SslBundle sslBundle = SslBundle.of(new JksSslStoreBundle(keyStoreDetails, keyStoreDetails));
+		try (MockWebServer server = new MockWebServer()) {
+			server.useHttps(sslBundle.createSslContext().getSocketFactory(), false);
+			server.enqueue(new MockResponse().setResponseCode(204));
+			server.start();
+			this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
+						"management.cloudfoundry.skip-ssl-validation:true")
+				.run((context) -> {
+					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+							"cloudFoundrySecurityService");
+					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
+							"webClient");
+					ResponseEntity<Void> response = webClient.get()
+						.uri(server.url("/").uri())
+						.retrieve()
+						.toBodilessEntity()
+						.block(Duration.ofSeconds(30));
+					assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+				});
 		}
 	}
 
 	@Test
-	void sslValidationNotSkippedByDefault() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
-			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-					"vcap.application.cf_api:https://my-cloud-controller.com")
-			.run((context) -> {
-				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
-				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
-				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
-						"cloudFoundrySecurityService");
-				WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService, "webClient");
-				assertThatExceptionOfType(RuntimeException.class)
-					.isThrownBy(() -> webClient.get()
-						.uri("https://self-signed.badssl.com/")
-						.retrieve()
-						.toBodilessEntity()
-						.block(Duration.ofSeconds(30)))
-					.withCauseInstanceOf(SSLException.class);
-			});
+	@WithPackageResources("test.jks")
+	void sslValidationNotSkippedByDefault() throws IOException {
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("JKS", null, "classpath:test.jks", "secret");
+		SslBundle sslBundle = SslBundle.of(new JksSslStoreBundle(keyStoreDetails, keyStoreDetails));
+		try (MockWebServer server = new MockWebServer()) {
+			server.useHttps(sslBundle.createSslContext().getSocketFactory(), false);
+			server.enqueue(new MockResponse().setResponseCode(204));
+			server.start();
+			this.contextRunner.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
+					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
+					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+							"cloudFoundrySecurityService");
+					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
+							"webClient");
+					assertThatExceptionOfType(RuntimeException.class)
+						.isThrownBy(() -> webClient.get()
+							.uri(server.url("/").uri())
+							.retrieve()
+							.toBodilessEntity()
+							.block(Duration.ofSeconds(30)))
+						.withCauseInstanceOf(SSLException.class);
+				});
+		}
 	}
 
 	private CloudFoundryWebFluxEndpointHandlerMapping getHandlerMapping(ApplicationContext context) {
@@ -363,16 +383,6 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		}
 		throw new IllegalStateException(
 				"No operation found with request path " + requestPath + " from " + endpoint.getOperations());
-	}
-
-	private static <E extends Throwable> E findCause(Throwable failure, Class<E> type) {
-		while (failure != null) {
-			if (type.isInstance(failure)) {
-				return type.cast(failure);
-			}
-			failure = failure.getCause();
-		}
-		return null;
 	}
 
 	@Endpoint(id = "test")
