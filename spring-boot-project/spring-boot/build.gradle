@@ -100,7 +100,7 @@ dependencies {
 	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
-	
+
 	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
 	testFixturesCompileOnly("org.mockito:mockito-core")
 	testFixturesCompileOnly("org.springframework:spring-web")
