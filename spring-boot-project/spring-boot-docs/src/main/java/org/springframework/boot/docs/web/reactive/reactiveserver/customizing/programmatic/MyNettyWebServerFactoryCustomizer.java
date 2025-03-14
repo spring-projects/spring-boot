@@ -18,8 +18,8 @@ package org.springframework.boot.docs.web.reactive.reactiveserver.customizing.pr
 
 import java.time.Duration;
 
+import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.reactive.netty.NettyReactiveWebServerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
