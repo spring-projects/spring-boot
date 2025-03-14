@@ -64,6 +64,7 @@ org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
@@ -92,6 +93,7 @@ org.springframework.boot.autoconfigure.pulsar.PulsarAutoConfiguration
 org.springframework.boot.autoconfigure.pulsar.PulsarReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+org.springframework.boot.autoconfigure.r2dbc.R2dbcInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcProxyAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
@@ -116,7 +118,6 @@ org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2Auth
 org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerJwtAutoConfiguration
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
-org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration

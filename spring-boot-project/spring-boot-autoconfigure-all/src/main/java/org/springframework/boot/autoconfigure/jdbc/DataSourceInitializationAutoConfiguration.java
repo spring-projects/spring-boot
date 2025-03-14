@@ -14,30 +14,46 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.sql.init.ApplicationScriptDatabaseInitializer;
+import org.springframework.boot.autoconfigure.sql.init.ConditionalOnSqlInitialization;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean({ SqlDataSourceScriptDatabaseInitializer.class, SqlR2dbcScriptDatabaseInitializer.class })
+/**
+ * Auto-configuration for {@link DataSource} initialization.
+ *
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 4.0.0
+ */
+@AutoConfiguration
+@ConditionalOnMissingBean(ApplicationScriptDatabaseInitializer.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnClass(DatabasePopulator.class)
-class DataSourceInitializationConfiguration {
+@Import(DatabaseInitializationDependencyConfigurer.class)
+@EnableConfigurationProperties(SqlInitializationProperties.class)
+@ConditionalOnSqlInitialization
+public class DataSourceInitializationAutoConfiguration {
 
 	@Bean
-	SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
+	ApplicationDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
 			SqlInitializationProperties properties) {
-		return new SqlDataSourceScriptDatabaseInitializer(
+		return new ApplicationDataSourceScriptDatabaseInitializer(
 				determineDataSource(dataSource, properties.getUsername(), properties.getPassword()), properties);
 	}
 

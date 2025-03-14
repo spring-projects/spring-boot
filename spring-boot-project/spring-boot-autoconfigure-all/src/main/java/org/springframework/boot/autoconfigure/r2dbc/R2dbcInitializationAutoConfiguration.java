@@ -14,35 +14,47 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.autoconfigure.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactory;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jdbc.ApplicationDataSourceScriptDatabaseInitializer;
+import org.springframework.boot.autoconfigure.sql.init.ConditionalOnSqlInitialization;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.r2dbc.connection.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
- * Configuration for initializing an SQL database accessed through an R2DBC
+ * Auto-configuration for initializing an SQL database accessed through an R2DBC
  * {@link ConnectionFactory}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 4.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({ ConnectionFactory.class, DatabasePopulator.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
-@ConditionalOnMissingBean({ SqlR2dbcScriptDatabaseInitializer.class, SqlDataSourceScriptDatabaseInitializer.class })
-class R2dbcInitializationConfiguration {
+@ConditionalOnMissingBean({ ApplicationR2dbcScriptDatabaseInitializer.class,
+		ApplicationDataSourceScriptDatabaseInitializer.class })
+@ConditionalOnSqlInitialization
+@Import(DatabaseInitializationDependencyConfigurer.class)
+@EnableConfigurationProperties(SqlInitializationProperties.class)
+public class R2dbcInitializationAutoConfiguration {
 
 	@Bean
-	SqlR2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
+	ApplicationR2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
 			SqlInitializationProperties properties) {
-		return new SqlR2dbcScriptDatabaseInitializer(
+		return new ApplicationR2dbcScriptDatabaseInitializer(
 				determineConnectionFactory(connectionFactory, properties.getUsername(), properties.getPassword()),
 				properties);
 	}

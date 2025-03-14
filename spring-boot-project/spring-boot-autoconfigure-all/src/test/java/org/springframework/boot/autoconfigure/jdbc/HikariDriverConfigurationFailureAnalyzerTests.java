@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -78,7 +77,7 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class })
+	@ImportAutoConfiguration({ DataSourceAutoConfiguration.class, DataSourceInitializationAutoConfiguration.class })
 	static class TestConfiguration {
 
 	}

@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -44,7 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.3.0
  */
-@AutoConfiguration(before = { DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class })
+@AutoConfiguration(before = { DataSourceAutoConfiguration.class, R2dbcInitializationAutoConfiguration.class })
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider")
 @EnableConfigurationProperties(R2dbcProperties.class)

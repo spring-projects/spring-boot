@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.autoconfigure.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactory;
 
+import org.springframework.boot.autoconfigure.sql.init.ApplicationScriptDatabaseInitializer;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
 import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
-import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link R2dbcScriptDatabaseInitializer} for the primary SQL database. May be registered
@@ -30,41 +31,27 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  * @author Phillip Webb
  * @since 2.6.0
  */
-@ImportRuntimeHints(SqlInitializationScriptsRuntimeHints.class)
-public class SqlR2dbcScriptDatabaseInitializer extends R2dbcScriptDatabaseInitializer {
+public class ApplicationR2dbcScriptDatabaseInitializer extends R2dbcScriptDatabaseInitializer
+		implements ApplicationScriptDatabaseInitializer {
 
 	/**
-	 * Create a new {@code SqlR2dbcScriptDatabaseInitializer} instance.
+	 * Create a new {@code ApplicationR2dbcScriptDatabaseInitializer} instance.
 	 * @param connectionFactory the primary SQL connection factory
 	 * @param properties the SQL initialization properties
-	 * @see #getSettings
 	 */
-	public SqlR2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
+	public ApplicationR2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
 			SqlInitializationProperties properties) {
-		super(connectionFactory, getSettings(properties));
+		super(connectionFactory, ApplicationScriptDatabaseInitializer.getSettings(properties));
 	}
 
 	/**
-	 * Create a new {@code SqlR2dbcScriptDatabaseInitializer} instance.
+	 * Create a new {@code ApplicationR2dbcScriptDatabaseInitializer} instance.
 	 * @param connectionFactory the primary SQL connection factory
 	 * @param settings the database initialization settings
-	 * @see #getSettings
 	 */
-	public SqlR2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
+	public ApplicationR2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,
 			DatabaseInitializationSettings settings) {
 		super(connectionFactory, settings);
-	}
-
-	/**
-	 * Adapts {@link SqlInitializationProperties SQL initialization properties} to
-	 * {@link DatabaseInitializationSettings}.
-	 * @param properties the SQL initialization properties
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 * @see #SqlR2dbcScriptDatabaseInitializer(ConnectionFactory,
-	 * DatabaseInitializationSettings)
-	 */
-	public static DatabaseInitializationSettings getSettings(SqlInitializationProperties properties) {
-		return SettingsCreator.createFrom(properties);
 	}
 
 }
