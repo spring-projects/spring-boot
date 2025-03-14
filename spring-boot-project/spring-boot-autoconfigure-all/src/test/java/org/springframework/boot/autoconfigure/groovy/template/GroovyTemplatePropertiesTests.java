@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.template;
+package org.springframework.boot.autoconfigure.groovy.template;
 
 import java.nio.charset.StandardCharsets;
 
@@ -25,34 +25,34 @@ import org.springframework.util.MimeTypeUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AbstractViewResolverProperties}.
+ * Tests for {@link GroovyTemplateProperties}.
  *
  * @author Stephane Nicoll
  */
-class ViewResolverPropertiesTests {
+class GroovyTemplatePropertiesTests {
 
 	@Test
 	void defaultContentType() {
-		assertThat(new ViewResolverProperties().getContentType()).hasToString("text/html;charset=UTF-8");
+		assertThat(new GroovyTemplateProperties().getContentType()).hasToString("text/html;charset=UTF-8");
 	}
 
 	@Test
 	void customContentTypeDefaultCharset() {
-		ViewResolverProperties properties = new ViewResolverProperties();
+		GroovyTemplateProperties properties = new GroovyTemplateProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain"));
 		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-8");
 	}
 
 	@Test
 	void defaultContentTypeCustomCharset() {
-		ViewResolverProperties properties = new ViewResolverProperties();
+		GroovyTemplateProperties properties = new GroovyTemplateProperties();
 		properties.setCharset(StandardCharsets.UTF_16);
 		assertThat(properties.getContentType()).hasToString("text/html;charset=UTF-16");
 	}
 
 	@Test
 	void customContentTypeCustomCharset() {
-		ViewResolverProperties properties = new ViewResolverProperties();
+		GroovyTemplateProperties properties = new GroovyTemplateProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain"));
 		properties.setCharset(StandardCharsets.UTF_16);
 		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16");
@@ -60,14 +60,10 @@ class ViewResolverPropertiesTests {
 
 	@Test
 	void customContentTypeWithPropertyAndCustomCharset() {
-		ViewResolverProperties properties = new ViewResolverProperties();
+		GroovyTemplateProperties properties = new GroovyTemplateProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain;foo=bar"));
 		properties.setCharset(StandardCharsets.UTF_16);
 		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16;foo=bar");
-	}
-
-	static class ViewResolverProperties extends AbstractViewResolverProperties {
-
 	}
 
 }
