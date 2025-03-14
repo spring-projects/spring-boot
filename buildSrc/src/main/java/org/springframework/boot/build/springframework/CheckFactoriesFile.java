@@ -96,31 +96,17 @@ public abstract class CheckFactoriesFile extends DefaultTask {
 	}
 
 	private void check(File factoriesFile) {
-		Properties factories = load(factoriesFile);
+		Properties properties = load(factoriesFile);
 		Map<String, List<String>> problems = new LinkedHashMap<>();
-		for (String key : factories.stringPropertyNames()) {
-			List<String> values = Arrays
-				.asList(StringUtils.commaDelimitedListToStringArray(factories.getProperty(key)));
-			for (String value : values) {
-				boolean found = find(value);
-				if (!found) {
-					List<String> problemsForKey = problems.computeIfAbsent(key, (k) -> new ArrayList<>());
-					String binaryName = binaryNameOf(value);
-					found = find(binaryName);
-					if (found) {
-						problemsForKey
-							.add("'%s' should be listed using its binary name '%s'".formatted(value, binaryName));
-					}
-					else {
-						problemsForKey.add("'%s' was not found".formatted(value));
-					}
-				}
-			}
-			List<String> sortedValues = new ArrayList<>(values);
+		for (String name : properties.stringPropertyNames()) {
+			String value = properties.getProperty(name);
+			List<String> classNames = Arrays.asList(StringUtils.commaDelimitedListToStringArray(value));
+			collectProblems(problems, name, classNames);
+			List<String> sortedValues = new ArrayList<>(classNames);
 			Collections.sort(sortedValues);
-			if (!sortedValues.equals(values)) {
-				List<String> problemsForKey = problems.computeIfAbsent(key, (k) -> new ArrayList<>());
-				problemsForKey.add("Entries should be sorted alphabetically");
+			if (!sortedValues.equals(classNames)) {
+				List<String> problemsForClassName = problems.computeIfAbsent(name, (k) -> new ArrayList<>());
+				problemsForClassName.add("Entries should be sorted alphabetically");
 			}
 		}
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
@@ -128,6 +114,21 @@ public abstract class CheckFactoriesFile extends DefaultTask {
 		if (!problems.isEmpty()) {
 			throw new GradleException("%s check failed. See '%s' for details".formatted(this.path, outputFile));
 		}
+	}
+
+	private void collectProblems(Map<String, List<String>> problems, String key, List<String> classNames) {
+		for (String className : classNames) {
+			if (!find(className)) {
+				addNoFoundProblem(className, problems.computeIfAbsent(key, (k) -> new ArrayList<>()));
+			}
+		}
+	}
+
+	private void addNoFoundProblem(String className, List<String> problemsForClassName) {
+		String binaryName = binaryNameOf(className);
+		boolean foundBinaryForm = find(binaryName);
+		problemsForClassName.add(!foundBinaryForm ? "'%s' was not found".formatted(className)
+				: "'%s' should be listed using its binary name '%s'".formatted(className, binaryName));
 	}
 
 	private boolean find(String className) {

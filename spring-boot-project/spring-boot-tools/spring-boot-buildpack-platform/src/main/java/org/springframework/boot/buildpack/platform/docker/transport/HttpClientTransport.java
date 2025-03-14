@@ -167,10 +167,7 @@ abstract class HttpClientTransport implements HttpTransport {
 			return null;
 		}
 		try (InputStream stream = entity.getContent()) {
-			if (stream == null) {
-				return null;
-			}
-			return stream.readAllBytes();
+			return (stream != null) ? stream.readAllBytes() : null;
 		}
 	}
 
