@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -56,7 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Olga Maciaszek-Sharma
  * @since 1.0.0
  */
-@AutoConfiguration(before = SqlInitializationAutoConfiguration.class)
+@AutoConfiguration(before = DataSourceInitializationAutoConfiguration.class)
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)

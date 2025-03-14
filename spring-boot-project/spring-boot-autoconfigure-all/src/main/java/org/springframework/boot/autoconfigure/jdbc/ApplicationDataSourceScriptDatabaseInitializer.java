@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.sql.init.ApplicationScriptDatabaseInitializer;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
-import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the primary SQL database. May be
@@ -30,39 +31,27 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  * @author Phillip Webb
  * @since 2.6.0
  */
-@ImportRuntimeHints(SqlInitializationScriptsRuntimeHints.class)
-public class SqlDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
+public class ApplicationDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer
+		implements ApplicationScriptDatabaseInitializer {
 
 	/**
-	 * Create a new {@link SqlDataSourceScriptDatabaseInitializer} instance.
+	 * Create a new {@link ApplicationDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the primary SQL data source
 	 * @param properties the SQL initialization properties
-	 * @see #getSettings
 	 */
-	public SqlDataSourceScriptDatabaseInitializer(DataSource dataSource, SqlInitializationProperties properties) {
-		this(dataSource, getSettings(properties));
+	public ApplicationDataSourceScriptDatabaseInitializer(DataSource dataSource,
+			SqlInitializationProperties properties) {
+		this(dataSource, ApplicationScriptDatabaseInitializer.getSettings(properties));
 	}
 
 	/**
-	 * Create a new {@link SqlDataSourceScriptDatabaseInitializer} instance.
+	 * Create a new {@link ApplicationDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the primary SQL data source
 	 * @param settings the database initialization settings
-	 * @see #getSettings
 	 */
-	public SqlDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
+	public ApplicationDataSourceScriptDatabaseInitializer(DataSource dataSource,
+			DatabaseInitializationSettings settings) {
 		super(dataSource, settings);
-	}
-
-	/**
-	 * Adapts {@link SqlInitializationProperties SQL initialization properties} to
-	 * {@link DatabaseInitializationSettings}.
-	 * @param properties the SQL initialization properties
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 * @see #SqlDataSourceScriptDatabaseInitializer(DataSource,
-	 * DatabaseInitializationSettings)
-	 */
-	public static DatabaseInitializationSettings getSettings(SqlInitializationProperties properties) {
-		return SettingsCreator.createFrom(properties);
 	}
 
 }

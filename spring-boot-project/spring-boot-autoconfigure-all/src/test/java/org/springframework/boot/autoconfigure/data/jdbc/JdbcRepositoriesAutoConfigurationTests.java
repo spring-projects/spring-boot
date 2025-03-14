@@ -29,9 +29,9 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.jdbc.city.City;
 import org.springframework.boot.autoconfigure.data.jdbc.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
@@ -218,8 +218,8 @@ class JdbcRepositoriesAutoConfigurationTests {
 
 	private Function<ApplicationContextRunner, ApplicationContextRunner> database() {
 		return (runner) -> runner
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceInitializationAutoConfiguration.class))
 			.withPropertyValues("spring.sql.init.schema-locations=classpath:schema.sql",
 					"spring.sql.init.data-locations=classpath:data.sql", "spring.datasource.generate-unique-name:true");
 	}
