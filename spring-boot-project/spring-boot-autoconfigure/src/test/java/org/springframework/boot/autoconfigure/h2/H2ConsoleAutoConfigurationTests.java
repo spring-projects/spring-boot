@@ -206,7 +206,6 @@ class H2ConsoleAutoConfigurationTests {
 			given(metadata.getURL()).willReturn(url);
 			return connection;
 		});
-
 		return dataSource;
 	}
 
