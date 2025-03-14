@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -50,8 +49,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@AutoConfiguration(after = { WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
+@AutoConfiguration(
+		after = { WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				RepositoryRestMvcAutoConfiguration.class },
+		afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass({ EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class })
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(HateoasProperties.class)

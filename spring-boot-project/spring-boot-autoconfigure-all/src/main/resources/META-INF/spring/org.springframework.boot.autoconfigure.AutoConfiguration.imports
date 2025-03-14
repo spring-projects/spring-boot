@@ -59,7 +59,6 @@ org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfigurati
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
