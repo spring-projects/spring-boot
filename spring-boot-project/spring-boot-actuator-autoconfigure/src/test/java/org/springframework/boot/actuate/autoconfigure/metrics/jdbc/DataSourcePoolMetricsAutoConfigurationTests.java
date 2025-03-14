@@ -34,7 +34,7 @@ import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -125,8 +125,8 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguredHikariDataSourceIsInstrumentedWhenUsingDataSourceInitialization() {
 		this.contextRunner.withPropertyValues("spring.sql.init.schema:db/create-custom-schema.sql")
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, SqlInitializationAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceInitializationAutoConfiguration.class))
 			.run((context) -> {
 				context.getBean(DataSource.class).getConnection();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);

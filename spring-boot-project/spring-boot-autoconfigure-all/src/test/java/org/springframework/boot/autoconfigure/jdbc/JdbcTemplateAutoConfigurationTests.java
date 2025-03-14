@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
@@ -175,7 +174,7 @@ class JdbcTemplateAutoConfigurationTests {
 			""")
 	@WithResource(name = "data.sql", content = "INSERT INTO BAR VALUES (1, 'Andy');")
 	void testDependencyToScriptBasedDataSourceInitialization() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceInitializationAutoConfiguration.class))
 			.withUserConfiguration(DataSourceInitializationValidator.class)
 			.run((context) -> {
 				assertThat(context).hasNotFailed();

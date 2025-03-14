@@ -328,6 +328,16 @@
       ]
     },
     {
+      "name": "spring.sql.init.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether basic script-based initialization of an SQL database is enabled.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.sql.init.mode",
+        "level": "warning"
+      }
+    },
+    {
       "name": "spring.threads.virtual.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to use virtual threads.",
