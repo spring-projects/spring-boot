@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.rabbit;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
+import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
