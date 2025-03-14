@@ -146,6 +146,11 @@ public class Cookie {
 	public enum SameSite {
 
 		/**
+		 * The SameSite cookie attribute will be omitted when creating the cookie.
+		 */
+		OMITTED(null),
+
+		/**
 		 * Cookies are sent in both first-party and cross-origin requests.
 		 */
 		NONE("None"),
