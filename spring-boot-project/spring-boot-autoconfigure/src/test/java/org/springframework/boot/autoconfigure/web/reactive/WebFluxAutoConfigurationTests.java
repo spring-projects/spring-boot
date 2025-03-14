@@ -676,6 +676,15 @@ class WebFluxAutoConfigurationTests {
 			}));
 	}
 
+	@Test
+	void sessionCookieUnsetConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("server.reactive.session.cookie.same-site:unset")
+			.run(assertExchangeWithSession((exchange) -> {
+				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("SESSION");
+				assertThat(cookies).extracting(ResponseCookie::getSameSite).containsOnlyNulls();
+			}));
+	}
+
 	@ParameterizedTest
 	@ValueSource(classes = { ServerProperties.class, WebFluxProperties.class })
 	void propertiesAreNotEnabledInNonWebApplication(Class<?> propertiesClass) {
