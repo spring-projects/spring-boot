@@ -97,7 +97,9 @@ public class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
+			map.from(cookie::getSameSite)
+				.as((sameSite) -> (sameSite == SameSite.UNSET) ? null : sameSite.attributeValue())
+				.to(cookieSerializer::setSameSite);
 			map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;

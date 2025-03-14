@@ -82,7 +82,7 @@ public class WebSessionIdResolverAutoConfiguration {
 
 	private String getSameSite(Cookie properties) {
 		SameSite sameSite = properties.getSameSite();
-		return (sameSite != null) ? sameSite.attributeValue() : null;
+		return (sameSite != null && sameSite != SameSite.UNSET) ? sameSite.attributeValue() : null;
 	}
 
 }
