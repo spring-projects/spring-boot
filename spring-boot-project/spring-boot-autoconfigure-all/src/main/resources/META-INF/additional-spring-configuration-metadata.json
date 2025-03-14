@@ -2,13 +2,6 @@
   "groups": [],
   "properties": [
     {
-      "name": "server.netty.max-chunk-size",
-      "deprecation": {
-        "reason": "Deprecated for removal in Reactor Netty.",
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.activemq.pool.create-connection-on-startup",
       "type": "java.lang.Boolean",
       "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
