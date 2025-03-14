@@ -18,7 +18,7 @@ package org.springframework.boot.docker.compose.service.connection.rabbit;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;

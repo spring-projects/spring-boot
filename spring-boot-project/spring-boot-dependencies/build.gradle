@@ -1985,6 +1985,7 @@ bom {
 				"spring-boot",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
+				"spring-boot-amqp",
 				"spring-boot-autoconfigure",
 				"spring-boot-autoconfigure-processor",
 				"spring-boot-buildpack-platform",

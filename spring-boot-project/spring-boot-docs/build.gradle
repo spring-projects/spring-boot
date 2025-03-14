@@ -75,6 +75,7 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure-all", configuration: "autoConfigurationMetadata"))
@@ -86,6 +87,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
 
 	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
@@ -104,6 +106,7 @@ dependencies {
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-amqp"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))

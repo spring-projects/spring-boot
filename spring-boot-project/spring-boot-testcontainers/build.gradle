@@ -69,6 +69,7 @@ dependencies {
 	dockerTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
+	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
