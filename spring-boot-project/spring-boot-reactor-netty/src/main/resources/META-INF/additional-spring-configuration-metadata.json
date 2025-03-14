@@ -1,0 +1,12 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "server.netty.max-chunk-size",
+      "deprecation": {
+        "reason": "Deprecated for removal in Reactor Netty.",
+        "level": "error"
+      }
+    }
+  ]
+}

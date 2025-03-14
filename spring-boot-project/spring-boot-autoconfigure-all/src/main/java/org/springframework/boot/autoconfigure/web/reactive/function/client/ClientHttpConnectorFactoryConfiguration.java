@@ -23,7 +23,7 @@ import org.apache.hc.core5.reactive.ReactiveResponseConsumer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations;
+import org.springframework.boot.reactor.netty.autoconfigure.ReactorNettyConfigurations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -40,7 +40,7 @@ import org.springframework.http.client.ReactorResourceFactory;
 class ClientHttpConnectorFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
+	@ConditionalOnClass({ reactor.netty.http.client.HttpClient.class, ReactorNettyConfigurations.class })
 	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class ReactorNetty {

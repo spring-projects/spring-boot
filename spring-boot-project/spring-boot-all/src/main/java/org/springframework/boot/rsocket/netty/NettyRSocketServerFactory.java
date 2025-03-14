@@ -22,18 +22,24 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.netty.handler.ssl.ClientAuth;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.AbstractProtocolSslContextSpec;
+import reactor.netty.tcp.SslProvider;
 import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
+import reactor.netty.tcp.SslProvider.SslContextSpec;
 import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -43,11 +49,10 @@ import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerSslBundle;
-import org.springframework.boot.web.server.reactive.netty.SslServerCustomizer;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
@@ -185,7 +190,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
+		return new HttpServerSslCustomizer(this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
 			.apply(httpServer);
 	}
 
@@ -195,7 +200,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (Ssl.isEnabled(this.ssl)) {
-			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
+			tcpServer = new TcpServerSslCustomizer(this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
 				.apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
@@ -222,20 +227,79 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return new InetSocketAddress(this.port);
 	}
 
-	private static final class TcpSslServerCustomizer
-			extends org.springframework.boot.web.server.reactive.netty.SslServerCustomizer {
+	private abstract static class SslCustomizer {
+
+		private final ClientAuth clientAuth;
+
+		protected SslCustomizer(ClientAuth clientAuth) {
+			this.clientAuth = clientAuth;
+		}
+
+		protected final AbstractProtocolSslContextSpec<?> createSslContextSpec(SslBundle sslBundle) {
+			AbstractProtocolSslContextSpec<?> sslContextSpec = Http11SslContextSpec
+				.forServer(sslBundle.getManagers().getKeyManagerFactory());
+			return sslContextSpec.configure((builder) -> {
+				builder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
+				SslOptions options = sslBundle.getOptions();
+				builder.protocols(options.getEnabledProtocols());
+				builder.ciphers(SslOptions.asSet(options.getCiphers()));
+				builder.clientAuth(this.clientAuth);
+			});
+		}
+
+	}
+
+	private static final class TcpServerSslCustomizer extends SslCustomizer {
 
 		private final SslBundle sslBundle;
 
-		private TcpSslServerCustomizer(ClientAuth clientAuth, SslBundle sslBundle,
+		private TcpServerSslCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle,
 				Map<String, SslBundle> serverNameSslBundles) {
-			super(null, clientAuth, sslBundle, serverNameSslBundles);
+			super(Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 			this.sslBundle = sslBundle;
 		}
 
 		private TcpServer apply(TcpServer server) {
 			GenericSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
 			return server.secure((spec) -> spec.sslContext(sslContextSpec));
+		}
+
+	}
+
+	private static final class HttpServerSslCustomizer extends SslCustomizer {
+
+		private final SslProvider sslProvider;
+
+		private final Map<String, SslProvider> serverNameSslProviders;
+
+		private HttpServerSslCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle,
+				Map<String, SslBundle> serverNameSslBundles) {
+			super(Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
+			this.sslProvider = createSslProvider(sslBundle);
+			this.serverNameSslProviders = createServerNameSslProviders(serverNameSslBundles);
+		}
+
+		private HttpServer apply(HttpServer server) {
+			return server.secure(this::applySecurity);
+		}
+
+		private void applySecurity(SslContextSpec spec) {
+			spec.sslContext(this.sslProvider.getSslContext()).setSniAsyncMappings((serverName, promise) -> {
+				SslProvider provider = (serverName != null) ? this.serverNameSslProviders.get(serverName)
+						: this.sslProvider;
+				return promise.setSuccess(provider);
+			});
+		}
+
+		private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {
+			Map<String, SslProvider> serverNameSslProviders = new HashMap<>();
+			serverNameSslBundles.forEach(
+					(serverName, sslBundle) -> serverNameSslProviders.put(serverName, createSslProvider(sslBundle)));
+			return serverNameSslProviders;
+		}
+
+		private SslProvider createSslProvider(SslBundle sslBundle) {
+			return SslProvider.builder().sslContext((GenericSslContextSpec<?>) createSslContextSpec(sslBundle)).build();
 		}
 
 	}
