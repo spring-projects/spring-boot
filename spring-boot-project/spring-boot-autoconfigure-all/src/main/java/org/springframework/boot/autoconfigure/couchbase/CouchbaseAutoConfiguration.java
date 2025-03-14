@@ -48,7 +48,6 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Auth
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication.Pem;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Ssl;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
@@ -76,7 +75,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @since 1.4.0
  */
-@AutoConfiguration(after = JacksonAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass(Cluster.class)
 @Conditional(CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)

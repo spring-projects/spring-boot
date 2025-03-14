@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.jackson.autoconfigure;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -59,13 +59,12 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.jackson.JsonMixin;
 import org.springframework.boot.jackson.JsonMixinModule;
 import org.springframework.boot.jackson.JsonMixinModuleEntries;
 import org.springframework.boot.jackson.JsonObjectSerializer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -100,12 +99,10 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void doubleModuleRegistration() {
-		this.contextRunner.withUserConfiguration(DoubleModulesConfig.class)
-			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.run((context) -> {
-				ObjectMapper mapper = context.getBean(ObjectMapper.class);
-				assertThat(mapper.writeValueAsString(new Foo())).isEqualTo("{\"foo\":\"bar\"}");
-			});
+		this.contextRunner.withUserConfiguration(DoubleModulesConfig.class).run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			assertThat(mapper.writeValueAsString(new Foo())).isEqualTo("{\"foo\":\"bar\"}");
+		});
 	}
 
 	@Test
@@ -138,8 +135,7 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void customDateFormatClass() {
-		this.contextRunner.withPropertyValues(
-				"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat")
+		this.contextRunner.withPropertyValues("spring.jackson.date-format:" + MyDateFormat.class.getName())
 			.run((context) -> {
 				ObjectMapper mapper = context.getBean(ObjectMapper.class);
 				assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);

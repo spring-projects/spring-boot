@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @see JsonComponentModule
- * @since 1.4.0
+ * @since 4.0.0
  * @author Phillip Webb
  * @author Paul Aly
  */

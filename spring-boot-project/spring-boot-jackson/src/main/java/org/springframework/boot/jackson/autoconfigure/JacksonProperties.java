@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.jackson.autoconfigure;
 
 import java.util.EnumMap;
 import java.util.Locale;
@@ -41,7 +41,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marcel Overdijk
  * @author Johannes Edmeier
  * @author Eddú Meléndez
- * @since 1.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.jackson")
 public class JacksonProperties {

@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.jackson.autoconfigure;
 
-import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * {@link JacksonBackgroundPreinitializer} for Jackson.
+ * Callback interface that can be implemented by beans wishing to further customize the
+ * {@link ObjectMapper} through {@link Jackson2ObjectMapperBuilder} retaining its default
+ * auto-configuration.
  *
- * @author Phillip Webb
+ * @author Grzegorz Poznachowski
+ * @since 4.0.0
  */
+@FunctionalInterface
 @SuppressWarnings("removal")
-final class JacksonBackgroundPreinitializer implements BackgroundPreinitializer {
+public interface Jackson2ObjectMapperBuilderCustomizer {
 
-	@Override
-	public void preinitialize() throws Exception {
-		Jackson2ObjectMapperBuilder.json().build();
-	}
+	/**
+	 * Customize the JacksonObjectMapperBuilder.
+	 * @param jacksonObjectMapperBuilder the JacksonObjectMapperBuilder to customize
+	 */
+	void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder);
 
 }

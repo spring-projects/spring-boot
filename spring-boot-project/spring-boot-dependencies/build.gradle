@@ -1993,6 +1993,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
+				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
 				"spring-boot-jetty",
 				"spring-boot-loader",

@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
@@ -38,7 +37,7 @@ import org.springframework.http.MediaType;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration(after = { JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class })
+@AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlTester.class })
 public class GraphQlTesterAutoConfiguration {
 

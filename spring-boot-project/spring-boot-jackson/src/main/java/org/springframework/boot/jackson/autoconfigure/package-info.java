@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Jackson.
  */
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.jackson.autoconfigure;

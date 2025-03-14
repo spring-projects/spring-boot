@@ -30,7 +30,7 @@ import org.springframework.core.annotation.AliasFor;
  *
  * @author Guirong Hu
  * @see JsonMixinModule
- * @since 2.7.0
+ * @since 4.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

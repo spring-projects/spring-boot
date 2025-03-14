@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * Provide the mapping of json mixin class to consider.
  *
  * @author Stephane Nicoll
- * @since 3.0.0
+ * @since 4.0.0
  */
 public final class JsonMixinModuleEntries {
 

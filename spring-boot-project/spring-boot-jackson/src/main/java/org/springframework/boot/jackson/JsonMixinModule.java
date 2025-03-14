@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  *
  * @author Guirong Hu
  * @author Stephane Nicoll
- * @since 2.7.0
+ * @since 4.0.0
  * @see JsonMixin
  */
 public class JsonMixinModule extends SimpleModule {

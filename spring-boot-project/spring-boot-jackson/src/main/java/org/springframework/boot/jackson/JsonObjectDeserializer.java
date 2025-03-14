@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
  *
  * @param <T> the supported object type
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see JsonObjectSerializer
  */
 public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.databind.JsonDeserializer<T> {

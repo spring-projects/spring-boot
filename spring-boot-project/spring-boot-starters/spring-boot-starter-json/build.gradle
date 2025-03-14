@@ -22,6 +22,7 @@ description = "Starter for reading and writing json"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-jackson"))
 	api("org.springframework:spring-web")
 	api("com.fasterxml.jackson.core:jackson-databind")
 	api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")

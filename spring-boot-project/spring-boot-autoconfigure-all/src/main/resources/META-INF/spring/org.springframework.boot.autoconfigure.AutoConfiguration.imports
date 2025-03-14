@@ -62,7 +62,6 @@ org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorA
 org.springframework.boot.autoconfigure.http.client.reactive.service.ReactiveHttpServiceClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration

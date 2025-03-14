@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.jackson.autoconfigure;
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;
@@ -49,11 +49,11 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jackson.JacksonProperties.ConstructorDetectorStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.boot.jackson.JsonMixinModule;
 import org.springframework.boot.jackson.JsonMixinModuleEntries;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties.ConstructorDetectorStrategy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,7 +82,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Ralf Ueberfuhr
- * @since 1.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(ObjectMapper.class)

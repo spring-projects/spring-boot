@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  *
  * @param <T> the supported object type
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see JsonObjectDeserializer
  */
 public abstract class JsonObjectSerializer<T> extends JsonSerializer<T> {
