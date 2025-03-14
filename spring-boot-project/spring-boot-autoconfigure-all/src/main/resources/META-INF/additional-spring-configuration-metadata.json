@@ -1302,22 +1302,6 @@
       }
     },
     {
-      "name": "spring.jackson.constructor-detector",
-      "defaultValue": "default"
-    },
-    {
-      "name": "spring.jackson.datatype.enum",
-      "description": "Jackson on/off features for enums."
-    },
-    {
-      "name": "spring.jackson.joda-date-time-format",
-      "type": "java.lang.String",
-      "description": "Joda date time format string. If not configured, \"date-format\" is used as a fallback if it is configured with a format string.",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
       "type": "java.lang.Boolean",
       "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
