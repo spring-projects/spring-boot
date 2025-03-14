@@ -40,6 +40,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-jetty"))
+	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional("org.apache.cassandra:java-driver-core") {
@@ -107,6 +108,7 @@ dependencies {
 	optional("org.springframework.session:spring-session-core")
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-observation-test")

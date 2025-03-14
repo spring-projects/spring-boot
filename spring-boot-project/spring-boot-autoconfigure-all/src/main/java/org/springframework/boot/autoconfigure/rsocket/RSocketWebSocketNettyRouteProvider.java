@@ -28,8 +28,8 @@ import reactor.netty.http.server.HttpServerRoutes;
 import reactor.netty.http.server.WebsocketServerSpec;
 import reactor.netty.http.server.WebsocketServerSpec.Builder;
 
+import org.springframework.boot.reactor.netty.NettyRouteProvider;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
-import org.springframework.boot.web.server.reactive.netty.NettyRouteProvider;
 
 /**
  * {@link NettyRouteProvider} that configures an RSocket Websocket endpoint.
