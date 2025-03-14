@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.testcontainers.containers.RabbitMQContainer;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
