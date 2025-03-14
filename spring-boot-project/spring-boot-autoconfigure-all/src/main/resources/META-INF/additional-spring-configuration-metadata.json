@@ -1792,34 +1792,6 @@
       "defaultValue": "quartzScheduler"
     },
     {
-      "name": "spring.rabbitmq.dynamic",
-      "type": "java.lang.Boolean",
-      "description": "Whether to create an AmqpAdmin bean.",
-      "defaultValue": true
-    },
-    {
-      "name": "spring.rabbitmq.listener.simple.transaction-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.rabbitmq.publisher-confirms",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.rabbitmq.template.queue",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.rabbitmq.template.default-receive-queue",
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.reactor.stacktrace-mode.enabled",
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,
