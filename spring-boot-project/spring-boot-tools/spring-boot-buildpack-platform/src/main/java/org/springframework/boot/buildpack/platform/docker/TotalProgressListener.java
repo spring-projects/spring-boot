@@ -120,7 +120,7 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 		}
 
 		int getProgress() {
-			return withinPercentageBounds((this.progressByStatus.values().stream().mapToInt(Integer::intValue).sum())
+			return withinPercentageBounds((this.progressByStatus.values().stream().mapToInt(Integer::valueOf).sum())
 					/ this.progressByStatus.size());
 		}
 
