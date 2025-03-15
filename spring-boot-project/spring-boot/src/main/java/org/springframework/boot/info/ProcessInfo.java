@@ -16,11 +16,13 @@
 
 package org.springframework.boot.info;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.PlatformManagedObject;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.springframework.util.ClassUtils;
 
@@ -178,13 +180,19 @@ public class ProcessInfo {
 
 		private static final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
 
+		private static final List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory
+			.getGarbageCollectorMXBeans();
+
 		private final MemoryUsageInfo heap;
 
 		private final MemoryUsageInfo nonHeap;
 
+		private final List<GarbageCollectorInfo> garbageCollectors;
+
 		MemoryInfo() {
 			this.heap = new MemoryUsageInfo(memoryMXBean.getHeapMemoryUsage());
 			this.nonHeap = new MemoryUsageInfo(memoryMXBean.getNonHeapMemoryUsage());
+			this.garbageCollectors = garbageCollectorMXBeans.stream().map(GarbageCollectorInfo::new).toList();
 		}
 
 		public MemoryUsageInfo getHeap() {
@@ -193,6 +201,20 @@ public class ProcessInfo {
 
 		public MemoryUsageInfo getNonHeap() {
 			return this.nonHeap;
+		}
+
+		/**
+		 * Garbage Collector information for the process. This list provides details about
+		 * the currently used GC algorithms selected by the user or JVM ergonomics. It
+		 * might not be trivial to know the used GC algorithms since that usually depends
+		 * on the {@link Runtime#availableProcessors()} (see:
+		 * {@link ProcessInfo#getCpus()}) and the available memory (see:
+		 * {@link MemoryUsageInfo}).
+		 * @return {@link List} of {@link GarbageCollectorInfo}.
+		 * @since 3.5.0
+		 */
+		public List<GarbageCollectorInfo> getGarbageCollectors() {
+			return this.garbageCollectors;
 		}
 
 		public static class MemoryUsageInfo {
@@ -217,6 +239,27 @@ public class ProcessInfo {
 
 			public long getMax() {
 				return this.memoryUsage.getMax();
+			}
+
+		}
+
+		public static class GarbageCollectorInfo {
+
+			private final String name;
+
+			private final long collectionCount;
+
+			GarbageCollectorInfo(GarbageCollectorMXBean garbageCollectorMXBean) {
+				this.name = garbageCollectorMXBean.getName();
+				this.collectionCount = garbageCollectorMXBean.getCollectionCount();
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public long getCollectionCount() {
+				return this.collectionCount;
 			}
 
 		}

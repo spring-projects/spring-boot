@@ -16,10 +16,13 @@
 
 package org.springframework.boot.info;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
+import org.springframework.boot.info.ProcessInfo.MemoryInfo;
 import org.springframework.boot.info.ProcessInfo.MemoryInfo.MemoryUsageInfo;
 import org.springframework.boot.info.ProcessInfo.VirtualThreadsInfo;
 
@@ -56,6 +59,12 @@ class ProcessInfoTests {
 		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(nonHeapUsageInfo.getCommitted());
 		assertThat(nonHeapUsageInfo.getCommitted()).isPositive();
 		assertThat(nonHeapUsageInfo.getMax()).isEqualTo(-1);
+		List<MemoryInfo.GarbageCollectorInfo> garbageCollectors = processInfo.getMemory().getGarbageCollectors();
+		assertThat(garbageCollectors).isNotEmpty();
+		assertThat(garbageCollectors).allSatisfy((garbageCollector) -> {
+			assertThat(garbageCollector.getName()).isNotEmpty();
+			assertThat(garbageCollector.getCollectionCount()).isNotNegative();
+		});
 	}
 
 	@Test
