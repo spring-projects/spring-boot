@@ -114,23 +114,23 @@ class KafkaAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
+	ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> kafkaListenerContainerFactoryConfigurer() {
 		return configurer();
 	}
 
 	@Bean(name = "kafkaListenerContainerFactoryConfigurer")
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
-	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurerVirtualThreads() {
-		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = configurer();
+	ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> kafkaListenerContainerFactoryConfigurerVirtualThreads() {
+		ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> configurer = configurer();
 		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("kafka-");
 		executor.setVirtualThreads(true);
 		configurer.setListenerTaskExecutor(executor);
 		return configurer;
 	}
 
-	private ConcurrentKafkaListenerContainerFactoryConfigurer configurer() {
-		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
+	private ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> configurer() {
+		ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer<>();
 		configurer.setKafkaProperties(this.properties);
 		configurer.setBatchMessageConverter(this.batchMessageConverter);
 		configurer.setRecordMessageConverter(this.recordMessageConverter);
@@ -149,7 +149,7 @@ class KafkaAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
 	ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
-			ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
+			ConcurrentKafkaListenerContainerFactoryConfigurer<Object, Object> configurer,
 			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
 			ObjectProvider<ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>>> kafkaContainerCustomizer) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
