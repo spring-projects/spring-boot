@@ -146,6 +146,11 @@ public class Cookie {
 	public enum SameSite {
 
 		/**
+		 * Don't set the SameSite cookie attribute.
+		 */
+		UNSET("Unset"),
+
+		/**
 		 * Cookies are sent in both first-party and cross-origin requests.
 		 */
 		NONE("None"),
