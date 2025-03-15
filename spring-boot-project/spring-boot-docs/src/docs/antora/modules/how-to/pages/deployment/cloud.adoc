@@ -244,7 +244,7 @@ For more details, see https://devcenter.heroku.com/articles/deploying-spring-boo
 https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
-* https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]
+* https://github.com/RHsyseng/spring-boot-msa-ocp[Architecture guide]
 * https://blog.openshift.com/using-spring-boot-on-openshift/[Running as a traditional web application on Wildfly]
 * https://blog.openshift.com/openshift-commons-briefing-96-cloud-native-applications-spring-rhoar/[OpenShift Commons Briefing]
 
