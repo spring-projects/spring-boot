@@ -1,0 +1,17 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Armeria Tomcat smoke test"
+
+dependencies {
+	implementation("com.linecorp.armeria:armeria")
+	implementation("com.linecorp.armeria:armeria-spring-boot3-autoconfigure")
+	implementation("com.linecorp.armeria:armeria-tomcat10")
+
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	implementation("org.springframework:spring-webmvc")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}
