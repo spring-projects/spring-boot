@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,11 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 class JsonValueWriter {
 
+	private static final int DEFAULT_MAX_NESTING_DEPTH = 1000;
+
 	private final Appendable out;
+
+	private final int maxNestingDepth;
 
 	private MemberPath path = MemberPath.ROOT;
 
@@ -59,7 +63,18 @@ class JsonValueWriter {
 	 * @param out the {@link Appendable} used to receive the JSON output
 	 */
 	JsonValueWriter(Appendable out) {
+		this(out, DEFAULT_MAX_NESTING_DEPTH);
+	}
+
+	/**
+	 * Create a new {@link JsonValueWriter} instance.
+	 * @param out the {@link Appendable} used to receive the JSON output
+	 * @param maxNestingDepth the maximum allowed nesting depth for JSON objects and
+	 * arrays
+	 */
+	JsonValueWriter(Appendable out, int maxNestingDepth) {
 		this.out = out;
+		this.maxNestingDepth = maxNestingDepth;
 	}
 
 	void pushProcessors(JsonWriterFiltersAndProcessors jsonProcessors) {
@@ -140,6 +155,7 @@ class JsonValueWriter {
 	 */
 	void start(Series series) {
 		if (series != null) {
+			validateNestingDepth();
 			this.activeSeries.push(new ActiveSeries(series));
 			append(series.openChar);
 		}
@@ -264,6 +280,13 @@ class JsonValueWriter {
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private void validateNestingDepth() {
+		if (this.activeSeries.size() > this.maxNestingDepth) {
+			throw new IllegalStateException("JSON nesting depth (%s) exceeds maximum depth of %s (current path: %s)"
+				.formatted(this.activeSeries.size(), this.maxNestingDepth, this.path));
 		}
 	}
 
