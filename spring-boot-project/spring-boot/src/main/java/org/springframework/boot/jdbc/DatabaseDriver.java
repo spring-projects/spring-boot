@@ -85,8 +85,16 @@ public enum DatabaseDriver {
 
 	/**
 	 * Kingbase.
+	 * @since 3.4.0
 	 */
-	KINGBASE("KingbaseES","com.kingbase8.Driver","com.kingbase8.xa.KBXADataSource","SELECT 1"),
+	KINGBASE("KingbaseES","com.kingbase8.Driver","com.kingbase8.xa.KBXADataSource","SELECT 1") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("kingbase8");
+		}
+
+	},
 
 	/**
 	 * Amazon Redshift.
