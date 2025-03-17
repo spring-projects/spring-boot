@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.mail.autoconfigure;
 
 import java.util.Map;
 import java.util.Properties;
@@ -22,7 +22,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.mail.MailProperties.Ssl;
+import org.springframework.boot.mail.autoconfigure.MailProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;

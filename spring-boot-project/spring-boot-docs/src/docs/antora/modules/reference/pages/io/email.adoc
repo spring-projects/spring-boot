@@ -7,7 +7,7 @@ TIP: See the {url-spring-framework-docs}/integration/email.html[reference docume
 
 If `spring.mail.host` and the relevant libraries (as defined by `spring-boot-starter-mail`) are available, a default javadoc:org.springframework.mail.javamail.JavaMailSender[] is created if none exists.
 The sender can be further customized by configuration items from the `spring.mail` namespace.
-See javadoc:org.springframework.boot.autoconfigure.mail.MailProperties[] for more details.
+See javadoc:org.springframework.boot.mail.autoconfigure.MailProperties[] for more details.
 
 In particular, certain default timeout values are infinite, and you may want to change that to avoid having a thread blocked by an unresponsive mail server, as shown in the following example:
 

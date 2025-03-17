@@ -1,0 +1,37 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Mail"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework:spring-context-support")
+	api("org.eclipse.angus:jakarta.mail")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
