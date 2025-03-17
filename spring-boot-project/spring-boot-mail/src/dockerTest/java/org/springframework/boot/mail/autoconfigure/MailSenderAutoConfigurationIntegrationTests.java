@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.mail.autoconfigure;
 
 import java.net.SocketTimeoutException;
 import java.security.cert.CertPathBuilderException;
@@ -95,9 +95,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
 			.withSmtpRequireTls(true)
 			.withSmtpTlsCert(MountableFile
-				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.crt"))
+				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.crt"))
 			.withSmtpTlsKey(MountableFile
-				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.key"))
+				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.key"))
 			.withPop3Auth("user:pass");
 
 		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -108,9 +108,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 			this.contextRunner.withPropertyValues("spring.mail.host:" + mailpit.getHost(),
 					"spring.mail.port:" + mailpit.getSmtpPort(), "spring.mail.ssl.enabled:true",
 					"spring.mail.ssl.bundle:test-bundle",
-					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
+					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-ca.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.key",
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {
@@ -137,9 +137,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 			this.contextRunner.withPropertyValues("spring.mail.host:" + mailpit.getHost(),
 					"spring.mail.port:" + mailpit.getSmtpPort(), "spring.mail.properties.mail.smtp.timeout:1000",
 					"spring.mail.ssl.bundle:test-bundle",
-					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key")
+					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-ca.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.key")
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
 					assertThatException().isThrownBy(() -> mailSender.send(createMessage("Should fail")))
@@ -156,9 +156,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
 			.withSmtpRequireStarttls(true)
 			.withSmtpTlsCert(MountableFile
-				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.crt"))
+				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.crt"))
 			.withSmtpTlsKey(MountableFile
-				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.key"))
+				.forClasspathResource("/org/springframework/boot/mail/autoconfigure/ssl/test-server.key"))
 			.withPop3Auth("user:pass");
 
 		final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -170,9 +170,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.mail.port:" + mailpit.getSmtpPort(),
 					"spring.mail.properties.mail.smtp.starttls.enable:true",
 					"spring.mail.properties.mail.smtp.starttls.required:true", "spring.mail.ssl.bundle:test-bundle",
-					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
+					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-ca.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.key",
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {
@@ -188,9 +188,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.mail.port:" + mailpit.getSmtpPort(), "spring.mail.ssl.enabled:true",
 					"spring.mail.properties.mail.smtp.starttls.enable:true",
 					"spring.mail.properties.mail.smtp.starttls.required:true", "spring.mail.ssl.bundle:test-bundle",
-					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
-					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
+					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-ca.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.crt",
+					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/mail/autoconfigure/ssl/test-client.key",
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {

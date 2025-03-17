@@ -1999,6 +1999,7 @@ bom {
 				"spring-boot-loader",
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
+				"spring-boot-mail",
 				"spring-boot-properties-migrator",
 				"spring-boot-reactor-netty",
 				"spring-boot-starter",

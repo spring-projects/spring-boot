@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.mail.autoconfigure;
 
 import jakarta.activation.MimeType;
 import jakarta.mail.internet.MimeMessage;
@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.MailSenderCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration.MailSenderCondition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
