@@ -33,12 +33,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
@@ -109,11 +112,23 @@ public class GroovyTemplateAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
-		@ConfigurationProperties("spring.groovy.template.configuration")
-		public GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine) {
+		GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine,
+				Environment environment) {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
-			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
-			configurer.setCacheTemplates(this.properties.isCache());
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this.properties::isAutoEscape).to(configurer::setAutoEscape);
+			map.from(this.properties::isAutoIndent).to(configurer::setAutoIndent);
+			map.from(this.properties::getAutoIndentString).to(configurer::setAutoIndentString);
+			map.from(this.properties::isAutoNewLine).to(configurer::setAutoNewLine);
+			map.from(this.properties::getBaseTemplateClass).to(configurer::setBaseTemplateClass);
+			map.from(this.properties::isCache).to(configurer::setCacheTemplates);
+			map.from(this.properties::getDeclarationEncoding).to(configurer::setDeclarationEncoding);
+			map.from(this.properties::isExpandEmptyElements).to(configurer::setExpandEmptyElements);
+			map.from(this.properties::getLocale).to(configurer::setLocale);
+			map.from(this.properties::getNewLineString).to(configurer::setNewLineString);
+			map.from(this.properties::getResourceLoaderPath).to(configurer::setResourceLoaderPath);
+			map.from(this.properties::isUseDoubleQuotes).to(configurer::setUseDoubleQuotes);
+			Binder.get(environment).bind("spring.groovy.template.configuration", Bindable.ofInstance(configurer));
 			templateEngine.ifAvailable(configurer::setTemplateEngine);
 			return configurer;
 		}
