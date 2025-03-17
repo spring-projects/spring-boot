@@ -75,7 +75,7 @@ import org.springframework.util.unit.DataSize;
  * @author Lasse Wulff
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
+@ConfigurationProperties("server")
 public class ServerProperties {
 
 	/**

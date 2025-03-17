@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  * @see ServerProperties
  */
-@ConfigurationProperties(prefix = "management.server", ignoreUnknownFields = true)
+@ConfigurationProperties("management.server")
 public class ManagementServerProperties {
 
 	/**
