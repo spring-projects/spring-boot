@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.mail.autoconfigure;
 
 import javax.naming.NamingException;
 

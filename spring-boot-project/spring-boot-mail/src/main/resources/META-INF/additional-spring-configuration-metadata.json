@@ -1,0 +1,12 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.mail.test-connection",
+      "description": "Whether to test that the mail server is available on startup.",
+      "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
+    }
+  ]
+}
