@@ -2369,7 +2369,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "1.2.4-SNAPSHOT") {
+	library("Spring Pulsar", "1.2.4") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			imports = [
