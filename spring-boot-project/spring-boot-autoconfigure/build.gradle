@@ -283,7 +283,7 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 		"spring.datasource.hikari.*",
 		"spring.datasource.oracleucp.*",
 		"spring.datasource.tomcat.*",
-		"spring.groovy.template.configuration.*"
+		"spring.groovy.template.*"
 	]
 }
 

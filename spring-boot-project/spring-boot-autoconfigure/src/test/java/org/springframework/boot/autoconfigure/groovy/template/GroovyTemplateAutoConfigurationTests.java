@@ -186,7 +186,7 @@ class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	void customConfiguration() {
-		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
+		registerAndRefreshContext("spring.groovy.template.auto-indent:true");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent()).isTrue();
 	}
 

@@ -109,7 +109,7 @@ public class GroovyTemplateAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
-		@ConfigurationProperties("spring.groovy.template.configuration")
+		@ConfigurationProperties("spring.groovy.template")
 		public GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
 			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());

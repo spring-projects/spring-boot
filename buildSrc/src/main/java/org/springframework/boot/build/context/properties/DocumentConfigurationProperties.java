@@ -191,7 +191,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.groovy");
 		prefix.accept("spring.mustache");
 		prefix.accept("spring.thymeleaf");
-		prefix.accept("spring.groovy.template.configuration", "See GroovyMarkupConfigurer");
+		prefix.accept("spring.groovy.template", "See GroovyMarkupConfigurer");
 	}
 
 	private void serverPrefixes(Config prefix) {
