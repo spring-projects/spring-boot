@@ -114,7 +114,7 @@ class JmsAutoConfigurationTests {
 			DefaultMessageListenerContainer container = containerFactory.createListenerContainer(jmsListenerEndpoint);
 			assertThat(container.getClientId()).isNull();
 			assertThat(container.getConcurrentConsumers()).isEqualTo(1);
-			assertThat(container.getConnectionFactory()).isSameAs(connectionFactory.getTargetConnectionFactory());
+			assertThat(container.getConnectionFactory()).isSameAs(connectionFactory);
 			assertThat(container.getMaxConcurrentConsumers()).isEqualTo(1);
 			assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.AUTO_ACKNOWLEDGE);
 			assertThat(container.isAutoStartup()).isTrue();
