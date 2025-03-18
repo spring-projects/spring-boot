@@ -89,7 +89,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	public HealthContributor dbHealthContributor(ConfigurableListableBeanFactory beanFactory,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
 		Map<String, DataSource> dataSources = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory,
-				DataSource.class);
+				DataSource.class, false, true);
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
 				.stream()
