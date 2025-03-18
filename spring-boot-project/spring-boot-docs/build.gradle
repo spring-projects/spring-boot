@@ -201,8 +201,6 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 	testRuntimeOnly("com.h2database:h2")

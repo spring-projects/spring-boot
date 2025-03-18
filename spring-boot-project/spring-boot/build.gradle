@@ -122,9 +122,7 @@ dependencies {
 	testFixturesCompileOnly("org.springframework:spring-web")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.springframework:spring-core-test")
 	testImplementation("com.ibm.db2:jcc")
-	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
 	testImplementation("com.mysql:mysql-connector-j")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
@@ -135,7 +133,6 @@ dependencies {
 	testImplementation("net.sourceforge.jtds:jtds")
 	testImplementation("org.apache.derby:derby")
 	testImplementation("org.apache.derby:derbytools")
-	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.codehaus.janino:janino")
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client")
@@ -144,14 +141,10 @@ dependencies {
 		exclude group: "javax.resource", module: "connector-api"
 	}
 	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-context-support")
-	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.data:spring-data-r2dbc")
 	testImplementation("org.xerial:sqlite-jdbc")

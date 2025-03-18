@@ -46,20 +46,12 @@ dependencies {
 	implementation("org.springframework.security:spring-security-crypto")
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	intTestImplementation("org.assertj:assertj-core")
-	intTestImplementation("org.junit.jupiter:junit-jupiter")
-	intTestImplementation("org.springframework:spring-core")
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
-	testImplementation("org.springframework:spring-test")
 }
 
 tasks.register("fullJar", Jar) {

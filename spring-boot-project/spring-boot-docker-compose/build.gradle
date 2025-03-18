@@ -57,9 +57,4 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("ch.qos.logback:logback-classic")
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.springframework:spring-core-test")
-	testImplementation("org.springframework:spring-test")
 }

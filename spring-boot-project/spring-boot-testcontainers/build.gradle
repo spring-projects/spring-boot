@@ -99,11 +99,6 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
-	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework:spring-jdbc")
 	testImplementation("org.springframework:spring-jms")
 	testImplementation("org.springframework:spring-r2dbc")

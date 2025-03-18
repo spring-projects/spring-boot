@@ -29,7 +29,6 @@ dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
-	intTestImplementation("org.awaitility:awaitility")
 	intTestImplementation("org.springframework:spring-web")
 
 	testRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))

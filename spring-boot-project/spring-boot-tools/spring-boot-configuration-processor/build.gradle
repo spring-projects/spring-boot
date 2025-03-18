@@ -34,13 +34,7 @@ dependencies {
 	testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 	testImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.springframework:spring-core-test")
 	testImplementation("jakarta.validation:jakarta.validation-api")
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.hamcrest:hamcrest-library")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.projectlombok:lombok")
-	testImplementation("org.springframework:spring-core")
 	testImplementation("org.apache.commons:commons-dbcp2")
 }
