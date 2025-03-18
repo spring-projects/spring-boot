@@ -52,12 +52,6 @@ import org.springframework.http.ReactiveHttpInputMessage;
 public class TomcatReactiveWebServerAutoConfiguration {
 
 	@Bean
-	TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
-			TomcatServerProperties tomcatProperties) {
-		return new TomcatReactiveWebServerFactoryCustomizer(tomcatProperties);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
 			ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
