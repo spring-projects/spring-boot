@@ -88,3 +88,7 @@ org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
 # Resource Locator Protocol Resolvers
 org.springframework.core.io.ProtocolResolver=\
 org.springframework.boot.io.Base64ProtocolResolver
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector

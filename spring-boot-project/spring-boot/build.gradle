@@ -42,6 +42,7 @@ dependencies {
 	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client")
 	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
 	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
+	testFixturesCompileOnly("org.springframework:spring-tx")
 	testFixturesCompileOnly("org.springframework:spring-web")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
