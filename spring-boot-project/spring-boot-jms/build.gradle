@@ -1,0 +1,33 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot JMS"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("jakarta.jms:jakarta.jms-api")
+	api("org.springframework:spring-jms")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("jakarta.transaction:jakarta.transaction-api")
+	optional("org.messaginghub:pooled-jms") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+	}
+	optional("org.springframework:spring-jdbc")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
