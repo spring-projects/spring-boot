@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import org.springframework.transaction.TransactionManager;
 
@@ -25,7 +25,7 @@ import org.springframework.transaction.TransactionManager;
  *
  * @param <T> the transaction manager type
  * @author Andy Wilkinson
- * @since 3.2.0
+ * @since 4.0.0
  */
 public interface TransactionManagerCustomizer<T extends TransactionManager> {
 

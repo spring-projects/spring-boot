@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import org.springframework.transaction.TransactionManager;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.5.0
+ * @since 4.0.0
  */
 public final class TransactionManagerCustomizers {
 

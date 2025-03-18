@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.boot.jms.autoconfigure.JmsProperties;
 import org.springframework.boot.jms.autoconfigure.JndiConnectionFactoryAutoConfiguration;
+import org.springframework.boot.transaction.jta.autoconfigure.JtaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -41,7 +42,8 @@ import org.springframework.context.annotation.Import;
  * @since 1.3.0
  * @see ArtemisProperties
  */
-@AutoConfiguration(before = JmsAutoConfiguration.class, after = JndiConnectionFactoryAutoConfiguration.class)
+@AutoConfiguration(before = JmsAutoConfiguration.class,
+		after = { JndiConnectionFactoryAutoConfiguration.class, JtaAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties({ ArtemisProperties.class, JmsProperties.class })

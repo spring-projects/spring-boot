@@ -2056,6 +2056,7 @@ bom {
 				"spring-boot-test-autoconfigure",
 				"spring-boot-testcontainers",
 				"spring-boot-tomcat",
+				"spring-boot-tx",
 				"spring-boot-undertow"
 			]
 			plugins = [

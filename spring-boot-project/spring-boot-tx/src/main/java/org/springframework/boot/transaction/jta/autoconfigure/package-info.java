@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for transaction support.
+ * Auto-configuration for JTA.
  */
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.jta.autoconfigure;

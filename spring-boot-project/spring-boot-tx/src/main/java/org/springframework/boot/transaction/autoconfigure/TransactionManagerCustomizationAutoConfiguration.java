@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -30,7 +30,7 @@ import org.springframework.transaction.TransactionManager;
  * Auto-configuration for the customization of a {@link TransactionManager}.
  *
  * @author Andy Wilkinson
- * @since 3.2.0
+ * @since 4.0.0
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @AutoConfiguration(before = TransactionAutoConfiguration.class)
