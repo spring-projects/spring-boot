@@ -40,6 +40,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-jetty"))
+	optional(project(":spring-boot-project:spring-boot-jms"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
@@ -65,7 +66,6 @@ dependencies {
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.undertow:undertow-servlet")
 	optional("javax.cache:cache-api")
-	optional("jakarta.jms:jakarta.jms-api")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-micrometer")

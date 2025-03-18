@@ -20,9 +20,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties;
 
 /**
  * Configuration properties for ActiveMQ.

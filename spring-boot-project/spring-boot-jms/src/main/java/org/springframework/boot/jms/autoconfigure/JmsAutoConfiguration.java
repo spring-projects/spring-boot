@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.jms.autoconfigure;
 
 import java.time.Duration;
 import java.util.List;
@@ -34,11 +34,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration.JmsRuntimeHints;
-import org.springframework.boot.autoconfigure.jms.JmsProperties.DeliveryMode;
-import org.springframework.boot.autoconfigure.jms.JmsProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration.JmsRuntimeHints;
+import org.springframework.boot.jms.autoconfigure.JmsProperties.DeliveryMode;
+import org.springframework.boot.jms.autoconfigure.JmsProperties.Template;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

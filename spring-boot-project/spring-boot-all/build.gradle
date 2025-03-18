@@ -46,7 +46,6 @@ dependencies {
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet")
-	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("jakarta.transaction:jakarta.transaction-api")
@@ -74,15 +73,11 @@ dependencies {
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
-	optional("org.messaginghub:pooled-jms") {
-		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
-	}
 	optional("org.postgresql:postgresql")
 	optional("org.slf4j:jul-to-slf4j")
 	optional("org.slf4j:slf4j-api")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-orm")
-	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-oxm")
 	optional("org.springframework:spring-r2dbc")
 	optional("org.springframework:spring-test")

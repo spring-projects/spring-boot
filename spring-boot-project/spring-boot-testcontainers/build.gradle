@@ -29,6 +29,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	api("org.testcontainers:testcontainers")
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-jms"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("ch.qos.logback:logback-classic")

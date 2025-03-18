@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.jms.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
