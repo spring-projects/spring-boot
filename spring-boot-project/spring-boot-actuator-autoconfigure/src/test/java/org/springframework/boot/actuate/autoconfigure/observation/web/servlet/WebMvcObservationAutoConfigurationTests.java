@@ -20,7 +20,6 @@ import java.util.EnumSet;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.tracing.Tracer;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigu
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -77,8 +75,7 @@ class WebMvcObservationAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 			assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
-				.isInstanceOf(ServerHttpObservationFilter.class)
-				.isNotInstanceOf(TraceHeaderObservationFilter.class);
+				.isInstanceOf(ServerHttpObservationFilter.class);
 		});
 	}
 
@@ -127,50 +124,6 @@ class WebMvcObservationAutoConfigurationTests {
 	void filterRegistrationDoesNotBackOffWithOtherFilter() {
 		this.contextRunner.withUserConfiguration(TestFilterConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("testFilter").hasBean("webMvcObservationFilter"));
-	}
-
-	@Test
-	void usesTracingFilterWhenTracingIsPresentAndEnabled() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(NoopTracerAutoConfiguration.class))
-			.withPropertyValues("management.observations.http.server.requests.write-trace-header=true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-				assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
-					.isInstanceOf(TraceHeaderObservationFilter.class);
-			});
-	}
-
-	@Test
-	void tracingFilterRegistrationHasExpectedDispatcherTypesAndOrder() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(NoopTracerAutoConfiguration.class))
-			.withPropertyValues("management.observations.http.server.requests.write-trace-header=true")
-			.run((context) -> {
-				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
-				assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
-						EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
-				assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
-			});
-	}
-
-	@Test
-	void filterRegistrationBacksOffWithAnotherTraceHeaderObservationFilterRegistration() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(NoopTracerAutoConfiguration.class))
-			.withPropertyValues("management.observations.http.server.requests.write-trace-header=true")
-			.withUserConfiguration(TestTraceHeaderObservationFilterRegistrationConfiguration.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-				assertThat(context.getBean(FilterRegistrationBean.class))
-					.isSameAs(context.getBean("testTraceHeaderObservationFilter"));
-			});
-	}
-
-	@Test
-	void filterRegistrationBacksOffWithAnotherTraceHeaderObservationFilter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(NoopTracerAutoConfiguration.class))
-			.withPropertyValues("management.observations.http.server.requests.write-trace-header=true")
-			.withUserConfiguration(TestTraceHeaderObservationFilterConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class)
-				.hasSingleBean(TraceHeaderObservationFilter.class));
 	}
 
 	@Test
@@ -245,27 +198,6 @@ class WebMvcObservationAutoConfigurationTests {
 		@Bean
 		ServerHttpObservationFilter testServerHttpObservationFilter() {
 			return new ServerHttpObservationFilter(TestObservationRegistry.create());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestTraceHeaderObservationFilterRegistrationConfiguration {
-
-		@Bean
-		@SuppressWarnings("unchecked")
-		FilterRegistrationBean<TraceHeaderObservationFilter> testTraceHeaderObservationFilter() {
-			return mock(FilterRegistrationBean.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestTraceHeaderObservationFilterConfiguration {
-
-		@Bean
-		TraceHeaderObservationFilter testTraceHeaderObservationFilter() {
-			return new TraceHeaderObservationFilter(Tracer.NOOP, TestObservationRegistry.create());
 		}
 
 	}

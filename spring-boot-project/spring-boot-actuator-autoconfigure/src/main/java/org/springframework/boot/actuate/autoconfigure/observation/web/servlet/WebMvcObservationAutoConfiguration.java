@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
+import jakarta.servlet.DispatcherType;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
@@ -33,11 +35,16 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
+import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -55,9 +62,22 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ DispatcherServlet.class, Observation.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-@Import({ ObservationFilterConfigurations.TracingHeaderObservation.class,
-		ObservationFilterConfigurations.DefaultObservation.class })
 public class WebMvcObservationAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingFilterBean
+	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
+			ObjectProvider<ServerRequestObservationConvention> customConvention,
+			ObservationProperties observationProperties) {
+		String name = observationProperties.getHttp().getServer().getRequests().getName();
+		ServerRequestObservationConvention convention = customConvention
+			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
+		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
+		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
+		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+		return registration;
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
