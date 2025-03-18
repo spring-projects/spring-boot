@@ -35,6 +35,7 @@ dependencies {
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
 
 	optional(project(":spring-boot-project:spring-boot-jackson"))
+	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")

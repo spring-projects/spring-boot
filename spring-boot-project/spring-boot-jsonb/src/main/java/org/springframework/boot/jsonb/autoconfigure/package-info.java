@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for JSON-B.
  */
-package org.springframework.boot.autoconfigure.jsonb;
+package org.springframework.boot.jsonb.autoconfigure;
