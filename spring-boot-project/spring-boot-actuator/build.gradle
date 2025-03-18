@@ -40,6 +40,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-jetty"))
+	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
@@ -109,6 +110,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

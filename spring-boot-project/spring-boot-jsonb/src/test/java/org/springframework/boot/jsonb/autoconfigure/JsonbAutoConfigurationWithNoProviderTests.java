@@ -14,47 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jsonb;
+package org.springframework.boot.jsonb.autoconfigure;
 
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JsonbAutoConfiguration}.
+ * Tests for {@link JsonbAutoConfiguration} when there is no provider available.
  *
- * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
-class JsonbAutoConfigurationTests {
+@ClassPathExclusions("yasson-*.jar")
+class JsonbAutoConfigurationWithNoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
-	void jsonbRegistration() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Jsonb.class);
-			Jsonb jsonb = context.getBean(Jsonb.class);
-			assertThat(jsonb.toJson(new DataObject())).isEqualTo("{\"data\":\"hello\"}");
-		});
-	}
-
-	public class DataObject {
-
-		private String data = "hello";
-
-		public String getData() {
-			return this.data;
-		}
-
-		public void setData(String data) {
-			this.data = data;
-		}
-
+	void jsonbBacksOffWhenThereIsNoProvider() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Jsonb.class));
 	}
 
 }
