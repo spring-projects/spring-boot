@@ -15,6 +15,8 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
+
 	dockerTestImplementation("com.zaxxer:HikariCP")
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("com.redis:testcontainers-redis")
@@ -36,6 +38,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
+	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")

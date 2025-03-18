@@ -8,5 +8,5 @@ org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -40,7 +40,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * Auto-configuration} for Spring transaction.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(PlatformTransactionManager.class)

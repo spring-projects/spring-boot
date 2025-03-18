@@ -5,5 +5,5 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationAutoConfigur
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
-org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
