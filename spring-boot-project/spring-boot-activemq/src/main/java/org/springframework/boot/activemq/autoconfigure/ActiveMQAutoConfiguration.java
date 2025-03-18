@@ -39,7 +39,8 @@ import org.springframework.context.annotation.Import;
  * @author Eddú Meléndez
  * @since 3.1.0
  */
-@AutoConfiguration(before = JmsAutoConfiguration.class, after = JndiConnectionFactoryAutoConfiguration.class)
+@AutoConfiguration(before = JmsAutoConfiguration.class, after = JndiConnectionFactoryAutoConfiguration.class,
+		afterName = "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration")
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties({ ActiveMQProperties.class, JmsProperties.class })
