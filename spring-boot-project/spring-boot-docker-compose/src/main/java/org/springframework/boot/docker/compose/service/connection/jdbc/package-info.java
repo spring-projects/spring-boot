@@ -16,6 +16,6 @@
 
 /**
  * Utilities to help when creating
- * {@link org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails}.
+ * {@link org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails}.
  */
 package org.springframework.boot.docker.compose.service.connection.jdbc;

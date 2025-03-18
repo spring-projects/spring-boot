@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docker.compose.service.connection.liquibase;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 
 /**
  * {@link ConnectionDetailsFactory} that produces {@link LiquibaseConnectionDetails} by
