@@ -5,7 +5,7 @@ org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchR
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientAutoConfiguration
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
 org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration
-org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
 org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
+optional:org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
