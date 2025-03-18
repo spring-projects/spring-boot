@@ -233,8 +233,8 @@ dependencies {
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("commons-fileupload:commons-fileupload")

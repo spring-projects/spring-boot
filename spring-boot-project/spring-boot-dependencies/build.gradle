@@ -1929,9 +1929,6 @@ bom {
 		group("org.springframework.boot") {
 			modules = [
 				"spring-boot",
-				"spring-boot-test",
-				"spring-boot-test-autoconfigure",
-				"spring-boot-testcontainers",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
 				"spring-boot-autoconfigure",
@@ -1964,10 +1961,10 @@ bom {
 				"spring-boot-starter-data-ldap",
 				"spring-boot-starter-data-mongodb",
 				"spring-boot-starter-data-mongodb-reactive",
+				"spring-boot-starter-data-neo4j",
 				"spring-boot-starter-data-r2dbc",
 				"spring-boot-starter-data-redis",
 				"spring-boot-starter-data-redis-reactive",
-				"spring-boot-starter-data-neo4j",
 				"spring-boot-starter-data-rest",
 				"spring-boot-starter-freemarker",
 				"spring-boot-starter-graphql",
@@ -1998,9 +1995,12 @@ bom {
 				"spring-boot-starter-undertow",
 				"spring-boot-starter-validation",
 				"spring-boot-starter-web",
+				"spring-boot-starter-web-services",
 				"spring-boot-starter-webflux",
 				"spring-boot-starter-websocket",
-				"spring-boot-starter-web-services"
+				"spring-boot-test",
+				"spring-boot-test-autoconfigure",
+				"spring-boot-testcontainers"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"
