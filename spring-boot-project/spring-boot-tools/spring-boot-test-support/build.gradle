@@ -23,16 +23,26 @@ description = "Spring Boot Testing Support"
 
 dependencies {
 	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
+	api("com.jayway.jsonpath:json-path")
+	api("org.assertj:assertj-core")
+	api("org.awaitility:awaitility")
+	api("org.hamcrest:hamcrest-core")
+	api("org.hamcrest:hamcrest-library")
+	api("org.junit.jupiter:junit-jupiter")
+	api("org.mockito:mockito-core")
+	api("org.mockito:mockito-junit-jupiter")
+	api("org.skyscreamer:jsonassert")
+	api("org.springframework:spring-core")
+	api("org.springframework:spring-test")
+	api("org.springframework:spring-core-test")
 
 	compileOnly("org.apache.cassandra:java-driver-core") {
 		exclude(group: "org.slf4j", module: "jcl-over-slf4j")
 	}
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly("junit:junit")
-	compileOnly("org.junit.jupiter:junit-jupiter")
 	compileOnly("org.junit.platform:junit-platform-engine")
 	compileOnly("org.junit.platform:junit-platform-launcher")
-	compileOnly("org.mockito:mockito-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
 
@@ -45,17 +55,9 @@ dependencies {
 	implementation("org.apache.maven.resolver:maven-resolver-transport-http") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	implementation("org.assertj:assertj-core")
-	implementation("org.hamcrest:hamcrest-core")
-	implementation("org.hamcrest:hamcrest-library")
-	implementation("org.springframework:spring-core")
-	implementation("org.springframework:spring-test")
-	implementation("org.springframework:spring-core-test")
 
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
-	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-context")
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
-	testRuntimeOnly("org.mockito:mockito-core")
 }
