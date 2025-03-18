@@ -84,6 +84,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -490,6 +491,32 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(source);
 		assertThat(metadata).has(Metadata.withProperty("implicit.some-string"));
 		assertThat(metadata).has(Metadata.withProperty("implicit.some-integer"));
+	}
+
+	@Test
+	void recordPropertiesWithName() {
+		String source = """
+				@org.springframework.boot.configurationsample.ConfigurationProperties("implicit")
+				public record ExampleRecord(
+					@org.springframework.boot.configurationsample.Name("for") String forString) {
+				}
+				""";
+		ConfigurationMetadata metadata = compile(source);
+		assertThat(metadata).has(Metadata.withProperty("implicit.for"));
+	}
+
+	@Test
+	void recordPropertiesWithNameAndDefaultValue() {
+		String source = """
+				@org.springframework.boot.configurationsample.ConfigurationProperties("implicit")
+				public record ExampleRecord(
+					@org.springframework.boot.configurationsample.Name("for")
+					@org.springframework.boot.configurationsample.DefaultValue("example")
+					String forString) {
+				}
+				""";
+		ConfigurationMetadata metadata = compile(source);
+		assertThat(metadata).has(Metadata.withProperty("implicit.for", String.class).withDefaultValue("example"));
 	}
 
 	@Test
