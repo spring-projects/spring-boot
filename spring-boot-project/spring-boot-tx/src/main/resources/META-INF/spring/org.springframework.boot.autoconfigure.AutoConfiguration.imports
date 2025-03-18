@@ -1,0 +1,3 @@
+org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration
+org.springframework.boot.transaction.jta.autoconfigure.JtaAutoConfiguration

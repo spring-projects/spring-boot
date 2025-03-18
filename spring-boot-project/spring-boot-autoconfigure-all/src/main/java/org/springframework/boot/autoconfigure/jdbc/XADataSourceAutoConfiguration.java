@@ -57,7 +57,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@AutoConfiguration(before = DataSourceAutoConfiguration.class)
+@AutoConfiguration(before = DataSourceAutoConfiguration.class,
+		afterName = "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration")
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)

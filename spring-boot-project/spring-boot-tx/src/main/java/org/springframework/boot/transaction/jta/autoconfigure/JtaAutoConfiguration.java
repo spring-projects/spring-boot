@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction.jta;
+package org.springframework.boot.transaction.jta.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
+import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -32,13 +30,9 @@ import org.springframework.context.annotation.Import;
  * @author Josh Long
  * @author Phillip Webb
  * @author Nishant Raut
- * @since 1.2.0
+ * @since 4.0.0
  */
-@AutoConfiguration(
-		before = { XADataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-				TransactionAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class },
-		beforeName = { "org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration",
-				"org.springframework.boot.artemis.autoconfigure.ArtemisAutoConfiguration" })
+@AutoConfiguration(before = { TransactionAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnBooleanProperty(name = "spring.jta.enabled", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)
