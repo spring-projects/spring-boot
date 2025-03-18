@@ -1,3 +1,2 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
-org.springframework.boot.http.client.ClientHttpRequestFactoryRuntimeHints,\
-org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints
+org.springframework.boot.http.client.ClientHttpRequestFactoryRuntimeHints

@@ -18,9 +18,9 @@ package org.springframework.boot.docker.compose.service.connection.clickhouse;
 
 import java.sql.Driver;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;

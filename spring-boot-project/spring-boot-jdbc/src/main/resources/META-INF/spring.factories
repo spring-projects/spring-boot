@@ -1,0 +1,12 @@
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.jdbc.autoconfigure.DataSourceBeanCreationFailureAnalyzer,\
+org.springframework.boot.jdbc.autoconfigure.HikariDriverConfigurationFailureAnalyzer
+
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector

@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -261,7 +261,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 				DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES
 				""";
 		this.contextRunner.withUserConfiguration(CustomJdbcIndexedSessionRepositoryCustomizerConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
 			.run((context) -> {
 				JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 						JdbcIndexedSessionRepository.class);
