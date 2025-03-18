@@ -43,6 +43,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
+	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
@@ -82,8 +83,6 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
-	optional("org.apache.activemq:artemis-jakarta-client")
-	optional("org.apache.activemq:artemis-jakarta-server")
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")

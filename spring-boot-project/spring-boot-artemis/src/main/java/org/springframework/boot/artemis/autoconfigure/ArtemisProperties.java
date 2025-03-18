@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.artemis;
+package org.springframework.boot.artemis.autoconfigure;
 
 import java.util.HashMap;
 import java.util.Map;

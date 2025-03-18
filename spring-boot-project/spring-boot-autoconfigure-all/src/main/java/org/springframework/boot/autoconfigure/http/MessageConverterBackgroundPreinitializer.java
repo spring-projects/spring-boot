@@ -16,13 +16,12 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import org.apache.activemq.artemis.spi.core.protocol.MessageConverter;
-
 import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
- * {@link BackgroundPreinitializer} Spring's {@link MessageConverter} implementations.
+ * {@link BackgroundPreinitializer} Spring's {@link HttpMessageConverter} implementations.
  *
  * @author Phillip Webb
  */

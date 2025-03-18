@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,35 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.artemis.autoconfigure;
+
+import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
+
 /**
- * Auto-configuration for Artemis.
+ * A no-op implementation of the {@link BindingRegistry}.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @since 1.3.0
  */
-package org.springframework.boot.autoconfigure.jms.artemis;
+public class ArtemisNoOpBindingRegistry implements BindingRegistry {
+
+	@Override
+	public Object lookup(String s) {
+		return null;
+	}
+
+	@Override
+	public boolean bind(String s, Object o) {
+		return false;
+	}
+
+	@Override
+	public void unbind(String s) {
+	}
+
+	@Override
+	public void close() {
+	}
+
+}
