@@ -91,5 +91,5 @@ org.springframework.boot.io.Base64ProtocolResolver
 # Resource File Path Resolvers
 org.springframework.boot.io.ApplicationResourceLoader$FilePathResolver=\
 org.springframework.boot.io.ClassPathResourceFilePathResolver,\
-org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver,\
-org.springframework.boot.web.servlet.context.ServletContextResourceFilePathResolver
+org.springframework.boot.web.context.ServletContextResourceFilePathResolver,\
+org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver
