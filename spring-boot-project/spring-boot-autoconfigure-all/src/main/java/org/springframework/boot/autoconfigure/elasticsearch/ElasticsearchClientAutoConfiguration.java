@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientConfigurations.ElasticsearchClientConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientConfigurations.ElasticsearchTransportConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientConfigurations.JsonpMapperConfiguration;
-import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -35,7 +34,8 @@ import org.springframework.context.annotation.Import;
  * @author Andy Wilkinson
  * @since 3.0.0
  */
-@AutoConfiguration(after = { JsonbAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class })
+@AutoConfiguration(after = { ElasticsearchRestClientAutoConfiguration.class },
+		afterName = { "org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration" })
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnClass(ElasticsearchClient.class)
 @Import({ JsonpMapperConfiguration.class, ElasticsearchTransportConfiguration.class,

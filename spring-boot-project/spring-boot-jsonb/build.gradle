@@ -1,0 +1,26 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot JSON-B"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("jakarta.json.bind:jakarta.json.bind-api")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.eclipse:yasson")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
