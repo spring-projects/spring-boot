@@ -72,9 +72,8 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		@Bean
 		DataSourcePoolMetadataMeterBinder dataSourcePoolMetadataMeterBinder(ConfigurableListableBeanFactory beanFactory,
 				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-			return new DataSourcePoolMetadataMeterBinder(
-					SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, DataSource.class),
-					metadataProviders);
+			return new DataSourcePoolMetadataMeterBinder(SimpleAutowireCandidateResolver
+				.resolveAutowireCandidates(beanFactory, DataSource.class, false, true), metadataProviders);
 		}
 
 		static class DataSourcePoolMetadataMeterBinder implements MeterBinder {
@@ -141,7 +140,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				this.dataSources.stream(ObjectProvider.UNFILTERED).forEach((dataSource) -> {
+				this.dataSources.stream(ObjectProvider.UNFILTERED, false).forEach((dataSource) -> {
 					HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
 							HikariDataSource.class);
 					if (hikariDataSource != null) {

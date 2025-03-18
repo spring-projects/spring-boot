@@ -28,6 +28,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -39,6 +40,7 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
@@ -222,6 +224,19 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void prototypeDataSourceIsIgnored() {
+		this.contextRunner
+			.withUserConfiguration(OneHikariDataSourceConfiguration.class, PrototypeDataSourceConfiguration.class)
+			.run((context) -> {
+				context.getBean("hikariDataSource", DataSource.class).getConnection();
+				((DataSource) context.getBean("prototypeDataSource", "", "")).getConnection();
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.get("hikaricp.connections").meter().getId().getTags())
+					.containsExactly(Tag.of("pool", "hikariDataSource"));
+			});
+	}
+
 	private static HikariDataSource createHikariDataSource(String poolName) {
 		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
@@ -330,6 +345,28 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		private org.apache.tomcat.jdbc.pool.DataSource createTomcatDataSource() {
 			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrototypeDataSourceConfiguration {
+
+		@Bean
+		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+		DataSource prototypeDataSource(String username, String password) {
+			return createHikariDataSource(username, password);
+		}
+
+		private HikariDataSource createHikariDataSource(String username, String password) {
+			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
+			HikariDataSource hikariDataSource = DataSourceBuilder.create()
+				.url(url)
+				.type(HikariDataSource.class)
+				.username(username)
+				.password(password)
+				.build();
+			return hikariDataSource;
 		}
 
 	}
