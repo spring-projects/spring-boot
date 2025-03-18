@@ -25,9 +25,6 @@ dependencies {
 	dockerTestImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	dockerTestImplementation("org.apache.activemq:artemis-jakarta-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
 	dockerTestImplementation("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
@@ -59,6 +56,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
+	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
