@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -37,8 +36,8 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(after = ArtemisAutoConfiguration.class,
-		afterName = "org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration")
+@AutoConfiguration(afterName = { "org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration",
+		"org.springframework.boot.artemis.autoconfigure.ArtemisAutoConfiguration" })
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("jms")
