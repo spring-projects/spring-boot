@@ -17,8 +17,8 @@
 package org.springframework.boot.docs.messaging.jms.receiving.custom
 
 import jakarta.jms.ConnectionFactory
-import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.boot.jms.ConnectionFactoryUnwrapper
+import org.springframework.boot.jms.autoconfigure.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory

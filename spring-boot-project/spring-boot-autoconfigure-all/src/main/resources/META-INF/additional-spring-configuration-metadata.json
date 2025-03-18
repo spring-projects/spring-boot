@@ -2,6 +2,20 @@
   "groups": [],
   "properties": [
     {
+      "name": "spring.activemq.pool.block-if-full",
+      "type": "java.lang.Boolean",
+      "description": "Whether to block when a connection is requested and the pool is full. Set it to false to throw a \"JMSException\" instead.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.activemq.pool.block-if-full-timeout",
+      "type": "java.time.Duration",
+      "description": "Blocking period before throwing an exception if the pool is still full.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "-1ms"
+    },
+    {
       "name": "spring.activemq.pool.create-connection-on-startup",
       "type": "java.lang.Boolean",
       "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
@@ -11,6 +25,13 @@
       }
     },
     {
+      "name": "spring.activemq.pool.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether a JmsPoolConnectionFactory should be created, instead of a regular ConnectionFactory.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": false
+    },
+    {
       "name": "spring.activemq.pool.expiry-timeout",
       "type": "java.time.Duration",
       "description": "Connection expiration timeout.",
@@ -18,6 +39,27 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "spring.activemq.pool.idle-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection idle timeout.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.activemq.pool.max-connections",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of pooled connections.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.activemq.pool.max-sessions-per-connection",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of pooled sessions per connection in the pool.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": 500
     },
     {
       "name": "spring.activemq.pool.maximum-active-session-per-connection",
@@ -33,6 +75,20 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "spring.activemq.pool.time-between-expiration-check",
+      "type": "java.time.Duration",
+      "description": "Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "-1ms"
+    },
+    {
+      "name": "spring.activemq.pool.use-anonymous-producers",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use only one anonymous \"MessageProducer\" instance. Set it to false to create one \"MessageProducer\" every time one is required.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": true
     },
     {
       "name": "spring.aop.auto",
@@ -59,10 +115,66 @@
       }
     },
     {
+      "name": "spring.artemis.pool.block-if-full",
+      "type": "java.lang.Boolean",
+      "description": "Whether to block when a connection is requested and the pool is full. Set it to false to throw a \"JMSException\" instead.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.artemis.pool.block-if-full-timeout",
+      "type": "java.time.Duration",
+      "description": "Blocking period before throwing an exception if the pool is still full.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "-1ms"
+    },
+    {
+      "name": "spring.artemis.pool.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether a JmsPoolConnectionFactory should be created, instead of a regular ConnectionFactory.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.artemis.pool.idle-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection idle timeout.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.artemis.pool.max-connections",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of pooled connections.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": 1
+    },
+    {
+      "name": "spring.artemis.pool.max-sessions-per-connection",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of pooled sessions per connection in the pool.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": 500
+    },
+    {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
         "replacement": "spring.artemis.pool.max-sessions-per-connection"
       }
+    },
+    {
+      "name": "spring.artemis.pool.time-between-expiration-check",
+      "type": "java.time.Duration",
+      "description": "Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": "-1ms"
+    },
+    {
+      "name": "spring.artemis.pool.use-anonymous-producers",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use only one anonymous \"MessageProducer\" instance. Set it to false to create one \"MessageProducer\" every time one is required.",
+      "sourceType": "org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProperties",
+      "defaultValue": true
     },
     {
       "name": "spring.artemis.port",
@@ -2603,40 +2715,6 @@
       "providers": [
         {
           "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "spring.jms.listener.session.acknowledge-mode",
-      "values": [
-        {
-          "value": "auto",
-          "description": "Messages sent or received from the session are automatically acknowledged. This is the simplest mode and enables once-only message delivery guarantee."
-        },
-        {
-          "value": "client",
-          "description": "Messages are acknowledged once the message listener implementation has called \"jakarta.jms.Message#acknowledge()\". This mode gives the application (rather than the JMS provider) complete control over message acknowledgement."
-        },
-        {
-          "value": "dups_ok",
-          "description": "Similar to auto acknowledgment except that said acknowledgment is lazy. As a consequence, the messages might be delivered more than once. This mode enables at-least-once message delivery guarantee."
-        }
-      ]
-    },
-    {
-      "name": "spring.jms.template.session.acknowledge-mode",
-      "values": [
-        {
-          "value": "auto",
-          "description": "Messages sent or received from the session are automatically acknowledged. This is the simplest mode and enables once-only message delivery guarantee."
-        },
-        {
-          "value": "client",
-          "description": "Messages are acknowledged once the message listener implementation has called \"jakarta.jms.Message#acknowledge()\". This mode gives the application (rather than the JMS provider) complete control over message acknowledgement."
-        },
-        {
-          "value": "dups_ok",
-          "description": "Similar to auto acknowledgment except that said acknowledgment is lazy. As a consequence, the messages might be delivered more than once. This mode enables at-least-once message delivery guarantee."
         }
       ]
     },

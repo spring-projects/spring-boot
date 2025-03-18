@@ -180,7 +180,7 @@ include-code::MyBean[]
 
 TIP: See the javadoc:org.springframework.jms.annotation.EnableJms[format=annotation] API documentation for more details.
 
-If you need to create more javadoc:org.springframework.jms.config.JmsListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.jms.config.DefaultJmsListenerContainerFactory[] with the same settings as the one that is auto-configured.
+If you need to create more javadoc:org.springframework.jms.config.JmsListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.jms.autoconfigure.DefaultJmsListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.jms.config.DefaultJmsListenerContainerFactory[] with the same settings as the one that is auto-configured.
 
 For instance, the following example exposes another factory that uses a specific javadoc:org.springframework.jms.support.converter.MessageConverter[]:
 

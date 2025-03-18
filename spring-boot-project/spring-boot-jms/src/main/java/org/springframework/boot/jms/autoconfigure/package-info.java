@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for JMS.
  */
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.jms.autoconfigure;
