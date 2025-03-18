@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.using.autoconfiguration.disablingspecific
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 
 @SpringBootApplication(exclude = [DataSourceAutoConfiguration::class])
 class MyApplication

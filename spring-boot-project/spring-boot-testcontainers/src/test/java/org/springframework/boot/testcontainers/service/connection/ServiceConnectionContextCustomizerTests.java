@@ -26,8 +26,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;

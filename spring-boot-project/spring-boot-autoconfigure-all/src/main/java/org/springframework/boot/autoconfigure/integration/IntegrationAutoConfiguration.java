@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
@@ -89,8 +88,8 @@ import org.springframework.util.StringUtils;
  * @author Yanming Zhou
  * @since 1.1.0
  */
-@AutoConfiguration(after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
-		TaskSchedulingAutoConfiguration.class })
+@AutoConfiguration(after = { JmxAutoConfiguration.class, TaskSchedulingAutoConfiguration.class },
+		afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
 public class IntegrationAutoConfiguration {
