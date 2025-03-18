@@ -18,8 +18,8 @@ package org.springframework.boot.testcontainers.service.connection.activemq;
 
 import org.testcontainers.activemq.ArtemisContainer;
 
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails;
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
+import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
+import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

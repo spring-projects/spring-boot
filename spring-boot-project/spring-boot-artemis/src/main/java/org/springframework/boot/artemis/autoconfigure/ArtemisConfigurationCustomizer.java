@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.artemis;
+package org.springframework.boot.artemis.autoconfigure;
 
-import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
+import org.apache.activemq.artemis.core.config.Configuration;
+import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 
 /**
- * A no-op implementation of the {@link BindingRegistry}.
+ * Callback interface that can be implemented by beans wishing to customize the Artemis
+ * JMS server {@link Configuration} before it is used by an auto-configured
+ * {@link EmbeddedActiveMQ} instance.
  *
  * @author Eddú Meléndez
- * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 1.3.0
+ * @see ArtemisAutoConfiguration
  */
-public class ArtemisNoOpBindingRegistry implements BindingRegistry {
+@FunctionalInterface
+public interface ArtemisConfigurationCustomizer {
 
-	@Override
-	public Object lookup(String s) {
-		return null;
-	}
-
-	@Override
-	public boolean bind(String s, Object o) {
-		return false;
-	}
-
-	@Override
-	public void unbind(String s) {
-	}
-
-	@Override
-	public void close() {
-	}
+	/**
+	 * Customize the configuration.
+	 * @param configuration the configuration to customize
+	 */
+	void customize(Configuration configuration);
 
 }

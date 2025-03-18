@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.artemis;
-
-import org.apache.activemq.artemis.core.config.Configuration;
-import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
+package org.springframework.boot.artemis.autoconfigure;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the Artemis
- * JMS server {@link Configuration} before it is used by an auto-configured
- * {@link EmbeddedActiveMQ} instance.
+ * Define the mode in which Artemis can operate.
  *
  * @author Eddú Meléndez
- * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.3.0
- * @see ArtemisAutoConfiguration
  */
-@FunctionalInterface
-public interface ArtemisConfigurationCustomizer {
+public enum ArtemisMode {
 
 	/**
-	 * Customize the configuration.
-	 * @param configuration the configuration to customize
+	 * Connect to a broker using the native Artemis protocol (i.e. netty).
 	 */
-	void customize(Configuration configuration);
+	NATIVE,
+
+	/**
+	 * Embed (i.e. start) the broker in the application.
+	 */
+	EMBEDDED
 
 }

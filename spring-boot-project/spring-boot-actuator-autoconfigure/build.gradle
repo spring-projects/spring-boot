@@ -35,6 +35,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
+	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))

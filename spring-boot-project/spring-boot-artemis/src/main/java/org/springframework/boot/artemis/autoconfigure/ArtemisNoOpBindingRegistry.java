@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.artemis;
+package org.springframework.boot.artemis.autoconfigure;
+
+import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
 
 /**
- * Define the mode in which Artemis can operate.
+ * A no-op implementation of the {@link BindingRegistry}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public enum ArtemisMode {
+public class ArtemisNoOpBindingRegistry implements BindingRegistry {
 
-	/**
-	 * Connect to a broker using the native Artemis protocol (i.e. netty).
-	 */
-	NATIVE,
+	@Override
+	public Object lookup(String s) {
+		return null;
+	}
 
-	/**
-	 * Embed (i.e. start) the broker in the application.
-	 */
-	EMBEDDED
+	@Override
+	public boolean bind(String s, Object o) {
+		return false;
+	}
+
+	@Override
+	public void unbind(String s) {
+	}
+
+	@Override
+	public void close() {
+	}
 
 }

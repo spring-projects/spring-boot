@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.activemq;
 
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails;
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
+import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
+import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
