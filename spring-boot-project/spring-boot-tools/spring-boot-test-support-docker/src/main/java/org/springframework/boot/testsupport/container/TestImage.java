@@ -132,7 +132,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Oracle Free.
 	 */
-	ORACLE_FREE("gvenzl/oracle-free", "23.3-slim", () -> org.testcontainers.oracle.OracleContainer.class,
+	ORACLE_FREE("gvenzl/oracle-free", "23.6-slim", () -> org.testcontainers.oracle.OracleContainer.class,
 			(container) -> ((org.testcontainers.oracle.OracleContainer) container)
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
