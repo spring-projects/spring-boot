@@ -22,6 +22,5 @@ description = "Starter for JMS messaging using Apache ActiveMQ"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-	api(project(":spring-boot-project:spring-boot-jms"))
-	api("org.apache.activemq:activemq-client")
+	api(project(":spring-boot-project:spring-boot-activemq"))
 }

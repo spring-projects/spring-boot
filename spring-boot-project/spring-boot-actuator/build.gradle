@@ -39,8 +39,8 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
-	optional(project(":spring-boot-project:spring-boot-jms"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))

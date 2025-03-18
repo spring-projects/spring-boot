@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docker.compose.service.connection.activemq;
 
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
+import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 

@@ -19,7 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.activemq;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
+import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

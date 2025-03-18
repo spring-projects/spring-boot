@@ -1983,6 +1983,7 @@ bom {
 		group("org.springframework.boot") {
 			modules = [
 				"spring-boot",
+				"spring-boot-activemq",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
 				"spring-boot-amqp",

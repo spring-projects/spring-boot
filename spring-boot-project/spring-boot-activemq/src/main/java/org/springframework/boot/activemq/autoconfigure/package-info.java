@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-
 /**
- * Callback interface that can be implemented by beans wishing to customize the
- * {@link ActiveMQConnectionFactory} whilst retaining default auto-configuration.
- *
- * @author Stephane Nicoll
- * @since 3.1.0
+ * Auto-configuration for ActiveMQ.
  */
-@FunctionalInterface
-public interface ActiveMQConnectionFactoryCustomizer {
-
-	/**
-	 * Customize the {@link ActiveMQConnectionFactory}.
-	 * @param factory the factory to customize
-	 */
-	void customize(ActiveMQConnectionFactory factory);
-
-}
+package org.springframework.boot.activemq.autoconfigure;

@@ -46,6 +46,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 
+	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))

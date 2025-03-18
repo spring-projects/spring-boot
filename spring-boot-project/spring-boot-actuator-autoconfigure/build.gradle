@@ -33,10 +33,10 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
+	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
-	optional(project(":spring-boot-project:spring-boot-jms"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-mail"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
