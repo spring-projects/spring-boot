@@ -1,0 +1,184 @@
+{
+  "properties": [
+    {
+      "name": "spring.datasource.continue-on-error",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.continue-on-error"
+      }
+    },
+    {
+      "name": "spring.datasource.data",
+      "type": "java.util.List<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.data-locations"
+      }
+    },
+    {
+      "name": "spring.datasource.data-password",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.password"
+      }
+    },
+    {
+      "name": "spring.datasource.data-username",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.username"
+      }
+    },
+    {
+      "name": "spring.datasource.initialization-mode",
+      "type": "org.springframework.boot.jdbc.DataSourceInitializationMode",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.mode"
+      }
+    },
+    {
+      "name": "spring.datasource.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX support (if provided by the underlying pool).",
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.datasource.tomcat.jmx-enabled"
+      }
+    },
+    {
+      "name": "spring.datasource.platform",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.platform"
+      }
+    },
+    {
+      "name": "spring.datasource.schema",
+      "type": "java.util.List<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.schema-locations"
+      }
+    },
+    {
+      "name": "spring.datasource.schema-password",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.password"
+      }
+    },
+    {
+      "name": "spring.datasource.schema-username",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.username"
+      }
+    },
+    {
+      "name": "spring.datasource.separator",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.separator"
+      }
+    },
+    {
+      "name": "spring.datasource.sql-script-encoding",
+      "type": "java.nio.charset.Charset",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.sql.init.encoding"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.datasource.data",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.driver-class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "java.sql.Driver"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.schema",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.xa.data-source-class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "javax.sql.XADataSource"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.xa.data-source-class-name",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "javax.sql.XADataSource"
+          }
+        }
+      ]
+    }
+  ],
+ "ignored": {
+    "properties": [
+      {
+        "name": "spring.datasource.dbcp2.driver"
+      },
+      {
+        "name": "spring.datasource.hikari.credentials"
+      },
+      {
+        "name": "spring.datasource.hikari.exception-override"
+      },
+      {
+        "name": "spring.datasource.hikari.metrics-tracker-factory"
+      },
+      {
+        "name": "spring.datasource.hikari.scheduled-executor"
+      },
+      {
+        "name": "spring.datasource.oracleucp.connection-wait-duration-in-millis"
+      },
+      {
+        "name": "spring.datasource.oracleucp.hostname-resolver"
+      }
+    ]
+  }
+}

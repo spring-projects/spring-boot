@@ -22,7 +22,7 @@ description = "Starter for using JDBC with the HikariCP connection pool"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-jdbc"))
 	api(project(":spring-boot-project:spring-boot-tx"))
 	api("com.zaxxer:HikariCP")
-	api("org.springframework:spring-jdbc")
 }

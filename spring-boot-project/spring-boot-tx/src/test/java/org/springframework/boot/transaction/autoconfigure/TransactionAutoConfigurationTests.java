@@ -20,11 +20,11 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
@@ -273,11 +273,11 @@ class TransactionAutoConfigurationTests {
 
 		@Bean
 		DataSource dataSource() {
-			return DataSourceBuilder.create()
-				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:tx")
-				.username("sa")
-				.build();
+			HikariDataSource dataSource = new HikariDataSource();
+			dataSource.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+			dataSource.setJdbcUrl("jdbc:hsqldb:mem:tx");
+			dataSource.setUsername("sa");
+			return dataSource;
 		}
 
 	}

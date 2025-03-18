@@ -32,7 +32,8 @@ import org.springframework.context.annotation.Import;
  * @author Nishant Raut
  * @since 4.0.0
  */
-@AutoConfiguration(before = { TransactionAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
+@AutoConfiguration(
+		before = { TransactionAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnBooleanProperty(name = "spring.jta.enabled", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)

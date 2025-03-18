@@ -32,6 +32,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-r2dbc"))
 
+	runtimeOnly(project(":spring-boot-project:spring-boot-jdbc"))
 	runtimeOnly("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}

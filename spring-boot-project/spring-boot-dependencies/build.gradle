@@ -1997,6 +1997,7 @@ bom {
 				"spring-boot-docker-compose",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
+				"spring-boot-jdbc",
 				"spring-boot-jetty",
 				"spring-boot-jms",
 				"spring-boot-jsonb",

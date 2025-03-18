@@ -52,6 +52,7 @@ dependencies {
 
 	intTestRuntimeOnly("org.springframework:spring-web")
 
+	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional("io.projectreactor:reactor-core")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.servlet:jakarta.servlet-api")

@@ -18,12 +18,12 @@ package org.springframework.boot.liquibase;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +70,10 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 
 		@Bean
 		DataSource dataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:test").username("sa").build();
+			HikariDataSource dataSource = new HikariDataSource();
+			dataSource.setJdbcUrl("jdbc:hsqldb:mem:test");
+			dataSource.setUsername("sa");
+			return dataSource;
 		}
 
 		@Bean

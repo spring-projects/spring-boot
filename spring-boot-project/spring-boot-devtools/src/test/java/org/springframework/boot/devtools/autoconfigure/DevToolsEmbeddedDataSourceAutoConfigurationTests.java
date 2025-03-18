@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.ConfigurableApplicationContext;
 

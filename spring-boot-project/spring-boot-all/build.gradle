@@ -30,11 +30,9 @@ dependencies {
 	api("org.springframework:spring-core")
 	api("org.springframework:spring-context")
 	optional("ch.qos.logback:logback-classic")
-	optional("com.clickhouse:clickhouse-jdbc")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")
-	optional("com.mchange:c3p0")
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.oracle.database.jdbc:ojdbc11")
 	optional("com.samskivert:jmustache")
@@ -103,14 +101,11 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("com.ibm.db2:jcc")
-	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
-	testImplementation("com.mysql:mysql-connector-j")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.inject:jakarta.inject-api")
 	testImplementation("jakarta.xml.ws:jakarta.xml.ws-api")
-	testImplementation("net.sourceforge.jtds:jtds")
 	testImplementation("org.apache.derby:derby")
 	testImplementation("org.apache.derby:derbytools")
 	testImplementation("org.codehaus.janino:janino")
@@ -118,9 +113,6 @@ dependencies {
 	testImplementation("org.eclipse.jetty:jetty-reactive-httpclient")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-client-transport")
-	testImplementation("org.firebirdsql.jdbc:jaybird") {
-		exclude group: "javax.resource", module: "connector-api"
-	}
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
@@ -128,7 +120,6 @@ dependencies {
 	testImplementation("org.springframework:spring-context-support")
 	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.data:spring-data-r2dbc")
-	testImplementation("org.xerial:sqlite-jdbc")
 
 	testRuntimeOnly("org.testcontainers:jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"

@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 
 /**
  * A sample {@link SpringBootConfiguration @ConfigurationProperties} that only enables the
