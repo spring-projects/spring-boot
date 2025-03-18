@@ -22,9 +22,9 @@ import java.time.Duration;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.OS;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.jdbc.core.JdbcTemplate;

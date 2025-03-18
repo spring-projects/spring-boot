@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.oracle;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}

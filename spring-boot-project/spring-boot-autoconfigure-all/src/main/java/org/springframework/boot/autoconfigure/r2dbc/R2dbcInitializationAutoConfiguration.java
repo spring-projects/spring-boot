@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.jdbc.ApplicationDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.autoconfigure.sql.init.ConditionalOnSqlInitialization;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,8 +43,8 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnClass({ ConnectionFactory.class, DatabasePopulator.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
-@ConditionalOnMissingBean({ ApplicationR2dbcScriptDatabaseInitializer.class,
-		ApplicationDataSourceScriptDatabaseInitializer.class })
+@ConditionalOnMissingBean(value = ApplicationR2dbcScriptDatabaseInitializer.class,
+		type = "org.springframework.boot.jdbc.autoconfigure.ApplicationDataSourceScriptDatabaseInitializer")
 @ConditionalOnSqlInitialization
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @EnableConfigurationProperties(SqlInitializationProperties.class)

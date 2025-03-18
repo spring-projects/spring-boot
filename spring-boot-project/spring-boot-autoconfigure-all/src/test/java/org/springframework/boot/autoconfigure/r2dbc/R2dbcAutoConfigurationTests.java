@@ -38,8 +38,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.SimpleConnectionFactoryProvider.SimpleTestConnectionFactory;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.r2dbc.OptionsCapableConnectionFactory;
 import org.springframework.boot.test.context.FilteredClassLoader;

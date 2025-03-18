@@ -17,8 +17,8 @@
 package org.springframework.boot.docker.compose.service.connection.flyway;
 
 import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 
 /**
  * {@link ConnectionDetailsFactory} that produces {@link FlywayConnectionDetails} by
