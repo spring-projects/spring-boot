@@ -157,6 +157,9 @@ public class TomcatWebServerFactoryCustomizer
 			.as(this::joinCharacters)
 			.whenHasText()
 			.to((relaxedChars) -> customizeRelaxedQueryChars(factory, relaxedChars));
+		map.from(this.tomcatProperties.getMbeanregistry()::isEnabled)
+			.as((enable) -> !enable)
+			.to(factory::setDisableMBeanRegistry);
 		customizeStaticResources(factory);
 		customizeErrorReportValve(this.serverProperties.getError(), factory);
 		factory.setUseApr(getUseApr(this.tomcatProperties.getUseApr()));

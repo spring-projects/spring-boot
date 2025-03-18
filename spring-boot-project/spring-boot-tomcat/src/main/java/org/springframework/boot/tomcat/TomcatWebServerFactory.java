@@ -351,6 +351,7 @@ public class TomcatWebServerFactory extends AbstractConfigurableWebServerFactory
 	 * the server.
 	 * @param disableMBeanRegistry whether to disable the MBean registry
 	 */
+	@Override
 	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
 		this.disableMBeanRegistry = disableMBeanRegistry;
 	}

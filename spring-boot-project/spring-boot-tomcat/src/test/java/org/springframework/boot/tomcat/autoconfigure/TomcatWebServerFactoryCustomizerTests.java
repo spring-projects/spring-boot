@@ -623,6 +623,15 @@ class TomcatWebServerFactoryCustomizerTests {
 		});
 	}
 
+	@Test
+	void enableMBeanRegistry() {
+		bind("server.tomcat.mbeanregistry.enabled=true");
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		assertThat(factory.isDisableMBeanRegistry()).isTrue();
+		this.customizer.customize(factory);
+		assertThat(factory.isDisableMBeanRegistry()).isFalse();
+	}
+
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
 		Binder binder = new Binder(ConfigurationPropertySources.get(this.environment));

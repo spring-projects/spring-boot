@@ -53,7 +53,6 @@ class TomcatServletWebServerFactoryCustomizer
 			customizeRedirectContextRoot(factory, this.tomcatProperties.getRedirectContextRoot());
 		}
 		customizeUseRelativeRedirects(factory, this.tomcatProperties.isUseRelativeRedirects());
-		factory.setDisableMBeanRegistry(!this.tomcatProperties.getMbeanregistry().isEnabled());
 	}
 
 	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
