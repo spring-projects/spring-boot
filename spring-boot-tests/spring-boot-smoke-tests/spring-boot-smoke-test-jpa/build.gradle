@@ -23,6 +23,7 @@ description = "Spring Boot JPA smoke test"
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-freemarker"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation(project(":spring-boot-project:spring-boot-tx"))
 	implementation("jakarta.persistence:jakarta.persistence-api")
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 	implementation("org.hibernate.orm:hibernate-core")

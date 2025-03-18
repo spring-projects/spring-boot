@@ -22,5 +22,6 @@ description = "Starter for exposing Spring Data repositories over REST using Spr
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.springframework.data:spring-data-rest-webmvc")
 }

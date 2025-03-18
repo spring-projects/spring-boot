@@ -22,6 +22,6 @@ description = "Starter for using jOOQ to access SQL databases with JDBC. An alte
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
-	api("org.springframework:spring-tx")
+	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.jooq:jooq")
 }

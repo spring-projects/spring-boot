@@ -30,6 +30,8 @@ dependencies {
 	api("org.springframework:spring-messaging")
 	api("org.springframework.amqp:spring-rabbit")
 
+	implementation(project(":spring-boot-project:spring-boot-tx"))
+
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("org.springframework.amqp:spring-rabbit-stream")
 

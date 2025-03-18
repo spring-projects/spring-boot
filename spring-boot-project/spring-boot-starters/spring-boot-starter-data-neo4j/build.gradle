@@ -22,5 +22,6 @@ description = "Starter for using Neo4j graph database and Spring Data Neo4j"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.springframework.data:spring-data-neo4j")
 }

@@ -111,9 +111,6 @@ org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2Auth
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
-org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
-org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration
-org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration

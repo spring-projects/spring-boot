@@ -24,9 +24,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
+import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -41,6 +41,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  */
 @AutoConfiguration(
 		after = { DataSourceAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class },
+		afterName = "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
 		before = { TransactionAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class, SessionImplementor.class })
 @EnableConfigurationProperties(JpaProperties.class)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction.jta;
+package org.springframework.boot.transaction.jta.autoconfigure;
 
 import java.util.Arrays;
 import java.util.List;

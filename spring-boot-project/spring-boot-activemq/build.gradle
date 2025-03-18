@@ -30,6 +30,7 @@ dependencies {
 	api("org.apache.activemq:activemq-client")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("jakarta.transaction:jakarta.transaction-api")
 	optional("org.apache.activemq:activemq-broker")
 	optional("org.messaginghub:pooled-jms") {

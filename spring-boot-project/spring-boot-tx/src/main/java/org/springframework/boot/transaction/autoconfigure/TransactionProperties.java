@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -29,7 +29,7 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
  *
  * @author Kazuki Shimizu
  * @author Phillip Webb
- * @since 1.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.transaction")
 public class TransactionProperties implements TransactionManagerCustomizer<AbstractPlatformTransactionManager> {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.transaction.autoconfigure;
 
 import java.util.UUID;
 
@@ -24,8 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AdviceMode;
@@ -82,8 +80,6 @@ class TransactionAutoConfigurationTests {
 	@Test
 	void whenThereAreBothReactiveAndPlatformTransactionManagersATemplateAndAnOperatorAreAutoConfigured() {
 		this.contextRunner
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					DataSourceTransactionManagerAutoConfiguration.class))
 			.withUserConfiguration(SinglePlatformTransactionManagerConfiguration.class,
 					SingleReactiveTransactionManagerConfiguration.class)
 			.withPropertyValues("spring.datasource.url:jdbc:h2:mem:" + UUID.randomUUID())

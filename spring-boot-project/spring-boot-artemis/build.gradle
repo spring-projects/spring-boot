@@ -30,6 +30,7 @@ dependencies {
 	api("org.apache.activemq:artemis-jakarta-client")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.apache.activemq:artemis-jakarta-server")
 	optional("org.messaginghub:pooled-jms") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
