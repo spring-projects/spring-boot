@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.activemq.autoconfigure;
 
 import java.time.Duration;
 import java.util.ArrayList;

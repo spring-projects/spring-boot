@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.activemq.autoconfigure;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
+import org.springframework.boot.activemq.autoconfigure.ActiveMQProperties.Packages;
 import org.springframework.util.Assert;
 
 /**
