@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import jakarta.validation.ValidationException;
 
@@ -40,7 +40,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Zisis Pavloudis
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class ValidatorAdapter implements SmartValidator, ApplicationContextAware, InitializingBean, DisposableBean {
 

@@ -1,0 +1,12 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.validation.method.adapt-constraint-violations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to adapt ConstraintViolations to MethodValidationResult.",
+      "defaultValue": false
+    }
+  ],
+  "hints": []
+}

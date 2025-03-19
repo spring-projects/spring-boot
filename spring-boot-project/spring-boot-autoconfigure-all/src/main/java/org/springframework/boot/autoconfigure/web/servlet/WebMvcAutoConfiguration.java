@@ -43,8 +43,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
@@ -55,6 +53,7 @@ import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
@@ -137,8 +136,8 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Scott Frederick
  * @since 2.0.0
  */
-@AutoConfiguration(after = { DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+@AutoConfiguration(after = { DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class },
+		afterName = "org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
@@ -516,7 +515,9 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public Validator mvcValidator() {
-			if (!ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())) {
+			if (!ClassUtils.isPresent("jakarta.validation.Validator", getClass().getClassLoader())
+					|| !ClassUtils.isPresent("org.springframework.boot.validation.autoconfigure.ValidatorAdapter",
+							getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import jakarta.validation.Validator;
 import jakarta.validation.executable.ExecutableValidator;
@@ -45,7 +45,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Yanming Zhou
- * @since 1.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(ExecutableValidator.class)
