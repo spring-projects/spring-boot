@@ -20,7 +20,7 @@ subprojects {
 	}
 
 	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
+		resolutionStrategy.cacheChangingModulesFor 1, "hours"
 	}
 }
 
