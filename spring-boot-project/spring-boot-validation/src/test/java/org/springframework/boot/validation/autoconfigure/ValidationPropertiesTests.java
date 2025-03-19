@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
-import jakarta.validation.Configuration;
-import jakarta.validation.Validation;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link BackgroundPreinitializer} for jakarta.validation.
+ * Tests for {@link ValidationProperties}.
  *
- * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-final class JakartaValidationBackgroundPreinitializer implements BackgroundPreinitializer {
+class ValidationPropertiesTests {
 
-	@Override
-	public void preinitialize() throws Exception {
-		Configuration<?> configuration = Validation.byDefaultProvider().configure();
-		configuration.buildValidatorFactory().getValidator();
+	@Test
+	void adaptConstraintViolationsPropertyDefaultMatchesPostProcessorDefault() {
+		assertThat(new MethodValidationPostProcessor()).extracting("adaptConstraintViolations")
+			.isEqualTo(new ValidationProperties().getMethod().isAdaptConstraintViolations());
 	}
 
 }

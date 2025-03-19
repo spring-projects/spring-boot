@@ -36,8 +36,6 @@ import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.thread.Threading;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -48,6 +46,7 @@ import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
@@ -106,8 +105,10 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Weix Sun
  * @since 2.0.0
  */
-@AutoConfiguration(after = { CodecsAutoConfiguration.class, ReactiveMultipartAutoConfiguration.class,
-		ValidationAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class })
+@AutoConfiguration(
+		after = { CodecsAutoConfiguration.class, ReactiveMultipartAutoConfiguration.class,
+				WebSessionIdResolverAutoConfiguration.class },
+		afterName = "org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
