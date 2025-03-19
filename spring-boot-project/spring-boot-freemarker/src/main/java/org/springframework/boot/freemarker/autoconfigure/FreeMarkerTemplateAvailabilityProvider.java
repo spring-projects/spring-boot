@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.freemarker;
+package org.springframework.boot.freemarker.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
  * FreeMarker view templates.
  *
  * @author Andy Wilkinson
- * @since 1.1.0
+ * @since 4.0.0
  */
 public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
 

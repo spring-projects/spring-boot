@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.freemarker;
+package org.springframework.boot.freemarker.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfig;
@@ -36,7 +36,8 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@AutoConfigureAfter(WebFluxAutoConfiguration.class)
+@ConditionalOnClass(FreeMarkerConfigurer.class)
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration")
 class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration {
 
 	FreeMarkerReactiveWebConfiguration(FreeMarkerProperties properties,

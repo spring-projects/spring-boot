@@ -1,0 +1,3 @@
+# Template Availability Providers
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+org.springframework.boot.freemarker.autoconfigure.FreeMarkerTemplateAvailabilityProvider

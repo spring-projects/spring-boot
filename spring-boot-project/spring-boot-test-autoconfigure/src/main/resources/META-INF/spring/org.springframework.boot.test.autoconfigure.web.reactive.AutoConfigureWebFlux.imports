@@ -1,6 +1,6 @@
 # AutoConfigureWebFlux auto-configuration imports
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
-org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
