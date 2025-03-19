@@ -2069,7 +2069,8 @@ bom {
 				"spring-boot-testcontainers",
 				"spring-boot-tomcat",
 				"spring-boot-tx",
-				"spring-boot-undertow"
+				"spring-boot-undertow",
+				"spring-boot-validation"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

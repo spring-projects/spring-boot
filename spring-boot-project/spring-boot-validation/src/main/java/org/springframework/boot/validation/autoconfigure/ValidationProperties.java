@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Role;
  *
  * @author Yanming Zhou
  * @author Andy Wilkinson
- * @since 3.5.0
+ * @since 4.0.0
  */
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConfigurationProperties("spring.validation")
