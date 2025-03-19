@@ -14,6 +14,6 @@
     "default": ["{projectRoot}/**/*"],
     "production": ["default", "!{projectRoot}/src/test/**/*"]
   },
-  "nxCloudUrl": "https://staging.nx.app",
-  "nxCloudId": "67a56832eb5d9093e3ebe776"
+  "nxCloudUrl": "https://snapshot.nx.app",
+  "nxCloudId": "67dad8ae45125407e384edab"
 }
