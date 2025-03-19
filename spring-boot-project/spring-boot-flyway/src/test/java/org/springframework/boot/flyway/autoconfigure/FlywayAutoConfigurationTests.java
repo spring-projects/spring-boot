@@ -67,12 +67,10 @@ import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.Ora
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -1065,10 +1063,11 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource) {
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), (ds) -> configureJpaProperties(),
-					null)
-				.dataSource(dataSource)
-				.build();
+			LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+			localContainerEntityManagerFactoryBean.setDataSource(dataSource);
+			localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+			localContainerEntityManagerFactoryBean.setJpaPropertyMap(configureJpaProperties());
+			return localContainerEntityManagerFactoryBean;
 		}
 
 	}
@@ -1089,50 +1088,11 @@ class FlywayAutoConfigurationTests {
 
 		@Bean
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
-					(datasource) -> configureJpaProperties(), null)
-				.dataSource(this.dataSource)
-				.build();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JpaWithMultipleDataSourcesConfiguration {
-
-		@Bean
-		@Primary
-		DataSource normalDataSource() {
-			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
-				.generateUniqueName(true)
-				.build();
-		}
-
-		@Bean
-		@Primary
-		LocalContainerEntityManagerFactoryBean normalEntityManagerFactory(EntityManagerFactoryBuilder builder,
-				DataSource normalDataSource) {
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("configured", "normal");
-			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
-			return builder.dataSource(normalDataSource).properties(properties).build();
-		}
-
-		@Bean
-		@FlywayDataSource
-		DataSource flywayDataSource() {
-			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseConnection.HSQLDB.getType())
-				.generateUniqueName(true)
-				.build();
-		}
-
-		@Bean
-		LocalContainerEntityManagerFactoryBean flywayEntityManagerFactory(EntityManagerFactoryBuilder builder,
-				@FlywayDataSource DataSource flywayDataSource) {
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("configured", "flyway");
-			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
-			return builder.dataSource(flywayDataSource).properties(properties).build();
+			LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+			localContainerEntityManagerFactoryBean.setDataSource(this.dataSource);
+			localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+			localContainerEntityManagerFactoryBean.setJpaPropertyMap(configureJpaProperties());
+			return localContainerEntityManagerFactoryBean;
 		}
 
 	}
