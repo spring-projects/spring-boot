@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -63,9 +64,9 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		Path workspace = Files.createTempDirectory("DockerComposeTestExtension-");
 		store.put(STORE_KEY_WORKSPACE, workspace);
 		try {
-			Path transformedComposeFile = prepareComposeFile(workspace, context);
+			Path composeFile = prepareComposeFile(workspace, context);
 			copyAdditionalResources(workspace, context);
-			SpringApplication application = prepareApplication(transformedComposeFile);
+			SpringApplication application = prepareApplication(composeFile);
 			store.put(STORE_KEY_APPLICATION_CONTEXT, application.run());
 		}
 		catch (Exception ex) {
@@ -84,11 +85,11 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 
 	private Path transformedComposeFile(Path workspace, Resource composeFileResource, TestImage image) {
 		try {
-			Path composeFile = composeFileResource.getFile().toPath();
-			String transformedContent = Files.readString(composeFile).replace("{imageName}", image.toString());
-			Path transformedComposeFile = workspace.resolve("compose.yaml");
-			Files.writeString(transformedComposeFile, transformedContent);
-			return transformedComposeFile;
+			String template = composeFileResource.getContentAsString(StandardCharsets.UTF_8);
+			String content = template.replace("{imageName}", image.toString());
+			Path composeFile = workspace.resolve("compose.yaml");
+			Files.writeString(composeFile, content);
+			return composeFile;
 		}
 		catch (IOException ex) {
 			fail("Error transforming Docker compose file '" + composeFileResource + "': " + ex.getMessage(), ex);
@@ -114,11 +115,11 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		}
 	}
 
-	private SpringApplication prepareApplication(Path transformedComposeFile) {
+	private SpringApplication prepareApplication(Path composeFile) {
 		SpringApplication application = new SpringApplication(Config.class);
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("spring.docker.compose.skip.in-tests", "false");
-		properties.put("spring.docker.compose.file", transformedComposeFile);
+		properties.put("spring.docker.compose.file", composeFile);
 		properties.put("spring.docker.compose.stop.command", "down");
 		application.setDefaultProperties(properties);
 		return application;
