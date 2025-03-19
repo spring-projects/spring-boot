@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurati
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

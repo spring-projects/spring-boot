@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;

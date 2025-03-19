@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
-
-import jakarta.validation.Configuration;
-import jakarta.validation.Validation;
-
-import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
-
 /**
- * {@link BackgroundPreinitializer} for jakarta.validation.
- *
- * @author Phillip Webb
+ * Auto-configuration for (JSR-303) Validation.
  */
-final class JakartaValidationBackgroundPreinitializer implements BackgroundPreinitializer {
-
-	@Override
-	public void preinitialize() throws Exception {
-		Configuration<?> configuration = Validation.byDefaultProvider().configure();
-		configuration.buildValidatorFactory().getValidator();
-	}
-
-}
+package org.springframework.boot.validation.autoconfigure;

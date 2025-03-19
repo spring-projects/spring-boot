@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -27,22 +27,21 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link ValidationAutoConfiguration} when Hibernate validator is present but no
- * EL implementation is available.
+ * Test for {@link ValidationAutoConfiguration} when no JSR-303 provider is available.
  *
  * @author Stephane Nicoll
  */
-@ClassPathExclusions({ "tomcat-embed-el-*.jar", "el-api-*.jar" })
-class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests {
+@ClassPathExclusions("hibernate-validator-*.jar")
+class ValidationAutoConfigurationWithoutValidatorTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
-	void missingElDependencyIsTolerated() {
+	void validationIsDisabled() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(Validator.class);
-			assertThat(context).hasSingleBean(MethodValidationPostProcessor.class);
+			assertThat(context).doesNotHaveBean(Validator.class);
+			assertThat(context).doesNotHaveBean(MethodValidationPostProcessor.class);
 		});
 	}
 

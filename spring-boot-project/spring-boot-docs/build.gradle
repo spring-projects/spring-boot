@@ -94,6 +94,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tomcat", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tx", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-validation", configuration: "autoConfigurationMetadata"))
 
 	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))

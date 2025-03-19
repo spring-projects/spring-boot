@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.validation.autoconfigure;
+
+import jakarta.validation.Configuration;
+
 /**
- * Auto-configuration for (JSR-303) Validation.
+ * Callback interface that can be used to customize {@link Configuration}.
+ *
+ * @author Dang Zhicairang
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.validation;
+@FunctionalInterface
+public interface ValidationConfigurationCustomizer {
+
+	/**
+	 * Customize the given {@code configuration}.
+	 * @param configuration the configuration to customize
+	 */
+	void customize(Configuration<?> configuration);
+
+}

@@ -45,6 +45,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
+	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional("ch.qos.logback:logback-classic")
 	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"

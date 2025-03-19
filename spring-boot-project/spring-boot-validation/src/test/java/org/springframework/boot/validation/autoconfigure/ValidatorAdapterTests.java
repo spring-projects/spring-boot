@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import java.util.HashMap;
 

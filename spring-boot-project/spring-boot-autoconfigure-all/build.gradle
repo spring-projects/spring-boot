@@ -68,6 +68,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
+	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional("co.elastic.clients:elasticsearch-java")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")

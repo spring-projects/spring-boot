@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.validation;
+package org.springframework.boot.validation.autoconfigure;
 
 import jakarta.validation.Configuration;
+import jakarta.validation.Validation;
+
+import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
 
 /**
- * Callback interface that can be used to customize {@link Configuration}.
+ * {@link BackgroundPreinitializer} for jakarta.validation.
  *
- * @author Dang Zhicairang
- * @since 3.0.0
+ * @author Phillip Webb
  */
-@FunctionalInterface
-public interface ValidationConfigurationCustomizer {
+final class JakartaValidationBackgroundPreinitializer implements BackgroundPreinitializer {
 
-	/**
-	 * Customize the given {@code configuration}.
-	 * @param configuration the configuration to customize
-	 */
-	void customize(Configuration<?> configuration);
+	@Override
+	public void preinitialize() throws Exception {
+		Configuration<?> configuration = Validation.byDefaultProvider().configure();
+		configuration.buildValidatorFactory().getValidator();
+	}
 
 }
