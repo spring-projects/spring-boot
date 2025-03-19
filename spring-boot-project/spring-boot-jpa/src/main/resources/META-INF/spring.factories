@@ -1,0 +1,7 @@
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.jpa.JpaDatabaseInitializerDetector
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.jpa.JpaDependsOnDatabaseInitializationDetector

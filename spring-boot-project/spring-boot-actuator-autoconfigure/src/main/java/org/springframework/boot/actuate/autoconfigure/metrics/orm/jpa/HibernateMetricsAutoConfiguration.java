@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,8 +44,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
+		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, HibernateMetrics.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration implements SmartInitializingSingleton {

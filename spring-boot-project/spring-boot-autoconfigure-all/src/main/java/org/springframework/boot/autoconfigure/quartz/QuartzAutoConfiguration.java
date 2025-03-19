@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
@@ -55,7 +54,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@AutoConfiguration(after = DataSourceAutoConfiguration.class,
+		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(QuartzProperties.class)
 public class QuartzAutoConfiguration {
