@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sebastiaan Fernandez
  */
-@ClassPathExclusions("derby-*")
 class LiquibaseChangelogMissingFailureAnalyzerTests {
 
 	@Test
@@ -71,7 +69,7 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 		@Bean
 		DataSource dataSource() {
 			HikariDataSource dataSource = new HikariDataSource();
-			dataSource.setJdbcUrl("jdbc:hsqldb:mem:test");
+			dataSource.setJdbcUrl("jdbc:h2:mem:test");
 			dataSource.setUsername("sa");
 			return dataSource;
 		}
