@@ -38,7 +38,6 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junit.platform.commons.support.SearchOption;
 
 import org.springframework.util.StreamUtils;
 
@@ -66,7 +65,7 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 		resourcesOf(testMethod)
 			.forEach((resource) -> resources.addResource(resource.name(), resource.content(), resource.additional()));
 		resourceDirectoriesOf(testMethod).forEach((directory) -> resources.addDirectory(directory.value()));
-		packageResourcesOf(testMethod).forEach((withPackageResources) -> resources
+		packageResourcesOf(testMethod, context).forEach((withPackageResources) -> resources
 			.addPackage(testMethod.getDeclaringClass().getPackage(), withPackageResources.value()));
 		ResourcesClassLoader classLoader = new ResourcesClassLoader(context.getRequiredTestClass().getClassLoader(),
 				resources);
@@ -93,12 +92,11 @@ class ResourcesExtension implements BeforeEachCallback, AfterEachCallback, Param
 		return annotations;
 	}
 
-	private List<WithPackageResources> packageResourcesOf(Method method) {
+	private List<WithPackageResources> packageResourcesOf(Method method, ExtensionContext context) {
 		List<WithPackageResources> annotations = new ArrayList<>();
 		AnnotationSupport.findAnnotation(method, WithPackageResources.class).ifPresent(annotations::add);
 		AnnotationSupport
-			.findAnnotation(method.getDeclaringClass(), WithPackageResources.class,
-					SearchOption.INCLUDE_ENCLOSING_CLASSES)
+			.findAnnotation(method.getDeclaringClass(), WithPackageResources.class, context.getEnclosingTestClasses())
 			.ifPresent(annotations::add);
 		return annotations;
 	}
