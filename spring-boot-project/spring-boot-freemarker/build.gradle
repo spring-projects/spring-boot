@@ -1,0 +1,25 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Freemarker"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.freemarker:freemarker")
+	api("org.springframework:spring-context-support")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("org.springframework:spring-webmvc")
+	optional("org.springframework:spring-webflux")
+	optional("jakarta.servlet:jakarta.servlet-api")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
