@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * @since 2.7.0
  * @see GraphQlTest
  * @see org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
- * @see org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
+ * @see org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
  * @see org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
  */
 @Target(ElementType.TYPE)
