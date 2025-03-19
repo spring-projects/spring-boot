@@ -1,7 +1,7 @@
 # AutoConfigureWebMvc auto-configuration imports
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
-org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration

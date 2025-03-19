@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.freemarker;
+package org.springframework.boot.freemarker.autoconfigure;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @since 1.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.freemarker")
 public class FreeMarkerProperties {
