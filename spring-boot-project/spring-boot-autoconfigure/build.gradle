@@ -29,6 +29,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-web")
 

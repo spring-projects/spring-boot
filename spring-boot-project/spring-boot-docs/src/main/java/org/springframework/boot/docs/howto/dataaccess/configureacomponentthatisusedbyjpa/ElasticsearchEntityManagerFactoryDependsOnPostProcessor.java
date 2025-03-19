@@ -18,7 +18,7 @@ package org.springframework.boot.docs.howto.dataaccess.configureacomponentthatis
 
 import jakarta.persistence.EntityManagerFactory;
 
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.stereotype.Component;
 
 /**

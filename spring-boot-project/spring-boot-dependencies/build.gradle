@@ -2004,6 +2004,7 @@ bom {
 				"spring-boot-jdbc",
 				"spring-boot-jetty",
 				"spring-boot-jms",
+				"spring-boot-jpa",
 				"spring-boot-jsonb",
 				"spring-boot-kafka",
 				"spring-boot-liquibase",

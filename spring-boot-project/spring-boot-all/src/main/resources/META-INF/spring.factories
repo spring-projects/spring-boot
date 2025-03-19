@@ -6,11 +6,6 @@ org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitia
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
 
-# Database Initializer Detectors
-org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
-org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector
-
 # Depends On Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
-org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
-org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
+org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector
