@@ -134,7 +134,6 @@ dependencies {
 	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
-	optional("org.freemarker:freemarker")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet")
 	optional("org.glassfish.jersey.core:jersey-server")
@@ -235,6 +234,7 @@ dependencies {
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
+	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
 	testImplementation(project(":spring-boot-project:spring-boot-jetty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

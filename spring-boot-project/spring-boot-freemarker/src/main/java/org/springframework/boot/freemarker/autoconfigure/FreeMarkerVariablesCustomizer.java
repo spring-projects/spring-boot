@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.freemarker;
+package org.springframework.boot.freemarker.autoconfigure;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
  * before it is used by an auto-configured {@link FreeMarkerConfigurationFactory}.
  *
  * @author Stephane Nicoll
- * @since 3.4.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface FreeMarkerVariablesCustomizer {

@@ -66,6 +66,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.session:spring-session-core")
 
+	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -84,7 +85,6 @@ dependencies {
 	testImplementation("org.springframework:spring-websocket")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("org.freemarker:freemarker")
 
 	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.yaml:snakeyaml")
