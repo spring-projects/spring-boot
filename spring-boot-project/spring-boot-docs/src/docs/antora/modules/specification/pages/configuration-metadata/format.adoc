@@ -14,8 +14,8 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 	},
 	{
 		"name": "spring.jpa.hibernate",
-		"type": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate",
-		"sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties",
+		"type": "org.springframework.boot.jpa.autoconfigure.JpaProperties$Hibernate",
+		"sourceType": "org.springframework.boot.jpa.autoconfigure.JpaProperties",
 		"sourceMethod": "getHibernate()"
 	}
 	...
@@ -34,7 +34,7 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 		  "name": "spring.jpa.hibernate.ddl-auto",
 		  "type": "java.lang.String",
 		  "description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
-		  "sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate"
+		  "sourceType": "org.springframework.boot.jpa.autoconfigure.JpaProperties$Hibernate"
 	}
 	...
 ],"hints": [

@@ -21,20 +21,20 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheManagerEntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheManagerEntityManagerFactoryDependsOnConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheAspectSupport;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
@@ -53,13 +53,15 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  * @see EnableCaching
  */
-@AutoConfiguration(after = { CouchbaseDataAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class, RedisAutoConfiguration.class })
+@AutoConfiguration(
+		after = { CouchbaseDataAutoConfiguration.class, HazelcastAutoConfiguration.class,
+				RedisAutoConfiguration.class },
+		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
-@Import({ CacheConfigurationImportSelector.class, CacheManagerEntityManagerFactoryDependsOnPostProcessor.class })
+@Import({ CacheConfigurationImportSelector.class, CacheManagerEntityManagerFactoryDependsOnConfiguration.class })
 public class CacheAutoConfiguration {
 
 	@Bean
@@ -74,8 +76,15 @@ public class CacheAutoConfiguration {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
-	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ EntityManagerFactoryDependsOnPostProcessor.class,
+			LocalContainerEntityManagerFactoryBean.class })
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+	@Import(CacheManagerEntityManagerFactoryDependsOnPostProcessor.class)
+	static class CacheManagerEntityManagerFactoryDependsOnConfiguration {
+
+	}
+
 	static class CacheManagerEntityManagerFactoryDependsOnPostProcessor
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
