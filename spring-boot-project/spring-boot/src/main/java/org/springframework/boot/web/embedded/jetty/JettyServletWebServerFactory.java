@@ -284,7 +284,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		SameSite sessionSameSite = getSession().getCookie().getSameSite();
-		if (sessionSameSite != null) {
+		if (sessionSameSite != null && sessionSameSite != SameSite.OMITTED) {
 			handler.setSameSite(HttpCookie.SameSite.valueOf(sessionSameSite.name()));
 		}
 		Duration sessionTimeout = getSession().getTimeout();
