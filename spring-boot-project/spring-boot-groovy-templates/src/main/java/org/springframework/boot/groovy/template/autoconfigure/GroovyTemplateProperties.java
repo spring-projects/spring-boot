@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.groovy.template.autoconfigure;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
  *
  * @author Dave Syer
  * @author Marten Deinum
- * @since 1.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.groovy.template")
 public class GroovyTemplateProperties {

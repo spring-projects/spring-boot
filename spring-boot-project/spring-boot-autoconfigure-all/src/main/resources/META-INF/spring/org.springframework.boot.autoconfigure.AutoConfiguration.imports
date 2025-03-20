@@ -48,7 +48,6 @@ org.springframework.boot.autoconfigure.graphql.rsocket.RSocketGraphQlClientAutoC
 org.springframework.boot.autoconfigure.graphql.security.GraphQlWebFluxSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.security.GraphQlWebMvcSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
-org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
 org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration

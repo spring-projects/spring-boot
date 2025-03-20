@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.groovy.template.autoconfigure;
 
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -57,9 +56,9 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Brian Clozel
- * @since 1.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = WebMvcAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnClass(MarkupTemplateEngine.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
