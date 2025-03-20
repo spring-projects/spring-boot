@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.groovy.template.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
  * view templates.
  *
  * @author Dave Syer
- * @since 1.1.0
+ * @since 4.0.0
  */
 public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
 

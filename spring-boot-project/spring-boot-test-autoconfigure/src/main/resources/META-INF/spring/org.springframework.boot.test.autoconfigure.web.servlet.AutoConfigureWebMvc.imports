@@ -2,12 +2,12 @@
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
-org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
+optional:org.springframework.boot.groovy.template.autoconfigure.GroovyTemplateAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
