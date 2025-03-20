@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.groovy.template.autoconfigure;
 
 import java.io.File;
 import java.io.StringWriter;

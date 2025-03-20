@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Groovy templates.
  */
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.groovy.template.autoconfigure;

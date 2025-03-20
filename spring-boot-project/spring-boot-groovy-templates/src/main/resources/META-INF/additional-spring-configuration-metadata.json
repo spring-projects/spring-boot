@@ -1,0 +1,108 @@
+{
+  "properties": [
+    {
+      "name": "spring.groovy.template.configuration.auto-escape",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-escape",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-indent",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-indent",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-indent-string",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-indent-string",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-new-line",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-new-line",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.base-template-class",
+      "deprecation": {
+        "replacement": "spring.groovy.template.base-template-class",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.cache-templates",
+      "deprecation": {
+        "replacement": "spring.groovy.template.cache",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.declaration-encoding",
+      "deprecation": {
+        "replacement": "spring.groovy.template.declaration-encoding",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.expand-empty-elements",
+      "deprecation": {
+        "replacement": "spring.groovy.template.expand-empty-elements",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.locale",
+      "deprecation": {
+        "replacement": "spring.groovy.template.locale",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.new-line-string",
+      "deprecation": {
+        "replacement": "spring.groovy.template.new-line-string",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.resource-loader-path",
+      "deprecation": {
+        "replacement": "spring.groovy.template.resource-loader-path",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.use-double-quotes",
+      "deprecation": {
+        "replacement": "spring.groovy.template.use-double-quotes",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.prefix",
+      "defaultValue": ""
+    },
+    {
+      "name": "spring.groovy.template.suffix",
+      "defaultValue": ".tpl"
+    }
+  ]
+}
