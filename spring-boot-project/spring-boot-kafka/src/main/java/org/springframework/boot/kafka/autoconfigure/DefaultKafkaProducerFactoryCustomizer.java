@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.kafka.autoconfigure;
+
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+
 /**
- * Auto-configuration for Apache Kafka.
+ * Callback interface for customizing {@code DefaultKafkaProducerFactory} beans.
+ *
+ * @author Stephane Nicoll
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.kafka;
+@FunctionalInterface
+public interface DefaultKafkaProducerFactoryCustomizer {
+
+	/**
+	 * Customize the {@link DefaultKafkaProducerFactory}.
+	 * @param producerFactory the producer factory to customize
+	 */
+	void customize(DefaultKafkaProducerFactory<?, ?> producerFactory);
+
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,11 +22,11 @@ import java.util.Map;
 import org.apache.kafka.common.config.SslConfigs;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Admin;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Cleanup;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.IsolationLevel;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Listener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.core.KafkaAdmin;

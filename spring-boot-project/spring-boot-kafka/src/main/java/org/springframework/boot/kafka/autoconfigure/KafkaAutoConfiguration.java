@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -36,11 +36,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails.Configuration;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic.Backoff;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails.Configuration;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Jaas;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry.Topic.Backoff;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -76,7 +76,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Scott Frederick
- * @since 1.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(KafkaTemplate.class)

@@ -109,7 +109,6 @@ dependencies {
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
-	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket")
@@ -222,7 +221,6 @@ dependencies {
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.amqp:spring-rabbit-stream")
-	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.ws:spring-ws-core") {
 		exclude group: "com.sun.mail", module: "jakarta.mail"
 		exclude group: "jakarta.platform", module: "jakarta.jakartaee-api"
@@ -263,7 +261,6 @@ dependencies {
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.postgresql:r2dbc-postgresql")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
-	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")

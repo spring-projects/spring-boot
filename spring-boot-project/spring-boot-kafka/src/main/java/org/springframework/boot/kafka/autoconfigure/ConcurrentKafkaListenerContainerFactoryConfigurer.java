@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.time.Duration;
 import java.util.function.Function;
 
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Listener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -49,7 +49,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  * @author Eddú Meléndez
  * @author Thomas Kåsene
  * @author Moritz Halbritter
- * @since 1.5.0
+ * @since 4.0.0
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
@@ -130,7 +130,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	/**
 	 * Set the {@link ConsumerAwareRebalanceListener} to use.
 	 * @param rebalanceListener the rebalance listener.
-	 * @since 2.2
 	 */
 	void setRebalanceListener(ConsumerAwareRebalanceListener rebalanceListener) {
 		this.rebalanceListener = rebalanceListener;
@@ -139,7 +138,6 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	/**
 	 * Set the {@link CommonErrorHandler} to use.
 	 * @param commonErrorHandler the error handler.
-	 * @since 2.6.0
 	 */
 	public void setCommonErrorHandler(CommonErrorHandler commonErrorHandler) {
 		this.commonErrorHandler = commonErrorHandler;

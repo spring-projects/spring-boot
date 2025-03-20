@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 /**
- * Callback interface for customizing {@code StreamsBuilderFactoryBean} beans.
+ * Callback interface for customizing {@code DefaultKafkaConsumerFactory} beans.
  *
- * @author Eddú Meléndez
- * @since 2.3.2
+ * @author Stephane Nicoll
+ * @since 4.0.0
  */
 @FunctionalInterface
-public interface StreamsBuilderFactoryBeanCustomizer {
+public interface DefaultKafkaConsumerFactoryCustomizer {
 
 	/**
-	 * Customize the {@link StreamsBuilderFactoryBean}.
-	 * @param factoryBean the factory bean to customize
+	 * Customize the {@link DefaultKafkaConsumerFactory}.
+	 * @param consumerFactory the consumer factory to customize
 	 */
-	void customize(StreamsBuilderFactoryBean factoryBean);
+	void customize(DefaultKafkaConsumerFactory<?, ?> consumerFactory);
 
 }

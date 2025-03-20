@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -59,7 +59,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Yanming Zhou
- * @since 1.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.kafka")
 public class KafkaProperties {
