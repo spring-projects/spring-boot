@@ -71,7 +71,7 @@ public class BatchProperties {
 		/**
 		 * Whether to validate the transaction state.
 		 */
-		private Boolean validateTransactionState;
+		private boolean validateTransactionState = true;
 
 		/**
 		 * Transaction isolation level to use when creating job meta-data for new jobs.
@@ -99,7 +99,7 @@ public class BatchProperties {
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
-		public Boolean getValidateTransactionState() {
+		public boolean isValidateTransactionState() {
 			return this.validateTransactionState;
 		}
 

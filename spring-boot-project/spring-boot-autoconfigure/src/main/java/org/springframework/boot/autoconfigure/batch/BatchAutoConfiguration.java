@@ -143,8 +143,7 @@ public class BatchAutoConfiguration {
 
 		@Override
 		protected boolean getValidateTransactionState() {
-			Boolean validateTransactionState = this.properties.getJdbc().getValidateTransactionState();
-			return (validateTransactionState != null) ? validateTransactionState : super.getValidateTransactionState();
+			return this.properties.getJdbc().isValidateTransactionState();
 		}
 
 		@Override
