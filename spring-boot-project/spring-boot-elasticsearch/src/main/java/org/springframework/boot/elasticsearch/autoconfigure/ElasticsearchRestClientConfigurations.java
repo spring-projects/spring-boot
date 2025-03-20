@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.autoconfigure;
 
 import java.net.URI;
 import java.time.Duration;
@@ -42,10 +42,10 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties.Restclient.Ssl;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchProperties.Restclient.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;

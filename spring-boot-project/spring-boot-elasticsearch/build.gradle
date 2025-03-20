@@ -1,0 +1,50 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Elasticsearch"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.elasticsearch.client:elasticsearch-rest-client") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
+
+	optional("co.elastic.clients:elasticsearch-java") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("jakarta.json.bind:jakarta.json.bind-api")
+	optional("org.springframework.data:spring-data-elasticsearch") {
+		exclude group: "org.elasticsearch.client", module: "transport"
+	}
+	optional("io.projectreactor:reactor-core")
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:elasticsearch")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.springframework:spring-web")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

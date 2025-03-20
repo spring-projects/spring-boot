@@ -1,0 +1,84 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.elasticsearch.jest.connection-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.multi-threaded",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable connection requests from multiple execution threads.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.password",
+      "type": "java.lang.String",
+      "description": "Login password.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.proxy.host",
+      "type": "java.lang.String",
+      "description": "Proxy host the HTTP client should use.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.proxy.port",
+      "type": "java.lang.Integer",
+      "description": "Proxy port the HTTP client should use.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.read-timeout",
+      "type": "java.time.Duration",
+      "description": "Read timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.uris",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of the Elasticsearch instances to use.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.jest.username",
+      "type": "java.lang.String",
+      "description": "Login username.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.elasticsearch.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
+      "name": "spring.elasticsearch.webclient.max-in-memory-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Limit on the number of bytes that can be buffered whenever the input stream needs to be aggregated.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Reactive Elasticsearch client no longer uses WebClient."
+      }
+    }
+  ]
+}

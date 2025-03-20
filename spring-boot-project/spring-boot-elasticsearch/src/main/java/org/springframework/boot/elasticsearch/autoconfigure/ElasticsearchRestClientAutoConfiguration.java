@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.autoconfigure;
 
 import org.elasticsearch.client.RestClientBuilder;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientBuilderConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.RestClientSnifferConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientConfigurations.RestClientBuilderConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientConfigurations.RestClientConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientConfigurations.RestClientSnifferConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**

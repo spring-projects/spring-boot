@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Elasticsearch client.
  */
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.autoconfigure;
