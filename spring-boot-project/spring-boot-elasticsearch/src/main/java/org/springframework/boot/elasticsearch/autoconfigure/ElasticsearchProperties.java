@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.autoconfigure;
 
 import java.time.Duration;
 import java.util.ArrayList;

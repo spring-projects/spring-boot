@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.autoconfigure;
 
 import co.elastic.clients.transport.ElasticsearchTransport;
 import org.elasticsearch.client.RestClient;

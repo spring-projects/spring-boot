@@ -131,7 +131,7 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.couchbase.CouchbaseContainer[]
 
-| javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
+| javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.elasticsearch.ElasticsearchContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails[]

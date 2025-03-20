@@ -27,7 +27,9 @@ description = "Spring Boot JSON-B"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("jakarta.json.bind:jakarta.json.bind-api")
+	api("org.eclipse:yasson")
 
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
