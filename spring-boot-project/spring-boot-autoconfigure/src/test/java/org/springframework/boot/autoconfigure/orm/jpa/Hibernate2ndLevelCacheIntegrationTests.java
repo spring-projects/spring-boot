@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
+import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,29 +41,12 @@ class Hibernate2ndLevelCacheIntegrationTests {
 		.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	@WithResource(name = "hazelcast.xml", content = """
-			<hazelcast
-				xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-5.0.xsd"
-				xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<instance-name>default-instance</instance-name>
-				<map name="defaultCache" />
-				<network>
-					<join>
-						<auto-detection enabled="false" />
-						<multicast enabled="false" />
-					</join>
-				</network>
-			</hazelcast>
-			""")
-	void hibernate2ndLevelCacheWithJCacheAndHazelcast() {
-		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
-		String configLocation = "classpath:hazelcast.xml";
+	void hibernate2ndLevelCacheWithJCacheAndEhCache() {
+		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		this.contextRunner
 			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.jcache.config=" + configLocation,
 					"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
-					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
-					"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
+					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn)
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
