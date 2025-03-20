@@ -1996,6 +1996,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
+				"spring-boot-elasticsearch",
 				"spring-boot-flyway",
 				"spring-boot-freemarker",
 				"spring-boot-groovy-templates",

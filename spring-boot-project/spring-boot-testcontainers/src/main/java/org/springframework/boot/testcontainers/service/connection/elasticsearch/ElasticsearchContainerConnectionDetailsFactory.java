@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;

@@ -24,8 +24,8 @@ import org.springframework.boot.actuate.data.elasticsearch.ElasticsearchReactive
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;

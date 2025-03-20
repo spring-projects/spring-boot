@@ -92,7 +92,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
 | Containers named "cassandra" or "bitnami/cassandra"
 
-| javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
+| javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]
 | Containers named "elasticsearch" or "bitnami/elasticsearch"
 
 | javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails[]

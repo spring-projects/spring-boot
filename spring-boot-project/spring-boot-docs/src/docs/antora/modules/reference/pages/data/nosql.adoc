@@ -335,7 +335,7 @@ spring:
 ==== Connecting to Elasticsearch Using RestClient
 
 If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a javadoc:org.springframework.web.client.RestClient[] bean.
-In addition to the properties described previously, to fine-tune the javadoc:org.springframework.web.client.RestClient[] you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer[] for more advanced customizations.
+In addition to the properties described previously, to fine-tune the javadoc:org.springframework.web.client.RestClient[] you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.elasticsearch.autoconfigure.RestClientBuilderCustomizer[] for more advanced customizations.
 To take full control over the clients' configuration, define a javadoc:org.elasticsearch.client.RestClientBuilder[] bean.
 
 
