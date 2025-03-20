@@ -22,6 +22,7 @@ description = "Starter for using Spring for Apache Pulsar Reactive"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-pulsar"))
 	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.springframework.pulsar:spring-pulsar-reactive")
 }

@@ -1,0 +1,2 @@
+org.springframework.boot.pulsar.autoconfigure.PulsarAutoConfiguration
+org.springframework.boot.pulsar.autoconfigure.PulsarReactiveAutoConfiguration

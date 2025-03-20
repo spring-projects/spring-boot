@@ -2012,6 +2012,7 @@ bom {
 				"spring-boot-loader-tools",
 				"spring-boot-mail",
 				"spring-boot-properties-migrator",
+				"spring-boot-pulsar",
 				"spring-boot-reactor-netty",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",

@@ -16,11 +16,11 @@
 
 package org.springframework.boot.docker.compose.service.connection.pulsar;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails;
 import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link PulsarConnectionDetails}

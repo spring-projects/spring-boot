@@ -56,7 +56,6 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:neo4j")
-	dockerTestImplementation("org.testcontainers:pulsar")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
@@ -197,8 +196,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.hateoas:spring-hateoas")
-	optional("org.springframework.pulsar:spring-pulsar")
-	optional("org.springframework.pulsar:spring-pulsar-reactive")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-data")
@@ -261,7 +258,6 @@ dependencies {
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.postgresql:r2dbc-postgresql")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
-	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 
