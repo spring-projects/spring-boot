@@ -37,6 +37,8 @@ runs:
         staging-profile-name: ${{ inputs.ossrh-s01-staging-profile }}
         upload: true
         username: ${{ inputs.ossrh-s01-token-username }}
+        close-timeout: 3600
+        release-timeout: 3600
     - name: Await
       uses: ./.github/actions/await-http-resource
       with:
