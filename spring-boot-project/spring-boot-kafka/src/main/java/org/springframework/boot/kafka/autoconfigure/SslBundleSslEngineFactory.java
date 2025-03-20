@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.io.IOException;
 import java.security.KeyStore;
@@ -34,7 +34,7 @@ import org.springframework.boot.ssl.SslBundle;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
- * @since 3.2.0
+ * @since 4.0.0
  */
 public class SslBundleSslEngineFactory implements SslEngineFactory {
 
