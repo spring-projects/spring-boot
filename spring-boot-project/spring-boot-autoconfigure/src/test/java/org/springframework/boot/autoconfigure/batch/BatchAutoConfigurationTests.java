@@ -90,6 +90,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -107,6 +108,7 @@ import static org.mockito.Mockito.mock;
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
  * @author Lasse Wulff
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -517,6 +519,18 @@ class BatchAutoConfigurationTests {
 				assertThat(context).doesNotHaveBean(ExecutionContextSerializer.class);
 				assertThat(context.getBean(SpringBootBatchConfiguration.class).getExecutionContextSerializer())
 					.isInstanceOf(DefaultExecutionContextSerializer.class);
+			});
+	}
+
+	@Test
+	void customJdbcPropertiesIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.batch.jdbc.validate-transaction-state:false",
+					"spring.batch.jdbc.isolation-level-for-create:READ_COMMITTED")
+			.run((context) -> {
+				SpringBootBatchConfiguration configuration = context.getBean(SpringBootBatchConfiguration.class);
+				assertThat(configuration.getValidateTransactionState()).isEqualTo(false);
+				assertThat(configuration.getIsolationLevelForCreate()).isEqualTo(Isolation.READ_COMMITTED);
 			});
 	}
 

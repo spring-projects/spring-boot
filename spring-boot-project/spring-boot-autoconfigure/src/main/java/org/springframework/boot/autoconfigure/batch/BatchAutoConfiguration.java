@@ -66,6 +66,7 @@ import org.springframework.util.StringUtils;
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
  * @author Lasse Wulff
+ * @author Yanming Zhou
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -138,6 +139,11 @@ public class BatchAutoConfiguration {
 		protected String getTablePrefix() {
 			String tablePrefix = this.properties.getJdbc().getTablePrefix();
 			return (tablePrefix != null) ? tablePrefix : super.getTablePrefix();
+		}
+
+		@Override
+		protected boolean getValidateTransactionState() {
+			return this.properties.getJdbc().isValidateTransactionState();
 		}
 
 		@Override

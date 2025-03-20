@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Isolation;
  * @author Eddú Meléndez
  * @author Vedran Pavic
  * @author Mukul Kumar Chaundhyan
+ * @author Yanming Zhou
  * @since 1.2.0
  */
 @ConfigurationProperties("spring.batch")
@@ -68,6 +69,11 @@ public class BatchProperties {
 				+ "batch/core/schema-@@platform@@.sql";
 
 		/**
+		 * Whether to validate the transaction state.
+		 */
+		private boolean validateTransactionState = true;
+
+		/**
 		 * Transaction isolation level to use when creating job meta-data for new jobs.
 		 */
 		private Isolation isolationLevelForCreate;
@@ -92,6 +98,14 @@ public class BatchProperties {
 		 * Database schema initialization mode.
 		 */
 		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
+
+		public boolean isValidateTransactionState() {
+			return this.validateTransactionState;
+		}
+
+		public void setValidateTransactionState(Boolean validateTransactionState) {
+			this.validateTransactionState = validateTransactionState;
+		}
 
 		public Isolation getIsolationLevelForCreate() {
 			return this.isolationLevelForCreate;
