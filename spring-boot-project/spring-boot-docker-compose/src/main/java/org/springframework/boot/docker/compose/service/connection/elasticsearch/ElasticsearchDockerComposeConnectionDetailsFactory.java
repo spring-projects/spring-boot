@@ -18,11 +18,11 @@ package org.springframework.boot.docker.compose.service.connection.elasticsearch
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails.Node.Protocol;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create

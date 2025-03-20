@@ -36,6 +36,7 @@ dependencies {
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
 
+	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
