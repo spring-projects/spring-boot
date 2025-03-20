@@ -24,7 +24,7 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.annotation.MergedAnnotation;

@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -38,7 +37,8 @@ import org.springframework.context.annotation.Bean;
  * @author Artsiom Yudovin
  * @since 2.1.1
  */
-@AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
+@AutoConfiguration(
+		afterName = "org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration")
 @ConditionalOnClass(RestClient.class)
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
