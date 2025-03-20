@@ -42,6 +42,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.server.webflux.GraphQlSseHandler;
 import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -269,6 +270,24 @@ class GraphQlWebFluxAutoConfigurationTests {
 					.isEqualTo(Duration.ofSeconds(120));
 				assertThat(graphQlWebSocketHandler).extracting("keepAliveDuration").isEqualTo(Duration.ofSeconds(30));
 			});
+	}
+
+	@Test
+	void shouldConfigureSseTimeout() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.timeout=10s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("timeout", Duration.ofSeconds(10));
+		});
+	}
+
+	@Test
+	void shouldConfigureSseKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.keep-alive=5s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("keepAliveDuration", Duration.ofSeconds(5));
+		});
 	}
 
 	@Test

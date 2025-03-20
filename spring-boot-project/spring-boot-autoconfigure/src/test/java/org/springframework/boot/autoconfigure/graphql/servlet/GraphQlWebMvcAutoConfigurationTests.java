@@ -109,6 +109,15 @@ class GraphQlWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureSseKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.keep-alive=5s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("keepAliveDuration", Duration.ofSeconds(5));
+		});
+	}
+
+	@Test
 	void simpleQueryShouldWork() {
 		withMockMvc((mvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";

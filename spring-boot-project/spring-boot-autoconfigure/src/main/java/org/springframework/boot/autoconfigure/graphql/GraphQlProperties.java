@@ -316,9 +316,22 @@ public class GraphQlProperties {
 	public static class Sse {
 
 		/**
+		 * How frequently keep-alive messages should be sent.
+		 */
+		private Duration keepAlive;
+
+		/**
 		 * Time required for concurrent handling to complete.
 		 */
 		private Duration timeout;
+
+		public Duration getKeepAlive() {
+			return this.keepAlive;
+		}
+
+		public void setKeepAlive(Duration keepAlive) {
+			this.keepAlive = keepAlive;
+		}
 
 		public Duration getTimeout() {
 			return this.timeout;

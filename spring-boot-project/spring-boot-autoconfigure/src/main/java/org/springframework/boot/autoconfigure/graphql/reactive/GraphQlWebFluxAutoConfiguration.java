@@ -94,7 +94,8 @@ public class GraphQlWebFluxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
-		return new GraphQlSseHandler(webGraphQlHandler, properties.getHttp().getSse().getTimeout());
+		return new GraphQlSseHandler(webGraphQlHandler, properties.getHttp().getSse().getTimeout(),
+				properties.getHttp().getSse().getKeepAlive());
 	}
 
 	@Bean
