@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;

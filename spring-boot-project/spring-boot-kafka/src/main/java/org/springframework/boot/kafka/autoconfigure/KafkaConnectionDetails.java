@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.kafka;
+package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface KafkaConnectionDetails extends ConnectionDetails {
 
@@ -40,7 +40,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the SSL bundle.
 	 * @return the SSL bundle
-	 * @since 3.5.0
 	 */
 	default SslBundle getSslBundle() {
 		return null;
@@ -49,7 +48,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the security protocol.
 	 * @return the security protocol
-	 * @since 3.5.0
 	 */
 	default String getSecurityProtocol() {
 		return null;
@@ -58,7 +56,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the consumer configuration.
 	 * @return the consumer configuration
-	 * @since 3.5.0
 	 */
 	default Configuration getConsumer() {
 		return Configuration.of(getBootstrapServers(), getSslBundle(), getSecurityProtocol());
@@ -67,7 +64,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the producer configuration.
 	 * @return the producer configuration
-	 * @since 3.5.0
 	 */
 	default Configuration getProducer() {
 		return Configuration.of(getBootstrapServers(), getSslBundle(), getSecurityProtocol());
@@ -76,7 +72,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the admin configuration.
 	 * @return the admin configuration
-	 * @since 3.5.0
 	 */
 	default Configuration getAdmin() {
 		return Configuration.of(getBootstrapServers(), getSslBundle(), getSecurityProtocol());
@@ -85,7 +80,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the Kafka Streams configuration.
 	 * @return the Kafka Streams configuration
-	 * @since 3.5.0
 	 */
 	default Configuration getStreams() {
 		return Configuration.of(getBootstrapServers(), getSslBundle(), getSecurityProtocol());

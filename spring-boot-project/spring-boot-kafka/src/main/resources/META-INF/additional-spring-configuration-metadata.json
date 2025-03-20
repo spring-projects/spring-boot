@@ -1,0 +1,247 @@
+{
+  "properties": [
+     {
+      "name": "spring.kafka.admin.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.admin.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.admin.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.consumer.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.consumer.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.listener.only-log-record-metadata",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to suppress the entire record from being written to the log when retries are being attempted.",
+      "deprecation": {
+        "reason": "Use KafkaUtils#setConsumerRecordFormatter instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.producer.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.producer.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.keystore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.key-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.keystore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the key store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.key-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.truststore-location",
+      "type": "org.springframework.core.io.Resource",
+      "description": "Location of the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.trust-store-location",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.ssl.truststore-password",
+      "type": "java.lang.String",
+      "description": "Store password for the trust store file.",
+      "deprecation": {
+        "replacement": "spring.kafka.ssl.trust-store-password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.streams.cache-max-bytes-buffering",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.kafka.streams.state-store-cache-max-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.kafka.streams.cache-max-size-buffering",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.kafka.streams.state-store-cache-max-size",
+        "level": "error",
+        "since": "3.1.0"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.kafka.consumer.auto-offset-reset",
+      "values": [
+        {
+          "value": "earliest",
+          "description": "Automatically reset the offset to the earliest offset."
+        },
+        {
+          "value": "latest",
+          "description": "Automatically reset the offset to the latest offset."
+        },
+        {
+          "value": "none",
+          "description": "Throw exception to the consumer if no previous offset is found for the consumer's group."
+        },
+        {
+          "value": "exception",
+          "description": "Throw exception to the consumer."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.consumer.key-deserializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Deserializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.consumer.value-deserializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Deserializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.producer.key-serializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Serializer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.kafka.producer.value-serializer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.kafka.common.serialization.Serializer"
+          }
+        }
+      ]
+    }
+  ]
+}
