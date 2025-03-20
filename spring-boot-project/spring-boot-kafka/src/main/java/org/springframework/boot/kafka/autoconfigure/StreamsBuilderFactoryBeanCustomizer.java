@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.kafka.autoconfigure;
+
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+
 /**
- * Auto-configuration for Apache Kafka.
+ * Callback interface for customizing {@code StreamsBuilderFactoryBean} beans.
+ *
+ * @author Eddú Meléndez
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.kafka;
+@FunctionalInterface
+public interface StreamsBuilderFactoryBeanCustomizer {
+
+	/**
+	 * Customize the {@link StreamsBuilderFactoryBean}.
+	 * @param factoryBean the factory bean to customize
+	 */
+	void customize(StreamsBuilderFactoryBean factoryBean);
+
+}
