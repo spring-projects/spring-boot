@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
@@ -111,18 +112,22 @@ public class BatchAutoConfiguration {
 
 		private final ExecutionContextSerializer executionContextSerializer;
 
+		private final JobParametersConverter jobParametersConverter;
+
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
 				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor, BatchProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
-				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
+				ObjectProvider<ExecutionContextSerializer> executionContextSerializer,
+				ObjectProvider<JobParametersConverter> jobParametersConverter) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
 			this.taskExector = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
+			this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 		}
 
 		@Override
@@ -165,6 +170,12 @@ public class BatchAutoConfiguration {
 		protected ExecutionContextSerializer getExecutionContextSerializer() {
 			return (this.executionContextSerializer != null) ? this.executionContextSerializer
 					: super.getExecutionContextSerializer();
+		}
+
+		@Override
+		protected JobParametersConverter getJobParametersConverter() {
+			return (this.jobParametersConverter != null) ? this.jobParametersConverter
+					: super.getJobParametersConverter();
 		}
 
 		@Override
