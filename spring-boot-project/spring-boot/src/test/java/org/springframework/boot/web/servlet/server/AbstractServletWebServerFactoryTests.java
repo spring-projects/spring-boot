@@ -881,7 +881,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "UNSET")
+	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().getCookie().setSameSite(sameSite);
@@ -896,7 +896,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "UNSET")
+	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -950,9 +950,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void cookieSameSiteSuppliersShouldNotAffectUnsetSameSite() throws IOException, URISyntaxException {
+	void cookieSameSiteSuppliersShouldNotAffectOmittedSameSite() throws IOException, URISyntaxException {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.getSession().getCookie().setSameSite(SameSite.UNSET);
+		factory.getSession().getCookie().setSameSite(SameSite.OMITTED);
 		factory.getSession().getCookie().setName("SESSIONCOOKIE");
 		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofStrict());
 		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(false), "/"));

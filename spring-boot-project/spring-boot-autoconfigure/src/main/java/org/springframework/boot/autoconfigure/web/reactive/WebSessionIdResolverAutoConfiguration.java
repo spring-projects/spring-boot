@@ -77,8 +77,7 @@ public class WebSessionIdResolverAutoConfiguration {
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
 		map.from(cookie::getPartitioned).to(builder::partitioned);
-		map.from(cookie::getSameSite)
-			.to(((sameSite) -> builder.sameSite((sameSite == SameSite.UNSET) ? null : sameSite.attributeValue())));
+		map.from(cookie::getSameSite).as(SameSite::attributeValue).to(builder::sameSite);
 	}
 
 }

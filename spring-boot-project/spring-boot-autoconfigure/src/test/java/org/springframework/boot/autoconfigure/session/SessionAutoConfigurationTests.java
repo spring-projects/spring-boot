@@ -171,9 +171,9 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	}
 
 	@Test
-	void sessionCookieSameSiteUnsetIsAppliedToAutoConfiguredCookieSerializer() {
+	void sessionCookieSameSiteOmittedIsAppliedToAutoConfiguredCookieSerializer() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-			.withPropertyValues("server.servlet.session.cookie.sameSite=unset")
+			.withPropertyValues("server.servlet.session.cookie.sameSite=omitted")
 			.run((context) -> {
 				DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
 				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", null);

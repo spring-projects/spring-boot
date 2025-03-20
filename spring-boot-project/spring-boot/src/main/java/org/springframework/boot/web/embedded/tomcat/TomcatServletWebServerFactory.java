@@ -998,11 +998,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		@Override
 		public String generateHeader(Cookie cookie, HttpServletRequest request) {
 			SameSite sameSite = getSameSite(cookie);
-			if (sameSite == null || sameSite == SameSite.UNSET) {
+			String sameSiteValue = (sameSite != null) ? sameSite.attributeValue() : null;
+			if (sameSiteValue == null) {
 				return super.generateHeader(cookie, request);
 			}
 			Rfc6265CookieProcessor delegate = new Rfc6265CookieProcessor();
-			delegate.setSameSiteCookies(sameSite.attributeValue());
+			delegate.setSameSiteCookies(sameSiteValue);
 			return delegate.generateHeader(cookie, request);
 		}
 

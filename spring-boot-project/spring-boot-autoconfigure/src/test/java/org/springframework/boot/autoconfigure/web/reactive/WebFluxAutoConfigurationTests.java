@@ -677,8 +677,8 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void sessionCookieUnsetConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("server.reactive.session.cookie.same-site:unset")
+	void sessionCookieOmittedConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("server.reactive.session.cookie.same-site:omitted")
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("SESSION");
 				assertThat(cookies).extracting(ResponseCookie::getSameSite).containsOnlyNulls();
