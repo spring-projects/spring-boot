@@ -1,0 +1,31 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Pulsar"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework.pulsar:spring-pulsar")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:pulsar")
+
+	optional("org.springframework.pulsar:spring-pulsar-reactive")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.github.ben-manes.caffeine:caffeine")
+	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
