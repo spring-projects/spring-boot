@@ -39,6 +39,9 @@ import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.converter.DefaultJobParametersConverter;
+import org.springframework.batch.core.converter.JobParametersConverter;
+import org.springframework.batch.core.converter.JsonJobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -107,6 +110,7 @@ import static org.mockito.Mockito.mock;
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
  * @author Lasse Wulff
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -518,6 +522,27 @@ class BatchAutoConfigurationTests {
 				assertThat(context.getBean(SpringBootBatchConfiguration.class).getExecutionContextSerializer())
 					.isInstanceOf(DefaultExecutionContextSerializer.class);
 			});
+	}
+
+	@Test
+	void customJobParametersConverterIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withBean(JobParametersConverter.class, JsonJobParametersConverter::new)
+			.withPropertyValues("spring.datasource.generate-unique-name=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JsonJobParametersConverter.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getJobParametersConverter())
+					.isInstanceOf(JsonJobParametersConverter.class);
+			});
+	}
+
+	@Test
+	void defaultJobParametersConverterIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(JobParametersConverter.class);
+			assertThat(context.getBean(SpringBootBatchConfiguration.class).getJobParametersConverter())
+				.isInstanceOf(DefaultJobParametersConverter.class);
+		});
 	}
 
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
