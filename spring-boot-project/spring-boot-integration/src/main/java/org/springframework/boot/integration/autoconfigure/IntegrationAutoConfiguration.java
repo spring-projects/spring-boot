@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;
+package org.springframework.boot.integration.autoconfigure;
 
 import java.time.Duration;
 
@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.ApplicationContext;
@@ -263,7 +264,7 @@ public class IntegrationAutoConfiguration {
 	 * Integration JDBC configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(JdbcMessageStore.class)
+	@ConditionalOnClass({ JdbcMessageStore.class, DataSourceScriptDatabaseInitializer.class })
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Conditional(OnIntegrationDatasourceInitializationCondition.class)
 	protected static class IntegrationJdbcConfiguration {

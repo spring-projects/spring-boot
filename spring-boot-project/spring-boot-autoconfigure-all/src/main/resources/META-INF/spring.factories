@@ -1,7 +1,3 @@
-# Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
-org.springframework.boot.autoconfigure.integration.IntegrationPropertiesEnvironmentPostProcessor
-
 # Background Preinitializers
 org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
 org.springframework.boot.autoconfigure.http.MessageConverterBackgroundPreinitializer
