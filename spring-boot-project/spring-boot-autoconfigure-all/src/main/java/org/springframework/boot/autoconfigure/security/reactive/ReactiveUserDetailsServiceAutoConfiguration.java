@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +56,8 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class, after = RSocketMessagingAutoConfiguration.class)
+@AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class,
+		afterName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration")
 @ConditionalOnClass({ ReactiveAuthenticationManager.class })
 @ConditionalOnMissingBean(
 		value = { ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class,
