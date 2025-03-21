@@ -1,0 +1,4 @@
+org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
+org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
+org.springframework.boot.r2dbc.autoconfigure.R2dbcProxyAutoConfiguration
+org.springframework.boot.r2dbc.autoconfigure.R2dbcTransactionManagerAutoConfiguration

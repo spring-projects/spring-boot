@@ -45,6 +45,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-liquibase")) {
 		exclude(group: "org.liquibase")
 	}
+	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional("jakarta.json.bind:jakarta.json.bind-api")
