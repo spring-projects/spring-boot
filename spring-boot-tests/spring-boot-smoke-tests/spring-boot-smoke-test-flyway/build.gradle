@@ -25,8 +25,8 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-jpa"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
+	runtimeOnly(project(":spring-boot-project:spring-boot-flyway"))
 	runtimeOnly("com.h2database:h2")
-	runtimeOnly("org.flywaydb:flyway-core")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

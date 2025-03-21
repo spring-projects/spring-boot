@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -38,7 +38,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Chris Bono
- * @since 1.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.flyway")
 public class FlywayProperties {

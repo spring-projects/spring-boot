@@ -36,6 +36,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
+	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
@@ -110,7 +111,6 @@ dependencies {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
-	optional("org.flywaydb:flyway-core")
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.glassfish.jersey.ext:jersey-micrometer")

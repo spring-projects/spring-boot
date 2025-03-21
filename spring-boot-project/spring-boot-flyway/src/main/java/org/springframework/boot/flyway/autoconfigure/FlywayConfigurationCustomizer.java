@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 
@@ -23,7 +23,7 @@ import org.flywaydb.core.api.configuration.FluentConfiguration;
  * configuration.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface FlywayConfigurationCustomizer {

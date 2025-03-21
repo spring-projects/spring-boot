@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.flyway;
 
-import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.flyway.autoconfigure.FlywayConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;

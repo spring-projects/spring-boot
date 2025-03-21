@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import java.sql.DatabaseMetaData;
 import java.time.Duration;
@@ -50,20 +50,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
-import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Oracle;
-import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Postgresql;
-import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Sqlserver;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.FlywayDataSourceCondition;
+import org.springframework.boot.flyway.autoconfigure.FlywayProperties.Oracle;
+import org.springframework.boot.flyway.autoconfigure.FlywayProperties.Postgresql;
+import org.springframework.boot.flyway.autoconfigure.FlywayProperties.Sqlserver;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
-import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -100,10 +98,9 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @since 1.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
 @ConditionalOnBooleanProperty(name = "spring.flyway.enabled", matchIfMissing = true)

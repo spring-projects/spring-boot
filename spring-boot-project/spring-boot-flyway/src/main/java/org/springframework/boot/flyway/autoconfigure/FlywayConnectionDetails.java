@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -23,7 +23,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
  * Details required for Flyway to establish a connection to an SQL service using JDBC.
  *
  * @author Andy Wilkinson
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface FlywayConnectionDetails extends ConnectionDetails {
 

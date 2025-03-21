@@ -1995,6 +1995,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
+				"spring-boot-flyway",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
 				"spring-boot-jdbc",

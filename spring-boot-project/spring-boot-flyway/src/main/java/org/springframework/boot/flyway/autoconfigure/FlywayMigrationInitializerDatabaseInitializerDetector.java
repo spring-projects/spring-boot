@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import java.util.Collections;
 import java.util.Set;

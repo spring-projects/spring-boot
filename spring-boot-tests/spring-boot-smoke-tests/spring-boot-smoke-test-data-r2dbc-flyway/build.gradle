@@ -32,8 +32,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-r2dbc"))
 
-	runtimeOnly(project(":spring-boot-project:spring-boot-jdbc"))
-	runtimeOnly("org.flywaydb:flyway-core")
+	runtimeOnly(project(":spring-boot-project:spring-boot-flyway"))
 	runtimeOnly("org.flywaydb:flyway-database-postgresql")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import java.io.Serializable;
 import java.lang.annotation.ElementType;
@@ -61,16 +61,14 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.SchemaManagement;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
@@ -490,36 +488,6 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJpaConfiguration.class)
 			.run((context) -> assertThat(context).hasNotFailed());
-	}
-
-	@Test
-	@WithMetaInfPersistenceXmlResource
-	void jpaApplyDdl() {
-		this.contextRunner
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class))
-			.run((context) -> {
-				Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
-					.getJpaPropertyMap();
-				assertThat(jpaProperties).doesNotContainKey("hibernate.hbm2ddl.auto");
-			});
-	}
-
-	@Test
-	@WithMetaInfPersistenceXmlResource
-	void jpaAndMultipleDataSourcesApplyDdl() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
-			.withUserConfiguration(JpaWithMultipleDataSourcesConfiguration.class)
-			.run((context) -> {
-				LocalContainerEntityManagerFactoryBean normalEntityManagerFactoryBean = context
-					.getBean("&normalEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
-				assertThat(normalEntityManagerFactoryBean.getJpaPropertyMap()).containsEntry("configured", "normal")
-					.containsEntry("hibernate.hbm2ddl.auto", "create-drop");
-				LocalContainerEntityManagerFactoryBean flywayEntityManagerFactoryBean = context
-					.getBean("&flywayEntityManagerFactory", LocalContainerEntityManagerFactoryBean.class);
-				assertThat(flywayEntityManagerFactoryBean.getJpaPropertyMap()).containsEntry("configured", "flyway")
-					.doesNotContainKey("hibernate.hbm2ddl.auto");
-			});
 	}
 
 	@Test
@@ -957,9 +925,9 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void overrideLoggers() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.loggers=log4j2")
+			.withPropertyValues("spring.flyway.loggers=apache-commons")
 			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
-				.containsExactly("log4j2"));
+				.containsExactly("apache-commons"));
 	}
 
 	@Test
@@ -1439,7 +1407,7 @@ class FlywayAutoConfigurationTests {
 					<?xml version="1.0" encoding="UTF-8"?>
 					<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence https://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 						<persistence-unit name="manually-configured">
-							<class>org.springframework.boot.autoconfigure.flyway.FlywayAutoConfigurationTests$City</class>
+							<class>org.springframework.boot.flyway.autoconfigure.FlywayAutoConfigurationTests$City</class>
 							<exclude-unlisted-classes>true</exclude-unlisted-classes>
 						</persistence-unit>
 					</persistence>

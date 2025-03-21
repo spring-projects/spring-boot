@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;
+package org.springframework.boot.flyway.autoconfigure;
 
 import org.flywaydb.core.Flyway;
 
@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  * {@link FlywayMigrationStrategy}.
  *
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 4.0.0
  */
 public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 
