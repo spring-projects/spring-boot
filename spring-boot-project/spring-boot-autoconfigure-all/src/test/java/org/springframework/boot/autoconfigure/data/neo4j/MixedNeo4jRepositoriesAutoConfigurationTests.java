@@ -25,13 +25,13 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.internal.logging.Slf4jLogging;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.city.City;
-import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
+import org.springframework.boot.autoconfigure.data.alt.jpa.City;
+import org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.empty.EmptyMarker;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -75,26 +75,26 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	void testMixedRepositoryConfiguration() {
 		load(MixedConfiguration.class);
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityJpaRepository.class)).isNotNull();
 	}
 
 	@Test
 	void testJpaRepositoryConfigurationWithNeo4jTemplate() {
 		load(JpaConfiguration.class);
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityJpaRepository.class)).isNotNull();
 	}
 
 	@Test
 	@Disabled
 	void testJpaRepositoryConfigurationWithNeo4jOverlap() {
 		load(OverlapConfiguration.class);
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityJpaRepository.class)).isNotNull();
 	}
 
 	@Test
 	void testJpaRepositoryConfigurationWithNeo4jOverlapDisabled() {
 		load(OverlapConfiguration.class, "spring.data.neo4j.repositories.enabled:false");
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityJpaRepository.class)).isNotNull();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -128,7 +128,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
-	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
+	@EnableJpaRepositories(basePackageClasses = CityJpaRepository.class)
 	static class MixedConfiguration extends AbstractNeo4jConfig {
 
 		@Override
@@ -143,7 +143,7 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EntityScan(basePackageClasses = City.class)
-	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
+	@EnableJpaRepositories(basePackageClasses = CityJpaRepository.class)
 	static class JpaConfiguration {
 
 	}
@@ -151,8 +151,8 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Neo4j will try and configure the same repositories
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(CityRepository.class)
-	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
+	@TestAutoConfigurationPackage(CityJpaRepository.class)
+	@EnableJpaRepositories(basePackageClasses = CityJpaRepository.class)
 	static class OverlapConfiguration {
 
 	}

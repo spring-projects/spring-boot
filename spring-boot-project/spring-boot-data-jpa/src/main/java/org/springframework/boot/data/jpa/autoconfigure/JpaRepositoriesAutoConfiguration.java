@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa;
+package org.springframework.boot.data.jpa.autoconfigure;
 
 import java.util.Map;
 
@@ -28,8 +28,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -68,7 +68,7 @@ import org.springframework.util.ClassUtils;
  * @author Josh Long
  * @author Scott Frederick
  * @author Stefano Cordio
- * @since 1.0.0
+ * @since 4.0.0
  * @see EnableJpaRepositories
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
