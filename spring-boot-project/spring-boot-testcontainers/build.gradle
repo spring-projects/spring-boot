@@ -13,6 +13,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	api("org.testcontainers:testcontainers")
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
@@ -32,7 +33,6 @@ dependencies {
 	}
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
-	dockerTestImplementation("org.flywaydb:flyway-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
 	dockerTestImplementation("org.liquibase:liquibase-core") {
@@ -60,6 +60,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.springframework:spring-test")

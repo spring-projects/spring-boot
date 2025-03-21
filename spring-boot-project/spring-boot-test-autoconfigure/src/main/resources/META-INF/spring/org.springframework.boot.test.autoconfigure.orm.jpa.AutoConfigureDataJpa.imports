@@ -1,6 +1,5 @@
 # AutoConfigureDataJpa auto-configuration imports
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
@@ -9,4 +8,5 @@ org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConf
 org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration
 org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+optional:org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
