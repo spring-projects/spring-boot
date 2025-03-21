@@ -1,0 +1,36 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Flyway"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-jdbc"))
+	api("org.flywaydb:flyway-core")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("org.flywaydb:flyway-database-oracle")
+	optional("org.flywaydb:flyway-database-postgresql")
+	optional("org.flywaydb:flyway-sqlserver")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("jakarta.persistence:jakarta.persistence-api")
+	testImplementation("org.hibernate.orm:hibernate-core")
+	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.jooq:jooq") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+	testImplementation("org.postgresql:postgresql")
+	testImplementation("org.springframework:spring-orm")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("com.zaxxer:HikariCP")
+	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
+}

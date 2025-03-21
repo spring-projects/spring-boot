@@ -1,6 +1,3 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider$FreeMarkerTemplateAvailabilityRuntimeHints,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider$GroovyTemplateAvailabilityRuntimeHints
-
-org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
-org.springframework.boot.autoconfigure.flyway.ResourceProviderCustomizerBeanRegistrationAotProcessor
