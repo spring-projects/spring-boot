@@ -103,6 +103,7 @@ import static org.mockito.Mockito.mock;
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
  * @author Lasse Wulff
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
