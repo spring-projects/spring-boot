@@ -1,0 +1,2 @@
+org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration
+org.springframework.boot.hazelcast.autoconfigure.HazelcastJpaDependencyAutoConfiguration

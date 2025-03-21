@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.hazelcast.autoconfigure;
+
+import com.hazelcast.client.config.ClientConfig;
+
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+
 /**
- * Auto-configuration for Hazelcast.
+ * Details required to establish a client connection to a Hazelcast instance.
+ *
+ * @author Dmytro Nosan
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.hazelcast;
+public interface HazelcastConnectionDetails extends ConnectionDetails {
+
+	/**
+	 * The {@link ClientConfig} for Hazelcast client.
+	 * @return the client config
+	 */
+	ClientConfig getClientConfig();
+
+}
