@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.server.WebsocketServerSpec;
 
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
+import org.springframework.boot.rsocket.autoconfigure.RSocketProperties.Server.Spec;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

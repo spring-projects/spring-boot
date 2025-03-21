@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.rsocket.autoconfigure;
+
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+
 /**
- * Auto-configuration for RSocket.
+ * Callback interface that can be used to customize a {@link RSocketMessageHandler}.
+ *
+ * @author Aarti Gupta
+ * @author Madhura Bhave
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.rsocket;
+@FunctionalInterface
+public interface RSocketMessageHandlerCustomizer {
+
+	/**
+	 * Customize the {@link RSocketMessageHandler}.
+	 * @param messageHandler the message handler to customize
+	 */
+	void customize(RSocketMessageHandler messageHandler);
+
+}

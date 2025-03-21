@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
@@ -33,7 +33,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * Messaging.
  *
  * @author Brian Clozel
- * @since 2.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
 @ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocket.class, TcpServerTransport.class })

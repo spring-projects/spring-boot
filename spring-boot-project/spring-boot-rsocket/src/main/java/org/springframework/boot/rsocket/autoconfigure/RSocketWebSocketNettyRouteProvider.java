@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import java.util.List;
 import java.util.function.Consumer;

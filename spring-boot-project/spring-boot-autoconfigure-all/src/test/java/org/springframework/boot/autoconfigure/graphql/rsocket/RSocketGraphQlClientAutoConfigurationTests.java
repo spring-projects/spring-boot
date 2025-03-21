@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.graphql.rsocket;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration;
-import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
+import org.springframework.boot.rsocket.autoconfigure.RSocketRequesterAutoConfiguration;
+import org.springframework.boot.rsocket.autoconfigure.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

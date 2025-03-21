@@ -41,8 +41,6 @@ dependencies {
 	optional("io.projectreactor:reactor-tools")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-pool")
-	optional("io.rsocket:rsocket-core")
-	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")

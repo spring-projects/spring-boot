@@ -25,7 +25,6 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -37,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxProperties;
-import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.autoconfigure.thread.Threading;
@@ -88,7 +86,8 @@ import org.springframework.util.StringUtils;
  * @author Yanming Zhou
  * @since 1.1.0
  */
-@AutoConfiguration(after = { JmxAutoConfiguration.class, TaskSchedulingAutoConfiguration.class },
+@AutoConfiguration(beforeName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration",
+		after = { JmxAutoConfiguration.class, TaskSchedulingAutoConfiguration.class },
 		afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
@@ -310,7 +309,6 @@ public class IntegrationAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(TcpServerTransport.class)
-		@AutoConfigureBefore(RSocketMessagingAutoConfiguration.class)
 		protected static class IntegrationRSocketServerConfiguration {
 
 			@Bean

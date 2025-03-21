@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import java.util.function.Consumer;
 
@@ -33,10 +33,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.reactor.netty.autoconfigure.ReactorNettyConfigurations;
+import org.springframework.boot.rsocket.autoconfigure.RSocketProperties.Server.Spec;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -61,7 +61,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Scott Frederick
- * @since 2.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
 @ConditionalOnClass({ RSocketServer.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })

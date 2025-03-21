@@ -66,10 +66,6 @@ org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
-org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration
-org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration
-org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration
-org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration

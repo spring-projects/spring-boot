@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
-import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
@@ -45,7 +44,8 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * @author Brian Clozel
  * @since 2.7.0
  */
-@AutoConfiguration(after = { GraphQlAutoConfiguration.class, RSocketMessagingAutoConfiguration.class })
+@AutoConfiguration(after = GraphQlAutoConfiguration.class,
+		afterName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration")
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, RSocketServer.class, HttpServer.class })
 @ConditionalOnBean({ RSocketMessageHandler.class, AnnotatedControllerConfigurer.class })
 @ConditionalOnProperty("spring.graphql.rsocket.mapping")

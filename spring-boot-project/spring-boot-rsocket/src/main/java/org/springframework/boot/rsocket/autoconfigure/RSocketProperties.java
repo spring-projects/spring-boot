@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import java.net.InetAddress;
 
@@ -29,7 +29,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Chris Bono
- * @since 2.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.rsocket")
 public class RSocketProperties {

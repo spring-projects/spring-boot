@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
@@ -39,7 +39,7 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RSocketStrategies}.
  *
  * @author Brian Clozel
- * @since 2.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass({ io.rsocket.RSocket.class, RSocketStrategies.class, PooledByteBufAllocator.class })

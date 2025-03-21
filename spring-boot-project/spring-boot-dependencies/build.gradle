@@ -2017,6 +2017,7 @@ bom {
 				"spring-boot-pulsar",
 				"spring-boot-r2dbc",
 				"spring-boot-reactor-netty",
+				"spring-boot-rsocket",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",
 				"spring-boot-starter-actuator",

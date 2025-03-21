@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.rsocket;
+package org.springframework.boot.rsocket.autoconfigure;
 
 import java.net.URI;
 import java.time.Duration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -37,12 +35,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,14 +57,13 @@ class RSocketWebSocketNettyRouteProviderTests {
 	@Test
 	void webEndpointsShouldWork() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
-					ErrorWebFluxAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-					JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
 					RSocketStrategiesAutoConfiguration.class, RSocketServerAutoConfiguration.class,
 					RSocketMessagingAutoConfiguration.class, RSocketRequesterAutoConfiguration.class))
 			.withUserConfiguration(WebConfiguration.class)
 			.withPropertyValues("spring.rsocket.server.transport=websocket",
 					"spring.rsocket.server.mapping-path=/rsocket")
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
 				ReactiveWebServerApplicationContext serverContext = (ReactiveWebServerApplicationContext) context
 					.getSourceApplicationContext();
@@ -99,8 +99,14 @@ class RSocketWebSocketNettyRouteProviderTests {
 			.websocket(URI.create("ws://localhost:" + port + "/rsocket"));
 	}
 
+	@EnableWebFlux
 	@Configuration(proxyBeanMethods = false)
 	static class WebConfiguration {
+
+		@Bean
+		HttpHandler httpHandler(ApplicationContext context) {
+			return WebHttpHandlerBuilder.applicationContext(context).build();
+		}
 
 		@Bean
 		WebController webController() {
@@ -112,6 +118,17 @@ class RSocketWebSocketNettyRouteProviderTests {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
+		}
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper();
+		}
+
+		@Bean
+		@SuppressWarnings({ "removal", "deprecation" })
+		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder() {
+			return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
 		}
 
 	}
