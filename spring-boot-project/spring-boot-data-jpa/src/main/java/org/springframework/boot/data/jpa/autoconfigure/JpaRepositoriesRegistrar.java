@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa;
+package org.springframework.boot.data.jpa.autoconfigure;
 
 import java.lang.annotation.Annotation;
 import java.util.Locale;

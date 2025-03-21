@@ -1993,6 +1993,7 @@ bom {
 				"spring-boot-buildpack-platform",
 				"spring-boot-configuration-metadata",
 				"spring-boot-configuration-processor",
+				"spring-boot-data-jpa",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-elasticsearch",

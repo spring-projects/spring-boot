@@ -32,6 +32,7 @@ dependencies {
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-web")
+	optional("org.springframework.data:spring-data-commons")
 
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-test"))
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

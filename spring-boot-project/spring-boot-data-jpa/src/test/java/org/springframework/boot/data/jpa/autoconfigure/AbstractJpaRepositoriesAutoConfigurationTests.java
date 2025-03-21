@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa;
+package org.springframework.boot.data.jpa.autoconfigure;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
@@ -22,21 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
-import org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository;
-import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
-import org.springframework.boot.autoconfigure.data.jpa.city.City;
-import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
-import org.springframework.boot.autoconfigure.data.jpa.country.Country;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.data.jpa.autoconfigure.domain.city.City;
+import org.springframework.boot.data.jpa.autoconfigure.domain.city.CityRepository;
+import org.springframework.boot.data.jpa.autoconfigure.domain.country.Country;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -74,7 +69,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 	@Test
 	void testOverrideRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CityJpaRepository.class);
+			assertThat(context).hasSingleBean(CityRepository.class);
 			assertThat(context).hasSingleBean(PlatformTransactionManager.class);
 			assertThat(context).hasSingleBean(EntityManagerFactory.class);
 		});
@@ -163,10 +158,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(
-			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
-			excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
-					@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityElasticsearchDbRepository.class) })
+	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	@TestAutoConfigurationPackage(City.class)
 	static class CustomConfiguration {
 

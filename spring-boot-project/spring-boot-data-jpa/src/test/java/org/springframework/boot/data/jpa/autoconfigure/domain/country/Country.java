@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.country;
+package org.springframework.boot.data.jpa.autoconfigure.domain.country;
 
 import java.io.Serializable;
 

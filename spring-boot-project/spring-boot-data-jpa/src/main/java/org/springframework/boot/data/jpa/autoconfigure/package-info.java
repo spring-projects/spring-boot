@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.country;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.history.RevisionRepository;
-
-public interface CountryRepository extends JpaRepository<Country, Long>, RevisionRepository<Country, Long, Integer> {
-
-}
+/**
+ * Auto-configuration for Spring Data JPA.
+ */
+package org.springframework.boot.data.jpa.autoconfigure;
