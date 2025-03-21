@@ -129,7 +129,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Hazelcast.
 	 */
-	HAZELCAST("hazelcast/hazelcast", "5.5.0-slim", () -> HazelcastContainer.class),
+	HAZELCAST("hazelcast/hazelcast", "5.5.0-slim-jdk17", () -> HazelcastContainer.class),
 
 	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.
