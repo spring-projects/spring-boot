@@ -172,7 +172,6 @@ dependencies {
 	optional("org.springframework:spring-websocket")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
-	optional("org.springframework.batch:spring-batch-core")
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
