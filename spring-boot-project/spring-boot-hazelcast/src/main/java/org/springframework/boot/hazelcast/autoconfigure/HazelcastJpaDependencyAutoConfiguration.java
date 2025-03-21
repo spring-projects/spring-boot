@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import com.hazelcast.core.HazelcastInstance;
 import jakarta.persistence.EntityManagerFactory;
@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfiguration.HazelcastInstanceEntityManagerFactoryDependsOnConfiguration;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastJpaDependencyAutoConfiguration.HazelcastInstanceEntityManagerFactoryDependsOnConfiguration;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +36,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * the {@code hazelcastInstance} bean.
  *
  * @author Stephane Nicoll
- * @since 1.3.2
+ * @since 4.0.0
  */
 @AutoConfiguration(after = HazelcastAutoConfiguration.class,
 		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")

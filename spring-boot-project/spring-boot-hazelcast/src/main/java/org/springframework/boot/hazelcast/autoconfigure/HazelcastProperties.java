@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
  * Configuration properties for the hazelcast integration.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.hazelcast")
 public class HazelcastProperties {

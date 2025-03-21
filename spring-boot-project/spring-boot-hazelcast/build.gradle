@@ -1,0 +1,25 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Hazelcast"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("com.hazelcast:hazelcast")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-jpa"))
+	optional("com.hazelcast:hazelcast-spring")
+	optional("org.slf4j:slf4j-api")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
