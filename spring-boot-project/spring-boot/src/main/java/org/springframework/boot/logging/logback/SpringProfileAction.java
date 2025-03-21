@@ -22,8 +22,8 @@ import ch.qos.logback.core.model.Model;
 import org.xml.sax.Attributes;
 
 /**
- * Logback {@link BaseModelAction} for {@code <springProfile>} tags. Allows a section of
- * a Logback configuration to only be enabled when a specific profile is active.
+ * Logback {@link BaseModelAction} for {@code <springProfile>} tags. Allows a section of a
+ * Logback configuration to only be enabled when a specific profile is active.
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
