@@ -1,0 +1,10 @@
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.r2dbc.autoconfigure.ConnectionFactoryBeanCreationFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.MissingR2dbcPoolDependencyFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.MultipleConnectionPoolConfigurationsFailureAnalyzer,\
+org.springframework.boot.r2dbc.autoconfigure.NoConnectionFactoryBeanFailureAnalyzer

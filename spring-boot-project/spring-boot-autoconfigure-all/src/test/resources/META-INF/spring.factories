@@ -1,1 +1,0 @@
-org.springframework.r2dbc.core.binding.BindMarkersFactoryResolver$BindMarkerFactoryProvider=org.springframework.boot.autoconfigure.r2dbc.SimpleBindMarkerFactoryProvider

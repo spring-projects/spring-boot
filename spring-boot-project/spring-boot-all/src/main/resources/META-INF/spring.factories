@@ -8,8 +8,7 @@ org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
 
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
-org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
-org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector
 
 # Depends On Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
