@@ -51,7 +51,6 @@ import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider.MockCacheManager;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -97,7 +96,6 @@ import static org.mockito.Mockito.times;
  * @author Mark Paluch
  * @author Ryon Day
  */
-@ClassPathExclusions("hazelcast-client-*.jar")
 class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
