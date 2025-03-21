@@ -1,0 +1,43 @@
+{
+  "properties": [
+    {
+      "name": "spring.batch.initialize-schema",
+      "type": "org.springframework.boot.sql.init.DatabaseInitializationMode",
+      "deprecation": {
+        "replacement": "spring.batch.jdbc.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.batch.initializer.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
+      "deprecation": {
+        "replacement": "spring.batch.jdbc.initialize-schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.batch.job.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Execute all Spring Batch jobs in the context on startup.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.batch.schema",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.batch.jdbc.schema",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.batch.table-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.batch.jdbc.table-prefix",
+        "level": "error"
+      }
+    }
+  ]
+}
