@@ -428,7 +428,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	@Test
 	void jCacheCacheWithConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		this.contextRunner.withUserConfiguration(JCacheCustomConfiguration.class)
 			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
 					"spring.cache.jcache.config=" + configLocation)
@@ -499,7 +499,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
 	void hazelcastCacheWithHazelcastAutoConfiguration() {
-		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		String hazelcastConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
 			.withUserConfiguration(DefaultCacheConfiguration.class)
 			.withPropertyValues("spring.cache.type=hazelcast", "spring.hazelcast.config=" + hazelcastConfig)
