@@ -1,0 +1,4 @@
+org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration
+org.springframework.boot.rsocket.autoconfigure.RSocketRequesterAutoConfiguration
+org.springframework.boot.rsocket.autoconfigure.RSocketServerAutoConfiguration
+org.springframework.boot.rsocket.autoconfigure.RSocketStrategiesAutoConfiguration
