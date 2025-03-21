@@ -51,7 +51,6 @@ org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfi
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
-org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration
 org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;
+package org.springframework.boot.integration.autoconfigure;
 
 import java.io.FileNotFoundException;
 import java.lang.reflect.Modifier;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import io.lettuce.core.dynamic.support.ReflectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -48,6 +47,7 @@ import org.springframework.integration.context.IntegrationProperties;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -160,11 +160,11 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 	@MethodSource("mappedConfigurationProperties")
 	@ParameterizedTest
 	void mappedPropertiesExistOnBootsIntegrationProperties(String mapping) {
-		Bindable<org.springframework.boot.autoconfigure.integration.IntegrationProperties> bindable = Bindable
-			.of(org.springframework.boot.autoconfigure.integration.IntegrationProperties.class);
+		Bindable<org.springframework.boot.integration.autoconfigure.IntegrationProperties> bindable = Bindable
+			.of(org.springframework.boot.integration.autoconfigure.IntegrationProperties.class);
 		MockEnvironment environment = new MockEnvironment().withProperty(mapping,
 				(mapping.contains("max") || mapping.contains("timeout")) ? "1" : "true");
-		BindResult<org.springframework.boot.autoconfigure.integration.IntegrationProperties> result = Binder
+		BindResult<org.springframework.boot.integration.autoconfigure.IntegrationProperties> result = Binder
 			.get(environment)
 			.bind("spring.integration", bindable);
 		assertThat(result.isBound()).isTrue();

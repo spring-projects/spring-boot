@@ -1,0 +1,3 @@
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.integration.autoconfigure.IntegrationPropertiesEnvironmentPostProcessor
