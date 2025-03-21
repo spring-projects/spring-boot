@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Integration's metrics.
@@ -32,8 +31,8 @@ import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfigu
  *
  * @author Andy Wilkinson
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class },
-		before = IntegrationAutoConfiguration.class)
+@AutoConfiguration(beforeName = "org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration",
+		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 class IntegrationMetricsAutoConfiguration {
 
 }
