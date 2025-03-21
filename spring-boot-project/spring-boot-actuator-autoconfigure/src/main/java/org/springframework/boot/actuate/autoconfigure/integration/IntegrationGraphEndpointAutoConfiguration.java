@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.config.IntegrationConfigurationBeanFactoryPostProcessor;
 import org.springframework.integration.graph.IntegrationGraphServer;
@@ -36,7 +35,7 @@ import org.springframework.integration.graph.IntegrationGraphServer;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = IntegrationAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration")
 @ConditionalOnClass(IntegrationGraphServer.class)
 @ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
 @ConditionalOnAvailableEndpoint(IntegrationGraphEndpoint.class)
