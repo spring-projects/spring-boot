@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;

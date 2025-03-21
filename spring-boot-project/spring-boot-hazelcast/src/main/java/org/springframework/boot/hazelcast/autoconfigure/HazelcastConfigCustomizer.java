@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import com.hazelcast.config.Config;
 
@@ -24,7 +24,7 @@ import com.hazelcast.config.Config;
  *
  * @author Jaromir Hamala
  * @author Stephane Nicoll
- * @since 2.7.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface HazelcastConfigCustomizer {

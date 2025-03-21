@@ -22,7 +22,7 @@ import com.hazelcast.client.config.ClientConfig;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

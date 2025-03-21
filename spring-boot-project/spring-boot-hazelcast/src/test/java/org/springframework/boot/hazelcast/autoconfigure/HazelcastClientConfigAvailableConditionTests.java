@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class HazelcastClientConfigAvailableConditionTests {
 	@Test
 	void explicitConfigurationWithClientConfigMatches() {
 		ConditionOutcome outcome = getMatchOutcome(new MockEnvironment().withProperty("spring.hazelcast.config",
-				"classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-client-specific.xml"));
+				"classpath:org/springframework/boot/hazelcast/autoconfigure/hazelcast-client-specific.xml"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage()).contains("Hazelcast client configuration detected");
 	}
@@ -49,7 +49,7 @@ class HazelcastClientConfigAvailableConditionTests {
 	@Test
 	void explicitConfigurationWithServerConfigDoesNotMatch() {
 		ConditionOutcome outcome = getMatchOutcome(new MockEnvironment().withProperty("spring.hazelcast.config",
-				"classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml"));
+				"classpath:org/springframework/boot/hazelcast/autoconfigure/hazelcast-specific.xml"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).contains("Hazelcast server configuration detected");
 	}
@@ -57,7 +57,7 @@ class HazelcastClientConfigAvailableConditionTests {
 	@Test
 	void explicitConfigurationWithMissingConfigDoesNotMatch() {
 		ConditionOutcome outcome = getMatchOutcome(new MockEnvironment().withProperty("spring.hazelcast.config",
-				"classpath:org/springframework/boot/autoconfigure/hazelcast/test-config-does-not-exist.xml"));
+				"classpath:org/springframework/boot/hazelcast/autoconfigure/test-config-does-not-exist.xml"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).contains("Hazelcast configuration does not exist");
 	}

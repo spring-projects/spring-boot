@@ -18,10 +18,10 @@ package org.springframework.boot.docker.compose.service.connection.hazelcast;
 
 import com.hazelcast.client.config.ClientConfig;
 
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create

@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
+import org.springframework.context.annotation.Import;
 
 /**
- * Configuration for Hazelcast client instance.
+ * Configuration for Hazelcast client.
  *
- * @author Dmytro Nosan
+ * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnBean(HazelcastConnectionDetails.class)
-class HazelcastClientInstanceConfiguration {
+@ConditionalOnClass(HazelcastClient.class)
+@ConditionalOnMissingBean(HazelcastInstance.class)
+@Import({ HazelcastConnectionDetailsConfiguration.class, HazelcastClientInstanceConfiguration.class })
+class HazelcastClientConfiguration {
 
-	@Bean
-	HazelcastInstance hazelcastInstance(HazelcastConnectionDetails hazelcastConnectionDetails) {
-		ClientConfig config = hazelcastConnectionDetails.getClientConfig();
-		return (!StringUtils.hasText(config.getInstanceName())) ? HazelcastClient.newHazelcastClient(config)
-				: HazelcastClient.getOrCreateHazelcastClient(config);
-	}
+	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
 
 }

@@ -2000,6 +2000,7 @@ bom {
 				"spring-boot-flyway",
 				"spring-boot-freemarker",
 				"spring-boot-groovy-templates",
+				"spring-boot-hazelcast",
 				"spring-boot-integration",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",

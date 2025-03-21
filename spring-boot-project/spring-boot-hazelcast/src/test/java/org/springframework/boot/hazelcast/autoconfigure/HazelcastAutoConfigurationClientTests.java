@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import java.io.File;
 import java.io.FileReader;
@@ -87,7 +87,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void systemPropertyWithXml() {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.xml");
 		this.contextRunner
 			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-xml"));
@@ -96,7 +96,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void systemPropertyWithYaml() {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.yaml");
 		this.contextRunner
 			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-yaml"));
@@ -105,7 +105,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void systemPropertyWithYml() {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.yml");
 		this.contextRunner
 			.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY + "=" + config.getAbsolutePath())
 			.run(assertSpecificHazelcastClient("explicit-yml"));
@@ -114,7 +114,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void explicitConfigUrlWithXml() throws MalformedURLException {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.xml");
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-xml"));
 	}
@@ -122,7 +122,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void explicitConfigUrlWithYaml() throws MalformedURLException {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yaml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.yaml");
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-yaml"));
 	}
@@ -130,7 +130,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void explicitConfigUrlWithYml() throws MalformedURLException {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.yml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.yml");
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run(assertSpecificHazelcastClient("explicit-yml"));
 	}
@@ -170,7 +170,7 @@ class HazelcastAutoConfigurationClientTests {
 	void clientConfigWithInstanceNameCreatesClientIfNecessary() throws MalformedURLException {
 		assertThat(HazelcastClient.getHazelcastClientByName("spring-boot")).isNull();
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-instance.xml");
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL())
 			.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
 				.extracting(HazelcastInstance::getName)
@@ -180,7 +180,7 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void autoConfiguredClientConfigUsesApplicationClassLoader() throws MalformedURLException {
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
-				+ "boot/autoconfigure/hazelcast/hazelcast-client-specific.xml");
+				+ "boot/hazelcast/autoconfigure/hazelcast-client-specific.xml");
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=" + config.toURI().toURL()).run((context) -> {
 			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
 			assertThat(hazelcast).isInstanceOf(HazelcastClientProxy.class);

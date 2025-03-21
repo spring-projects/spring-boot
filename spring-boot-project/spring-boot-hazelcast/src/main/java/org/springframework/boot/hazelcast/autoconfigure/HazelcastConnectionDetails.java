@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import com.hazelcast.client.config.ClientConfig;
 
@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * Details required to establish a client connection to a Hazelcast instance.
  *
  * @author Dmytro Nosan
- * @since 3.4.0
+ * @since 4.0.0
  */
 public interface HazelcastConnectionDetails extends ConnectionDetails {
 

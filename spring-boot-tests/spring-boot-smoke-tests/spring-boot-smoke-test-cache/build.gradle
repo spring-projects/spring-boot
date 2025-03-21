@@ -55,7 +55,7 @@ dependencies {
 	ehcache("org.ehcache:ehcache::jakarta")
 
 	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
-	hazelcast("com.hazelcast:hazelcast")
+	hazelcast(project(":spring-boot-project:spring-boot-hazelcast"))
 	hazelcast("com.hazelcast:hazelcast-spring")
 
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))

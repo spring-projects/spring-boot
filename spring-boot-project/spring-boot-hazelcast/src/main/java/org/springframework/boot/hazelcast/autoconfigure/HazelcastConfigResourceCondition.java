@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ResourceCondition;
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Vedran Pavic
- * @since 1.3.0
+ * @since 4.0.0
  */
 public abstract class HazelcastConfigResourceCondition extends ResourceCondition {
 

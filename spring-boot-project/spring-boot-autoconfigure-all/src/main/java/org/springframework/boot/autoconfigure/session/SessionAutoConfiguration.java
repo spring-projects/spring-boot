@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfigurat
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
@@ -67,10 +66,11 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @since 1.4.0
  */
 @AutoConfiguration(
-		after = { HazelcastAutoConfiguration.class, MongoDataAutoConfiguration.class,
-				MongoReactiveDataAutoConfiguration.class, RedisAutoConfiguration.class,
-				RedisReactiveAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class },
-		afterName = { "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+		after = { MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+				RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class,
+				WebSessionIdResolverAutoConfiguration.class },
+		afterName = { "org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration",
+				"org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
 				"org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration" },
 		before = { HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @ConditionalOnClass(Session.class)

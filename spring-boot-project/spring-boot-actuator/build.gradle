@@ -56,7 +56,6 @@ dependencies {
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
-	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")
@@ -112,6 +111,7 @@ dependencies {
 	optional("org.springframework.session:spring-session-core")
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+	testImplementation(project(":spring-boot-project:spring-boot-hazelcast"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
