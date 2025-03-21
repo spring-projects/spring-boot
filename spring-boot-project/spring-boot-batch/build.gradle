@@ -1,0 +1,31 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Batch"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-jdbc"))
+	api("org.springframework.batch:spring-batch-core")
+
+	implementation(project(":spring-boot-project:spring-boot-tx"))
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
+	testImplementation(project(":spring-boot-project:spring-boot-jpa"))
+	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("com.zaxxer:HikariCP")
+}
