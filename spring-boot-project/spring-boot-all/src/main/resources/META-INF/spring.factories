@@ -12,7 +12,6 @@ org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
 
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
-org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
 org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
 org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector

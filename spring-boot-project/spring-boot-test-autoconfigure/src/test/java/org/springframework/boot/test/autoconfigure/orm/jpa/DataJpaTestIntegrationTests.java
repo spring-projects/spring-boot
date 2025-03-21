@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.config.BootstrapMode;
@@ -42,7 +42,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * @author Scott Frederick
  * @author Yanming Zhou
  */
-@DataJpaTest
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 class DataJpaTestIntegrationTests {
 
 	@Autowired
