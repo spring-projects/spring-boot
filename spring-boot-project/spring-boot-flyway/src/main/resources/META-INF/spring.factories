@@ -1,0 +1,4 @@
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
+org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializerDatabaseInitializerDetector
