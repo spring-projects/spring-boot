@@ -47,7 +47,7 @@ import org.springframework.transaction.TransactionManager;
  * @since 1.0.0
  */
 @AutoConfiguration(before = TransactionAutoConfiguration.class,
-		after = TransactionManagerCustomizationAutoConfiguration.class)
+		after = { DataSourceAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, JdbcTemplate.class, TransactionManager.class })
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class DataSourceTransactionManagerAutoConfiguration {
