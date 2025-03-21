@@ -103,7 +103,7 @@ public class BatchProperties {
 			return this.validateTransactionState;
 		}
 
-		public void setValidateTransactionState(Boolean validateTransactionState) {
+		public void setValidateTransactionState(boolean validateTransactionState) {
 			this.validateTransactionState = validateTransactionState;
 		}
 
