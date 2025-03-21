@@ -16,7 +16,6 @@ org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoC
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration

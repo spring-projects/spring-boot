@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.country;
+package org.springframework.boot.autoconfigure.data;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.history.RevisionRepository;
+/**
+ * Type of Spring Data repositories to enable.
+ *
+ * @author Andy Wilkinson
+ * @since 2.0.0
+ */
+public enum RepositoryType {
 
-public interface CountryRepository extends JpaRepository<Country, Long>, RevisionRepository<Country, Long, Integer> {
+	/**
+	 * Enables all repository types automatically based on their availability.
+	 */
+	AUTO,
+
+	/**
+	 * Enables imperative repositories.
+	 */
+	IMPERATIVE,
+
+	/**
+	 * Enables no repositories.
+	 */
+	NONE,
+
+	/**
+	 * Enables reactive repositories.
+	 */
+	REACTIVE
 
 }
