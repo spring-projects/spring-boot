@@ -23,17 +23,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
-import io.r2dbc.spi.ConnectionFactoryMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.reactivestreams.Publisher;
 
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.R2dbcDatabaseShutdownEvent;
+import org.springframework.boot.r2dbc.SimpleConnectionFactoryProvider.SimpleTestConnectionFactory;
+import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.ApplicationListener;
@@ -109,7 +107,7 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 		private ConfigurableApplicationContext getEmptyFactoryMethodMetadataIgnoredContext() {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-			ConnectionFactory connectionFactory = new MockConnectionFactory();
+			ConnectionFactory connectionFactory = new SimpleTestConnectionFactory();
 			AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(
 					connectionFactory.getClass());
 			context.registerBeanDefinition("connectionFactory", beanDefinition);
@@ -170,7 +168,7 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 		@Bean
 		ConnectionFactory connectionFactory() {
-			return new MockConnectionFactory();
+			return new SimpleTestConnectionFactory();
 		}
 
 	}
@@ -180,26 +178,12 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 		@Bean
 		ConnectionFactory connectionFactoryOne() {
-			return new MockConnectionFactory();
+			return new SimpleTestConnectionFactory();
 		}
 
 		@Bean
 		ConnectionFactory connectionFactoryTwo() {
-			return new MockConnectionFactory();
-		}
-
-	}
-
-	private static final class MockConnectionFactory implements ConnectionFactory {
-
-		@Override
-		public Publisher<? extends Connection> create() {
-			return null;
-		}
-
-		@Override
-		public ConnectionFactoryMetadata getMetadata() {
-			return null;
+			return new SimpleTestConnectionFactory();
 		}
 
 	}

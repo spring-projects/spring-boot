@@ -53,6 +53,7 @@ dependencies {
 	intTestRuntimeOnly("org.springframework:spring-web")
 
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional("io.projectreactor:reactor-core")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.servlet:jakarta.servlet-api")
@@ -70,6 +71,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-r2dbc")))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.zaxxer:HikariCP")

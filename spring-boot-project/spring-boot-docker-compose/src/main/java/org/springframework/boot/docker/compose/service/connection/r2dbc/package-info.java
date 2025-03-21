@@ -16,6 +16,6 @@
 
 /**
  * Utilities to help when creating
- * {@link org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails}.
+ * {@link org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails}.
  */
 package org.springframework.boot.docker.compose.service.connection.r2dbc;

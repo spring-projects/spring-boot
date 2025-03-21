@@ -30,9 +30,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.devtools.autoconfigure.DevToolsR2dbcAutoConfiguration.DevToolsConnectionFactoryCondition;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -51,7 +51,7 @@ import org.springframework.core.type.MethodMetadata;
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsConnectionFactoryCondition.class)
-@AutoConfiguration(after = R2dbcAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration")
 public class DevToolsR2dbcAutoConfiguration {
 
 	@Bean

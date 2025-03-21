@@ -18,11 +18,11 @@ package org.springframework.boot.docker.compose.service.connection.mysql;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.docker.compose.service.connection.r2dbc.ConnectionFactoryOptionsBuilder;
+import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}

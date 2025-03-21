@@ -21,7 +21,7 @@ import java.util.Map;
 
 import io.r2dbc.postgresql.PostgresqlConnectionFactoryProvider;
 
-import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilderCustomizer;
+import org.springframework.boot.r2dbc.autoconfigure.ConnectionFactoryOptionsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

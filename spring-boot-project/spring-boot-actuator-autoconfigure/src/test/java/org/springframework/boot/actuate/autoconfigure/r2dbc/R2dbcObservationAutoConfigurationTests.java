@@ -30,11 +30,11 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.r2dbc.ProxyConnectionFactoryCustomizer;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcProxyAutoConfiguration;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.boot.r2dbc.ConnectionFactoryDecorator;
+import org.springframework.boot.r2dbc.autoconfigure.ProxyConnectionFactoryCustomizer;
+import org.springframework.boot.r2dbc.autoconfigure.R2dbcProxyAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

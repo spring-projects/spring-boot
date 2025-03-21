@@ -67,10 +67,6 @@ org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
-org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
-org.springframework.boot.autoconfigure.r2dbc.R2dbcInitializationAutoConfiguration
-org.springframework.boot.autoconfigure.r2dbc.R2dbcProxyAutoConfiguration
-org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration
 org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration

@@ -20,7 +20,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.clickhouse.ClickHouseR2DBCDatabaseContainer;
 
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
+import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

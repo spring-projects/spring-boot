@@ -2013,6 +2013,7 @@ bom {
 				"spring-boot-mail",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
+				"spring-boot-r2dbc",
 				"spring-boot-reactor-netty",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",
