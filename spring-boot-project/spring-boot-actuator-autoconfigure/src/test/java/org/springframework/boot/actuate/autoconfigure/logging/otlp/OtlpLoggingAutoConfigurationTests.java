@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging.otlp;
 
+import java.util.function.Supplier;
+
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
+import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
+import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import okhttp3.HttpUrl;
 import org.junit.jupiter.api.Test;
@@ -30,6 +35,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
+ * @author Moritz Halbritter
  */
 class OtlpLoggingAutoConfigurationTests {
 
@@ -118,7 +125,6 @@ class OtlpLoggingAutoConfigurationTests {
 			assertThat(otlpHttpLogRecordExporter).extracting("delegate.httpSender.url")
 				.isEqualTo(HttpUrl.get("https://otel.example.com/v1/logs"));
 		});
-
 	}
 
 	@Test
@@ -155,31 +161,74 @@ class OtlpLoggingAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void httpShouldUseMeterProviderIfSet() {
+		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs")
+			.run((context) -> {
+				OtlpHttpLogRecordExporter otlpHttpLogRecordExporter = context.getBean(OtlpHttpLogRecordExporter.class);
+				OtlpHttpLogRecordExporterBuilder builder = otlpHttpLogRecordExporter.toBuilder();
+				Supplier<MeterProvider> meterProviderSupplier = (Supplier<MeterProvider>) ReflectionTestUtils
+					.getField(ReflectionTestUtils.getField(builder, "delegate"), "meterProviderSupplier");
+				assertThat(meterProviderSupplier).isNotNull();
+				assertThat(meterProviderSupplier.get()).isSameAs(MeterProviderConfiguration.meterProvider);
+			});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void grpcShouldUseMeterProviderIfSet() {
+		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs",
+					"management.otlp.logging.transport=grpc")
+			.run((context) -> {
+				OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter = context.getBean(OtlpGrpcLogRecordExporter.class);
+				OtlpGrpcLogRecordExporterBuilder builder = otlpGrpcLogRecordExporter.toBuilder();
+				Supplier<MeterProvider> meterProviderSupplier = (Supplier<MeterProvider>) ReflectionTestUtils
+					.getField(ReflectionTestUtils.getField(builder, "delegate"), "meterProviderSupplier");
+				assertThat(meterProviderSupplier).isNotNull();
+				assertThat(meterProviderSupplier.get()).isSameAs(MeterProviderConfiguration.meterProvider);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomHttpExporterConfiguration {
+	private static final class MeterProviderConfiguration {
+
+		static final MeterProvider meterProvider = (instrumentationScopeName) -> null;
 
 		@Bean
-		public OtlpHttpLogRecordExporter customOtlpHttpLogRecordExporter() {
+		MeterProvider meterProvider() {
+			return meterProvider;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class CustomHttpExporterConfiguration {
+
+		@Bean
+		OtlpHttpLogRecordExporter customOtlpHttpLogRecordExporter() {
 			return OtlpHttpLogRecordExporter.builder().build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomGrpcExporterConfiguration {
+	private static final class CustomGrpcExporterConfiguration {
 
 		@Bean
-		public OtlpGrpcLogRecordExporter customOtlpGrpcLogRecordExporter() {
+		OtlpGrpcLogRecordExporter customOtlpGrpcLogRecordExporter() {
 			return OtlpGrpcLogRecordExporter.builder().build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomOtlpLoggingConnectionDetails {
+	private static final class CustomOtlpLoggingConnectionDetails {
 
 		@Bean
-		public OtlpLoggingConnectionDetails customOtlpLoggingConnectionDetails() {
+		OtlpLoggingConnectionDetails customOtlpLoggingConnectionDetails() {
 			return (transport) -> "https://otel.example.com/v1/logs";
 		}
 

@@ -18,11 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
 import java.util.Locale;
 
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -81,26 +83,28 @@ class OtlpTracingConfigurations {
 		@Bean
 		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "http", matchIfMissing = true)
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
 			return builder.build();
 		}
 
 		@Bean
 		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "grpc")
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
 			return builder.build();
 		}
 
