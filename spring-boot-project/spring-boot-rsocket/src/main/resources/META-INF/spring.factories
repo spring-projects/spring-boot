@@ -1,0 +1,3 @@
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer
