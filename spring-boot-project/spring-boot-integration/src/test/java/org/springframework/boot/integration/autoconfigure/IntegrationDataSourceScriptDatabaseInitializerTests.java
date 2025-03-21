@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;
+package org.springframework.boot.integration.autoconfigure;
 
 import javax.sql.DataSource;
 
