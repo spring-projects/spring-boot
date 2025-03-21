@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.city.City;
-import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
+import org.springframework.boot.autoconfigure.data.alt.jpa.City;
+import org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository;
+import org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -52,7 +52,7 @@ class SpringDataWebAutoConfigurationJpaTests {
 	@Test
 	void springDataWebIsConfiguredWithJpaRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CityRepository.class);
+			assertThat(context).hasSingleBean(CityJpaRepository.class);
 			assertThat(context).hasSingleBean(PageableHandlerMethodArgumentResolver.class);
 			assertThat(context).hasSingleBean(SortHandlerMethodArgumentResolver.class);
 			assertThat(context.getBean(FormattingConversionService.class).canConvert(String.class, Distance.class))

@@ -1,5 +1,5 @@
 # AutoConfigureDataJpa auto-configuration imports
-org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration
 org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration

@@ -36,12 +36,12 @@ dependencies {
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
 
+	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-jpa"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-liquibase")) {
 		exclude(group: "org.liquibase")
