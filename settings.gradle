@@ -31,10 +31,12 @@ pluginManagement {
 			}
 		}
 	}
+	includeBuild("gradle/plugins")
 }
 
 plugins {
 	id "io.spring.develocity.conventions" version "0.0.22"
+	id "org.springframework.boot.cycle-detection"
 }
 
 rootProject.name="spring-boot-build"
