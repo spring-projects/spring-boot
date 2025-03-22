@@ -43,6 +43,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
+import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusListener;
@@ -451,6 +452,48 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(
 				PropertiesUtil.getProperties().getBooleanProperty(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, true))
 			.isFalse();
+	}
+
+	@Test
+	@WithNonDefaultXmlResource
+	void loadOptionalOverrideConfigurationWhenDoesNotExist() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml", null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+	}
+
+	@Test
+	void loadOptionalOverrideConfigurationWhenDoesNotExistUponReinitialization() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+		this.loggingSystem.cleanUp();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+	}
+
+	@Test
+	@WithNonDefaultXmlResource
+	@WithOverrideXmlResource
+	void loadOptionalOverrideConfiguration() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml", null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+	}
+
+	@Test
+	@WithOverrideXmlResource
+	void loadOptionalOverrideConfigurationUponReinitialization() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+		this.loggingSystem.cleanUp();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
 	}
 
 	@Test
