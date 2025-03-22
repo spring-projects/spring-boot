@@ -1,0 +1,12 @@
+pluginManagement {
+	new File(rootDir.parentFile.parentFile, "gradle.properties").withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		properties.forEach(settings.ext::set)
+		gradle.rootProject {
+			properties.forEach(project.ext::set)
+		}
+	}
+}
+
+include 'cycle-detection-plugin'

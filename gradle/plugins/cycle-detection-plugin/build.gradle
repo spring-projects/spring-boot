@@ -1,0 +1,30 @@
+plugins {
+	id 'java-gradle-plugin'
+	id "checkstyle"
+	id "io.spring.javaformat" version "$javaFormatVersion"
+
+}
+
+repositories {
+	mavenCentral()
+}
+
+checkstyle {
+	toolVersion = "${checkstyleToolVersion}"
+}
+
+dependencies {
+	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
+	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
+
+	implementation("org.jgrapht:jgrapht-core:1.5.2")
+}
+
+gradlePlugin {
+	plugins {
+		cycleDetectionPlugin {
+			id = "org.springframework.boot.cycle-detection"
+			implementationClass = "org.springframework.boot.build.cycledetection.CycleDetectionPlugin"
+		}
+	}
+}
