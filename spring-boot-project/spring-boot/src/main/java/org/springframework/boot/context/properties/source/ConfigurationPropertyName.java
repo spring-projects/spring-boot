@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -63,9 +65,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	private final CharSequence[] uniformElements;
 
-	private String string;
-
 	private int hashCode;
+
+	private String[] string = new String[ToStringFormat.values().length];
+
+	private Boolean hasDashedElement;
+
+	private ConfigurationPropertyName systemEnvironmentLegacyName;
 
 	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
@@ -525,15 +531,41 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		return hashCode;
 	}
 
-	@Override
-	public String toString() {
-		if (this.string == null) {
-			this.string = buildToString();
+	ConfigurationPropertyName asSystemEnvironmentLegacyName() {
+		ConfigurationPropertyName name = this.systemEnvironmentLegacyName;
+		if (name == null) {
+			name = ConfigurationPropertyName
+				.ofIfValid(buildSimpleToString('.', (i) -> getElement(i, Form.DASHED).replace('-', '.')));
+			this.systemEnvironmentLegacyName = (name != null) ? name : EMPTY;
 		}
-		return this.string;
+		return (name != EMPTY) ? name : null;
 	}
 
-	private String buildToString() {
+	@Override
+	public String toString() {
+		return toString(ToStringFormat.DEFAULT);
+	}
+
+	String toString(ToStringFormat format) {
+		String string = this.string[format.ordinal()];
+		if (string == null) {
+			string = buildToString(format);
+			this.string[format.ordinal()] = string;
+		}
+		return string;
+	}
+
+	private String buildToString(ToStringFormat format) {
+		return switch (format) {
+			case DEFAULT -> buildDefaultToString();
+			case SYSTEM_ENVIRONMENT ->
+				buildSimpleToString('_', (i) -> getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
+			case LEGACY_SYSTEM_ENVIRONMENT -> buildSimpleToString('_',
+					(i) -> getElement(i, Form.ORIGINAL).replace('-', '_').toUpperCase(Locale.ENGLISH));
+		};
+	}
+
+	private String buildDefaultToString() {
 		if (this.elements.canShortcutWithSource(ElementType.UNIFORM, ElementType.DASHED)) {
 			return this.elements.getSource().toString();
 		}
@@ -554,6 +586,32 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			}
 		}
 		return result.toString();
+	}
+
+	private String buildSimpleToString(char joinChar, IntFunction<String> elementConverter) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < getNumberOfElements(); i++) {
+			if (!result.isEmpty()) {
+				result.append(joinChar);
+			}
+			result.append(elementConverter.apply(i));
+		}
+		return result.toString();
+	}
+
+	boolean hasDashedElement() {
+		Boolean hasDashedElement = this.hasDashedElement;
+		if (hasDashedElement != null) {
+			return hasDashedElement;
+		}
+		for (int i = 0; i < getNumberOfElements(); i++) {
+			if (getElement(i, Form.DASHED).indexOf('-') != -1) {
+				this.hasDashedElement = true;
+				return true;
+			}
+		}
+		this.hasDashedElement = false;
+		return false;
 	}
 
 	/**
@@ -1129,6 +1187,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	private interface ElementCharPredicate {
 
 		boolean test(char ch, int index);
+
+	}
+
+	/**
+	 * Formats for {@code toString}.
+	 */
+	enum ToStringFormat {
+
+		DEFAULT, SYSTEM_ENVIRONMENT, LEGACY_SYSTEM_ENVIRONMENT
 
 	}
 
