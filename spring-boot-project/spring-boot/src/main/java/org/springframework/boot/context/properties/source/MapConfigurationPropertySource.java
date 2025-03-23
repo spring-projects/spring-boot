@@ -56,7 +56,7 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
 		MapPropertySource mapPropertySource = new MapPropertySource("source", this.source);
-		this.delegate = new SpringIterableConfigurationPropertySource(mapPropertySource, DEFAULT_MAPPERS);
+		this.delegate = new SpringIterableConfigurationPropertySource(mapPropertySource, false, DEFAULT_MAPPERS);
 		putAll(map);
 	}
 
