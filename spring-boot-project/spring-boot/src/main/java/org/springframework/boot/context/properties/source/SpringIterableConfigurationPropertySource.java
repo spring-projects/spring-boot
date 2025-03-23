@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private final BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck;
 
-	private final SoftReferenceConfigurationPropertyCache<Mappings> cache;
+	private final SoftReferenceConfigurationPropertyCache<Cache> cache;
 
 	private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
@@ -101,7 +101,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		if (configurationProperty != null) {
 			return configurationProperty;
 		}
-		for (String candidate : getMappings().getMapped(name)) {
+		for (String candidate : getCache().getMapped(name)) {
 			Object value = getPropertySource().getProperty(candidate);
 			if (value != null) {
 				Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
@@ -129,7 +129,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return result;
 		}
 		if (this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK) {
-			return getMappings().containsDescendantOf(name, this.ancestorOfCheck);
+			return getCache().containsDescendantOf(name, this.ancestorOfCheck);
 		}
 		ConfigurationPropertyName[] candidates = getConfigurationPropertyNames();
 		for (ConfigurationPropertyName candidate : candidates) {
@@ -142,29 +142,29 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
 		if (!isImmutablePropertySource()) {
-			return getMappings().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
+			return getCache().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
 		ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
 		if (configurationPropertyNames == null) {
-			configurationPropertyNames = getMappings()
+			configurationPropertyNames = getCache()
 				.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 			this.configurationPropertyNames = configurationPropertyNames;
 		}
 		return configurationPropertyNames;
 	}
 
-	private Mappings getMappings() {
-		return this.cache.get(this::createMappings, this::updateMappings);
+	private Cache getCache() {
+		return this.cache.get(this::createCache, this::updateCache);
 	}
 
-	private Mappings createMappings() {
-		return new Mappings(getMappers(), isImmutablePropertySource(),
+	private Cache createCache() {
+		return new Cache(getMappers(), isImmutablePropertySource(),
 				this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK);
 	}
 
-	private Mappings updateMappings(Mappings mappings) {
-		mappings.updateMappings(getPropertySource()::getPropertyNames);
-		return mappings;
+	private Cache updateCache(Cache cache) {
+		cache.update(getPropertySource()::getPropertyNames);
+		return cache;
 	}
 
 	private boolean isImmutablePropertySource() {
@@ -183,7 +183,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return (EnumerablePropertySource<?>) super.getPropertySource();
 	}
 
-	private static class Mappings {
+	private static class Cache {
 
 		private static final ConfigurationPropertyName[] EMPTY_NAMES_ARRAY = {};
 
@@ -191,30 +191,22 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final boolean immutable;
 
-		private final boolean trackDescendants;
+		private final boolean captureDescendants;
 
-		private volatile Map<ConfigurationPropertyName, Set<String>> mappings;
+		private volatile Data data;
 
-		private volatile Map<String, ConfigurationPropertyName> reverseMappings;
-
-		private volatile Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants;
-
-		private volatile ConfigurationPropertyName[] configurationPropertyNames;
-
-		private volatile String[] lastUpdated;
-
-		Mappings(PropertyMapper[] mappers, boolean immutable, boolean trackDescendants) {
+		Cache(PropertyMapper[] mappers, boolean immutable, boolean captureDescendants) {
 			this.mappers = mappers;
 			this.immutable = immutable;
-			this.trackDescendants = trackDescendants;
+			this.captureDescendants = captureDescendants;
 		}
 
-		void updateMappings(Supplier<String[]> propertyNames) {
-			if (this.mappings == null || !this.immutable) {
+		void update(Supplier<String[]> propertyNames) {
+			if (this.data == null || !this.immutable) {
 				int count = 0;
 				while (true) {
 					try {
-						updateMappings(propertyNames.get());
+						tryUpdate(propertyNames.get());
 						return;
 					}
 					catch (ConcurrentModificationException ex) {
@@ -226,16 +218,19 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 		}
 
-		private void updateMappings(String[] propertyNames) {
-			String[] lastUpdated = this.lastUpdated;
+		private void tryUpdate(String[] propertyNames) {
+			Data data = this.data;
+			String[] lastUpdated = (data != null) ? data.lastUpdated() : null;
 			if (lastUpdated != null && Arrays.equals(lastUpdated, propertyNames)) {
 				return;
 			}
 			int size = propertyNames.length;
-			Map<ConfigurationPropertyName, Set<String>> mappings = cloneOrCreate(this.mappings, size);
-			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(this.reverseMappings, size);
-			Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants = cloneOrCreate(this.descendants,
-					size);
+			Map<ConfigurationPropertyName, Set<String>> mappings = cloneOrCreate(
+					(data != null) ? data.mappings() : null, size);
+			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(
+					(data != null) ? data.reverseMappings() : null, size);
+			Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants = cloneOrCreate(
+					(data != null) ? data.descendants() : null, size);
 			for (PropertyMapper propertyMapper : this.mappers) {
 				for (String propertyName : propertyNames) {
 					if (!reverseMappings.containsKey(propertyName)) {
@@ -243,19 +238,17 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 						if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
 							add(mappings, configurationPropertyName, propertyName);
 							reverseMappings.put(propertyName, configurationPropertyName);
-							if (this.trackDescendants) {
+							if (this.captureDescendants) {
 								addParents(descendants, configurationPropertyName);
 							}
 						}
 					}
 				}
 			}
-			this.mappings = mappings;
-			this.reverseMappings = reverseMappings;
-			this.descendants = descendants;
-			this.lastUpdated = this.immutable ? null : propertyNames;
-			this.configurationPropertyNames = this.immutable
+			ConfigurationPropertyName[] configurationPropertyNames = this.immutable
 					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
+			lastUpdated = this.immutable ? null : propertyNames;
+			this.data = new Data(mappings, reverseMappings, descendants, configurationPropertyNames, lastUpdated);
 		}
 
 		private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
@@ -276,15 +269,16 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		Set<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
-			return this.mappings.getOrDefault(configurationPropertyName, Collections.emptySet());
+			return this.data.mappings().getOrDefault(configurationPropertyName, Collections.emptySet());
 		}
 
 		ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
-			ConfigurationPropertyName[] names = this.configurationPropertyNames;
+			Data data = this.data;
+			ConfigurationPropertyName[] names = data.configurationPropertyNames();
 			if (names != null) {
 				return names;
 			}
-			Map<String, ConfigurationPropertyName> reverseMappings = this.reverseMappings;
+			Map<String, ConfigurationPropertyName> reverseMappings = data.reverseMappings();
 			if (reverseMappings == null || reverseMappings.isEmpty()) {
 				return EMPTY_NAMES_ARRAY;
 			}
@@ -297,16 +291,24 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name,
 				BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck) {
-			if (name.isEmpty() && !this.descendants.isEmpty()) {
+			Data data = this.data;
+			if (name.isEmpty() && !data.descendants().isEmpty()) {
 				return ConfigurationPropertyState.PRESENT;
 			}
-			Set<ConfigurationPropertyName> candidates = this.descendants.getOrDefault(name, Collections.emptySet());
+			Set<ConfigurationPropertyName> candidates = data.descendants().getOrDefault(name, Collections.emptySet());
 			for (ConfigurationPropertyName candidate : candidates) {
 				if (ancestorOfCheck.test(name, candidate)) {
 					return ConfigurationPropertyState.PRESENT;
 				}
 			}
 			return ConfigurationPropertyState.ABSENT;
+		}
+
+		private record Data(Map<ConfigurationPropertyName, Set<String>> mappings,
+				Map<String, ConfigurationPropertyName> reverseMappings,
+				Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants,
+				ConfigurationPropertyName[] configurationPropertyNames, String[] lastUpdated) {
+
 		}
 
 	}
