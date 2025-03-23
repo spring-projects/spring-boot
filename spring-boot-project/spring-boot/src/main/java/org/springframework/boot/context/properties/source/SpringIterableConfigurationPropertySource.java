@@ -38,6 +38,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * {@link ConfigurationPropertySource} backed by an {@link EnumerablePropertySource}.
@@ -59,6 +60,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
+	private final Map<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfCache;
+
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
 			boolean systemEnvironmentSource, PropertyMapper... mappers) {
 		super(propertySource, systemEnvironmentSource, mappers);
@@ -66,6 +69,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		boolean immutable = isImmutablePropertySource();
 		this.ancestorOfCheck = getAncestorOfCheck(mappers);
 		this.cache = new SoftReferenceConfigurationPropertyCache<>(immutable);
+		this.containsDescendantOfCache = (!systemEnvironmentSource) ? null : new ConcurrentReferenceHashMap<>();
 	}
 
 	private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
@@ -145,13 +149,24 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 						: ConfigurationPropertyState.PRESENT;
 			}
 		}
+		result = (this.containsDescendantOfCache != null) ? this.containsDescendantOfCache.get(name) : null;
+		if (result == null) {
+			result = (!ancestorOfCheck(name)) ? ConfigurationPropertyState.ABSENT : ConfigurationPropertyState.PRESENT;
+			if (this.containsDescendantOfCache != null) {
+				this.containsDescendantOfCache.put(name, result);
+			}
+		}
+		return result;
+	}
+
+	private boolean ancestorOfCheck(ConfigurationPropertyName name) {
 		ConfigurationPropertyName[] candidates = getConfigurationPropertyNames();
 		for (ConfigurationPropertyName candidate : candidates) {
 			if (candidate != null && this.ancestorOfCheck.test(name, candidate)) {
-				return ConfigurationPropertyState.PRESENT;
+				return true;
 			}
 		}
-		return ConfigurationPropertyState.ABSENT;
+		return false;
 	}
 
 	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
