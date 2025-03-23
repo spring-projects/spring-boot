@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,24 +85,16 @@ class FileWatcher implements Closeable {
 					this.thread = new WatcherThread();
 					this.thread.start();
 				}
-				Set<Path> actualPaths = new HashSet<>();
+				Set<Path> registrationPaths = new HashSet<>();
 				for (Path path : paths) {
-					actualPaths.add(resolveSymlinkIfNecessary(path));
+					registrationPaths.addAll(getRegistrationPaths(path));
 				}
-				this.thread.register(new Registration(actualPaths, action));
+				this.thread.register(new Registration(registrationPaths, action));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
-	}
-
-	private static Path resolveSymlinkIfNecessary(Path path) throws IOException {
-		if (Files.isSymbolicLink(path)) {
-			Path target = path.resolveSibling(Files.readSymbolicLink(path));
-			return resolveSymlinkIfNecessary(target);
-		}
-		return path;
 	}
 
 	@Override
@@ -121,6 +112,44 @@ class FileWatcher implements Closeable {
 				this.thread = null;
 			}
 		}
+	}
+
+	/**
+	 * Retrieves all {@link Path Paths} that should be registered for the specified
+	 * {@link Path}. If the path is a symlink, changes to the symlink should be monitored,
+	 * not just the file it points to. For example, for the given {@code keystore.jks}
+	 * path in the following directory structure:<pre>
+	 * .
+	 * ├── ..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f
+	 * │   ├── keystore.jks
+	 * ├── ..data -> ..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f
+	 * ├── keystore.jks -> ..data/keystore.jks
+	 * </pre> the resulting paths would include:
+	 * <ul>
+	 * <li><b>keystore.jks</b></li>
+	 * <li><b>..data/keystore.jks</b></li>
+	 * <li><b>..data</b></li>
+	 * <li><b>..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f/keystore.jks</b></li>
+	 * </ul>
+	 * @param path the path
+	 * @return all possible {@link Path} instances to be registered
+	 * @throws IOException if an I/O error occurs
+	 */
+	private static Set<Path> getRegistrationPaths(Path path) throws IOException {
+		path = path.toAbsolutePath();
+		Set<Path> result = new HashSet<>();
+		result.add(path);
+		Path parent = path.getParent();
+		if (parent != null && Files.isSymbolicLink(parent)) {
+			result.add(parent);
+			Path target = parent.resolveSibling(Files.readSymbolicLink(parent));
+			result.addAll(getRegistrationPaths(target.resolve(path.getFileName())));
+		}
+		else if (Files.isSymbolicLink(path)) {
+			Path target = path.resolveSibling(Files.readSymbolicLink(path));
+			result.addAll(getRegistrationPaths(target));
+		}
+		return result;
 	}
 
 	/**
@@ -145,11 +174,15 @@ class FileWatcher implements Closeable {
 		}
 
 		void register(Registration registration) throws IOException {
+			Set<Path> directories = new HashSet<>();
 			for (Path path : registration.paths()) {
 				if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 					throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 				}
 				Path directory = Files.isDirectory(path) ? path : path.getParent();
+				directories.add(directory);
+			}
+			for (Path directory : directories) {
 				WatchKey watchKey = register(directory);
 				this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
 			}
@@ -223,10 +256,6 @@ class FileWatcher implements Closeable {
 	 * An individual watch registration.
 	 */
 	private record Registration(Set<Path> paths, Runnable action) {
-
-		Registration {
-			paths = paths.stream().map(Path::toAbsolutePath).collect(Collectors.toSet());
-		}
 
 		boolean manages(Path file) {
 			Path absolutePath = file.toAbsolutePath();
