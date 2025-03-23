@@ -46,6 +46,7 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * A container object which Binds objects from one or more
@@ -69,6 +70,8 @@ public class Binder {
 	private final BindHandler defaultBindHandler;
 
 	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
+
+	private final Map<Object, Object> cache = new ConcurrentReferenceHashMap<>();
 
 	private ConfigurationPropertyCaching configurationPropertyCaching;
 
@@ -633,6 +636,10 @@ public class Binder {
 
 		BindConverter getConverter() {
 			return Binder.this.bindConverter;
+		}
+
+		Map<Object, Object> getCache() {
+			return Binder.this.cache;
 		}
 
 		@Override
