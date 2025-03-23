@@ -63,6 +63,11 @@ public class LdapProperties {
 	private Boolean anonymousReadOnly;
 
 	/**
+	 * Set the method to handle referrals.
+	 */
+	private String referral;
+
+	/**
 	 * LDAP specification settings.
 	 */
 	private final Map<String, String> baseEnvironment = new HashMap<>();
@@ -107,6 +112,14 @@ public class LdapProperties {
 
 	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
 		this.anonymousReadOnly = anonymousReadOnly;
+	}
+
+	public String getReferral() {
+		return this.referral;
+	}
+
+	public void setReferral(String referral) {
+		this.referral = referral;
 	}
 
 	public Map<String, String> getBaseEnvironment() {
