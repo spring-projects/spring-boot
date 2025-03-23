@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -490,12 +489,13 @@ public class Binder {
 	}
 
 	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
-		return this.dataObjectBinders.get(bindMethod)
-			.stream()
-			.map(operation)
-			.filter(Objects::nonNull)
-			.findFirst()
-			.orElse(null);
+		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders.get(bindMethod)) {
+			Object bound = operation.apply(dataObjectBinder);
+			if (bound != null) {
+				return bound;
+			}
+		}
+		return null;
 	}
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
