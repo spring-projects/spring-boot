@@ -35,6 +35,7 @@ import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyCaching;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -68,6 +69,8 @@ public class Binder {
 	private final BindHandler defaultBindHandler;
 
 	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
+
+	private ConfigurationPropertyCaching configurationPropertyCaching;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -189,6 +192,7 @@ public class Binder {
 			Assert.notNull(source, "'sources' must not contain null elements");
 		}
 		this.sources = sources;
+		this.configurationPropertyCaching = ConfigurationPropertyCaching.get(sources);
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.bindConverter = BindConverter.get(conversionServices, propertyEditorInitializer);
 		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
@@ -341,17 +345,19 @@ public class Binder {
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
 			boolean allowRecursiveBinding, boolean create) {
-		try {
-			Bindable<T> replacementTarget = handler.onStart(name, target, context);
-			if (replacementTarget == null) {
-				return handleBindResult(name, target, handler, context, null, create);
+		try (ConfigurationPropertyCaching.CacheOverride cacheOverride = this.configurationPropertyCaching.override()) {
+			try {
+				Bindable<T> replacementTarget = handler.onStart(name, target, context);
+				if (replacementTarget == null) {
+					return handleBindResult(name, target, handler, context, null, create);
+				}
+				target = replacementTarget;
+				Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
+				return handleBindResult(name, target, handler, context, bound, create);
 			}
-			target = replacementTarget;
-			Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
-			return handleBindResult(name, target, handler, context, bound, create);
-		}
-		catch (Exception ex) {
-			return handleBindError(name, target, handler, context, ex);
+			catch (Exception ex) {
+				return handleBindError(name, target, handler, context, ex);
+			}
 		}
 	}
 
