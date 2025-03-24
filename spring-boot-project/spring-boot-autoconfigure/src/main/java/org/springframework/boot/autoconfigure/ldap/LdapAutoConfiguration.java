@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ldap;
 
 import java.util.Collections;
+import java.util.Locale;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -67,6 +68,9 @@ public class LdapAutoConfiguration {
 		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
 		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
+		propertyMapper.from(properties.getReferral())
+			.as(((referral) -> referral.name().toLowerCase(Locale.ROOT)))
+			.to(source::setReferral);
 		propertyMapper.from(connectionDetails.getBase()).to(source::setBase);
 		propertyMapper.from(connectionDetails.getUrls()).to(source::setUrls);
 		propertyMapper.from(properties.getBaseEnvironment())

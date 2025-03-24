@@ -89,6 +89,14 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void contextSourceWithReferral() {
+		this.contextRunner.withPropertyValues("spring.ldap.referral:ignore").run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource).hasFieldOrPropertyWithValue("referral", "ignore");
+		});
+	}
+
+	@Test
 	void contextSourceWithExtraCustomization() {
 		this.contextRunner
 			.withPropertyValues("spring.ldap.urls:ldap://localhost:123", "spring.ldap.username:root",

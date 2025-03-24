@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.ReferralException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -61,6 +62,12 @@ public class LdapProperties {
 	 * default unless a username is set.
 	 */
 	private Boolean anonymousReadOnly;
+
+	/**
+	 * Specify how referrals encountered by the service provider are to be processed. If
+	 * not specified, the default is determined by the provider.
+	 */
+	private Referral referral;
 
 	/**
 	 * LDAP specification settings.
@@ -107,6 +114,14 @@ public class LdapProperties {
 
 	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
 		this.anonymousReadOnly = anonymousReadOnly;
+	}
+
+	public Referral getReferral() {
+		return this.referral;
+	}
+
+	public void setReferral(Referral referral) {
+		this.referral = referral;
 	}
 
 	public Map<String, String> getBaseEnvironment() {
@@ -179,6 +194,28 @@ public class LdapProperties {
 		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
 			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
 		}
+
+	}
+
+	/**
+	 * Define the methods to handle referrals.
+	 */
+	public enum Referral {
+
+		/**
+		 * Follow referrals automatically.
+		 */
+		FOLLOW,
+
+		/**
+		 * Ignore referrals.
+		 */
+		IGNORE,
+
+		/**
+		 * Throw {@link ReferralException} when a referral is encountered.
+		 */
+		THROW
 
 	}
 
