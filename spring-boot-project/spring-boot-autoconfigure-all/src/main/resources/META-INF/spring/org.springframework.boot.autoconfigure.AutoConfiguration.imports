@@ -1,7 +1,6 @@
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration
-org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
 org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration
