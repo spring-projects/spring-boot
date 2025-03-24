@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import java.time.Duration;
 
@@ -34,7 +34,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.container.TestImage;
 
