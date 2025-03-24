@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class,
 		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import java.io.InputStream;
 import java.nio.file.Files;
