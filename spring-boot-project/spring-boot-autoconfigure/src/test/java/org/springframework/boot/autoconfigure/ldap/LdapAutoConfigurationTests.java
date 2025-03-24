@@ -38,7 +38,6 @@ import org.springframework.ldap.support.LdapUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 /**
  * Tests for {@link LdapAutoConfiguration}.
@@ -93,7 +92,7 @@ class LdapAutoConfigurationTests {
 	void contextSourceWithReferral() {
 		this.contextRunner.withPropertyValues("spring.ldap.referral:ignore").run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			assertThat(getField(contextSource, "referral")).isEqualTo("ignore");
+			assertThat(contextSource).hasFieldOrPropertyWithValue("referral", "ignore");
 		});
 	}
 

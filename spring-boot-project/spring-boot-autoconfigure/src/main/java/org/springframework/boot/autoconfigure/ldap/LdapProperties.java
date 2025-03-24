@@ -64,7 +64,8 @@ public class LdapProperties {
 	private Boolean anonymousReadOnly;
 
 	/**
-	 * Set the method to handle referrals.
+	 * Specify how referrals encountered by the service provider are to be processed. If
+	 * not specified, the default is determined by the provider.
 	 */
 	private Referral referral;
 
@@ -197,34 +198,24 @@ public class LdapProperties {
 	}
 
 	/**
-	 * Enum to define how referrals encountered by the service provider are to be processed.
+	 * Define the methods to handle referrals.
 	 */
 	public enum Referral {
 
 		/**
-		 * follow referrals automatically
+		 * Follow referrals automatically.
 		 */
-		FOLLOW("follow"),
+		FOLLOW,
 
 		/**
-		 * ignore referrals
+		 * Ignore referrals.
 		 */
-		IGNORE("ignore"),
+		IGNORE,
 
 		/**
-		 * throw a {@link ReferralException} for each referral
+		 * Throw {@link ReferralException} when a referral is encountered.
 		 */
-		THROW("throw");
-
-		private final String mode;
-
-		Referral(String mode) {
-			this.mode = mode;
-		}
-
-		public String getMode() {
-			return this.mode;
-		}
+		THROW
 
 	}
 

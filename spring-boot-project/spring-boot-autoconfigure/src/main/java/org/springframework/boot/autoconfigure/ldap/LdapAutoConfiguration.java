@@ -17,14 +17,13 @@
 package org.springframework.boot.autoconfigure.ldap;
 
 import java.util.Collections;
-import java.util.Optional;
+import java.util.Locale;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.ldap.LdapProperties.Referral;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -69,7 +68,9 @@ public class LdapAutoConfiguration {
 		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
 		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
-		Optional.ofNullable(properties.getReferral()).map(Referral::getMode).ifPresent(source::setReferral);
+		propertyMapper.from(properties.getReferral())
+			.as(((referral) -> referral.name().toLowerCase(Locale.ROOT)))
+			.to(source::setReferral);
 		propertyMapper.from(connectionDetails.getBase()).to(source::setBase);
 		propertyMapper.from(connectionDetails.getUrls()).to(source::setUrls);
 		propertyMapper.from(properties.getBaseEnvironment())
