@@ -602,7 +602,7 @@ spring:
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
-To take more control, one or more javadoc:org.springframework.boot.autoconfigure.couchbase.ClusterEnvironmentBuilderCustomizer[] beans can be used.
+To take more control, one or more javadoc:org.springframework.boot.couchbase.autoconfigure.ClusterEnvironmentBuilderCustomizer[] beans can be used.
 
 
 
