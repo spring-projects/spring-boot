@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,8 +39,8 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(
-		after = { CouchbaseAutoConfiguration.class, CouchbaseReactiveHealthContributorAutoConfiguration.class })
+@AutoConfiguration(after = CouchbaseReactiveHealthContributorAutoConfiguration.class,
+		afterName = "org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration")
 @ConditionalOnClass(Cluster.class)
 @ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")

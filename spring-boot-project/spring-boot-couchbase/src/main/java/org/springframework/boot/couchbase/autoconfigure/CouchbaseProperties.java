@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import java.time.Duration;
 
@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @author Michael Nitschinger
  * @author Scott Frederick
- * @since 1.4.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.couchbase")
 public class CouchbaseProperties {
