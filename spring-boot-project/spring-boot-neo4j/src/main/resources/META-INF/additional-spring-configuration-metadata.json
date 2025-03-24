@@ -1,0 +1,9 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.neo4j.uri",
+      "defaultValue": "bolt://localhost:7687"
+    }
+  ]
+}

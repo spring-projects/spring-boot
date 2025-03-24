@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNode;
 import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNonAnnotated;
 import org.springframework.boot.autoconfigure.data.neo4j.scan.TestPersistent;
 import org.springframework.boot.autoconfigure.data.neo4j.scan.TestRelationshipProperties;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

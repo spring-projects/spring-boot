@@ -261,7 +261,7 @@ spring:
 ----
 
 The auto-configured javadoc:org.neo4j.driver.Driver[] is created using `org.neo4j.driver.Config$ConfigBuilder`.
-To fine-tune its configuration, declare one or more javadoc:org.springframework.boot.autoconfigure.neo4j.ConfigBuilderCustomizer[] beans.
+To fine-tune its configuration, declare one or more javadoc:org.springframework.boot.neo4j.autoconfigure.ConfigBuilderCustomizer[] beans.
 Each will be called in order with the `org.neo4j.driver.Config$ConfigBuilder` that is used to build the javadoc:org.neo4j.driver.Driver[].
 
 
