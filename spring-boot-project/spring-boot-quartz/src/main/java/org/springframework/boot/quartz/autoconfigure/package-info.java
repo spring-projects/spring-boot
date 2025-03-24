@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Quartz Scheduler.
  */
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;

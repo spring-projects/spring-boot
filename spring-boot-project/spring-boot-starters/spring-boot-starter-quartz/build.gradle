@@ -22,7 +22,6 @@ description = "Starter for using the Quartz scheduler"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-quartz"))
 	api(project(":spring-boot-project:spring-boot-tx"))
-	api("org.springframework:spring-context-support")
-	api("org.quartz-scheduler:quartz")
 }

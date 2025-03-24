@@ -761,17 +761,6 @@
       }
     },
     {
-      "name": "spring.quartz.jdbc.comment-prefix",
-      "defaultValue": [
-        "#",
-        "--"
-      ]
-    },
-    {
-      "name": "spring.quartz.scheduler-name",
-      "defaultValue": "quartzScheduler"
-    },
-    {
       "name": "spring.reactor.stacktrace-mode.enabled",
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,

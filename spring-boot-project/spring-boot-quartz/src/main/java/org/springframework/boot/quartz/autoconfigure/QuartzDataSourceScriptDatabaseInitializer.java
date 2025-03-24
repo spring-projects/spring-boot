@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 

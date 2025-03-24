@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import javax.sql.DataSource;
 
@@ -31,7 +31,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  * {@link QuartzDataSourceScriptDatabaseInitializer}.
  *
  * @author Vedran Pavic
- * @since 2.0.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface SchedulerFactoryBeanCustomizer {

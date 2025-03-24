@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.quartz")
 public class QuartzProperties {

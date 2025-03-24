@@ -164,7 +164,6 @@ dependencies {
 	optional("org.opensaml:opensaml-core:4.0.1")
 	optional("org.opensaml:opensaml-saml-api:4.0.1")
 	optional("org.opensaml:opensaml-saml-impl:4.0.1")
-	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-aspects")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-jms")

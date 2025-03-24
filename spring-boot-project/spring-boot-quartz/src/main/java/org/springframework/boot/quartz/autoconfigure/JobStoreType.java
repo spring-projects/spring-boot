@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 /**
  * Define the supported Quartz {@code JobStore}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public enum JobStoreType {
 

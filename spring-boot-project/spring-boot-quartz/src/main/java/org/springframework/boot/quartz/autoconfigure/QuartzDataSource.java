@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.quartz;
+package org.springframework.boot.quartz.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,18 +25,18 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Qualifier annotation for a TransactionManager to be injected into Quartz
- * auto-configuration. Can be used on a secondary transaction manager, if there is another
- * one marked as {@code @Primary}.
+ * Qualifier annotation for a DataSource to be injected into Quartz auto-configuration.
+ * Can be used on a secondary data source, if there is another one marked as
+ * {@code @Primary}.
  *
- * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @see QuartzDataSource
- * @since 2.2.11
+ * @since 4.0.0
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier
-public @interface QuartzTransactionManager {
+public @interface QuartzDataSource {
 
 }

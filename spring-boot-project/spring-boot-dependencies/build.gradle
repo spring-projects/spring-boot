@@ -2023,6 +2023,7 @@ bom {
 				"spring-boot-neo4j",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
+				"spring-boot-quartz",
 				"spring-boot-r2dbc",
 				"spring-boot-reactor-netty",
 				"spring-boot-rsocket",
