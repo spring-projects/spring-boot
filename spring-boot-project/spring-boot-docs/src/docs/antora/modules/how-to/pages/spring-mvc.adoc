@@ -233,11 +233,11 @@ javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurati
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.
   You can override javadoc:org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver[] by providing a bean of the same name.
-* If you use Mustache, you also have a javadoc:org.springframework.boot.web.servlet.view.MustacheViewResolver[] named '`mustacheViewResolver`'.
+* If you use Mustache, you also have a javadoc:org.springframework.boot.mustache.servlet.view.MustacheViewResolver[] named '`mustacheViewResolver`'.
   It looks for resources by surrounding the view name with a prefix and suffix.
   The prefix is `spring.mustache.prefix`, and the suffix is `spring.mustache.suffix`.
   The values of the prefix and suffix default to '`classpath:/templates/`' and '`.mustache`', respectively.
-  You can override javadoc:org.springframework.boot.web.servlet.view.MustacheViewResolver[] by providing a bean of the same name.
+  You can override javadoc:org.springframework.boot.mustache.servlet.view.MustacheViewResolver[] by providing a bean of the same name.
 
 For more detail, see the following sections:
 

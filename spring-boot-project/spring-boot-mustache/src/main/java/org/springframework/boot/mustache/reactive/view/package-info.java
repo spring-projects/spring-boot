@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
-
-description = "Starter for building web applications using Mustache views"
-
-dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-	api(project(":spring-boot-project:spring-boot-mustache"))
-}
+/**
+ * Additional {@link org.springframework.web.reactive.result.view.View Views} for use with
+ * WebFlux.
+ */
+package org.springframework.boot.mustache.reactive.view;

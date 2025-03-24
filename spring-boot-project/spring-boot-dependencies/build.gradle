@@ -2019,6 +2019,7 @@ bom {
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
 				"spring-boot-mail",
+				"spring-boot-mustache",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
 				"spring-boot-r2dbc",

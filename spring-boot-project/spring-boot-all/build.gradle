@@ -35,7 +35,6 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.oracle.database.jdbc:ojdbc11")
-	optional("com.samskivert:jmustache")
 	optional("com.zaxxer:HikariCP")
 	optional("io.netty:netty-tcnative-boringssl-static")
 	optional("io.projectreactor:reactor-tools")
