@@ -107,7 +107,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
 | Containers named "mongo" or "bitnami/mongodb"
 
-| javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[]
+| javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
 | Containers named "neo4j" or "bitnami/neo4j"
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]

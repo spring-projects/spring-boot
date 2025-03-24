@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.neo4j.autoconfigure;
 
 import java.io.File;
 import java.net.URI;
@@ -37,11 +37,11 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Pool;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Security;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Authentication;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Pool;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
