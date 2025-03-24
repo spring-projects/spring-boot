@@ -51,7 +51,7 @@ jobs:
         docs-host: ${{ secrets.DOCS_HOST }}
         docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
         docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
-        httpdocs-path: /spring-boot/antora/reference
+        httpdocs-path: /spring-boot/antora
       env:
         BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
