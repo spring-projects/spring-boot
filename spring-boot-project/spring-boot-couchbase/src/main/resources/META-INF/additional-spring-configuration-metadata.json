@@ -1,0 +1,136 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.couchbase.bootstrap-hosts",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Couchbase nodes (host or IP address) to bootstrap from.",
+      "deprecation": {
+        "replacement": "spring.couchbase.connection-string",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.bucket.name",
+      "type": "java.lang.String",
+      "description": "Name of the bucket to connect to.",
+      "deprecation": {
+        "reason": "A bucket is no longer auto-configured.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.bucket.password",
+      "type": "java.lang.String",
+      "description": "Password of the bucket.",
+      "deprecation": {
+        "reason": "A bucket is no longer auto-configured.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.bootstrap.http-direct-port",
+      "type": "java.lang.Integer",
+      "description": "Port for the HTTP bootstrap.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.bootstrap.http-ssl-port",
+      "type": "java.lang.Integer",
+      "description": "Port for the HTTPS bootstrap.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.key-value",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the key/value service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.query",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the query (N1QL) service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.queryservice.max-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.max-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.queryservice.min-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Minimum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.min-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.view",
+      "type": "java.lang.Integer",
+      "description": "Number of sockets per node against the view service.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.viewservice.max-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.max-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.endpoints.viewservice.min-endpoints",
+      "type": "java.lang.Integer",
+      "description": "Minimum number of sockets per node.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.io.min-endpoints",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.ssl.key-store",
+      "type": "java.lang.String",
+      "description": "Path to the JVM key store that holds the certificates.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.ssl.bundle",
+        "level": "error",
+        "since": "3.1.0"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.ssl.key-store-password",
+      "type": "java.lang.String",
+      "description": "Password used to access the key store.",
+      "deprecation": {
+        "replacement": "spring.couchbase.env.ssl.bundle",
+        "level": "error",
+        "since": "3.1.0"
+      }
+    },
+    {
+      "name": "spring.couchbase.env.timeouts.socket-connect",
+      "type": "java.time.Duration",
+      "description": "Socket connect connections timeout.",
+      "deprecation": {
+        "level": "error"
+      }
+    }
+  ]
+}

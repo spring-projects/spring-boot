@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import com.couchbase.client.core.env.IoConfig;
 import com.couchbase.client.core.env.TimeoutConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Io;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Timeouts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

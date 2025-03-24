@@ -128,7 +128,7 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.cassandra.CassandraContainer[]
 
-| javadoc:org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails[]
+| javadoc:org.springframework.boot.couchbase.autoconfigure.CouchbaseConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.couchbase.CouchbaseContainer[]
 
 | javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]

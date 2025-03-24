@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Couchbase.
  */
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;

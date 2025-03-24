@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.couchbase;
 
 import org.testcontainers.couchbase.CouchbaseContainer;
 
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;

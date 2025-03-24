@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import com.couchbase.client.core.env.Authenticator;
 import com.couchbase.client.java.Cluster;

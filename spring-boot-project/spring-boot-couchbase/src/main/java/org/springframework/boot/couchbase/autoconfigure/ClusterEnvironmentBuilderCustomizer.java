@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.env.ClusterEnvironment.Builder;
@@ -25,7 +25,7 @@ import com.couchbase.client.java.env.ClusterEnvironment.Builder;
  * retaining default auto-configuration.
  *
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ClusterEnvironmentBuilderCustomizer {
