@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTraci
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -36,6 +35,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;

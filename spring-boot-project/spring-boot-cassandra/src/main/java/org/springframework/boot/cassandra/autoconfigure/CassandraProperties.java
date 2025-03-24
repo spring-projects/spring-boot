@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.autoconfigure;
 
 import java.time.Duration;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.springframework.core.io.Resource;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Scott Frederick
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.cassandra")
 public class CassandraProperties {
