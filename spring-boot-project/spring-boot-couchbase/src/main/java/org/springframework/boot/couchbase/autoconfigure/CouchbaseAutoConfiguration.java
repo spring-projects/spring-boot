@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.autoconfigure;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,12 +43,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseCondition;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication.Jks;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication.Pem;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Ssl;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration.CouchbaseCondition;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Authentication.Jks;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Authentication.Pem;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Ssl;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseProperties.Timeouts;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -73,7 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 1.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass(Cluster.class)
