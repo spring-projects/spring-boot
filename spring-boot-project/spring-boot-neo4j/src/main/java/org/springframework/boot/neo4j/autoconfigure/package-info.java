@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Neo4j.
  */
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.neo4j.autoconfigure;

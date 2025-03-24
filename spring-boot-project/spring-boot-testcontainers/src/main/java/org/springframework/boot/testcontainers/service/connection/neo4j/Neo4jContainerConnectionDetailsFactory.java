@@ -22,7 +22,7 @@ import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
 import org.testcontainers.containers.Neo4jContainer;
 
-import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

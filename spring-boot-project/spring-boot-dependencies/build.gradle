@@ -2020,6 +2020,7 @@ bom {
 				"spring-boot-loader-tools",
 				"spring-boot-mail",
 				"spring-boot-mustache",
+				"spring-boot-neo4j",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
 				"spring-boot-r2dbc",

@@ -20,10 +20,10 @@ import java.net.URI;
 
 import org.neo4j.driver.AuthToken;
 
-import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link Neo4jConnectionDetails}

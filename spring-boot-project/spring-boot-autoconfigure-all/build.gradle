@@ -70,6 +70,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-liquibase"))
+	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))

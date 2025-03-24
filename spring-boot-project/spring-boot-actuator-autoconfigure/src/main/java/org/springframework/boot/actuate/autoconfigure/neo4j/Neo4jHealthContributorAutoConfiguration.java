@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -39,7 +38,7 @@ import org.springframework.context.annotation.Import;
  * @author Michael J. Simons
  * @since 2.0.0
  */
-@AutoConfiguration(after = Neo4jAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration")
 @ConditionalOnClass(Driver.class)
 @ConditionalOnBean(Driver.class)
 @ConditionalOnEnabledHealthIndicator("neo4j")
