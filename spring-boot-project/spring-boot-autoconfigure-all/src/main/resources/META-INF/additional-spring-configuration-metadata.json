@@ -683,18 +683,6 @@
       }
     },
     {
-      "name": "spring.mustache.prefix",
-      "defaultValue": "classpath:/templates/"
-    },
-    {
-      "name": "spring.mustache.reactive.media-types",
-      "defaultValue": "text/html;charset=UTF-8"
-    },
-    {
-      "name": "spring.mustache.suffix",
-      "defaultValue": ".mustache"
-    },
-    {
       "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "defaultValue": "jackson",

@@ -54,7 +54,6 @@ org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfigurati
 org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
-org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration

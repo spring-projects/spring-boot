@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -27,6 +26,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
 import org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration;
 import org.springframework.boot.groovy.template.autoconfigure.GroovyTemplateAutoConfiguration;
+import org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
