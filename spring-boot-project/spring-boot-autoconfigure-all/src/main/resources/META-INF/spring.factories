@@ -13,5 +13,4 @@ org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvid
 
 # Depends on Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
-org.springframework.boot.autoconfigure.quartz.SchedulerDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.autoconfigure.session.JdbcIndexedSessionRepositoryDependsOnDatabaseInitializationDetector
