@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import javax.sql.DataSource;
 
@@ -227,7 +227,7 @@ class JooqAutoConfigurationTests {
 	@Test
 	void shouldLoadSettingsFromConfigPropertyThroughJaxb() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class)
-			.withPropertyValues("spring.jooq.config=classpath:org/springframework/boot/autoconfigure/jooq/settings.xml")
+			.withPropertyValues("spring.jooq.config=classpath:org/springframework/boot/jooq/autoconfigure/settings.xml")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Settings.class);
 				Settings settings = context.getBean(Settings.class);

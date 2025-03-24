@@ -23,29 +23,24 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Flyway"
+description = "Spring Boot jOOQ"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-jdbc"))
-	api("org.flywaydb:flyway-core")
+	api(project(":spring-boot-project:spring-boot-tx"))
+	api("org.jooq:jooq")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("org.flywaydb:flyway-database-oracle")
-	optional("org.flywaydb:flyway-database-postgresql")
-	optional("org.flywaydb:flyway-sqlserver")
+	optional(project(":spring-boot-project:spring-boot-r2dbc"))
+	optional("jakarta.xml.bind:jakarta.xml.bind-api")
 
-	testImplementation(project(":spring-boot-project:spring-boot-jooq"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("jakarta.persistence:jakarta.persistence-api")
-	testImplementation("org.hibernate.orm:hibernate-core")
-	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.postgresql:postgresql")
-	testImplementation("org.springframework:spring-orm")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
-	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
+	testRuntimeOnly("io.r2dbc:r2dbc-h2")
+	testRuntimeOnly("org.glassfish.jaxb:jaxb-runtime")
+	testRuntimeOnly("org.hsqldb:hsqldb")
 }

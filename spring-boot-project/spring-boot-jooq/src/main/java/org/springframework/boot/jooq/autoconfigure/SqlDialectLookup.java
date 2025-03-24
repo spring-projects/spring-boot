@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import java.sql.Connection;
 import java.sql.SQLException;

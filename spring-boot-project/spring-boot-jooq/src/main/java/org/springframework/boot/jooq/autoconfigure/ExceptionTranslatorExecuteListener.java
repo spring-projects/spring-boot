@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -34,7 +34,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
  * adapting an existing {@link SQLExceptionTranslator}.
  *
  * @author Dennis Melzer
- * @since 3.3.0
+ * @since 4.0.0
  * @see #DEFAULT
  * @see #of(Function)
  */

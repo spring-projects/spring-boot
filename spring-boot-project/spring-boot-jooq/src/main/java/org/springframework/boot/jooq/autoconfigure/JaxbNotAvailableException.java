@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
-
-import org.jooq.impl.DefaultConfiguration;
+package org.springframework.boot.jooq.autoconfigure;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the
- * {@link DefaultConfiguration} whilst retaining default auto-configuration.
+ * Exception to be thrown if JAXB is not available.
  *
- * @author Stephane Nicoll
- * @since 2.5.0
+ * @author Moritz Halbritter
  */
-@FunctionalInterface
-public interface DefaultConfigurationCustomizer {
-
-	/**
-	 * Customize the {@link DefaultConfiguration jOOQ Configuration}.
-	 * @param configuration the configuration to customize
-	 */
-	void customize(DefaultConfiguration configuration);
+class JaxbNotAvailableException extends RuntimeException {
 
 }

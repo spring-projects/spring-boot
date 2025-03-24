@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +68,7 @@ import org.springframework.util.ClassUtils;
  * @author Michael Simons
  * @author Dmytro Nosan
  * @author Moritz Halbritter
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass(DSLContext.class)

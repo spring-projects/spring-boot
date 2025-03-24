@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
+
+import org.jooq.Transaction;
+
+import org.springframework.transaction.TransactionStatus;
 
 /**
- * Exception to be thrown if JAXB is not available.
+ * Adapts a Spring transaction for jOOQ.
  *
- * @author Moritz Halbritter
+ * @author Lukas Eder
+ * @author Andreas Ahlenstorf
+ * @author Phillip Webb
  */
-class JaxbNotAvailableException extends RuntimeException {
+class SpringTransaction implements Transaction {
+
+	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
+
+	private final TransactionStatus transactionStatus;
+
+	SpringTransaction(TransactionStatus transactionStatus) {
+		this.transactionStatus = transactionStatus;
+	}
+
+	TransactionStatus getTxStatus() {
+		return this.transactionStatus;
+	}
 
 }

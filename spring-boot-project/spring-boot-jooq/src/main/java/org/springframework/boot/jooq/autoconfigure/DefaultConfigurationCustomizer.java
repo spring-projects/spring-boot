@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.jooq.autoconfigure;
+
+import org.jooq.impl.DefaultConfiguration;
+
 /**
- * Auto-configuration for jOOQ.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link DefaultConfiguration} whilst retaining default auto-configuration.
+ *
+ * @author Stephane Nicoll
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.jooq;
+@FunctionalInterface
+public interface DefaultConfigurationCustomizer {
+
+	/**
+	 * Customize the {@link DefaultConfiguration jOOQ Configuration}.
+	 * @param configuration the configuration to customize
+	 */
+	void customize(DefaultConfiguration configuration);
+
+}

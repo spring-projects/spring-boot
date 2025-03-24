@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import javax.sql.DataSource;
 
@@ -29,7 +29,7 @@ import org.springframework.core.io.Resource;
  * @author Andreas Ahlenstorf
  * @author Michael Simons
  * @author Moritz Halbritter
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.jooq")
 public class JooqProperties {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.jooq.autoconfigure;
 
 import org.jooq.TransactionContext;
 import org.jooq.TransactionProvider;
@@ -30,7 +30,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @author Lukas Eder
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
- * @since 1.5.10
+ * @since 4.0.0
  */
 public class SpringTransactionProvider implements TransactionProvider {
 
