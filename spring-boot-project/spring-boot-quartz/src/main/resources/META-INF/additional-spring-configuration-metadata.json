@@ -1,0 +1,16 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.quartz.jdbc.comment-prefix",
+      "defaultValue": [
+        "#",
+        "--"
+      ]
+    },
+    {
+      "name": "spring.quartz.scheduler-name",
+      "defaultValue": "quartzScheduler"
+    }
+  ]
+}

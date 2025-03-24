@@ -37,18 +37,18 @@ To use a custom script, set the configprop:spring.quartz.jdbc.schema[] property.
 Some of the standard scripts – such as those for SQL Server, Azure SQL, and Sybase – cannot be used without modification.
 In these cases, make a copy of the script and edit it as directed in the script's comments then set configprop:spring.quartz.jdbc.schema[] to use your customized script.
 
-To have Quartz use a javadoc:javax.sql.DataSource[] other than the application's main javadoc:javax.sql.DataSource[], declare a javadoc:javax.sql.DataSource[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzDataSource[format=annotation].
+To have Quartz use a javadoc:javax.sql.DataSource[] other than the application's main javadoc:javax.sql.DataSource[], declare a javadoc:javax.sql.DataSource[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.quartz.autoconfigure.QuartzDataSource[format=annotation].
 Doing so ensures that the Quartz-specific javadoc:javax.sql.DataSource[] is used by both the javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] and for schema initialization.
-Similarly, to have Quartz use a javadoc:org.springframework.transaction.TransactionManager[] other than the application's main javadoc:org.springframework.transaction.TransactionManager[] declare a javadoc:org.springframework.transaction.TransactionManager[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager[format=annotation].
+Similarly, to have Quartz use a javadoc:org.springframework.transaction.TransactionManager[] other than the application's main javadoc:org.springframework.transaction.TransactionManager[] declare a javadoc:org.springframework.transaction.TransactionManager[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.quartz.autoconfigure.QuartzTransactionManager[format=annotation].
 
 By default, jobs created by configuration will not overwrite already registered jobs that have been read from a persistent job store.
 To enable overwriting existing job definitions set the configprop:spring.quartz.overwrite-existing-jobs[] property.
 
-Quartz Scheduler configuration can be customized using `spring.quartz` properties and javadoc:org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer[] beans, which allow programmatic javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] customization.
+Quartz Scheduler configuration can be customized using `spring.quartz` properties and javadoc:org.springframework.boot.quartz.autoconfigure.SchedulerFactoryBeanCustomizer[] beans, which allow programmatic javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] customization.
 Advanced Quartz configuration properties can be customized using `spring.quartz.properties.*`.
 
 NOTE: In particular, an javadoc:java.util.concurrent.Executor[] bean is not associated with the scheduler as Quartz offers a way to configure the scheduler through `spring.quartz.properties`.
-If you need to customize the task executor, consider implementing javadoc:org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer[].
+If you need to customize the task executor, consider implementing javadoc:org.springframework.boot.quartz.autoconfigure.SchedulerFactoryBeanCustomizer[].
 
 Jobs can define setters to inject data map properties.
 Regular beans can also be injected in a similar manner, as shown in the following example:
