@@ -1,7 +1,3 @@
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
-
-# Depends On Database Initialization Detectors
-org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
-org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector

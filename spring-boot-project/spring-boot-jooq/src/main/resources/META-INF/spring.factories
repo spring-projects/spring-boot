@@ -1,0 +1,9 @@
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.jooq.autoconfigure.JaxbNotAvailableExceptionFailureAnalyzer,\
+org.springframework.boot.jooq.autoconfigure.NoDslContextBeanFailureAnalyzer
+
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector
+

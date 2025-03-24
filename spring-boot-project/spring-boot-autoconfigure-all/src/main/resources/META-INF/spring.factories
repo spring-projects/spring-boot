@@ -4,9 +4,7 @@ org.springframework.boot.autoconfigure.http.MessageConverterBackgroundPreinitial
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer,\
-org.springframework.boot.autoconfigure.jooq.JaxbNotAvailableExceptionFailureAnalyzer,\
-org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer
+org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer
 
 # Template Availability Providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
