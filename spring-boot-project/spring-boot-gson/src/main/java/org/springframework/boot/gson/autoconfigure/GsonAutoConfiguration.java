@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.gson;
+package org.springframework.boot.gson.autoconfigure;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author David Liu
  * @author Ivan Golovko
- * @since 1.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Gson.class)
