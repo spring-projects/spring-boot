@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.dialect.IDialect;

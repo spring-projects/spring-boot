@@ -1,0 +1,34 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Thymeleaf"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.thymeleaf:thymeleaf-spring6")
+	api("org.springframework:spring-web")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework:spring-webmvc")
+	optional("org.springframework.security:spring-security-web")
+	optional("org.thymeleaf:thymeleaf")
+	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
+	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+	optional("jakarta.servlet:jakarta.servlet-api")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.getByName("checkAutoConfigurationClasses") {
+	enabled = false
+}

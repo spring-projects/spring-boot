@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
 import java.util.LinkedHashMap;
 
@@ -40,12 +40,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilt
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties.Reactive;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.thymeleaf.autoconfigure.ThymeleafProperties.Reactive;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -69,9 +67,10 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
  * @author Daniel Fernández
  * @author Kazuki Shimizu
  * @author Artsiom Yudovin
- * @since 1.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
+@AutoConfiguration(afterName = { "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration",
+		"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" })
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
 @Import({ TemplateEngineConfigurations.ReactiveTemplateEngineConfiguration.class,

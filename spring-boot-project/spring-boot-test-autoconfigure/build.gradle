@@ -105,6 +105,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	testImplementation(project(":spring-boot-project:spring-boot-thymeleaf"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")

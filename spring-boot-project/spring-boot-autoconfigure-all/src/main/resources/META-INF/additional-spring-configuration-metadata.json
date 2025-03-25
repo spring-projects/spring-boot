@@ -1264,33 +1264,6 @@
       }
     },
     {
-      "name": "spring.thymeleaf.prefix",
-      "defaultValue": "classpath:/templates/"
-    },
-    {
-      "name": "spring.thymeleaf.reactive.media-types",
-      "defaultValue": [
-        "text/html",
-        "application/xhtml+xml",
-        "application/xml",
-        "text/xml",
-        "application/rss+xml",
-        "application/atom+xml",
-        "application/javascript",
-        "application/ecmascript",
-        "text/javascript",
-        "text/ecmascript",
-        "application/json",
-        "text/css",
-        "text/plain",
-        "text/event-stream"
-      ]
-    },
-    {
-      "name": "spring.thymeleaf.suffix",
-      "defaultValue": ".html"
-    },
-    {
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
