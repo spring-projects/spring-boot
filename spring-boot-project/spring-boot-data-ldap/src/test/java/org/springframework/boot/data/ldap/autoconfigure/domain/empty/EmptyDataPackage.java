@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.alt.ldap;
+package org.springframework.boot.data.ldap.autoconfigure.domain.empty;
 
-import javax.naming.Name;
-
-import org.springframework.boot.autoconfigure.data.ldap.person.Person;
-import org.springframework.data.repository.Repository;
-
-public interface PersonLdapRepository extends Repository<Person, Name> {
+public class EmptyDataPackage {
 
 }

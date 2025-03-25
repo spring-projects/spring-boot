@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.ldap;
+package org.springframework.boot.data.ldap.autoconfigure;
 
 import javax.naming.ldap.LdapContext;
 
@@ -31,7 +31,7 @@ import org.springframework.data.ldap.repository.support.LdapRepositoryFactoryBea
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's LDAP Repositories.
  *
  * @author Eddú Meléndez
- * @since 1.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ LdapContext.class, LdapRepository.class })

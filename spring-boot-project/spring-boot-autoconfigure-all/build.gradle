@@ -69,7 +69,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
-	optional(project(":spring-boot-project:spring-boot-ldap"))
 	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
@@ -123,7 +122,6 @@ dependencies {
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java")
-	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
@@ -188,7 +186,6 @@ dependencies {
 		exclude group: "org.elasticsearch.client", module: "transport"
 	}
 	optional("org.springframework.data:spring-data-jdbc")
-	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.ldap;
+package org.springframework.boot.data.ldap.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
