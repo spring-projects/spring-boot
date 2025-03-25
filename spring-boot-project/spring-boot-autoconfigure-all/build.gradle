@@ -120,10 +120,8 @@ dependencies {
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.eclipse.angus:angus-mail")
 	optional("com.github.ben-manes.caffeine:caffeine")
-	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java")
 	optional("com.zaxxer:HikariCP")
-	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
@@ -221,9 +219,6 @@ dependencies {
 		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
 		exclude group: "jakarta.mail", module: "jakarta.mail-api"
 	}
-	optional("org.thymeleaf:thymeleaf")
-	optional("org.thymeleaf:thymeleaf-spring6")
-	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
@@ -232,6 +227,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-undertow"))
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
+	testImplementation(project(":spring-boot-project:spring-boot-thymeleaf"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("ch.qos.logback:logback-classic")

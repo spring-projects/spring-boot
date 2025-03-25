@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Locale;
@@ -26,8 +28,10 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.GroupingStrategy;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
@@ -45,7 +49,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
@@ -74,11 +77,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Kazuki Shimizu
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ThymeleafServletAutoConfigurationTests {
-
-	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class));
@@ -179,9 +181,10 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	void templateLocationEmpty(CapturedOutput output) {
-		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
-		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
+	void templateLocationEmpty(CapturedOutput output, @TempDir Path tempDir) throws IOException {
+		Path directory = tempDir.resolve("empty-templates/empty-directory").toAbsolutePath();
+		Files.createDirectories(directory);
+		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:file:" + directory)
 			.run((context) -> assertThat(output).doesNotContain("Cannot find template location"));
 	}
 
@@ -354,7 +357,7 @@ class ThymeleafServletAutoConfigurationTests {
 	@Test
 	void cachingCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.cache:false").run((context) -> {
-			assertThat(context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
+			Assertions.assertThat(context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
 			SpringResourceTemplateResolver templateResolver = context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(templateResolver.isCacheable()).isFalse();
 		});

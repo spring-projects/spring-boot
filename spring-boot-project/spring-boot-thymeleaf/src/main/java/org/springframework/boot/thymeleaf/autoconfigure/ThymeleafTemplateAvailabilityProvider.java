@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
@@ -27,7 +27,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
- * @since 1.1.0
+ * @since 4.0.0
  */
 public class ThymeleafTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
