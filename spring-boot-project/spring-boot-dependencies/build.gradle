@@ -6,7 +6,6 @@ plugins {
 description = "Spring Boot Dependencies"
 
 bom {
-	effectiveBomArtifact()
 	upgrade {
 		policy = "same-minor-version"
 		gitHub {
