@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,13 @@ import org.springframework.util.MultiValueMap;
  */
 abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
-	private static final String INDEX_ZERO = "[0]";
+	private static final String[] INDEXES;
+	static {
+		INDEXES = new String[10];
+		for (int i = 0; i < INDEXES.length; i++) {
+			INDEXES[i] = "[" + i + "]";
+		}
+	}
 
 	IndexedElementsBinder(Context context) {
 		super(context);
@@ -100,15 +106,36 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType elementType) {
-		MultiValueMap<String, ConfigurationPropertyName> knownIndexedChildren = getKnownIndexedChildren(source, root);
+		int firstUnboundIndex = 0;
+		boolean hasBindingGap = false;
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.append((i != 0) ? "[" + i + "]" : INDEX_ZERO);
+			ConfigurationPropertyName name = appendIndex(root, i);
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
-			if (value == null) {
+			if (value != null) {
+				collection.get().add(value);
+				hasBindingGap = hasBindingGap || firstUnboundIndex > 0;
+				continue;
+			}
+			firstUnboundIndex = (firstUnboundIndex <= 0) ? i : firstUnboundIndex;
+			if (i - firstUnboundIndex > 10) {
 				break;
 			}
+		}
+		if (hasBindingGap) {
+			assertNoUnboundChildren(source, root, firstUnboundIndex);
+		}
+	}
+
+	private ConfigurationPropertyName appendIndex(ConfigurationPropertyName root, int i) {
+		return root.append((i < INDEXES.length) ? INDEXES[i] : "[" + i + "]");
+	}
+
+	private void assertNoUnboundChildren(ConfigurationPropertySource source, ConfigurationPropertyName root,
+			int firstUnboundIndex) {
+		MultiValueMap<String, ConfigurationPropertyName> knownIndexedChildren = getKnownIndexedChildren(source, root);
+		for (int i = 0; i < firstUnboundIndex; i++) {
+			ConfigurationPropertyName name = appendIndex(root, i);
 			knownIndexedChildren.remove(name.getLastElement(Form.UNIFORM));
-			collection.get().add(value);
 		}
 		assertNoUnboundChildren(source, knownIndexedChildren);
 	}
