@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.ldap;
+package org.springframework.boot.data.ldap.autoconfigure;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.alt.ldap.PersonLdapRepository;
-import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.data.ldap.person.Person;
-import org.springframework.boot.autoconfigure.data.ldap.person.PersonRepository;
+import org.springframework.boot.data.ldap.autoconfigure.domain.empty.EmptyDataPackage;
+import org.springframework.boot.data.ldap.autoconfigure.domain.person.Person;
+import org.springframework.boot.data.ldap.autoconfigure.domain.person.PersonRepository;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -64,7 +63,7 @@ class LdapRepositoriesAutoConfigurationTests {
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(PersonLdapRepository.class)).isNotNull();
+		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	private void load(Class<?>... configurationClasses) {
@@ -90,7 +89,7 @@ class LdapRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(LdapRepositoriesAutoConfigurationTests.class)
-	@EnableLdapRepositories(basePackageClasses = PersonLdapRepository.class)
+	@EnableLdapRepositories(basePackageClasses = PersonRepository.class)
 	static class CustomizedConfiguration {
 
 	}
