@@ -82,6 +82,8 @@ import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
  */
 public class BomExtension {
 
+	private final String id;
+
 	private final Project project;
 
 	private final UpgradeHandler upgradeHandler;
@@ -95,6 +97,11 @@ public class BomExtension {
 	public BomExtension(Project project) {
 		this.project = project;
 		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class, project);
+		this.id = "%s:%s:%s".formatted(project.getGroup(), project.getName(), project.getVersion());
+	}
+
+	public String getId() {
+		return this.id;
 	}
 
 	public List<Library> getLibraries() {

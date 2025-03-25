@@ -14,6 +14,7 @@ configurations {
 	autoConfiguration
 	configurationProperties
 	remoteSpringApplicationExample
+	resolvedBom
 	springApplicationExample
 	testSlices
 	all {
@@ -177,6 +178,8 @@ dependencies {
 	remoteSpringApplicationExample(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 	remoteSpringApplicationExample("org.springframework:spring-web")
 
+	resolvedBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "resolvedBom"))
+
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
@@ -254,16 +257,14 @@ task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoc
 	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
-task documentDependencyVersionCoordinates(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
-	dependsOn dependencyVersions
-	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
+task documentDependencyVersionCoordinates(type: org.springframework.boot.build.docs.DocumentManagedDependencies) {
 	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-coordinates.adoc")
+	resolvedBoms = configurations.resolvedBom
 }
 
-task documentDependencyVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
-	dependsOn dependencyVersions
-	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
+task documentDependencyVersionProperties(type: org.springframework.boot.build.docs.DocumentVersionProperties) {
 	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-properties.adoc")
+	resolvedBoms = configurations.resolvedBom
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
