@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration;
 import org.springframework.boot.test.json.BasicJsonTester;

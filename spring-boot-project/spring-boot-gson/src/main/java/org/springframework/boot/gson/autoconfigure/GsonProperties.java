@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.gson;
+package org.springframework.boot.gson.autoconfigure;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * Configuration properties to configure {@link Gson}.
  *
  * @author Ivan Golovko
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.gson")
 public class GsonProperties {
@@ -193,8 +193,6 @@ public class GsonProperties {
 	 * Enumeration of levels of strictness. Values are the same as those on
 	 * {@link com.google.gson.Strictness} that was introduced in Gson 2.11. To maximize
 	 * backwards compatibility, the Gson enum is not used directly.
-	 *
-	 * @since 3.4.2
 	 */
 	public enum Strictness {
 
