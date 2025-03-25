@@ -17,7 +17,9 @@
 package org.springframework.boot.build.bom;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +42,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
+import org.springframework.boot.build.bom.ResolvedBom.JavadocLink;
+import org.springframework.boot.build.bom.ResolvedBom.Links;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 
 /**
@@ -85,13 +90,21 @@ class BomResolver {
 					imports.add(bom);
 				}
 			}
+			List<JavadocLink> javadocLinks = javadocLinksOf(library).stream()
+				.map((link) -> new JavadocLink(URI.create(link.url(library)), link.packages()))
+				.toList();
 			ResolvedLibrary resolvedLibrary = new ResolvedLibrary(library.getName(),
 					library.getVersion().getVersion().toString(), library.getVersionProperty(), managedDependencies,
-					imports);
+					imports, new Links(javadocLinks));
 			libraries.add(resolvedLibrary);
 		}
 		String[] idComponents = bomExtension.getId().split(":");
 		return new ResolvedBom(new Id(idComponents[0], idComponents[1], idComponents[2]), libraries);
+	}
+
+	private List<Link> javadocLinksOf(Library library) {
+		List<Link> javadocLinks = library.getLinks("javadoc");
+		return (javadocLinks != null) ? javadocLinks : Collections.emptyList();
 	}
 
 	Bom resolveMavenBom(String coordinates) {

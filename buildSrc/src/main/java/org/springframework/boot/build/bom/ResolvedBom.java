@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.net.URI;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -66,7 +67,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
-			List<Bom> importedBoms) {
+			List<Bom> importedBoms, Links links) {
 
 	}
 
@@ -106,6 +107,14 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public record Bom(Id id, Bom parent, List<Id> managedDependencies, List<Bom> importedBoms) {
+
+	}
+
+	public record Links(List<JavadocLink> javadoc) {
+
+	}
+
+	public record JavadocLink(URI uri, List<String> packages) {
 
 	}
 
