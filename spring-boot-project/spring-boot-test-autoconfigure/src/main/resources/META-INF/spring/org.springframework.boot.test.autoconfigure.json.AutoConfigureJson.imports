@@ -1,4 +1,4 @@
 # AutoConfigureJson auto-configuration imports
-org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
+optional:org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration
 org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
 optional:org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration
