@@ -3,7 +3,7 @@ org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
 optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 optional:org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration
-org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration
+optional:org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration

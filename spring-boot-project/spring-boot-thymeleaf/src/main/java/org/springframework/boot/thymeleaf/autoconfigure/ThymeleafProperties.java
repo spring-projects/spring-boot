@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Daniel Fernández
  * @author Kazuki Shimizu
- * @since 1.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.thymeleaf")
 public class ThymeleafProperties {
