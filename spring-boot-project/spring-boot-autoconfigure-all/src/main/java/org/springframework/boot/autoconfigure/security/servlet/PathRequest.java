@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
+import org.springframework.boot.h2.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -63,12 +65,12 @@ public final class PathRequest {
 	/**
 	 * The request matcher used to match against h2 console path.
 	 */
-	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<H2ConsoleProperties> {
+	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<ApplicationContext> {
 
 		private volatile RequestMatcher delegate;
 
 		private H2ConsoleRequestMatcher() {
-			super(H2ConsoleProperties.class);
+			super(ApplicationContext.class);
 		}
 
 		@Override
@@ -77,12 +79,15 @@ public final class PathRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
-			this.delegate = new AntPathRequestMatcher(h2ConsoleProperties.get().getPath() + "/**");
+		protected void initialized(Supplier<ApplicationContext> context) {
+			H2ConsoleProperties properties = context.get().getBean(H2ConsoleProperties.class);
+			String path = properties.getPath();
+			Assert.hasText(path, "'path' in H2ConsoleProperties must not be empty");
+			this.delegate = new AntPathRequestMatcher(path + "/**");
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, Supplier<H2ConsoleProperties> context) {
+		protected boolean matches(HttpServletRequest request, Supplier<ApplicationContext> context) {
 			return this.delegate.matches(request);
 		}
 

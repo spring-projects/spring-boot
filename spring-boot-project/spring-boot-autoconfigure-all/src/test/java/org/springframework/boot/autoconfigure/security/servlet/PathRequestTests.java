@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.h2.autoconfigure.H2ConsoleProperties;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
