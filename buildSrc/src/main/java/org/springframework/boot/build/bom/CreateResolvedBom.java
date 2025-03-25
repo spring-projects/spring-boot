@@ -49,10 +49,10 @@ public abstract class CreateResolvedBom extends DefaultTask {
 	public abstract RegularFileProperty getOutputFile();
 
 	@TaskAction
-	void describeDependencyManagement() throws IOException {
-		ResolvedBom dependencyManagement = this.bomResolver.resolve(this.bomExtension);
+	void createResolvedBom() throws IOException {
+		ResolvedBom resolvedBom = this.bomResolver.resolve(this.bomExtension);
 		try (FileWriter writer = new FileWriter(getOutputFile().get().getAsFile())) {
-			dependencyManagement.writeTo(writer);
+			resolvedBom.writeTo(writer);
 		}
 	}
 

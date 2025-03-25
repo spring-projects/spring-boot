@@ -1,3 +1,5 @@
+import org.springframework.boot.build.docs.ConfigureJavadocLinks
+
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
@@ -203,7 +205,6 @@ dokkatoo {
 }
 
 task aggregatedJavadoc(type: Javadoc) {
-	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
@@ -225,24 +226,7 @@ task aggregatedJavadoc(type: Javadoc) {
 			use = true
 			windowTitle = "Spring Boot ${project.version} API"
 		}
-		doFirst {
-			def versionConstraints = dependencyVersions.versionConstraints
-			def toMajorMinorVersion = version -> {
-				String formatted = version.split("\\.").take(2).join('.') + '.x'
-				return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
-			}
-			def springFrameworkVersion = toMajorMinorVersion(versionConstraints["org.springframework:spring-core"])
-			def springSecurityVersion = toMajorMinorVersion(versionConstraints["org.springframework.security:spring-security-core"])
-			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
-			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
-			options.links = [
-				"https://docs.oracle.com/en/java/javase/17/docs/api/",
-				"https://docs.spring.io/spring-framework/docs/${springFrameworkVersion}/javadoc-api/",
-				"https://docs.spring.io/spring-security/site/docs/${springSecurityVersion}/api/",
-				"https://jakarta.ee/specifications/platform/9/apidocs/",
-				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
-			] as String[]
-		}
+		doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
 	}
 }
 
