@@ -2026,6 +2026,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-couchbase",
 				"spring-boot-data-jpa",
+				"spring-boot-data-ldap",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-elasticsearch",
