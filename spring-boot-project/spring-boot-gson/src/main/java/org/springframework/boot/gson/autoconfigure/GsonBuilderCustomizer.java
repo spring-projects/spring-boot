@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.gson.autoconfigure;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
- * Auto-configuration for GSON.
+ * Callback interface that can be implemented by beans wishing to further customize the
+ * {@link Gson} through {@link GsonBuilder} retaining its default auto-configuration.
+ *
+ * @author Ivan Golovko
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.gson;
+@FunctionalInterface
+public interface GsonBuilderCustomizer {
+
+	/**
+	 * Customize the GsonBuilder.
+	 * @param gsonBuilder the GsonBuilder to customize
+	 */
+	void customize(GsonBuilder gsonBuilder);
+
+}

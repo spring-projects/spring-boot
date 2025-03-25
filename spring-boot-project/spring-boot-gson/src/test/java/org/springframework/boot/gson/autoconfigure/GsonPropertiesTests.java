@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.gson;
+package org.springframework.boot.gson.autoconfigure;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.List;
+import java.util.stream.Stream;
+
+import com.google.gson.Strictness;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Callback interface that can be implemented by beans wishing to further customize the
- * {@link Gson} through {@link GsonBuilder} retaining its default auto-configuration.
+ * Tests for {@link GsonProperties}.
  *
- * @author Ivan Golovko
- * @since 2.0.0
+ * @author Andy Wilkinson
  */
-@FunctionalInterface
-public interface GsonBuilderCustomizer {
+class GsonPropertiesTests {
 
-	/**
-	 * Customize the GsonBuilder.
-	 * @param gsonBuilder the GsonBuilder to customize
-	 */
-	void customize(GsonBuilder gsonBuilder);
+	@Test
+	void valuesOfOurStrictnessMatchValuesOfGsonsStrictness() {
+		assertThat(namesOf(GsonProperties.Strictness.values())).isEqualTo(namesOf(Strictness.values()));
+	}
+
+	private List<String> namesOf(Enum<?>[] input) {
+		return Stream.of(input).map(Enum::name).toList();
+	}
 
 }

@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -48,9 +47,9 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Eddú Meléndez
  * @since 2.0.0
  */
-@AutoConfiguration(after = { GsonAutoConfiguration.class },
-		afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
-				"org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration" })
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration",
+		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration" })
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,

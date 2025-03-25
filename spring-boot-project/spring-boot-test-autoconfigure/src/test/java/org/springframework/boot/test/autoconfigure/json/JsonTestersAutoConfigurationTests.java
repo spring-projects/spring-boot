@@ -24,7 +24,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration;
 import org.springframework.boot.test.json.BasicJsonTester;

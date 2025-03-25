@@ -84,7 +84,6 @@ dependencies {
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 	optional("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	optional("com.google.code.gson:gson")
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")
 	optional("com.nimbusds:oauth2-oidc-sdk")
@@ -221,6 +220,7 @@ dependencies {
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
+	testImplementation(project(":spring-boot-project:spring-boot-gson"))
 	testImplementation(project(":spring-boot-project:spring-boot-jetty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

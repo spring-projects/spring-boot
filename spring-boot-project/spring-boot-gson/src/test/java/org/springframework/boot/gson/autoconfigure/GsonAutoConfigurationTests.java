@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.gson;
+package org.springframework.boot.gson.autoconfigure;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

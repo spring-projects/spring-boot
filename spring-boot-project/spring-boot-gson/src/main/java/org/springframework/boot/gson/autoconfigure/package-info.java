@@ -14,30 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.gson;
-
-import java.util.List;
-import java.util.stream.Stream;
-
-import com.google.gson.Strictness;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Tests for {@link GsonProperties}.
- *
- * @author Andy Wilkinson
+ * Auto-configuration for GSON.
  */
-class GsonPropertiesTests {
-
-	@Test
-	void valuesOfOurStrictnessMatchValuesOfGsonsStrictness() {
-		assertThat(namesOf(GsonProperties.Strictness.values())).isEqualTo(namesOf(Strictness.values()));
-	}
-
-	private List<String> namesOf(Enum<?>[] input) {
-		return Stream.of(input).map(Enum::name).toList();
-	}
-
-}
+package org.springframework.boot.gson.autoconfigure;
