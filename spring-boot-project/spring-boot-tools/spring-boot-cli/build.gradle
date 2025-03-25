@@ -11,7 +11,6 @@ plugins {
 description = "Spring Boot CLI"
 
 configurations {
-	dependenciesBom
 	loader
 	testRepository
 	compileOnlyProject
@@ -20,8 +19,6 @@ configurations {
 
 dependencies {
 	compileOnlyProject(project(":spring-boot-project:spring-boot"))
-
-	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("com.vaadin.external.google:android-json")
