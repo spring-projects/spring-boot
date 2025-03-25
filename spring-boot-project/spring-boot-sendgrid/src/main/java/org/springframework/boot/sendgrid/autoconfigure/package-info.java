@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for SendGrid.
  */
-package org.springframework.boot.autoconfigure.sendgrid;
+package org.springframework.boot.sendgrid.autoconfigure;

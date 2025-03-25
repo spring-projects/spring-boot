@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sendgrid;
+package org.springframework.boot.sendgrid.autoconfigure;
 
 import com.sendgrid.Client;
 import com.sendgrid.SendGrid;
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Bean;
  * @author Maciej Walkowiak
  * @author Patrick Bray
  * @author Andy Wilkinson
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(SendGrid.class)

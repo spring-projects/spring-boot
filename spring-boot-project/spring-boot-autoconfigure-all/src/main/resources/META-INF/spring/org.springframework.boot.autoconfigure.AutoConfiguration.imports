@@ -68,7 +68,6 @@ org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2Re
 org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerJwtAutoConfiguration
-org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration

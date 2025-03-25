@@ -120,7 +120,6 @@ dependencies {
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.eclipse.angus:angus-mail")
 	optional("com.github.ben-manes.caffeine:caffeine")
-	optional("com.sendgrid:sendgrid-java")
 	optional("com.zaxxer:HikariCP")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
