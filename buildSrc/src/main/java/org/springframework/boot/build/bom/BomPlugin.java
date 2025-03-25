@@ -65,6 +65,8 @@ public class BomPlugin implements Plugin<Project> {
 		TaskProvider<CreateResolvedBom> createResolvedBom = project.getTasks()
 			.register("createResolvedBom", CreateResolvedBom.class, bom);
 		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
+		checkBom.configure(
+				(task) -> task.getResolvedBomFile().set(createResolvedBom.flatMap(CreateResolvedBom::getOutputFile)));
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
 		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);

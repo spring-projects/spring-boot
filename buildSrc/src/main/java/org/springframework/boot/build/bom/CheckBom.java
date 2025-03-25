@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.build.bom;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -32,15 +32,22 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.file.RegularFile;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
-import org.springframework.boot.build.bom.ManagedDependencies.Difference;
+import org.springframework.boot.build.bom.ResolvedBom.Bom;
+import org.springframework.boot.build.bom.ResolvedBom.Id;
+import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
@@ -51,18 +58,28 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  */
 public abstract class CheckBom extends DefaultTask {
 
+	private final Provider<ResolvedBom> resolvedBom;
+
 	private final ConfigurationContainer configurations;
 
 	private final DependencyHandler dependencies;
 
 	private final BomExtension bom;
 
+	private final BomResolver bomResolver;
+
 	@Inject
 	public CheckBom(BomExtension bom) {
-		this.bom = bom;
 		this.configurations = getProject().getConfigurations();
 		this.dependencies = getProject().getDependencies();
+		this.bom = bom;
+		this.resolvedBom = getResolvedBomFile().map(RegularFile::getAsFile).map(ResolvedBom::readFrom);
+		this.bomResolver = new BomResolver(this.configurations, this.dependencies);
 	}
+
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
+	abstract RegularFileProperty getResolvedBomFile();
 
 	@TaskAction
 	void checkBom() {
@@ -191,35 +208,52 @@ public abstract class CheckBom extends DefaultTask {
 		if (alignsWithBom == null) {
 			return;
 		}
-		File bom = resolveBom(library, alignsWithBom);
-		ManagedDependencies managedByBom = ManagedDependencies.ofBom(bom);
-		ManagedDependencies managedByLibrary = ManagedDependencies.ofLibrary(library);
-		Difference diff = managedByBom.diff(managedByLibrary);
-		if (!diff.isEmpty()) {
-			String error = "Dependency management does not align with " + library.getAlignsWithBom() + ":";
-			if (!diff.missing().isEmpty()) {
-				error = error + "%n        - Missing:%n            %s"
-					.formatted(String.join("\n            ", diff.missing()));
-			}
-			if (!diff.unexpected().isEmpty()) {
-				error = error + "%n        - Unexpected:%n            %s"
-					.formatted(String.join("\n            ", diff.unexpected()));
-			}
-			errors.add(error);
+		Bom mavenBom = this.bomResolver.resolveMavenBom(alignsWithBom + ":" + library.getVersion().getVersion());
+		ResolvedBom resolvedBom = this.resolvedBom.get();
+		Optional<ResolvedLibrary> resolvedLibrary = resolvedBom.libraries()
+			.stream()
+			.filter((candidate) -> candidate.name().equals(library.getName()))
+			.findFirst();
+		if (!resolvedLibrary.isPresent()) {
+			throw new RuntimeException("Library '%s' not found in resolved bom".formatted(library.getName()));
 		}
+		checkDependencyManagementAlignment(resolvedLibrary.get(), mavenBom, errors);
 	}
 
-	private File resolveBom(Library library, String alignsWithBom) {
-		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
-		Set<ResolvedArtifact> artifacts = this.configurations
-			.detachedConfiguration(this.dependencies.create(coordinates))
-			.getResolvedConfiguration()
-			.getResolvedArtifacts();
-		if (artifacts.size() != 1) {
-			throw new IllegalStateException("Expected a single file but '%s' resolved to %d artifacts"
-				.formatted(coordinates, artifacts.size()));
+	private void checkDependencyManagementAlignment(ResolvedLibrary library, Bom mavenBom, List<String> errors) {
+		List<Id> managedByLibrary = library.managedDependencies();
+		List<Id> managedByBom = managedDependenciesOf(mavenBom);
+
+		List<Id> missing = new ArrayList<>(managedByBom);
+		missing.removeAll(managedByLibrary);
+
+		List<Id> unexpected = new ArrayList<>(managedByLibrary);
+		unexpected.removeAll(managedByBom);
+		if (missing.isEmpty() && unexpected.isEmpty()) {
+			return;
 		}
-		return artifacts.iterator().next().getFile();
+		String error = "Dependency management does not align with " + mavenBom.id() + ":";
+		if (!missing.isEmpty()) {
+			error = error + "%n        - Missing:%n            %s".formatted(String.join("\n            ",
+					missing.stream().map((dependency) -> dependency.toString()).toList()));
+		}
+		if (!unexpected.isEmpty()) {
+			error = error + "%n        - Unexpected:%n            %s".formatted(String.join("\n            ",
+					unexpected.stream().map((dependency) -> dependency.toString()).toList()));
+		}
+		errors.add(error);
+	}
+
+	private List<Id> managedDependenciesOf(Bom mavenBom) {
+		List<Id> managedDependencies = new ArrayList<>();
+		managedDependencies.addAll(mavenBom.managedDependencies());
+		if (mavenBom.parent() != null) {
+			managedDependencies.addAll(managedDependenciesOf(mavenBom.parent()));
+		}
+		for (Bom importedBom : mavenBom.importedBoms()) {
+			managedDependencies.addAll(managedDependenciesOf(importedBom));
+		}
+		return managedDependencies;
 	}
 
 }
