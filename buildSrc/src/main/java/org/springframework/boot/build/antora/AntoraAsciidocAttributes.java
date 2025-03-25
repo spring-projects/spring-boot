@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,10 @@ import org.gradle.api.Project;
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.ResolvedBom;
+import org.springframework.boot.build.bom.ResolvedBom.Bom;
+import org.springframework.boot.build.bom.ResolvedBom.Id;
+import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.boot.build.properties.BuildType;
 import org.springframework.util.Assert;
@@ -59,15 +65,46 @@ public class AntoraAsciidocAttributes {
 
 	private final Map<String, ?> projectProperties;
 
-	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom,
-			Map<String, String> dependencyVersions) {
+	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom, ResolvedBom resolvedBom) {
 		this.version = String.valueOf(project.getVersion());
 		this.latestVersion = Boolean.parseBoolean(String.valueOf(project.findProperty("latestVersion")));
 		this.buildType = BuildProperties.get(project).buildType();
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
-		this.dependencyVersions = dependencyVersions;
+		this.dependencyVersions = dependencyVersionsOf(resolvedBom);
 		this.projectProperties = project.getProperties();
+	}
+
+	private static Map<String, String> dependencyVersionsOf(ResolvedBom resolvedBom) {
+		Map<String, String> dependencyVersions = new HashMap<>();
+		for (ResolvedLibrary library : resolvedBom.libraries()) {
+			dependencyVersions.putAll(dependencyVersionsOf(library.managedDependencies()));
+			for (Bom importedBom : library.importedBoms()) {
+				dependencyVersions.putAll(dependencyVersionsOf(importedBom));
+			}
+		}
+		return dependencyVersions;
+	}
+
+	private static Map<String, String> dependencyVersionsOf(Bom bom) {
+		Map<String, String> dependencyVersions = new HashMap<>();
+		if (bom != null) {
+			dependencyVersions.putAll(dependencyVersionsOf(bom.managedDependencies()));
+			dependencyVersions.putAll(dependencyVersionsOf(bom.parent()));
+			for (Bom importedBom : bom.importedBoms()) {
+				dependencyVersions.putAll(dependencyVersionsOf(importedBom));
+			}
+		}
+		return dependencyVersions;
+	}
+
+	private static Map<String, String> dependencyVersionsOf(Collection<Id> managedDependencies) {
+		Map<String, String> dependencyVersions = new HashMap<>();
+		for (Id managedDependency : managedDependencies) {
+			dependencyVersions.put(managedDependency.groupId() + ":" + managedDependency.artifactId(),
+					managedDependency.version());
+		}
+		return dependencyVersions;
 	}
 
 	AntoraAsciidocAttributes(String version, boolean latestVersion, BuildType buildType, List<Library> libraries,
