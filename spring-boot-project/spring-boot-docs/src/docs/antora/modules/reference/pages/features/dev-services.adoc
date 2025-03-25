@@ -101,7 +101,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
 | Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
-| javadoc:org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails[]
+| javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[]
 | Containers named "osixia/openldap", "lldap/lldap"
 
 | javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]

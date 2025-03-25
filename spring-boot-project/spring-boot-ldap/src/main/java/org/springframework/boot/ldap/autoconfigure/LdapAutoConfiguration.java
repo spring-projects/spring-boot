@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap;
+package org.springframework.boot.ldap.autoconfigure;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -24,10 +24,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.ldap.LdapProperties.Template;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.ldap.autoconfigure.LdapProperties.Template;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.convert.ConverterUtils;
@@ -44,7 +44,7 @@ import org.springframework.ldap.odm.core.impl.DefaultObjectDirectoryMapper;
  *
  * @author Eddú Meléndez
  * @author Vedran Pavic
- * @since 1.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(ContextSource.class)
