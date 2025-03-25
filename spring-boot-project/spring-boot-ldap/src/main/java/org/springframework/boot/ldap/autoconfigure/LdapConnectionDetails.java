@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap;
+package org.springframework.boot.ldap.autoconfigure;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * Details required to establish a connection to an LDAP service.
  *
  * @author Philipp Kessler
- * @since 3.3.0
+ * @since 4.0.0
  */
 public interface LdapConnectionDetails extends ConnectionDetails {
 

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.ldap;
 
-import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;

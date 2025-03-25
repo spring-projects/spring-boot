@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.data.alt.ldap.PersonLdapRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.ldap.person.Person;
 import org.springframework.boot.autoconfigure.data.ldap.person.PersonRepository;
-import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;

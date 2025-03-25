@@ -143,7 +143,7 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.kafka.KafkaContainer[], javadoc:org.testcontainers.kafka.ConfluentKafkaContainer[] or javadoc:org.testcontainers.redpanda.RedpandaContainer[]
 
-| javadoc:org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails[]
+| javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[]
 | Containers named "osixia/openldap" or of type javadoc:org.testcontainers.ldap.LLdapContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails[]

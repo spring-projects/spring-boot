@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for embedded LDAP.
  */
-package org.springframework.boot.autoconfigure.ldap.embedded;
+package org.springframework.boot.ldap.autoconfigure.embedded;

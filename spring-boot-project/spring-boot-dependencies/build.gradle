@@ -2014,6 +2014,7 @@ bom {
 				"spring-boot-jpa",
 				"spring-boot-jsonb",
 				"spring-boot-kafka",
+				"spring-boot-ldap",
 				"spring-boot-liquibase",
 				"spring-boot-loader",
 				"spring-boot-loader-classic",

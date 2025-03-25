@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for LDAP.
  */
-package org.springframework.boot.autoconfigure.ldap;
+package org.springframework.boot.ldap.autoconfigure;

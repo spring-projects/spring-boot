@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link LdapConnectionDetails}
