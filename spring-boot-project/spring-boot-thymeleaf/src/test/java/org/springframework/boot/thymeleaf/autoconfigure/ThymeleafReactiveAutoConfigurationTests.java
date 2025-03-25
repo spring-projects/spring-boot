@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.thymeleaf.autoconfigure;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Locale;
 
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.GroupingStrategy;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
@@ -42,7 +46,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,11 +64,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ThymeleafReactiveAutoConfigurationTests {
-
-	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class));
@@ -88,26 +90,27 @@ class ThymeleafReactiveAutoConfigurationTests {
 			assertThat(resolver).isInstanceOf(SpringResourceTemplateResolver.class);
 			assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding()).isEqualTo("UTF-16");
 			ThymeleafReactiveViewResolver views = context.getBean(ThymeleafReactiveViewResolver.class);
-			assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
+			Assertions.assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
 		});
 	}
 
 	@Test
 	void defaultMediaTypes() {
-		this.contextRunner
-			.run((context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
-				.containsExactly(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML,
-						MediaType.TEXT_XML, MediaType.APPLICATION_RSS_XML, MediaType.APPLICATION_ATOM_XML,
-						new MediaType("application", "javascript"), new MediaType("application", "ecmascript"),
-						new MediaType("text", "javascript"), new MediaType("text", "ecmascript"),
-						MediaType.APPLICATION_JSON, new MediaType("text", "css"), MediaType.TEXT_PLAIN,
-						MediaType.TEXT_EVENT_STREAM));
+		this.contextRunner.run((context) -> Assertions
+			.assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+			.containsExactly(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML,
+					MediaType.TEXT_XML, MediaType.APPLICATION_RSS_XML, MediaType.APPLICATION_ATOM_XML,
+					new MediaType("application", "javascript"), new MediaType("application", "ecmascript"),
+					new MediaType("text", "javascript"), new MediaType("text", "ecmascript"),
+					MediaType.APPLICATION_JSON, new MediaType("text", "css"), MediaType.TEXT_PLAIN,
+					MediaType.TEXT_EVENT_STREAM));
 	}
 
 	@Test
 	void overrideMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain")
-			.run((context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+			.run((context) -> Assertions
+				.assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
 				.containsExactly(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
 	}
 
@@ -183,9 +186,10 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
-	void templateLocationEmpty(CapturedOutput output) {
-		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
-		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
+	void templateLocationEmpty(CapturedOutput output, @TempDir Path tempDir) throws IOException {
+		Path directory = tempDir.resolve("empty-templates/empty-directory").toAbsolutePath();
+		Files.createDirectories(directory);
+		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:file:" + directory)
 			.run((context) -> assertThat(output).doesNotContain("Cannot find template location"));
 	}
 
