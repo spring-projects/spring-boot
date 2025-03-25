@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sendgrid;
+package org.springframework.boot.sendgrid.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Maciej Walkowiak
  * @author Andy Wilkinson
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.sendgrid")
 public class SendGridProperties {
