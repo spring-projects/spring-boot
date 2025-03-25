@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap;
+package org.springframework.boot.ldap.autoconfigure;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import org.springframework.util.ObjectUtils;
  * Configuration properties for LDAP.
  *
  * @author Eddú Meléndez
- * @since 1.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.ldap")
 public class LdapProperties {

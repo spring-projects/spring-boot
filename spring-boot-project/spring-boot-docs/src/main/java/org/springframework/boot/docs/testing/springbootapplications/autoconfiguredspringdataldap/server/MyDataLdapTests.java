@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataldap.server;
 
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
 
 @DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)

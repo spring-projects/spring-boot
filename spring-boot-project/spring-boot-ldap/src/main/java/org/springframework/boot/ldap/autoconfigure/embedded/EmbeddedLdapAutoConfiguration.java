@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap.embedded;
+package org.springframework.boot.ldap.autoconfigure.embedded;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -40,12 +40,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
-import org.springframework.boot.autoconfigure.ldap.LdapProperties;
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.LdapProperties;
+import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
  * @author Raja Kolli
- * @since 1.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = LdapAutoConfiguration.class)
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
