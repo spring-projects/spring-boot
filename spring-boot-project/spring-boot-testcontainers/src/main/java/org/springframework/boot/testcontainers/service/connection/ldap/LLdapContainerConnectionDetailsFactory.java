@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.ldap;
 
 import org.testcontainers.ldap.LLdapContainer;
 
-import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
+import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap.embedded;
+package org.springframework.boot.ldap.autoconfigure.embedded;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
- * @since 1.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.ldap.embedded")
 public class EmbeddedLdapProperties {
