@@ -20,12 +20,14 @@ import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -63,12 +65,12 @@ public final class PathRequest {
 	/**
 	 * The request matcher used to match against h2 console path.
 	 */
-	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<H2ConsoleProperties> {
+	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<ApplicationContext> {
 
 		private volatile RequestMatcher delegate;
 
 		private H2ConsoleRequestMatcher() {
-			super(H2ConsoleProperties.class);
+			super(ApplicationContext.class);
 		}
 
 		@Override
@@ -77,13 +79,14 @@ public final class PathRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
-			this.delegate = PathPatternRequestMatcher.withDefaults()
-				.matcher(h2ConsoleProperties.get().getPath() + "/**");
+		protected void initialized(Supplier<ApplicationContext> context) {
+			String path = context.get().getBean(H2ConsoleProperties.class).getPath();
+			Assert.hasText(path, "'path' in H2ConsoleProperties must not be empty");
+			this.delegate = PathPatternRequestMatcher.withDefaults().matcher(path + "/**");
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, Supplier<H2ConsoleProperties> context) {
+		protected boolean matches(HttpServletRequest request, Supplier<ApplicationContext> context) {
 			return this.delegate.matches(request);
 		}
 
