@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ldap;
+package org.springframework.boot.ldap.autoconfigure;
 
 import javax.naming.Name;
 
