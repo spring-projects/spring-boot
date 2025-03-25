@@ -114,7 +114,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 		private SQLExceptionTranslator apply(SQLDialect dialect) {
 			String dbName = getSpringDbName(dialect);
 			return (dbName != null) ? new SQLErrorCodeSQLExceptionTranslator(dbName)
-					: new SQLStateSQLExceptionTranslator();
+					: new SQLErrorCodeSQLExceptionTranslator();
 		}
 
 		private String getSpringDbName(SQLDialect dialect) {
