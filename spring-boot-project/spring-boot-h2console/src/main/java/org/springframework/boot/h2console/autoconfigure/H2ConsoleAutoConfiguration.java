@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.h2;
+package org.springframework.boot.h2console.autoconfigure;
 
 import java.sql.Connection;
 import java.util.List;
@@ -33,9 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties.Settings;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties.Settings;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.log.LogMessage;
@@ -47,9 +46,9 @@ import org.springframework.core.log.LogMessage;
  * @author Marten Deinum
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = DataSourceAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(JakartaWebServlet.class)
 @ConditionalOnBooleanProperty("spring.h2.console.enabled")

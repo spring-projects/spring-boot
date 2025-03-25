@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.h2;
+package org.springframework.boot.h2console.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Marten Deinum
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.h2.console")
 public class H2ConsoleProperties {
