@@ -62,11 +62,17 @@ public class BomPlugin implements Plugin<Project> {
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
 		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project);
+		TaskProvider<CreateResolvedBom> createResolvedBom = project.getTasks()
+			.register("createResolvedBom", CreateResolvedBom.class, bom);
 		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
 		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
 		project.getTasks().register("checkLinks", CheckLinks.class, bom);
+		Configuration resolvedBomConfiguration = project.getConfigurations().create("resolvedBom");
+		project.getArtifacts()
+			.add(resolvedBomConfiguration.getName(), createResolvedBom.map(CreateResolvedBom::getOutputFile),
+					(artifact) -> artifact.builtBy(createResolvedBom));
 		new PublishingCustomizer(project, bom).customize();
 	}
 
