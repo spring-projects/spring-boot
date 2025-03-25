@@ -17,10 +17,8 @@
 package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,16 +26,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.function.BiConsumer;
+import java.util.Set;
 
 import javax.inject.Inject;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import io.spring.javaformat.formatter.FileEdit;
 import io.spring.javaformat.formatter.FileFormatter;
@@ -88,19 +79,18 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.bom.ResolvedBom;
+import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.test.DockerTestPlugin;
 import org.springframework.boot.build.test.IntegrationTestPlugin;
 import org.springframework.core.CollectionFactory;
-import org.springframework.util.Assert;
 
 /**
  * Plugin for building Spring Boot's Maven Plugin.
@@ -125,7 +115,13 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				generateHelpMojoTask);
 		addDocumentPluginGoalsTask(project, generatePluginDescriptorTask);
 		addPrepareMavenBinariesTask(project);
-		addExtractVersionPropertiesTask(project);
+		TaskProvider<ExtractVersionProperties> extractVersionPropertiesTask = addExtractVersionPropertiesTask(project);
+		project.getTasks()
+			.named(IntegrationTestPlugin.INT_TEST_TASK_NAME)
+			.configure((task) -> task.getInputs()
+				.file(extractVersionPropertiesTask.map(ExtractVersionProperties::getDestination))
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("versionProperties"));
 		publishOptionalDependenciesInPom(project);
 		project.getTasks().withType(GenerateModuleMetadata.class).configureEach((task) -> task.setEnabled(false));
 	}
@@ -335,9 +331,9 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		return input.replace("{{version}}", project.getVersion().toString());
 	}
 
-	private void addExtractVersionPropertiesTask(Project project) {
-		project.getTasks().register("extractVersionProperties", ExtractVersionProperties.class, (task) -> {
-			task.setEffectiveBoms(project.getConfigurations().create("versionProperties"));
+	private TaskProvider<ExtractVersionProperties> addExtractVersionPropertiesTask(Project project) {
+		return project.getTasks().register("extractVersionProperties", ExtractVersionProperties.class, (task) -> {
+			task.setResolvedBoms(project.getConfigurations().create("versionProperties"));
 			task.getDestination()
 				.set(project.getLayout()
 					.getBuildDirectory()
@@ -466,16 +462,16 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	public abstract static class ExtractVersionProperties extends DefaultTask {
 
-		private FileCollection effectiveBoms;
+		private FileCollection resolvedBoms;
 
 		@InputFiles
 		@PathSensitive(PathSensitivity.RELATIVE)
-		public FileCollection getEffectiveBoms() {
-			return this.effectiveBoms;
+		public FileCollection getResolvedBoms() {
+			return this.resolvedBoms;
 		}
 
-		public void setEffectiveBoms(FileCollection effectiveBoms) {
-			this.effectiveBoms = effectiveBoms;
+		public void setResolvedBoms(FileCollection resolvedBoms) {
+			this.resolvedBoms = resolvedBoms;
 		}
 
 		@OutputFile
@@ -483,8 +479,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		@TaskAction
 		public void extractVersionProperties() {
-			EffectiveBom effectiveBom = new EffectiveBom(this.effectiveBoms.getSingleFile());
-			Properties versions = extractVersionProperties(effectiveBom);
+			ResolvedBom resolvedBom = ResolvedBom.readFrom(this.resolvedBoms.getSingleFile());
+			Properties versions = extractVersionProperties(resolvedBom);
 			writeProperties(versions);
 		}
 
@@ -499,66 +495,18 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			}
 		}
 
-		private Properties extractVersionProperties(EffectiveBom effectiveBom) {
+		private Properties extractVersionProperties(ResolvedBom resolvedBom) {
 			Properties versions = CollectionFactory.createSortedProperties(true);
-			versions.setProperty("project.version", effectiveBom.version());
-			effectiveBom.property("log4j2.version", versions::setProperty);
-			effectiveBom.property("maven-jar-plugin.version", versions::setProperty);
-			effectiveBom.property("maven-war-plugin.version", versions::setProperty);
-			effectiveBom.property("build-helper-maven-plugin.version", versions::setProperty);
-			effectiveBom.property("spring-framework.version", versions::setProperty);
-			effectiveBom.property("jakarta-servlet.version", versions::setProperty);
-			effectiveBom.property("kotlin.version", versions::setProperty);
-			effectiveBom.property("assertj.version", versions::setProperty);
-			effectiveBom.property("junit-jupiter.version", versions::setProperty);
-			return versions;
-		}
-
-	}
-
-	private static final class EffectiveBom {
-
-		private final Document document;
-
-		private final XPath xpath;
-
-		private EffectiveBom(File bomFile) {
-			this.document = loadDocument(bomFile);
-			this.xpath = XPathFactory.newInstance().newXPath();
-		}
-
-		private Document loadDocument(File bomFile) {
-			try {
-				try (InputStream inputStream = new FileInputStream(bomFile)) {
-					DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder builder = builderFactory.newDocumentBuilder();
-					return builder.parse(inputStream);
+			versions.setProperty("project.version", resolvedBom.id().version());
+			Set<String> versionProperties = Set.of("log4j2.version", "maven-jar-plugin.version",
+					"maven-war-plugin.version", "build-helper-maven-plugin.version", "spring-framework.version",
+					"jakarta-servlet.version", "kotlin.version", "assertj.version", "junit-jupiter.version");
+			for (ResolvedLibrary library : resolvedBom.libraries()) {
+				if (library.versionProperty() != null && versionProperties.contains(library.versionProperty())) {
+					versions.setProperty(library.versionProperty(), library.version());
 				}
 			}
-			catch (ParserConfigurationException | SAXException | IOException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
-		private String version() {
-			return get("version");
-		}
-
-		private void property(String name, BiConsumer<String, String> handler) {
-			handler.accept(name, get("properties/" + name));
-		}
-
-		private String get(String expression) {
-			try {
-				Node node = (Node) this.xpath.compile("/project/" + expression)
-					.evaluate(this.document, XPathConstants.NODE);
-				String text = (node != null) ? node.getTextContent() : null;
-				Assert.hasLength(text, () -> "No result for expression " + expression);
-				return text;
-			}
-			catch (XPathExpressionException ex) {
-				throw new IllegalStateException(ex);
-			}
+			return versions;
 		}
 
 	}
