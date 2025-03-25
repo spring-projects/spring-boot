@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.ldap.person;
+package org.springframework.boot.data.ldap.autoconfigure.domain.person;
 
 import javax.naming.Name;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.ldap.odm.annotations.Attribute;
+import org.springframework.ldap.odm.annotations.DnAttribute;
+import org.springframework.ldap.odm.annotations.Entry;
+import org.springframework.ldap.odm.annotations.Id;
 
-public interface PersonRepository extends Repository<Person, Name> {
+@Entry(objectClasses = { "person", "top" }, base = "ou=someOu")
+public class Person {
+
+	@Id
+	private Name dn;
+
+	@Attribute(name = "cn")
+	@DnAttribute(value = "cn", index = 1)
+	private String fullName;
 
 }
