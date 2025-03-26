@@ -1989,6 +1989,7 @@ bom {
 				"spring-boot-couchbase",
 				"spring-boot-data-jpa",
 				"spring-boot-data-ldap",
+				"spring-boot-data-mongodb",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-elasticsearch",

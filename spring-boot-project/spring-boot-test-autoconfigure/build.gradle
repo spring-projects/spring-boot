@@ -12,11 +12,11 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-data-mongodb"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
-
 	dockerTestImplementation("com.zaxxer:HikariCP")
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("com.redis:testcontainers-redis")
@@ -40,6 +40,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-ldap"))
+	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
