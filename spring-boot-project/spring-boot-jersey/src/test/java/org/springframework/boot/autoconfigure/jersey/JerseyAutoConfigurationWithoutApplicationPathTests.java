@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -45,25 +45,24 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using custom servlet paths.
+ * Tests for {@link JerseyAutoConfiguration} when using custom application path.
  *
- * @author Dave Syer
+ * @author Eddú Meléndez
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servlet.contextPath=/app")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.application-path=/api")
 @DirtiesContext
-class JerseyAutoConfigurationCustomServletContextPathTests {
+class JerseyAutoConfigurationWithoutApplicationPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/api/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("/rest")
 	@Path("/hello")
 	public static class Application extends ResourceConfig {
 

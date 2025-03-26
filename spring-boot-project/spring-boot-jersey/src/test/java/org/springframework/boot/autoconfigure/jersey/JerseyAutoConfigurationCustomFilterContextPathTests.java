@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -50,9 +51,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.jersey.type=filter", "server.servlet.register-default-servlet=true" })
+		properties = { "spring.jersey.type=filter", "server.servlet.context-path=/app",
+				"server.servlet.register-default-servlet=true" })
 @DirtiesContext
-class JerseyAutoConfigurationCustomFilterPathTests {
+class JerseyAutoConfigurationCustomFilterContextPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -64,7 +66,7 @@ class JerseyAutoConfigurationCustomFilterPathTests {
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("rest")
+	@ApplicationPath("/rest")
 	@Path("/hello")
 	public static class Application extends ResourceConfig {
 
