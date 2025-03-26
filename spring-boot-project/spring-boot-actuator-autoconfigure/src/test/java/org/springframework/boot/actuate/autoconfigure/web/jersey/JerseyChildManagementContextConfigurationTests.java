@@ -21,7 +21,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jersey.JerseyApplicationPath;
+import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;

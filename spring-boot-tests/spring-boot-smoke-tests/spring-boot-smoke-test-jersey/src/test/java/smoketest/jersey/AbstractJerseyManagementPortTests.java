@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import smoketest.jersey.AbstractJerseyManagementPortTests.ResourceConfigConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
+import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;

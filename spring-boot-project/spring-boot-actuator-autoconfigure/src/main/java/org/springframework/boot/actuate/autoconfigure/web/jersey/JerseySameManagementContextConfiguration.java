@@ -25,11 +25,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.jersey.DefaultJerseyApplicationPath;
-import org.springframework.boot.autoconfigure.jersey.JerseyApplicationPath;
-import org.springframework.boot.autoconfigure.jersey.JerseyProperties;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jersey.autoconfigure.DefaultJerseyApplicationPath;
+import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
+import org.springframework.boot.jersey.autoconfigure.JerseyProperties;
+import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
 @ManagementContextConfiguration(value = ManagementContextType.SAME, proxyBeanMethods = false)
 @EnableConfigurationProperties(JerseyProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(ResourceConfig.class)
+@ConditionalOnClass({ JerseyApplicationPath.class, ResourceConfig.class })
 @ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 public class JerseySameManagementContextConfiguration {
 

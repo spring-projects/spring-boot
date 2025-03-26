@@ -114,6 +114,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-hazelcast"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	testImplementation(project(":spring-boot-project:spring-boot-jersey"))
 	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Jersey.
  */
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;

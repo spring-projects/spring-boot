@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -44,20 +44,20 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using custom application path.
+ * Tests for {@link JerseyAutoConfiguration} when using default servlet paths.
  *
- * @author Eddú Meléndez
+ * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.application-path=/api")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-class JerseyAutoConfigurationWithoutApplicationPathTests {
+class JerseyAutoConfigurationDefaultServletPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/api/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

@@ -2012,6 +2012,7 @@ bom {
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
 				"spring-boot-jdbc",
+				"spring-boot-jersey",
 				"spring-boot-jetty",
 				"spring-boot-jms",
 				"spring-boot-jooq",

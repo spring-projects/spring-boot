@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.jersey.JerseyApplicationPath;
+import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @Import(JerseyManagementContextConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(ResourceConfig.class)
+@ConditionalOnClass({ JerseyApplicationPath.class, ResourceConfig.class })
 @ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 public class JerseyChildManagementContextConfiguration {
 

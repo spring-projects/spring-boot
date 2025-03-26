@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -23,7 +23,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  * {@link ResourceConfig} before it is used.
  *
  * @author Eddú Meléndez
- * @since 1.4.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ResourceConfigCustomizer {

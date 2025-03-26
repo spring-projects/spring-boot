@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -50,9 +50,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.jersey.type=filter", "server.servlet.register-default-servlet=true" })
+		properties = { "spring.jersey.type=filter", "server.servlet.context-path=/app",
+				"server.servlet.register-default-servlet=true" })
 @DirtiesContext
-class JerseyAutoConfigurationCustomFilterPathTests {
+class JerseyAutoConfigurationCustomFilterContextPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -64,7 +65,7 @@ class JerseyAutoConfigurationCustomFilterPathTests {
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("rest")
+	@ApplicationPath("/rest")
 	@Path("/hello")
 	public static class Application extends ResourceConfig {
 
