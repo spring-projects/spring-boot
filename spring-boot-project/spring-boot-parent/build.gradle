@@ -56,9 +56,9 @@ bom {
 	}
 	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
-			imports = [
-				"janino"
-			]
+			bom("janino") {
+				permit("junit:junit")
+			}
 		}
 	}
 	library("JLine", "2.11") {
@@ -188,9 +188,7 @@ bom {
 	}
 	library("Spock Framework", "2.3-groovy-4.0") {
 		group("org.spockframework") {
-			imports = [
-				"spock-bom"
-			]
+			bom("spock-bom")
 		}
 	}
 	library("TestNG", "6.14.3") {

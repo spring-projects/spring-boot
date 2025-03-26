@@ -22,9 +22,7 @@ bom {
 						exclude group: "commons-logging", module: "commons-logging"
 					}
 			]
-			imports = [
-					"activemq-bom"
-			]
+			bom("activemq-bom")
 		}
 		links {
 			site("https://activemq.apache.org")
@@ -54,9 +52,9 @@ bom {
 	}
 	library("Artemis", "2.33.0") {
 		group("org.apache.activemq") {
-			imports = [
-				"artemis-bom"
-			]
+			bom("artemis-bom") {
+				permit("org.apache.maven.plugin-tools:maven-plugin-annotations")
+			}
 		}
 		links {
 			site("https://activemq.apache.org/components/artemis")
@@ -80,9 +78,7 @@ bom {
 	}
 	library("AssertJ", "${assertjVersion}") {
 		group("org.assertj") {
-			imports = [
-				"assertj-bom"
-			]
+			bom("assertj-bom")
 		}
 		links {
 			site("https://assertj.github.io/doc")
@@ -105,9 +101,9 @@ bom {
 	}
 	library("Zipkin Reporter", "3.4.3") {
 		group("io.zipkin.reporter2") {
-			imports = [
-				"zipkin-reporter-bom"
-			]
+			bom("zipkin-reporter-bom") {
+				permit("io.zipkin.zipkin2:zipkin")
+			}
 		}
 		links {
 			site("https://github.com/openzipkin/zipkin-reporter-java")
@@ -116,9 +112,7 @@ bom {
 	}
 	library("Brave", "6.0.3") {
 		group("io.zipkin.brave") {
-			imports = [
-				"brave-bom"
-			]
+			bom("brave-bom")
 		}
 		links {
 			site("https://github.com/openzipkin/brave")
@@ -183,9 +177,10 @@ bom {
 	}
 	library("Cassandra Driver", "4.18.1") {
 		group("org.apache.cassandra") {
-			imports = [
-				"java-driver-bom"
-			]
+			bom("java-driver-bom") {
+				permit("com.datastax.oss:java-driver-shaded-guava")
+				permit("com.datastax.oss:native-protocol")
+			}
 			modules = [
 				"java-driver-core"
 			]
@@ -417,9 +412,19 @@ bom {
 	}
 	library("Glassfish JAXB", "4.0.5") {
 		group("org.glassfish.jaxb") {
-			imports = [
-				"jaxb-bom"
-			]
+			bom("jaxb-bom") {
+				permit("com.sun.istack:istack-commons-runtime")
+				permit("com.sun.xml.bind:jaxb-core")
+				permit("com.sun.xml.bind:jaxb-impl")
+				permit("com.sun.xml.bind:jaxb-jxc")
+				permit("com.sun.xml.bind:jaxb-osgi")
+				permit("com.sun.xml.bind:jaxb-xjc")
+				permit("com.sun.xml.fastinfoset:FastInfoset")
+				permit("jakarta.activation:jakarta.activation-api")
+				permit("jakarta.xml.bind:jakarta.xml.bind-api")
+				permit("org.eclipse.angus:angus-activation")
+				permit("org.jvnet.staxex:stax-ex")
+			}
 		}
 		links {
 			releaseNotes("https://github.com/eclipse-ee4j/jaxb-ri/releases/tag/{version}-RI")
@@ -455,9 +460,7 @@ bom {
 	}
 	library("Groovy", "4.0.26") {
 		group("org.apache.groovy") {
-			imports = [
-				"groovy-bom"
-			]
+			bom("groovy-bom")
 		}
 		links {
 			site("https://groovy-lang.org")
@@ -624,9 +627,7 @@ bom {
 	}
 	library("Infinispan", "15.0.14.Final") {
 		group("org.infinispan") {
-			imports = [
-				"infinispan-bom"
-			]
+			bom("infinispan-bom")
 		}
 		links {
 			site("https://infinispan.org")
@@ -648,9 +649,7 @@ bom {
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
 		group("com.fasterxml.jackson") {
-			imports = [
-				"jackson-bom"
-			]
+			bom("jackson-bom")
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
@@ -952,9 +951,7 @@ bom {
 	}
 	library("Jersey", "3.1.10") {
 		group("org.glassfish.jersey") {
-			imports = [
-				"jersey-bom"
-			]
+			bom("jersey-bom")
 		}
 		links {
 			site("https://github.com/eclipse-ee4j/jersey")
@@ -971,14 +968,10 @@ bom {
 	}
 	library("Jetty", "12.0.18") {
 		group("org.eclipse.jetty.ee10") {
-			imports = [
-				"jetty-ee10-bom"
-			]
+			bom("jetty-ee10-bom")
 		}
 		group("org.eclipse.jetty") {
-			imports = [
-				"jetty-bom"
-			]
+			bom("jetty-bom")
 		}
 		links {
 			site("https://eclipse.dev/jetty")
@@ -1065,9 +1058,7 @@ bom {
 	}
 	library("JUnit Jupiter", "${junitJupiterVersion}") {
 		group("org.junit") {
-			imports = [
-				"junit-bom"
-			]
+			bom("junit-bom")
 		}
 		links {
 			site("https://junit.org/junit5")
@@ -1129,9 +1120,7 @@ bom {
 	}
 	library("Kotlin", "${kotlinVersion}") {
 		group("org.jetbrains.kotlin") {
-			imports = [
-				"kotlin-bom"
-			]
+			bom("kotlin-bom")
 			plugins = [
 				"kotlin-maven-plugin"
 			]
@@ -1144,9 +1133,7 @@ bom {
 	}
 	library("Kotlin Coroutines", "1.8.1") {
 		group("org.jetbrains.kotlinx") {
-			imports = [
-				"kotlinx-coroutines-bom"
-			]
+			bom("kotlinx-coroutines-bom")
 		}
 		links {
 			site("https://github.com/Kotlin/kotlinx.coroutines")
@@ -1155,9 +1142,7 @@ bom {
 	}
 	library("Kotlin Serialization", "1.6.3") {
 		group("org.jetbrains.kotlinx") {
-			imports = [
-				"kotlinx-serialization-bom"
-			]
+			bom("kotlinx-serialization-bom")
 		}
 		links {
 			site("https://github.com/Kotlin/kotlinx.serialization")
@@ -1195,9 +1180,15 @@ bom {
 	}
 	library("Log4j2", "2.23.1") {
 		group("org.apache.logging.log4j") {
-			imports = [
-				"log4j-bom"
-			]
+			bom("log4j-bom") {
+				permit("biz.aQute.bnd:biz.aQute.bnd.annotation")
+				permit("com.github.spotbugs:spotbugs-annotations")
+				permit("org.apache.maven.plugin-tools:maven-plugin-annotations")
+				permit("org.jspecify:jspecify")
+				permit("org.osgi:org.osgi.annotation.bundle")
+				permit("org.osgi:org.osgi.annotation.versioning")
+				permit("org.osgi:osgi.annotation")
+			}
 		}
 		links {
 			site("https://logging.apache.org/log4j")
@@ -1424,9 +1415,7 @@ bom {
 					exclude group: "javax.annotation", module: "javax.annotation-api"
 				}
 			]
-			imports = [
-				"micrometer-bom"
-			]
+			bom("micrometer-bom")
 		}
 		links {
 			site("https://micrometer.io")
@@ -1443,9 +1432,7 @@ bom {
 	library("Micrometer Tracing", "1.3.10") {
 		considerSnapshots()
 		group("io.micrometer") {
-			imports = [
-				"micrometer-tracing-bom"
-			]
+			bom("micrometer-tracing-bom")
 		}
 		links {
 			site("https://micrometer.io")
@@ -1457,9 +1444,7 @@ bom {
 	}
 	library("Mockito", "${mockitoVersion}") {
 		group("org.mockito") {
-			imports = [
-				"mockito-bom"
-			]
+			bom("mockito-bom")
 		}
 		links {
 			site("https://site.mockito.org")
@@ -1560,9 +1545,7 @@ bom {
 	}
 	library("Netty", "4.1.119.Final") {
 		group("io.netty") {
-			imports = [
-				"netty-bom"
-			]
+			bom("netty-bom")
 		}
 		links {
 			site("https://netty.io")
@@ -1571,9 +1554,7 @@ bom {
 	}
 	library("OkHttp", "4.12.0") {
 		group("com.squareup.okhttp3") {
-			imports = [
-				"okhttp-bom"
-			]
+			bom("okhttp-bom")
 		}
 		links {
 			releaseNotes(version -> "https://square.github.io/okhttp/changelogs/changelog_4x/#version-%s"
@@ -1582,9 +1563,7 @@ bom {
 	}
 	library("OpenTelemetry", "1.38.0") {
 		group("io.opentelemetry") {
-			imports = [
-				"opentelemetry-bom"
-			]
+			bom("opentelemetry-bom")
 		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
@@ -1696,9 +1675,7 @@ bom {
 	}
 	library("Prometheus Client", "1.2.1") {
 		group("io.prometheus") {
-			imports = [
-				"prometheus-metrics-bom"
-			]
+			bom("prometheus-metrics-bom")
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
@@ -1708,9 +1685,7 @@ bom {
 	}
 	library("Prometheus Simpleclient", "0.16.0") {
 		group("io.prometheus") {
-			imports = [
-				"simpleclient_bom"
-			]
+			bom("simpleclient_bom")
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
@@ -1720,9 +1695,9 @@ bom {
 	}
 	library("Pulsar", "3.2.4") {
 		group("org.apache.pulsar") {
-			imports = [
-				"pulsar-bom"
-			]
+			bom("pulsar-bom") {
+				permit("org.apache.maven.plugin-tools:maven-plugin-annotations")
+			}
 		}
 		links {
 			site("https://pulsar.apache.org")
@@ -1764,9 +1739,7 @@ bom {
 	}
 	library("QueryDSL", "5.1.0") {
 		group("com.querydsl") {
-			imports = [
-				"querydsl-bom"
-			]
+			bom("querydsl-bom")
 		}
 		links {
 			site("https://github.com/querydsl/querydsl")
@@ -1896,9 +1869,9 @@ bom {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
-			imports = [
-				"reactor-bom"
-			]
+			bom("reactor-bom") {
+				permit("org.reactivestreams:reactive-streams")
+			}
 		}
 		links {
 			site("https://projectreactor.io")
@@ -1907,9 +1880,7 @@ bom {
 	}
 	library("REST Assured", "5.4.0") {
 		group("io.rest-assured") {
-			imports = [
-				"rest-assured-bom"
-			]
+			bom("rest-assured-bom")
 		}
 		links {
 			javadoc("https://javadoc.io/doc/io.rest-assured/rest-assured/{version}", "io.restassured")
@@ -1917,9 +1888,7 @@ bom {
 	}
 	library("RSocket", "1.1.5") {
 		group("io.rsocket") {
-			imports = [
-				"rsocket-bom"
-			]
+			bom("rsocket-bom")
 		}
 		links {
 			site("https://github.com/rsocket/rsocket-java")
@@ -2037,9 +2006,7 @@ bom {
 	}
 	library("Selenium", "4.19.1") {
 		group("org.seleniumhq.selenium") {
-			imports = [
-				"selenium-bom"
-			]
+			bom("selenium-bom")
 		}
 		links {
 			site("https://www.selenium.dev")
@@ -2096,9 +2063,7 @@ bom {
 	library("Spring AMQP", "3.1.10") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
-			imports = [
-				"spring-amqp-bom"
-			]
+			bom("spring-amqp-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-amqp")
@@ -2130,9 +2095,7 @@ bom {
 	library("Spring Batch", "5.1.3") {
 		considerSnapshots()
 		group("org.springframework.batch") {
-			imports = [
-				"spring-batch-bom"
-			]
+			bom("spring-batch-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-batch")
@@ -2148,9 +2111,7 @@ bom {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
-			imports = [
-				"spring-data-bom"
-			]
+			bom("spring-data-bom")
 		}
 		links("spring-data") {
 			site("https://spring.io/projects/spring-data")
@@ -2161,9 +2122,7 @@ bom {
 	library("Spring Framework", "${springFrameworkVersion}") {
 		considerSnapshots()
 		group("org.springframework") {
-			imports = [
-				"spring-framework-bom"
-			]
+			bom("spring-framework-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-framework")
@@ -2216,9 +2175,7 @@ bom {
 	library("Spring Integration", "6.3.9") {
 		considerSnapshots()
 		group("org.springframework.integration") {
-			imports = [
-				"spring-integration-bom"
-			]
+			bom("spring-integration-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-integration")
@@ -2271,9 +2228,7 @@ bom {
 	library("Spring Pulsar", "1.1.10") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
-			imports = [
-				"spring-pulsar-bom"
-			]
+			bom("spring-pulsar-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-pulsar")
@@ -2288,9 +2243,7 @@ bom {
 	library("Spring RESTDocs", "3.0.3") {
 		considerSnapshots()
 		group("org.springframework.restdocs") {
-			imports = [
-				"spring-restdocs-bom"
-			]
+			bom("spring-restdocs-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-restdocs")
@@ -2318,9 +2271,7 @@ bom {
 	library("Spring Security", "6.3.8") {
 		considerSnapshots()
 		group("org.springframework.security") {
-			imports = [
-				"spring-security-bom"
-			]
+			bom("spring-security-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-security")
@@ -2339,9 +2290,7 @@ bom {
 			because "Spring Session switched to numeric version numbers"
 		}
 		group("org.springframework.session") {
-			imports = [
-				"spring-session-bom"
-			]
+			bom("spring-session-bom")
 		}
 		links {
 			site("https://spring.io/projects/spring-session")
@@ -2356,9 +2305,7 @@ bom {
 	library("Spring WS", "4.0.12") {
 		considerSnapshots()
 		group("org.springframework.ws") {
-			imports = [
-				"spring-ws-bom"
-			]
+			bom("spring-ws-bom")
 		}
 		links("spring-webservices") {
 			site("https://spring.io/projects/spring-ws")
@@ -2383,9 +2330,7 @@ bom {
 	}
 	library("Testcontainers", "1.19.8") {
 		group("org.testcontainers") {
-			imports = [
-				"testcontainers-bom"
-			]
+			bom("testcontainers-bom")
 		}
 		links {
 			site("https://java.testcontainers.org")

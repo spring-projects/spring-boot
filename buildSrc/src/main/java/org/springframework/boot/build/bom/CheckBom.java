@@ -17,7 +17,11 @@
 package org.springframework.boot.build.bom;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,7 +46,9 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Module;
+import org.springframework.boot.build.bom.Library.PermittedDependency;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
@@ -69,7 +75,8 @@ public abstract class CheckBom extends DefaultTask {
 		Provider<ResolvedBom> resolvedBom = getResolvedBomFile().map(RegularFile::getAsFile).map(ResolvedBom::readFrom);
 		this.checks = List.of(new CheckExclusions(configurations, dependencies), new CheckProhibitedVersions(),
 				new CheckVersionAlignment(),
-				new CheckDependencyManagementAlignment(resolvedBom, configurations, dependencies));
+				new CheckDependencyManagementAlignment(resolvedBom, configurations, dependencies),
+				new CheckForUnwantedDependencyManagement(resolvedBom));
 		this.bom = bom;
 	}
 
@@ -241,30 +248,21 @@ public abstract class CheckBom extends DefaultTask {
 
 	}
 
-	private static final class CheckDependencyManagementAlignment implements LibraryCheck {
+	private abstract static class ResolvedLibraryCheck implements LibraryCheck {
 
 		private final Provider<ResolvedBom> resolvedBom;
 
-		private final BomResolver bomResolver;
-
-		private CheckDependencyManagementAlignment(Provider<ResolvedBom> resolvedBom,
-				ConfigurationContainer configurations, DependencyHandler dependencies) {
+		private ResolvedLibraryCheck(Provider<ResolvedBom> resolvedBom) {
 			this.resolvedBom = resolvedBom;
-			this.bomResolver = new BomResolver(configurations, dependencies);
 		}
 
 		@Override
 		public List<String> check(Library library) {
-			List<String> errors = new ArrayList<>();
-			String alignsWithBom = library.getAlignsWithBom();
-			if (alignsWithBom != null) {
-				Bom mavenBom = this.bomResolver
-					.resolveMavenBom(alignsWithBom + ":" + library.getVersion().getVersion());
-				ResolvedLibrary resolvedLibrary = getResolvedLibrary(library);
-				checkDependencyManagementAlignment(resolvedLibrary, mavenBom, errors);
-			}
-			return errors;
+			ResolvedLibrary resolvedLibrary = getResolvedLibrary(library);
+			return check(library, resolvedLibrary);
 		}
+
+		protected abstract List<String> check(Library library, ResolvedLibrary resolvedLibrary);
 
 		private ResolvedLibrary getResolvedLibrary(Library library) {
 			ResolvedBom resolvedBom = this.resolvedBom.get();
@@ -276,6 +274,30 @@ public abstract class CheckBom extends DefaultTask {
 				throw new RuntimeException("Library '%s' not found in resolved bom".formatted(library.getName()));
 			}
 			return resolvedLibrary.get();
+		}
+
+	}
+
+	private static final class CheckDependencyManagementAlignment extends ResolvedLibraryCheck {
+
+		private final BomResolver bomResolver;
+
+		private CheckDependencyManagementAlignment(Provider<ResolvedBom> resolvedBom,
+				ConfigurationContainer configurations, DependencyHandler dependencies) {
+			super(resolvedBom);
+			this.bomResolver = new BomResolver(configurations, dependencies);
+		}
+
+		@Override
+		public List<String> check(Library library, ResolvedLibrary resolvedLibrary) {
+			List<String> errors = new ArrayList<>();
+			String alignsWithBom = library.getAlignsWithBom();
+			if (alignsWithBom != null) {
+				Bom mavenBom = this.bomResolver
+					.resolveMavenBom(alignsWithBom + ":" + library.getVersion().getVersion());
+				checkDependencyManagementAlignment(resolvedLibrary, mavenBom, errors);
+			}
+			return errors;
 		}
 
 		private void checkDependencyManagementAlignment(ResolvedLibrary library, Bom mavenBom, List<String> errors) {
@@ -312,6 +334,110 @@ public abstract class CheckBom extends DefaultTask {
 				managedDependencies.addAll(managedDependenciesOf(importedBom));
 			}
 			return managedDependencies;
+		}
+
+	}
+
+	private static final class CheckForUnwantedDependencyManagement extends ResolvedLibraryCheck {
+
+		private CheckForUnwantedDependencyManagement(Provider<ResolvedBom> resolvedBom) {
+			super(resolvedBom);
+		}
+
+		@Override
+		public List<String> check(Library library, ResolvedLibrary resolvedLibrary) {
+			Map<String, Set<String>> unwanted = findUnwantedDependencyManagement(library, resolvedLibrary);
+			List<String> errors = new ArrayList<>();
+			if (!unwanted.isEmpty()) {
+				StringBuilder error = new StringBuilder("Unwanted dependency management:");
+				unwanted.forEach((bom, dependencies) -> {
+					error.append("%n        - %s:".formatted(bom));
+					error.append("%n            - %s".formatted(String.join("\n            - ", dependencies)));
+				});
+				errors.add(error.toString());
+			}
+			Map<String, Set<String>> unnecessary = findUnnecessaryPermittedDependencies(library, resolvedLibrary);
+			if (!unnecessary.isEmpty()) {
+				StringBuilder error = new StringBuilder("Dependencies permitted unnecessarily:");
+				unnecessary.forEach((bom, dependencies) -> {
+					error.append("%n        - %s:".formatted(bom));
+					error.append("%n            - %s".formatted(String.join("\n            - ", dependencies)));
+				});
+				errors.add(error.toString());
+			}
+			return errors;
+		}
+
+		private Map<String, Set<String>> findUnwantedDependencyManagement(Library library,
+				ResolvedLibrary resolvedLibrary) {
+			Map<String, Set<String>> unwanted = new LinkedHashMap<>();
+			for (Bom bom : resolvedLibrary.importedBoms()) {
+				Set<String> notPermitted = new TreeSet<>();
+				Set<Id> managedDependencies = managedDependenciesOf(bom);
+				managedDependencies.stream()
+					.filter((dependency) -> unwanted(bom, dependency, findPermittedDependencies(library, bom)))
+					.map(Id::toString)
+					.forEach(notPermitted::add);
+				if (!notPermitted.isEmpty()) {
+					unwanted.put(bom.id().artifactId(), notPermitted);
+				}
+			}
+			return unwanted;
+		}
+
+		private List<PermittedDependency> findPermittedDependencies(Library library, Bom bom) {
+			for (Group group : library.getGroups()) {
+				for (ImportedBom importedBom : group.getBoms()) {
+					if (importedBom.name().equals(bom.id().artifactId()) && group.getId().equals(bom.id().groupId())) {
+						return importedBom.permittedDependencies();
+					}
+				}
+			}
+			return Collections.emptyList();
+		}
+
+		private Set<Id> managedDependenciesOf(Bom bom) {
+			Set<Id> managedDependencies = new TreeSet<>();
+			if (bom != null) {
+				managedDependencies.addAll(bom.managedDependencies());
+				managedDependencies.addAll(managedDependenciesOf(bom.parent()));
+				for (Bom importedBom : bom.importedBoms()) {
+					managedDependencies.addAll(managedDependenciesOf(importedBom));
+				}
+			}
+			return managedDependencies;
+		}
+
+		private boolean unwanted(Bom bom, Id managedDependency, List<PermittedDependency> permittedDependencies) {
+			if (bom.id().groupId().equals(managedDependency.groupId())
+					|| managedDependency.groupId().startsWith(bom.id().groupId() + ".")) {
+				return false;
+			}
+			for (PermittedDependency permittedDependency : permittedDependencies) {
+				if (permittedDependency.artifactId().equals(managedDependency.artifactId())
+						&& permittedDependency.groupId().equals(managedDependency.groupId())) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private Map<String, Set<String>> findUnnecessaryPermittedDependencies(Library library,
+				ResolvedLibrary resolvedLibrary) {
+			Map<String, Set<String>> unnecessary = new HashMap<>();
+			for (Bom bom : resolvedLibrary.importedBoms()) {
+				Set<String> permittedDependencies = findPermittedDependencies(library, bom).stream()
+					.map((dependency) -> dependency.groupId() + ":" + dependency.artifactId())
+					.collect(Collectors.toCollection(TreeSet::new));
+				Set<String> dependencies = managedDependenciesOf(bom).stream()
+					.map((dependency) -> dependency.groupId() + ":" + dependency.artifactId())
+					.collect(Collectors.toCollection(TreeSet::new));
+				permittedDependencies.removeAll(dependencies);
+				if (!permittedDependencies.isEmpty()) {
+					unnecessary.put(bom.id().artifactId(), permittedDependencies);
+				}
+			}
+			return unnecessary;
 		}
 
 	}

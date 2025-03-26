@@ -40,9 +40,11 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
+import org.springframework.boot.build.bom.Library.PermittedDependency;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -152,8 +154,8 @@ public class BomExtension {
 			for (Module module : group.getModules()) {
 				addModule(library, dependencies, versionProperty, group, module);
 			}
-			for (String bomImport : group.getBoms()) {
-				addBomImport(library, dependencies, versionProperty, group, bomImport);
+			for (ImportedBom bomImport : group.getBoms()) {
+				addBomImport(library, dependencies, versionProperty, group, bomImport.name());
 			}
 		}
 	}
@@ -176,6 +178,8 @@ public class BomExtension {
 
 	public static class LibraryHandler {
 
+		private final Project project;
+
 		private final List<Group> groups = new ArrayList<>();
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
@@ -194,6 +198,7 @@ public class BomExtension {
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
+			this.project = project;
 			this.version = version;
 			this.alignWith = project.getObjects().newInstance(AlignWithHandler.class);
 		}
@@ -211,7 +216,7 @@ public class BomExtension {
 		}
 
 		public void group(String id, Action<GroupHandler> action) {
-			GroupHandler groupHandler = new GroupHandler(id);
+			GroupHandler groupHandler = this.project.getObjects().newInstance(GroupHandler.class, id);
 			action.execute(groupHandler);
 			this.groups
 				.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
@@ -290,16 +295,17 @@ public class BomExtension {
 
 		}
 
-		public class GroupHandler extends GroovyObjectSupport {
+		public static class GroupHandler extends GroovyObjectSupport {
 
 			private final String id;
 
 			private List<Module> modules = new ArrayList<>();
 
-			private List<String> imports = new ArrayList<>();
+			private List<ImportedBom> imports = new ArrayList<>();
 
 			private List<String> plugins = new ArrayList<>();
 
+			@Inject
 			public GroupHandler(String id) {
 				this.id = id;
 			}
@@ -310,8 +316,14 @@ public class BomExtension {
 					.toList();
 			}
 
-			public void setImports(List<String> imports) {
-				this.imports = imports;
+			public void bom(String bom) {
+				this.imports.add(new ImportedBom(bom));
+			}
+
+			public void bom(String bom, Action<ImportBomHandler> action) {
+				ImportBomHandler handler = new ImportBomHandler();
+				action.execute(handler);
+				this.imports.add(new ImportedBom(bom, handler.permittedDependencies));
 			}
 
 			public void setPlugins(List<String> plugins) {
@@ -350,6 +362,17 @@ public class BomExtension {
 
 				public void setClassifier(String classifier) {
 					this.classifier = classifier;
+				}
+
+			}
+
+			public class ImportBomHandler {
+
+				private final List<PermittedDependency> permittedDependencies = new ArrayList<>();
+
+				public void permit(String allowed) {
+					String[] components = allowed.split(":");
+					this.permittedDependencies.add(new PermittedDependency(components[0], components[1]));
 				}
 
 			}
