@@ -4,26 +4,39 @@
 In the absence of an javadoc:java.util.concurrent.Executor[] bean in the context, Spring Boot auto-configures an javadoc:org.springframework.core.task.AsyncTaskExecutor[].
 When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a javadoc:org.springframework.core.task.SimpleAsyncTaskExecutor[] that uses virtual threads.
 Otherwise, it will be a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor[] with sensible defaults.
-In either case, the auto-configured executor will be automatically used for:
 
-- asynchronous task execution (`@EnableAsync`)
-- Spring for GraphQL's asynchronous handling of javadoc:java.util.concurrent.Callable[] return values from controller methods
-- Spring MVC's asynchronous request processing
-- Spring WebFlux's blocking execution support
+If a custom `Executor` bean is present, you can request Spring Boot to auto-configure an `AsyncTaskExecutor` anyway, as follows:
+
+[configprops,yaml]
+----
+spring:
+  task:
+    execution:
+      mode: force
+----
+
+The auto-configured executor will be automatically used for:
+
+- Asynchronous task execution (`@EnableAsync`), unless an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] bean is present.
+- Spring for GraphQL's asynchronous handling of javadoc:java.util.concurrent.Callable[] return values from controller methods.
+- Spring MVC's asynchronous request processing.
+- Spring WebFlux's blocking execution support.
 
 [TIP]
 ====
 If you have defined a custom javadoc:java.util.concurrent.Executor[] in the context, both regular task execution (that is javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation]) and Spring for GraphQL will use it.
-However, the Spring MVC and Spring WebFlux support will only use it if it is an javadoc:org.springframework.core.task.AsyncTaskExecutor[] implementation (named `applicationTaskExecutor`).
-Depending on your target arrangement, you could change your javadoc:java.util.concurrent.Executor[] into an javadoc:org.springframework.core.task.AsyncTaskExecutor[] or define both an javadoc:org.springframework.core.task.AsyncTaskExecutor[] and an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] wrapping your custom javadoc:java.util.concurrent.Executor[].
+However, the Spring MVC and Spring WebFlux support will only use it if it is an javadoc:org.springframework.core.task.AsyncTaskExecutor[] implementation named `applicationTaskExecutor`.
 
-The auto-configured javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] allows you to easily create instances that reproduce what the auto-configuration does by default.
+Depending on your target arrangement, you could set configprop:spring.task.execution.mode[] to `force` to auto-configure an `applicationTaskExecutor`, change your javadoc:java.util.concurrent.Executor[] into an javadoc:org.springframework.core.task.AsyncTaskExecutor[] or define both an javadoc:org.springframework.core.task.AsyncTaskExecutor[] and an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] wrapping your custom javadoc:java.util.concurrent.Executor[].
+
+Another option is to define those beans explicitly.
+The auto-configured javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] or javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] allow you to easily create instances that reproduce what the auto-configuration does by default.
 ====
 
 [NOTE]
 ====
-If multiple javadoc:java.util.concurrent.Executor[] beans are defined, regular task execution fallbacks to a bean named `taskExecutor`.
-GraphQL, Spring MVC and Spring WebFlux support fallback to a bean named `applicationTaskExecutor`.
+If multiple javadoc:java.util.concurrent.Executor[] beans are defined with configprop:spring.task.execution.mode[] to `force`, all the supported integrations look for a bean named `applicationTaskExecutor`.
+If the auto-configured `AsyncTaskExecutor` is not defined, only regular task execution fallbacks to a bean named `taskExecutor` to match Spring Framework's behavior.
 ====
 
 
