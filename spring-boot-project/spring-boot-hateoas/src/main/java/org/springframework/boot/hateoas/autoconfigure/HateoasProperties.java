@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hateoas;
+package org.springframework.boot.hateoas.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.2.1
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.hateoas")
 public class HateoasProperties {
