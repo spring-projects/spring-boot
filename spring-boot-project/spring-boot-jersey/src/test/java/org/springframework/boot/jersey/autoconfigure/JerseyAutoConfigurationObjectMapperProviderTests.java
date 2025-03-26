@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,15 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.xml.bind.annotation.XmlTransient;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -44,37 +46,38 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using default servlet paths.
+ * Tests for {@link JerseyAutoConfiguration} with an ObjectMapper.
  *
- * @author Dave Syer
+ * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.jackson.default-property-inclusion:non-null")
 @DirtiesContext
-class JerseyAutoConfigurationDefaultServletPathTests {
+class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	void responseIsSerializedUsingAutoConfiguredObjectMapper() {
+		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
 	}
 
 	@MinimalWebConfiguration
-	@Path("/hello")
+	@ApplicationPath("/rest")
+	@Path("/message")
 	public static class Application extends ResourceConfig {
-
-		@Value("${message:World}")
-		private String msg;
 
 		Application() {
 			register(Application.class);
 		}
 
 		@GET
-		public String message() {
-			return "Hello " + this.msg;
+		public Message message() {
+			return new Message("Jersey", null);
 		}
 
 		static void main(String[] args) {
@@ -83,12 +86,49 @@ class JerseyAutoConfigurationDefaultServletPathTests {
 
 	}
 
+	public static class Message {
+
+		private String subject;
+
+		private String body;
+
+		Message() {
+		}
+
+		Message(String subject, String body) {
+			this.subject = subject;
+			this.body = body;
+		}
+
+		public String getSubject() {
+			return this.subject;
+		}
+
+		public void setSubject(String subject) {
+			this.subject = subject;
+		}
+
+		public String getBody() {
+			return this.body;
+		}
+
+		public void setBody(String body) {
+			this.body = body;
+		}
+
+		@XmlTransient
+		public String getFoo() {
+			return "foo";
+		}
+
+	}
+
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ TomcatServletWebServerAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
+			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

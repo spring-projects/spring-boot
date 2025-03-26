@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,65 +22,43 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using custom servlet paths.
+ * Tests for {@link JerseyAutoConfiguration} when using custom load on startup.
  *
- * @author Dave Syer
+ * @author Stephane Nicoll
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
 @DirtiesContext
-class JerseyAutoConfigurationCustomServletPathTests {
+class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private ApplicationContext context;
 
 	@Test
 	void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(this.context.getBean("jerseyServletRegistration")).hasFieldOrPropertyWithValue("loadOnStartup", 5);
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("/rest")
-	@Path("/hello")
-	public static class Application extends ResourceConfig {
-
-		@Value("${message:World}")
-		private String msg;
+	static class Application extends ResourceConfig {
 
 		Application() {
 			register(Application.class);
-		}
-
-		@GET
-		public String message() {
-			return "Hello " + this.msg;
-		}
-
-		static void main(String[] args) {
-			SpringApplication.run(Application.class, args);
 		}
 
 	}
@@ -89,7 +67,7 @@ class JerseyAutoConfigurationCustomServletPathTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@Import({ TomcatServletWebServerAutoConfiguration.class, JerseyAutoConfiguration.class,
+	@Import({ JerseyAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 

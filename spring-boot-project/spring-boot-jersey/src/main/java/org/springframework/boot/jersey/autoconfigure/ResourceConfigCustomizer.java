@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.jersey.autoconfigure;
+
+import org.glassfish.jersey.server.ResourceConfig;
+
 /**
- * Auto-configuration for Jersey.
+ * Callback interface that can be implemented by beans wishing to customize Jersey's
+ * {@link ResourceConfig} before it is used.
+ *
+ * @author Eddú Meléndez
+ * @since 4.0.0
  */
-package org.springframework.boot.autoconfigure.jersey;
+@FunctionalInterface
+public interface ResourceConfigCustomizer {
+
+	/**
+	 * Customize the resource config.
+	 * @param config the {@link ResourceConfig} to customize
+	 */
+	void customize(ResourceConfig config);
+
+}
