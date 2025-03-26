@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
@@ -39,7 +38,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = MongoReactiveDataAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration")
 @ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class })
 @ConditionalOnBean(ReactiveMongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
