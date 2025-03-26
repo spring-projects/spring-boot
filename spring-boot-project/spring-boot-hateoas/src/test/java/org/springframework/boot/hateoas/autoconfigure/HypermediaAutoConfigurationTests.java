@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hateoas;
+package org.springframework.boot.hateoas.autoconfigure;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +35,7 @@ import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,8 +115,8 @@ class HypermediaAutoConfigurationTests {
 			});
 	}
 
-	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HypermediaAutoConfiguration.class })
+	@EnableWebMvc
+	@ImportAutoConfiguration(HypermediaAutoConfiguration.class)
 	static class BaseConfig {
 
 	}
