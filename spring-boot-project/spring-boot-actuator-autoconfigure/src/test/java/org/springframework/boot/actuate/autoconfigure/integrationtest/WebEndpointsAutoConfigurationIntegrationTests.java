@@ -33,13 +33,13 @@ import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;

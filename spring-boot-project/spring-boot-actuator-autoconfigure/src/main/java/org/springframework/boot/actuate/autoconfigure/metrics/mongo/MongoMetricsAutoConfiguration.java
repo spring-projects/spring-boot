@@ -33,8 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 
 /**
