@@ -25,9 +25,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
