@@ -59,6 +59,7 @@ import org.springframework.util.unit.DataSize;
  * @author Tomaz Fernandes
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.5.0
  */
 @ConfigurationProperties("spring.kafka")
@@ -338,6 +339,12 @@ public class KafkaProperties {
 		private Integer maxPollRecords;
 
 		/**
+		 * Maximum delay between invocations of poll() when using consumer group
+		 * management.
+		 */
+		private Duration maxPollInterval;
+
+		/**
 		 * Additional consumer-specific properties used to configure the client.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -454,6 +461,14 @@ public class KafkaProperties {
 			this.maxPollRecords = maxPollRecords;
 		}
 
+		public Duration getMaxPollInterval() {
+			return this.maxPollInterval;
+		}
+
+		public void setMaxPollInterval(Duration maxPollInterval) {
+			this.maxPollInterval = maxPollInterval;
+		}
+
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
@@ -483,6 +498,9 @@ public class KafkaProperties {
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
+			map.from(this::getMaxPollInterval)
+				.asInt(Duration::toMillis)
+				.to(properties.in(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
