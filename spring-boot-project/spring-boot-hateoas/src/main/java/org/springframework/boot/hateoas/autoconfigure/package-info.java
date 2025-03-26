@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring HATEOAS.
  */
-package org.springframework.boot.autoconfigure.hateoas;
+package org.springframework.boot.hateoas.autoconfigure;

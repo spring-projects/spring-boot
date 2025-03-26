@@ -163,6 +163,7 @@ dependencies {
 	optional("org.springframework.session:spring-session-core")
 	optional("redis.clients:jedis")
 
+	testImplementation(project(":spring-boot-project:spring-boot-hateoas"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
