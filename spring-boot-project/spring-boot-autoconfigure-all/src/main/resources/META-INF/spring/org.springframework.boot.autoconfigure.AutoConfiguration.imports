@@ -47,8 +47,6 @@ org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorA
 org.springframework.boot.autoconfigure.http.client.reactive.service.ReactiveHttpServiceClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration

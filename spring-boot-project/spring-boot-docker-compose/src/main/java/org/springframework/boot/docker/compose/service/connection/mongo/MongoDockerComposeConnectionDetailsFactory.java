@@ -18,10 +18,10 @@ package org.springframework.boot.docker.compose.service.connection.mongo;
 
 import com.mongodb.ConnectionString;
 
-import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link MongoConnectionDetails}

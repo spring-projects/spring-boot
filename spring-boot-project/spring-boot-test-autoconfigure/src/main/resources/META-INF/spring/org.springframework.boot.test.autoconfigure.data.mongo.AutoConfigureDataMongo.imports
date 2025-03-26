@@ -3,8 +3,8 @@ org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
-org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
 org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration
+org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
 optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

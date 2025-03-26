@@ -86,6 +86,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-ldap"))
 	optional(project(":spring-boot-project:spring-boot-liquibase"))
+	optional(project(":spring-boot-project:spring-boot-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-pulsar"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))

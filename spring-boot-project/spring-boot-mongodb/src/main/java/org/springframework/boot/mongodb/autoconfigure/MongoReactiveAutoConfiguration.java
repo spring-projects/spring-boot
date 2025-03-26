@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
@@ -45,7 +45,7 @@ import org.springframework.core.annotation.Order;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ MongoClient.class, Flux.class })

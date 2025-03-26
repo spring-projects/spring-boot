@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mark Paluch
  * @author Artsiom Yudovin
  * @author Safeer Ansari
- * @since 1.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.mongodb")
 public class MongoProperties {

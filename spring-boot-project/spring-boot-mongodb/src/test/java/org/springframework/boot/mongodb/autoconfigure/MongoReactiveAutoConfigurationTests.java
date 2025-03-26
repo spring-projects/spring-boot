@@ -14,41 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.internal.MongoClientImpl;
-import com.mongodb.connection.ClusterConnectionMode;
+import com.mongodb.ReadPreference;
+import com.mongodb.connection.NettyTransportSettings;
 import com.mongodb.connection.SslSettings;
+import com.mongodb.connection.TransportSettings;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
+import io.netty.channel.EventLoopGroup;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MongoAutoConfiguration}.
+ * Tests for {@link MongoReactiveAutoConfiguration}.
  *
- * @author Dave Syer
+ * @author Mark Paluch
  * @author Stephane Nicoll
- * @author Scott Frederick
  */
-class MongoAutoConfigurationTests {
+class MongoReactiveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, SslAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MongoReactiveAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void clientExists() {
@@ -57,24 +59,29 @@ class MongoAutoConfigurationTests {
 
 	@Test
 	void settingsAdded() {
-		this.contextRunner.withUserConfiguration(SettingsConfig.class)
-			.run((context) -> assertThat(
-					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
+		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
+			.withUserConfiguration(SettingsConfig.class)
+			.run((context) -> assertThat(getSettings(context).getSocketSettings().getReadTimeout(TimeUnit.SECONDS))
 				.isEqualTo(300));
 	}
 
 	@Test
 	void settingsAddedButNoHost() {
-		this.contextRunner.withUserConfiguration(SettingsConfig.class)
-			.run((context) -> assertThat(
-					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
-				.isEqualTo(300));
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+			.withUserConfiguration(SettingsConfig.class)
+			.run((context) -> assertThat(getSettings(context).getReadPreference()).isEqualTo(ReadPreference.nearest()));
 	}
 
 	@Test
 	void settingsSslConfig() {
-		this.contextRunner.withUserConfiguration(SslSettingsConfig.class)
-			.run((context) -> assertThat(getSettings(context).getSslSettings().isEnabled()).isTrue());
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+			.withUserConfiguration(SslSettingsConfig.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MongoClient.class);
+				MongoClientSettings settings = getSettings(context);
+				assertThat(settings.getApplicationName()).isEqualTo("test-config");
+				assertThat(settings.getTransportSettings()).isSameAs(context.getBean("myTransportSettings"));
+			});
 	}
 
 	@Test
@@ -99,22 +106,6 @@ class MongoAutoConfigurationTests {
 				assertThat(sslSettings.isEnabled()).isTrue();
 				assertThat(sslSettings.getContext()).isNotNull();
 			});
-	}
-
-	@Test
-	void configuresProtocol() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.protocol=mongodb+srv").run((context) -> {
-			MongoClientSettings settings = getSettings(context);
-			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.MULTIPLE);
-		});
-	}
-
-	@Test
-	void defaultProtocol() {
-		this.contextRunner.run((context) -> {
-			MongoClientSettings settings = getSettings(context);
-			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.SINGLE);
-		});
 	}
 
 	@Test
@@ -174,18 +165,6 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	void configuresCredentialsFromPropertiesWithSpecialCharacters() {
-		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.username=us:er", "spring.data.mongodb.password=sec@ret")
-			.run((context) -> {
-				MongoCredential credential = getSettings(context).getCredential();
-				assertThat(credential.getUserName()).isEqualTo("us:er");
-				assertThat(credential.getPassword()).isEqualTo("sec@ret".toCharArray());
-				assertThat(credential.getSource()).isEqualTo("test");
-			});
-	}
-
-	@Test
 	void doesNotConfigureCredentialsWithoutUsernameInUri() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://localhost/mydb?authSource=authdb")
 			.run((context) -> assertThat(getSettings(context).getCredential()).isNull());
@@ -229,16 +208,31 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	void configuresSingleClient() {
-		this.contextRunner.withUserConfiguration(FallbackMongoClientConfig.class)
-			.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
+	void nettyTransportSettingsAreConfiguredAutomatically() {
+		AtomicReference<EventLoopGroup> eventLoopGroupReference = new AtomicReference<>();
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MongoClient.class);
+			TransportSettings transportSettings = getSettings(context).getTransportSettings();
+			assertThat(transportSettings).isInstanceOf(NettyTransportSettings.class);
+			EventLoopGroup eventLoopGroup = ((NettyTransportSettings) transportSettings).getEventLoopGroup();
+			assertThat(eventLoopGroup.isShutdown()).isFalse();
+			eventLoopGroupReference.set(eventLoopGroup);
+		});
+		assertThat(eventLoopGroupReference.get().isShutdown()).isTrue();
 	}
 
 	@Test
-	void customizerOverridesAutoConfig() {
+	@SuppressWarnings("deprecation")
+	void customizerWithTransportSettingsOverridesAutoConfig() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
-			.withUserConfiguration(SimpleCustomizerConfig.class)
-			.run((context) -> assertThat(getSettings(context).getApplicationName()).isEqualTo("overridden-name"));
+			.withUserConfiguration(SimpleTransportSettingsCustomizerConfig.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MongoClient.class);
+				MongoClientSettings settings = getSettings(context);
+				assertThat(settings.getApplicationName()).isEqualTo("custom-transport-settings");
+				assertThat(settings.getTransportSettings())
+					.isSameAs(SimpleTransportSettingsCustomizerConfig.transportSettings);
+			});
 	}
 
 	@Test
@@ -266,8 +260,7 @@ class MongoAutoConfigurationTests {
 			.isEqualTo(new MongoProperties().getUuidRepresentation()));
 	}
 
-	private MongoClientSettings getSettings(AssertableApplicationContext context) {
-		assertThat(context).hasSingleBean(MongoClient.class);
+	private MongoClientSettings getSettings(ApplicationContext context) {
 		MongoClientImpl client = (MongoClientImpl) context.getBean(MongoClient.class);
 		return client.getSettings();
 	}
@@ -278,7 +271,8 @@ class MongoAutoConfigurationTests {
 		@Bean
 		MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder()
-				.applyToSocketSettings((socketSettings) -> socketSettings.connectTimeout(300, TimeUnit.MILLISECONDS))
+				.readPreference(ReadPreference.nearest())
+				.applyToSocketSettings((socket) -> socket.readTimeout(300, TimeUnit.SECONDS))
 				.build();
 		}
 
@@ -288,28 +282,29 @@ class MongoAutoConfigurationTests {
 	static class SslSettingsConfig {
 
 		@Bean
-		MongoClientSettings mongoClientSettings() {
-			return MongoClientSettings.builder().applyToSslSettings((ssl) -> ssl.enabled(true)).build();
+		MongoClientSettings mongoClientSettings(TransportSettings transportSettings) {
+			return MongoClientSettings.builder()
+				.applicationName("test-config")
+				.transportSettings(transportSettings)
+				.build();
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class FallbackMongoClientConfig {
 
 		@Bean
-		MongoClient fallbackMongoClient() {
-			return MongoClients.create();
+		TransportSettings myTransportSettings() {
+			return TransportSettings.nettyBuilder().build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class SimpleCustomizerConfig {
+	static class SimpleTransportSettingsCustomizerConfig {
+
+		private static final TransportSettings transportSettings = TransportSettings.nettyBuilder().build();
 
 		@Bean
 		MongoClientSettingsBuilderCustomizer customizer() {
-			return (clientSettingsBuilder) -> clientSettingsBuilder.applicationName("overridden-name");
+			return (clientSettingsBuilder) -> clientSettingsBuilder.applicationName("custom-transport-settings")
+				.transportSettings(transportSettings);
 		}
 
 	}
