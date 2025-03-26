@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * class loader at the time this call is made.
 	 * @param resourceLoader the delegate resource loader
 	 * @param preferFileResolution if file based resolution is preferred over
-	 * {@code ServletContextResource} or {@link ClassPathResource} when no resource prefix
-	 * is provided.
+	 * {@code ServletContextResource}, {@code FilteredReactiveWebContextResource} or
+	 * {@link ClassPathResource} when no resource prefix is provided.
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.4.1
 	 */
@@ -212,28 +212,31 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 
 		private static final String SERVLET_CONTEXT_RESOURCE_CLASS_NAME = "org.springframework.web.context.support.ServletContextResource";
 
+		private static final String FILTERED_REACTIVE_WEB_CONTEXT_RESOURCE_CLASS_NAME = "org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResource";
+
 		private final ResourceLoader resourceLoader;
 
 		private final List<ProtocolResolver> protocolResolvers;
 
 		private final boolean preferFileResolution;
 
-		private Class<?> servletContextResourceClass;
+		private final Class<?> servletContextResourceClass;
+
+		private final Class<?> filteredReactiveWebContextResourceClass;
 
 		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers,
 				boolean preferFileResolution) {
 			this.resourceLoader = resourceLoader;
 			this.protocolResolvers = protocolResolvers;
 			this.preferFileResolution = preferFileResolution;
-			this.servletContextResourceClass = resolveServletContextResourceClass(
-					resourceLoader.getClass().getClassLoader());
+			this.servletContextResourceClass = resolveServletContextResourceClass(resourceLoader);
+			this.filteredReactiveWebContextResourceClass = resolveFilteredReactiveWebContextResourceClass(
+					resourceLoader);
 		}
 
-		private static Class<?> resolveServletContextResourceClass(ClassLoader classLoader) {
-			if (!ClassUtils.isPresent(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, classLoader)) {
-				return null;
-			}
-			return ClassUtils.resolveClassName(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, classLoader);
+		@Override
+		public ClassLoader getClassLoader() {
+			return this.resourceLoader.getClassLoader();
 		}
 
 		@Override
@@ -247,24 +250,47 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 				}
 			}
 			Resource resource = this.resourceLoader.getResource(location);
-			if (this.preferFileResolution
-					&& (isClassPathResourceByPath(location, resource) || isServletResource(resource))) {
-				resource = new ApplicationResource(location);
+			if (shouldUseFileResolution(location, resource)) {
+				return new ApplicationResource(location);
 			}
 			return resource;
+		}
+
+		private boolean shouldUseFileResolution(String location, Resource resource) {
+			if (!this.preferFileResolution) {
+				return false;
+			}
+			return isClassPathResourceByPath(location, resource) || isServletContextResource(resource)
+					|| isFilteredReactiveWebContextResource(resource);
 		}
 
 		private boolean isClassPathResourceByPath(String location, Resource resource) {
 			return (resource instanceof ClassPathResource) && !location.startsWith(CLASSPATH_URL_PREFIX);
 		}
 
-		private boolean isServletResource(Resource resource) {
-			return this.servletContextResourceClass != null && this.servletContextResourceClass.isInstance(resource);
+		private boolean isServletContextResource(Resource resource) {
+			return (this.servletContextResourceClass != null) && this.servletContextResourceClass.isInstance(resource);
 		}
 
-		@Override
-		public ClassLoader getClassLoader() {
-			return this.resourceLoader.getClassLoader();
+		private boolean isFilteredReactiveWebContextResource(Resource resource) {
+			return (this.filteredReactiveWebContextResourceClass != null)
+					&& this.filteredReactiveWebContextResourceClass.isInstance(resource);
+		}
+
+		private static Class<?> resolveServletContextResourceClass(ResourceLoader resourceLoader) {
+			return resolveClassName(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, resourceLoader.getClass().getClassLoader());
+		}
+
+		private static Class<?> resolveFilteredReactiveWebContextResourceClass(ResourceLoader resourceLoader) {
+			return resolveClassName(FILTERED_REACTIVE_WEB_CONTEXT_RESOURCE_CLASS_NAME,
+					resourceLoader.getClass().getClassLoader());
+		}
+
+		private static Class<?> resolveClassName(String clazz, ClassLoader classLoader) {
+			if (!ClassUtils.isPresent(clazz, classLoader)) {
+				return null;
+			}
+			return ClassUtils.resolveClassName(clazz, classLoader);
 		}
 
 	}
