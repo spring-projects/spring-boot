@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -50,22 +49,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.jersey.type=filter", "server.servlet.context-path=/app",
-				"server.servlet.register-default-servlet=true" })
+		properties = { "spring.jersey.type=filter", "server.servlet.register-default-servlet=true" })
 @DirtiesContext
-class JerseyAutoConfigurationCustomFilterContextPathTests {
+class JerseyAutoConfigurationDefaultFilterPathTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("/rest")
 	@Path("/hello")
 	public static class Application extends ResourceConfig {
 
