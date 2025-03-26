@@ -70,9 +70,9 @@ bom {
 	}
 	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
-			imports = [
-				"janino"
-			]
+			bom("janino") {
+				permit("junit:junit")
+			}
 		}
 	}
 	library("JLine", "2.11") {

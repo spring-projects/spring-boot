@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.result.DependencyResult;
+import org.gradle.api.artifacts.result.ResolutionResult;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
@@ -304,9 +305,9 @@ public class Library {
 
 		private final List<String> plugins;
 
-		private final List<String> boms;
+		private final List<ImportedBom> boms;
 
-		public Group(String id, List<Module> modules, List<String> plugins, List<String> boms) {
+		public Group(String id, List<Module> modules, List<String> plugins, List<ImportedBom> boms) {
 			this.id = id;
 			this.modules = modules;
 			this.plugins = plugins;
@@ -325,7 +326,7 @@ public class Library {
 			return this.plugins;
 		}
 
-		public List<String> getBoms() {
+		public List<ImportedBom> getBoms() {
 			return this.boms;
 		}
 
@@ -459,9 +460,8 @@ public class Library {
 			Configuration alignmentConfiguration = this.project.getConfigurations()
 				.detachedConfiguration(dependencies.toArray(new Dependency[0]));
 			Map<String, String> versions = new HashMap<>();
-			for (DependencyResult dependency : alignmentConfiguration.getIncoming()
-				.getResolutionResult()
-				.getAllDependencies()) {
+			ResolutionResult resolutionResult = alignmentConfiguration.getIncoming().getResolutionResult();
+			for (DependencyResult dependency : resolutionResult.getAllDependencies()) {
 				versions.put(dependency.getFrom().getModuleVersion().getModule().toString(),
 						dependency.getFrom().getModuleVersion().getVersion());
 			}
@@ -516,7 +516,7 @@ public class Library {
 				.flatMap((group) -> group.getBoms()
 					.stream()
 					.map((bom) -> this.project.getDependencies()
-						.platform(group.getId() + ":" + bom + ":" + manager.getVersion().getVersion())))
+						.platform(group.getId() + ":" + bom.name() + ":" + manager.getVersion().getVersion())))
 				.toList();
 		}
 
@@ -568,6 +568,18 @@ public class Library {
 		public String url(LibraryVersion libraryVersion) {
 			return factory().apply(libraryVersion);
 		}
+
+	}
+
+	public record ImportedBom(String name, List<PermittedDependency> permittedDependencies) {
+
+		public ImportedBom(String name) {
+			this(name, Collections.emptyList());
+		}
+
+	}
+
+	public record PermittedDependency(String groupId, String artifactId) {
 
 	}
 
