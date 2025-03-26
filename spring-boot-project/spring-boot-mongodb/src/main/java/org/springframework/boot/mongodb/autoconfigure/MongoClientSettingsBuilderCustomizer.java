@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import com.mongodb.MongoClientSettings.Builder;
 
@@ -24,7 +24,7 @@ import com.mongodb.MongoClientSettings.Builder;
  * MongoClientSettings.Builder} whilst retaining default auto-configuration.
  *
  * @author Mark Paluch
- * @since 2.0.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface MongoClientSettingsBuilderCustomizer {

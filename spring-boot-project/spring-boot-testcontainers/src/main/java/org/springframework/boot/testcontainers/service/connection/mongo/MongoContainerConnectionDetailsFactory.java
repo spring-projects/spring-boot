@@ -19,7 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.mongo;
 import com.mongodb.ConnectionString;
 import org.testcontainers.containers.MongoDBContainer;
 
-import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
