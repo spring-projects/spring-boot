@@ -20,6 +20,13 @@ Depending on your target arrangement, you could change your javadoc:java.util.co
 The auto-configured javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] allows you to easily create instances that reproduce what the auto-configuration does by default.
 ====
 
+[NOTE]
+====
+If multiple javadoc:java.util.concurrent.Executor[] beans are defined, regular task execution fallbacks to a bean named `taskExecutor`.
+GraphQL, Spring MVC and Spring WebFlux support fallback to a bean named `applicationTaskExecutor`.
+====
+
+
 When a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor[] is auto-configured, the thread pool uses 8 core threads that can grow and shrink according to the load.
 Those default settings can be fine-tuned using the `spring.task.execution` namespace, as shown in the following example:
 
