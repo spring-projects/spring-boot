@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import java.util.List;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 
 /**
- * A factory for a reactive {@link MongoClient}.
+ * Tests for {@link ReactiveMongoClientFactory}.
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Scott Frederick
- * @since 2.0.0
  */
-public class ReactiveMongoClientFactory extends MongoClientFactorySupport<MongoClient> {
+class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<MongoClient> {
 
-	/**
-	 * Construct a factory for creating a {@link MongoClient}.
-	 * @param builderCustomizers a list of configuration settings customizers
-	 */
-	public ReactiveMongoClientFactory(List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
-		super(builderCustomizers, MongoClients::create);
+	@Override
+	protected MongoClient createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+			MongoClientSettings settings) {
+		return new ReactiveMongoClientFactory(customizers).createMongoClient(settings);
+	}
+
+	@Override
+	protected MongoClientSettings getClientSettings(MongoClient client) {
+		return ((MongoClientImpl) client).getSettings();
 	}
 
 }

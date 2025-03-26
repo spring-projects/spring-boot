@@ -327,24 +327,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.data.mongodb.grid-fs-database",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.data.mongodb.gridfs.database",
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.data.mongodb.repositories.type",
-      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
-      "description": "Type of Mongo repositories to enable.",
-      "defaultValue": "auto"
-    },
-    {
-      "name": "spring.data.mongodb.uri",
-      "defaultValue": "mongodb://localhost/test"
-    },
-    {
       "name": "spring.data.neo4j.auto-index",
       "description": "Auto index mode.",
       "defaultValue": "none",
