@@ -16,15 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.exporter.internal.compression.GzipCompressor;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.HttpUrl;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConfigurations.ConnectionDetails.PropertiesOtlpTracingConnectionDetails;
@@ -71,12 +74,55 @@ class OtlpTracingAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldCustomizeHttpTransportWithProperties() {
+		this.contextRunner
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces",
+					"management.otlp.tracing.timeout=10m", "management.otlp.tracing.connect-timeout=20m",
+					"management.otlp.tracing.compression=GZIP", "management.otlp.tracing.headers.spring=boot")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class).hasSingleBean(SpanExporter.class);
+				OtlpHttpSpanExporter exporter = context.getBean(OtlpHttpSpanExporter.class);
+				assertThat(exporter).extracting("delegate.httpSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", 1200000)
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", 600000);
+				assertThat(exporter).extracting("delegate.httpSender.compressor").isInstanceOf(GzipCompressor.class);
+				assertThat(exporter).extracting("delegate.httpSender.headerSupplier")
+					.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((headerSupplier) -> assertThat(headerSupplier.get())
+						.asInstanceOf(InstanceOfAssertFactories.map(String.class, List.class))
+						.containsEntry("spring", List.of("boot")));
+			});
+	}
+
+	@Test
 	void shouldSupplyBeansIfGrpcTransportIsEnabled() {
 		this.contextRunner
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces",
 					"management.otlp.tracing.transport=grpc")
 			.run((context) -> assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class)
 				.hasSingleBean(SpanExporter.class));
+	}
+
+	@Test
+	void shouldCustomizeGrpcTransportWithProperties() {
+		this.contextRunner
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces",
+					"management.otlp.tracing.transport=grpc", "management.otlp.tracing.timeout=10m",
+					"management.otlp.tracing.connect-timeout=20m", "management.otlp.tracing.compression=GZIP",
+					"management.otlp.tracing.headers.spring=boot")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class).hasSingleBean(SpanExporter.class);
+				OtlpGrpcSpanExporter exporter = context.getBean(OtlpGrpcSpanExporter.class);
+				assertThat(exporter).extracting("delegate.grpcSender.client")
+					.hasFieldOrPropertyWithValue("connectTimeoutMillis", 1200000)
+					.hasFieldOrPropertyWithValue("callTimeoutMillis", 600000);
+				assertThat(exporter).extracting("delegate.grpcSender.compressor").isInstanceOf(GzipCompressor.class);
+				assertThat(exporter).extracting("delegate.grpcSender.headersSupplier")
+					.asInstanceOf(InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((headerSupplier) -> assertThat(headerSupplier.get())
+						.asInstanceOf(InstanceOfAssertFactories.map(String.class, List.class))
+						.containsEntry("spring", List.of("boot")));
+			});
 	}
 
 	@Test
