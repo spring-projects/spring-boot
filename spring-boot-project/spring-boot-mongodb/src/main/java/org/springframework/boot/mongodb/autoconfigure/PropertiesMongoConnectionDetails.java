@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import com.mongodb.ConnectionString;
 
-import org.springframework.boot.autoconfigure.mongo.MongoProperties.Ssl;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.util.Assert;
@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 3.1.0
+ * @since 4.0.0
  */
 public class PropertiesMongoConnectionDetails implements MongoConnectionDetails {
 

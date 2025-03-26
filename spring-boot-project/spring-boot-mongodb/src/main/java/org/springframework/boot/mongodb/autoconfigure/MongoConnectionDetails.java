@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import com.mongodb.ConnectionString;
 
@@ -27,7 +27,7 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface MongoConnectionDetails extends ConnectionDetails {
 

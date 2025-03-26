@@ -22,10 +22,10 @@ import com.mongodb.client.MongoDatabase;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
+import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
+import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails.GridFs;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Gridfs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;

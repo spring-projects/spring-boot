@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo;
+package org.springframework.boot.mongodb.autoconfigure;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import com.mongodb.client.MongoClients;
  * @author Nasko Vasilev
  * @author Mark Paluch
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 
