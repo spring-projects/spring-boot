@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jersey;
+package org.springframework.boot.jersey.autoconfigure;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 1.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.jersey")
 public class JerseyProperties {
