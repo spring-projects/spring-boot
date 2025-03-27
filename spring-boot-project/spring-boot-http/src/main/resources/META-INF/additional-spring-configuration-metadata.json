@@ -1,0 +1,31 @@
+{
+  "properties": [
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "values": [
+        {
+          "value": "gson"
+        },
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}
