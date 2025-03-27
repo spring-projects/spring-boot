@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.webmvc.autoconfigure.JspTemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;

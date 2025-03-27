@@ -9,6 +9,6 @@ optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfigu
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
-org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
-org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
+org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration

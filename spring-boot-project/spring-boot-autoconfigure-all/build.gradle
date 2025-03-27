@@ -64,6 +64,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -96,7 +97,6 @@ dependencies {
 	optional("jakarta.websocket:jakarta.websocket-api")
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
-	optional("javax.money:money-api")
 
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
