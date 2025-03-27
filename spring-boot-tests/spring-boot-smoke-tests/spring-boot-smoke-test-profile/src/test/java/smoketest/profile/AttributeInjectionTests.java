@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AttributeInjectionTests {
 
 	@Autowired(required = false)
-	private org.springframework.boot.web.servlet.error.ErrorAttributes errorAttributesServlet;
+	private org.springframework.boot.webmvc.error.ErrorAttributes errorAttributesServlet;
 
 	@Autowired(required = false)
 	private org.springframework.boot.web.reactive.error.ErrorAttributes errorAttributesReactive;

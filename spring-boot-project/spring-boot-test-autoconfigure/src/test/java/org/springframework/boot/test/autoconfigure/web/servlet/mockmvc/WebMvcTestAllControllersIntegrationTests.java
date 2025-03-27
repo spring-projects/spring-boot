@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;

@@ -28,7 +28,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

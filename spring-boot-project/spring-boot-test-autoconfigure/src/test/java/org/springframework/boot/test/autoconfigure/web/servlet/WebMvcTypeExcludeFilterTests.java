@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
 
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;

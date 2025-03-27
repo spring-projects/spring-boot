@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.http.converter.HttpMessageConverter;

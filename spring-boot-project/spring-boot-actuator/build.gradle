@@ -52,6 +52,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}

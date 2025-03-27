@@ -25,6 +25,5 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-json"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
-	api("org.springframework:spring-web")
-	api("org.springframework:spring-webmvc")
+	api(project(":spring-boot-project:spring-boot-webmvc"))
 }

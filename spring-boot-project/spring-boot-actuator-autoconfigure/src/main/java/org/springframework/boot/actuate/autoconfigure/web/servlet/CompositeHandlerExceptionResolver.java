@@ -26,7 +26,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;

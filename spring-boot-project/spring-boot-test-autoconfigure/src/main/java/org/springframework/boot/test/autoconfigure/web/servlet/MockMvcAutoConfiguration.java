@@ -24,12 +24,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration;
 import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

@@ -31,6 +31,9 @@ dependencies {
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("javax.money:money-api")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-web")
 	optional("org.springframework.data:spring-data-commons")
 

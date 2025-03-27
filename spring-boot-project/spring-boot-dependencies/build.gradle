@@ -2099,7 +2099,8 @@ bom {
 				"spring-boot-tomcat",
 				"spring-boot-tx",
 				"spring-boot-undertow",
-				"spring-boot-validation"
+				"spring-boot-validation",
+				"spring-boot-webmvc"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"
