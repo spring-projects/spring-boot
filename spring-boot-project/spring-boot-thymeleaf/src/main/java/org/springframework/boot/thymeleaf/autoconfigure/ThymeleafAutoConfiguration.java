@@ -70,7 +70,7 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration",
-		"org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" })
+		"org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration" })
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
 @Import({ TemplateEngineConfigurations.ReactiveTemplateEngineConfiguration.class,

@@ -31,8 +31,6 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -53,6 +51,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /**
@@ -191,8 +191,8 @@ class ControllerEndpointHandlerMappingIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
+	@EnableWebMvc
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	static class EndpointConfiguration {
 
 		@Bean
@@ -215,6 +215,11 @@ class ControllerEndpointHandlerMappingIntegrationTests {
 		@Bean
 		EndpointAccessResolver endpointAccessResolver(Environment environment) {
 			return (id, defaultAccess) -> environment.getProperty("endpoint-access", Access.class, Access.UNRESTRICTED);
+		}
+
+		@Bean
+		DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
 		}
 
 	}
