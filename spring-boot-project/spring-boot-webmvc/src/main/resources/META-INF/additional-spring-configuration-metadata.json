@@ -1,0 +1,156 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.mvc.date-format",
+      "type": "java.lang.String",
+      "description": "Date format to use, for example 'dd/MM/yyyy'.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.favicon.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable resolution of favicon.ico.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.formcontent.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's FormContentFilter.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.mvc.formcontent.putfilter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HttpPutFormContentFilter.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.mvc.formcontent.filter.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.mvc.ignore-default-model-on-redirect",
+      "deprecation": {
+        "reason": "Deprecated for removal in Spring MVC.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.locale",
+      "type": "java.util.Locale",
+      "deprecation": {
+        "replacement": "spring.web.locale",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.locale-resolver",
+      "type": "org.springframework.boot.autoconfigure.web.WebProperties$LocaleResolver",
+      "deprecation": {
+        "replacement": "spring.web.locale-resolver",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.mvc.throw-exception-if-no-handler-found",
+      "deprecation": {
+      	"reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
+      	"level": "error"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.mvc.converters.preferred-json-mapper",
+      "values": [
+        {
+          "value": "gson"
+        },
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.mvc.format.date",
+      "values": [
+        {
+          "value": "dd/MM/yyyy",
+          "description": "Example date format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local date format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.mvc.format.date-time",
+      "values": [
+        {
+          "value": "yyyy-MM-dd HH:mm:ss",
+          "description": "Example date-time format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset date-time format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.mvc.format.time",
+      "values": [
+        {
+          "value": "HH:mm:ss",
+          "description": "Example time format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset time format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}
