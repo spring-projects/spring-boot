@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;

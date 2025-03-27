@@ -433,12 +433,6 @@
       "defaultValue": "classpath:graphql/**/"
     },
     {
-      "name": "spring.http.converters.preferred-json-mapper",
-      "type": "java.lang.String",
-      "defaultValue": "jackson",
-      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper."
-    },
-    {
       "name": "spring.http.encoding.charset",
       "type": "java.nio.charset.Charset",
       "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
@@ -656,16 +650,6 @@
       "deprecation": {
         "level": "error",
         "reason": "Narayana support has moved to third party starter."
-      }
-    },
-    {
-      "name": "spring.mvc.converters.preferred-json-mapper",
-      "type": "java.lang.String",
-      "defaultValue": "jackson",
-      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper.",
-      "deprecation": {
-        "replacement": "spring.http.converters.preferred-json-mapper",
-        "level": "error"
       }
     },
     {
@@ -1429,25 +1413,6 @@
           "parameters": {
             "target": "org.apache.kafka.common.serialization.Serializer"
           }
-        }
-      ]
-    },
-    {
-      "name": "spring.mvc.converters.preferred-json-mapper",
-      "values": [
-        {
-          "value": "gson"
-        },
-        {
-          "value": "jackson"
-        },
-        {
-          "value": "jsonb"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
         }
       ]
     },

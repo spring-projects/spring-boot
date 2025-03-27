@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +55,8 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
+
+	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Bean
 	@ConditionalOnMissingBean

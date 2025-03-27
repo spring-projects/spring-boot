@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

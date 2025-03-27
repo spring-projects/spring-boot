@@ -1,7 +1,3 @@
-# Background Preinitializers
-org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
-org.springframework.boot.autoconfigure.http.MessageConverterBackgroundPreinitializer
-
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer

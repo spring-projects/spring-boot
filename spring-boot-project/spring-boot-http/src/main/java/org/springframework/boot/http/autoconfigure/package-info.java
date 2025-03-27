@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for HTTP concerns.
  */
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;

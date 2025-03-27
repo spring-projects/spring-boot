@@ -21,9 +21,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -42,8 +41,8 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
-@ConditionalOnClass(RestTemplate.class)
+@AutoConfiguration(after = HttpClientAutoConfiguration.class)
+@ConditionalOnClass({ RestTemplate.class, HttpMessageConverters.class })
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestTemplateAutoConfiguration {
 

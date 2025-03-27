@@ -35,7 +35,6 @@ org.springframework.boot.autoconfigure.graphql.rsocket.RSocketGraphQlClientAutoC
 org.springframework.boot.autoconfigure.graphql.security.GraphQlWebFluxSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.security.GraphQlWebMvcSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
-org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.service.HttpServiceClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration

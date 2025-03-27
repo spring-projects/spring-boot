@@ -20,13 +20,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ConverterBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.DeserializerBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ExampleController;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
