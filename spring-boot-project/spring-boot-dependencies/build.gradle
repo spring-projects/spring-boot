@@ -2010,6 +2010,7 @@ bom {
 				"spring-boot-h2",
 				"spring-boot-hateoas",
 				"spring-boot-hazelcast",
+				"spring-boot-http",
 				"spring-boot-integration",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",

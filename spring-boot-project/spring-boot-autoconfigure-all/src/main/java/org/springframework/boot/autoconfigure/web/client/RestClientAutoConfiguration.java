@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
@@ -50,19 +49,10 @@ import org.springframework.web.client.RestClient.Builder;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
-@AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		SslAutoConfiguration.class })
+@AutoConfiguration(after = { HttpClientAutoConfiguration.class, SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestClientAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
-			ObjectProvider<HttpMessageConverters> messageConverters) {
-		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(RestClientSsl.class)
@@ -91,6 +81,19 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		return restClientBuilderConfigurer.configure(RestClient.builder());
+	}
+
+	@ConditionalOnClass(HttpMessageConverters.class)
+	static class HttpMessageConvertersConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
+				ObjectProvider<HttpMessageConverters> messageConverters) {
+			return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
+		}
+
 	}
 
 }

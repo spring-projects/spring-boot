@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;
 
 import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
-import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration;
+import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
+import org.springframework.boot.http.autoconfigure.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -117,14 +115,14 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void gsonDefaultConverter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
+		this.contextRunner.withBean(Gson.class)
 			.run(assertConverter(GsonHttpMessageConverter.class, "gsonHttpMessageConverter"));
 	}
 
 	@Test
 	void gsonCustomConverter() {
 		this.contextRunner.withUserConfiguration(GsonConverterConfig.class)
-			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
+			.withBean(Gson.class)
 			.run(assertConverter(GsonHttpMessageConverter.class, "customGsonMessageConverter"));
 	}
 
@@ -148,14 +146,14 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void jsonbDefaultConverter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+		this.contextRunner.withBean(Jsonb.class, JsonbBuilder::create)
 			.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
 	}
 
 	@Test
 	void jsonbCustomConverter() {
 		this.contextRunner.withUserConfiguration(JsonbConverterConfig.class)
-			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+			.withBean(Jsonb.class, JsonbBuilder::create)
 			.run(assertConverter(JsonbHttpMessageConverter.class, "customJsonbMessageConverter"));
 	}
 
@@ -293,8 +291,9 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {
-		return this.contextRunner.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class,
-				JacksonAutoConfiguration.class, JsonbAutoConfiguration.class));
+		return this.contextRunner.withBean(Gson.class)
+			.withBean(ObjectMapper.class)
+			.withBean(Jsonb.class, JsonbBuilder::create);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertConverter(
