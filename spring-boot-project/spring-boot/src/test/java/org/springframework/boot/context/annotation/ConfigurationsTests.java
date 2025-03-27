@@ -128,7 +128,6 @@ class ConfigurationsTests {
 
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class TestSortedConfigurations extends Configurations {
 
 		protected TestSortedConfigurations(Class<?>... classes) {
@@ -146,7 +145,6 @@ class ConfigurationsTests {
 
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	@SuppressWarnings("removal")
 	static class TestDeprecatedSortedConfigurations extends Configurations {
 

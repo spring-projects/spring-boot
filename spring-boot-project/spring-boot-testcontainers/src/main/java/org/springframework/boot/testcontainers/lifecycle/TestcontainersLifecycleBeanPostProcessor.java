@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.aot.AbstractAotProcessor;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -60,7 +58,6 @@ import org.springframework.core.log.LogMessage;
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
 @SuppressWarnings({ "removal", "deprecation" })
-@Order(Ordered.LOWEST_PRECEDENCE)
 class TestcontainersLifecycleBeanPostProcessor
 		implements DestructionAwareBeanPostProcessor, ApplicationListener<BeforeTestcontainerUsedEvent> {
 

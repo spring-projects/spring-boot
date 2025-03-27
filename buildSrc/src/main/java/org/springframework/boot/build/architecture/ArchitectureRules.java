@@ -96,6 +96,8 @@ final class ArchitectureRules {
 		rules.add(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
+		rules.add(classLevelProhibitRedundantOrderAnnotation());
+		rules.add(methodLevelProhibitRedundantOrderAnnotation());
 		return List.copyOf(rules);
 	}
 
@@ -304,6 +306,35 @@ final class ArchitectureRules {
 			.should()
 			.bePublic()
 			.allowEmptyShould(true);
+	}
+
+	private static ArchRule classLevelProhibitRedundantOrderAnnotation() {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith("org.springframework.core.annotation.Order")
+			.should(prohibitRedundantOrderAnnotation())
+			.allowEmptyShould(true);
+	}
+
+	private static ArchRule methodLevelProhibitRedundantOrderAnnotation() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.springframework.core.annotation.Order")
+			.should(prohibitRedundantOrderAnnotation())
+			.allowEmptyShould(true);
+	}
+
+	private static ArchCondition<? super HasAnnotations<?>> prohibitRedundantOrderAnnotation() {
+		return check("prohibit redundant @Order(Ordered.LOWEST_PRECEDENCE) or empty @Order",
+				(HasAnnotations<?> item, ConditionEvents events) -> {
+					JavaAnnotation<?> orderAnnotation = item
+						.getAnnotationOfType("org.springframework.core.annotation.Order");
+					int value = (int) orderAnnotation.getProperties().get("value");
+					if (value == Integer.MAX_VALUE) {
+						addViolation(events, item,
+								orderAnnotation.getDescription() + " should be removed since it's redundant");
+					}
+				});
 	}
 
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {

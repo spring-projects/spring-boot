@@ -50,14 +50,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotation.Adapt;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -81,7 +79,6 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnMissingBean
  * @see ConditionalOnSingleCandidate
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
 
 	@Override

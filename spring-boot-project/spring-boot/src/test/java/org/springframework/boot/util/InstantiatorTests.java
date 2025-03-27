@@ -160,7 +160,6 @@ class InstantiatorTests {
 
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class WithMultipleConstructors {
 
 		WithMultipleConstructors() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.NativeDetector;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -48,7 +46,6 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
 	private static final Log logger = DevToolsLogFactory.getLog(DevToolsPropertyDefaultsPostProcessor.class);

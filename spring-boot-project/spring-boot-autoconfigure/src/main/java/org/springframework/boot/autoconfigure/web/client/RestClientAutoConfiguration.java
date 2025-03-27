@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,6 @@ import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -58,7 +56,6 @@ public class RestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
 			ObjectProvider<HttpMessageConverters> messageConverters) {
 		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());

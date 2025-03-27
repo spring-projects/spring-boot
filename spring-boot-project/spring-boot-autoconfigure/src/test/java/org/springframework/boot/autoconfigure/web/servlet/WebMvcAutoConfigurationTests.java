@@ -1566,7 +1566,6 @@ class WebMvcAutoConfigurationTests {
 	static class OrderedControllerAdviceBeansConfiguration {
 
 		@ControllerAdvice
-		@Order
 		static class LowestOrderedControllerAdvice {
 
 		}

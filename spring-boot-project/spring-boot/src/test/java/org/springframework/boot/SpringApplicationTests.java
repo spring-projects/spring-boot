@@ -1806,7 +1806,6 @@ class SpringApplicationTests {
 		private final List<String> runners = new ArrayList<>();
 
 		@Bean
-		@Order
 		CommandLineRunner runnerC() {
 			return (args) -> this.runners.add("runnerC");
 		}

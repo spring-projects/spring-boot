@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.Set;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,7 +30,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
 class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 
 	private static final String USE_PARAMETERS_MESSAGE = "Ensure that the compiler uses the '-parameters' flag";

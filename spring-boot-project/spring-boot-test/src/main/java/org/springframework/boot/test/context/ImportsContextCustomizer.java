@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
@@ -176,7 +174,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 * {@link BeanDefinitionRegistryPostProcessor} to cleanup temporary configuration
 	 * added to load imports.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class ImportsCleanupPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 		static final String BEAN_NAME = ImportsCleanupPostProcessor.class.getName();

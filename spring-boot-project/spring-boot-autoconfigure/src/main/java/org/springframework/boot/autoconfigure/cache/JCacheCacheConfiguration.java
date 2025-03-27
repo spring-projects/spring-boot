@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
@@ -122,7 +120,6 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	 * as defined per {@link JCacheProviderAvailableCondition} or if a
 	 * {@link CacheManager} has already been defined.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class JCacheAvailableCondition extends AnyNestedCondition {
 
 		JCacheAvailableCondition() {
@@ -146,7 +143,6 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	 * {@link CachingProvider} has been found or if the property referring to the provider
 	 * to use has been set.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class JCacheProviderAvailableCondition extends SpringBootCondition {
 
 		@Override

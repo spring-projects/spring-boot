@@ -79,7 +79,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.retry.RetryPolicy;
@@ -1187,7 +1186,6 @@ class RabbitAutoConfigurationTests {
 	static class MultipleRabbitTemplateCustomizersConfiguration {
 
 		@Bean
-		@Order(Ordered.LOWEST_PRECEDENCE)
 		RabbitTemplateCustomizer secondCustomizer() {
 			return mock(RabbitTemplateCustomizer.class);
 		}
@@ -1356,7 +1354,6 @@ class RabbitAutoConfigurationTests {
 	static class MultipleConnectionFactoryCustomizersConfiguration {
 
 		@Bean
-		@Order(Ordered.LOWEST_PRECEDENCE)
 		ConnectionFactoryCustomizer secondCustomizer() {
 			return mock(ConnectionFactoryCustomizer.class);
 		}

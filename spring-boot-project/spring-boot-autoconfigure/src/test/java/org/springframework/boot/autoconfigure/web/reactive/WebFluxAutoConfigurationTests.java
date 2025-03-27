@@ -1126,7 +1126,6 @@ class WebFluxAutoConfigurationTests {
 	static class OrderedControllerAdviceBeansConfiguration {
 
 		@ControllerAdvice
-		@Order
 		static class LowestOrderedControllerAdvice {
 
 		}
