@@ -348,6 +348,23 @@ class TaskExecutionAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void enableAsyncUsesAutoConfiguredExecutorWhenModeIsForceAndHasPrimaryCustomTaskExecutor() {
+		this.contextRunner
+			.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-",
+					"spring.task.execution.mode=force")
+			.withBean("taskExecutor", Executor.class, () -> createCustomAsyncExecutor("custom-task-"),
+					(bd) -> bd.setPrimary(true))
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
+				assertThat(context.getBeansOfType(Executor.class)).hasSize(2);
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("auto-task-").contains("something");
+			});
+	}
+
 	private Executor createCustomAsyncExecutor(String threadNamePrefix) {
 		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 		executor.setThreadNamePrefix(threadNamePrefix);
