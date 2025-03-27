@@ -30,6 +30,7 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
@@ -240,6 +241,21 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void taskExecutorWhenModeIsForceAndHasCustomBFPPCanRestoreTaskExecutorAlias() {
+		this.contextRunner.withBean("customTaskExecutor", Executor.class, SyncTaskExecutor::new)
+			.withPropertyValues("spring.task.execution.mode=force")
+			.withBean(BeanFactoryPostProcessor.class,
+					() -> (beanFactory) -> beanFactory.registerAlias("applicationTaskExecutor", "taskExecutor"))
+			.run((context) -> {
+				assertThat(context.getBeansOfType(Executor.class)).hasSize(2)
+					.containsKeys("customTaskExecutor", "applicationTaskExecutor");
+				assertThat(context).hasBean("taskExecutor");
+				assertThat(context.getBean("taskExecutor")).isSameAs(context.getBean("applicationTaskExecutor"));
+
+			});
+	}
+
+	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsAreEnabledAndCustomTaskExecutorIsDefinedThenSimpleAsyncTaskExecutorThatUsesVirtualThreadsBacksOff() {
 		this.contextRunner.withBean("customTaskExecutor", Executor.class, SyncTaskExecutor::new)
@@ -294,18 +310,18 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	void enableAsyncUsesCustomExecutorWhenModeIsForceAndHasCustomTaskExecutorWithReservedName() {
+	void enableAsyncUsesAutoConfiguredExecutorWhenModeIsForceAndHasCustomTaskExecutorWithReservedName() {
 		this.contextRunner
 			.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-",
 					"spring.task.execution.mode=force")
 			.withBean("taskExecutor", Executor.class, () -> createCustomAsyncExecutor("custom-task-"))
 			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(AsyncConfigurer.class);
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
 				assertThat(context.getBeansOfType(Executor.class)).hasSize(2);
 				TestBean bean = context.getBean(TestBean.class);
 				String text = bean.echo("something").get();
-				assertThat(text).contains("custom-task-").contains("something");
+				assertThat(text).contains("auto-task-").contains("something");
 			});
 	}
 
