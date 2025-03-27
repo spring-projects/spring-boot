@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;
 
 import org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer;
 import org.springframework.http.converter.HttpMessageConverter;
