@@ -40,7 +40,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
@@ -53,6 +52,7 @@ import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;

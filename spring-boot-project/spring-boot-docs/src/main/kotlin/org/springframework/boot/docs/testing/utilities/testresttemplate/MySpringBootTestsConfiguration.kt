@@ -18,8 +18,8 @@ package org.springframework.boot.docs.testing.utilities.testresttemplate
 
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration
 import org.springframework.http.ResponseEntity

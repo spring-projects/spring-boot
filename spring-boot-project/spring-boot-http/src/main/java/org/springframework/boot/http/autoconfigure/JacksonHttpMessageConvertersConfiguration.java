@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http;
+package org.springframework.boot.http.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.ConditionalOnPreferredJsonMapper.JsonMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -41,7 +41,8 @@ class JacksonHttpMessageConvertersConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
-	@ConditionalOnPreferredJsonMapper(JsonMapper.JACKSON)
+	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+			havingValue = "jackson", matchIfMissing = true)
 	static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Bean
