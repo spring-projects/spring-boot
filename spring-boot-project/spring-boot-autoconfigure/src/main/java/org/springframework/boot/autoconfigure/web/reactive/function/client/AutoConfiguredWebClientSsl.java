@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.http.client.reactive.ClientHttpConnector;
@@ -30,12 +32,16 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 class AutoConfiguredWebClientSsl implements WebClientSsl {
 
-	private final ClientHttpConnectorFactory<?> clientHttpConnectorFactory;
+	private final ClientHttpConnectorBuilder<?> connectorBuilder;
+
+	private final ClientHttpConnectorSettings settings;
 
 	private final SslBundles sslBundles;
 
-	AutoConfiguredWebClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory, SslBundles sslBundles) {
-		this.clientHttpConnectorFactory = clientHttpConnectorFactory;
+	AutoConfiguredWebClientSsl(ClientHttpConnectorBuilder<?> connectorBuilder, ClientHttpConnectorSettings settings,
+			SslBundles sslBundles) {
+		this.connectorBuilder = connectorBuilder;
+		this.settings = settings;
 		this.sslBundles = sslBundles;
 	}
 
@@ -47,7 +53,8 @@ class AutoConfiguredWebClientSsl implements WebClientSsl {
 	@Override
 	public Consumer<WebClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
-			ClientHttpConnector connector = this.clientHttpConnectorFactory.createClientHttpConnector(bundle);
+			ClientHttpConnectorSettings settings = this.settings.withSslBundle(bundle);
+			ClientHttpConnector connector = this.connectorBuilder.build(settings);
 			builder.clientConnector(connector);
 		};
 	}

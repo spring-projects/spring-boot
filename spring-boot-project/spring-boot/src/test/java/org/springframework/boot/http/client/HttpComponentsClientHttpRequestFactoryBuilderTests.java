@@ -38,7 +38,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder}.
+ * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder} and
+ * {@link HttpComponentsHttpClientBuilder}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

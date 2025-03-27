@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
+package org.springframework.boot.docs.io.restclient.webclient.configuration;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import java.net.ProxySelector;
 
-/**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
- *
- * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
- */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration(proxyBeanMethods = false)
+public class MyConnectorHttpConfiguration {
+
+	@Bean
+	ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder(ProxySelector proxySelector) {
+		return ClientHttpConnectorBuilder.jdk().withHttpClientCustomizer((builder) -> builder.proxy(proxySelector));
+	}
 
 }

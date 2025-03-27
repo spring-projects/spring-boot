@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.net.ssl.SSLContext;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
-import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
-import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -49,36 +41,27 @@ import org.springframework.util.ClassUtils;
 public final class JettyClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> {
 
-	private final Consumer<HttpClient> httpClientCustomizer;
-
-	private final Consumer<HttpClientTransport> httpClientTransportCustomizer;
-
-	private final Consumer<ClientConnector> clientConnectorCustomizerCustomizer;
+	private final JettyHttpClientBuilder httpClientBuilder;
 
 	JettyClientHttpRequestFactoryBuilder() {
-		this(null, emptyCustomizer(), emptyCustomizer(), emptyCustomizer());
+		this(null, new JettyHttpClientBuilder());
 	}
 
 	private JettyClientHttpRequestFactoryBuilder(List<Consumer<JettyClientHttpRequestFactory>> customizers,
-			Consumer<HttpClient> httpClientCustomizer, Consumer<HttpClientTransport> httpClientTransportCustomizer,
-			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
+			JettyHttpClientBuilder httpClientBuilder) {
 		super(customizers);
-		this.httpClientCustomizer = httpClientCustomizer;
-		this.httpClientTransportCustomizer = httpClientTransportCustomizer;
-		this.clientConnectorCustomizerCustomizer = clientConnectorCustomizerCustomizer;
+		this.httpClientBuilder = httpClientBuilder;
 	}
 
 	@Override
 	public JettyClientHttpRequestFactoryBuilder withCustomizer(Consumer<JettyClientHttpRequestFactory> customizer) {
-		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer,
-				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
+		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
 	}
 
 	@Override
 	public JettyClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<JettyClientHttpRequestFactory>> customizers) {
-		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer,
-				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
+		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
 	}
 
 	/**
@@ -90,8 +73,7 @@ public final class JettyClientHttpRequestFactoryBuilder
 	public JettyClientHttpRequestFactoryBuilder withHttpClientCustomizer(Consumer<HttpClient> httpClientCustomizer) {
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
-				this.httpClientCustomizer.andThen(httpClientCustomizer), this.httpClientTransportCustomizer,
-				this.clientConnectorCustomizerCustomizer);
+				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
 	}
 
 	/**
@@ -103,9 +85,8 @@ public final class JettyClientHttpRequestFactoryBuilder
 	public JettyClientHttpRequestFactoryBuilder withHttpClientTransportCustomizer(
 			Consumer<HttpClientTransport> httpClientTransportCustomizer) {
 		Assert.notNull(httpClientTransportCustomizer, "'httpClientTransportCustomizer' must not be null");
-		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.httpClientTransportCustomizer.andThen(httpClientTransportCustomizer),
-				this.clientConnectorCustomizerCustomizer);
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientTransportCustomizer(httpClientTransportCustomizer));
 	}
 
 	/**
@@ -117,66 +98,18 @@ public final class JettyClientHttpRequestFactoryBuilder
 	public JettyClientHttpRequestFactoryBuilder withClientConnectorCustomizerCustomizer(
 			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
 		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
-		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.httpClientTransportCustomizer,
-				this.clientConnectorCustomizerCustomizer.andThen(clientConnectorCustomizerCustomizer));
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
 	}
 
 	@Override
 	protected JettyClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings);
+		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withTimeouts(null, null)));
+		JettyClientHttpRequestFactory requestFactory = new JettyClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
-	}
-
-	private JettyClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClientTransport transport = createTransport(settings);
-		this.httpClientTransportCustomizer.accept(transport);
-		HttpClient httpClient = new HttpClient(transport);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
-		this.httpClientCustomizer.accept(httpClient);
-		return new JettyClientHttpRequestFactory(httpClient);
-	}
-
-	private HttpClientTransport createTransport(ClientHttpRequestFactorySettings settings) {
-		ClientConnector connector = createClientConnector(settings.sslBundle());
-		return (connector.getSslContextFactory() != null) ? new HttpClientTransportDynamic(connector)
-				: new HttpClientTransportOverHTTP(connector);
-	}
-
-	private ClientConnector createClientConnector(SslBundle sslBundle) {
-		ClientConnector connector = new ClientConnector();
-		if (sslBundle != null) {
-			connector.setSslContextFactory(createSslContextFactory(sslBundle));
-		}
-		this.clientConnectorCustomizerCustomizer.accept(connector);
-		return connector;
-	}
-
-	private SslContextFactory.Client createSslContextFactory(SslBundle sslBundle) {
-		SslOptions options = sslBundle.getOptions();
-		SSLContext sslContext = sslBundle.createSslContext();
-		SslContextFactory.Client factory = new SslContextFactory.Client();
-		factory.setSslContext(sslContext);
-		if (options.getCiphers() != null) {
-			factory.setIncludeCipherSuites(options.getCiphers());
-			factory.setExcludeCipherSuites();
-		}
-		if (options.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(options.getEnabledProtocols());
-			factory.setExcludeProtocols();
-		}
-		return factory;
-	}
-
-	private boolean followRedirects(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
-			case DONT_FOLLOW -> false;
-		};
 	}
 
 	static class Classes {

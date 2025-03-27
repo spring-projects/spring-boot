@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
- *
- * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
+ * Auto-configuration for client-side reactive HTTP.
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
-
-}
+package org.springframework.boot.autoconfigure.http.client.reactive;

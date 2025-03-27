@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkHttpClientBuilder;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link JdkClientHttpRequestFactoryBuilder} and {@link JdkHttpClientBuilder}.
+ * Tests for {@link JdkClientHttpConnectorBuilder} and {@link JdkHttpClientBuilder}.
  *
  * @author Phillip Webb
  */
-class JdkClientHttpRequestFactoryBuilderTests
-		extends AbstractClientHttpRequestFactoryBuilderTests<JdkClientHttpRequestFactory> {
+class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuilderTests<JdkClientHttpConnector> {
 
-	JdkClientHttpRequestFactoryBuilderTests() {
-		super(JdkClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jdk());
+	JdkClientHttpConnectorBuilderTests() {
+		super(JdkClientHttpConnector.class, ClientHttpConnectorBuilder.jdk());
 	}
 
 	@Test
@@ -49,14 +50,14 @@ class JdkClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
-	protected long connectTimeout(JdkClientHttpRequestFactory requestFactory) {
-		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+	protected long connectTimeout(JdkClientHttpConnector connector) {
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		return httpClient.connectTimeout().get().toMillis();
 	}
 
 	@Override
-	protected long readTimeout(JdkClientHttpRequestFactory requestFactory) {
-		Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	protected long readTimeout(JdkClientHttpConnector connector) {
+		Duration readTimeout = (Duration) ReflectionTestUtils.getField(connector, "readTimeout");
 		return readTimeout.toMillis();
 	}
 

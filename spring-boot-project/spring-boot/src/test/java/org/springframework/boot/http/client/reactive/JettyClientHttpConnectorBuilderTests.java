@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
+
+import java.time.Duration;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JettyHttpClientBuilder;
+import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link JettyClientHttpRequestFactoryBuilder} and
- * {@link JettyHttpClientBuilder}.
+ * Tests for {@link JettyClientHttpConnectorBuilder} and {@link JettyHttpClientBuilder}.
  *
  * @author Phillip Webb
  */
-class JettyClientHttpRequestFactoryBuilderTests
-		extends AbstractClientHttpRequestFactoryBuilderTests<JettyClientHttpRequestFactory> {
+class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuilderTests<JettyClientHttpConnector> {
 
-	JettyClientHttpRequestFactoryBuilderTests() {
-		super(JettyClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jetty());
+	JettyClientHttpConnectorBuilderTests() {
+		super(JettyClientHttpConnector.class, ClientHttpConnectorBuilder.jetty());
 	}
 
 	@Test
@@ -56,13 +58,14 @@ class JettyClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
-	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+	protected long connectTimeout(JettyClientHttpConnector connector) {
+		return ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).getConnectTimeout();
 	}
 
 	@Override
-	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	protected long readTimeout(JettyClientHttpConnector connector) {
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		return ((Duration) ReflectionTestUtils.getField(httpClient, "readTimeout")).toMillis();
 	}
 
 }

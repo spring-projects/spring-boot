@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,19 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 	 * @param readTimeout the new read timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-
 	public ClientHttpRequestFactorySettings withReadTimeout(Duration readTimeout) {
 		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
+	 * connect and read timeout setting.
+	 * @param connectTimeout the new connect timeout setting
+	 * @param readTimeout the new read timeout setting
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public ClientHttpRequestFactorySettings withTimeouts(Duration connectTimeout, Duration readTimeout) {
+		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -113,17 +123,27 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 		/**
 		 * Follow redirects (if the underlying library has support).
 		 */
-		FOLLOW_WHEN_POSSIBLE,
+		FOLLOW_WHEN_POSSIBLE(HttpRedirects.FOLLOW_WHEN_POSSIBLE),
 
 		/**
 		 * Follow redirects (fail if the underlying library has no support).
 		 */
-		FOLLOW,
+		FOLLOW(HttpRedirects.FOLLOW),
 
 		/**
 		 * Don't follow redirects (fail if the underlying library has no support).
 		 */
-		DONT_FOLLOW
+		DONT_FOLLOW(HttpRedirects.DONT_FOLLOW);
+
+		private final HttpRedirects httpClientRedirects;
+
+		Redirects(HttpRedirects httpClientRedirects) {
+			this.httpClientRedirects = httpClientRedirects;
+		}
+
+		HttpRedirects httpClientRedirects() {
+			return this.httpClientRedirects;
+		}
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive.function.client;
+package org.springframework.boot.http.client.reactive;
+
+import java.util.function.Consumer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JdkClientHttpConnectorFactory}.
+ * Test customizer that can assert that it has been called.
  *
+ * @param <T> type being customized
  * @author Phillip Webb
  */
-class JdkClientHttpConnectorFactoryTests extends AbstractClientHttpConnectorFactoryTests {
+class TestCustomizer<T> implements Consumer<T> {
+
+	private boolean called;
 
 	@Override
-	protected ClientHttpConnectorFactory<?> getFactory() {
-		return new JdkClientHttpConnectorFactory();
+	public void accept(T t) {
+		this.called = true;
+	}
+
+	void assertCalled() {
+		assertThat(this.called).isTrue();
 	}
 
 }

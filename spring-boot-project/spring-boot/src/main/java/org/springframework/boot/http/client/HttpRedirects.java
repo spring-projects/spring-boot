@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive.function.client;
-
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.http.client.reactive.ClientHttpConnector;
+package org.springframework.boot.http.client;
 
 /**
- * Internal factory used to create {@link ClientHttpConnector} instances.
+ * Redirect strategies support by HTTP clients.
  *
- * @param <T> the {@link ClientHttpConnector} type
  * @author Phillip Webb
+ * @since 3.5.0
  */
-@FunctionalInterface
-interface ClientHttpConnectorFactory<T extends ClientHttpConnector> {
+public enum HttpRedirects {
 
-	default T createClientHttpConnector() {
-		return createClientHttpConnector(null);
-	}
+	/**
+	 * Follow redirects (if the underlying library has support).
+	 */
+	FOLLOW_WHEN_POSSIBLE,
 
-	T createClientHttpConnector(SslBundle sslBundle);
+	/**
+	 * Follow redirects (fail if the underlying library has no support).
+	 */
+	FOLLOW,
+
+	/**
+	 * Don't follow redirects (fail if the underlying library has no support).
+	 */
+	DONT_FOLLOW
 
 }

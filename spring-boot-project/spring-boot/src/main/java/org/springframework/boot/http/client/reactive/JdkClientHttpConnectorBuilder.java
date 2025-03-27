@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
 
 import java.net.http.HttpClient;
 import java.util.Collection;
@@ -22,71 +22,69 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.boot.http.client.JdkHttpClientBuilder;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Builder for {@link ClientHttpRequestFactoryBuilder#jdk()}.
+ * Builder for {@link ClientHttpConnectorBuilder#jdk()}.
  *
  * @author Phillip Webb
- * @author Andy Wilkinson
- * @author Scott Frederick
- * @since 3.4.0
+ * @since 3.5.0
  */
-public final class JdkClientHttpRequestFactoryBuilder
-		extends AbstractClientHttpRequestFactoryBuilder<JdkClientHttpRequestFactory> {
+public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConnectorBuilder<JdkClientHttpConnector> {
 
 	private final JdkHttpClientBuilder httpClientBuilder;
 
-	JdkClientHttpRequestFactoryBuilder() {
+	JdkClientHttpConnectorBuilder() {
 		this(null, new JdkHttpClientBuilder());
 	}
 
-	private JdkClientHttpRequestFactoryBuilder(List<Consumer<JdkClientHttpRequestFactory>> customizers,
+	private JdkClientHttpConnectorBuilder(List<Consumer<JdkClientHttpConnector>> customizers,
 			JdkHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
 	}
 
 	@Override
-	public JdkClientHttpRequestFactoryBuilder withCustomizer(Consumer<JdkClientHttpRequestFactory> customizer) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
+	public JdkClientHttpConnectorBuilder withCustomizer(Consumer<JdkClientHttpConnector> customizer) {
+		return new JdkClientHttpConnectorBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
 	}
 
 	@Override
-	public JdkClientHttpRequestFactoryBuilder withCustomizers(
-			Collection<Consumer<JdkClientHttpRequestFactory>> customizers) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	public JdkClientHttpConnectorBuilder withCustomizers(Collection<Consumer<JdkClientHttpConnector>> customizers) {
+		return new JdkClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
 	}
 
 	/**
-	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} that applies additional
+	 * Return a new {@link JdkClientHttpConnectorBuilder} that applies additional
 	 * customization to the underlying {@link java.net.http.HttpClient.Builder}.
 	 * @param httpClientCustomizer the customizer to apply
-	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
+	 * @return a new {@link JdkClientHttpConnectorBuilder} instance
 	 */
-	public JdkClientHttpRequestFactoryBuilder withHttpClientCustomizer(
-			Consumer<HttpClient.Builder> httpClientCustomizer) {
+	public JdkClientHttpConnectorBuilder withHttpClientCustomizer(Consumer<HttpClient.Builder> httpClientCustomizer) {
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
-		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
+		return new JdkClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
 	}
 
 	@Override
-	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
+	protected JdkClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withReadTimeout(null)));
-		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+		JdkClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
-		return requestFactory;
+		map.from(settings::readTimeout).to(connector::setReadTimeout);
+		return connector;
 	}
 
 	static class Classes {
 
 		static final String HTTP_CLIENT = "java.net.http.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
+		}
 
 	}
 

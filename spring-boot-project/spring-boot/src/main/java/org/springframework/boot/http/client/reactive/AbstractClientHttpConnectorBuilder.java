@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,22 +22,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.util.Assert;
 
 /**
- * Internal base class used for {@link ClientHttpRequestFactoryBuilder} implementations.
+ * Internal base class used for {@link ClientHttpConnectorBuilder} implementations.
  *
- * @param <T> the {@link ClientHttpRequestFactory} type
+ * @param <T> the {@link ClientHttpConnector} type
  * @author Phillip Webb
  */
-abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFactory>
-		implements ClientHttpRequestFactoryBuilder<T> {
+abstract class AbstractClientHttpConnectorBuilder<T extends ClientHttpConnector>
+		implements ClientHttpConnectorBuilder<T> {
 
 	private final List<Consumer<T>> customizers;
 
-	protected AbstractClientHttpRequestFactoryBuilder(List<Consumer<T>> customizers) {
+	protected AbstractClientHttpConnectorBuilder(List<Consumer<T>> customizers) {
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 	}
 
@@ -64,18 +65,18 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final T build(ClientHttpRequestFactorySettings settings) {
-		T factory = createClientHttpRequestFactory(
-				(settings != null) ? settings : ClientHttpRequestFactorySettings.defaults());
-		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
-		return factory;
+	public final T build(ClientHttpConnectorSettings settings) {
+		T connector = createClientHttpConnector((settings != null) ? settings : ClientHttpConnectorSettings.defaults());
+		LambdaSafe.callbacks(Consumer.class, this.customizers, connector)
+			.invoke((consumer) -> consumer.accept(connector));
+		return connector;
 	}
 
-	protected abstract T createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings);
+	protected abstract T createClientHttpConnector(ClientHttpConnectorSettings settings);
 
-	protected final HttpClientSettings asHttpClientSettings(ClientHttpRequestFactorySettings settings) {
-		return (settings != null) ? new HttpClientSettings(settings.redirects().httpClientRedirects(),
-				settings.connectTimeout(), settings.readTimeout(), settings.sslBundle()) : null;
+	protected final HttpClientSettings asHttpClientSettings(ClientHttpConnectorSettings settings) {
+		return (settings != null) ? new HttpClientSettings(settings.redirects(), settings.connectTimeout(),
+				settings.readTimeout(), settings.sslBundle()) : null;
 	}
 
 }

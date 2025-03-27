@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
+package org.springframework.boot.autoconfigure.http.client.reactive;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * Customizer that can be used to modify the auto-configured
+ * {@link ClientHttpConnectorBuilder} when its type matches.
  *
+ * @param <B> the builder type
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
+ * @since 3.5.0
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+public interface ClientHttpConnectorBuilderCustomizer<B extends ClientHttpConnectorBuilder<?>> {
+
+	/**
+	 * Customize the given builder.
+	 * @param builder the builder to customize
+	 * @return the customized builder
+	 */
+	B customize(B builder);
 
 }

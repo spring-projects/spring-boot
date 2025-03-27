@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -25,23 +24,24 @@ import io.netty.channel.ChannelOption;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
 
-import org.springframework.http.client.ReactorClientHttpRequestFactory;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReactorHttpClientBuilder;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactorClientHttpRequestFactoryBuilder} and
+ * Tests for {@link ReactorClientHttpConnectorBuilder} and
  * {@link ReactorHttpClientBuilder}.
  *
  * @author Phillip Webb
- * @author Andy Wilkinson
  */
-class ReactorClientHttpRequestFactoryBuilderTests
-		extends AbstractClientHttpRequestFactoryBuilderTests<ReactorClientHttpRequestFactory> {
+class ReactorClientHttpConnectorBuilderTests
+		extends AbstractClientHttpConnectorBuilderTests<ReactorClientHttpConnector> {
 
-	ReactorClientHttpRequestFactoryBuilderTests() {
-		super(ReactorClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.reactor());
+	ReactorClientHttpConnectorBuilderTests() {
+		super(ReactorClientHttpConnector.class, ClientHttpConnectorBuilder.reactor());
 	}
 
 	@Test
@@ -63,15 +63,17 @@ class ReactorClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
-	protected long connectTimeout(ReactorClientHttpRequestFactory requestFactory) {
-		return (int) ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).configuration()
+	protected long connectTimeout(ReactorClientHttpConnector connector) {
+		return (int) ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).configuration()
 			.options()
 			.get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
 	}
 
 	@Override
-	protected long readTimeout(ReactorClientHttpRequestFactory requestFactory) {
-		return ((Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout")).toMillis();
+	protected long readTimeout(ReactorClientHttpConnector connector) {
+		return (int) ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).configuration()
+			.responseTimeout()
+			.toMillis();
 	}
 
 }
