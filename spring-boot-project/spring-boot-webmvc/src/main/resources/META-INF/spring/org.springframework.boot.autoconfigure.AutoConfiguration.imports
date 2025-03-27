@@ -1,0 +1,3 @@
+org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration
+org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
+org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration
