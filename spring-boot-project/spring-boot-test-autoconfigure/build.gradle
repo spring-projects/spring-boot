@@ -36,8 +36,8 @@ dependencies {
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
 
-	optional(project(":spring-boot-project:spring-boot-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
+	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-ldap"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
@@ -79,9 +79,6 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
-	optional("org.springframework.data:spring-data-cassandra") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-jdbc")
