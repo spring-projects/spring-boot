@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
+package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
@@ -46,10 +47,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
  * OAuth2 authorization server that require it (e.g. User Info, Client Registration).
  *
  * @author Steve Riesenberg
- * @since 3.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(
-		afterName = "org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration")
+@AutoConfiguration(after = UserDetailsServiceAutoConfiguration.class)
 @ConditionalOnClass({ OAuth2Authorization.class, JWKSource.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OAuth2AuthorizationServerJwtAutoConfiguration {

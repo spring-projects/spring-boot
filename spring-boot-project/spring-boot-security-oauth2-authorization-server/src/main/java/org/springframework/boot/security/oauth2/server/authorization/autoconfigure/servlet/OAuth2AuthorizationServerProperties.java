@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
+package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * OAuth 2.0 Authorization Server properties.
  *
  * @author Steve Riesenberg
- * @since 3.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.authorizationserver")
 public class OAuth2AuthorizationServerProperties implements InitializingBean {
