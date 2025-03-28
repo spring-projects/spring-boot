@@ -1,10 +1,6 @@
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration
