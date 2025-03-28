@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * Support for web-based codecs.
- */
 package org.springframework.boot.web.codec;
+
+import org.springframework.http.codec.CodecConfigurer;
+
+/**
+ * Callback interface that can be used to customize codecs configuration for an HTTP
+ * client and/or server with a {@link CodecConfigurer}.
+ *
+ * @author Brian Clozel
+ * @since 2.0.0
+ */
+@FunctionalInterface
+public interface CodecCustomizer {
+
+	/**
+	 * Callback to customize a {@link CodecConfigurer} instance.
+	 * @param configurer codec configurer to customize
+	 */
+	void customize(CodecConfigurer configurer);
+
+}

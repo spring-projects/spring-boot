@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
-
-import org.springframework.web.client.RestTemplate;
-
 /**
- * Callback interface that can be used to customize a {@link RestTemplate}.
- *
- * @author Phillip Webb
- * @since 1.4.0
- * @see RestTemplateBuilder
+ * Web client utilities.
  */
-@FunctionalInterface
-public interface RestTemplateCustomizer {
-
-	/**
-	 * Callback to customize a {@link RestTemplate} instance.
-	 * @param restTemplate the template to customize
-	 */
-	void customize(RestTemplate restTemplate);
-
-}
+package org.springframework.boot.web.client;

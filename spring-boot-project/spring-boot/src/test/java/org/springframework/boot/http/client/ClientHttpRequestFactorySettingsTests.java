@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,17 +30,24 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ClientHttpRequestFactorySettings}.
  *
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 4.0.0
  */
-@SuppressWarnings("removal")
-@Deprecated(since = "3.4.0", forRemoval = true)
 class ClientHttpRequestFactorySettingsTests {
 
 	private static final Duration ONE_SECOND = Duration.ofSeconds(1);
 
 	@Test
-	void defaultsHasNullValues() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS;
+	void defaults() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
+		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.sslBundle()).isNull();
+	}
+
+	@Test
+	void createWithNullsUsesDefaults() {
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
+		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -47,7 +55,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withConnectTimeoutReturnsInstanceWithUpdatedConnectionTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withConnectTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
@@ -56,7 +64,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withReadTimeoutReturnsInstanceWithUpdatedReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withReadTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
@@ -66,10 +74,18 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withSslBundleReturnsInstanceWithUpdatedSslBundle() {
 		SslBundle sslBundle = mock(SslBundle.class);
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withSslBundle(sslBundle);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isSameAs(sslBundle);
+	}
+
+	@Test
+	void withRedirectsReturnsInstanceWithUpdatedRedirect() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW);
+		assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
 	}
 
 }

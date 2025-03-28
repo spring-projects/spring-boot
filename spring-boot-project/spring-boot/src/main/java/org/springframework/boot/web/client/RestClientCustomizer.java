@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.codec;
+package org.springframework.boot.web.client;
 
-import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.web.client.RestClient;
 
 /**
- * Callback interface that can be used to customize codecs configuration for an HTTP
- * client and/or server with a {@link CodecConfigurer}.
+ * Callback interface that can be used to customize a
+ * {@link org.springframework.web.client.RestClient.Builder RestClient.Builder}.
  *
- * @author Brian Clozel
- * @since 2.0.0
+ * @author Arjen Poutsma
+ * @since 3.2.0
  */
 @FunctionalInterface
-public interface CodecCustomizer {
+public interface RestClientCustomizer {
 
 	/**
-	 * Callback to customize a {@link CodecConfigurer} instance.
-	 * @param configurer codec configurer to customize
+	 * Callback to customize a {@link org.springframework.web.client.RestClient.Builder
+	 * RestClient.Builder} instance.
+	 * @param restClientBuilder the client builder to customize
 	 */
-	void customize(CodecConfigurer configurer);
+	void customize(RestClient.Builder restClientBuilder);
 
 }
