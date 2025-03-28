@@ -38,6 +38,7 @@ class MyElasticsearchWithSslIntegrationTests {
 			"docker.elastic.co/elasticsearch/elasticsearch:8.17.2");
 
 	@Autowired
+	@SuppressWarnings("unused")
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Test

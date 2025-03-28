@@ -39,6 +39,7 @@ class MyRedisWithSslIntegrationTests {
 	static RedisContainer redis = new SecureRedisContainer("redis:latest");
 
 	@Autowired
+	@SuppressWarnings("unused")
 	private RedisOperations<Object, Object> operations;
 
 	@Test
