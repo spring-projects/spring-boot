@@ -176,7 +176,7 @@ javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javad
 | javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[]
 
-| javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
+| javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
 | Containers of type javadoc:com.redis.testcontainers.RedisContainer[] or javadoc:com.redis.testcontainers.RedisStackContainer[], or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
@@ -205,7 +205,7 @@ include-code::MyRedisConfiguration[]
 Spring Boot can't tell from javadoc:org.testcontainers.containers.GenericContainer[] which container image is used, so the `name` attribute from javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] must be used to provide that hint.
 
 You can also use the `name` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] to override which connection detail will be used, for example when using custom images.
-If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[] are created.
+If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[] are created.
 
 
 

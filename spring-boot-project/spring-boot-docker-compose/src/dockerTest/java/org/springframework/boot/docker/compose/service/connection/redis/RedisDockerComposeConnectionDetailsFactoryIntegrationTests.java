@@ -18,8 +18,8 @@ package org.springframework.boot.docker.compose.service.connection.redis;
 
 import javax.net.ssl.SSLContext;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
+import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
+import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Standalone;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;

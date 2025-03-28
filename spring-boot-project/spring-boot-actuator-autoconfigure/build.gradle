@@ -42,6 +42,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
+	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
 	optional(project(":spring-boot-project:spring-boot-http"))
