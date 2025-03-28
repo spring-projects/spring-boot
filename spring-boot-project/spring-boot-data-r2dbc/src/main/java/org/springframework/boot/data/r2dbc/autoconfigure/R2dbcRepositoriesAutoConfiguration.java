@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.r2dbc;
+package org.springframework.boot.data.r2dbc.autoconfigure;
 
 import io.r2dbc.spi.ConnectionFactory;
 
@@ -34,7 +34,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data R2DBC Repositories.
  *
  * @author Mark Paluch
- * @since 2.3.0
+ * @since 4.0.0
  * @see EnableR2dbcRepositories
  */
 @AutoConfiguration(after = R2dbcDataAutoConfiguration.class)

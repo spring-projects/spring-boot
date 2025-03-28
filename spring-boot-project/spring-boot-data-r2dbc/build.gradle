@@ -1,0 +1,26 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Data R2DBC"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-r2dbc"))
+	api("io.r2dbc:r2dbc-spi")
+	api("io.r2dbc:r2dbc-pool")
+	api("org.springframework.data:spring-data-r2dbc")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.r2dbc:r2dbc-h2")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
