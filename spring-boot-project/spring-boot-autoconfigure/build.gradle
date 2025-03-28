@@ -142,9 +142,7 @@ dependencies {
 	optional("org.infinispan:infinispan-jcache")
 	optional("org.infinispan:infinispan-spring6-embedded")
 	optional("org.influxdb:influxdb-java")
-	optional("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}

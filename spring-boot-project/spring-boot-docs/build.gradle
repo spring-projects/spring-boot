@@ -118,9 +118,7 @@ dependencies {
 		exclude group: "xml-apis", module: "xml-apis"
 	}
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	implementation("org.jooq:jooq")
 	implementation("org.mockito:mockito-core")
 	implementation("org.mongodb:mongodb-driver-sync")
 	implementation("org.postgresql:r2dbc-postgresql")
