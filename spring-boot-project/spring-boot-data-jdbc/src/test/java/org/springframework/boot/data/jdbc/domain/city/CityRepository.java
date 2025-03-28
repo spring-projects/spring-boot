@@ -14,31 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jdbc;
+package org.springframework.boot.data.jdbc.domain.city;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.repository.CrudRepository;
 
-/**
- * Configuration properties for Spring Data JDBC.
- *
- * @author Jens Schauder
- * @since 3.3.0
- */
-@ConfigurationProperties("spring.data.jdbc")
-public class JdbcDataProperties {
-
-	/**
-	 * Dialect to use. By default, the dialect is determined by inspecting the database
-	 * connection.
-	 */
-	private JdbcDatabaseDialect dialect;
-
-	public JdbcDatabaseDialect getDialect() {
-		return this.dialect;
-	}
-
-	public void setDialect(JdbcDatabaseDialect dialect) {
-		this.dialect = dialect;
-	}
+public interface CityRepository extends CrudRepository<City, Long> {
 
 }

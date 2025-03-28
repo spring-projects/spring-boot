@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jdbc.city;
+package org.springframework.boot.data.jdbc.domain.empty;
 
-import org.springframework.data.repository.CrudRepository;
-
-public interface CityRepository extends CrudRepository<City, Long> {
+public class EmptyDataPackage {
 
 }

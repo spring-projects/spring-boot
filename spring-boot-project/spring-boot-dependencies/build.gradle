@@ -1999,6 +1999,7 @@ bom {
 				"spring-boot-data-cassandra",
 				"spring-boot-data-couchbase",
 				"spring-boot-data-elasticsearch",
+				"spring-boot-data-jdbc",
 				"spring-boot-data-jpa",
 				"spring-boot-data-ldap",
 				"spring-boot-data-mongodb",

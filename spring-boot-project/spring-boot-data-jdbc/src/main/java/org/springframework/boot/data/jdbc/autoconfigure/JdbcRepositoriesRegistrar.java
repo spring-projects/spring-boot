@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jdbc;
+package org.springframework.boot.data.jdbc.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
