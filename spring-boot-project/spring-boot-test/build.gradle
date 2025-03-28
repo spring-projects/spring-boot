@@ -25,7 +25,7 @@ plugins {
 description = "Spring Boot Test"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-all"))
+	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-test")
 
 	optional("com.fasterxml.jackson.core:jackson-databind")

@@ -59,7 +59,6 @@ dependencies {
 	optional("org.apache.groovy:groovy")
 	optional("org.apache.groovy:groovy-xml")
 	optional("org.crac:crac")
-	optional("org.eclipse.jetty:jetty-client")
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
