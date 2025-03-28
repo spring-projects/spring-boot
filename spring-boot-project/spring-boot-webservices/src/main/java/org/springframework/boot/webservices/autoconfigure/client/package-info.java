@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring Web Services Clients.
  */
-package org.springframework.boot.autoconfigure.webservices.client;
+package org.springframework.boot.webservices.autoconfigure.client;
