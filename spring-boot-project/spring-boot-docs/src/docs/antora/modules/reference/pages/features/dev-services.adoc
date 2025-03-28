@@ -128,7 +128,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
 | Containers named "rabbitmq" or "bitnami/rabbitmq"
 
-| javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
+| javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
 | Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]

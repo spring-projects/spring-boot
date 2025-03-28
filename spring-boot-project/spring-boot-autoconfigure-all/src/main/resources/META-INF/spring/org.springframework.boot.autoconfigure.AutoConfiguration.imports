@@ -8,9 +8,6 @@ org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
-org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
