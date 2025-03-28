@@ -59,5 +59,3 @@ org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAut
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration
-org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
-org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAutoConfiguration

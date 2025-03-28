@@ -197,13 +197,6 @@ dependencies {
 	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.amqp:spring-rabbit-stream")
-	optional("org.springframework.ws:spring-ws-core") {
-		exclude group: "com.sun.mail", module: "jakarta.mail"
-		exclude group: "jakarta.platform", module: "jakarta.jakartaee-api"
-		exclude group: "org.eclipse.jetty", module: "jetty-server"
-		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
-		exclude group: "jakarta.mail", module: "jakarta.mail-api"
-	}
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))

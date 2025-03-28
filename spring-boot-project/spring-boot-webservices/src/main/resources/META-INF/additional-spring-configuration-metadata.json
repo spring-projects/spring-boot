@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "spring.webservices.wsdl-locations",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
+    }
+  ]
+}

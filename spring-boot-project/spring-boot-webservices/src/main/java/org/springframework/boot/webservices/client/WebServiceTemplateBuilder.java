@@ -117,7 +117,6 @@ public class WebServiceTemplateBuilder {
 	 * @param messageSenderFactory the {@link WebServiceMessageSenderFactory} to use
 	 * @return a new builder instance
 	 * @since 3.4.0
-	 * @see HttpWebServiceMessageSenderBuilder
 	 */
 	public WebServiceTemplateBuilder httpMessageSenderFactory(WebServiceMessageSenderFactory messageSenderFactory) {
 		Assert.notNull(messageSenderFactory, "'messageSenderFactory' must not be null");
@@ -132,7 +131,6 @@ public class WebServiceTemplateBuilder {
 	 * @param detectHttpMessageSender if an HTTP-based {@link WebServiceMessageSender}
 	 * should be detected
 	 * @return a new builder instance
-	 * @see HttpWebServiceMessageSenderBuilder
 	 */
 	public WebServiceTemplateBuilder detectHttpMessageSender(boolean detectHttpMessageSender) {
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, detectHttpMessageSender, this.interceptors,

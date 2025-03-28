@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.webservices.client;
+package org.springframework.boot.webservices.autoconfigure.client;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.webservices.client.WebServiceMessageSenderFactory;
@@ -38,9 +37,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebServiceTemplate}.
  *
  * @author Dmytro Nosan
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = HttpClientAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
