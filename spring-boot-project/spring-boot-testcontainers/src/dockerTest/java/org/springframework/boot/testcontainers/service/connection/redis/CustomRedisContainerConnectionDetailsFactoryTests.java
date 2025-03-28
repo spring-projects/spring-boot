@@ -22,9 +22,9 @@ import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
+import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.TestContainerConnectionSource;

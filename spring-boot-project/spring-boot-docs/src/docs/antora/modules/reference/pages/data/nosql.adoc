@@ -72,9 +72,9 @@ spring:
 ----
 
 
-TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer[] for more advanced customizations.
-javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer[].
-If you use Jedis, javadoc:org.springframework.boot.autoconfigure.data.redis.JedisClientConfigurationBuilderCustomizer[] is also available.
+TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer[] for more advanced customizations.
+javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer[].
+If you use Jedis, javadoc:org.springframework.boot.data.redis.autoconfigure.JedisClientConfigurationBuilderCustomizer[] is also available.
 Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[] to take full control over the configuration.
 
 If you add your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of any of the auto-configured types, it replaces the default (except in the case of javadoc:org.springframework.data.redis.core.RedisTemplate[], when the exclusion is based on the bean name, `redisTemplate`, not its type).
