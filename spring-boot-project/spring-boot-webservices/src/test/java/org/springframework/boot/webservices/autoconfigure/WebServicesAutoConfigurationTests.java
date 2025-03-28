@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.webservices;
+package org.springframework.boot.webservices.autoconfigure;
 
 import java.util.Collection;
 
