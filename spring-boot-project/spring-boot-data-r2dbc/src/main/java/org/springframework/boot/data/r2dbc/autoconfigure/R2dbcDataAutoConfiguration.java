@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.r2dbc;
+package org.springframework.boot.data.r2dbc.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +49,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
  *
  * @author Mark Paluch
  * @author Oliver Drotbohm
- * @since 2.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = R2dbcAutoConfiguration.class)
 @ConditionalOnClass({ DatabaseClient.class, R2dbcEntityTemplate.class })

@@ -1,8 +1,6 @@
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
-org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
-org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
