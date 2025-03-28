@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring Security's OAuth2 authorization server.
  */
-package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
+package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;

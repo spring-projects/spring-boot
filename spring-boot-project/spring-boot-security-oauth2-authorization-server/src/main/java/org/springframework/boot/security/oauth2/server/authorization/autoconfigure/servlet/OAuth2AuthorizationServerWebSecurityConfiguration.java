@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
+package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
 import java.util.Set;
 

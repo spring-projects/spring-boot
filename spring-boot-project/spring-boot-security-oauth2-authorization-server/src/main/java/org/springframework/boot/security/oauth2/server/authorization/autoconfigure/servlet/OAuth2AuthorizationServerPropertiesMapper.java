@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
+package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Client;
-import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Registration;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerProperties.Client;
+import org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerProperties.Registration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.JwsAlgorithm;
