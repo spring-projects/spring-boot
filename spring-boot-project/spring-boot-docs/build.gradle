@@ -85,6 +85,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-cassandra", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-couchbase", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-data-cassandra", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-data-elasticsearch", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-data-jpa", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-data-ldap", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-data-mongodb", configuration: "autoConfigurationMetadata"))
@@ -139,6 +140,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-cassandra", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-couchbase", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-data-cassandra", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-data-elasticsearch", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-data-jpa", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-data-ldap", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
@@ -188,6 +190,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-amqp"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-data-cassandra"))
+	implementation(project(path: ":spring-boot-project:spring-boot-data-elasticsearch"))
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
 	implementation(project(path: ":spring-boot-project:spring-boot-http"))
@@ -260,7 +263,6 @@ dependencies {
 	implementation("org.springframework.amqp:spring-rabbit")
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-couchbase")
-	implementation("org.springframework.data:spring-data-elasticsearch")
 	implementation("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

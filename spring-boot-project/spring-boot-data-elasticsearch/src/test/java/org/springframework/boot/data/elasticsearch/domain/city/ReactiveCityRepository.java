@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch.city;
+package org.springframework.boot.data.elasticsearch.domain.city;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 

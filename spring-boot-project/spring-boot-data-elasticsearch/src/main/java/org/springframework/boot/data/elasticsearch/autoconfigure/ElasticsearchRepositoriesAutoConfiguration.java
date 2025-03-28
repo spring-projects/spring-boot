@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
-
-import reactor.core.publisher.Mono;
+package org.springframework.boot.data.elasticsearch.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,24 +22,24 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
-import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
-import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
-import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.elasticsearch.repository.support.ElasticsearchRepositoryFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
- * Reactive Repositories.
+ * Repositories.
  *
- * @author Brian Clozel
- * @since 2.2.0
- * @see EnableReactiveElasticsearchRepositories
+ * @author Artur Konczak
+ * @author Mohsin Husen
+ * @since 4.0.0
+ * @see EnableElasticsearchRepositories
  */
 @AutoConfiguration
-@ConditionalOnClass({ ReactiveElasticsearchClient.class, ReactiveElasticsearchRepository.class, Mono.class })
+@ConditionalOnClass(ElasticsearchRepository.class)
 @ConditionalOnBooleanProperty(name = "spring.data.elasticsearch.repositories.enabled", matchIfMissing = true)
-@ConditionalOnMissingBean(ReactiveElasticsearchRepositoryFactoryBean.class)
-@Import(ReactiveElasticsearchRepositoriesRegistrar.class)
-public class ReactiveElasticsearchRepositoriesAutoConfiguration {
+@ConditionalOnMissingBean(ElasticsearchRepositoryFactoryBean.class)
+@Import(ElasticsearchRepositoriesRegistrar.class)
+public class ElasticsearchRepositoriesAutoConfiguration {
 
 }

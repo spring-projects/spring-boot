@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.autoconfigure;
 
 import java.util.Collections;
 

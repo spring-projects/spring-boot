@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.alt.elasticsearch;
+package org.springframework.boot.data.elasticsearch.domain.empty;
 
-import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
-import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
-
-public interface CityReactiveElasticsearchDbRepository extends ReactiveElasticsearchRepository<City, Long> {
+public class EmptyDataPackage {
 
 }

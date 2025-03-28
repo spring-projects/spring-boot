@@ -51,7 +51,6 @@ dependencies {
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-test")
 	dockerTestImplementation("org.testcontainers:couchbase")
-	dockerTestImplementation("org.testcontainers:elasticsearch")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:neo4j")
@@ -62,7 +61,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
-	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-h2console"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
@@ -80,7 +78,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
-	optional("co.elastic.clients:elasticsearch-java")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -132,8 +129,6 @@ dependencies {
 			classifier = 'jakarta'
 		}
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
-	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet")
 	optional("org.glassfish.jersey.core:jersey-server")
@@ -176,9 +171,6 @@ dependencies {
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
 	optional("org.springframework.data:spring-data-rest-webmvc")
-	optional("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "org.elasticsearch.client", module: "transport"
-	}
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
