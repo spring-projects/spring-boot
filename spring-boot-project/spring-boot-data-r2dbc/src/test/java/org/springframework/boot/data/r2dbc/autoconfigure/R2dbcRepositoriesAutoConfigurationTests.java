@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.r2dbc;
+package org.springframework.boot.data.r2dbc.autoconfigure;
 
 import java.time.Duration;
 
@@ -25,9 +25,9 @@ import reactor.test.StepVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.data.r2dbc.city.City;
-import org.springframework.boot.autoconfigure.data.r2dbc.city.CityRepository;
+import org.springframework.boot.data.r2dbc.domain.city.City;
+import org.springframework.boot.data.r2dbc.domain.city.CityRepository;
+import org.springframework.boot.data.r2dbc.domain.empty.EmptyDataPackage;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

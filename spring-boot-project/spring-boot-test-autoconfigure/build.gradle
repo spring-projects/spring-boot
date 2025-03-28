@@ -44,6 +44,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-ldap"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
+	optional(project(":spring-boot-project:spring-boot-data-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
@@ -57,7 +58,6 @@ dependencies {
 		exclude(group: "org.liquibase")
 	}
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
-	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
