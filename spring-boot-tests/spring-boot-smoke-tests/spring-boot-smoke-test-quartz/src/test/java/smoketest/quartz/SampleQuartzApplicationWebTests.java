@@ -16,6 +16,7 @@
 
 package smoketest.quartz;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -110,7 +112,9 @@ class SampleQuartzApplicationWebTests {
 		assertThat(content).extractingByKey("triggerTime", InstanceOfAssertFactories.STRING)
 			.satisfies((triggerTime) -> assertThat(Instant.parse(triggerTime)).isCloseTo(Instant.now(),
 					within(10, ChronoUnit.SECONDS)));
-		assertThat(output).contains("Hello On Demand Job");
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.untilAsserted(() -> assertThat(output).contains("Hello On Demand Job"));
 	}
 
 	private Map<String, Object> getContent(String path) {
