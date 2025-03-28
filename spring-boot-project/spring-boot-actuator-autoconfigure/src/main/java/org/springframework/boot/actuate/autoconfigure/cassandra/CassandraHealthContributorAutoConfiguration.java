@@ -34,8 +34,9 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = CassandraReactiveHealthContributorAutoConfiguration.class,
-		afterName = "org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration")
+@AutoConfiguration(afterName = {
+		"org.springframework.boot.actuate.autoconfigure.cassandra.CassandraReactiveHealthContributorAutoConfiguration",
+		"org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration" })
 @ConditionalOnClass(CqlSession.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @Import(CassandraDriverConfiguration.class)

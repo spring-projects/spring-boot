@@ -36,8 +36,8 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
-	optional(project(":spring-boot-project:spring-boot-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
+	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
@@ -149,9 +149,6 @@ dependencies {
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.batch:spring-batch-core")
-	optional("org.springframework.data:spring-data-cassandra") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")

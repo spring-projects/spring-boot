@@ -41,6 +41,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
+	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-http"))
 	optional(project(":spring-boot-project:spring-boot-integration"))
@@ -53,9 +54,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
-	optional("org.apache.cassandra:java-driver-core") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
@@ -100,9 +98,6 @@ dependencies {
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.amqp:spring-rabbit")
-	optional("org.springframework.data:spring-data-cassandra") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-ldap")
