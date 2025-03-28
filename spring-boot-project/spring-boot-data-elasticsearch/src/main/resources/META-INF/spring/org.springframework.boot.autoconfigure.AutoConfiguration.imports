@@ -1,0 +1,3 @@
+org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchDataAutoConfiguration
+org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchRepositoriesAutoConfiguration
+org.springframework.boot.data.elasticsearch.autoconfigure.ReactiveElasticsearchRepositoriesAutoConfiguration
