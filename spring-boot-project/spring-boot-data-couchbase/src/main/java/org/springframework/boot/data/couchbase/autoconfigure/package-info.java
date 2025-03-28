@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
-
-description = "Starter for using Couchbase document-oriented database and Spring Data Couchbase"
-
-dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-	api(project(":spring-boot-project:spring-boot-data-couchbase"))
-	api(project(":spring-boot-project:spring-boot-tx"))
-}
+/**
+ * Auto-configuration for Spring Data Couchbase.
+ */
+package org.springframework.boot.data.couchbase.autoconfigure;
