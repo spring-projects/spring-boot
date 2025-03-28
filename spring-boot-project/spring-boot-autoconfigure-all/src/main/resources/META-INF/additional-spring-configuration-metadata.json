@@ -20,19 +20,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.data.couchbase.consistency",
-      "type": "org.springframework.data.couchbase.core.query.Consistency",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "spring.data.couchbase.repositories.type",
-      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
-      "description": "Type of Couchbase repositories to enable.",
-      "defaultValue": "auto"
-    },
-    {
       "name": "spring.data.jdbc.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JDBC repositories.",

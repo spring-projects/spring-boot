@@ -1,0 +1,18 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.data.couchbase.consistency",
+      "type": "org.springframework.data.couchbase.core.query.Consistency",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.couchbase.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Couchbase repositories to enable.",
+      "defaultValue": "auto"
+    }
+  ]
+}
