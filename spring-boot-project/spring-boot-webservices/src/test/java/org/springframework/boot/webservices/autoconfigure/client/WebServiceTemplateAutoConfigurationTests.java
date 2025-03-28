@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.webservices.client;
+package org.springframework.boot.webservices.autoconfigure.client;
 
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
-import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -48,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebServiceTemplateAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
@@ -97,9 +96,8 @@ class WebServiceTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	void whenHasFactoryProperty() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withPropertyValues("spring.http.client.factory=simple")
+	void whenHasFactory() {
+		this.contextRunner.withBean(ClientHttpRequestFactoryBuilder.class, ClientHttpRequestFactoryBuilder::simple)
 			.run(assertWebServiceTemplateBuilder((builder) -> {
 				WebServiceTemplate webServiceTemplate = builder.build();
 				assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
