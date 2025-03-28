@@ -1,0 +1,263 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.data.cassandra.compression",
+      "defaultValue": "none",
+      "deprecation": {
+        "replacement": "spring.cassandra.compression",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.config",
+      "type": "org.springframework.core.io.Resource",
+      "deprecation": {
+        "replacement": "spring.cassandra.config",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.connection.connect-timeout",
+      "defaultValue": "5s",
+      "deprecation": {
+        "replacement": "spring.cassandra.connection.connect-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.connection.init-query-timeout",
+      "defaultValue": "5s",
+      "deprecation": {
+        "replacement": "spring.cassandra.connection.init-query-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.contact-points",
+      "defaultValue": [
+        "127.0.0.1:9042"
+      ],
+      "deprecation": {
+        "replacement": "spring.cassandra.contact-points",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.controlconnection.timeout",
+      "defaultValue": "5s",
+      "deprecation": {
+        "replacement": "spring.cassandra.controlconnection.timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not compatible with Dropwizard Metrics.",
+      "deprecation": {
+        "reason": "Cassandra no longer provides JMX metrics.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.keyspace-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.keyspace-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.load-balancing-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the load balancing policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.local-datacenter",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.local-datacenter",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.password",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s",
+      "deprecation": {
+        "replacement": "spring.cassandra.pool.heartbeat-interval",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.idle-timeout",
+      "defaultValue": "5s",
+      "deprecation": {
+        "replacement": "spring.cassandra.pool.idle-timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.max-queue-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.max-queue-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.pool.pool-timeout",
+      "type": "java.time.Duration",
+      "description": "Pool timeout when trying to acquire a connection from a host's pool.",
+      "deprecation": {
+        "reason": "No longer available.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.port",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.cassandra.port",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.reconnection-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the reconnection policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Cassandra repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.cassandra.request.consistency",
+      "type": "com.datastax.oss.driver.api.core.DefaultConsistencyLevel",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.consistency",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.page-size",
+      "defaultValue": 5000,
+      "deprecation": {
+        "replacement": "spring.cassandra.request.page-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.serial-consistency",
+      "type": "com.datastax.oss.driver.api.core.DefaultConsistencyLevel",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.serial-consistency",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.throttler.drain-interval",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.drain-interval",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.throttler.max-concurrent-requests",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.max-concurrent-requests",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.throttler.max-queue-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.max-queue-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.throttler.max-requests-per-second",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.max-requests-per-second",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.throttler.type",
+      "defaultValue": "none",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.throttler.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.request.timeout",
+      "defaultValue": "2s",
+      "deprecation": {
+        "replacement": "spring.cassandra.request.timeout",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.retry-policy",
+      "type": "java.lang.Class",
+      "description": "Class name of the retry policy. The class must have a default constructor.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.schema-action",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.schema-action",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.session-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.session-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.ssl",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.cassandra.ssl.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.cassandra.username",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.cassandra.username",
+        "level": "error"
+      }
+    }
+  ]
+}

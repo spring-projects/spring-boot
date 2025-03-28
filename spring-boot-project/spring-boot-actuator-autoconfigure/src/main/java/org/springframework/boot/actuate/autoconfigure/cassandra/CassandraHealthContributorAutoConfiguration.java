@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.cassandra.CassandraDriverHealthIndicator
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -35,9 +34,9 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(
-		after = { CassandraDataAutoConfiguration.class, CassandraReactiveHealthContributorAutoConfiguration.class },
-		afterName = "org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration")
+@AutoConfiguration(afterName = { "org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration",
+		"org.springframework.boot.actuate.autoconfigure.cassandra.CassandraReactiveHealthContributorAutoConfiguration",
+		"org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration" })
 @ConditionalOnClass(CqlSession.class)
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @Import(CassandraDriverConfiguration.class)
