@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.json;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -238,6 +239,36 @@ class JsonValueWriterTests {
 	void endWhenNotStartedThrowsException() {
 		doWrite((valueWriter) -> assertThatExceptionOfType(NoSuchElementException.class)
 			.isThrownBy(() -> valueWriter.end(Series.ARRAY)));
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenCollectionExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(list))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenMapExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("foo", Map.of("bar", map));
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(map))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: foo.bar.foo.bar.foo.bar.foo");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenIterableExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write((Iterable<Object>) list::iterator))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
 	}
 
 	private <V> String write(V value) {
