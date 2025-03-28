@@ -289,6 +289,8 @@ class FileWatcherTests {
 	 * <li>Performs an atomic rename of {@code ..data_tmp} to {@code ..data}.</li>
 	 * <li>Deletes the old ConfigMap/Secret directory.</li>
 	 * </ul>
+	 * @param tempDir temp directory
+	 * @throws Exception if a failure occurs
 	 */
 	@Test
 	void shouldTriggerOnConfigMapAtomicMoveUpdates(@TempDir Path tempDir) throws Exception {
