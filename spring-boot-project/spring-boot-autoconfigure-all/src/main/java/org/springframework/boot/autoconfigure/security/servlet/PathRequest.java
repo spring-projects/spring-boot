@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.boot.h2.autoconfigure.H2ConsoleProperties;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;

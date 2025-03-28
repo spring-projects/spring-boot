@@ -2010,7 +2010,7 @@ bom {
 				"spring-boot-freemarker",
 				"spring-boot-groovy-templates",
 				"spring-boot-gson",
-				"spring-boot-h2",
+				"spring-boot-h2console",
 				"spring-boot-hateoas",
 				"spring-boot-hazelcast",
 				"spring-boot-http",

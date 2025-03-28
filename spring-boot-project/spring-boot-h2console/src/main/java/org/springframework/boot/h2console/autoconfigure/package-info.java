@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for H2's Console.
  */
-package org.springframework.boot.h2.autoconfigure;
+package org.springframework.boot.h2console.autoconfigure;

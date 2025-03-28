@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.h2.autoconfigure;
+package org.springframework.boot.h2console.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.h2.autoconfigure;
+package org.springframework.boot.h2console.autoconfigure;
 
 import java.sql.Connection;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.h2.autoconfigure.H2ConsoleProperties.Settings;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties.Settings;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.log.LogMessage;

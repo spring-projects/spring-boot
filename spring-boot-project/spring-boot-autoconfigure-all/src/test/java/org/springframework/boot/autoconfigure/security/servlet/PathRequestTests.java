@@ -21,7 +21,7 @@ import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.h2.autoconfigure.H2ConsoleProperties;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
