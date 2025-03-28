@@ -42,6 +42,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-ldap"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
+	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
 	optional(project(":spring-boot-project:spring-boot-hateoas"))
@@ -54,7 +55,6 @@ dependencies {
 		exclude(group: "org.liquibase")
 	}
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
-	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
@@ -86,7 +86,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
-	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql-test")

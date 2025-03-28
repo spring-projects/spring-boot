@@ -1,8 +1,4 @@
-# AutoConfigureDataNeo4j auto-configuration imports
-org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration
 org.springframework.boot.data.neo4j.autoconfigure.Neo4jDataAutoConfiguration
 org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoConfiguration
 org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveRepositoriesAutoConfiguration
 org.springframework.boot.data.neo4j.autoconfigure.Neo4jRepositoriesAutoConfiguration
-org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
