@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.r2dbc.city;
+package org.springframework.boot.data.r2dbc.domain.empty;
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-
-public interface CityRepository extends ReactiveCrudRepository<City, Long> {
+public class EmptyDataPackage {
 
 }

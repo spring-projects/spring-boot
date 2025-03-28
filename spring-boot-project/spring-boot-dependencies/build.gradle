@@ -2004,6 +2004,7 @@ bom {
 				"spring-boot-data-ldap",
 				"spring-boot-data-mongodb",
 				"spring-boot-data-neo4j",
+				"spring-boot-data-r2dbc",
 				"spring-boot-data-redis",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",

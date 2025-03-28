@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.empty;
-
 /**
- * Empty package used with data tests.
- *
- * @author Phillip Webb
+ * Auto-Configuration for Spring Data R2DBC.
  */
-public class EmptyDataPackage {
-
-}
+package org.springframework.boot.data.r2dbc.autoconfigure;

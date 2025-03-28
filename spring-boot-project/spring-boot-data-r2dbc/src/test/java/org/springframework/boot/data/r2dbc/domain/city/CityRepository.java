@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * Auto-Configuration for Spring Data R2DBC.
- */
-package org.springframework.boot.autoconfigure.data.r2dbc;
+package org.springframework.boot.data.r2dbc.domain.city;
+
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+public interface CityRepository extends ReactiveCrudRepository<City, Long> {
+
+}

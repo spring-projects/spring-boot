@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.r2dbc;
+package org.springframework.boot.data.r2dbc.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
