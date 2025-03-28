@@ -6,7 +6,7 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot New Project"
+description = "Spring Boot SendGrid"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
