@@ -87,6 +87,7 @@ final class ArchitectureRules {
 		rules.add(noClassesShouldCallStringToUpperCaseWithoutLocale());
 		rules.add(noClassesShouldCallStringToLowerCaseWithoutLocale());
 		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
+		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		return List.copyOf(rules);
 	}
 
@@ -199,6 +200,34 @@ final class ArchitectureRules {
 				});
 			}
 		});
+	}
+
+	private static ArchRule enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.junit.jupiter.params.provider.EnumSource")
+			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType())
+			.allowEmptyShould(true);
+	}
+
+	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType() {
+		return check("not specify only a type that is the same as the method's parameter type",
+				ArchitectureRules::notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType);
+	}
+
+	private static void notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType(JavaMethod item,
+			ConditionEvents events) {
+		JavaAnnotation<JavaMethod> enumSourceAnnotation = item
+			.getAnnotationOfType("org.junit.jupiter.params.provider.EnumSource");
+		Map<String, Object> properties = enumSourceAnnotation.getProperties();
+		if (properties.size() == 1 && item.getParameterTypes().size() == 1) {
+			enumSourceAnnotation.get("value").ifPresent((value) -> {
+				if (value.equals(item.getParameterTypes().get(0))) {
+					addViolation(events, item, enumSourceAnnotation.getDescription()
+							+ " should not specify only a value that is the same as the method's parameter type");
+				}
+			});
+		}
 	}
 
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {

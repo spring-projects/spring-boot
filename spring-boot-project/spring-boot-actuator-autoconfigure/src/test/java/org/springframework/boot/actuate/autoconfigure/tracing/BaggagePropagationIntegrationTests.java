@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class BaggagePropagationIntegrationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
+	@EnumSource
 	void shouldSetEntriesToMdcFromSpanWithBaggage(AutoConfig autoConfig) {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);
@@ -83,7 +83,7 @@ class BaggagePropagationIntegrationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
+	@EnumSource
 	void shouldRemoveEntriesFromMdcForNullSpan(AutoConfig autoConfig) {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);

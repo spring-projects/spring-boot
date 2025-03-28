@@ -159,7 +159,7 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", "UTF-16");
 		if (kind == ViewResolverKind.SERVLET) {
@@ -187,21 +187,21 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void prefixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.prefix=classpath:/mustache-templates/", "prefix",
 				"classpath:/mustache-templates/");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void requestContextAttributeCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.request-context-attribute=test", "requestContextAttribute",
 				"test");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void suffixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.suffix=.tache", "suffix", ".tache");
 	}
