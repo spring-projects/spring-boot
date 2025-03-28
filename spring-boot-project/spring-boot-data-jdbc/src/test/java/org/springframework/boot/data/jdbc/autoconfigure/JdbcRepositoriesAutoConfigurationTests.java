@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jdbc;
+package org.springframework.boot.data.jdbc.autoconfigure;
 
 import java.util.function.Function;
 
@@ -25,9 +25,9 @@ import org.mockito.Answers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.data.jdbc.city.City;
-import org.springframework.boot.autoconfigure.data.jdbc.city.CityRepository;
+import org.springframework.boot.data.jdbc.domain.city.City;
+import org.springframework.boot.data.jdbc.domain.city.CityRepository;
+import org.springframework.boot.data.jdbc.domain.empty.EmptyDataPackage;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;

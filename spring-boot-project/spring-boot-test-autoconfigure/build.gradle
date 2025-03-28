@@ -39,6 +39,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-elasticsearch"))
+	optional(project(":spring-boot-project:spring-boot-data-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-ldap"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
