@@ -1,9 +1,4 @@
-# AutoConfigureDataCouchbase auto-configuration imports
-
-org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration
 org.springframework.boot.data.couchbase.autoconfigure.CouchbaseDataAutoConfiguration
 org.springframework.boot.data.couchbase.autoconfigure.CouchbaseReactiveDataAutoConfiguration
 org.springframework.boot.data.couchbase.autoconfigure.CouchbaseReactiveRepositoriesAutoConfiguration
 org.springframework.boot.data.couchbase.autoconfigure.CouchbaseRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
