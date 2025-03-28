@@ -2026,6 +2026,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-couchbase",
 				"spring-boot-data-cassandra",
+				"spring-boot-data-couchbase",
 				"spring-boot-data-elasticsearch",
 				"spring-boot-data-jpa",
 				"spring-boot-data-ldap",
