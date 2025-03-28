@@ -1,5 +1,5 @@
 # AutoConfigureDataJdbc auto-configuration imports
-org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration
+org.springframework.boot.data.jdbc.autoconfigure.JdbcRepositoriesAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
