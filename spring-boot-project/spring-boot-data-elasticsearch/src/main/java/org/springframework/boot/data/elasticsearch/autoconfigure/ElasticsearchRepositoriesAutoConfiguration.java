@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,7 +32,7 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
  *
  * @author Artur Konczak
  * @author Mohsin Husen
- * @since 1.1.0
+ * @since 4.0.0
  * @see EnableElasticsearchRepositories
  */
 @AutoConfiguration
