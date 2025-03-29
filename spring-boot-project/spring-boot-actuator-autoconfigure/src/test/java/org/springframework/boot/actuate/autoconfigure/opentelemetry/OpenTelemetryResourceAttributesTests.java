@@ -118,6 +118,22 @@ class OpenTelemetryResourceAttributesTests {
 	}
 
 	@Test
+	void otelResourceAttributeValuesShouldBePercentDecodedWhenStringContainsNonAscii() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%20\u015bp\u0159\u00ec\u0144\u0121%20");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("key", " śpřìńġ ");
+	}
+
+	@Test
+	void otelResourceAttributeValuesShouldBePercentDecodedWhenMultiByteSequences() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=T%C5%8Dky%C5%8D");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("key", "Tōkyō");
+	}
+
+	@Test
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingIllegalHexCharPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=abc%ß");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
