@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,6 +198,17 @@ class ConfigDataPropertiesTests {
 		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.KUBERNETES,
 				createTestProfiles());
 		assertThat(properties.isActive(context)).isFalse();
+	}
+
+	@Test
+	void isActiveAgainstBoundDataWhenProfilesMatchCommaSeparatedList() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.activate.on-profile", "a&b,nonexistent");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		ConfigDataActivationContext context = new ConfigDataActivationContext(NULL_CLOUD_PLATFORM,
+				createTestProfiles());
+		assertThat(properties.isActive(context)).isTrue();
 	}
 
 	@Test
