@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -42,6 +42,8 @@ import org.springframework.util.StringUtils;
  * @since 3.5.0
  */
 public final class OpenTelemetryResourceAttributes {
+
+	private static final HexFormat HEX_FORMAT = HexFormat.of();
 
 	/**
 	 * Default value for service name if {@code service.name} is not set.
@@ -154,42 +156,31 @@ public final class OpenTelemetryResourceAttributes {
 	}
 
 	/**
-	 * Decodes a percent-encoded string. Converts sequences like '%HH' (where HH
-	 * represents hexadecimal digits) back into their literal representations.
-	 * <p>
-	 * Inspired by {@code org.apache.commons.codec.net.PercentCodec}.
+	 * Decodes a percent-encoded string.
 	 * @param value value to decode
 	 * @return the decoded string
 	 */
 	private static String decode(String value) {
-		if (value.indexOf('%') < 0) {
+		int length = value.length();
+		if (length == 0) {
 			return value;
 		}
-		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length);
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-			if (b != '%') {
-				bos.write(b);
+		StringBuilder result = new StringBuilder(length);
+		boolean changed = false;
+		for (int i = 0; i < length; i++) {
+			char ch = value.charAt(i);
+			if (ch != '%') {
+				result.append(ch);
 				continue;
 			}
-			int u = decodeHex(bytes, i + 1);
-			int l = decodeHex(bytes, i + 2);
-			if (u >= 0 && l >= 0) {
-				bos.write((u << 4) + l);
+			if (i + 2 >= length) {
+				throw new IllegalArgumentException("Invalid encoded sequence \"%s\"".formatted(value.substring(i)));
 			}
-			else {
-				throw new IllegalArgumentException(
-						"Failed to decode percent-encoded characters at index %d in the value: '%s'".formatted(i,
-								value));
-			}
+			result.append(new String(HEX_FORMAT.parseHex(value, i + 1, i + 3), StandardCharsets.UTF_8));
 			i += 2;
+			changed = true;
 		}
-		return bos.toString(StandardCharsets.UTF_8);
-	}
-
-	private static int decodeHex(byte[] bytes, int index) {
-		return (index < bytes.length) ? Character.digit(bytes[index], 16) : -1;
+		return (changed ? result.toString() : value);
 	}
 
 }
