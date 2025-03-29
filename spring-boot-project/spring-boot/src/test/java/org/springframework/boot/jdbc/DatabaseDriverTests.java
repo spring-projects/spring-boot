@@ -72,6 +72,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("MariaDB")).isEqualTo(DatabaseDriver.MARIADB);
 		assertThat(DatabaseDriver.fromProductName("Oracle")).isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromProductName("PostgreSQL")).isEqualTo(DatabaseDriver.POSTGRESQL);
+		assertThat(DatabaseDriver.fromProductName("KingbaseES")).isEqualTo(DatabaseDriver.KingbaseES);
 		assertThat(DatabaseDriver.fromProductName("Redshift")).isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server")).isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("SQL SERVER")).isEqualTo(DatabaseDriver.SQLSERVER);
@@ -98,6 +99,8 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:oracle:thin:@localhost:1521:orcl"))
 			.isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:postgresql://127.0.0.1:5432/sample"))
+			.isEqualTo(DatabaseDriver.POSTGRESQL);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:kingbase8://localhost:54321/test"))
 			.isEqualTo(DatabaseDriver.POSTGRESQL);
 		assertThat(DatabaseDriver
 			.fromJdbcUrl("jdbc:redshift://examplecluster.abc123xyz789.us-west-2.redshift.amazonaws.com:5439/sample"))
