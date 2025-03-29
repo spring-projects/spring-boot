@@ -118,10 +118,18 @@ class OpenTelemetryResourceAttributesTests {
 	}
 
 	@Test
+	void otelResourceAttributeValuesShouldBePercentDecodedWhenStringContainsNonAsciiUnicode() {
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%20\u015bp\u0159\u00ec\u0144\u0121%20");
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
+			.containsEntry("key", " śpřìńġ ");
+	}
+
+	@Test
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingIllegalHexCharPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=abc%ß");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Failed to decode percent-encoded characters at index 3 in the value: 'abc%ß'");
+			.withMessage("Invalid encoded sequence \"%ß\"");
 	}
 
 	@Test
@@ -134,7 +142,7 @@ class OpenTelemetryResourceAttributesTests {
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingInvalidPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Failed to decode percent-encoded characters at index 0 in the value: '%'");
+			.withMessage("Invalid encoded sequence \"%\"");
 	}
 
 	@Test
