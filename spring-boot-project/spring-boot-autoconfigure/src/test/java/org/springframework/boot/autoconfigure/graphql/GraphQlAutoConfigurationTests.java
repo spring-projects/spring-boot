@@ -35,9 +35,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -88,12 +86,11 @@ class GraphQlAutoConfigurationTests {
 
 	@Test
 	void shouldContributeDefaultBeans() {
-		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
-				.hasSingleBean(BatchLoaderRegistry.class)
-				.hasSingleBean(ExecutionGraphQlService.class)
-				.hasSingleBean(AnnotatedControllerConfigurer.class)
-				.hasSingleBean(EncodingCursorStrategy.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
+			.hasSingleBean(BatchLoaderRegistry.class)
+			.hasSingleBean(ExecutionGraphQlService.class)
+			.hasSingleBean(AnnotatedControllerConfigurer.class)
+			.hasSingleBean(EncodingCursorStrategy.class));
 	}
 
 	@Test
