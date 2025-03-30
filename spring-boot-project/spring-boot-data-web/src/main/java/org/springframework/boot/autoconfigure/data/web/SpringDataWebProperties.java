@@ -24,7 +24,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerial
  *
  * @author Vedran Pavic
  * @author Yanming Zhou
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.web")
 public class SpringDataWebProperties {
