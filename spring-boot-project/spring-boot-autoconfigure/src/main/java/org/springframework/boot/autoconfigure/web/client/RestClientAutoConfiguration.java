@@ -53,7 +53,7 @@ import org.springframework.web.client.RestClient.Builder;
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 		SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
-@Conditional(NotReactiveWebApplicationCondition.class)
+@Conditional(NotReactiveWebApplicationOrVirtualThreadsEnabledCondition.class)
 public class RestClientAutoConfiguration {
 
 	@Bean
