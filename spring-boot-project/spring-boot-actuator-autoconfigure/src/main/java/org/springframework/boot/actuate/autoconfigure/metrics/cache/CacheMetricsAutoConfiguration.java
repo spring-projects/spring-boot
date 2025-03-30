@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -32,7 +31,8 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CacheAutoConfiguration.class })
+@AutoConfiguration(after = MetricsAutoConfiguration.class,
+		afterName = "org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration")
 @ConditionalOnBean(CacheManager.class)
 @Import({ CacheMeterBinderProvidersConfiguration.class, CacheMetricsRegistrarConfiguration.class })
 public class CacheMetricsAutoConfiguration {

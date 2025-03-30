@@ -50,14 +50,12 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-test")
-	dockerTestImplementation("org.testcontainers:couchbase")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
-	optional(project(":spring-boot-project:spring-boot-data-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
@@ -84,7 +82,6 @@ dependencies {
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 	optional("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	optional("com.hazelcast:hazelcast-spring")
 	optional("com.nimbusds:oauth2-oidc-sdk")
 	optional("com.oracle.database.jdbc:ojdbc11")
 	optional("com.oracle.database.jdbc:ucp11")
@@ -116,19 +113,12 @@ dependencies {
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.eclipse.angus:angus-mail")
-	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.zaxxer:HikariCP")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
 	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
 	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
-	optional("org.ehcache:ehcache") {
-		artifact {
-			classifier = 'jakarta'
-		}
-	}
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet")
 	optional("org.glassfish.jersey.core:jersey-server")
@@ -137,11 +127,6 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.orm:hibernate-jcache")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.infinispan:infinispan-commons")
-	optional("org.infinispan:infinispan-component-annotations")
-	optional("org.infinispan:infinispan-core")
-	optional("org.infinispan:infinispan-jcache")
-	optional("org.infinispan:infinispan-spring6-embedded")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core") {
@@ -164,7 +149,6 @@ dependencies {
 	optional("org.springframework:spring-websocket")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
-	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"

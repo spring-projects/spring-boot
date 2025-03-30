@@ -18,7 +18,7 @@ package org.springframework.boot.docs.io.caching.provider.cache2k;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer;
+import org.springframework.boot.cache.autoconfigure.Cache2kBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

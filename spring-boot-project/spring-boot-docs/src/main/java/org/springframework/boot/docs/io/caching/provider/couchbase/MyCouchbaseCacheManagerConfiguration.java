@@ -18,7 +18,7 @@ package org.springframework.boot.docs.io.caching.provider.couchbase;
 
 import java.time.Duration;
 
-import org.springframework.boot.autoconfigure.cache.CouchbaseCacheManagerBuilderCustomizer;
+import org.springframework.boot.cache.autoconfigure.CouchbaseCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;

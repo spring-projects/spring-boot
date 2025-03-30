@@ -521,17 +521,6 @@
   ],
   "hints": [
     {
-      "name": "spring.cache.jcache.provider",
-      "providers": [
-        {
-          "name": "class-reference",
-          "parameters": {
-            "target": "javax.cache.spi.CachingProvider"
-          }
-        }
-      ]
-    },
-    {
       "name": "spring.graphql.cors.allowed-headers",
       "values": [
         {

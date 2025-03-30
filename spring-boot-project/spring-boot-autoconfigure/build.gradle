@@ -39,6 +39,7 @@ dependencies {
 
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-test"))
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesCompileOnly("javax.cache:cache-api")
 	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-api")
 	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-client-api")
 	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
