@@ -31,7 +31,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
 
-	protected LLdapDockerComposeConnectionDetailsFactory() {
+	LLdapDockerComposeConnectionDetailsFactory() {
 		super("lldap/lldap");
 	}
 

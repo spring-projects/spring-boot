@@ -63,7 +63,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesUrlIsNotSetThanUseOtlpConfigUrlAsFallback() {
+	void whenPropertiesUrlIsNotSetThenUseOtlpConfigUrlAsFallback() {
 		assertThat(this.properties.getUrl()).isNull();
 		OtlpMetricsPropertiesConfigAdapter adapter = spy(createAdapter());
 		given(adapter.get("management.otlp.metrics.export.url")).willReturn("https://my-endpoint/v1/metrics");

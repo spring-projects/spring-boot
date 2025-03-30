@@ -45,7 +45,7 @@ public class JdbcProperties {
 
 		/**
 		 * Whether to ignore JDBC statement warnings (SQLWarning). When set to false,
-		 * throw a SQLWarningException instead.
+		 * throw an SQLWarningException instead.
 		 */
 		private boolean ignoreWarnings = true;
 

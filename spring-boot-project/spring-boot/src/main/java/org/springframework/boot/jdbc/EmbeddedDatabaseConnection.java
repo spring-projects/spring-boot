@@ -163,10 +163,8 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the data source is one of the embedded types
 	 */
 	public static boolean isEmbedded(DataSource dataSource) {
-		try {
-			try (Connection connection = dataSource.getConnection()) {
-				return new IsEmbedded().apply(connection);
-			}
+		try (Connection connection = dataSource.getConnection()) {
+			return new IsEmbedded().apply(connection);
 		}
 		catch (SQLException ex) {
 			// Could not connect, which means it's not embedded
