@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +45,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Yanming Zhou
  * @since 1.2.0
  */
-@AutoConfiguration(after = RepositoryRestMvcAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration")
 @EnableSpringDataWebSupport
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurer.class })
