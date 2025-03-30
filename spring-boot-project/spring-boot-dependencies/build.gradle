@@ -1998,6 +1998,7 @@ bom {
 				"spring-boot-data-r2dbc",
 				"spring-boot-data-redis",
 				"spring-boot-data-rest",
+				"spring-boot-data-web",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-elasticsearch",
