@@ -43,7 +43,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Yanming Zhou
- * @since 1.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration")
 @EnableSpringDataWebSupport

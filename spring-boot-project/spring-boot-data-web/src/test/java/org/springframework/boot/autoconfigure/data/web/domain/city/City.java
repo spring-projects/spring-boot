@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.alt.jpa;
+package org.springframework.boot.autoconfigure.data.web.domain.city;
 
 import java.io.Serializable;
 

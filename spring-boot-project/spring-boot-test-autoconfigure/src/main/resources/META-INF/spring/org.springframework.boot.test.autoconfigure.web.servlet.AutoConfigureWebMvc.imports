@@ -7,7 +7,7 @@ optional:org.springframework.boot.mustache.autoconfigure.MustacheAutoConfigurati
 optional:org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
-org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
+optional:org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
 org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
