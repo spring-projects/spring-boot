@@ -61,6 +61,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
+	optional(project(":spring-boot-project:spring-boot-data-rest"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-h2console"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))

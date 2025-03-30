@@ -2006,6 +2006,7 @@ bom {
 				"spring-boot-data-neo4j",
 				"spring-boot-data-r2dbc",
 				"spring-boot-data-redis",
+				"spring-boot-data-rest",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-elasticsearch",

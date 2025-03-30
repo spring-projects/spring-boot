@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
-
-description = "Starter for exposing Spring Data repositories over REST using Spring Data REST and Spring MVC"
-
-dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	api(project(":spring-boot-project:spring-boot-data-rest"))
-	api(project(":spring-boot-project:spring-boot-tx"))
-}
+/**
+ * Auto-configuration for Spring Data REST.
+ */
+package org.springframework.boot.data.rest.autoconfigure;

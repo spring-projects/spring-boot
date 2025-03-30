@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.rest;
+package org.springframework.boot.data.rest.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
