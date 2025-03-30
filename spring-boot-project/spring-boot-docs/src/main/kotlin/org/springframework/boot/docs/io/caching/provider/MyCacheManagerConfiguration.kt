@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.caching.provider
 
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer
+import org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
