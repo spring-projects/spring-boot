@@ -84,6 +84,18 @@ public enum DatabaseDriver {
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource", "SELECT 1"),
 
 	/**
+	 * Kingbase.
+	 */
+	KINGBASE("KingbaseES","com.kingbase8.Driver","com.kingbase8.xa.KBXADataSource","SELECT 1") {
+
+   		@Override
+  	    protected Collection<String> getUrlPrefixes() {
+        	return Collections.singleton("kingbase8");
+    	}
+
+	},
+	
+	/**
 	 * Amazon Redshift.
 	 * @since 2.2.0
 	 */
