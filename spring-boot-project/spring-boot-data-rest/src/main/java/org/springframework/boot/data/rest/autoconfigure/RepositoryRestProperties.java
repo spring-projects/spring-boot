@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.rest;
+package org.springframework.boot.data.rest.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -26,7 +26,7 @@ import org.springframework.http.MediaType;
  * Configuration properties for Spring Data REST.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.rest")
 public class RepositoryRestProperties {
