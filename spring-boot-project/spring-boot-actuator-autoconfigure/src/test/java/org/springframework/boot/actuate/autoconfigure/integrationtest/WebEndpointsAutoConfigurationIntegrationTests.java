@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTraci
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration;
@@ -35,6 +34,7 @@ import org.springframework.boot.data.neo4j.autoconfigure.Neo4jDataAutoConfigurat
 import org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration;
+import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
