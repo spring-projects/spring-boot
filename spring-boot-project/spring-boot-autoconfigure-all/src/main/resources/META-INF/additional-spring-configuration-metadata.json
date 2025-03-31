@@ -455,14 +455,6 @@
       }
     },
     {
-      "name": "spring.security.oauth2.resourceserver.jwt.jws-algorithm",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
-        "level": "error"
-      }
-    },
-    {
       "name": "spring.servlet.encoding.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Servlet HTTP encoding support.",

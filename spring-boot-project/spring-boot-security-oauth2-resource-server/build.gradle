@@ -1,0 +1,30 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Security OAuth2 Resource Server"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework.security:spring-security-oauth2-jose")
+	api("org.springframework.security:spring-security-oauth2-resource-server")
+
+	implementation(project(":spring-boot-project:spring-boot-security"))
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("io.projectreactor:reactor-core")
+	optional("jakarta.servlet:jakarta.servlet-api")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("org.springframework:spring-webflux")
+}
