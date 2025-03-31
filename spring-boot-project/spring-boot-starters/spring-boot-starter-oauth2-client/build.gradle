@@ -6,6 +6,6 @@ description = "Starter for using Spring Security's OAuth2/OpenID Connect client 
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
-	api("org.springframework.security:spring-security-oauth2-client")
+	api(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	api("org.springframework.security:spring-security-oauth2-jose")
 }
