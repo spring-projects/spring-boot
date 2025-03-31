@@ -97,7 +97,7 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 === Client
 
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up OAuth2/Open ID Connect clients.
-This configuration makes use of the properties under javadoc:org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties[].
+This configuration makes use of the properties under javadoc:org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties[].
 The same properties are applicable to both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
