@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.autoconfigure.saml2;
+package org.springframework.boot.security.saml2.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

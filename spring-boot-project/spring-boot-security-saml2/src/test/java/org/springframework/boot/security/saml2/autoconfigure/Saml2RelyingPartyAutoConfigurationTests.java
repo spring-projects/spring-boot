@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.autoconfigure.saml2;
+package org.springframework.boot.security.saml2.autoconfigure;
 
 import java.io.InputStream;
 import java.util.List;
@@ -280,8 +280,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			setupMockResponse(server, new ClassPathResource("idp-metadata"));
 			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
 					PREFIX + ".foo.assertingparty.singlesignon.sign-request=true",
-					PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:org/springframework/boot/security/autoconfigure/saml2/rsa.key",
-					PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:org/springframework/boot/security/autoconfigure/saml2/rsa.crt")
+					PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:org/springframework/boot/security/saml2/autoconfigure/rsa.key",
+					PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:org/springframework/boot/security/saml2/autoconfigure/rsa.crt")
 				.run((context) -> {
 					RelyingPartyRegistrationRepository repository = context
 						.getBean(RelyingPartyRegistrationRepository.class);

@@ -1,0 +1,35 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Security SAML2"
+
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
+	}
+}
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework.security:spring-security-saml2-service-provider")
+
+	implementation(project(":spring-boot-project:spring-boot-security"))
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("jakarta.servlet:jakarta.servlet-api")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
