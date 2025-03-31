@@ -25,6 +25,14 @@ plugins {
 
 description = "Spring Boot Actuator AutoConfigure"
 
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
+	}
+}
+
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot-all"))
@@ -66,6 +74,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
+	optional(project(":spring-boot-project:spring-boot-security-saml2"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))

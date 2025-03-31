@@ -31,7 +31,7 @@ configurations.all {
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	implementation("org.springframework.security:spring-security-saml2-service-provider")
+	implementation(project(":spring-boot-project:spring-boot-security-saml2"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
