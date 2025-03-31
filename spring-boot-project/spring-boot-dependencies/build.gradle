@@ -2050,6 +2050,7 @@ bom {
 				"spring-boot-security-oauth2-authorization-server",
 				"spring-boot-security-oauth2-client",
 				"spring-boot-security-oauth2-resource-server",
+				"spring-boot-security-saml2",
 				"spring-boot-sendgrid",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",

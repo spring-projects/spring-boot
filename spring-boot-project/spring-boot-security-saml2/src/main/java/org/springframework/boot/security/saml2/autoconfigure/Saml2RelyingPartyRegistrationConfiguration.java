@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security.autoconfigure.saml2;
+package org.springframework.boot.security.saml2.autoconfigure;
 
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -27,11 +27,11 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties.AssertingParty;
-import org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties.AssertingParty.Verification;
-import org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties.Decryption;
-import org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties.Registration;
-import org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties.Registration.Signing;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.AssertingParty;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.AssertingParty.Verification;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.Decryption;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.Registration;
+import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.Registration.Signing;
 import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;

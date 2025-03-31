@@ -1,7 +1,6 @@
 org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration
 org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration
 org.springframework.boot.security.autoconfigure.rsocket.RSocketSecurityAutoConfiguration
-org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyAutoConfiguration
 org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration
 org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfiguration
 org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration

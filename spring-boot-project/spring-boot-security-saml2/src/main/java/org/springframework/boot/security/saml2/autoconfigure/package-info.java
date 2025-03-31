@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring Security's SAML 2.0.
  */
-package org.springframework.boot.security.autoconfigure.saml2;
+package org.springframework.boot.security.saml2.autoconfigure;
