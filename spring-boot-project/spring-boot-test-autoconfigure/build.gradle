@@ -7,6 +7,14 @@ plugins {
 
 description = "Spring Boot Test AutoConfigure"
 
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
+	}
+}
+
 dependencies {
 	api(project(":spring-boot-project:spring-boot-all"))
 	api(project(":spring-boot-project:spring-boot-test"))
@@ -65,6 +73,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-security"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
+	optional(project(":spring-boot-project:spring-boot-security-saml2"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
@@ -137,17 +146,9 @@ dependencies {
 	testImplementation("org.jooq:jooq")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.opensaml:opensaml-core:4.0.1")
-	testImplementation("org.opensaml:opensaml-saml-api:4.0.1")
-	testImplementation("org.opensaml:opensaml-saml-impl:4.0.1")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.springframework.security:spring-security-oauth2-client")
-	testImplementation("org.springframework.security:spring-security-saml2-service-provider") {
-		exclude group: "org.opensaml", module: "opensaml-core"
-		exclude group: "org.opensaml", module: "opensaml-saml-api"
-		exclude group: "org.opensaml", module: "opensaml-saml-impl"
-	}
 	testImplementation("org.thymeleaf:thymeleaf")
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-tomcat"))
