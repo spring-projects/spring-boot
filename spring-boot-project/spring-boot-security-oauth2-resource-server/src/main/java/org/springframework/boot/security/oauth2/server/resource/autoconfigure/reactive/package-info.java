@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
-
-description = "Starter for using Spring Security's OAuth2 resource server features"
-
-dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
-	api(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
-}
+/**
+ * Auto-configuration for Spring Security's Reactive OAuth2 resource server.
+ */
+package org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive;
