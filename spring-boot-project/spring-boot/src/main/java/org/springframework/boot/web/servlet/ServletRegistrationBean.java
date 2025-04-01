@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
+ * @see org.springframework.boot.web.servlet.ServletRegistration
  */
 public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 

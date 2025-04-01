@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,8 +42,11 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * A collection {@link ServletContextInitializer}s obtained from a
@@ -57,6 +61,7 @@ import org.springframework.util.MultiValueMap;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 1.4.0
  */
 public class ServletContextInitializerBeans extends AbstractCollection<ServletContextInitializer> {
@@ -150,8 +155,9 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	@SuppressWarnings("unchecked")
 	protected void addAdaptableBeans(ListableBeanFactory beanFactory) {
 		MultipartConfigElement multipartConfig = getMultipartConfig(beanFactory);
-		addAsRegistrationBean(beanFactory, Servlet.class, new ServletRegistrationBeanAdapter(multipartConfig));
-		addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter());
+		addAsRegistrationBean(beanFactory, Servlet.class,
+				new ServletRegistrationBeanAdapter(multipartConfig, beanFactory));
+		addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter(beanFactory));
 		for (Class<?> listenerType : ServletListenerRegistrationBean.getSupportedTypes()) {
 			addAsRegistrationBean(beanFactory, EventListener.class, (Class<EventListener>) listenerType,
 					new ServletListenerRegistrationBeanAdapter());
@@ -178,8 +184,10 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			if (this.seen.add(type, bean)) {
 				// One that we haven't already seen
 				RegistrationBean registration = adapter.createRegistrationBean(beanName, bean, entries.size());
-				int order = getOrder(bean);
-				registration.setOrder(order);
+				Integer order = findOrder(bean);
+				if (order != null) {
+					registration.setOrder(order);
+				}
 				this.initializers.add(type, registration);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Created " + type.getSimpleName() + " initializer for bean '" + beanName + "'; order="
@@ -196,6 +204,15 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				return super.getOrder(obj);
 			}
 		}.getOrder(value);
+	}
+
+	private Integer findOrder(Object value) {
+		return new AnnotationAwareOrderComparator() {
+			@Override
+			public Integer findOrder(Object obj) {
+				return super.findOrder(obj);
+			}
+		}.findOrder(value);
 	}
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(ListableBeanFactory beanFactory, Class<T> type) {
@@ -254,7 +271,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	@FunctionalInterface
 	protected interface RegistrationBeanAdapter<T> {
 
-		RegistrationBean createRegistrationBean(String name, T source, int totalNumberOfSourceBeans);
+		RegistrationBean createRegistrationBean(String beanName, T source, int totalNumberOfSourceBeans);
 
 	}
 
@@ -265,20 +282,45 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 
 		private final MultipartConfigElement multipartConfig;
 
-		ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig) {
+		private final ListableBeanFactory beanFactory;
+
+		ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig, ListableBeanFactory beanFactory) {
 			this.multipartConfig = multipartConfig;
+			this.beanFactory = beanFactory;
 		}
 
 		@Override
-		public RegistrationBean createRegistrationBean(String name, Servlet source, int totalNumberOfSourceBeans) {
-			String url = (totalNumberOfSourceBeans != 1) ? "/" + name + "/" : "/";
-			if (name.equals(DISPATCHER_SERVLET_NAME)) {
+		public RegistrationBean createRegistrationBean(String beanName, Servlet source, int totalNumberOfSourceBeans) {
+			String url = (totalNumberOfSourceBeans != 1) ? "/" + beanName + "/" : "/";
+			if (beanName.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}
 			ServletRegistrationBean<Servlet> bean = new ServletRegistrationBean<>(source, url);
-			bean.setName(name);
+			bean.setName(beanName);
 			bean.setMultipartConfig(this.multipartConfig);
+			ServletRegistration registrationAnnotation = this.beanFactory.findAnnotationOnBean(beanName,
+					ServletRegistration.class);
+			if (registrationAnnotation != null) {
+				Order orderAnnotation = this.beanFactory.findAnnotationOnBean(beanName, Order.class);
+				Assert.notNull(orderAnnotation, "'orderAnnotation' must not be null");
+				configureFromAnnotation(bean, registrationAnnotation, orderAnnotation);
+			}
 			return bean;
+		}
+
+		private void configureFromAnnotation(ServletRegistrationBean<Servlet> bean, ServletRegistration registration,
+				Order order) {
+			bean.setEnabled(registration.enabled());
+			bean.setOrder(order.value());
+			if (StringUtils.hasText(registration.name())) {
+				bean.setName(registration.name());
+			}
+			bean.setAsyncSupported(registration.asyncSupported());
+			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
+			bean.setLoadOnStartup(registration.loadOnStartup());
+			if (registration.urlMappings().length > 0) {
+				bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
+			}
 		}
 
 	}
@@ -286,13 +328,47 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	/**
 	 * {@link RegistrationBeanAdapter} for {@link Filter} beans.
 	 */
-	private static final class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
+	private static class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
+
+		private final ListableBeanFactory beanFactory;
+
+		FilterRegistrationBeanAdapter(ListableBeanFactory beanFactory) {
+			this.beanFactory = beanFactory;
+		}
 
 		@Override
-		public RegistrationBean createRegistrationBean(String name, Filter source, int totalNumberOfSourceBeans) {
+		public RegistrationBean createRegistrationBean(String beanName, Filter source, int totalNumberOfSourceBeans) {
 			FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(source);
-			bean.setName(name);
+			bean.setName(beanName);
+			FilterRegistration registrationAnnotation = this.beanFactory.findAnnotationOnBean(beanName,
+					FilterRegistration.class);
+			if (registrationAnnotation != null) {
+				Order orderAnnotation = this.beanFactory.findAnnotationOnBean(beanName, Order.class);
+				Assert.notNull(orderAnnotation, "'orderAnnotation' must not be null");
+				configureFromAnnotation(bean, registrationAnnotation, orderAnnotation);
+			}
 			return bean;
+		}
+
+		private void configureFromAnnotation(FilterRegistrationBean<Filter> bean, FilterRegistration registration,
+				Order order) {
+			bean.setEnabled(registration.enabled());
+			bean.setOrder(order.value());
+			if (StringUtils.hasText(registration.name())) {
+				bean.setName(registration.name());
+			}
+			bean.setAsyncSupported(registration.asyncSupported());
+			if (registration.dispatcherTypes().length > 0) {
+				bean.setDispatcherTypes(EnumSet.copyOf(Arrays.asList(registration.dispatcherTypes())));
+			}
+			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
+			bean.setMatchAfter(registration.matchAfter());
+			if (registration.servletNames().length > 0) {
+				bean.setServletNames(Arrays.asList(registration.servletNames()));
+			}
+			if (registration.urlPatterns().length > 0) {
+				bean.setUrlPatterns(Arrays.asList(registration.urlPatterns()));
+			}
 		}
 
 	}
@@ -304,7 +380,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			implements RegistrationBeanAdapter<EventListener> {
 
 		@Override
-		public RegistrationBean createRegistrationBean(String name, EventListener source,
+		public RegistrationBean createRegistrationBean(String beanName, EventListener source,
 				int totalNumberOfSourceBeans) {
 			return new ServletListenerRegistrationBean<>(source);
 		}
