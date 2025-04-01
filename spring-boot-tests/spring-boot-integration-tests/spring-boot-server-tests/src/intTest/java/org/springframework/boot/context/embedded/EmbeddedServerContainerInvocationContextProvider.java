@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,12 +42,13 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.platform.commons.util.ReflectionUtils;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -119,10 +121,17 @@ class EmbeddedServerContainerInvocationContextProvider
 		if (this.launcherCache.containsKey(cacheKey)) {
 			return this.launcherCache.get(cacheKey);
 		}
-		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application,
-				new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
-		this.launcherCache.put(cacheKey, launcher);
-		return launcher;
+		try {
+			Constructor<? extends AbstractApplicationLauncher> constructor = ReflectionUtils
+				.accessibleConstructor(launcherClass, Application.class, File.class);
+			AbstractApplicationLauncher launcher = BeanUtils.instantiateClass(constructor, application,
+					new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
+			this.launcherCache.put(cacheKey, launcher);
+			return launcher;
+		}
+		catch (NoSuchMethodException ex) {
+			throw new IllegalStateException("Launcher class %s does not have an (Application, File) constructor");
+		}
 	}
 
 	private Application getApplication(EmbeddedServletContainerTest annotation, String container) {
