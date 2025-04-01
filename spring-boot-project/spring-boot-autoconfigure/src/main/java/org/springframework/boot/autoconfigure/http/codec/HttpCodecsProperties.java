@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.codec;
+package org.springframework.boot.autoconfigure.http.codec;
 
-import org.springframework.boot.autoconfigure.http.codec.HttpCodecsProperties;
+import java.util.function.Supplier;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties Properties} for reactive codecs.
+ * {@link ConfigurationProperties Properties} for reactive HTTP codecs.
  *
  * @author Brian Clozel
- * @since 2.2.1
- * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link HttpCodecsProperties}
+ * @author Andy Wilkinson
+ * @since 3.5.0
  */
-@ConfigurationProperties("spring.codec")
-@Deprecated(since = "3.5.0", forRemoval = true)
-public class CodecProperties {
+@ConfigurationProperties("spring.http.codecs")
+public class HttpCodecsProperties {
 
 	/**
 	 * Whether to log form data at DEBUG level, and headers at TRACE level.
 	 */
 	private boolean logRequestDetails;
+
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	private boolean logRequestDetailsBound = false;
 
 	/**
 	 * Limit on the number of bytes that can be buffered whenever the input stream needs
@@ -45,22 +47,33 @@ public class CodecProperties {
 	 */
 	private DataSize maxInMemorySize;
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codec.log-request-details")
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	private boolean maxInMemorySizeBound = false;
+
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
 
-	public void setLogRequestDetails(boolean logRequestDetails) {
-		this.logRequestDetails = logRequestDetails;
+	boolean isLogRequestDetails(Supplier<Boolean> fallback) {
+		return this.logRequestDetailsBound ? this.logRequestDetails : fallback.get();
 	}
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codec.max-in-memory-size")
+	public void setLogRequestDetails(boolean logRequestDetails) {
+		this.logRequestDetails = logRequestDetails;
+		this.logRequestDetailsBound = true;
+	}
+
 	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
+	DataSize getMaxInMemorySize(Supplier<DataSize> fallback) {
+		return this.maxInMemorySizeBound ? this.maxInMemorySize : fallback.get();
+	}
+
 	public void setMaxInMemorySize(DataSize maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
+		this.maxInMemorySizeBound = true;
 	}
 
 }
