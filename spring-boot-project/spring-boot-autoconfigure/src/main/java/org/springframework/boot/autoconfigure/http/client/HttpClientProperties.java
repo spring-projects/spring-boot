@@ -30,7 +30,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Red
  * @author Phillip Webb
  * @since 3.4.0
  */
-@ConfigurationProperties("spring.http.client")
+@ConfigurationProperties("spring.http.clients")
 public class HttpClientProperties {
 
 	/**

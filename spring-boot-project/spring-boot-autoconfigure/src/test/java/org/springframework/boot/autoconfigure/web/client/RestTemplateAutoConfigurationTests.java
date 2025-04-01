@@ -197,7 +197,7 @@ class RestTemplateAutoConfigurationTests {
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 			.withUserConfiguration(RestTemplateConfig.class)
-			.withPropertyValues("spring.http.client.factory=simple")
+			.withPropertyValues("spring.http.clients.factory=simple")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestTemplate.class);
 				RestTemplate restTemplate = context.getBean(RestTemplate.class);

@@ -53,7 +53,7 @@ class HttpClientAutoConfigurationTests {
 
 	@Test
 	void configuresDefinedClientHttpRequestFactoryBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.client.factory=simple")
+		this.contextRunner.withPropertyValues("spring.http.clients.factory=simple")
 			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
 				.isInstanceOf(SimpleClientHttpRequestFactoryBuilder.class));
 	}
@@ -61,8 +61,8 @@ class HttpClientAutoConfigurationTests {
 	@Test
 	void configuresClientHttpRequestFactorySettings() {
 		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
-			.withPropertyValues("spring.http.client.redirects=dont-follow", "spring.http.client.connect-timeout=10s",
-					"spring.http.client.read-timeout=20s", "spring.http.client.ssl.bundle=test")
+			.withPropertyValues("spring.http.clients.redirects=dont-follow", "spring.http.clients.connect-timeout=10s",
+					"spring.http.clients.read-timeout=20s", "spring.http.clients.ssl.bundle=test")
 			.run((context) -> {
 				ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
 				assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);

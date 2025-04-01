@@ -99,7 +99,7 @@ class WebServiceTemplateAutoConfigurationTests {
 	@Test
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withPropertyValues("spring.http.client.factory=simple")
+			.withPropertyValues("spring.http.clients.factory=simple")
 			.run(assertWebServiceTemplateBuilder((builder) -> {
 				WebServiceTemplate webServiceTemplate = builder.build();
 				assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
