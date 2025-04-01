@@ -28,15 +28,15 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link CassandraConnectionDetails}
- * from a {@link ServiceConnection @ServiceConnection}-annotated
- * {@link CassandraContainer}.
+ * Implementation of {@link ConnectionDetailsFactory} that provides
+ * {@link CassandraConnectionDetails} from a deprecated {@link CassandraContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
- * {@link CassandraContainerConnectionDetailsFactory}.
+ * @since 3.1.0
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
+ * {@link CassandraContainerConnectionDetailsFactory}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
 class DeprecatedCassandraContainerConnectionDetailsFactory

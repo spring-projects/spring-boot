@@ -54,7 +54,7 @@ import org.springframework.util.function.SupplierUtils;
  *
  * @author Phillip Webb
  * @since 3.1.0
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of declaring one or more
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of declaring one or more
  * {@link DynamicPropertyRegistrar} beans.
  */
 @SuppressWarnings("removal")
@@ -204,5 +204,15 @@ public class TestcontainersPropertySource extends MapPropertySource {
 		}
 
 	}
+
+	/**
+	 * Configures a {@link GenericContainer} to collect properties and install a
+	 * {@link PropertySource} containing it.
+	 * @param container the container to configure
+	 * @return the configured container
+	 * @param <T> the {@link GenericContainer} type
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of declaring one or more
+	 * {@link Catalog} classes using the {@link Import} annotation
+	 */
 
 }

@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 
 /**
- * Tests for {@link SampleDataJpaApplication} that use {@link SpyBean @SpyBean}.
+ * Tests that spy beans can be used with JPA.
  *
- * @author Andy Wilkinson
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

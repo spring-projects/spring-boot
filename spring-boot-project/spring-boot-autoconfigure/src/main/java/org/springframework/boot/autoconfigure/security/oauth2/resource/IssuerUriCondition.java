@@ -26,12 +26,13 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.util.StringUtils;
 
 /**
- * Condition for creating {@link JwtDecoder} by oidc issuer location.
+ * Condition that checks that a JWT issuer URI is configured correctly for
+ * {@code spring.security.oauth2.resourceserver.jwt.issuer-uri}.
  *
- * @author Artsiom Yudovin
- * @since 2.1.0
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
- * {@link ConditionalOnIssuerLocationJwtDecoder @ConditionalOnIssuerLocationJwtDecoder}
+ * @author Phillip Webb
+ * @since 3.3.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@code org.springframework.boot.autoconfigure.security.oauth2.server.resource.IssuerUriCondition}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 public class IssuerUriCondition extends SpringBootCondition {

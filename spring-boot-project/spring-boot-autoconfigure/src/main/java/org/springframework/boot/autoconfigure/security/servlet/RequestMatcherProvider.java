@@ -19,13 +19,12 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * Interface that can be used to provide a {@link RequestMatcher} that can be used with
- * Spring Security.
+ * Interface for components that provide {@link RequestMatcher}.
  *
  * @author Madhura Bhave
- * @since 2.0.5
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
- * {@code org.springframework.boot.actuate.autoconfigure.security.servlet.RequestMatcherProvider}
+ * @since 2.1.7
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@code org.springframework.security.web.util.matcher.RequestMatcherProvider}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 @FunctionalInterface

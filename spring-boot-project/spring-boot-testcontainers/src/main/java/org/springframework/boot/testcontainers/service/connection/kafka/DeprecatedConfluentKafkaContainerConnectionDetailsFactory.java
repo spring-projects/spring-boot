@@ -27,14 +27,15 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
+ * Implementation of {@link ConnectionDetailsFactory} that provides
+ * {@link KafkaConnectionDetails} from the deprecated {@link KafkaContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
- * {@link ConfluentKafkaContainerConnectionDetailsFactory}.
+ * @since 3.1.0
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
+ * {@link ConfluentKafkaContainerConnectionDetailsFactory}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
 class DeprecatedConfluentKafkaContainerConnectionDetailsFactory

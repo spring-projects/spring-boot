@@ -26,7 +26,7 @@ import org.springframework.test.context.DynamicPropertyRegistrar;
  *
  * @author Andy Wilkinson
  * @since 3.2.6
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of property registration using a
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of property registration using a
  * {@link DynamicPropertyRegistrar} bean that injects the {@link Container} from which the
  * properties will be sourced.
  */

@@ -41,12 +41,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeprecatedConfluentKafkaContainerConnectionDetailsFactory}.
+ * Integration tests for {@link DeprecatedConfluentKafkaContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)

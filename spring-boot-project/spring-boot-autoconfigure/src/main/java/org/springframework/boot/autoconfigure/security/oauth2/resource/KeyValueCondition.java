@@ -25,12 +25,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
 /**
- * Condition for creating a jwt decoder using a public key value.
+ * Condition that check that a JWT key value configuration exists for
+ * {@code spring.security.oauth2.resourceserver.jwt.key-value}.
  *
- * @author Madhura Bhave
- * @since 2.2.0
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
- * {@link ConditionalOnPublicKeyJwtDecoder @ConditionalOnPublicKeyJwtDecoder}
+ * @author Phillip Webb
+ * @since 3.3.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@code org.springframework.boot.autoconfigure.security.oauth2.server.resource.KeyValueCondition}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 public class KeyValueCondition extends SpringBootCondition {
