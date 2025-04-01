@@ -91,6 +91,7 @@ import org.springframework.web.server.session.DefaultWebSessionManager;
 import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
+import org.springframework.boot.autoconfigure.task.ApplicationTaskExecutorBuilder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebFlux WebFlux}.
@@ -168,11 +169,14 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
+		private final ObjectProvider<ApplicationTaskExecutorBuilder> executorBuilderProvider;
+
 		public WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers,
-				ObjectProvider<ViewResolver> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers,
+				ObjectProvider<ApplicationTaskExecutorBuilder> executorBuilderProvider) {
 			this.environment = environment;
 			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
@@ -181,6 +185,7 @@ public class WebFluxAutoConfiguration {
 			this.codecCustomizers = codecCustomizers;
 			this.resourceHandlerRegistrationCustomizers = resourceHandlerRegistrationCustomizers;
 			this.viewResolvers = viewResolvers;
+			this.executorBuilderProvider = executorBuilderProvider;
 		}
 
 		@Override
@@ -195,13 +200,16 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureBlockingExecution(BlockingExecutionConfigurer configurer) {
-			if (Threading.VIRTUAL.isActive(this.environment) && this.beanFactory
-				.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
-				Object taskExecutor = this.beanFactory
-					.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
-				if (taskExecutor instanceof AsyncTaskExecutor asyncTaskExecutor) {
-					configurer.setExecutor(asyncTaskExecutor);
-				}
+			if (this.executorBuilderProvider != null) {
+				this.executorBuilderProvider.ifAvailable((executorBuilder) -> {
+					try {
+						AsyncTaskExecutor executor = executorBuilder.getAsyncTaskExecutor();
+						configurer.setExecutor(executor);
+					}
+					catch (IllegalStateException ex) {
+						// No executor available or not of the right type, that's fine
+					}
+				});
 			}
 		}
 

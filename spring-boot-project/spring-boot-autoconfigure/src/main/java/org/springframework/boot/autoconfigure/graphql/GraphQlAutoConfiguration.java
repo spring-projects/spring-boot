@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.ApplicationTaskExecutorBuilder;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -159,12 +160,18 @@ public class GraphQlAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public AnnotatedControllerConfigurer annotatedControllerConfigurer(
-			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider,
+			ApplicationTaskExecutorBuilder executorBuilder,
 			ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
 			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
-		executorProvider.ifAvailable(controllerConfigurer::setExecutor);
+		try {
+			Executor executor = executorBuilder.getExecutor();
+			controllerConfigurer.setExecutor(executor);
+		}
+		catch (IllegalStateException ex) {
+			// No executor available, that's fine
+		}
 		argumentResolvers.orderedStream().forEach(controllerConfigurer::addCustomArgumentResolver);
 		return controllerConfigurer;
 	}

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.ApplicationTaskExecutorBuilder;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,16 +70,18 @@ public class WebSocketMessagingAutoConfiguration {
 		private final AsyncTaskExecutor executor;
 
 		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
-				Map<String, AsyncTaskExecutor> taskExecutors) {
+				ApplicationTaskExecutorBuilder executorBuilder) {
 			this.objectMapper = objectMapper;
-			this.executor = determineAsyncTaskExecutor(taskExecutors);
+			this.executor = getExecutor(executorBuilder);
 		}
 
-		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
-			if (taskExecutors.size() == 1) {
-				return taskExecutors.values().iterator().next();
+		private static AsyncTaskExecutor getExecutor(ApplicationTaskExecutorBuilder executorBuilder) {
+			try {
+				return executorBuilder.getAsyncTaskExecutor();
 			}
-			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+			catch (IllegalStateException ex) {
+				return null;
+			}
 		}
 
 		@Override

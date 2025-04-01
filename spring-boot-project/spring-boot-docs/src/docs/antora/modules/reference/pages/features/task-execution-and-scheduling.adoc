@@ -77,3 +77,27 @@ spring:
 
 A javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] bean, a javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] bean, a javadoc:org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder[] bean and a javadoc:org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder[] are made available in the context if a custom executor or scheduler needs to be created.
 The javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] and javadoc:org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder[] beans are auto-configured to use virtual threads if they are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`).
+
+===== Using ApplicationTaskExecutorBuilder
+Spring Boot provides a standardized approach to accessing the application task executor across different Spring integrations.
+The `ApplicationTaskExecutorBuilder` class provides a consistent API for different component types:
+
+[source,java]
+----
+@Autowired
+private ApplicationTaskExecutorBuilder executorBuilder;
+
+// Get a basic Executor - suitable for GraphQL
+Executor executor = executorBuilder.getExecutor();
+
+// Get an AsyncTaskExecutor - suitable for MVC, WebFlux, WebSocket
+AsyncTaskExecutor asyncExecutor = executorBuilder.getAsyncTaskExecutor();
+
+// Get a TaskExecutor - suitable for JPA and other integrations
+TaskExecutor taskExecutor = executorBuilder.getTaskExecutor();
+----
+
+This consistent approach avoids type mismatch issues when different Spring integrations require different
+executor types, while still using the same underlying `applicationTaskExecutor` bean.
+
+All Spring Boot auto-configurations that require task execution now use this builder approach.

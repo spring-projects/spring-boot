@@ -194,11 +194,13 @@ public class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<HttpMessageConverters> messageConvertersProvider;
 
+		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
 		private final ObjectProvider<DispatcherServletPath> dispatcherServletPath;
 
 		private final ObjectProvider<ServletRegistrationBean<?>> servletRegistrations;
 
-		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		private final ObjectProvider<ApplicationTaskExecutorBuilder> executorBuilderProvider;
 
 		private ServletContext servletContext;
 
@@ -206,7 +208,8 @@ public class WebMvcAutoConfiguration {
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
-				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
+				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations,
+				ObjectProvider<ApplicationTaskExecutorBuilder> executorBuilderProvider) {
 			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
@@ -214,6 +217,7 @@ public class WebMvcAutoConfiguration {
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
 			this.dispatcherServletPath = dispatcherServletPath;
 			this.servletRegistrations = servletRegistrations;
+			this.executorBuilderProvider = executorBuilderProvider;
 		}
 
 		@Override
@@ -229,12 +233,16 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-			if (this.beanFactory.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
-				Object taskExecutor = this.beanFactory
-					.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
-				if (taskExecutor instanceof AsyncTaskExecutor asyncTaskExecutor) {
-					configurer.setTaskExecutor(asyncTaskExecutor);
-				}
+			if (this.executorBuilderProvider != null) {
+				this.executorBuilderProvider.ifAvailable((executorBuilder) -> {
+					try {
+						AsyncTaskExecutor executor = executorBuilder.getAsyncTaskExecutor();
+						configurer.setTaskExecutor(executor);
+					}
+					catch (IllegalStateException ex) {
+						// No executor available or not of the right type, that's fine
+					}
+				});
 			}
 			Duration timeout = this.mvcProperties.getAsync().getRequestTimeout();
 			if (timeout != null) {
