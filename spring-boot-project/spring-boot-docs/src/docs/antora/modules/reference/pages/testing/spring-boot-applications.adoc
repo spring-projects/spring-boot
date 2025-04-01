@@ -319,7 +319,7 @@ TIP: A list of the auto-configuration settings that are enabled by javadoc:org.s
 
 TIP: If you need to register extra components, such as the Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes by using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] is limited to a single controller and is used in combination with javadoc:org.springframework.boot.test.mock.mockito.MockBean[format=annotation] to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] is limited to a single controller and is used in combination with javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] to provide mock implementations for required collaborators.
 
 javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] also auto-configures javadoc:org.springframework.test.web.servlet.MockMvc[].
 Mock MVC offers a powerful way to quickly test MVC controllers without needing to start a full HTTP server.
@@ -363,7 +363,7 @@ TIP: A list of the auto-configurations that are enabled by javadoc:org.springfra
 
 TIP: If you need to register extra components, such as Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] is limited to a single controller and used in combination with the javadoc:org.springframework.boot.test.mock.mockito.MockBean[format=annotation] annotation to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] is limited to a single controller and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
 
 javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] also auto-configures {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
 
@@ -432,7 +432,7 @@ javadoc:org.springframework.boot.context.properties.EnableConfigurationPropertie
 
 TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-Often, javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] is limited to a set of controllers and used in combination with the javadoc:org.springframework.boot.test.mock.mockito.MockBean[format=annotation] annotation to provide mock implementations for required collaborators.
+Often, javadoc:org.springframework.boot.test.autoconfigure.graphql.GraphQlTest[format=annotation] is limited to a set of controllers and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
 
 include-code::GreetingControllerTests[]
 
