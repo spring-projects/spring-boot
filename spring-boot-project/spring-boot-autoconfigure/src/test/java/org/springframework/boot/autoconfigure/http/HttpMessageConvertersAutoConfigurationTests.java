@@ -32,9 +32,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -132,33 +130,29 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void gsonCanBePreferred() {
-		allOptionsRunner().withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.withPropertyValues("spring.http.converters.preferred-json-mapper:gson")
-			.run((context) -> {
-				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
-				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
-				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
-				assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
-			});
+		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:gson").run((context) -> {
+			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
+			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+		});
 	}
 
 	@Test
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	void gsonCanBePreferredWithDeprecatedProperty() {
-		allOptionsRunner().withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.withPropertyValues("spring.mvc.converters.preferred-json-mapper:gson")
-			.run((context) -> {
-				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
-				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
-				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
-				assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
-			});
+		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:gson").run((context) -> {
+			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
+			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+		});
 	}
 
 	@Test
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	void gsonCanBePreferredWithNonDeprecatedPropertyTakingPrecedence() {
-		allOptionsRunner().withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+		allOptionsRunner()
 			.withPropertyValues("spring.http.converters.preferred-json-mapper:gson",
 					"spring.mvc.converters.preferred-json-mapper:jackson")
 			.run((context) -> {
@@ -192,7 +186,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void jsonbCanBePreferred() {
-		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:jsonb").run((context) -> {
+		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb").run((context) -> {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
@@ -203,7 +197,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	void jsonbCanBePreferredWithDeprecatedProperty() {
-		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb").run((context) -> {
+		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:jsonb").run((context) -> {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);

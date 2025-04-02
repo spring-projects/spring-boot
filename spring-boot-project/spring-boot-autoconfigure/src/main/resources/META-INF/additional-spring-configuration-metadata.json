@@ -3175,6 +3175,25 @@
       ]
     },
     {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "values": [
+        {
+          "value": "gson"
+        },
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.jms.listener.session.acknowledge-mode",
       "values": [
         {
