@@ -68,9 +68,12 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnMissingBean(RestClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
 	AutoConfiguredRestClientSsl restClientSsl(
-			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder, SslBundles sslBundles) {
+			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
+			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings, SslBundles sslBundles) {
 		return new AutoConfiguredRestClientSsl(
-				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect), sslBundles);
+				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect),
+				clientHttpRequestFactorySettings.getIfAvailable(ClientHttpRequestFactorySettings::defaults),
+				sslBundles);
 	}
 
 	@Bean

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfigur
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
@@ -66,9 +68,43 @@ class RestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldSupplyRestClientSslIfSslBundlesIsThere() {
-		this.contextRunner.withBean(SslBundles.class, () -> mock(SslBundles.class))
-			.run((context) -> assertThat(context).hasSingleBean(RestClientSsl.class));
+	void shouldSupplyRestClientSslIfSslBundlesIsThereWithCustomHttpSettingsAndBuilder() {
+		SslBundles sslBundles = mock(SslBundles.class);
+		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW)
+			.withConnectTimeout(Duration.ofHours(1))
+			.withReadTimeout(Duration.ofDays(1))
+			.withSslBundle(mock(SslBundle.class));
+		ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder = mock(
+				ClientHttpRequestFactoryBuilder.class);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
+			.withBean(ClientHttpRequestFactorySettings.class, () -> clientHttpRequestFactorySettings)
+			.withBean(ClientHttpRequestFactoryBuilder.class, () -> clientHttpRequestFactoryBuilder)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RestClientSsl.class);
+				RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactoryBuilder",
+						clientHttpRequestFactoryBuilder);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactorySettings",
+						clientHttpRequestFactorySettings);
+			});
+	}
+
+	@Test
+	void shouldSupplyRestClientSslIfSslBundlesIsThereWithAutoConfiguredHttpSettingsAndBuilder() {
+		SslBundles sslBundles = mock(SslBundles.class);
+		this.contextRunner.withBean(SslBundles.class, () -> sslBundles).run((context) -> {
+			assertThat(context).hasSingleBean(RestClientSsl.class)
+				.hasSingleBean(ClientHttpRequestFactorySettings.class)
+				.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
+			RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
+			assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
+			assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactoryBuilder",
+					context.getBean(ClientHttpRequestFactoryBuilder.class));
+			assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactorySettings",
+					context.getBean(ClientHttpRequestFactorySettings.class));
+		});
 	}
 
 	@Test
