@@ -57,7 +57,7 @@ public final class OpenTelemetryResourceAttributes {
 	/**
 	 * Creates a new instance of {@link OpenTelemetryResourceAttributes}.
 	 * @param environment the environment
-	 * @param resourceAttributes user provided resource attributes to be used
+	 * @param resourceAttributes user-provided resource attributes to be used
 	 */
 	public OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes) {
 		this(environment, resourceAttributes, null);
@@ -66,7 +66,7 @@ public final class OpenTelemetryResourceAttributes {
 	/**
 	 * Creates a new {@link OpenTelemetryResourceAttributes} instance.
 	 * @param environment the environment
-	 * @param resourceAttributes user provided resource attributes to be used
+	 * @param resourceAttributes user-provided resource attributes to be used
 	 * @param getEnv a function to retrieve environment variables by name
 	 */
 	OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes,

@@ -1156,7 +1156,7 @@ public class ServerProperties {
 			WHEN_AVAILABLE,
 
 			/**
-			 * Never user APR.
+			 * Never use APR.
 			 */
 			NEVER
 

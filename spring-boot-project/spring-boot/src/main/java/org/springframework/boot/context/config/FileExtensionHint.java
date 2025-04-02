@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * User provided hint for an otherwise missing file extension.
+ * User-provided hint for an otherwise missing file extension.
  *
  * @author Phillip Webb
  */
