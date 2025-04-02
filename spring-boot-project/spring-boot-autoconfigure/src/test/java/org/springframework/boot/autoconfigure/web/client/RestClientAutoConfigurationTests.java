@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
@@ -168,6 +171,57 @@ class RestClientAutoConfigurationTests {
 				RestClient restClient = context.getBean(RestClient.class);
 				assertThat(restClient).extracting("clientRequestFactory")
 					.isInstanceOf(SimpleClientHttpRequestFactory.class);
+			});
+	}
+
+	@Test
+	void shouldSupplyRestClientBuilderConfigurerWithCustomSettings() {
+		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW);
+		ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder = mock(
+				ClientHttpRequestFactoryBuilder.class);
+		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);
+		RestClientCustomizer customizer2 = mock(RestClientCustomizer.class);
+		HttpMessageConvertersRestClientCustomizer httpMessageConverterCustomizer = mock(
+				HttpMessageConvertersRestClientCustomizer.class);
+		this.contextRunner.withBean(ClientHttpRequestFactorySettings.class, () -> clientHttpRequestFactorySettings)
+			.withBean(ClientHttpRequestFactoryBuilder.class, () -> clientHttpRequestFactoryBuilder)
+			.withBean("customizer1", RestClientCustomizer.class, () -> customizer1)
+			.withBean("customizer2", RestClientCustomizer.class, () -> customizer2)
+			.withBean("httpMessageConverterCustomizer", HttpMessageConvertersRestClientCustomizer.class,
+					() -> httpMessageConverterCustomizer)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class)
+					.hasSingleBean(ClientHttpRequestFactorySettings.class)
+					.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
+				RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
+				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactoryBuilder",
+						clientHttpRequestFactoryBuilder);
+				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactorySettings",
+						clientHttpRequestFactorySettings);
+				assertThat(configurer).hasFieldOrPropertyWithValue("customizers",
+						List.of(customizer1, customizer2, httpMessageConverterCustomizer));
+			});
+	}
+
+	@Test
+	void shouldSupplyRestClientBuilderConfigurerWithAutoConfiguredHttpSettings() {
+		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);
+		RestClientCustomizer customizer2 = mock(RestClientCustomizer.class);
+		this.contextRunner.withBean("customizer1", RestClientCustomizer.class, () -> customizer1)
+			.withBean("customizer2", RestClientCustomizer.class, () -> customizer2)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class)
+					.hasSingleBean(ClientHttpRequestFactorySettings.class)
+					.hasSingleBean(ClientHttpRequestFactoryBuilder.class)
+					.hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+				RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
+				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactoryBuilder",
+						context.getBean(ClientHttpRequestFactoryBuilder.class));
+				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactorySettings",
+						context.getBean(ClientHttpRequestFactorySettings.class));
+				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2,
+						context.getBean(HttpMessageConvertersRestClientCustomizer.class)));
 			});
 	}
 
