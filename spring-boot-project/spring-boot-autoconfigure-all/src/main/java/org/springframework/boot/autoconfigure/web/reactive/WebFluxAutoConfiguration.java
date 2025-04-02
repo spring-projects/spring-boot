@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.thread.Threading;
@@ -105,10 +104,9 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Weix Sun
  * @since 2.0.0
  */
-@AutoConfiguration(
-		after = { CodecsAutoConfiguration.class, ReactiveMultipartAutoConfiguration.class,
-				WebSessionIdResolverAutoConfiguration.class },
-		afterName = "org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration")
+@AutoConfiguration(after = { ReactiveMultipartAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class },
+		afterName = { "org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration",
+				"org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })

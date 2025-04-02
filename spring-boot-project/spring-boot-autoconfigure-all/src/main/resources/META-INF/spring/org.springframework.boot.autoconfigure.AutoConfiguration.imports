@@ -13,7 +13,6 @@ org.springframework.boot.autoconfigure.graphql.security.GraphQlWebMvcSecurityAut
 org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration
-org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
