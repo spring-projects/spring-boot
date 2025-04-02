@@ -126,6 +126,7 @@ dependencies {
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-http-codec"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")

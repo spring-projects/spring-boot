@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * @author Brian Clozel
  * @since 2.7.0
  * @see GraphQlTest
- * @see org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
+ * @see org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
  * @see org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
  * @see org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
  */

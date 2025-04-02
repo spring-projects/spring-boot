@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.codec;
+package org.springframework.boot.http.codec.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,19 +69,15 @@ public class CodecsAutoConfiguration {
 
 	}
 
-	@SuppressWarnings("removal")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.codec.CodecProperties.class,
-			HttpCodecsProperties.class })
+	@EnableConfigurationProperties(HttpCodecsProperties.class)
 	static class DefaultCodecsConfiguration {
 
 		@Bean
-		DefaultCodecCustomizer defaultCodecCustomizer(
-				org.springframework.boot.autoconfigure.codec.CodecProperties codecProperties,
-				HttpCodecsProperties httpCodecProperties, Environment environment) {
-			return new DefaultCodecCustomizer(
-					httpCodecProperties.isLogRequestDetails(codecProperties::isLogRequestDetails),
-					httpCodecProperties.getMaxInMemorySize(codecProperties::getMaxInMemorySize));
+		DefaultCodecCustomizer defaultCodecCustomizer(HttpCodecsProperties httpCodecProperties,
+				Environment environment) {
+			return new DefaultCodecCustomizer(httpCodecProperties.isLogRequestDetails(),
+					httpCodecProperties.getMaxInMemorySize());
 		}
 
 		static final class DefaultCodecCustomizer implements CodecCustomizer, Ordered {
