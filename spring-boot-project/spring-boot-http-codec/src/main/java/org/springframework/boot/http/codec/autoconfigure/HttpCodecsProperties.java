@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.codec;
-
-import java.util.function.Supplier;
+package org.springframework.boot.http.codec.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
@@ -36,9 +34,6 @@ public class HttpCodecsProperties {
 	 */
 	private boolean logRequestDetails;
 
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	private boolean logRequestDetailsBound = false;
-
 	/**
 	 * Limit on the number of bytes that can be buffered whenever the input stream needs
 	 * to be aggregated. This applies only to the auto-configured WebFlux server and
@@ -47,33 +42,20 @@ public class HttpCodecsProperties {
 	 */
 	private DataSize maxInMemorySize;
 
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	private boolean maxInMemorySizeBound = false;
-
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
 
-	boolean isLogRequestDetails(Supplier<Boolean> fallback) {
-		return this.logRequestDetailsBound ? this.logRequestDetails : fallback.get();
-	}
-
 	public void setLogRequestDetails(boolean logRequestDetails) {
 		this.logRequestDetails = logRequestDetails;
-		this.logRequestDetailsBound = true;
 	}
 
 	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
-	DataSize getMaxInMemorySize(Supplier<DataSize> fallback) {
-		return this.maxInMemorySizeBound ? this.maxInMemorySize : fallback.get();
-	}
-
 	public void setMaxInMemorySize(DataSize maxInMemorySize) {
 		this.maxInMemorySize = maxInMemorySize;
-		this.maxInMemorySizeBound = true;
 	}
 
 }
