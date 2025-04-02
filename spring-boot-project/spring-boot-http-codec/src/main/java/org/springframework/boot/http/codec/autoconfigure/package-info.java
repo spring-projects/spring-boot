@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for HTTP codecs.
  */
-package org.springframework.boot.autoconfigure.http.codec;
+package org.springframework.boot.http.codec.autoconfigure;

@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.codec;
+package org.springframework.boot.http.codec.autoconfigure;
 
-import org.springframework.boot.autoconfigure.http.codec.HttpCodecsProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties Properties} for reactive codecs.
+ * {@link ConfigurationProperties Properties} for reactive HTTP codecs.
  *
  * @author Brian Clozel
- * @since 2.2.1
- * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link HttpCodecsProperties}
+ * @author Andy Wilkinson
+ * @since 3.5.0
  */
-@ConfigurationProperties("spring.codec")
-@Deprecated(since = "3.5.0", forRemoval = true)
-public class CodecProperties {
+@ConfigurationProperties("spring.http.codecs")
+public class HttpCodecsProperties {
 
 	/**
 	 * Whether to log form data at DEBUG level, and headers at TRACE level.
@@ -45,7 +42,6 @@ public class CodecProperties {
 	 */
 	private DataSize maxInMemorySize;
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codecs.log-request-details")
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
@@ -54,7 +50,6 @@ public class CodecProperties {
 		this.logRequestDetails = logRequestDetails;
 	}
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codecs.max-in-memory-size")
 	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}

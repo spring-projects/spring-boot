@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.codec;
+package org.springframework.boot.http.codec.autoconfigure;
 
 import java.util.List;
 
@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,20 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CodecsAutoConfigurationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
 
 	@Test
 	void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
 		this.contextRunner.run((context) -> assertThat(defaultCodecs(context))
 			.hasFieldOrPropertyWithValue("enableLoggingRequestDetails", false));
-	}
-
-	@Test
-	void loggingRequestDetailsCustomizerShouldUseCodecProperties() {
-		this.contextRunner.withPropertyValues("spring.codec.log-request-details=true")
-			.run((context) -> assertThat(defaultCodecs(context))
-				.hasFieldOrPropertyWithValue("enableLoggingRequestDetails", true));
 	}
 
 	@Test
@@ -66,31 +59,8 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	void logRequestDetailsShouldGivePriorityToHttpCodecProperty() {
-		this.contextRunner
-			.withPropertyValues("spring.http.codecs.log-request-details=true", "spring.codec.log-request-details=false")
-			.run((context) -> assertThat(defaultCodecs(context))
-				.hasFieldOrPropertyWithValue("enableLoggingRequestDetails", true));
-	}
-
-	@Test
-	void maxInMemorySizeShouldUseCodecProperties() {
-		this.contextRunner.withPropertyValues("spring.codec.max-in-memory-size=64KB")
-			.run((context) -> assertThat(defaultCodecs(context)).hasFieldOrPropertyWithValue("maxInMemorySize",
-					64 * 1024));
-	}
-
-	@Test
 	void maxInMemorySizeShouldUseHttpCodecProperties() {
 		this.contextRunner.withPropertyValues("spring.http.codecs.max-in-memory-size=64KB")
-			.run((context) -> assertThat(defaultCodecs(context)).hasFieldOrPropertyWithValue("maxInMemorySize",
-					64 * 1024));
-	}
-
-	@Test
-	void maxInMemorySizeShouldGivePriorityToHttpCodecProperty() {
-		this.contextRunner
-			.withPropertyValues("spring.http.codecs.max-in-memory-size=64KB", "spring.codec.max-in-memory-size=32KB")
 			.run((context) -> assertThat(defaultCodecs(context)).hasFieldOrPropertyWithValue("maxInMemorySize",
 					64 * 1024));
 	}
@@ -124,12 +94,12 @@ class CodecsAutoConfigurationTests {
 
 	@Test
 	void maxInMemorySizeEnforcedInDefaultCodecs() {
-		this.contextRunner.withPropertyValues("spring.codec.max-in-memory-size=1MB")
+		this.contextRunner.withPropertyValues("spring.http.codecs.max-in-memory-size=1MB")
 			.run((context) -> assertThat(defaultCodecs(context)).hasFieldOrPropertyWithValue("maxInMemorySize",
 					1048576));
 	}
 
-	private DefaultCodecs defaultCodecs(AssertableWebApplicationContext context) {
+	private DefaultCodecs defaultCodecs(AssertableApplicationContext context) {
 		CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 		CodecConfigurer configurer = new DefaultClientCodecConfigurer();
 		customizer.customize(configurer);
