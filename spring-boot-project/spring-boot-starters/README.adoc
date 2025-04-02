@@ -257,6 +257,9 @@ do as they were designed before this was clarified.
 | https://github.com/structurizr/java[Structurizr]
 | https://github.com/Catalysts/structurizr-extensions
 
+| https://docs.styra.com/das/systems/springboot/[Styra DAS] (https://www.openpolicyagent.org/[OPA])
+| https://github.com/styrainc/opa-springboot
+
 | https://www.torproject.org/[Tor]
 | https://github.com/theborakompanioni/tor-spring-boot-starter
 
