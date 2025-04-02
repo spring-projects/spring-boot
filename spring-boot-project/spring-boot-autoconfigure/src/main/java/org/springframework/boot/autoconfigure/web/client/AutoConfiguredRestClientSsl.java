@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,14 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 
 	private final ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder;
 
+	private final ClientHttpRequestFactorySettings clientHttpRequestFactorySettings;
+
 	private final SslBundles sslBundles;
 
 	AutoConfiguredRestClientSsl(ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder,
-			SslBundles sslBundles) {
+			ClientHttpRequestFactorySettings clientHttpRequestFactorySettings, SslBundles sslBundles) {
 		this.clientHttpRequestFactoryBuilder = clientHttpRequestFactoryBuilder;
+		this.clientHttpRequestFactorySettings = clientHttpRequestFactorySettings;
 		this.sslBundles = sslBundles;
 	}
 
@@ -50,7 +53,7 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
-			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(bundle);
+			ClientHttpRequestFactorySettings settings = this.clientHttpRequestFactorySettings.withSslBundle(bundle);
 			ClientHttpRequestFactory requestFactory = this.clientHttpRequestFactoryBuilder.build(settings);
 			builder.requestFactory(requestFactory);
 		};
