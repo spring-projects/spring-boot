@@ -68,6 +68,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional(project(":spring-boot-project:spring-boot-webservices"))
 	optional("jakarta.json.bind:jakarta.json.bind-api")

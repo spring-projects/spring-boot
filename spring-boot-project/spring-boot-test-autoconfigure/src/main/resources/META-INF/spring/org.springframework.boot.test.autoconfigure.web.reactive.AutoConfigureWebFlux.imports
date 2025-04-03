@@ -5,5 +5,5 @@ optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfigurati
 optional:org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration
 optional:org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
-org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
-org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration

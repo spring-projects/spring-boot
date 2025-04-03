@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
@@ -43,8 +42,8 @@ import org.springframework.web.server.WebHandler;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@AutoConfiguration(after = WebFluxAutoConfiguration.class,
-		afterName = "org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration")
+@AutoConfiguration(afterName = { "org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration",
+		"org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration" })
 @ConditionalOnClass({ WebClient.class, WebTestClient.class })
 @Import(WebTestClientSecurityConfiguration.class)
 @EnableConfigurationProperties
