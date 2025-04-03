@@ -28,9 +28,9 @@ dependencies {
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
+	implementation(project(":spring-boot-project:spring-boot-session-data-redis"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
 
 	runtimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis-reactive"))
-	runtimeOnly("org.springframework.session:spring-session-data-redis")
 }
