@@ -140,6 +140,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tx", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-validation", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-webflux", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-webmvc", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-webservices", configuration: "autoConfigurationMetadata"))
 
@@ -209,6 +210,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-tomcat", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-tx", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-webflux", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-webmvc", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-webservices", configuration: "configurationPropertiesMetadata"))
 
@@ -244,6 +246,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-undertow"))
+	implementation(project(path: ":spring-boot-project:spring-boot-webflux"))
 	implementation(project(path: ":spring-boot-project:spring-boot-webmvc"))
 	implementation(project(path: ":spring-boot-project:spring-boot-webservices"))
 	implementation("ch.qos.logback:logback-classic")

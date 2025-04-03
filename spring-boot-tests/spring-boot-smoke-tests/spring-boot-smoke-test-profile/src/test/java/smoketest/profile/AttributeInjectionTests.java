@@ -31,7 +31,7 @@ class AttributeInjectionTests {
 	private org.springframework.boot.webmvc.error.ErrorAttributes errorAttributesServlet;
 
 	@Autowired(required = false)
-	private org.springframework.boot.web.reactive.error.ErrorAttributes errorAttributesReactive;
+	private org.springframework.boot.webflux.error.ErrorAttributes errorAttributesReactive;
 
 	@Test
 	void contextLoads() {

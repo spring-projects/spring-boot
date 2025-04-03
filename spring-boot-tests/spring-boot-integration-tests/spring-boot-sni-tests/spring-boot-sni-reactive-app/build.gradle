@@ -56,9 +56,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 	app(files(sourceSets.main.output))
-	app("org.springframework:spring-webflux") {
-		exclude group: "spring-boot-project", module: "spring-boot-starter-reactor-netty"
-	}
+	app("org.springframework.boot:spring-boot-webflux")
 	netty("org.springframework.boot:spring-boot-starter-webflux")
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
 	undertow("org.springframework.boot:spring-boot-starter-undertow")
