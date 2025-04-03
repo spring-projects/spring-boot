@@ -2144,6 +2144,7 @@ bom {
 				"spring-boot-tx",
 				"spring-boot-undertow",
 				"spring-boot-validation",
+				"spring-boot-webflux",
 				"spring-boot-webmvc",
 				"spring-boot-webservices"
 			]
