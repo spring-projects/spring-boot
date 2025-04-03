@@ -28,10 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
-import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie;
@@ -61,18 +57,20 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
  * @author Weix Sun
  * @since 1.4.0
  */
-@AutoConfiguration(after = WebSessionIdResolverAutoConfiguration.class,
+@AutoConfiguration(
+		beforeName = { "org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration",
+				"org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration" },
 		afterName = { "org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration",
 				"org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
 				"org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
 				"org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration",
 				"org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration",
 				"org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
-				"org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration" },
-		before = { HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class })
+				"org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration",
+				"org.springframework.boot.autoconfigure.session.WebSessionIdResolverAutoConfiguration" })
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class, WebFluxProperties.class })
+@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
 public class SessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

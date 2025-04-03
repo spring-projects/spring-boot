@@ -1,0 +1,5 @@
+org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.ReactiveMultipartAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration
+org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration

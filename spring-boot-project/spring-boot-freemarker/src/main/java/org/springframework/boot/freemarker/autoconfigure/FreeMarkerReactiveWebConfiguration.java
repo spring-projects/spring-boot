@@ -37,7 +37,7 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(FreeMarkerConfigurer.class)
-@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration")
+@AutoConfigureAfter(name = "org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration")
 class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration {
 
 	FreeMarkerReactiveWebConfiguration(FreeMarkerProperties properties,
