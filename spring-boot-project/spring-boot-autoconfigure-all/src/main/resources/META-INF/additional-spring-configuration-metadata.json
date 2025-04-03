@@ -461,18 +461,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.session.redis.cleanup-cron",
-      "defaultValue": "0 * * * * *"
-    },
-    {
-      "name": "spring.session.servlet.filter-dispatcher-types",
-      "defaultValue": [
-        "async",
-        "error",
-        "request"
-      ]
-    },
-    {
       "name": "spring.sql.init.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether basic script-based initialization of an SQL database is enabled.",

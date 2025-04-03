@@ -20,7 +20,6 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -39,20 +38,6 @@ configurations.all {
 dependencies {
 	api(project(":spring-boot-project:spring-boot-all"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
-
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
-	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
-	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
-	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.assertj:assertj-core")
-	dockerTestImplementation("org.awaitility:awaitility")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.mockito:mockito-core")
-	dockerTestImplementation("org.springframework:spring-test")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:mongodb")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
@@ -75,6 +60,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional(project(":spring-boot-project:spring-boot-security"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
+	optional(project(":spring-boot-project:spring-boot-session"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
@@ -179,11 +165,6 @@ dependencies {
 		exclude group: "org.opensaml", module: "opensaml-saml-impl"
 	}
 	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework.session:spring-session-core")
-	optional("org.springframework.session:spring-session-data-mongodb")
-	optional("org.springframework.session:spring-session-data-redis")
-	optional("org.springframework.session:spring-session-hazelcast")
-	optional("org.springframework.session:spring-session-jdbc")
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.amqp:spring-rabbit-stream")
 

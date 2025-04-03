@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "server.servlet.session.timeout:2" })
+		properties = { "server.servlet.session.timeout:2", "debug=true" })
 class SampleSessionJdbcApplicationTests {
 
 	private static final ClientHttpRequestFactorySettings DONT_FOLLOW_REDIRECTS = ClientHttpRequestFactorySettings

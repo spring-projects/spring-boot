@@ -21,13 +21,10 @@ plugins {
 description = "Spring Boot Session smoke test"
 
 dependencies {
-	implementation(project(":spring-boot-project:spring-boot-hazelcast"))
+	implementation(project(":spring-boot-project:spring-boot-session-hazelcast"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	implementation("org.springframework.session:spring-session-hazelcast") {
-		exclude group: "javax.annotation", module: "javax.annotation-api"
-	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

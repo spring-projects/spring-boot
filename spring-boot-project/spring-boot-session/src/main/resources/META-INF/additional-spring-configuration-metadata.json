@@ -1,0 +1,12 @@
+{
+  "properties": [
+    {
+      "name": "spring.session.servlet.filter-dispatcher-types",
+      "defaultValue": [
+        "async",
+        "error",
+        "request"
+      ]
+    }
+  ]
+}

@@ -28,9 +28,9 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 
+	implementation(project(":spring-boot-project:spring-boot-session-data-mongodb"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
 
 	runtimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb-reactive"))
-	runtimeOnly("org.springframework.session:spring-session-data-mongodb")
 }
