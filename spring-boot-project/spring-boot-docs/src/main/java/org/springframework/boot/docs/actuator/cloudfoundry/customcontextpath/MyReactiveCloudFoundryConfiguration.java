@@ -20,8 +20,8 @@ import java.util.Map;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

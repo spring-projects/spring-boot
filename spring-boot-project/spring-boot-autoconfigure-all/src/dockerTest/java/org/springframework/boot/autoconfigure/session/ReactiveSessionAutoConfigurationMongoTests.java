@@ -25,7 +25,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
@@ -35,6 +34,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration;
 import org.springframework.http.ResponseCookie;
 import org.springframework.session.MapSession;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;

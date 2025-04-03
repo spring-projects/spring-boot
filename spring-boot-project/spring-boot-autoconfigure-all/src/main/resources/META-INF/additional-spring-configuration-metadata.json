@@ -481,20 +481,6 @@
         "replacement": "spring.sql.init.mode",
         "level": "warning"
       }
-    },
-    {
-      "name": "spring.webflux.hiddenmethod.filter.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
-      "defaultValue": false
-    },
-    {
-      "name": "spring.webflux.multipart.streaming",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "reason": "Replaced by the PartEventHttpMessageReader and the PartEvent API.",
-        "level": "error"
-      }
     }
   ],
   "hints": [
@@ -626,68 +612,6 @@
           "parameters": {
             "target": "java.util.List<org.springframework.core.io.Resource>"
           }
-        }
-      ]
-    },
-    {
-      "name": "spring.webflux.format.date",
-      "values": [
-        {
-          "value": "dd/MM/yyyy",
-          "description": "Example date format. Any format supported by DateTimeFormatter.parse can be used."
-        },
-        {
-          "value": "iso",
-          "description": "ISO-8601 extended local date format."
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "spring.webflux.format.date-time",
-      "values": [
-        {
-          "value": "yyyy-MM-dd HH:mm:ss",
-          "description": "Example date-time format. Any format supported by DateTimeFormatter.parse can be used."
-        },
-        {
-          "value": "iso",
-          "description": "ISO-8601 extended local date-time format."
-        },
-        {
-          "value": "iso-offset",
-          "description": "ISO offset date-time format."
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
-        }
-      ]
-    },
-    {
-      "name": "spring.webflux.format.time",
-      "values": [
-        {
-          "value": "HH:mm:ss",
-          "description": "Example time format. Any format supported by DateTimeFormatter.parse can be used."
-        },
-        {
-          "value": "iso",
-          "description": "ISO-8601 extended local time format."
-        },
-        {
-          "value": "iso-offset",
-          "description": "ISO offset time format."
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
         }
       ]
     }

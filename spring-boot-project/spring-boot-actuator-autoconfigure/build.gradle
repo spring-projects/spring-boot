@@ -79,6 +79,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("ch.qos.logback:logback-classic")
 	optional("org.apache.cassandra:java-driver-core") {

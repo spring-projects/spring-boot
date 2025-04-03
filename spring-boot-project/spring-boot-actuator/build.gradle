@@ -55,6 +55,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
