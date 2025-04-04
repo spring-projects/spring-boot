@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
+import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,6 +31,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Red
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -48,8 +51,19 @@ public class HttpClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties) {
-		return httpClientProperties.factoryBuilder();
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties,
+			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
+		ClientHttpRequestFactoryBuilder<?> builder = httpClientProperties.factoryBuilder();
+		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
+	}
+
+	@SuppressWarnings("unchecked")
+	private ClientHttpRequestFactoryBuilder<?> customize(ClientHttpRequestFactoryBuilder<?> builder,
+			List<ClientHttpRequestFactoryBuilderCustomizer<?>> customizers) {
+		ClientHttpRequestFactoryBuilder<?>[] builderReference = { builder };
+		LambdaSafe.callbacks(ClientHttpRequestFactoryBuilderCustomizer.class, customizers, builderReference[0])
+			.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
+		return builderReference[0];
 	}
 
 	@Bean

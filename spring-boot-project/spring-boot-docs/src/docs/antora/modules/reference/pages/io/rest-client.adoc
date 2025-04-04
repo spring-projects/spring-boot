@@ -272,7 +272,7 @@ spring:
       redirects: dont-follow
 ----
 
-For more complex customizations, you can declare your own javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[] bean which will cause auto-configuration to back off.
+For more complex customizations, you can use javadoc:org.springframework.boot.autoconfigure.http.client.ClientHttpRequestFactoryBuilderCustomizer[] or declare your own javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[] bean which will cause auto-configuration to back off.
 This can be useful when you need to customize some of the internals of the underlying HTTP library.
 
 For example, the following will use a JDK client configured with a specific javadoc:java.net.ProxySelector[]:
