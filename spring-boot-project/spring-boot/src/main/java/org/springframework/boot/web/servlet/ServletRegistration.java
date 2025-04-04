@@ -101,7 +101,7 @@ public @interface ServletRegistration {
 	Class<? extends ServletRegistrationBean<?>>[] servletRegistrationBeans() default {};
 
 	/**
-	 * Multi-part configuration. Mirrors {@link jakarta.servlet.annotation.MultipartConfig}.
+	 * Multipart configuration. Mirrors {@link jakarta.servlet.annotation.MultipartConfig}.
 	 * If you omit it (no fields changed), it will not set a multipart config.
 	 */
 	MultipartConfigValues multipartConfig() default @MultipartConfigValues;
