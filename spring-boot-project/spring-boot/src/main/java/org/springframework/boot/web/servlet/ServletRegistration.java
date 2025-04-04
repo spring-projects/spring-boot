@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebInitParam;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AliasFor;
@@ -33,6 +35,7 @@ import org.springframework.core.annotation.Order;
  * annotation-based alternative to {@link ServletRegistrationBean}.
  *
  * @author Moritz Halbritter
+ * @author Dmytro Danilenkov
  * @since 3.5.0
  * @see ServletRegistrationBean
  */
@@ -87,4 +90,50 @@ public @interface ServletRegistration {
 	 */
 	int loadOnStartup() default -1;
 
+	/**
+	 * Init parameters to set on the servlet, as {@code "key=value"} pairs.
+	 */
+	String[] initParameters() default {};
+
+	/**
+	 * (Optional) Additional servlet-registration beans to apply.
+	 * Usually left empty unless you need custom bean logic.
+	 */
+	Class<? extends ServletRegistrationBean<?>>[] servletRegistrationBeans() default {};
+
+	/**
+	 * Multipart configuration. Mirrors {@link jakarta.servlet.annotation.MultipartConfig}.
+	 * If you omit it (no fields changed), it will not set a multipart config.
+	 */
+	MultipartConfigValues multipartConfig() default @MultipartConfigValues;
+
+	/**
+	 * Nested annotation that parallels the fields of
+	 * {@link jakarta.servlet.annotation.MultipartConfig}. Used within
+	 * {@link ServletRegistration#multipartConfig()}.
+	 * @see jakarta.servlet.annotation.MultipartConfig
+	 */
+	@Target({})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface MultipartConfigValues {
+
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#location()
+		 */
+		String location() default "";
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#maxFileSize()
+		 */
+		long maxFileSize() default -1L;
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#maxRequestSize()
+		 */
+		long maxRequestSize() default -1L;
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#fileSizeThreshold()
+		 */
+		int fileSizeThreshold() default 0;
+
+	}
 }
