@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.sql.autoconfigure.init;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

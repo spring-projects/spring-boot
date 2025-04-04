@@ -94,7 +94,3 @@ org.springframework.boot.io.ResourceFilePathResolver=\
 org.springframework.boot.io.ClassPathResourceFilePathResolver,\
 org.springframework.boot.web.context.ServletContextResourceFilePathResolver,\
 org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver
-
-# Depends On Database Initialization Detectors
-org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
-org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector

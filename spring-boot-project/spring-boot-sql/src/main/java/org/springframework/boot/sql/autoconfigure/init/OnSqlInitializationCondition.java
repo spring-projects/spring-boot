@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.sql.autoconfigure.init;
+
+import org.springframework.context.annotation.Condition;
+
 /**
- * Auto-configuration for basic script-based initialization of an SQL database.
+ * {@link Condition} implementation for {@link ConditionalOnSqlInitialization}.
+ *
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-package org.springframework.boot.autoconfigure.sql.init;
+class OnSqlInitializationCondition extends OnDatabaseInitializationCondition {
+
+	OnSqlInitializationCondition() {
+		super("SQL Initialization", "spring.sql.init.mode");
+	}
+
+}
