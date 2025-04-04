@@ -28,6 +28,7 @@ description = "Spring Boot R2DBC"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-sql"))
 	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.springframework:spring-r2dbc")
 
@@ -40,7 +41,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-sql")))
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("org.postgresql:r2dbc-postgresql")

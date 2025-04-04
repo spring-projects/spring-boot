@@ -17,31 +17,24 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
+	id "java-test-fixtures"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Quartz"
+description = "Spring Boot SQL"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-tx"))
-	api("org.quartz-scheduler:quartz")
-	api("org.springframework:spring-context-support")
-
-	implementation(project(":spring-boot-project:spring-boot-sql"))
+	api(project(":spring-boot-project:spring-boot"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-jpa"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
-	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesImplementation("org.springframework:spring-tx")
+
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.h2database:h2")
-	testRuntimeOnly("com.zaxxer:HikariCP")
 }

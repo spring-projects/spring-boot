@@ -18,9 +18,9 @@ package org.springframework.boot.jdbc.autoconfigure;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.sql.init.ApplicationScriptDatabaseInitializer;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.autoconfigure.init.ApplicationScriptDatabaseInitializer;
+import org.springframework.boot.sql.autoconfigure.init.SqlInitializationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**

@@ -214,6 +214,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-session-data-redis", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-session-hazelcast", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-session-jdbc", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-sql", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-thymeleaf", configuration: "configurationPropertiesMetadata"))
