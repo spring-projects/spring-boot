@@ -2048,6 +2048,7 @@ bom {
 				"spring-boot-session-data-redis",
 				"spring-boot-session-hazelcast",
 				"spring-boot-session-jdbc",
+				"spring-boot-sql",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",
 				"spring-boot-starter-actuator",
