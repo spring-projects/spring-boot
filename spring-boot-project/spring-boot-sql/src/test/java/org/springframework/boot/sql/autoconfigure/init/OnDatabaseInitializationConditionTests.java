@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sql.init;
+package org.springframework.boot.sql.autoconfigure.init;
 
 import org.junit.jupiter.api.Test;
 
