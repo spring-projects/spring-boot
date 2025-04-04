@@ -107,16 +107,31 @@ public @interface ServletRegistration {
 	MultipartConfigValues multipartConfig() default @MultipartConfigValues;
 
 	/**
-	 * Nested annotation that parallels the fields of {@link jakarta.servlet.annotation.MultipartConfig}.
+	 * Nested annotation that parallels the fields of
+	 * {@link jakarta.servlet.annotation.MultipartConfig}. Used within
+	 * {@link ServletRegistration#multipartConfig()}.
+	 * @see jakarta.servlet.annotation.MultipartConfig
 	 */
 	@Target({})
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface MultipartConfigValues {
 
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#location()
+		 */
 		String location() default "";
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#maxFileSize()
+		 */
 		long maxFileSize() default -1L;
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#maxRequestSize()
+		 */
 		long maxRequestSize() default -1L;
+		/**
+		 * @see jakarta.servlet.annotation.MultipartConfig#fileSizeThreshold()
+		 */
 		int fileSizeThreshold() default 0;
 
 	}
