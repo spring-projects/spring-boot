@@ -87,7 +87,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Cassandra using the deprecated
 	 * {@link org.testcontainers.containers.CassandraContainer}.
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CASSANDRA}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CASSANDRA}
 	 */
 	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
@@ -139,7 +139,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka using the
 	 * deprecated {@link org.testcontainers.containers.KafkaContainer}.
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CONFLUENT_KAFKA}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CONFLUENT_KAFKA}
 	 */
 	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)

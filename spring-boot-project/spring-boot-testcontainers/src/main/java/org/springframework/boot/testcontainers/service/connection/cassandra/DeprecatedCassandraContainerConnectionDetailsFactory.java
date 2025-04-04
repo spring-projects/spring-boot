@@ -35,7 +35,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
  * {@link CassandraContainerConnectionDetailsFactory}.
  */
 @Deprecated(since = "3.4.0", forRemoval = true)

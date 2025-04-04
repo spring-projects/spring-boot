@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * available
  *
  * @author Stephane Nicoll
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "reactor-netty-http-*.jar" })
 @SuppressWarnings("removal")

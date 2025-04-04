@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
- * @deprecated since 3.5.0 for removal in 3.7.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
 @ConfigurationProperties("management.signalfx.metrics.export")
 @Deprecated(since = "3.5.0", forRemoval = true)

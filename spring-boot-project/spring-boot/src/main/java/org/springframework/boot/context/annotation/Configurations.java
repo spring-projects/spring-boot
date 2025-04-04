@@ -104,7 +104,7 @@ public abstract class Configurations {
 	 * Sort configuration classes into the order that they should be applied.
 	 * @param classes the classes to sort
 	 * @return a sorted set of classes
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #Configurations(UnaryOperator, Collection, Function)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

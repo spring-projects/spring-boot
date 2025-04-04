@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @author Phillip Webb
  * @since 2.3.0
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
  * {@link ClientHttpConnectorBuilderCustomizer} or declaring a pre-configured
  * {@link ClientHttpConnectorBuilder} bean
  */

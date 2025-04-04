@@ -333,7 +333,7 @@ public class RestTemplateBuilder {
 	 * @param requestFactoryFunction the settings to request factory function
 	 * @return a new builder instance
 	 * @since 3.0.0
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)}
 	 * @see ClientHttpRequestFactoryBuilder
 	 * @see #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)
@@ -473,7 +473,7 @@ public class RestTemplateBuilder {
 	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance.
 	 * @since 2.1.0
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #connectTimeout(Duration)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
@@ -499,7 +499,7 @@ public class RestTemplateBuilder {
 	 * @param readTimeout the read timeout
 	 * @return a new builder instance.
 	 * @since 2.1.0
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #readTimeout(Duration)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
@@ -538,7 +538,7 @@ public class RestTemplateBuilder {
 	 * @param sslBundle the SSL bundle
 	 * @return a new builder instance
 	 * @since 3.1.0
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #sslBundle(SslBundle)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

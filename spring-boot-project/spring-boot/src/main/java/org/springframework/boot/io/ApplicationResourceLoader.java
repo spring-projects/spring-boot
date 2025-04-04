@@ -53,7 +53,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 
 	/**
 	 * Create a new {@code ApplicationResourceLoader}.
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #get()}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #get()}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	public ApplicationResourceLoader() {
@@ -65,7 +65,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @param classLoader the {@link ClassLoader} to load class path resources with, or
 	 * {@code null} for using the thread context class loader at the time of actual
 	 * resource access
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #get(ClassLoader)}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #get(ClassLoader)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	public ApplicationResourceLoader(ClassLoader classLoader) {

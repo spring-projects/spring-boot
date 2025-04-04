@@ -48,7 +48,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's support for
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of Spring Framework's support for
  * {@link MockitoBean} and {@link MockitoSpyBean}.
  */
 @SuppressWarnings("removal")

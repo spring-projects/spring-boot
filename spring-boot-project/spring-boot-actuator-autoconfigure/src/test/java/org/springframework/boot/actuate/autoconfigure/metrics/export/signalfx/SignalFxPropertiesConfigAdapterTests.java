@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SignalFxPropertiesConfigAdapter}.
  *
  * @author Mirko Sobeck
- * @deprecated since 3.5.0 for removal in 3.7.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.5.0", forRemoval = true)

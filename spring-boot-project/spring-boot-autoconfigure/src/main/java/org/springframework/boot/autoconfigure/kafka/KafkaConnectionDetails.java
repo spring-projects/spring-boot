@@ -94,7 +94,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the list of bootstrap servers used for consumers.
 	 * @return the list of bootstrap servers used for consumers
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of {@link #getConsumer()}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getConsumer()}
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	default List<String> getConsumerBootstrapServers() {
@@ -104,7 +104,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the list of bootstrap servers used for producers.
 	 * @return the list of bootstrap servers used for producers
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of {@link #getProducer()}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getProducer()}
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	default List<String> getProducerBootstrapServers() {
@@ -114,7 +114,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the list of bootstrap servers used for the admin.
 	 * @return the list of bootstrap servers used for the admin
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of {@link #getAdmin()}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getAdmin()}
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	default List<String> getAdminBootstrapServers() {
@@ -124,7 +124,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	/**
 	 * Returns the list of bootstrap servers used for Kafka Streams.
 	 * @return the list of bootstrap servers used for Kafka Streams
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of {@link #getStreams()}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getStreams()}
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	default List<String> getStreamsBootstrapServers() {

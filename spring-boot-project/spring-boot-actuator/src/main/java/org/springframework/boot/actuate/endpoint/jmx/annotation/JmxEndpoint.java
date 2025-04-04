@@ -51,7 +51,7 @@ public @interface JmxEndpoint {
 	/**
 	 * If the endpoint should be enabled or disabled by default.
 	 * @return {@code true} if the endpoint is enabled by default
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	@AliasFor(annotation = Endpoint.class)

@@ -41,7 +41,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @author Phillip Webb
  * @since 2.1.0
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
  * {@link org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration}
  * and to align with the deprecation of {@link ReactorNettyHttpClientMapper}
  */

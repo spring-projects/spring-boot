@@ -78,7 +78,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andreas Neiser
  * @since 1.4.0
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of Spring Framework's
  * {@link MockitoBean} and {@link MockitoSpyBean} support
  */
 @SuppressWarnings("removal")

@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Scott Frederick
- * @deprecated since 3.2.11 for removal in 3.6.0
+ * @deprecated since 3.2.11 for removal in 4.0.0
  */
 @ExtendWith(OutputCaptureExtension.class)
 @Deprecated(since = "3.2.11", forRemoval = true)

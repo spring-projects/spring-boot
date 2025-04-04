@@ -68,7 +68,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @param threadNamePrefix the prefix to use for the names of newly created threads
 	 * @param taskSchedulerCustomizers the customizers to apply to the
 	 * {@link ThreadPoolTaskScheduler}
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of the default constructor
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of the default constructor
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,

@@ -81,7 +81,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 	 * {@link DataSourceUnwrapper#unwrap unwrapped} to a {@link HikariDataSource}. If such
 	 * unwrapping is not possible, the lifecycle will have no effect.
 	 * @param dataSource the checkpoint-restore participant
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #HikariCheckpointRestoreLifecycle(DataSource, ConfigurableApplicationContext)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

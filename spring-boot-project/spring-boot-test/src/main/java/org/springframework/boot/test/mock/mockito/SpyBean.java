@@ -89,7 +89,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Phillip Webb
  * @since 1.4.0
  * @see MockitoPostProcessor
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
  * {@link org.springframework.test.context.bean.override.mockito.MockitoSpyBean}
  */
 @SuppressWarnings("removal")

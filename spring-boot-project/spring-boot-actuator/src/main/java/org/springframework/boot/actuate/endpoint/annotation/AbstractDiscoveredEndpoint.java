@@ -48,7 +48,7 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	 * @param id the ID of the endpoint
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #AbstractDiscoveredEndpoint(EndpointDiscoverer, Object, EndpointId, Access, Collection)}
 	 */
 	@SuppressWarnings("removal")

@@ -26,7 +26,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @since 2.1.8
- * @deprecated since 3.5.0 for removal in 3.8.0 along with {@link RequestMatcherProvider}
+ * @deprecated since 3.5.0 for removal in 4.0.0 along with {@link RequestMatcherProvider}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 @SuppressWarnings("removal")

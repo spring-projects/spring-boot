@@ -106,7 +106,7 @@ public class EntityManagerFactoryBuilder {
 	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
-	 * @deprecated since 3.4.4 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
 	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager)}
 	 */
 	@Deprecated(since = "3.4.4", forRemoval = true)
@@ -125,7 +125,7 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
 	 * fallback or {@code null}
 	 * @since 1.4.1
-	 * @deprecated since 3.4.4 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
 	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL)}
 	 */
 	@Deprecated(since = "3.4.4", forRemoval = true)

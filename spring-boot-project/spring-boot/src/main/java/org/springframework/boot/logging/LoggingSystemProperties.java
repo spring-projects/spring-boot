@@ -148,7 +148,7 @@ public class LoggingSystemProperties {
 	/**
 	 * Returns the default charset.
 	 * @return the default charset
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
 	 * {@link #getDefaultConsoleCharset()} and {@link #getDefaultFileCharset()}.
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
@@ -202,7 +202,7 @@ public class LoggingSystemProperties {
 		value = mapper.apply(value);
 		setSystemProperty(property.getEnvironmentVariableName(), value);
 		if (property == LoggingSystemProperty.APPLICATION_NAME && StringUtils.hasText(value)) {
-			// LOGGED_APPLICATION_NAME is deprecated for removal in 3.6.0
+			// LOGGED_APPLICATION_NAME is deprecated for removal in 4.0.0
 			setSystemProperty("LOGGED_APPLICATION_NAME", "[%s] ".formatted(value));
 		}
 	}

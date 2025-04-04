@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.4.0
  * @see ResetMocksTestExecutionListener
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
  * {@link org.springframework.test.context.bean.override.mockito.MockReset}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)

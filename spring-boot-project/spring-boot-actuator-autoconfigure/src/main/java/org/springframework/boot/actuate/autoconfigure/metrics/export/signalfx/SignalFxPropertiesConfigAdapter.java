@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  *
  * @author Jon Schneider
  * @since 2.0.0
- * @deprecated since 3.5.0 for removal in 3.7.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 @SuppressWarnings("removal")
