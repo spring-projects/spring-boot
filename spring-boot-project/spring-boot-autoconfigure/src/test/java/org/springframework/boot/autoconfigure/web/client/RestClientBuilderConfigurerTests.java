@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,19 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.client.RestClientCustomizer;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -32,23 +40,29 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  */
+@ExtendWith(MockitoExtension.class)
 class RestClientBuilderConfigurerTests {
 
-	@Test
-	void shouldApplyCustomizers() {
-		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
-		RestClientCustomizer customizer = mock(RestClientCustomizer.class);
-		configurer.setRestClientCustomizers(List.of(customizer));
-		RestClient.Builder builder = RestClient.builder();
-		configurer.configure(builder);
-		then(customizer).should().customize(builder);
-	}
+	@Mock
+	private ClientHttpRequestFactoryBuilder<ClientHttpRequestFactory> clientHttpRequestFactoryBuilder;
+
+	@Mock
+	private ClientHttpRequestFactory clientHttpRequestFactory;
 
 	@Test
-	void shouldSupportNullAsCustomizers() {
-		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
-		configurer.setRestClientCustomizers(null);
-		assertThatCode(() -> configurer.configure(RestClient.builder())).doesNotThrowAnyException();
+	void shouldConfigureRestClientBuilder() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(mock(SslBundle.class));
+		RestClientCustomizer customizer = mock(RestClientCustomizer.class);
+		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);
+		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer(this.clientHttpRequestFactoryBuilder,
+				settings, List.of(customizer, customizer1));
+		given(this.clientHttpRequestFactoryBuilder.build(settings)).willReturn(this.clientHttpRequestFactory);
+
+		RestClient.Builder builder = RestClient.builder();
+		configurer.configure(builder);
+		assertThat(builder.build()).hasFieldOrPropertyWithValue("clientRequestFactory", this.clientHttpRequestFactory);
+		then(customizer).should().customize(builder);
+		then(customizer1).should().customize(builder);
 	}
 
 }
