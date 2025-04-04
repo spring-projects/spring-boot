@@ -41,7 +41,7 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 	 * @param id the endpoint id
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #AbstractExposableEndpoint(EndpointId, Access, Collection)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

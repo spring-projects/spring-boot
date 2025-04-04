@@ -67,7 +67,7 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #WebEndpointDiscoverer(ApplicationContext, ParameterValueMapper, EndpointMediaTypes, List, List, Collection, Collection, Collection)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

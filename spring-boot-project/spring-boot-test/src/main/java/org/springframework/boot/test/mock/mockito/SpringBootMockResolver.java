@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @since 2.4.0
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of Spring Framework's
  * {@link MockitoBean} and {@link MockitoSpyBean}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)

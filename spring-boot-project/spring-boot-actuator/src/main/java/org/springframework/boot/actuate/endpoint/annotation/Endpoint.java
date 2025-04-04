@@ -66,7 +66,7 @@ public @interface Endpoint {
 	/**
 	 * If the endpoint should be enabled or disabled by default.
 	 * @return {@code true} if the endpoint is enabled by default
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #defaultAccess()}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #defaultAccess()}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	boolean enableByDefault() default true;

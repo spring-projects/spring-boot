@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/5724">gh-5724</a>
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

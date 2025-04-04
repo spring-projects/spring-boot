@@ -155,7 +155,7 @@ public class ResourceBanner implements Banner {
 	 * Returns the application version.
 	 * @param sourceClass the source class
 	 * @return the application version or {@code null} if unknown
-	 * @deprecated since 3.4.0 for removal in 3.6.0
+	 * @deprecated since 3.4.0 for removal in 4.0.0
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	protected String getApplicationVersion(Class<?> sourceClass) {

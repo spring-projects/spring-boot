@@ -630,7 +630,7 @@ public class SpringApplication {
 	 * Called to log startup information, subclasses may override to add additional
 	 * logging.
 	 * @param isRoot true if this application is the root of a context hierarchy
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #logStartupInfo(ConfigurableApplicationContext)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

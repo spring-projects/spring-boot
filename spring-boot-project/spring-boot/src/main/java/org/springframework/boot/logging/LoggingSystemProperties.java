@@ -164,7 +164,7 @@ public class LoggingSystemProperties {
 		value = mapper.apply(value);
 		setSystemProperty(property.getEnvironmentVariableName(), value);
 		if (property == LoggingSystemProperty.APPLICATION_NAME && StringUtils.hasText(value)) {
-			// LOGGED_APPLICATION_NAME is deprecated for removal in 3.6.0
+			// LOGGED_APPLICATION_NAME is deprecated for removal in 4.0.0
 			setSystemProperty("LOGGED_APPLICATION_NAME", "[%s] ".formatted(value));
 		}
 	}

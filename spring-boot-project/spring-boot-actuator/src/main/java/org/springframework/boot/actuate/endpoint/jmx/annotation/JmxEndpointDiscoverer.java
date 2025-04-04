@@ -54,7 +54,7 @@ public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoi
 	 * @param parameterValueMapper the parameter value mapper
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param endpointFilters endpoint filters to apply
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #JmxEndpointDiscoverer(ApplicationContext, ParameterValueMapper, Collection, Collection, Collection)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

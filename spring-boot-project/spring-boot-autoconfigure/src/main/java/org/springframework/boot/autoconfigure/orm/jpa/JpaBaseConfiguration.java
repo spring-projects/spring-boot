@@ -159,7 +159,7 @@ public abstract class JpaBaseConfiguration {
 	/**
 	 * Return the vendor-specific properties.
 	 * @return the vendor properties
-	 * @deprecated since 3.4.4 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
 	 * {@link #getVendorProperties(DataSource)}
 	 */
 	@Deprecated(since = "3.4.4", forRemoval = true)
