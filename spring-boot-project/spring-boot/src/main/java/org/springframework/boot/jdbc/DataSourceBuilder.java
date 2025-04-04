@@ -190,7 +190,10 @@ public final class DataSourceBuilder<T extends DataSource> {
 				&& this.values.containsKey(DataSourceProperty.URL)) {
 			String url = this.values.get(DataSourceProperty.URL);
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
-			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
+			String driverClassName = driver.getDriverClassName();
+			if (driverClassName != null) {
+				properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
+			}
 		}
 		return dataSource;
 	}
