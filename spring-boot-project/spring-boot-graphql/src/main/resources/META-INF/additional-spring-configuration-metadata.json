@@ -1,0 +1,13 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.graphql.schema.file-extensions",
+      "defaultValue": ".graphqls,.gqls"
+    },
+    {
+      "name": "spring.graphql.schema.locations",
+      "defaultValue": "classpath:graphql/**/"
+    }
+  ]
+}

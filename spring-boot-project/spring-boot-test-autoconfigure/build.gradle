@@ -57,6 +57,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-data-web"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
+	optional(project(":spring-boot-project:spring-boot-graphql"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
 	optional(project(":spring-boot-project:spring-boot-hateoas"))
 	optional(project(":spring-boot-project:spring-boot-http"))

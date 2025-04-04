@@ -20,14 +20,6 @@
       "defaultValue": true
     },
     {
-      "name": "spring.graphql.schema.file-extensions",
-      "defaultValue": ".graphqls,.gqls"
-    },
-    {
-      "name": "spring.graphql.schema.locations",
-      "defaultValue": "classpath:graphql/**/"
-    },
-    {
       "name": "spring.http.encoding.charset",
       "type": "java.nio.charset.Charset",
       "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",

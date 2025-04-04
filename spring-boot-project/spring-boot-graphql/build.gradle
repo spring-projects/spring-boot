@@ -1,0 +1,40 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot GraphQL"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework.graphql:spring-graphql")
+
+	implementation(project(":spring-boot-project:spring-boot-jackson"))
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-http"))
+	optional(project(":spring-boot-project:spring-boot-rsocket"))
+	optional(project(":spring-boot-project:spring-boot-security"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional("com.querydsl:querydsl-core")
+	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("io.rsocket:rsocket-transport-netty")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("jakarta.websocket:jakarta.websocket-api")
+	optional("jakarta.websocket:jakarta.websocket-client-api")
+	optional("org.springframework:spring-websocket")
+	optional("org.springframework.data:spring-data-commons")
+
+	testImplementation(project(":spring-boot-project:spring-boot-http-codec"))
+	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.springframework.graphql:spring-graphql-test")
+	testImplementation("org.springframework.security:spring-security-test")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
+import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
