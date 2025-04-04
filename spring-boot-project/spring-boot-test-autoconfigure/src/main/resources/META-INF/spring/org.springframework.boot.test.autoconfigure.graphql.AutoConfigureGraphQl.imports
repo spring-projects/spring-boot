@@ -1,4 +1,4 @@
 # AutoConfigureGraphQl auto-configuration imports
 optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
-org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
+org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration

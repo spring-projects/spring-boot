@@ -21,7 +21,7 @@ plugins {
 description = "Starter for building GraphQL applications with Spring GraphQL"
 
 dependencies {
+	api(project(":spring-boot-project:spring-boot-graphql"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-json"))
-	api("org.springframework.graphql:spring-graphql")
 }
