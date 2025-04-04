@@ -522,6 +522,15 @@ class DataSourceBuilderTests {
 		assertThat(viburDataSource.getDriverClassName()).isEqualTo("com.example.Driver");
 	}
 
+	@Test
+	void buildWhenJdbcUrlIsFromUnknownDriverLeavesDriverClassNameUnset() {
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:example://localhost:1234/example")
+			.type(HikariDataSource.class)
+			.build();
+		assertThat(((HikariDataSource) this.dataSource).getDriverClassName()).isNull();
+	}
+
 	private DataSource wrap(DataSource target) {
 		return new DataSourceWrapper(target);
 	}
