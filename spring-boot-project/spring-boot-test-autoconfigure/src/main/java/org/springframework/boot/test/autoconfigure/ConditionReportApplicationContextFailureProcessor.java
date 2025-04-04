@@ -29,7 +29,7 @@ import org.springframework.test.context.ApplicationContextFailureProcessor;
  * @author Phillip Webb
  * @author Scott Frederick
  * @since 3.0.0
- * @deprecated in 3.2.11 for removal in 3.6.0
+ * @deprecated in 3.2.11 for removal in 4.0.0
  */
 @Deprecated(since = "3.2.11", forRemoval = true)
 public class ConditionReportApplicationContextFailureProcessor implements ApplicationContextFailureProcessor {
