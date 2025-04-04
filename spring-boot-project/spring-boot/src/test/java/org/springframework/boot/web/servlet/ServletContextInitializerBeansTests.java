@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Dmytro Danilenkov
  */
 class ServletContextInitializerBeansTests {
 
@@ -178,6 +179,55 @@ class ServletContextInitializerBeansTests {
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
 	}
+
+	@Test
+	void shouldApplyExtendedServletRegistrationAnnotation() {
+		load(ServletConfigurationWithExtendedAttributes.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+
+		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extended");
+
+		assertThat(bean.getServletName()).isEqualTo("extended");
+		assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
+
+		assertThat(bean.getInitParameters()).containsEntry("hello", "world")
+				.containsEntry("flag", "true");
+
+		assertThat(bean.getMultipartConfig()).isNotNull();
+		assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+		assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+		assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+		assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
+	}
+
+	@Test
+	void shouldApplyServletRegistrationAnnotationWithExtraRegistrationBeans() {
+		load(ServletConfigurationWithExtendedAttributes.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+
+		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extendedWithExtraBeans");
+		assertThat(bean).as("extendedWithExtraBeans registration bean").isNotNull();
+
+		assertThat(bean.getServletName()).isEqualTo("extendedWithExtraBeans");
+		assertThat(bean.getUrlMappings()).containsExactly("/extra/*");
+
+		assertThat(bean.getInitParameters()).containsEntry("extra", "fromExtraBean");
+	}
+
+	@SuppressWarnings("rawtypes")
+	private ServletRegistrationBean findServletRegistrationBeanByName(
+			ServletContextInitializerBeans initializerBeans, String servletName) {
+
+		return initializerBeans.stream()
+				.filter(ServletRegistrationBean.class::isInstance)
+				.map(ServletRegistrationBean.class::cast)
+				.filter((registrationBean) -> servletName.equals(registrationBean.getServletName()))
+				.findFirst()
+				.orElse(null);
+	}
+
 
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
@@ -384,5 +434,51 @@ class ServletContextInitializerBeansTests {
 		}
 
 	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServletConfigurationWithExtendedAttributes {
+
+		@Bean
+		@ServletRegistration(
+				name = "extended",
+				urlMappings = "/extended/*",
+				initParameters = { "hello=world", "flag=true" },
+				multipartConfig = @ServletRegistration.MultipartConfigValues(
+						location = "/tmp",
+						maxFileSize = 1024,
+						maxRequestSize = 4096,
+						fileSizeThreshold = 128
+				)
+		)
+		TestServlet testServletWithInitParametersAndMultipart() {
+			return new TestServlet();
+		}
+
+		@Bean
+		MyExtraServletRegistrationBean myExtraServletRegistrationBean() {
+			MyExtraServletRegistrationBean bean = new MyExtraServletRegistrationBean();
+			bean.addInitParameter("extra", "fromExtraBean");
+			return bean;
+		}
+
+		@Bean
+		@ServletRegistration(
+				name = "extendedWithExtraBeans",
+				urlMappings = "/extra/*",
+				servletRegistrationBeans = { MyExtraServletRegistrationBean.class }
+		)
+		TestServlet testServletWithExtraBean() {
+			return new TestServlet();
+		}
+
+		static class MyExtraServletRegistrationBean extends ServletRegistrationBean<HttpServlet> {
+
+			MyExtraServletRegistrationBean() {
+				super();
+			}
+
+		}
+	}
+
 
 }
