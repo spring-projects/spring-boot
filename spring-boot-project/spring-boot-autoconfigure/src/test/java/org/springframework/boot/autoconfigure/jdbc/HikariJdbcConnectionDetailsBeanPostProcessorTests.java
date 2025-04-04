@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HikariJdbcConnectionDetailsBeanPostProcessor}.
@@ -45,6 +46,15 @@ class HikariJdbcConnectionDetailsBeanPostProcessorTests {
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
 		assertThat(dataSource.getPassword()).isEqualTo("password-1");
 		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+	}
+
+	@Test
+	void toleratesConnectionDetailsWithNullDriverClassName() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setDriverClassName(DatabaseDriver.H2.getDriverClassName());
+		JdbcConnectionDetails connectionDetails = mock(JdbcConnectionDetails.class);
+		new HikariJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource, connectionDetails);
+		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.H2.getDriverClassName());
 	}
 
 }
