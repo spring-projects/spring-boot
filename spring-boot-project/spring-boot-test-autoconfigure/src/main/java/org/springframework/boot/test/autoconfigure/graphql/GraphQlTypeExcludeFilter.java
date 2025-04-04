@@ -23,8 +23,8 @@ import java.util.Set;
 
 import graphql.execution.instrumentation.Instrumentation;
 
-import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.core.convert.converter.Converter;
