@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -26,6 +28,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -168,6 +172,39 @@ class RestClientAutoConfigurationTests {
 				RestClient restClient = context.getBean(RestClient.class);
 				assertThat(restClient).extracting("clientRequestFactory")
 					.isInstanceOf(SimpleClientHttpRequestFactory.class);
+			});
+	}
+
+	@Test
+	void whenReactiveWebApplicationRestClientIsNotConfigured() {
+		new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).doesNotHaveBean(RestClientBuilderConfigurer.class);
+				assertThat(context).doesNotHaveBean(RestClient.Builder.class);
+			});
+	}
+
+	@Test
+	void whenServletWebApplicationRestClientIsConfigured() {
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
+				assertThat(context).hasSingleBean(RestClient.Builder.class);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsAreEnabledOnJava21AndLaterRestClientIsConfigured() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
+				assertThat(context).hasSingleBean(RestClient.Builder.class);
 			});
 	}
 
