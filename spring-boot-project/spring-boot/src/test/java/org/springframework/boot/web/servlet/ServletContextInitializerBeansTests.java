@@ -23,6 +23,7 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpSessionIdListener;
 import org.assertj.core.api.ThrowingConsumer;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  */
 class ServletContextInitializerBeansTests {
 
@@ -136,6 +138,9 @@ class ServletContextInitializerBeansTests {
 			assertThat(filterRegistrationBean.getServletNames()).containsExactly("test");
 			assertThat(filterRegistrationBean.determineDispatcherTypes()).containsExactly(DispatcherType.ERROR);
 			assertThat(filterRegistrationBean.getUrlPatterns()).containsExactly("/test/*");
+			assertThat(filterRegistrationBean.getInitParameters()).containsEntry("env", "test")
+				.containsEntry("debug", "true");
+
 		});
 	}
 
@@ -177,6 +182,25 @@ class ServletContextInitializerBeansTests {
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
+	}
+
+	@Test
+	void shouldApplyServletRegistrationBeansInFilterRegistration() {
+		load(FilterWithServletRegistrationBeansConfiguration.class);
+
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+
+		FilterRegistrationBean<?> frb = initializerBeans.stream()
+			.filter(FilterRegistrationBean.class::isInstance)
+			.map(FilterRegistrationBean.class::cast)
+			.filter((f) -> "testFilter".equals(f.getFilterName()))
+			.findFirst()
+			.orElseThrow();
+
+		assertThat(frb.getServletRegistrationBeans()).hasSize(1);
+		assertThat(frb.getServletRegistrationBeans().iterator().next().getServletName())
+			.isEqualTo("testServletRegistrationBean");
 	}
 
 	private void load(Class<?>... configuration) {
@@ -280,7 +304,24 @@ class ServletContextInitializerBeansTests {
 		@Bean
 		@FilterRegistration(enabled = false, name = "test", asyncSupported = false,
 				dispatcherTypes = DispatcherType.ERROR, matchAfter = true, servletNames = "test",
-				urlPatterns = "/test/*")
+				urlPatterns = "/test/*", initParameters = { @WebInitParam(name = "env", value = "test"),
+						@WebInitParam(name = "debug", value = "true") })
+		TestFilter testFilter() {
+			return new TestFilter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FilterWithServletRegistrationBeansConfiguration {
+
+		@Bean
+		ServletRegistrationBean<TestServlet> testServletRegistrationBean() {
+			return new ServletRegistrationBean<>(new TestServlet(), "/test");
+		}
+
+		@Bean
+		@FilterRegistration(name = "testFilter", servletRegistrationBeans = TestServlet.class)
 		TestFilter testFilter() {
 			return new TestFilter();
 		}

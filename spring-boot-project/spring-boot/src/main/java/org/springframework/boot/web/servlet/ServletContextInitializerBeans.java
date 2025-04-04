@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.WebInitParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -368,6 +369,21 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			}
 			if (registration.urlPatterns().length > 0) {
 				bean.setUrlPatterns(Arrays.asList(registration.urlPatterns()));
+			}
+			for (WebInitParam param : registration.initParameters()) {
+				bean.addInitParameter(param.name(), param.value());
+			}
+
+			@SuppressWarnings("unchecked")
+			Map<String, ServletRegistrationBean<?>> servletRegistrationBeans = (Map<String, ServletRegistrationBean<?>>) (Map<?, ?>) this.beanFactory
+				.getBeansOfType(ServletRegistrationBean.class);
+
+			for (Class<?> servletClass : registration.servletRegistrationBeans()) {
+				for (ServletRegistrationBean<?> registrationBean : servletRegistrationBeans.values()) {
+					if (servletClass.isInstance(registrationBean.getServlet())) {
+						bean.addServletRegistrationBeans(registrationBean);
+					}
+				}
 			}
 		}
 
