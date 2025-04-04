@@ -321,9 +321,52 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			if (registration.urlMappings().length > 0) {
 				bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
 			}
+
+			if (registration.initParameters().length > 0) {
+				bean.setInitParameters(parseInitParameters(registration.initParameters()));
+			}
+
+			ServletRegistration.MultipartConfigValues multipart = registration.multipartConfig();
+			boolean isMultipartConfigUsed = !(multipart.location().isEmpty()
+					&& multipart.maxFileSize() == -1L
+					&& multipart.maxRequestSize() == -1L
+					&& multipart.fileSizeThreshold() == 0);
+			if (isMultipartConfigUsed) {
+				bean.setMultipartConfig(new MultipartConfigElement(
+						multipart.location(),
+						multipart.maxFileSize(),
+						multipart.maxRequestSize(),
+						multipart.fileSizeThreshold()
+				));
+			}
+
+			for (Class<? extends ServletRegistrationBean<?>> beanClass : registration.servletRegistrationBeans()) {
+				ServletRegistrationBean<?> extraBean = this.beanFactory.getBean(beanClass);
+				bean.getInitParameters().putAll(extraBean.getInitParameters());
+			}
+
+		}
+
+		private Map<String, String> parseInitParameters(String[] initParamsArray) {
+			Map<String, String> initParams = new LinkedHashMap<>();
+			for (String kv : initParamsArray) {
+				int index = kv.indexOf('=');
+				if (index != -1) {
+					String key = kv.substring(0, index).trim();
+					String value = kv.substring(index + 1).trim();
+					initParams.put(key, value);
+				}
+				else {
+					throw new IllegalArgumentException(
+							"initParameters must be in 'key=value' format, got: " + kv);
+				}
+			}
+			return initParams;
 		}
 
 	}
+
+
 
 	/**
 	 * {@link RegistrationBeanAdapter} for {@link Filter} beans.

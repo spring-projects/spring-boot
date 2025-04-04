@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebInitParam;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AliasFor;
@@ -87,4 +89,35 @@ public @interface ServletRegistration {
 	 */
 	int loadOnStartup() default -1;
 
+	/**
+	 * Init parameters to set on the servlet, as {@code "key=value"} pairs.
+	 */
+	String[] initParameters() default {};
+
+	/**
+	 * (Optional) Additional servlet-registration beans to apply.
+	 * Usually left empty unless you need custom bean logic.
+	 */
+	Class<? extends ServletRegistrationBean<?>>[] servletRegistrationBeans() default {};
+
+	/**
+	 * Multi-part configuration. Mirrors {@link jakarta.servlet.annotation.MultipartConfig}.
+	 * If you omit it (no fields changed), it will not set a multipart config.
+	 */
+	MultipartConfigValues multipartConfig() default @MultipartConfigValues;
+
+	/**
+	 * Nested annotation that parallels the fields of {@link jakarta.servlet.annotation.MultipartConfig}.
+	 */
+	@Target({})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface MultipartConfigValues {
+
+		String location() default "";
+		long maxFileSize() default -1L;
+		long maxRequestSize() default -1L;
+		int fileSizeThreshold() default 0;
+
+	}
 }

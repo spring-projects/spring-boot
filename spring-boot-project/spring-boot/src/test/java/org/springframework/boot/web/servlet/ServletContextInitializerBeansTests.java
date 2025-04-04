@@ -179,6 +179,73 @@ class ServletContextInitializerBeansTests {
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void shouldApplyExtendedServletRegistrationAnnotation() {
+		load(ServletConfigurationWithExtendedAttributes.class);
+		// Grab all initializers in the context, including beans that are adapted from @ServletRegistration
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+
+		// We expect two registrations in this config: 'testServletWithInitParametersAndMultipart'
+		// and 'testServletWithExtraBean'. So let's filter them individually or pick the one we want to assert.
+
+		// 1) Check the one with initParameters + multipartConfig
+		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extended");
+		assertThat(bean).as("extended servlet registration bean").isNotNull();
+
+		// Verify that the standard attributes were applied
+		assertThat(bean.getServletName()).isEqualTo("extended");
+		assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
+
+		// Verify our new initParameters
+		assertThat(bean.getInitParameters()).containsEntry("hello", "world")
+				.containsEntry("flag", "true");
+
+		// Verify multi-part config
+		assertThat(bean.getMultipartConfig()).isNotNull();
+		assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+		assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+		assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+		assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void shouldApplyServletRegistrationAnnotationWithExtraRegistrationBeans() {
+		load(ServletConfigurationWithExtendedAttributes.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+
+		// 2) Check the one referencing 'servletRegistrationBeans'
+		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extendedWithExtraBeans");
+		assertThat(bean).as("extendedWithExtraBeans registration bean").isNotNull();
+
+		// Confirm standard attributes
+		assertThat(bean.getServletName()).isEqualTo("extendedWithExtraBeans");
+		assertThat(bean.getUrlMappings()).containsExactly("/extra/*");
+
+		// Confirm that the extra init param from MyExtraServletRegistrationBean was merged
+		assertThat(bean.getInitParameters()).containsEntry("extra", "fromExtraBean");
+	}
+
+	/**
+	 * Simple helper method to locate a specific ServletRegistrationBean by its name
+	 * from the given ServletContextInitializerBeans collection.
+	 */
+	@SuppressWarnings("rawtypes")
+	private ServletRegistrationBean findServletRegistrationBeanByName(
+			ServletContextInitializerBeans initializerBeans, String servletName) {
+
+		return initializerBeans.stream()
+				.filter(ServletRegistrationBean.class::isInstance)
+				.map(ServletRegistrationBean.class::cast)
+				.filter((registrationBean) -> servletName.equals(registrationBean.getServletName()))
+				.findFirst()
+				.orElse(null);
+	}
+
+
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
@@ -384,5 +451,51 @@ class ServletContextInitializerBeansTests {
 		}
 
 	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServletConfigurationWithExtendedAttributes {
+
+		@Bean
+		@ServletRegistration(
+				name = "extended",
+				urlMappings = "/extended/*",
+				initParameters = { "hello=world", "flag=true" },
+				multipartConfig = @ServletRegistration.MultipartConfigValues(
+						location = "/tmp",
+						maxFileSize = 1024,
+						maxRequestSize = 4096,
+						fileSizeThreshold = 128
+				)
+		)
+		TestServlet testServletWithInitParametersAndMultipart() {
+			return new TestServlet();
+		}
+
+		@Bean
+		MyExtraServletRegistrationBean myExtraServletRegistrationBean() {
+			MyExtraServletRegistrationBean bean = new MyExtraServletRegistrationBean();
+			bean.addInitParameter("extra", "fromExtraBean");
+			return bean;
+		}
+
+		@Bean
+		@ServletRegistration(
+				name = "extendedWithExtraBeans",
+				urlMappings = "/extra/*",
+				servletRegistrationBeans = { MyExtraServletRegistrationBean.class }
+		)
+		TestServlet testServletWithExtraBean() {
+			return new TestServlet();
+		}
+
+		static class MyExtraServletRegistrationBean extends ServletRegistrationBean<HttpServlet> {
+
+			MyExtraServletRegistrationBean() {
+				super();
+			}
+
+		}
+	}
+
 
 }
