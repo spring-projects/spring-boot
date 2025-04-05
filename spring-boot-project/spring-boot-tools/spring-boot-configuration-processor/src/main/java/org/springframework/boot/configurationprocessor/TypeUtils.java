@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -135,7 +134,7 @@ class TypeUtils {
 		if (type == null) {
 			return null;
 		}
-		return type.accept(this.typeExtractor, createTypeDescriptor(element));
+		return type.accept(this.typeExtractor, resolveTypeDescriptor(element));
 	}
 
 	/**
@@ -394,35 +393,27 @@ class TypeUtils {
 
 		private final Map<TypeVariable, TypeMirror> generics = new HashMap<>();
 
-		Map<TypeVariable, TypeMirror> getGenerics() {
-			return Collections.unmodifiableMap(this.generics);
-		}
-
 		TypeMirror resolveGeneric(TypeVariable typeVariable) {
-			return resolveGeneric(getParameterName(typeVariable));
-		}
-
-		TypeMirror resolveGeneric(String parameterName) {
-			return this.generics.entrySet()
-				.stream()
-				.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
-				.findFirst()
-				.map(Entry::getValue)
-				.orElse(null);
+			if (this.generics.containsKey(typeVariable)) {
+				TypeMirror resolvedType = this.generics.get(typeVariable);
+				// Unresolved <T> -> <T>
+				if (resolvedType == typeVariable) {
+					return resolvedType;
+				}
+				// <T> -> <T1> -> <T2>
+				if (resolvedType instanceof TypeVariable) {
+					return resolveGeneric((TypeVariable) resolvedType);
+				}
+				// Resolved e.g. java.lang.String
+				return resolvedType;
+			}
+			return null;
 		}
 
 		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
 			if (variable instanceof TypeVariable typeVariable) {
-				if (this.generics.keySet()
-					.stream()
-					.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
-					this.generics.put(typeVariable, resolution);
-				}
+				this.generics.put(typeVariable, resolution);
 			}
-		}
-
-		private String getParameterName(TypeVariable typeVariable) {
-			return typeVariable.asElement().getSimpleName().toString();
 		}
 
 	}
