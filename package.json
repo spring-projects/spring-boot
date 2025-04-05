@@ -1,7 +1,11 @@
 {
     "name": "spring-boot",
+    "scripts": {
+        "postinstall": "node patch.js",
+        "postci": "node patch.js"
+    },
     "dependencies": {
-        "nx": "0.0.0-pr-30457-c176147",
-        "@nx/gradle": "0.0.0-pr-30457-c176147"
+        "@nx/gradle": "0.0.0-pr-30457-7dd593d",
+        "nx": "0.0.0-pr-30457-7dd593d"
     }
 }

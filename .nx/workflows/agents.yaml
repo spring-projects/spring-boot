@@ -34,3 +34,9 @@ launch-templates:
           base-branch: 'main'
       - name: Install Node Modules
         uses: 'nrwl/nx-cloud-workflows/v4/workflow-steps/install-node-modules/main.yaml'
+
+      - name: postinstall
+        script: |
+          if [ -f package.json ]; then
+            npm run postinstall || yarn postinstall || pnpm postinstall
+          fi
