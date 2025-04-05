@@ -90,7 +90,7 @@ ext {
 	xsdVersion = versionElements[0] + "." + versionElements[1]
 }
 
-task copySettingsXml(type: Copy) {
+tasks.register("copySettingsXml", Copy) {
 	from file("src/intTest/projects/settings.xml")
 	into layout.buildDirectory.dir("generated-resources/settings")
 	filter(springRepositoryTransformers.mavenSettings())
@@ -121,7 +121,7 @@ javadoc {
 	}
 }
 
-task xsdResources(type: Sync) {
+tasks.register("xsdResources", Sync) {
 	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
 	into layout.buildDirectory.dir("generated/resources/xsd/org/springframework/boot/maven")
 	rename { fileName -> "layers.xsd" }

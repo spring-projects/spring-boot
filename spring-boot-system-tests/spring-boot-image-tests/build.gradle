@@ -12,7 +12,7 @@ configurations {
 	}
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
 	into layout.buildDirectory.dir("system-test-maven-repository")
 }

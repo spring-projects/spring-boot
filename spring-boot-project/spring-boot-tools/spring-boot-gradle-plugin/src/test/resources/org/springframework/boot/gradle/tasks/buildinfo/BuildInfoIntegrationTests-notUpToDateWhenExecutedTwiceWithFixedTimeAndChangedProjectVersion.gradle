@@ -4,7 +4,7 @@ plugins {
 
 version = '{projectVersion}'
 
-task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
+tasks.register("buildInfo", org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
 	excludes = ["time"]
 	properties {
 		artifact = 'example'
