@@ -46,7 +46,7 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 }
 
-task fullJar(type: Jar) {
+tasks.register("fullJar", Jar) {
 	dependsOn configurations.loader
 	archiveClassifier = "full"
 	entryCompression = "stored"
@@ -89,7 +89,7 @@ def configureArchive(archive) {
 	}
 }
 
-task zip(type: Zip) {
+tasks.register("zip", Zip) {
 	archiveClassifier = "bin"
 	configureArchive it
 }
@@ -98,14 +98,14 @@ intTest {
 	dependsOn zip
 }
 
-task tar(type: Tar) {
+tasks.register("tar", Tar) {
 	compression = "gzip"
 	archiveExtension = "tar.gz"
 	configureArchive it
 }
 
 if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
-	task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
+	tasks.register("homebrewFormula", org.springframework.boot.build.cli.HomebrewFormula) {
 		dependsOn tar
 		outputDir = layout.buildDirectory.dir("homebrew")
 		template = file("src/main/homebrew/spring-boot.rb")

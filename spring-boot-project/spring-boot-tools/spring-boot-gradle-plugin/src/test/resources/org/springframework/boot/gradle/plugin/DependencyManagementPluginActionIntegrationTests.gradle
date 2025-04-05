@@ -22,7 +22,7 @@ repositories {
 	}
 }
 
-task doesNotHaveDependencyManagement {
+tasks.register("doesNotHaveDependencyManagement") {
 	def extensions = project.extensions
 	doLast {
 		if (extensions.findByName('dependencyManagement') != null) {
@@ -31,7 +31,7 @@ task doesNotHaveDependencyManagement {
 	}
 }
 
-task hasDependencyManagement {
+tasks.register("hasDependencyManagement") {
 	doLast {
 		if (!dependencyManagement.managedVersions) {
 			throw new GradleException('No managed versions have been configured')

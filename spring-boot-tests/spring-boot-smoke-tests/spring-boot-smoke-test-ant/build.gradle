@@ -40,7 +40,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-task syncTestRepository(type: Sync) {
+tasks.register("syncTestRepository", Sync) {
 	destinationDir = file(layout.buildDirectory.dir("test-repository"))
 	from configurations.testRepository
 	rename {
@@ -48,14 +48,14 @@ task syncTestRepository(type: Sync) {
 	}
 }
 
-task syncAntSources(type: Sync) {
+tasks.register("syncAntSources", Sync) {
 	destinationDir = file(layout.buildDirectory.dir("ant"))
 	from project.layout.projectDirectory
 	include "*.xml"
 	filter(springRepositoryTransformers.ant())
 }
 
-task antRun(type: JavaExec) {
+tasks.register("antRun", JavaExec) {
 	workingDir = layout.buildDirectory.dir("ant")
 	dependsOn syncTestRepository, syncAntSources, configurations.antDependencies
 	classpath = configurations.antDependencies;
@@ -67,7 +67,7 @@ task antRun(type: JavaExec) {
 	]
 }
 
-task test(type: Test) {
+tasks.register("test", Test) {
 	dependsOn antRun
 	testClassesDirs = sourceSets.test.output.classesDirs
 	classpath = sourceSets.test.runtimeClasspath

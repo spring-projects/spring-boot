@@ -83,7 +83,7 @@ dependencies {
 	testRuntimeOnly("io.r2dbc:r2dbc-h2")
 }
 
-task syncIntTestDependencies(type: Sync) {
+tasks.register("syncIntTestDependencies", Sync) {
 	destinationDir = file(layout.buildDirectory.dir("dependencies"))
 	from {
 		configurations.intTestDependencies

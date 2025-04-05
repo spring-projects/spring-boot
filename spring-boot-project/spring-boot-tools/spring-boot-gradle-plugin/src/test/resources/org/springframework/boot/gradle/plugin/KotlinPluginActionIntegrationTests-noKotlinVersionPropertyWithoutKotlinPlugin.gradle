@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-task kotlinVersion {
+tasks.register("kotlinVersion") {
 	def properties = project.properties
 	doLast {
 		def kotlinVersion = properties.getOrDefault('kotlin.version', 'none')

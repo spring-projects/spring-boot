@@ -25,7 +25,7 @@ dependencies {
 	implementation("org.springframework:spring-core")
 }
 
-task syncIntegrationTestSources(type: Sync) {
+tasks.register("syncIntegrationTestSources", Sync) {
 	destinationDir = file(layout.buildDirectory.dir("it"))
 	from file("src/it")
 	filter(springRepositoryTransformers.ant())
@@ -39,7 +39,7 @@ processResources {
 	inputs.property "version", version
 }
 
-task integrationTest {
+tasks.register("integrationTest") {
 	dependsOn syncIntegrationTestSources, jar
 	def resultsDir = file(layout.buildDirectory.dir("test-results/integrationTest"))
 	inputs.dir(file("src/it")).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("source")

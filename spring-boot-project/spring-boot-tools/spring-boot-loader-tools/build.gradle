@@ -39,7 +39,7 @@ dependencies {
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
-task reproducibleLoaderJar(type: Jar) {
+tasks.register("reproducibleLoaderJar", Jar) {
 	dependsOn configurations.loader
 	from {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
@@ -54,7 +54,7 @@ task reproducibleLoaderJar(type: Jar) {
 	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
 }
 
-task reproducibleLoaderClassicJar(type: Jar) {
+tasks.register("reproducibleLoaderClassicJar", Jar) {
 	dependsOn configurations.loaderClassic
 	from {
 		zipTree(configurations.loaderClassic.incoming.files.singleFile).matching {
@@ -69,7 +69,7 @@ task reproducibleLoaderClassicJar(type: Jar) {
 	destinationDirectory = file(generatedResources.map { it.dir("META-INF/loader") })
 }
 
-task toolsJar(type: Sync) {
+tasks.register("toolsJar", Sync) {
 	dependsOn configurations.jarmode
 	from {
 		file(configurations.jarmode.incoming.files.singleFile)
