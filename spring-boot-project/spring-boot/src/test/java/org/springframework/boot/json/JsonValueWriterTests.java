@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.json;
 
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -238,6 +239,18 @@ class JsonValueWriterTests {
 	void endWhenNotStartedThrowsException() {
 		doWrite((valueWriter) -> assertThatExceptionOfType(NoSuchElementException.class)
 			.isThrownBy(() -> valueWriter.end(Series.ARRAY)));
+	}
+
+	// https://github.com/spring-projects/spring-boot/issues/44502
+	@Test
+	void writeJavaNioPathWhenSingleElementShouldBeSerializedAsString() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("overflow")))).isEqualTo(quoted("overflow"));
+	}
+
+	@Test
+	void writeJavaNioPathShouldShouldBeSerializedAsString() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("stack/overflow/error"))))
+			.isEqualTo(quoted("stack\\/overflow\\/error"));
 	}
 
 	private <V> String write(V value) {
