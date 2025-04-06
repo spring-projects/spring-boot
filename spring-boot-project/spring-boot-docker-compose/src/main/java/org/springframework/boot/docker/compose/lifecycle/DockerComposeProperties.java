@@ -47,6 +47,11 @@ public class DockerComposeProperties {
 	private boolean enabled = true;
 
 	/**
+	 * Whether to try to use the context class loader for connection details factories.
+	 */
+	private boolean useContextClassLoader = false;
+
+	/**
 	 * Arguments to pass to the Docker Compose command.
 	 */
 	private final List<String> arguments = new ArrayList<>();
@@ -89,8 +94,16 @@ public class DockerComposeProperties {
 		return this.enabled;
 	}
 
+	public boolean isUseContextClassLoader() {
+		return this.useContextClassLoader;
+	}
+
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public void setUseContextClassLoader(boolean useContextClassLoader) {
+		this.useContextClassLoader = useContextClassLoader;
 	}
 
 	public List<String> getArguments() {
@@ -137,7 +150,7 @@ public class DockerComposeProperties {
 		return this.readiness;
 	}
 
-	static DockerComposeProperties get(Binder binder) {
+	public static DockerComposeProperties get(Binder binder) {
 		return binder.bind(NAME, DockerComposeProperties.class).orElseGet(DockerComposeProperties::new);
 	}
 

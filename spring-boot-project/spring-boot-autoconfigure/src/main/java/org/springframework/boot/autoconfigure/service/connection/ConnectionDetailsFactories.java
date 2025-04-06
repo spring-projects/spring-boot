@@ -47,8 +47,26 @@ public class ConnectionDetailsFactories {
 
 	private final List<Registration<?, ?>> registrations = new ArrayList<>();
 
+	/**
+	 * Create a new {@link ConnectionDetailsFactories} instance. This constructor uses the
+	 * class loader of {@link ConnectionDetailsFactory} class to load the factories.
+	 */
 	public ConnectionDetailsFactories() {
-		this(SpringFactoriesLoader.forDefaultResourceLocation(ConnectionDetailsFactory.class.getClassLoader()));
+		this(false);
+	}
+
+	/**
+	 * Create a new {@link ConnectionDetailsFactories} instance. This constructor takes a
+	 * boolean argument to determine whether the context class loader should be used to
+	 * load the factories. If {@code true} and the context class loader is available it
+	 * will be used otherwise the class loader of {@link ConnectionDetailsFactory} class
+	 * will be used.
+	 * @param useContextClassLoader if {@code true} and the context class loader is
+	 * available it will be used otherwise the class loader of
+	 * {@link ConnectionDetailsFactory} class will be used.
+	 */
+	public ConnectionDetailsFactories(boolean useContextClassLoader) {
+		this(SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader(useContextClassLoader)));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -105,6 +123,24 @@ public class ConnectionDetailsFactories {
 		}
 		result.sort(Comparator.comparing(Registration::factory, AnnotationAwareOrderComparator.INSTANCE));
 		return List.copyOf(result);
+	}
+
+	/**
+	 * Return the {@link ClassLoader} to use for loading factories.
+	 * <p>
+	 * The default implementation returns the context class loader of the current thread
+	 * or the class loader of this class if the context class loader is {@code null}.
+	 * @param useContextClassLoader if {@code true} and the context class loader is
+	 * available it will be used otherwise the class loader of
+	 * {@link ConnectionDetailsFactory} class will be used
+	 * @return the class loader to use for loading factories
+	 */
+	private static ClassLoader getClassLoader(boolean useContextClassLoader) {
+		if (!useContextClassLoader) {
+			return ConnectionDetailsFactory.class.getClassLoader();
+		}
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		return (classLoader != null) ? classLoader : getClassLoader(false);
 	}
 
 	/**
