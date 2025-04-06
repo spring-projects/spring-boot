@@ -34,7 +34,7 @@ import org.springframework.boot.info.SslInfo.CertificateInfo;
  * {@link Status#OUT_OF_SERVICE} when a certificate is invalid.
  *
  * @author Jonatan Ivanov
- * @author geniusYoo
+ * @author geniuus
  * @since 3.4.0
  */
 public class SslHealthIndicator extends AbstractHealthIndicator {
