@@ -28,6 +28,7 @@ import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
+import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} that checks the certificates the application uses and reports
