@@ -31,7 +31,7 @@ async function runTasks(executorName, projectGraph, batchTaskGraph, fullTaskGrap
         const targetConfiguration = projectConfiguration.targets[task.target.target];
         input[task.id] = (0, params_1.combineOptionsForExecutor)(task.overrides, task.target.configuration, targetConfiguration, batchExecutor.schema, null, process.cwd());
     }
-    const runBatchStart = performance.mark(`batch:start`);
+    const batchStart = performance.mark('run-batch:start');
     try {
         const results = await batchExecutor.batchImplementationFactory()(batchTaskGraph, input, tasks[0].overrides, context);
         if (typeof results !== 'object') {
@@ -63,16 +63,28 @@ async function runTasks(executorName, projectGraph, batchTaskGraph, fullTaskGrap
         process.exit(1);
     }
     finally {
-        const runBatchEnd = performance.mark(`run-batch:end`);
+        const batchEnd = performance.mark('run-batch:end');
+        const duration = performance.measure('run-batch', batchStart.name, batchEnd.name);
+        if (process.env.NX_PERF_LOGGING === 'true') {
+            console.log(`Time for 'run-batch'`, duration.duration);
+        }
     }
 }
 process.on('message', async (message) => {
     switch (message.type) {
         case batch_messages_1.BatchMessageType.RunTasks: {
             const results = await runTasks(message.executorName, message.projectGraph, message.batchTaskGraph, message.fullTaskGraph);
+            console.log("Send results to parent process");
             process.send({
                 type: batch_messages_1.BatchMessageType.CompleteBatchExecution,
                 results,
+            }, (error) => {
+                if (error) {
+                    console.error('Error sending message:', error);
+                    process.exit(1);
+                }
+                console.log('exiting run batch');
+                process.exit(0);
             });
         }
     }
