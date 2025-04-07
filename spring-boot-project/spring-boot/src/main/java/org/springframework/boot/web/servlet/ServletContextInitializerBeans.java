@@ -374,17 +374,13 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				bean.addInitParameter(param.name(), param.value());
 			}
 
-			@SuppressWarnings("unchecked")
-			Map<String, ServletRegistrationBean<?>> servletRegistrationBeans = (Map<String, ServletRegistrationBean<?>>) (Map<?, ?>) this.beanFactory
-				.getBeansOfType(ServletRegistrationBean.class);
-
-			for (Class<?> servletClass : registration.servletRegistrationBeans()) {
-				for (ServletRegistrationBean<?> registrationBean : servletRegistrationBeans.values()) {
-					if (servletClass.isInstance(registrationBean.getServlet())) {
-						bean.addServletRegistrationBeans(registrationBean);
+			this.beanFactory.getBeanProvider(ServletRegistrationBean.class).forEach((servletRegistrationBean) -> {
+				for (Class<?> servletClass : registration.servletRegistrationBeans()) {
+					if (servletClass.isInstance(servletRegistrationBean.getServlet())) {
+						bean.addServletRegistrationBeans(servletRegistrationBean);
 					}
 				}
-			}
+			});
 		}
 
 	}
