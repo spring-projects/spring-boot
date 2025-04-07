@@ -24,7 +24,7 @@ Spring WebSocket and JPA will use javadoc:org.springframework.core.task.AsyncTas
 
 The following code snippet demonstrates how to register a custom javadoc:org.springframework.core.task.AsyncTaskExecutor[] to be used with Spring MVC, Spring WebFlux, Spring GraphQL, Spring WebSocket and JPA.
 
-include-code::TaskExecutionConfigurationExamples[tag=application-task-executor]
+include-code::application/MyTaskExecutorConfiguration[]
 
 [NOTE]
 ====
@@ -40,23 +40,23 @@ It could, however, be used for Spring WebSocket or JPA if the bean's type is jav
 
 If your application needs multiple `Executor` beans for different integrations, such as one for regular task execution with javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation] and other for Spring MVC, Spring WebFlux, Spring WebSocket and JPA, you can configure them as follows.
 
-include-code::TaskExecutionConfigurationExamples[tag=multiple-task-executor]
+include-code::multiple/MyTaskExecutorConfiguration[]
 
 [TIP]
 ====
 The auto-configured javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] or javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] allow you to easily create instances of type javadoc:org.springframework.core.task.AsyncTaskExecutor[] that replicate the default behavior of auto-configuration.
 
-include-code::TaskExecutionConfigurationExamples[tag=executor-builder]
+include-code::builder/MyTaskExecutorConfiguration[]
 ====
 
 If a `taskExecutor` named bean is not an option, you can mark your bean as javadoc:org.springframework.context.annotation.Primary[format=annotation] or define an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[]  bean to specify the `Executor` responsible for handling regular task execution with javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation].
 The following example demonstrates how to achieve this.
 
-include-code::TaskExecutionConfigurationExamples[tag=async-configurer]
+include-code::async/MyTaskExecutorConfiguration[]
 
 To register a custom javadoc:java.util.concurrent.Executor[] while keeping the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[], you can create a custom javadoc:java.util.concurrent.Executor[] bean and set the `defaultCandidate=false` attribute in its javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation, as demonstrated in the following example:
 
-include-code::TaskExecutionConfigurationExamples[tag=default-candidate-task-executor]
+include-code::defaultcandidate/MyTaskExecutorConfiguration[]
 
 In that case, you will be able to autowire your custom javadoc:java.util.concurrent.Executor[] into other components while retaining the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[].
 However, remember to use the javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation] annotation alongside javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation].
