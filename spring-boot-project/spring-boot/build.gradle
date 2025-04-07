@@ -70,9 +70,7 @@ dependencies {
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jooq:jooq") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
+	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
@@ -148,7 +146,6 @@ dependencies {
 
 	testRuntimeOnly("org.testcontainers:jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
