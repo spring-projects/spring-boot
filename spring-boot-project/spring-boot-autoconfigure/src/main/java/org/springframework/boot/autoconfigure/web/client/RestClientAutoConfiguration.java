@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,11 +79,10 @@ public class RestClientAutoConfiguration {
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
 			ObjectProvider<RestClientCustomizer> customizerProvider) {
-		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
-		configurer.setRequestFactoryBuilder(clientHttpRequestFactoryBuilder.getIfAvailable());
-		configurer.setRequestFactorySettings(clientHttpRequestFactorySettings.getIfAvailable());
-		configurer.setRestClientCustomizers(customizerProvider.orderedStream().toList());
-		return configurer;
+		return new RestClientBuilderConfigurer(
+				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect),
+				clientHttpRequestFactorySettings.getIfAvailable(ClientHttpRequestFactorySettings::defaults),
+				customizerProvider.orderedStream().toList());
 	}
 
 	@Bean
