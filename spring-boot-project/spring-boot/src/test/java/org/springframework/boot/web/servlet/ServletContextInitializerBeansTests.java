@@ -202,8 +202,6 @@ class ServletContextInitializerBeansTests {
 		assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
 	}
 
-	// Removed the test that relied on servletRegistrationBeans = { ... }
-
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
