@@ -1570,10 +1570,12 @@ bom {
 			modules = [
 				"bson",
 				"bson-record-codec",
+				"bson-kotlin",
 				"mongodb-driver-core",
 				"mongodb-driver-legacy",
 				"mongodb-driver-reactivestreams",
-				"mongodb-driver-sync"
+				"mongodb-driver-sync",
+				"mongodb-driver-kotlin-coroutine"
 			]
 		}
 		links {
