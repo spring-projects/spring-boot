@@ -302,6 +302,18 @@ class ServletContextInitializerBeansTests {
 			return new ServletRegistrationBean<>(new TestServlet());
 		}
 
+		@Bean
+		ServletRegistrationBean<NonMatchingServlet> nonMatchingServletRegistrationBean() {
+			return new ServletRegistrationBean<>(new NonMatchingServlet());
+		}
+
+		static class NonMatchingServlet extends HttpServlet implements ServletContextInitializer {
+			@Override
+			public void onStartup(ServletContext servletContext) {
+
+			}
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
