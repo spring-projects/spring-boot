@@ -91,49 +91,14 @@ public @interface ServletRegistration {
 	int loadOnStartup() default -1;
 
 	/**
-	 * Init parameters to set on the servlet, as {@code "key=value"} pairs.
+	 * Init parameters to set on the servlet (mirrors {@code @WebInitParam} usage).
+	 * @return array of {@link WebInitParam}
 	 */
-	String[] initParameters() default {};
+	WebInitParam[] initParameters() default {};
 
 	/**
-	 * (Optional) Additional servlet-registration beans to apply.
-	 * Usually left empty unless you need custom bean logic.
+	 * Multipart configuration.
 	 */
-	Class<? extends ServletRegistrationBean<?>>[] servletRegistrationBeans() default {};
+	MultipartConfig multipartConfig() default @MultipartConfig;
 
-	/**
-	 * Multipart configuration. Mirrors {@link jakarta.servlet.annotation.MultipartConfig}.
-	 * If you omit it (no fields changed), it will not set a multipart config.
-	 */
-	MultipartConfigValues multipartConfig() default @MultipartConfigValues;
-
-	/**
-	 * Nested annotation that parallels the fields of
-	 * {@link jakarta.servlet.annotation.MultipartConfig}. Used within
-	 * {@link ServletRegistration#multipartConfig()}.
-	 * @see jakarta.servlet.annotation.MultipartConfig
-	 */
-	@Target({})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface MultipartConfigValues {
-
-		/**
-		 * @see jakarta.servlet.annotation.MultipartConfig#location()
-		 */
-		String location() default "";
-		/**
-		 * @see jakarta.servlet.annotation.MultipartConfig#maxFileSize()
-		 */
-		long maxFileSize() default -1L;
-		/**
-		 * @see jakarta.servlet.annotation.MultipartConfig#maxRequestSize()
-		 */
-		long maxRequestSize() default -1L;
-		/**
-		 * @see jakarta.servlet.annotation.MultipartConfig#fileSizeThreshold()
-		 */
-		int fileSizeThreshold() default 0;
-
-	}
 }

@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebInitParam;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -324,56 +327,23 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			}
 
 			if (registration.initParameters().length > 0) {
-				bean.setInitParameters(parseInitParameters(registration.initParameters()));
+				Map<String, String> initParams = new LinkedHashMap<>();
+				for (WebInitParam param : registration.initParameters()) {
+					initParams.put(param.name(), param.value());
+				}
+				bean.setInitParameters(initParams);
 			}
 
-			ServletRegistration.MultipartConfigValues multipart = registration.multipartConfig();
-			boolean isMultipartConfigUsed = !(multipart.location().isEmpty()
-					&& multipart.maxFileSize() == -1L
-					&& multipart.maxRequestSize() == -1L
-					&& multipart.fileSizeThreshold() == 0);
+			MultipartConfig multipart = registration.multipartConfig();
+			boolean isMultipartConfigUsed = !(multipart.location().isEmpty() && multipart.maxFileSize() == -1L
+					&& multipart.maxRequestSize() == -1L && multipart.fileSizeThreshold() == 0);
 			if (isMultipartConfigUsed) {
-				bean.setMultipartConfig(new MultipartConfigElement(
-						multipart.location(),
-						multipart.maxFileSize(),
-						multipart.maxRequestSize(),
-						multipart.fileSizeThreshold()
-				));
+				bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
+						multipart.maxRequestSize(), multipart.fileSizeThreshold()));
 			}
-
-			for (Class<? extends ServletRegistrationBean<?>> beanClass : registration.servletRegistrationBeans()) {
-				ServletRegistrationBean<?> extraBean = this.beanFactory.getBean(beanClass);
-				bean.getInitParameters().putAll(extraBean.getInitParameters());
-			}
-
-		}
-
-		/**
-		 * Parses an array of "key=value" strings into a Map.
-		 * @param initParamsArray Array of strings, expected format "key=value".
-		 * @return Map of parsed key-value pairs.
-		 * @throws IllegalArgumentException if any string doesn't match the "key=value" format.
-		 */
-		private Map<String, String> parseInitParameters(String[] initParamsArray) {
-			Map<String, String> initParams = new LinkedHashMap<>();
-			for (String kv : initParamsArray) {
-				int index = kv.indexOf('=');
-				if (index != -1) {
-					String key = kv.substring(0, index).trim();
-					String value = kv.substring(index + 1).trim();
-					initParams.put(key, value);
-				}
-				else {
-					throw new IllegalArgumentException(
-							"initParameters must be in 'key=value' format, got: " + kv);
-				}
-			}
-			return initParams;
 		}
 
 	}
-
-
 
 	/**
 	 * {@link RegistrationBeanAdapter} for {@link Filter} beans.

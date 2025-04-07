@@ -23,6 +23,8 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpSessionIdListener;
 import org.assertj.core.api.ThrowingConsumer;
@@ -191,8 +193,7 @@ class ServletContextInitializerBeansTests {
 		assertThat(bean.getServletName()).isEqualTo("extended");
 		assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
 
-		assertThat(bean.getInitParameters()).containsEntry("hello", "world")
-				.containsEntry("flag", "true");
+		assertThat(bean.getInitParameters()).containsEntry("hello", "world").containsEntry("flag", "true");
 
 		assertThat(bean.getMultipartConfig()).isNotNull();
 		assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
@@ -201,33 +202,7 @@ class ServletContextInitializerBeansTests {
 		assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
 	}
 
-	@Test
-	void shouldApplyServletRegistrationAnnotationWithExtraRegistrationBeans() {
-		load(ServletConfigurationWithExtendedAttributes.class);
-		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
-
-		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extendedWithExtraBeans");
-		assertThat(bean).as("extendedWithExtraBeans registration bean").isNotNull();
-
-		assertThat(bean.getServletName()).isEqualTo("extendedWithExtraBeans");
-		assertThat(bean.getUrlMappings()).containsExactly("/extra/*");
-
-		assertThat(bean.getInitParameters()).containsEntry("extra", "fromExtraBean");
-	}
-
-	@SuppressWarnings("rawtypes")
-	private ServletRegistrationBean findServletRegistrationBeanByName(
-			ServletContextInitializerBeans initializerBeans, String servletName) {
-
-		return initializerBeans.stream()
-				.filter(ServletRegistrationBean.class::isInstance)
-				.map(ServletRegistrationBean.class::cast)
-				.filter((registrationBean) -> servletName.equals(registrationBean.getServletName()))
-				.findFirst()
-				.orElse(null);
-	}
-
+	// Removed the test that relied on servletRegistrationBeans = { ... }
 
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
@@ -377,7 +352,6 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
-
 		}
 
 	}
@@ -388,7 +362,6 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
-
 		}
 
 		@Override
@@ -402,17 +375,14 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
-
 		}
 
 		@Override
 		public void init(FilterConfig filterConfig) {
-
 		}
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
-
 		}
 
 	}
@@ -421,7 +391,6 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
-
 		}
 
 	}
@@ -430,7 +399,6 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
-
 		}
 
 	}
@@ -439,46 +407,25 @@ class ServletContextInitializerBeansTests {
 	static class ServletConfigurationWithExtendedAttributes {
 
 		@Bean
-		@ServletRegistration(
-				name = "extended",
-				urlMappings = "/extended/*",
-				initParameters = { "hello=world", "flag=true" },
-				multipartConfig = @ServletRegistration.MultipartConfigValues(
-						location = "/tmp",
-						maxFileSize = 1024,
-						maxRequestSize = 4096,
-						fileSizeThreshold = 128
-				)
-		)
+		@ServletRegistration(name = "extended", urlMappings = "/extended/*",
+				initParameters = { @WebInitParam(name = "hello", value = "world"),
+						@WebInitParam(name = "flag", value = "true") },
+				multipartConfig = @MultipartConfig(location = "/tmp", maxFileSize = 1024, maxRequestSize = 4096,
+						fileSizeThreshold = 128))
 		TestServlet testServletWithInitParametersAndMultipart() {
 			return new TestServlet();
 		}
 
-		@Bean
-		MyExtraServletRegistrationBean myExtraServletRegistrationBean() {
-			MyExtraServletRegistrationBean bean = new MyExtraServletRegistrationBean();
-			bean.addInitParameter("extra", "fromExtraBean");
-			return bean;
-		}
-
-		@Bean
-		@ServletRegistration(
-				name = "extendedWithExtraBeans",
-				urlMappings = "/extra/*",
-				servletRegistrationBeans = { MyExtraServletRegistrationBean.class }
-		)
-		TestServlet testServletWithExtraBean() {
-			return new TestServlet();
-		}
-
-		static class MyExtraServletRegistrationBean extends ServletRegistrationBean<HttpServlet> {
-
-			MyExtraServletRegistrationBean() {
-				super();
-			}
-
-		}
 	}
 
+	private ServletRegistrationBean<?> findServletRegistrationBeanByName(
+			ServletContextInitializerBeans initializerBeans, String name) {
+		return initializerBeans.stream()
+			.filter(ServletRegistrationBean.class::isInstance)
+			.map(ServletRegistrationBean.class::cast)
+			.filter((r) -> name.equals(r.getServletName()))
+			.findFirst()
+			.orElse(null);
+	}
 
 }
