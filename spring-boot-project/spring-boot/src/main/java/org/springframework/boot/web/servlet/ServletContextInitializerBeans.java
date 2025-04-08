@@ -321,7 +321,6 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			bean.setAsyncSupported(registration.asyncSupported());
 			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
 			bean.setLoadOnStartup(registration.loadOnStartup());
-      
 			bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
 
 			if (registration.initParameters().length > 0) {
@@ -339,7 +338,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
 						multipart.maxRequestSize(), multipart.fileSizeThreshold()));
 			}
-      
+
 		}
 
 	}
