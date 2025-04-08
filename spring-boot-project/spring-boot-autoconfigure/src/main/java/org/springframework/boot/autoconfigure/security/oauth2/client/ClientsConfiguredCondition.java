@@ -36,7 +36,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @since 2.1.0
  * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
- * {@link ConditionalOnOAuth2ClientRegistrationProperties @ConditionalOnOAuth2ClientRegistrationConfigured}
+ * {@link ConditionalOnOAuth2ClientRegistrationProperties @ConditionalOnOAuth2ClientRegistrationProperties}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 public class ClientsConfiguredCondition extends SpringBootCondition {

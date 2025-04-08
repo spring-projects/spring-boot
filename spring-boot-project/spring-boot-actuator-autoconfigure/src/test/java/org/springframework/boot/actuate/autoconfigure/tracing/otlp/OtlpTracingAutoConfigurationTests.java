@@ -23,9 +23,7 @@ import java.util.function.Supplier;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.internal.compression.GzipCompressor;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
-import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.HttpUrl;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -37,7 +35,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -201,33 +198,29 @@ class OtlpTracingAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void httpShouldUseMeterProviderIfSet() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
 			.run((context) -> {
 				OtlpHttpSpanExporter otlpHttpSpanExporter = context.getBean(OtlpHttpSpanExporter.class);
-				OtlpHttpSpanExporterBuilder builder = otlpHttpSpanExporter.toBuilder();
-				Supplier<MeterProvider> meterProviderSupplier = (Supplier<MeterProvider>) ReflectionTestUtils
-					.getField(ReflectionTestUtils.getField(builder, "delegate"), "meterProviderSupplier");
-				assertThat(meterProviderSupplier).isNotNull();
-				assertThat(meterProviderSupplier.get()).isSameAs(MeterProviderConfiguration.meterProvider);
+				assertThat(otlpHttpSpanExporter.toBuilder())
+					.extracting("delegate.meterProviderSupplier", InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((meterProviderSupplier) -> assertThat(meterProviderSupplier.get())
+						.isSameAs(MeterProviderConfiguration.meterProvider));
 			});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void grpcShouldUseMeterProviderIfSet() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces",
 					"management.otlp.tracing.transport=grpc")
 			.run((context) -> {
 				OtlpGrpcSpanExporter otlpGrpcSpanExporter = context.getBean(OtlpGrpcSpanExporter.class);
-				OtlpGrpcSpanExporterBuilder builder = otlpGrpcSpanExporter.toBuilder();
-				Supplier<MeterProvider> meterProviderSupplier = (Supplier<MeterProvider>) ReflectionTestUtils
-					.getField(ReflectionTestUtils.getField(builder, "delegate"), "meterProviderSupplier");
-				assertThat(meterProviderSupplier).isNotNull();
-				assertThat(meterProviderSupplier.get()).isSameAs(MeterProviderConfiguration.meterProvider);
+				assertThat(otlpGrpcSpanExporter.toBuilder())
+					.extracting("delegate.meterProviderSupplier", InstanceOfAssertFactories.type(Supplier.class))
+					.satisfies((meterProviderSupplier) -> assertThat(meterProviderSupplier.get())
+						.isSameAs(MeterProviderConfiguration.meterProvider));
 			});
 	}
 
