@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.routing.HttpRoutePlanner;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.config.Lookup;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
@@ -60,6 +61,11 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	private LocalHttpClientTransport(HttpClient client, HttpHost host) {
 		super(client, host);
+	}
+
+	@Override
+	protected void beforeExecute(HttpRequest request) {
+		request.setHeader("Host", LOCAL_DOCKER_HOST.toHostString());
 	}
 
 	static LocalHttpClientTransport create(ResolvedDockerHost dockerHost) {
