@@ -47,7 +47,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
-		this(sources, new ConnectionDetailsFactories());
+		this(sources, new ConnectionDetailsFactories(null));
 	}
 
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
