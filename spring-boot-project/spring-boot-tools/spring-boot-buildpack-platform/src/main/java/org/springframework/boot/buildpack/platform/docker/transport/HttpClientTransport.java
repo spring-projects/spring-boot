@@ -35,6 +35,7 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 
 import org.springframework.boot.buildpack.platform.io.Content;
@@ -156,6 +157,7 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private Response execute(HttpUriRequest request) {
 		try {
+			beforeExecute(request);
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
 			if (statusCode >= 400 && statusCode <= 500) {
@@ -171,6 +173,9 @@ abstract class HttpClientTransport implements HttpTransport {
 		catch (IOException | URISyntaxException ex) {
 			throw new DockerConnectionException(this.host.toHostString(), ex);
 		}
+	}
+
+	protected void beforeExecute(HttpRequest request) {
 	}
 
 	private byte[] readContent(ClassicHttpResponse response) throws IOException {
