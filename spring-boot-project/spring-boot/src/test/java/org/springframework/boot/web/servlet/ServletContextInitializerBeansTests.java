@@ -17,6 +17,7 @@
 package org.springframework.boot.web.servlet;
 
 import java.util.Collection;
+import java.util.EnumSet;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
@@ -27,6 +28,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSessionIdListener;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -149,6 +153,17 @@ class ServletContextInitializerBeansTests {
 				.isEqualTo("testServletRegistrationBean");
 
 		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void shouldApplyFilterRegistrationAnnotationWithDefaultDispatcherTypes() {
+		load(FilterConfigurationWithAnnotationAndDefaultDispatcherTypes.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+		assertThatSingleRegistration(initializerBeans, FilterRegistrationBean.class,
+				(filterRegistrationBean) -> assertThat(filterRegistrationBean.determineDispatcherTypes())
+					.containsExactlyElementsOf(EnumSet.allOf(DispatcherType.class)));
 	}
 
 	@Test
@@ -315,6 +330,26 @@ class ServletContextInitializerBeansTests {
 			@Override
 			public void onStartup(ServletContext servletContext) {
 
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FilterConfigurationWithAnnotationAndDefaultDispatcherTypes {
+
+		@Bean
+		@FilterRegistration(name = "test")
+		TestOncePerRequestFilter testFilter() {
+			return new TestOncePerRequestFilter();
+		}
+
+		static class TestOncePerRequestFilter extends OncePerRequestFilter {
+
+			@Override
+			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+					FilterChain filterChain) {
 			}
 
 		}

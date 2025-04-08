@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging;
+package org.springframework.boot.docs.features.taskexecutionandscheduling.builder;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
-/**
- * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry logging.
- *
- * @author Toshiaki Maki
- * @since 3.4.0
- * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
- * {@link org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.OpenTelemetryLoggingAutoConfiguration}
- */
-@Deprecated(since = "3.4.0", forRemoval = true)
-public class OpenTelemetryLoggingAutoConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class MyTaskExecutorConfiguration {
+
+	@Bean
+	SimpleAsyncTaskExecutor taskExecutor(SimpleAsyncTaskExecutorBuilder builder) {
+		return builder.build();
+	}
 
 }

@@ -137,7 +137,7 @@ The `application.title`, `application.version`, and `application.formatted-versi
 The values will not be resolved if you are running an unpacked jar and starting it with `java -cp <classpath> <mainclass>`
 or running your application as a native image.
 
-To use the `application.*` properties, launch your application as a packed jar using `java -jar` or as an unpacked jar using `java org.springframework.boot.loader.launch.JarLauncher`.
+To use the `application.\*` properties, launch your application as a packed jar using `java -jar` or as an unpacked jar using `java org.springframework.boot.loader.launch.JarLauncher`.
 This will initialize the `application.*` banner properties before building the classpath and launching your app.
 ====
 

@@ -251,7 +251,6 @@ class TaskExecutionAutoConfigurationTests {
 					.containsKeys("customTaskExecutor", "applicationTaskExecutor");
 				assertThat(context).hasBean("taskExecutor");
 				assertThat(context.getBean("taskExecutor")).isSameAs(context.getBean("applicationTaskExecutor"));
-
 			});
 	}
 
@@ -354,7 +353,7 @@ class TaskExecutionAutoConfigurationTests {
 			.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-",
 					"spring.task.execution.mode=force")
 			.withBean("taskExecutor", Executor.class, () -> createCustomAsyncExecutor("custom-task-"),
-					(bd) -> bd.setPrimary(true))
+					(beanDefinition) -> beanDefinition.setPrimary(true))
 			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(AsyncConfigurer.class);
