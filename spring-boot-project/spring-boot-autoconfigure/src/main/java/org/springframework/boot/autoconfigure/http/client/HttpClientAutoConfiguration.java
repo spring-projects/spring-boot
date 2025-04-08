@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.http.client;
 
 import java.util.List;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -47,13 +48,20 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientProperties.class)
-public class HttpClientAutoConfiguration {
+public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
+
+	private ClassLoader beanClassLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
-		ClientHttpRequestFactoryBuilder<?> builder = httpClientProperties.factoryBuilder();
+		ClientHttpRequestFactoryBuilder<?> builder = httpClientProperties.factoryBuilder(this.beanClassLoader);
 		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
 

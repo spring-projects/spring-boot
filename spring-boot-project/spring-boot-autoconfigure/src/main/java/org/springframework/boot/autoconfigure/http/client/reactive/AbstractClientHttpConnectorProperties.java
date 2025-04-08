@@ -55,6 +55,11 @@ public abstract class AbstractClientHttpConnectorProperties extends AbstractHttp
 		return super.httpClientSettings(sslBundles);
 	}
 
+	/**
+	 * Return a {@link ClientHttpConnectorBuilder} based on the properties.
+	 * @param classLoader the class loader to use for detection
+	 * @return a {@link ClientHttpConnectorBuilder}
+	 */
 	protected final ClientHttpConnectorBuilder<?> connectorBuilder(ClassLoader classLoader) {
 		Connector connector = getConnector();
 		return (connector != null) ? connector.builder() : ClientHttpConnectorBuilder.detect(classLoader);

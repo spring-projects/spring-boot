@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
@@ -202,20 +203,18 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private int getOrder(Object value) {
-		return new AnnotationAwareOrderComparator() {
-			@Override
-			public int getOrder(Object obj) {
-				return super.getOrder(obj);
-			}
-		}.getOrder(value);
+		Integer order = findOrder(value);
+		return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 	}
 
 	private Integer findOrder(Object value) {
 		return new AnnotationAwareOrderComparator() {
+
 			@Override
 			public Integer findOrder(Object obj) {
 				return super.findOrder(obj);
 			}
+
 		}.findOrder(value);
 	}
 
@@ -322,9 +321,8 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			bean.setAsyncSupported(registration.asyncSupported());
 			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
 			bean.setLoadOnStartup(registration.loadOnStartup());
-			if (registration.urlMappings().length > 0) {
-				bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
-			}
+      
+			bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
 
 			if (registration.initParameters().length > 0) {
 				Map<String, String> initParams = new LinkedHashMap<>();
@@ -341,6 +339,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
 						multipart.maxRequestSize(), multipart.fileSizeThreshold()));
 			}
+      
 		}
 
 	}
@@ -383,12 +382,8 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			}
 			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
 			bean.setMatchAfter(registration.matchAfter());
-			if (registration.servletNames().length > 0) {
-				bean.setServletNames(Arrays.asList(registration.servletNames()));
-			}
-			if (registration.urlPatterns().length > 0) {
-				bean.setUrlPatterns(Arrays.asList(registration.urlPatterns()));
-			}
+			bean.setServletNames(Arrays.asList(registration.servletNames()));
+			bean.setUrlPatterns(Arrays.asList(registration.urlPatterns()));
 		}
 
 	}
@@ -407,6 +402,9 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 
 	}
 
+	/**
+	 * Tracks seen initializers.
+	 */
 	private static final class Seen {
 
 		private final Map<Class<?>, Set<Object>> seen = new HashMap<>();

@@ -156,7 +156,9 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.classic.HttpClients";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENTS, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENTS, classLoader);
+		}
 
 	}
 

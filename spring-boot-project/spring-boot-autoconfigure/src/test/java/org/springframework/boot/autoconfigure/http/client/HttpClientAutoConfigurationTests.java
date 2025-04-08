@@ -28,8 +28,11 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -85,6 +88,32 @@ class HttpClientAutoConfigurationTests {
 		propertyValues.add("spring.ssl.bundle.pem.test.truststore.certificate=" + location + "rsa-cert.pem");
 		propertyValues.add("spring.ssl.bundle.pem.test.truststore.private-key=" + location + "rsa-key.pem");
 		return propertyValues;
+	}
+
+	@Test
+	void whenHttpComponentsIsUnavailableThenJettyClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(JettyClientHttpRequestFactoryBuilder.class));
+	}
+
+	@Test
+	void whenHttpComponentsAndJettyAreUnavailableThenReactorClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
+					org.eclipse.jetty.client.HttpClient.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(ReactorClientHttpRequestFactoryBuilder.class));
+	}
+
+	@Test
+	void whenHttpComponentsAndJettyAndReactorAreUnavailableThenJdkClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
+					org.eclipse.jetty.client.HttpClient.class, reactor.netty.http.client.HttpClient.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(JdkClientHttpRequestFactoryBuilder.class));
 	}
 
 	@Test

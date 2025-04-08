@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.docs.features.taskexecutionandscheduling.application;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
-/**
- * Alternative to Spring Boot's {@code @DefaultValue} for testing (removes the need for a
- * dependency on the real annotation).
- *
- * @author Stephane Nicoll
- * @author Pavel Anisimov
- */
-@Target({ ElementType.PARAMETER })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface DefaultValue {
+@Configuration(proxyBeanMethods = false)
+public class MyTaskExecutorConfiguration {
 
-	String[] value() default {};
+	@Bean("applicationTaskExecutor")
+	SimpleAsyncTaskExecutor applicationTaskExecutor() {
+		return new SimpleAsyncTaskExecutor("app-");
+	}
 
 }

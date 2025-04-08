@@ -243,6 +243,11 @@ public class ProcessInfo {
 
 		}
 
+		/**
+		 * Garbage collection information.
+		 *
+		 * @since 3.5.0
+		 */
 		public static class GarbageCollectorInfo {
 
 			private final String name;

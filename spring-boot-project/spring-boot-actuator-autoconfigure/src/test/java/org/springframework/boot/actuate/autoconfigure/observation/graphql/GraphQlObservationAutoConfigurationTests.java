@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.observation.DefaultDataFetcherObservationConvention;
+import org.springframework.graphql.observation.DefaultDataLoaderObservationConvention;
 import org.springframework.graphql.observation.DefaultExecutionRequestObservationConvention;
 import org.springframework.graphql.observation.GraphQlObservationInstrumentation;
 import org.springframework.graphql.server.WebGraphQlHandler;
@@ -71,6 +72,8 @@ class GraphQlObservationAutoConfigurationTests {
 				.isInstanceOf(CustomExecutionRequestObservationConvention.class);
 			assertThat(instrumentation).extracting("dataFetcherObservationConvention")
 				.isInstanceOf(CustomDataFetcherObservationConvention.class);
+			assertThat(instrumentation).extracting("dataLoaderObservationConvention")
+				.isInstanceOf(CustomDataLoaderObservationConvention.class);
 		});
 	}
 
@@ -97,6 +100,11 @@ class GraphQlObservationAutoConfigurationTests {
 			return new CustomDataFetcherObservationConvention();
 		}
 
+		@Bean
+		CustomDataLoaderObservationConvention customDataLoaderConvention() {
+			return new CustomDataLoaderObservationConvention();
+		}
+
 	}
 
 	static class CustomExecutionRequestObservationConvention extends DefaultExecutionRequestObservationConvention {
@@ -104,6 +112,10 @@ class GraphQlObservationAutoConfigurationTests {
 	}
 
 	static class CustomDataFetcherObservationConvention extends DefaultDataFetcherObservationConvention {
+
+	}
+
+	static class CustomDataLoaderObservationConvention extends DefaultDataLoaderObservationConvention {
 
 	}
 
