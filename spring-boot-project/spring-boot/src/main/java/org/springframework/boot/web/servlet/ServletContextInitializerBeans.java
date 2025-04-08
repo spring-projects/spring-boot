@@ -63,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Brian Clozel
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  * @since 1.4.0
  */
 public class ServletContextInitializerBeans extends AbstractCollection<ServletContextInitializer> {

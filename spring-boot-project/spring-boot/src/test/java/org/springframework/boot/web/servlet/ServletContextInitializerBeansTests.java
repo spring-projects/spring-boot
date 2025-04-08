@@ -142,10 +142,11 @@ class ServletContextInitializerBeansTests {
 			assertThat(filterRegistrationBean.getUrlPatterns()).containsExactly("/test/*");
 			assertThat(filterRegistrationBean.getInitParameters()).containsEntry("env", "test")
 				.containsEntry("debug", "true");
-			Collection<ServletRegistrationBean<?>> servletRegistrationBeans = filterRegistrationBean.getServletRegistrationBeans();
+			Collection<ServletRegistrationBean<?>> servletRegistrationBeans = filterRegistrationBean
+				.getServletRegistrationBeans();
 			assertThat(servletRegistrationBeans).hasSize(1);
 			assertThat(servletRegistrationBeans.iterator().next().getServletName())
-					.isEqualTo("testServletRegistrationBean");
+				.isEqualTo("testServletRegistrationBean");
 
 		});
 	}
@@ -291,8 +292,10 @@ class ServletContextInitializerBeansTests {
 		@Bean
 		@FilterRegistration(enabled = false, name = "test", asyncSupported = false,
 				dispatcherTypes = DispatcherType.ERROR, matchAfter = true, servletNames = "test",
-				urlPatterns = "/test/*", initParameters = { @WebInitParam(name = "env", value = "test"),
-				@WebInitParam(name = "debug", value = "true") }, servletRegistrationBeans = { TestServlet.class })
+				urlPatterns = "/test/*",
+				initParameters = { @WebInitParam(name = "env", value = "test"),
+						@WebInitParam(name = "debug", value = "true") },
+				servletRegistrationBeans = { TestServlet.class })
 		TestFilter testFilter() {
 			return new TestFilter();
 		}
@@ -308,10 +311,12 @@ class ServletContextInitializerBeansTests {
 		}
 
 		static class NonMatchingServlet extends HttpServlet implements ServletContextInitializer {
+
 			@Override
 			public void onStartup(ServletContext servletContext) {
 
 			}
+
 		}
 
 	}
