@@ -323,21 +323,13 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			bean.setLoadOnStartup(registration.loadOnStartup());
 			bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
 
-			if (registration.initParameters().length > 0) {
-				Map<String, String> initParams = new LinkedHashMap<>();
-				for (WebInitParam param : registration.initParameters()) {
-					initParams.put(param.name(), param.value());
-				}
-				bean.setInitParameters(initParams);
+			for (WebInitParam param : registration.initParameters()) {
+				bean.addInitParameter(param.name(), param.value());
 			}
 
 			MultipartConfig multipart = registration.multipartConfig();
-			boolean isMultipartConfigUsed = !(multipart.location().isEmpty() && multipart.maxFileSize() == -1L
-					&& multipart.maxRequestSize() == -1L && multipart.fileSizeThreshold() == 0);
-			if (isMultipartConfigUsed) {
-				bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
-						multipart.maxRequestSize(), multipart.fileSizeThreshold()));
-			}
+			bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
+					multipart.maxRequestSize(), multipart.fileSizeThreshold()));
 
 		}
 
