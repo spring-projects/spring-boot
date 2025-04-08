@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,6 +46,7 @@ import javax.lang.model.util.Types;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Pavel Anisimov
+ * @author Dmytro Nosan
  */
 class TypeUtils {
 
@@ -135,7 +135,7 @@ class TypeUtils {
 		if (type == null) {
 			return null;
 		}
-		return type.accept(this.typeExtractor, createTypeDescriptor(element));
+		return type.accept(this.typeExtractor, resolveTypeDescriptor(element));
 	}
 
 	/**
@@ -218,7 +218,7 @@ class TypeUtils {
 		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
-	TypeDescriptor resolveTypeDescriptor(TypeElement element) {
+	private TypeDescriptor resolveTypeDescriptor(TypeElement element) {
 		if (this.typeDescriptors.containsKey(element)) {
 			return this.typeDescriptors.get(element);
 		}
@@ -319,22 +319,22 @@ class TypeUtils {
 		}
 
 		@Override
-		public String visitTypeVariable(TypeVariable t, TypeDescriptor descriptor) {
-			TypeMirror typeMirror = descriptor.resolveGeneric(t);
-			if (typeMirror != null) {
-				if (typeMirror instanceof TypeVariable typeVariable) {
+		public String visitTypeVariable(TypeVariable typeVariable, TypeDescriptor descriptor) {
+			TypeMirror resolvedGeneric = descriptor.resolveGeneric(typeVariable);
+			if (resolvedGeneric != null) {
+				if (resolvedGeneric instanceof TypeVariable resolveTypeVariable) {
 					// Still unresolved, let's use the upper bound, checking first if
 					// a cycle may exist
-					if (!hasCycle(typeVariable)) {
-						return visit(typeVariable.getUpperBound(), descriptor);
+					if (!hasCycle(resolveTypeVariable)) {
+						return visit(resolveTypeVariable.getUpperBound(), descriptor);
 					}
 				}
 				else {
-					return visit(typeMirror, descriptor);
+					return visit(resolvedGeneric, descriptor);
 				}
 			}
 			// Fallback to simple representation of the upper bound
-			return defaultAction(t.getUpperBound(), descriptor);
+			return defaultAction(typeVariable.getUpperBound(), descriptor);
 		}
 
 		private boolean hasCycle(TypeVariable variable) {
@@ -394,35 +394,18 @@ class TypeUtils {
 
 		private final Map<TypeVariable, TypeMirror> generics = new HashMap<>();
 
-		Map<TypeVariable, TypeMirror> getGenerics() {
-			return Collections.unmodifiableMap(this.generics);
-		}
-
 		TypeMirror resolveGeneric(TypeVariable typeVariable) {
-			return resolveGeneric(getParameterName(typeVariable));
-		}
-
-		TypeMirror resolveGeneric(String parameterName) {
-			return this.generics.entrySet()
-				.stream()
-				.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
-				.findFirst()
-				.map(Entry::getValue)
-				.orElse(null);
+			TypeMirror resolved = this.generics.get(typeVariable);
+			if (resolved != typeVariable && resolved instanceof TypeVariable resolvedTypeVariable) {
+				return resolveGeneric(resolvedTypeVariable);
+			}
+			return resolved;
 		}
 
 		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
 			if (variable instanceof TypeVariable typeVariable) {
-				if (this.generics.keySet()
-					.stream()
-					.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
-					this.generics.put(typeVariable, resolution);
-				}
+				this.generics.put(typeVariable, resolution);
 			}
-		}
-
-		private String getParameterName(TypeVariable typeVariable) {
-			return typeVariable.asElement().getSimpleName().toString();
 		}
 
 	}
