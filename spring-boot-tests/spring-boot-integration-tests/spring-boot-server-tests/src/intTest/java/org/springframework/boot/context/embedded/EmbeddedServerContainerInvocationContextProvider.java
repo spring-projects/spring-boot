@@ -130,7 +130,8 @@ class EmbeddedServerContainerInvocationContextProvider
 			return launcher;
 		}
 		catch (NoSuchMethodException ex) {
-			throw new IllegalStateException("Launcher class %s does not have an (Application, File) constructor");
+			throw new IllegalStateException(String
+				.format("Launcher class %s does not have an (Application, File) constructor", launcherClass.getName()));
 		}
 	}
 
