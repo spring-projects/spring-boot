@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging;
-
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry logging.
- *
- * @author Toshiaki Maki
- * @since 3.4.0
- * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
- * {@link org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.OpenTelemetryLoggingAutoConfiguration}
+ * Auto-configuration for logging over OpenTelemetry.
  */
-@Deprecated(since = "3.4.0", forRemoval = true)
-public class OpenTelemetryLoggingAutoConfiguration {
-
-}
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;

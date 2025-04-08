@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OpenTelemetryLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
+ * @author Moritz Halbritter
  */
 class OpenTelemetryLoggingAutoConfigurationTests {
 
@@ -120,16 +121,33 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	@SuppressWarnings("removal")
+	void shouldApplyDeprecatedCustomizers() {
+		this.contextRunner.withUserConfiguration(DeprecatedSdkLoggerProviderBuilderCustomizerConfig.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SdkLoggerProvider.class);
+				assertThat(context.getBeansOfType(
+						org.springframework.boot.actuate.autoconfigure.logging.SdkLoggerProviderBuilderCustomizer.class))
+					.hasSize(1);
+				assertThat(context).hasBean("deprecatedSdkLoggerProviderBuilderCustomizer");
+				assertThat(context
+					.getBean("deprecatedSdkLoggerProviderBuilderCustomizer",
+							DeprecatedNoopSdkLoggerProviderBuilderCustomizer.class)
+					.called()).isEqualTo(1);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	public static class CustomConfig {
 
 		@Bean
-		public BatchLogRecordProcessor customBatchLogRecordProcessor() {
+		BatchLogRecordProcessor customBatchLogRecordProcessor() {
 			return BatchLogRecordProcessor.builder(new NoopLogRecordExporter()).build();
 		}
 
 		@Bean
-		public SdkLoggerProvider customSdkLoggerProvider() {
+		SdkLoggerProvider customSdkLoggerProvider() {
 			return SdkLoggerProvider.builder().build();
 		}
 
@@ -139,12 +157,12 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	public static class MultipleLogRecordExportersConfig {
 
 		@Bean
-		public LogRecordExporter customLogRecordExporter1() {
+		LogRecordExporter customLogRecordExporter1() {
 			return new NoopLogRecordExporter();
 		}
 
 		@Bean
-		public LogRecordExporter customLogRecordExporter2() {
+		LogRecordExporter customLogRecordExporter2() {
 			return new NoopLogRecordExporter();
 		}
 
@@ -154,12 +172,12 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	public static class MultipleLogRecordProcessorsConfig {
 
 		@Bean
-		public LogRecordProcessor customLogRecordProcessor1() {
+		LogRecordProcessor customLogRecordProcessor1() {
 			return new NoopLogRecordProcessor();
 		}
 
 		@Bean
-		public LogRecordProcessor customLogRecordProcessor2() {
+		LogRecordProcessor customLogRecordProcessor2() {
 			return new NoopLogRecordProcessor();
 		}
 
@@ -169,13 +187,23 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	public static class MultipleSdkLoggerProviderBuilderCustomizersConfig {
 
 		@Bean
-		public SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer1() {
+		SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer1() {
 			return new NoopSdkLoggerProviderBuilderCustomizer();
 		}
 
 		@Bean
-		public SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer2() {
+		SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer2() {
 			return new NoopSdkLoggerProviderBuilderCustomizer();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	public static class DeprecatedSdkLoggerProviderBuilderCustomizerConfig {
+
+		@Bean
+		DeprecatedNoopSdkLoggerProviderBuilderCustomizer deprecatedSdkLoggerProviderBuilderCustomizer() {
+			return new DeprecatedNoopSdkLoggerProviderBuilderCustomizer();
 		}
 
 	}
@@ -210,7 +238,24 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 
 	static class NoopSdkLoggerProviderBuilderCustomizer implements SdkLoggerProviderBuilderCustomizer {
 
-		final AtomicInteger called = new AtomicInteger(0);
+		private final AtomicInteger called = new AtomicInteger(0);
+
+		@Override
+		public void customize(SdkLoggerProviderBuilder builder) {
+			this.called.incrementAndGet();
+		}
+
+		int called() {
+			return this.called.get();
+		}
+
+	}
+
+	@SuppressWarnings("removal")
+	static class DeprecatedNoopSdkLoggerProviderBuilderCustomizer
+			implements org.springframework.boot.actuate.autoconfigure.logging.SdkLoggerProviderBuilderCustomizer {
+
+		private final AtomicInteger called = new AtomicInteger(0);
 
 		@Override
 		public void customize(SdkLoggerProviderBuilder builder) {
