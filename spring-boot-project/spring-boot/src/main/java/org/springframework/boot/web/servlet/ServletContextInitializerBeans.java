@@ -64,6 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Brian Clozel
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  * @since 1.4.0
  */
 public class ServletContextInitializerBeans extends AbstractCollection<ServletContextInitializer> {
@@ -318,7 +319,9 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			bean.setAsyncSupported(registration.asyncSupported());
 			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
 			bean.setLoadOnStartup(registration.loadOnStartup());
-			bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
+			if (registration.urlMappings().length > 0) {
+				bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
+			}
 		}
 
 	}
