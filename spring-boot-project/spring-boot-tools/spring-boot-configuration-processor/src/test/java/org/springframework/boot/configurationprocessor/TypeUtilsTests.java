@@ -54,7 +54,6 @@ class TypeUtilsTests {
 			assertThat(getTypeOfField(typeUtils, typeElement, "name")).hasToString(String.class.getName());
 			assertThat(getTypeOfField(typeUtils, typeElement, "mappings"))
 				.hasToString(constructMapType(Integer.class, Duration.class));
-
 		});
 	}
 
