@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Pedro Xavier Leite Cavadas
  * @since 3.1.0
  */
 public class ConnectionDetailsFactories {
@@ -48,25 +49,22 @@ public class ConnectionDetailsFactories {
 	private final List<Registration<?, ?>> registrations = new ArrayList<>();
 
 	/**
-	 * Create a new {@link ConnectionDetailsFactories} instance. This constructor uses the
-	 * class loader of {@link ConnectionDetailsFactory} class to load the factories.
+	 * Create a new {@link ConnectionDetailsFactories} instance.
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #ConnectionDetailsFactories(ClassLoader)}
 	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public ConnectionDetailsFactories() {
-		this(false);
+		this((ClassLoader) null);
 	}
 
 	/**
-	 * Create a new {@link ConnectionDetailsFactories} instance. This constructor takes a
-	 * boolean argument to determine whether the context class loader should be used to
-	 * load the factories. If {@code true} and the context class loader is available it
-	 * will be used otherwise the class loader of {@link ConnectionDetailsFactory} class
-	 * will be used.
-	 * @param useContextClassLoader if {@code true} and the context class loader is
-	 * available it will be used otherwise the class loader of
-	 * {@link ConnectionDetailsFactory} class will be used.
+	 * Create a new {@link ConnectionDetailsFactories} instance.
+	 * @param classLoader the class loader used to load factories
+	 * @since 3.5.0
 	 */
-	public ConnectionDetailsFactories(boolean useContextClassLoader) {
-		this(SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader(useContextClassLoader)));
+	public ConnectionDetailsFactories(ClassLoader classLoader) {
+		this(SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -123,24 +121,6 @@ public class ConnectionDetailsFactories {
 		}
 		result.sort(Comparator.comparing(Registration::factory, AnnotationAwareOrderComparator.INSTANCE));
 		return List.copyOf(result);
-	}
-
-	/**
-	 * Return the {@link ClassLoader} to use for loading factories.
-	 * <p>
-	 * The default implementation returns the context class loader of the current thread
-	 * or the class loader of this class if the context class loader is {@code null}.
-	 * @param useContextClassLoader if {@code true} and the context class loader is
-	 * available it will be used otherwise the class loader of
-	 * {@link ConnectionDetailsFactory} class will be used
-	 * @return the class loader to use for loading factories
-	 */
-	private static ClassLoader getClassLoader(boolean useContextClassLoader) {
-		if (!useContextClassLoader) {
-			return ConnectionDetailsFactory.class.getClassLoader();
-		}
-		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		return (classLoader != null) ? classLoader : getClassLoader(false);
 	}
 
 	/**

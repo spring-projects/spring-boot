@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,11 +47,6 @@ public class DockerComposeProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Whether to try to use the context class loader for connection details factories.
-	 */
-	private boolean useContextClassLoader = false;
-
-	/**
 	 * Arguments to pass to the Docker Compose command.
 	 */
 	private final List<String> arguments = new ArrayList<>();
@@ -94,16 +89,8 @@ public class DockerComposeProperties {
 		return this.enabled;
 	}
 
-	public boolean isUseContextClassLoader() {
-		return this.useContextClassLoader;
-	}
-
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public void setUseContextClassLoader(boolean useContextClassLoader) {
-		this.useContextClassLoader = useContextClassLoader;
 	}
 
 	public List<String> getArguments() {

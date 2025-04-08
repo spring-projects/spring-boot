@@ -57,7 +57,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 
 	private void registerBeanDefinitions(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry) {
 		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
-				new ConnectionDetailsFactories());
+				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
 			MergedAnnotations annotations = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)

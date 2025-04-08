@@ -27,9 +27,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeServicesReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -48,30 +46,32 @@ import org.springframework.util.StringUtils;
 class DockerComposeServiceConnectionsApplicationListener
 		implements ApplicationListener<DockerComposeServicesReadyEvent> {
 
-	DockerComposeServiceConnectionsApplicationListener() {
+	private final ConnectionDetailsFactories factories;
 
+	DockerComposeServiceConnectionsApplicationListener() {
+		this(new ConnectionDetailsFactories(null));
+	}
+
+	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories) {
+		this.factories = factories;
 	}
 
 	@Override
 	public void onApplicationEvent(DockerComposeServicesReadyEvent event) {
 		ApplicationContext applicationContext = event.getSource();
 		if (applicationContext instanceof BeanDefinitionRegistry registry) {
-			Binder binder = Binder.get(applicationContext.getEnvironment());
-			DockerComposeProperties properties = DockerComposeProperties.get(binder);
-			boolean useContextClassLoader = properties.isUseContextClassLoader();
-			ConnectionDetailsFactories factories = new ConnectionDetailsFactories(useContextClassLoader);
 			Environment environment = applicationContext.getEnvironment();
-			registerConnectionDetails(registry, environment, event.getRunningServices(), factories);
+			registerConnectionDetails(registry, environment, event.getRunningServices());
 		}
 	}
 
 	private void registerConnectionDetails(BeanDefinitionRegistry registry, Environment environment,
-			List<RunningService> runningServices, ConnectionDetailsFactories factories) {
+			List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
 			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService, environment);
-			factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
+			this.factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
 				register(registry, runningService, connectionDetailsType, connectionDetails);
-				factories.getConnectionDetails(connectionDetails, false)
+				this.factories.getConnectionDetails(connectionDetails, false)
 					.forEach((adaptedType, adaptedDetails) -> register(registry, runningService, adaptedType,
 							adaptedDetails));
 			});
