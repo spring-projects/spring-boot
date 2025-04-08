@@ -319,9 +319,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			bean.setAsyncSupported(registration.asyncSupported());
 			bean.setIgnoreRegistrationFailure(registration.ignoreRegistrationFailure());
 			bean.setLoadOnStartup(registration.loadOnStartup());
-			if (registration.urlMappings().length > 0) {
-				bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
-			}
+			bean.setUrlMappings(Arrays.asList(registration.urlMappings()));
 		}
 
 	}
