@@ -91,7 +91,9 @@ public final class ReactorClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "reactor.netty.http.client.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
+		}
 
 	}
 

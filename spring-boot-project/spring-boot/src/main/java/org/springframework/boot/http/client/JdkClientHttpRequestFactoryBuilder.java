@@ -86,7 +86,9 @@ public final class JdkClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "java.net.http.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
+		}
 
 	}
 

@@ -116,7 +116,9 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "org.eclipse.jetty.client.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
+		}
 
 	}
 
