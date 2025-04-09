@@ -389,6 +389,7 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
+
 		}
 
 	}
@@ -399,6 +400,7 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
+
 		}
 
 		@Override
@@ -412,14 +414,17 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
+
 		}
 
 		@Override
 		public void init(FilterConfig filterConfig) {
+
 		}
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+
 		}
 
 	}
@@ -428,6 +433,7 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
+
 		}
 
 	}
@@ -436,6 +442,7 @@ class ServletContextInitializerBeansTests {
 
 		@Override
 		public void onStartup(ServletContext servletContext) {
+
 		}
 
 	}
