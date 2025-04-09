@@ -35,9 +35,7 @@ import java.util.stream.Collectors;
 import jakarta.servlet.Filter;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.Servlet;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebInitParam;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -96,9 +94,9 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
 		this.sortedList = this.initializers.values()
-			.stream()
-			.flatMap((value) -> value.stream().sorted(AnnotationAwareOrderComparator.INSTANCE))
-			.toList();
+				.stream()
+				.flatMap((value) -> value.stream().sorted(AnnotationAwareOrderComparator.INSTANCE))
+				.toList();
 		logMappings(this.initializers);
 	}
 
@@ -327,9 +325,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 				bean.addInitParameter(param.name(), param.value());
 			}
 
-			MultipartConfig multipart = registration.multipartConfig();
-			bean.setMultipartConfig(new MultipartConfigElement(multipart.location(), multipart.maxFileSize(),
-					multipart.maxRequestSize(), multipart.fileSizeThreshold()));
+			bean.setMultipartConfig(new MultipartConfigElement(registration.multipartConfig()));
 
 		}
 

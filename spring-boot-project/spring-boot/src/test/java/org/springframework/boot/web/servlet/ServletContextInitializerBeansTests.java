@@ -203,19 +203,22 @@ class ServletContextInitializerBeansTests {
 		load(ServletConfigurationWithExtendedAttributes.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);
+		assertThatSingleServletRegistration(initializerBeans, (bean) -> {
+			assertThat(bean.getServletName()).isEqualTo("extended");
+			assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
+			assertThat(bean.getInitParameters()).containsEntry("hello", "world").containsEntry("flag", "true");
+			assertThat(bean.getMultipartConfig()).isNotNull();
+			assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+			assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+			assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+			assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
+		});
 
-		ServletRegistrationBean<?> bean = findServletRegistrationBeanByName(initializerBeans, "extended");
+	}
 
-		assertThat(bean.getServletName()).isEqualTo("extended");
-		assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
-
-		assertThat(bean.getInitParameters()).containsEntry("hello", "world").containsEntry("flag", "true");
-
-		assertThat(bean.getMultipartConfig()).isNotNull();
-		assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
-		assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
-		assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
-		assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
+	private void assertThatSingleServletRegistration(ServletContextInitializerBeans initializerBeans,
+			ThrowingConsumer<ServletRegistrationBean<?>> code) {
+		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class, code::acceptThrows);
 	}
 
 	private void load(Class<?>... configuration) {
@@ -450,16 +453,6 @@ class ServletContextInitializerBeansTests {
 			return new TestServlet();
 		}
 
-	}
-
-	private ServletRegistrationBean<?> findServletRegistrationBeanByName(
-			ServletContextInitializerBeans initializerBeans, String name) {
-		return initializerBeans.stream()
-			.filter(ServletRegistrationBean.class::isInstance)
-			.map(ServletRegistrationBean.class::cast)
-			.filter((r) -> name.equals(r.getServletName()))
-			.findFirst()
-			.orElse(null);
 	}
 
 }

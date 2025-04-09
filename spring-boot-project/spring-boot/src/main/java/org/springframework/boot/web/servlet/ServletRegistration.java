@@ -98,6 +98,7 @@ public @interface ServletRegistration {
 
 	/**
 	 * Multipart configuration.
+	 * @return multipart config {@link MultipartConfig}
 	 */
 	MultipartConfig multipartConfig() default @MultipartConfig;
 
