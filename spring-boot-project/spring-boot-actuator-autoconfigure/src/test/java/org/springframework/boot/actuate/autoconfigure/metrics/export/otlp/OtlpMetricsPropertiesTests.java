@@ -37,8 +37,10 @@ class OtlpMetricsPropertiesTests extends StepRegistryPropertiesTests {
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getAggregationTemporality()).isSameAs(config.aggregationTemporality());
 		assertThat(properties.getHistogramFlavor()).isSameAs(config.histogramFlavor());
+		assertThat(properties.getHistogramFlavorPerMeter()).isEqualTo(config.histogramFlavorPerMeter());
 		assertThat(properties.getMaxScale()).isEqualTo(config.maxScale());
 		assertThat(properties.getMaxBucketCount()).isEqualTo(config.maxBucketCount());
+		assertThat(properties.getMaxBucketsPerMeter()).isEqualTo(config.maxBucketsPerMeter());
 		assertThat(properties.getBaseTimeUnit()).isSameAs(config.baseTimeUnit());
 	}
 

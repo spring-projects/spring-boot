@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -53,9 +54,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private Map<String, String> headers;
 
 	/**
-	 * Histogram type to be preferred when histogram publishing is enabled.
+	 * Default histogram type when histogram publishing is enabled.
 	 */
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
+
+	/**
+	 * Per meter histogram type to be preferred when histogram publishing is enabled.
+	 */
+	private Map<String, HistogramFlavor> histogramFlavorPerMeter = new LinkedHashMap<>();
 
 	/**
 	 * Max scale to use for exponential histograms, if configured.
@@ -63,10 +69,16 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private int maxScale = 20;
 
 	/**
-	 * Maximum number of buckets to be used for exponential histograms, if configured.
-	 * This has no effect on explicit bucket histograms.
+	 * Default maximum number of buckets to be used for exponential histograms, if
+	 * configured. This has no effect on explicit bucket histograms.
 	 */
 	private int maxBucketCount = 160;
+
+	/**
+	 * Per meter number of max buckets used for exponential histograms, if configured.
+	 * This has no effect on explicit bucket histograms.
+	 */
+	private Map<String, Integer> maxBucketsPerMeter = new LinkedHashMap<>();
 
 	/**
 	 * Time unit for exported metrics.
@@ -105,6 +117,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.histogramFlavor = histogramFlavor;
 	}
 
+	public Map<String, HistogramFlavor> getHistogramFlavorPerMeter() {
+		return this.histogramFlavorPerMeter;
+	}
+
+	public void setHistogramFlavorPerMeter(Map<String, HistogramFlavor> histogramFlavorPerMeter) {
+		this.histogramFlavorPerMeter = histogramFlavorPerMeter;
+	}
+
 	public int getMaxScale() {
 		return this.maxScale;
 	}
@@ -119,6 +139,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public void setMaxBucketCount(int maxBucketCount) {
 		this.maxBucketCount = maxBucketCount;
+	}
+
+	public Map<String, Integer> getMaxBucketsPerMeter() {
+		return this.maxBucketsPerMeter;
+	}
+
+	public void setMaxBucketsPerMeter(Map<String, Integer> maxBucketsPerMeter) {
+		this.maxBucketsPerMeter = maxBucketsPerMeter;
 	}
 
 	public TimeUnit getBaseTimeUnit() {

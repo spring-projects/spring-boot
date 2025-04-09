@@ -89,6 +89,16 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	@Override
+	public Map<String, HistogramFlavor> histogramFlavorPerMeter() {
+		return get(OtlpMetricsProperties::getHistogramFlavorPerMeter, OtlpConfig.super::histogramFlavorPerMeter);
+	}
+
+	@Override
+	public Map<String, Integer> maxBucketsPerMeter() {
+		return get(OtlpMetricsProperties::getMaxBucketsPerMeter, OtlpConfig.super::maxBucketsPerMeter);
+	}
+
+	@Override
 	public int maxScale() {
 		return get(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
