@@ -111,6 +111,19 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsNotSetAdapterHistogramFlavorReturnsEmptyMap() {
+		assertThat(createAdapter().histogramFlavorPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsSetAdapterHistogramFlavorPerMeterReturnsIt() {
+		this.properties
+			.setHistogramFlavorPerMeter(Map.of("my.histograms", HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM));
+		assertThat(createAdapter().histogramFlavorPerMeter()).containsEntry("my.histograms",
+				HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+	}
+
+	@Test
 	void whenPropertiesMaxScaleIsNotSetAdapterMaxScaleReturns20() {
 		assertThat(createAdapter().maxScale()).isEqualTo(20);
 	}
@@ -130,6 +143,17 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	void whenPropertiesMaxBucketCountIsSetAdapterMaxBucketCountReturnsIt() {
 		this.properties.setMaxBucketCount(6);
 		assertThat(createAdapter().maxBucketCount()).isEqualTo(6);
+	}
+
+	@Test
+	void whenPropertiesMaxBucketsPerMeterIsNotSetAdapterMaxBucketsPerMeterReturnsEmptyMap() {
+		assertThat(createAdapter().maxBucketsPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesMaxBucketsPerMeterIsSetAdapterMaxBucketsPerMeterReturnsIt() {
+		this.properties.setMaxBucketsPerMeter(Map.of("my.histograms", 111));
+		assertThat(createAdapter().maxBucketsPerMeter()).containsEntry("my.histograms", 111);
 	}
 
 	@Test
