@@ -60,7 +60,7 @@ class DockerCliTests {
 
 		DockerCli.DockerComposeOptions options = new DockerCli.DockerComposeOptions(mockFile, Set.of("dev"), List.of("--verbose"));
 
-		DockerCli cli = new DockerCli(new File("."), options); // ✅ 여기! 기존 생성자 직접 호출
+		DockerCli cli = new DockerCli(new File("."), options);
 
 		List<String> command = cli.createCommand(DockerCliCommand.Type.DOCKER_COMPOSE);
 
