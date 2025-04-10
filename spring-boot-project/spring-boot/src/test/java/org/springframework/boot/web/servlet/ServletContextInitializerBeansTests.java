@@ -27,6 +27,7 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Daeho Kwon
+ * @author Dmytro Danilenkov
  */
 class ServletContextInitializerBeansTests {
 
@@ -127,6 +129,13 @@ class ServletContextInitializerBeansTests {
 			assertThat(servletRegistrationBean.getServletName()).isEqualTo("test");
 			assertThat(servletRegistrationBean.isAsyncSupported()).isFalse();
 			assertThat(servletRegistrationBean.getUrlMappings()).containsExactly("/test/*");
+			assertThat(servletRegistrationBean.getInitParameters())
+				.containsExactlyInAnyOrderEntriesOf(Map.of("env", "test", "debug", "true"));
+			assertThat(servletRegistrationBean.getMultipartConfig()).isNotNull();
+			assertThat(servletRegistrationBean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+			assertThat(servletRegistrationBean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+			assertThat(servletRegistrationBean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+			assertThat(servletRegistrationBean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
 		});
 	}
 
@@ -244,7 +253,11 @@ class ServletContextInitializerBeansTests {
 
 		@Bean
 		@ServletRegistration(enabled = false, name = "test", asyncSupported = false, urlMappings = "/test/*",
-				loadOnStartup = 1)
+				loadOnStartup = 1,
+				initParameters = { @WebInitParam(name = "env", value = "test"),
+						@WebInitParam(name = "debug", value = "true") },
+				multipartConfig = @MultipartConfig(location = "/tmp", maxFileSize = 1024, maxRequestSize = 4096,
+						fileSizeThreshold = 128))
 		TestServlet testServlet() {
 			return new TestServlet();
 		}
