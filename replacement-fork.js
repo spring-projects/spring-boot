@@ -19,13 +19,14 @@ class ForkedProcessTaskRunner {
         this.options = options;
         this.cliPath = (0, utils_1.getCliPath)();
         this.verbose = process.env.NX_VERBOSE_LOGGING === 'true';
-        this.addedMessageListener = false;
         this.processes = new Set();
+        this.finishedBatchProcesses = new Set();
         this.pseudoTerminal = pseudo_terminal_1.PseudoTerminal.isSupported()
             ? (0, pseudo_terminal_1.getPseudoTerminal)()
             : null;
     }
     async init() {
+        console.log('fork process task runner init');
         if (this.pseudoTerminal) {
             await this.pseudoTerminal.init();
         }
@@ -57,16 +58,21 @@ class ForkedProcessTaskRunner {
                     }
                 });
                 p.on('message', (message) => {
+                    console.log('batch process received message', message);
                     switch (message.type) {
                         case batch_messages_1.BatchMessageType.CompleteBatchExecution: {
                             res(message.results);
-                            break;
-                        }
-                        case batch_messages_1.BatchMessageType.Performance: {
-                            // performance.measure(`run-batch`, message.start.name, message.end.name);
+                            this.finishedBatchProcesses.add(p);
                             break;
                         }
                         case batch_messages_1.BatchMessageType.RunTasks: {
+                            break;
+                        }
+                        case 'endCommand': {
+                            // this is a message from the main process that the command has completed
+                            // we need to exit the child process
+                            console.log('endCommand message received');
+                            p.kill();
                             break;
                         }
                         default: {
@@ -90,6 +96,14 @@ class ForkedProcessTaskRunner {
                 rej(e);
             }
         });
+    }
+    cleanupBatchProcesses() {
+        if (this.finishedBatchProcesses.size > 0) {
+            this.finishedBatchProcesses.forEach((p) => {
+                p.kill();
+            });
+            this.finishedBatchProcesses.clear();
+        }
     }
     async forkProcessLegacy(task, { temporaryOutputPath, streamOutput, pipeOutput, taskGraph, env, }) {
         return pipeOutput
@@ -319,6 +333,13 @@ class ForkedProcessTaskRunner {
         }
         const messageLisnter = (message) => {
             // this.publisher.publish(message.toString());
+            console.log('message from parent', message);
+            if (typeof message === 'object' &&
+                message.type === 'endCommand') {
+                this.processes.forEach((p) => {
+                    p.kill();
+                });
+            }
             if (this.pseudoTerminal) {
                 this.pseudoTerminal.sendMessageToChildren(message);
             }
@@ -334,10 +355,7 @@ class ForkedProcessTaskRunner {
             });
         };
         // When the nx process gets a message, it will be sent into the task's process
-        if (!this.addedMessageListener) {
-            process.on('message', messageLisnter);
-            this.addedMessageListener = true;
-        }
+        process.on('message', messageLisnter);
         const cleanupListeners = (signal) => {
             this.processes.forEach((p) => {
                 if ('connected' in p ? p.connected : p.isAlive) {
