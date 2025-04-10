@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
+import jakarta.servlet.annotation.WebInitParam;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AliasFor;
@@ -34,6 +35,7 @@ import org.springframework.core.annotation.Order;
  * annotation-based alternative to {@link FilterRegistrationBean}.
  *
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  * @since 3.5.0
  * @see FilterRegistrationBean
  */
@@ -82,6 +84,12 @@ public @interface FilterRegistration {
 	boolean ignoreRegistrationFailure() default false;
 
 	/**
+	 * Init parameters to be used with the filter.
+	 * @return the init parameters
+	 */
+	WebInitParam[] initParameters() default {};
+
+	/**
 	 * Whether the filter mappings should be matched after any declared Filter mappings of
 	 * the ServletContext.
 	 * @return whether the filter mappings should be matched after any declared Filter
@@ -94,6 +102,12 @@ public @interface FilterRegistration {
 	 * @return the servlet names
 	 */
 	String[] servletNames() default {};
+
+	/**
+	 * Servlet classes that the filter will be registered against.
+	 * @return the servlet classes
+	 */
+	Class<?>[] servletClasses() default {};
 
 	/**
 	 * URL patterns, as defined in the Servlet specification, that the filter will be
