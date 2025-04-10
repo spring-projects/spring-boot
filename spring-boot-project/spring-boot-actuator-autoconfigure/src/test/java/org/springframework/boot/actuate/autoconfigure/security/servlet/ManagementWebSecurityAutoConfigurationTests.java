@@ -178,6 +178,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	static class CustomSecurityConfiguration {
 
 		@Bean
+		@SuppressWarnings("removal")
 		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
@@ -207,6 +208,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
+		@SuppressWarnings("removal")
 		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.securityMatcher(new AntPathRequestMatcher("/**"));
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
