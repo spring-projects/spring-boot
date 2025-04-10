@@ -52,7 +52,7 @@ class DockerCliTests {
 
 	@Test
 	void fileConstructorShouldInitializeCorrectly_whenDockerIsRunning() {
-		// assume docker is running (아니면 생략 가능)
+		// assume docker is running
 		Assumptions.assumeTrue(new File("/var/run/docker.sock").exists() || System.getProperty("os.name").startsWith("Windows"));
 
 		DockerComposeFile mockFile = mock(DockerComposeFile.class);
