@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -142,7 +143,7 @@ public interface DockerCompose {
 	 */
 	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles,
 			List<String> arguments) {
-		DockerCli cli = new DockerCli(null, new DockerComposeOptions(file, activeProfiles, arguments));
+		DockerCli cli = new DockerCli((File) null, new DockerComposeOptions(file, activeProfiles, arguments));
 		return new DefaultDockerCompose(cli, hostname);
 	}
 
