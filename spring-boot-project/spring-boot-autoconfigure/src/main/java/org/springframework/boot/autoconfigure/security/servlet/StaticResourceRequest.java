@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -135,8 +134,10 @@ public final class StaticResourceRequest {
 			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()).toList());
 		}
 
+		@SuppressWarnings("removal")
 		private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
-			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new);
+			return getPatterns(dispatcherServletPath)
+				.map(org.springframework.security.web.util.matcher.AntPathRequestMatcher::new);
 		}
 
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {

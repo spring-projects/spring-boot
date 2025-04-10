@@ -42,7 +42,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -232,12 +231,14 @@ public final class EndpointRequest {
 			return linksMatchers;
 		}
 
+		@SuppressWarnings("removal")
 		protected RequestMatcherProvider getRequestMatcherProvider(WebApplicationContext context) {
 			try {
 				return getRequestMatcherProviderBean(context);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				return (pattern, method) -> new AntPathRequestMatcher(pattern, (method != null) ? method.name() : null);
+				return (pattern, method) -> new org.springframework.security.web.util.matcher.AntPathRequestMatcher(
+						pattern, (method != null) ? method.name() : null);
 			}
 		}
 
