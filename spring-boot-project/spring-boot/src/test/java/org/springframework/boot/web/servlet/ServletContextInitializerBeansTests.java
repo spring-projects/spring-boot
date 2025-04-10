@@ -129,6 +129,13 @@ class ServletContextInitializerBeansTests {
 			assertThat(servletRegistrationBean.getServletName()).isEqualTo("test");
 			assertThat(servletRegistrationBean.isAsyncSupported()).isFalse();
 			assertThat(servletRegistrationBean.getUrlMappings()).containsExactly("/test/*");
+			assertThat(servletRegistrationBean.getInitParameters())
+				.containsExactlyInAnyOrderEntriesOf(Map.of("env", "test", "debug", "true"));
+			assertThat(servletRegistrationBean.getMultipartConfig()).isNotNull();
+			assertThat(servletRegistrationBean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+			assertThat(servletRegistrationBean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+			assertThat(servletRegistrationBean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+			assertThat(servletRegistrationBean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
 		});
 	}
 
@@ -209,29 +216,6 @@ class ServletContextInitializerBeansTests {
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
 	}
 
-	@Test
-	void shouldApplyExtendedServletRegistrationAnnotation() {
-		load(ServletConfigurationWithExtendedAttributes.class);
-		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
-				this.context.getBeanFactory(), TestServletContextInitializer.class);
-		assertThatSingleServletRegistration(initializerBeans, (bean) -> {
-			assertThat(bean.getServletName()).isEqualTo("extended");
-			assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
-			assertThat(bean.getInitParameters()).containsEntry("hello", "world").containsEntry("flag", "true");
-			assertThat(bean.getMultipartConfig()).isNotNull();
-			assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
-			assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
-			assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
-			assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
-		});
-
-	}
-
-	private void assertThatSingleServletRegistration(ServletContextInitializerBeans initializerBeans,
-			ThrowingConsumer<ServletRegistrationBean<?>> code) {
-		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class, code::acceptThrows);
-	}
-
 	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
@@ -269,7 +253,11 @@ class ServletContextInitializerBeansTests {
 
 		@Bean
 		@ServletRegistration(enabled = false, name = "test", asyncSupported = false, urlMappings = "/test/*",
-				loadOnStartup = 1)
+				loadOnStartup = 1,
+				initParameters = { @WebInitParam(name = "env", value = "test"),
+						@WebInitParam(name = "debug", value = "true") },
+				multipartConfig = @MultipartConfig(location = "/tmp", maxFileSize = 1024, maxRequestSize = 4096,
+						fileSizeThreshold = 128))
 		TestServlet testServlet() {
 			return new TestServlet();
 		}
@@ -475,21 +463,6 @@ class ServletContextInitializerBeansTests {
 		@Override
 		public void onStartup(ServletContext servletContext) {
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ServletConfigurationWithExtendedAttributes {
-
-		@Bean
-		@ServletRegistration(name = "extended", urlMappings = "/extended/*",
-				initParameters = { @WebInitParam(name = "hello", value = "world"),
-						@WebInitParam(name = "flag", value = "true") },
-				multipartConfig = @MultipartConfig(location = "/tmp", maxFileSize = 1024, maxRequestSize = 4096,
-						fileSizeThreshold = 128))
-		TestServlet testServletWithInitParametersAndMultipart() {
-			return new TestServlet();
 		}
 
 	}

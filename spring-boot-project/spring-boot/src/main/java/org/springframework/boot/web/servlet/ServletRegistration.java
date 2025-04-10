@@ -91,14 +91,14 @@ public @interface ServletRegistration {
 	int loadOnStartup() default -1;
 
 	/**
-	 * Init parameters to set on the servlet (mirrors {@code @WebInitParam} usage).
-	 * @return array of {@link WebInitParam}
+	 * Init parameters to be used with the servlet.
+	 * @return the init parameters
 	 */
 	WebInitParam[] initParameters() default {};
 
 	/**
-	 * Multipart configuration.
-	 * @return multipart config {@link MultipartConfig}
+	 * The multipart configuration.
+	 * @return the multipart configuration
 	 */
 	MultipartConfig multipartConfig() default @MultipartConfig;
 
