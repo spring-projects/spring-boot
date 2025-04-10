@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.ssl.SslBundles;
@@ -52,7 +51,14 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 @EnableConfigurationProperties(HttpReactiveClientSettingsProperties.class)
 public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
 
+	private final ClientHttpConnectors connectors;
+
 	private ClassLoader beanClassLoader;
+
+	ClientHttpConnectorAutoConfiguration(ObjectProvider<SslBundles> sslBundles,
+			HttpReactiveClientSettingsProperties properties) {
+		this.connectors = new ClientHttpConnectors(sslBundles, properties);
+	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -62,10 +68,8 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder(
-			HttpReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
 			ObjectProvider<ClientHttpConnectorBuilderCustomizer<?>> clientHttpConnectorBuilderCustomizers) {
-		ClientHttpConnectorBuilder<?> builder = httpReactiveClientSettingsProperties
-			.connectorBuilder(this.beanClassLoader);
+		ClientHttpConnectorBuilder<?> builder = this.connectors.builder(this.beanClassLoader);
 		return customize(builder, clientHttpConnectorBuilderCustomizers.orderedStream().toList());
 	}
 
@@ -80,12 +84,8 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpConnectorSettings clientHttpConnectorSettings(
-			HttpReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
-			ObjectProvider<SslBundles> sslBundles) {
-		HttpClientSettings settings = httpReactiveClientSettingsProperties.httpClientSettings(sslBundles);
-		return new ClientHttpConnectorSettings(settings.redirects(), settings.connectTimeout(), settings.readTimeout(),
-				settings.sslBundle());
+	ClientHttpConnectorSettings clientHttpConnectorSettings() {
+		return this.connectors.settings();
 	}
 
 	@Bean

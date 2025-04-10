@@ -28,9 +28,6 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
-import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
@@ -44,13 +41,21 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Phillip Webb
  * @since 3.4.0
  */
+@SuppressWarnings("removal")
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@EnableConfigurationProperties(HttpClientProperties.class)
+@EnableConfigurationProperties({ HttpClientSettingsProperties.class, HttpClientProperties.class })
 public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
+	private final ClientHttpRequestFactories factories;
+
 	private ClassLoader beanClassLoader;
+
+	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientSettingsProperties properties,
+			HttpClientProperties deprecatedProperties) {
+		this.factories = new ClientHttpRequestFactories(sslBundles, properties, deprecatedProperties);
+	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -59,9 +64,9 @@ public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties,
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
-		ClientHttpRequestFactoryBuilder<?> builder = httpClientProperties.factoryBuilder(this.beanClassLoader);
+		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
 		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
 
@@ -76,19 +81,8 @@ public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(HttpClientProperties httpClientProperties,
-			ObjectProvider<SslBundles> sslBundles) {
-		HttpClientSettings settings = httpClientProperties.httpClientSettings(sslBundles);
-		return new ClientHttpRequestFactorySettings(asRequestFactoryRedirects(settings.redirects()),
-				settings.connectTimeout(), settings.readTimeout(), settings.sslBundle());
-	}
-
-	private Redirects asRequestFactoryRedirects(HttpRedirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE -> Redirects.FOLLOW_WHEN_POSSIBLE;
-			case FOLLOW -> Redirects.FOLLOW;
-			case DONT_FOLLOW -> Redirects.DONT_FOLLOW;
-		};
+	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings() {
+		return this.factories.settings();
 	}
 
 }

@@ -18,13 +18,10 @@ package org.springframework.boot.autoconfigure.http.client.reactive;
 
 import java.util.function.Supplier;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.http.client.AbstractHttpClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
@@ -48,21 +45,6 @@ public abstract class AbstractClientHttpConnectorProperties extends AbstractHttp
 
 	public void setConnector(Connector connector) {
 		this.connector = connector;
-	}
-
-	@Override
-	protected HttpClientSettings httpClientSettings(ObjectProvider<SslBundles> sslBundles) {
-		return super.httpClientSettings(sslBundles);
-	}
-
-	/**
-	 * Return a {@link ClientHttpConnectorBuilder} based on the properties.
-	 * @param classLoader the class loader to use for detection
-	 * @return a {@link ClientHttpConnectorBuilder}
-	 */
-	protected final ClientHttpConnectorBuilder<?> connectorBuilder(ClassLoader classLoader) {
-		Connector connector = getConnector();
-		return (connector != null) ? connector.builder() : ClientHttpConnectorBuilder.detect(classLoader);
 	}
 
 	/**

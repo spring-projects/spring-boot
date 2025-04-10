@@ -18,12 +18,8 @@ package org.springframework.boot.autoconfigure.http.client;
 
 import java.time.Duration;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for properties that directly or indirectly make use of a blocking
@@ -38,7 +34,7 @@ public abstract class AbstractHttpClientProperties {
 	/**
 	 * Handling for HTTP redirects.
 	 */
-	private HttpRedirects redirects = HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+	private HttpRedirects redirects;
 
 	/**
 	 * Default connect timeout for a client HTTP request.
@@ -81,20 +77,6 @@ public abstract class AbstractHttpClientProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
-	}
-
-	/**
-	 * Return {@link HttpClientSettings} based on these properties.
-	 * @param sslBundles a {@link SslBundles} provider
-	 * @return the {@link HttpClientSettings}
-	 */
-	protected HttpClientSettings httpClientSettings(ObjectProvider<SslBundles> sslBundles) {
-		return new HttpClientSettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle(sslBundles));
-	}
-
-	private SslBundle sslBundle(ObjectProvider<SslBundles> sslBundles) {
-		String name = getSsl().getBundle();
-		return (StringUtils.hasLength(name)) ? sslBundles.getObject().getBundle(name) : null;
 	}
 
 	/**

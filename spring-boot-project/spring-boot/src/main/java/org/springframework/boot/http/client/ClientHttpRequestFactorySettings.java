@@ -145,6 +145,20 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 			return this.httpClientRedirects;
 		}
 
+		/**
+		 * Return the related {@link Redirects} for the given {@link HttpRedirects}.
+		 * @param httpRedirects the HTTP redirects
+		 * @return the related redirects
+		 * @since 3.5.0
+		 */
+		public static Redirects of(HttpRedirects httpRedirects) {
+			return (httpRedirects != null) ? switch (httpRedirects) {
+				case FOLLOW_WHEN_POSSIBLE -> FOLLOW_WHEN_POSSIBLE;
+				case FOLLOW -> FOLLOW;
+				case DONT_FOLLOW -> DONT_FOLLOW;
+			} : null;
+		}
+
 	}
 
 }

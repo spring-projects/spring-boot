@@ -69,6 +69,21 @@ class HttpClientAutoConfigurationTests {
 	@Test
 	void configuresClientHttpRequestFactorySettings() {
 		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
+			.withPropertyValues("spring.http.client.settings.redirects=dont-follow",
+					"spring.http.client.settings.connect-timeout=10s", "spring.http.client.settings.read-timeout=20s",
+					"spring.http.client.settings.ssl.bundle=test")
+			.run((context) -> {
+				ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
+				assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
+				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
+				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
+				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
+			});
+	}
+
+	@Test
+	void configuresClientHttpRequestFactorySettingsUsingDeprecatedProperties() {
+		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
 			.withPropertyValues("spring.http.client.redirects=dont-follow", "spring.http.client.connect-timeout=10s",
 					"spring.http.client.read-timeout=20s", "spring.http.client.ssl.bundle=test")
 			.run((context) -> {
