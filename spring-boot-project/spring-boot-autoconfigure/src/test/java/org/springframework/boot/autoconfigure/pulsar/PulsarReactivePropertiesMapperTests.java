@@ -107,7 +107,7 @@ class PulsarReactivePropertiesMapperTests {
 		then(builder).should().topicsPattern(topisPattern);
 		then(builder).should().priorityLevel(123);
 		then(builder).should().readCompacted(true);
-		then(builder).should().deadLetterPolicy(new DeadLetterPolicy(1, null, "my-dlt", null));
+		then(builder).should().deadLetterPolicy(new DeadLetterPolicy(1, null, "my-dlt", null, null, null));
 		then(builder).should().retryLetterTopicEnable(false);
 		then(builder).should().subscriptionName("subname");
 		then(builder).should().subscriptionInitialPosition(SubscriptionInitialPosition.Earliest);
