@@ -651,7 +651,7 @@ bom {
 			releaseNotes("https://github.com/infinispan/infinispan/releases/tag/{version}")
 		}
 	}
-	library("InfluxDB Java", "2.24") {
+	library("InfluxDB Java", "2.25") {
 		group("org.influxdb") {
 			modules = [
 				"influxdb-java"
