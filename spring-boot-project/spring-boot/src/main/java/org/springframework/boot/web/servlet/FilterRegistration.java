@@ -104,10 +104,10 @@ public @interface FilterRegistration {
 	String[] servletNames() default {};
 
 	/**
-	 * Servlet types that the filter will be registered against.
-	 * @return the servlet types
+	 * Servlet classes that the filter will be registered against.
+	 * @return the servlet classes
 	 */
-	Class<?>[] servletRegistrationBeans() default {};
+	Class<?>[] servletClasses() default {};
 
 	/**
 	 * URL patterns, as defined in the Servlet specification, that the filter will be

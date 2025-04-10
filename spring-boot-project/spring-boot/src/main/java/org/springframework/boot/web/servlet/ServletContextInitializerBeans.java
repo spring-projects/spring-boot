@@ -367,9 +367,8 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			for (WebInitParam param : registration.initParameters()) {
 				bean.addInitParameter(param.name(), param.value());
 			}
-
 			this.beanFactory.getBeanProvider(ServletRegistrationBean.class).forEach((servletRegistrationBean) -> {
-				for (Class<?> servletClass : registration.servletRegistrationBeans()) {
+				for (Class<?> servletClass : registration.servletClasses()) {
 					if (servletClass.isInstance(servletRegistrationBean.getServlet())) {
 						bean.addServletRegistrationBeans(servletRegistrationBean);
 					}

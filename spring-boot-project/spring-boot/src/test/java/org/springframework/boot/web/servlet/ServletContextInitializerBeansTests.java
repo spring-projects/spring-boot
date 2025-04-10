@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
@@ -144,8 +145,8 @@ class ServletContextInitializerBeansTests {
 			assertThat(filterRegistrationBean.getServletNames()).containsExactly("test");
 			assertThat(filterRegistrationBean.determineDispatcherTypes()).containsExactly(DispatcherType.ERROR);
 			assertThat(filterRegistrationBean.getUrlPatterns()).containsExactly("/test/*");
-			assertThat(filterRegistrationBean.getInitParameters()).containsEntry("env", "test")
-				.containsEntry("debug", "true");
+			assertThat(filterRegistrationBean.getInitParameters())
+				.containsExactlyInAnyOrderEntriesOf(Map.of("env", "test", "debug", "true"));
 			Collection<ServletRegistrationBean<?>> servletRegistrationBeans = filterRegistrationBean
 				.getServletRegistrationBeans();
 			assertThat(servletRegistrationBeans).hasSize(1);
@@ -305,12 +306,11 @@ class ServletContextInitializerBeansTests {
 	static class FilterConfigurationWithAnnotation {
 
 		@Bean
-		@FilterRegistration(enabled = false, name = "test", asyncSupported = false,
-				dispatcherTypes = DispatcherType.ERROR, matchAfter = true, servletNames = "test",
-				urlPatterns = "/test/*",
-				initParameters = { @WebInitParam(name = "env", value = "test"),
-						@WebInitParam(name = "debug", value = "true") },
-				servletRegistrationBeans = { TestServlet.class })
+		@FilterRegistration(
+				enabled = false, name = "test", asyncSupported = false, dispatcherTypes = DispatcherType.ERROR,
+				matchAfter = true, servletNames = "test", urlPatterns = "/test/*", initParameters = {
+						@WebInitParam(name = "env", value = "test"), @WebInitParam(name = "debug", value = "true") },
+				servletClasses = { TestServlet.class })
 		TestFilter testFilter() {
 			return new TestFilter();
 		}
