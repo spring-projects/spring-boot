@@ -68,6 +68,15 @@ class DockerCli {
 		this.composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
 	}
 
+	// 테스트나 DI에서 사용하는 생성자
+	DockerCli(ProcessRunner processRunner, DockerComposeOptions dockerComposeOptions) {
+		this.processRunner = processRunner;
+		this.dockerCommands = dockerCommandsCache.computeIfAbsent(
+				new File("."), (key) -> new DockerCommands(this.processRunner));
+		this.dockerComposeOptions = (dockerComposeOptions != null) ? dockerComposeOptions : DockerComposeOptions.none();
+		this.composeVersion = ComposeVersion.of(this.dockerCommands.get(Type.DOCKER_COMPOSE).version());
+	}
+
 	/**
 	 * Run the given {@link DockerCli} command and return the response.
 	 * @param <R> the response type
@@ -89,7 +98,9 @@ class DockerCli {
 		return (line) -> logLevel.log(logger, line);
 	}
 
-	private List<String> createCommand(Type type) {
+
+
+	List<String> createCommand(Type type) {
 		return switch (type) {
 			case DOCKER -> new ArrayList<>(this.dockerCommands.get(type).command());
 			case DOCKER_COMPOSE -> {

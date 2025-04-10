@@ -63,7 +63,7 @@ class DockerCliIntegrationTests {
 
 	@Test
 	void runBasicCommand() {
-		DockerCli cli = new DockerCli(null, null);
+		DockerCli cli = new DockerCli((File) null, null);
 		List<DockerCliContextResponse> context = cli.run(new DockerCliCommand.Context());
 		assertThat(context).isNotEmpty();
 	}
@@ -72,7 +72,7 @@ class DockerCliIntegrationTests {
 	void runLifecycle() throws IOException {
 		File composeFile = createComposeFile("redis-compose.yaml");
 		String projectName = UUID.randomUUID().toString();
-		DockerCli cli = new DockerCli(null, new DockerComposeOptions(DockerComposeFile.of(composeFile),
+		DockerCli cli = new DockerCli((File) null, new DockerComposeOptions(DockerComposeFile.of(composeFile),
 				Collections.emptySet(), List.of("--project-name=" + projectName)));
 		try {
 			// Verify that no services are running (this is a fresh compose project)
@@ -112,7 +112,7 @@ class DockerCliIntegrationTests {
 	@Test
 	void shouldWorkWithMultipleComposeFiles() throws IOException {
 		List<File> composeFiles = createComposeFiles();
-		DockerCli cli = new DockerCli(null,
+		DockerCli cli = new DockerCli((File) null,
 				new DockerComposeOptions(DockerComposeFile.of(composeFiles), Set.of("dev"), Collections.emptyList()));
 		try {
 			// List the config and verify that both redis are there
