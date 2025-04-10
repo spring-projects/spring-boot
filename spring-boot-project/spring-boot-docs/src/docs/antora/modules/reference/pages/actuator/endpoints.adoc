@@ -66,7 +66,7 @@ Subject to xref:actuator/endpoints.adoc#actuator.endpoints.sanitization[sanitiza
   Requires one or more javadoc:{url-liquibase-javadoc}/liquibase.Liquibase[] beans.
 
 | `metrics`
-| Shows "`metrics`" information for the current application.
+| Shows "`metrics`" information for the current application to diagnose the metrics the application has recorded.
 
 | `mappings`
 | Displays a collated list of all javadoc:org.springframework.web.bind.annotation.RequestMapping[format=annotation] paths.
