@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebInitParam;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AliasFor;
@@ -33,6 +35,7 @@ import org.springframework.core.annotation.Order;
  * annotation-based alternative to {@link ServletRegistrationBean}.
  *
  * @author Moritz Halbritter
+ * @author Dmytro Danilenkov
  * @since 3.5.0
  * @see ServletRegistrationBean
  */
@@ -86,5 +89,17 @@ public @interface ServletRegistration {
 	 * @return the {@code loadOnStartup} priority
 	 */
 	int loadOnStartup() default -1;
+
+	/**
+	 * Init parameters to set on the servlet (mirrors {@code @WebInitParam} usage).
+	 * @return array of {@link WebInitParam}
+	 */
+	WebInitParam[] initParameters() default {};
+
+	/**
+	 * Multipart configuration.
+	 * @return multipart config {@link MultipartConfig}
+	 */
+	MultipartConfig multipartConfig() default @MultipartConfig;
 
 }

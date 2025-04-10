@@ -27,6 +27,7 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Daeho Kwon
+ * @author Dmytro Danilenkov
  */
 class ServletContextInitializerBeansTests {
 
@@ -205,6 +207,29 @@ class ServletContextInitializerBeansTests {
 		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class,
 				(servletRegistrationBean) -> assertThat(servletRegistrationBean.getOrder())
 					.isEqualTo(ServletConfigurationWithAnnotationAndOrder.ORDER));
+	}
+
+	@Test
+	void shouldApplyExtendedServletRegistrationAnnotation() {
+		load(ServletConfigurationWithExtendedAttributes.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+		assertThatSingleServletRegistration(initializerBeans, (bean) -> {
+			assertThat(bean.getServletName()).isEqualTo("extended");
+			assertThat(bean.getUrlMappings()).containsExactly("/extended/*");
+			assertThat(bean.getInitParameters()).containsEntry("hello", "world").containsEntry("flag", "true");
+			assertThat(bean.getMultipartConfig()).isNotNull();
+			assertThat(bean.getMultipartConfig().getLocation()).isEqualTo("/tmp");
+			assertThat(bean.getMultipartConfig().getMaxFileSize()).isEqualTo(1024);
+			assertThat(bean.getMultipartConfig().getMaxRequestSize()).isEqualTo(4096);
+			assertThat(bean.getMultipartConfig().getFileSizeThreshold()).isEqualTo(128);
+		});
+
+	}
+
+	private void assertThatSingleServletRegistration(ServletContextInitializerBeans initializerBeans,
+			ThrowingConsumer<ServletRegistrationBean<?>> code) {
+		assertThatSingleRegistration(initializerBeans, ServletRegistrationBean.class, code::acceptThrows);
 	}
 
 	private void load(Class<?>... configuration) {
@@ -450,6 +475,21 @@ class ServletContextInitializerBeansTests {
 		@Override
 		public void onStartup(ServletContext servletContext) {
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServletConfigurationWithExtendedAttributes {
+
+		@Bean
+		@ServletRegistration(name = "extended", urlMappings = "/extended/*",
+				initParameters = { @WebInitParam(name = "hello", value = "world"),
+						@WebInitParam(name = "flag", value = "true") },
+				multipartConfig = @MultipartConfig(location = "/tmp", maxFileSize = 1024, maxRequestSize = 4096,
+						fileSizeThreshold = 128))
+		TestServlet testServletWithInitParametersAndMultipart() {
+			return new TestServlet();
 		}
 
 	}
