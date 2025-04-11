@@ -1455,8 +1455,10 @@ bom {
 		group("org.mongodb") {
 			modules = [
 				"bson",
+				"bson-kotlin",
 				"bson-record-codec",
 				"mongodb-driver-core",
+				"mongodb-driver-kotlin-coroutine",
 				"mongodb-driver-legacy",
 				"mongodb-driver-reactivestreams",
 				"mongodb-driver-sync"
