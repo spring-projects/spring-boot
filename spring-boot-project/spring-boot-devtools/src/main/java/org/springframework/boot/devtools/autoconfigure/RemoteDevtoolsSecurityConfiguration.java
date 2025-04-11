@@ -25,7 +25,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Spring Security configuration that allows anonymous access to the remote devtools
@@ -46,9 +45,10 @@ class RemoteDevtoolsSecurityConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings("removal")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
 	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.securityMatcher(new AntPathRequestMatcher(this.url));
+		http.securityMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher(this.url));
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
 		http.csrf(CsrfConfigurer::disable);
 		return http.build();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,17 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,10 +91,62 @@ class HttpClientAutoConfigurationTests {
 	}
 
 	@Test
+	void whenHttpComponentsIsUnavailableThenJettyClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(JettyClientHttpRequestFactoryBuilder.class));
+	}
+
+	@Test
+	void whenHttpComponentsAndJettyAreUnavailableThenReactorClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
+					org.eclipse.jetty.client.HttpClient.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(ReactorClientHttpRequestFactoryBuilder.class));
+	}
+
+	@Test
+	void whenHttpComponentsAndJettyAndReactorAreUnavailableThenJdkClientBeansAreDefined() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(org.apache.hc.client5.http.impl.classic.HttpClients.class,
+					org.eclipse.jetty.client.HttpClient.class, reactor.netty.http.client.HttpClient.class))
+			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
+				.isExactlyInstanceOf(JdkClientHttpRequestFactoryBuilder.class));
+	}
+
+	@Test
 	void whenReactiveWebApplicationBeansAreNotConfigured() {
 		new ReactiveWebApplicationContextRunner().withConfiguration(autoConfigurations)
 			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpRequestFactoryBuilder.class)
 				.doesNotHaveBean(ClientHttpRequestFactorySettings.class));
+	}
+
+	@Test
+	void clientHttpRequestFactoryBuilderCustomizersAreApplied() {
+		this.contextRunner.withUserConfiguration(ClientHttpRequestFactoryBuilderCustomizersConfiguration.class)
+			.run((context) -> {
+				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
+				assertThat(factory).extracting("connectTimeout").isEqualTo(5L);
+			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ClientHttpRequestFactoryBuilderCustomizersConfiguration {
+
+		@Bean
+		ClientHttpRequestFactoryBuilderCustomizer<HttpComponentsClientHttpRequestFactoryBuilder> httpComponentsCustomizer() {
+			return (builder) -> builder.withCustomizer((factory) -> factory.setConnectTimeout(5));
+		}
+
+		@Bean
+		ClientHttpRequestFactoryBuilderCustomizer<JettyClientHttpRequestFactoryBuilder> jettyCustomizer() {
+			return (builder) -> {
+				throw new IllegalStateException();
+			};
+		}
+
 	}
 
 }

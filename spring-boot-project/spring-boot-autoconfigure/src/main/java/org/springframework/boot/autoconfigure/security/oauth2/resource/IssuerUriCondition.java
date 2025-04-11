@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Artsiom Yudovin
  * @since 2.1.0
- * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
  * {@link ConditionalOnIssuerLocationJwtDecoder @ConditionalOnIssuerLocationJwtDecoder}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)

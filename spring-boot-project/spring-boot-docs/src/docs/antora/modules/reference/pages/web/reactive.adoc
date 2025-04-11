@@ -87,7 +87,7 @@ When not configured, the following defaults are used:
 Spring WebFlux uses the javadoc:org.springframework.http.codec.HttpMessageReader[] and javadoc:org.springframework.http.codec.HttpMessageWriter[] interfaces to convert HTTP requests and responses.
 They are configured with javadoc:org.springframework.http.codec.CodecConfigurer[] to have sensible defaults by looking at the libraries available in your classpath.
 
-Spring Boot provides dedicated configuration properties for codecs, `+spring.codec.*+`.
+Spring Boot provides dedicated configuration properties for codecs, `+spring.http.codecs.*+`.
 It also applies further customization by using javadoc:org.springframework.boot.web.codec.CodecCustomizer[] instances.
 For example, `+spring.jackson.*+` configuration keys are applied to the Jackson codec.
 

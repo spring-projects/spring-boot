@@ -90,7 +90,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param parameterValueMapper the parameter value mapper
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param endpointFilters endpoint filters to apply
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #EndpointDiscoverer(ApplicationContext, ParameterValueMapper, Collection, Collection, Collection)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
@@ -388,7 +388,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
 	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #createEndpoint(Object, EndpointId, Access, Collection)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)

@@ -28,6 +28,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -85,16 +86,58 @@ class FileWatcher implements Closeable {
 					this.thread = new WatcherThread();
 					this.thread.start();
 				}
-				Set<Path> registrationPaths = new HashSet<>();
-				for (Path path : paths) {
-					registrationPaths.addAll(getRegistrationPaths(path));
-				}
-				this.thread.register(new Registration(registrationPaths, action));
+				this.thread.register(new Registration(getRegistrationPaths(paths), action));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
+	}
+
+	/**
+	 * Retrieves all {@link Path Paths} that should be registered for the specified
+	 * {@link Path}. If the path is a symlink, changes to the symlink should be monitored,
+	 * not just the file it points to. For example, for the given {@code keystore.jks}
+	 * path in the following directory structure:<pre>
+	 * +- stores
+	 * |  +─ keystore.jks
+	 * +- <em>data</em> -&gt; stores
+	 * +─ <em>keystore.jks</em> -&gt; data/keystore.jks
+	 * </pre> the resulting paths would include:
+	 * <p>
+	 * <ul>
+	 * <li>{@code keystore.jks}</li>
+	 * <li>{@code data/keystore.jks}</li>
+	 * <li>{@code data}</li>
+	 * <li>{@code stores/keystore.jks}</li>
+	 * </ul>
+	 * @param paths the source paths
+	 * @return all possible {@link Path} instances to be registered
+	 * @throws IOException if an I/O error occurs
+	 */
+	private Set<Path> getRegistrationPaths(Set<Path> paths) throws IOException {
+		Set<Path> result = new HashSet<>();
+		for (Path path : paths) {
+			collectRegistrationPaths(path, result);
+		}
+		return Collections.unmodifiableSet(result);
+	}
+
+	private void collectRegistrationPaths(Path path, Set<Path> result) throws IOException {
+		path = path.toAbsolutePath();
+		result.add(path);
+		Path parent = path.getParent();
+		if (parent != null && Files.isSymbolicLink(parent)) {
+			result.add(parent);
+			collectRegistrationPaths(resolveSiblingSymbolicLink(parent).resolve(path.getFileName()), result);
+		}
+		else if (Files.isSymbolicLink(path)) {
+			collectRegistrationPaths(resolveSiblingSymbolicLink(path), result);
+		}
+	}
+
+	private Path resolveSiblingSymbolicLink(Path path) throws IOException {
+		return path.resolveSibling(Files.readSymbolicLink(path));
 	}
 
 	@Override
@@ -112,44 +155,6 @@ class FileWatcher implements Closeable {
 				this.thread = null;
 			}
 		}
-	}
-
-	/**
-	 * Retrieves all {@link Path Paths} that should be registered for the specified
-	 * {@link Path}. If the path is a symlink, changes to the symlink should be monitored,
-	 * not just the file it points to. For example, for the given {@code keystore.jks}
-	 * path in the following directory structure:<pre>
-	 * .
-	 * ├── ..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f
-	 * │   ├── keystore.jks
-	 * ├── ..data -> ..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f
-	 * ├── keystore.jks -> ..data/keystore.jks
-	 * </pre> the resulting paths would include:
-	 * <ul>
-	 * <li><b>keystore.jks</b></li>
-	 * <li><b>..data/keystore.jks</b></li>
-	 * <li><b>..data</b></li>
-	 * <li><b>..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f/keystore.jks</b></li>
-	 * </ul>
-	 * @param path the path
-	 * @return all possible {@link Path} instances to be registered
-	 * @throws IOException if an I/O error occurs
-	 */
-	private static Set<Path> getRegistrationPaths(Path path) throws IOException {
-		path = path.toAbsolutePath();
-		Set<Path> result = new HashSet<>();
-		result.add(path);
-		Path parent = path.getParent();
-		if (parent != null && Files.isSymbolicLink(parent)) {
-			result.add(parent);
-			Path target = parent.resolveSibling(Files.readSymbolicLink(parent));
-			result.addAll(getRegistrationPaths(target.resolve(path.getFileName())));
-		}
-		else if (Files.isSymbolicLink(path)) {
-			Path target = path.resolveSibling(Files.readSymbolicLink(path));
-			result.addAll(getRegistrationPaths(target));
-		}
-		return result;
 	}
 
 	/**
@@ -254,6 +259,9 @@ class FileWatcher implements Closeable {
 
 	/**
 	 * An individual watch registration.
+	 *
+	 * @param paths the paths being registered
+	 * @param action the action to take
 	 */
 	private record Registration(Set<Path> paths, Runnable action) {
 
@@ -265,6 +273,7 @@ class FileWatcher implements Closeable {
 		private boolean isInDirectories(Path file) {
 			return this.paths.stream().filter(Files::isDirectory).anyMatch(file::startsWith);
 		}
+
 	}
 
 }

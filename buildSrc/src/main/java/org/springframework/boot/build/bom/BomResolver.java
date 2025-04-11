@@ -42,6 +42,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
@@ -84,9 +85,9 @@ class BomResolver {
 					Id id = new Id(group.getId(), module.getName(), library.getVersion().getVersion().toString());
 					managedDependencies.add(id);
 				}
-				for (String imported : group.getBoms()) {
+				for (ImportedBom imported : group.getBoms()) {
 					Bom bom = bomFrom(resolveBom(
-							"%s:%s:%s".formatted(group.getId(), imported, library.getVersion().getVersion())));
+							"%s:%s:%s".formatted(group.getId(), imported.name(), library.getVersion().getVersion())));
 					imports.add(bom);
 				}
 			}

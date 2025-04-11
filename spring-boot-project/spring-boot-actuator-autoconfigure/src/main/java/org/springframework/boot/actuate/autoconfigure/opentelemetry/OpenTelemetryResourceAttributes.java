@@ -57,7 +57,7 @@ public final class OpenTelemetryResourceAttributes {
 	/**
 	 * Creates a new instance of {@link OpenTelemetryResourceAttributes}.
 	 * @param environment the environment
-	 * @param resourceAttributes user provided resource attributes to be used
+	 * @param resourceAttributes user-provided resource attributes to be used
 	 */
 	public OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes) {
 		this(environment, resourceAttributes, null);
@@ -66,7 +66,7 @@ public final class OpenTelemetryResourceAttributes {
 	/**
 	 * Creates a new {@link OpenTelemetryResourceAttributes} instance.
 	 * @param environment the environment
-	 * @param resourceAttributes user provided resource attributes to be used
+	 * @param resourceAttributes user-provided resource attributes to be used
 	 * @param getEnv a function to retrieve environment variables by name
 	 */
 	OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes,
@@ -110,7 +110,7 @@ public final class OpenTelemetryResourceAttributes {
 	/**
 	 * Returns the application group.
 	 * @return the application group
-	 * @deprecated since 3.5.0 for removal in 3.7.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	private String getApplicationGroup() {

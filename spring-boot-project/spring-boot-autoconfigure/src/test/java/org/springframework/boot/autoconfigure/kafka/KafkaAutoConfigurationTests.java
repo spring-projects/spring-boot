@@ -115,6 +115,7 @@ import static org.mockito.Mockito.never;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class KafkaAutoConfigurationTests {
 
@@ -132,8 +133,9 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.ssl.key-store-type=PKCS12", "spring.kafka.ssl.trust-store-location=classpath:tsLoc",
 				"spring.kafka.ssl.trust-store-password=p3", "spring.kafka.ssl.trust-store-type=PKCS12",
 				"spring.kafka.ssl.protocol=TLSv1.2", "spring.kafka.consumer.auto-commit-interval=123",
-				"spring.kafka.consumer.max-poll-records=42", "spring.kafka.consumer.auto-offset-reset=earliest",
-				"spring.kafka.consumer.client-id=ccid", // test override common
+				"spring.kafka.consumer.max-poll-records=42", "spring.kafka.consumer.max-poll-interval=30s",
+				"spring.kafka.consumer.auto-offset-reset=earliest", "spring.kafka.consumer.client-id=ccid",
+				// test override common
 				"spring.kafka.consumer.enable-auto-commit=false", "spring.kafka.consumer.fetch-max-wait=456",
 				"spring.kafka.consumer.properties.fiz.buz=fix.fox", "spring.kafka.consumer.fetch-min-size=1KB",
 				"spring.kafka.consumer.group-id=bar", "spring.kafka.consumer.heartbeat-interval=234",
@@ -172,6 +174,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(configs).containsEntry(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
 						IntegerDeserializer.class);
 				assertThat(configs).containsEntry(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 42);
+				assertThat(configs).containsEntry(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30000);
 				assertThat(configs).containsEntry("foo", "bar");
 				assertThat(configs).containsEntry("baz", "qux");
 				assertThat(configs).containsEntry("foo.bar.baz", "qux.fiz.buz");

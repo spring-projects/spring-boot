@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -111,8 +112,9 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 				moduleVersions.put(group.getId() + ":" + module.getName(),
 						getLaterVersionsForModule(group.getId(), module.getName(), library));
 			}
-			for (String bom : group.getBoms()) {
-				moduleVersions.put(group.getId() + ":" + bom, getLaterVersionsForModule(group.getId(), bom, library));
+			for (ImportedBom bom : group.getBoms()) {
+				moduleVersions.put(group.getId() + ":" + bom,
+						getLaterVersionsForModule(group.getId(), bom.name(), library));
 			}
 			for (String plugin : group.getPlugins()) {
 				moduleVersions.put(group.getId() + ":" + plugin,

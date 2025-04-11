@@ -55,7 +55,7 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 	 * @param uuidRepresentation the uuid representation
 	 * @param ssl the ssl properties
 	 * @param sslBundles the ssl bundles
-	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
 	 * {@link #StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails, UuidRepresentation)}
 	 */
 	@Deprecated(forRemoval = true, since = "3.5.0")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ public class TaskExecutionProperties {
 	private final Shutdown shutdown = new Shutdown();
 
 	/**
+	 * Determine when the task executor is to be created.
+	 */
+	private Mode mode = Mode.AUTO;
+
+	/**
 	 * Prefix to use for the names of newly created threads.
 	 */
 	private String threadNamePrefix = "task-";
@@ -52,6 +57,14 @@ public class TaskExecutionProperties {
 
 	public Shutdown getShutdown() {
 		return this.shutdown;
+	}
+
+	public Mode getMode() {
+		return this.mode;
+	}
+
+	public void setMode(Mode mode) {
+		this.mode = mode;
 	}
 
 	public String getThreadNamePrefix() {
@@ -206,6 +219,25 @@ public class TaskExecutionProperties {
 		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
 			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
+
+	}
+
+	/**
+	 * Determine when the task executor is to be created.
+	 *
+	 * @since 3.5.0
+	 */
+	public enum Mode {
+
+		/**
+		 * Create the task executor if no user-defined executor is present.
+		 */
+		AUTO,
+
+		/**
+		 * Create the task executor even if a user-defined executor is present.
+		 */
+		FORCE
 
 	}
 

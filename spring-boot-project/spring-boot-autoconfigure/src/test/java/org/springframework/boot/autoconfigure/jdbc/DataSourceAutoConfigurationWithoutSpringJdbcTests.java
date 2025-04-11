@@ -25,8 +25,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -46,25 +44,22 @@ class DataSourceAutoConfigurationWithoutSpringJdbcTests {
 
 	@Test
 	void pooledDataSourceCanBeAutoConfigured() {
-		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.run((context) -> {
-				HikariDataSource dataSource = context.getBean(HikariDataSource.class);
-				assertThat(dataSource.getJdbcUrl()).isNotNull();
-				assertThat(dataSource.getDriverClassName()).isNotNull();
-			});
+		this.contextRunner.run((context) -> {
+			HikariDataSource dataSource = context.getBean(HikariDataSource.class);
+			assertThat(dataSource.getJdbcUrl()).isNotNull();
+			assertThat(dataSource.getDriverClassName()).isNotNull();
+		});
 	}
 
 	@Test
 	void withoutConnectionPoolsAutoConfigurationBacksOff() {
-		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.with(hideConnectionPools())
+		this.contextRunner.with(hideConnectionPools())
 			.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test
 	void withUrlAndWithoutConnectionPoolsAutoConfigurationBacksOff() {
-		this.contextRunner.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-			.with(hideConnectionPools())
+		this.contextRunner.with(hideConnectionPools())
 			.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt())
 			.run((context) -> assertThat(context).doesNotHaveBean(DataSource.class));
 	}

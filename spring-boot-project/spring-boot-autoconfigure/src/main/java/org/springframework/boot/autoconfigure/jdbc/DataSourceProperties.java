@@ -171,6 +171,15 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @since 1.4.0
 	 */
 	public String determineDriverClassName() {
+		String driverClassName = findDriverClassName();
+		if (!StringUtils.hasText(driverClassName)) {
+			throw new DataSourceBeanCreationException("Failed to determine a suitable driver class", this,
+					this.embeddedDatabaseConnection);
+		}
+		return driverClassName;
+	}
+
+	String findDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			Assert.state(driverClassIsLoadable(), () -> "Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
@@ -181,10 +190,6 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 		if (!StringUtils.hasText(driverClassName)) {
 			driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
-		}
-		if (!StringUtils.hasText(driverClassName)) {
-			throw new DataSourceBeanCreationException("Failed to determine a suitable driver class", this,
-					this.embeddedDatabaseConnection);
 		}
 		return driverClassName;
 	}
@@ -277,7 +282,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl())) {
+		if (EmbeddedDatabaseConnection.isEmbedded(findDriverClassName(), determineUrl())) {
 			return "sa";
 		}
 		return null;
@@ -305,7 +310,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl())) {
+		if (EmbeddedDatabaseConnection.isEmbedded(findDriverClassName(), determineUrl())) {
 			return "";
 		}
 		return null;

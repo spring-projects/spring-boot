@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import reactor.netty.http.client.HttpClient;
 
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorBuilderCustomizer;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 
@@ -30,8 +32,12 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @author Phillip Webb
  * @since 2.3.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@link ClientHttpConnectorBuilderCustomizer} or declaring a pre-configured
+ * {@link ClientHttpConnectorBuilder} bean
  */
 @FunctionalInterface
+@Deprecated(since = "3.5.0", forRemoval = true)
 public interface ReactorNettyHttpClientMapper {
 
 	/**

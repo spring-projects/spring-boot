@@ -49,7 +49,7 @@ class DockerComposeServiceConnectionsApplicationListener
 	private final ConnectionDetailsFactories factories;
 
 	DockerComposeServiceConnectionsApplicationListener() {
-		this(new ConnectionDetailsFactories());
+		this(new ConnectionDetailsFactories(null));
 	}
 
 	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories) {

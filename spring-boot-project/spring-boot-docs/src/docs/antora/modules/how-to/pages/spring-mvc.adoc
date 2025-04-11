@@ -180,6 +180,7 @@ spring:
 ----
 
 If you have additional servlets you can declare a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:jakarta.servlet.Servlet[] or javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] for each and Spring Boot will register them transparently to the container.
+It is also possible to use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] as an annotation-based alternative to javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[].
 Because servlets are registered that way, they can be mapped to a sub-context of the javadoc:org.springframework.web.servlet.DispatcherServlet[] without invoking it.
 
 Configuring the javadoc:org.springframework.web.servlet.DispatcherServlet[] yourself is unusual but if you really need to do it, a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath[] must be provided as well to provide the path of your custom javadoc:org.springframework.web.servlet.DispatcherServlet[].

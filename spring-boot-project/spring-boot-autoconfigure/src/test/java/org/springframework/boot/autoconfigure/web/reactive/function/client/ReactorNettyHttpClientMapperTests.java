@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class ReactorNettyHttpClientMapperTests {
 
 	@Test

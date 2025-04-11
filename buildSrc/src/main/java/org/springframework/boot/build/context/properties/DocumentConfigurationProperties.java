@@ -87,7 +87,6 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.autoconfigure");
 		config.accept("spring.banner");
 		config.accept("spring.beaninfo");
-		config.accept("spring.codec");
 		config.accept("spring.config");
 		config.accept("spring.info");
 		config.accept("spring.jmx");

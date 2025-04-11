@@ -37,9 +37,11 @@ class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
 		String path = this.pathFactory.apply(pattern);
-		return new AntPathRequestMatcher(path, (httpMethod != null) ? httpMethod.name() : null);
+		return new org.springframework.security.web.util.matcher.AntPathRequestMatcher(path,
+				(httpMethod != null) ? httpMethod.name() : null);
 	}
 
 }

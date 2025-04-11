@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -77,8 +76,10 @@ public final class PathRequest {
 		}
 
 		@Override
+		@SuppressWarnings("removal")
 		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
-			this.delegate = new AntPathRequestMatcher(h2ConsoleProperties.get().getPath() + "/**");
+			this.delegate = new org.springframework.security.web.util.matcher.AntPathRequestMatcher(
+					h2ConsoleProperties.get().getPath() + "/**");
 		}
 
 		@Override

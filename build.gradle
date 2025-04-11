@@ -22,5 +22,10 @@ subprojects {
 	configurations.all {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
+
+	// Added spring-boot-starter-mail dependency for the subprojects where email functionality is required
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-mail'
+	}
 }
 

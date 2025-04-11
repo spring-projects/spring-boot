@@ -33,6 +33,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,10 +51,17 @@ abstract class DataSourceConfiguration {
 	@SuppressWarnings("unchecked")
 	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
 			ClassLoader classLoader) {
-		return (T) DataSourceBuilder.create(classLoader)
-			.type(type)
-			.driverClassName(connectionDetails.getDriverClassName())
-			.url(connectionDetails.getJdbcUrl())
+		return createDataSource(connectionDetails, type, classLoader, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
+			ClassLoader classLoader, boolean applyDriverClassName) {
+		DataSourceBuilder<? extends DataSource> builder = DataSourceBuilder.create(classLoader).type(type);
+		if (applyDriverClassName) {
+			builder.driverClassName(connectionDetails.getDriverClassName());
+		}
+		return (T) builder.url(connectionDetails.getJdbcUrl())
 			.username(connectionDetails.getUsername())
 			.password(connectionDetails.getPassword())
 			.build();
@@ -113,9 +121,11 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties("spring.datasource.hikari")
-		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
+		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails,
+				Environment environment) {
+			String dataSourceClassName = environment.getProperty("spring.datasource.hikari.data-source-class-name");
 			HikariDataSource dataSource = createDataSource(connectionDetails, HikariDataSource.class,
-					properties.getClassLoader());
+					properties.getClassLoader(), dataSourceClassName == null);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
 			}

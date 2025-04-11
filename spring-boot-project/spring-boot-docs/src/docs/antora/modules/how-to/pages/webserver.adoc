@@ -369,6 +369,7 @@ However, you must be very careful that they do not cause eager initialization of
 You can work around such restrictions by initializing the beans lazily when first used instead of on initialization.
 
 In the case of filters and servlets, you can also add mappings and init parameters by adding a javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[] or a javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] instead of or in addition to the underlying component.
+You can also use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] and javadoc:org.springframework.boot.web.servlet.FilterRegistration[format=annotation] as an annotation-based alternative to javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] and javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[].
 
 [NOTE]
 ====

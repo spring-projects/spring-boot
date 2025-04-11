@@ -30,7 +30,7 @@ public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 	/**
 	 * Address to where tracing will be published.
 	 * @return the address to where tracing will be published
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #getUrl(Transport)}
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #getUrl(Transport)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	default String getUrl() {
