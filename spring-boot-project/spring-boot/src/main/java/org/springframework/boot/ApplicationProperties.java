@@ -37,13 +37,13 @@ class ApplicationProperties {
 	 * Whether bean definition overriding, by registering a definition with the same name
 	 * as an existing definition, is allowed.
 	 */
-	private boolean allowBeanDefinitionOverriding;
+	private boolean allowBeanDefinitionOverriding = false;
 
 	/**
 	 * Whether to allow circular references between beans and automatically try to resolve
 	 * them.
 	 */
-	private boolean allowCircularReferences;
+	private boolean allowCircularReferences = false;
 
 	/**
 	 * Mode used to display the banner when the application runs.
@@ -53,7 +53,7 @@ class ApplicationProperties {
 	/**
 	 * Whether to keep the application alive even if there are no more non-daemon threads.
 	 */
-	private boolean keepAlive;
+	private boolean keepAlive = false;
 
 	/**
 	 * Whether initialization should be performed lazily.
