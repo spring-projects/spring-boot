@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import javax.sql.DataSource;
 
@@ -37,13 +37,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -71,9 +70,9 @@ import org.springframework.util.StringUtils;
  * @author Evgeniy Cheban
  * @author Moritz Halbritter
  * @author Ahmed Ashour
- * @since 1.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBooleanProperty(name = "spring.liquibase.enabled", matchIfMissing = true)
 @Conditional(LiquibaseDataSourceCondition.class)
@@ -82,8 +81,7 @@ import org.springframework.util.StringUtils;
 public class LiquibaseAutoConfiguration {
 
 	@Bean
-	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
-			ObjectProvider<SpringLiquibase> liquibases) {
+	LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(ObjectProvider<SpringLiquibase> liquibases) {
 		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 
@@ -91,7 +89,7 @@ public class LiquibaseAutoConfiguration {
 	@ConditionalOnClass(ConnectionCallback.class)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties(LiquibaseProperties.class)
-	public static class LiquibaseConfiguration {
+	static class LiquibaseConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LiquibaseConnectionDetails.class)

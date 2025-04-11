@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import java.io.File;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Eddú Meléndez
  * @author Ferenc Gratzer
  * @author Evgeniy Cheban
- * @since 1.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
 public class LiquibaseProperties {
@@ -361,8 +361,6 @@ public class LiquibaseProperties {
 	 * Enumeration of types of summary to show. Values are the same as those on
 	 * {@link UpdateSummaryEnum}. To maximize backwards compatibility, the Liquibase enum
 	 * is not used directly.
-	 *
-	 * @since 3.2.1
 	 */
 	public enum ShowSummary {
 
@@ -387,8 +385,6 @@ public class LiquibaseProperties {
 	 * Enumeration of destinations to which the summary should be output. Values are the
 	 * same as those on {@link UpdateSummaryOutputEnum}. To maximize backwards
 	 * compatibility, the Liquibase enum is not used directly.
-	 *
-	 * @since 3.2.1
 	 */
 	public enum ShowSummaryOutput {
 

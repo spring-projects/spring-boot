@@ -1,0 +1,46 @@
+{
+  "properties": [
+    {
+      "name": "spring.liquibase.check-change-log-location",
+      "type": "java.lang.Boolean",
+      "description": "Check the change log location exists.",
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Liquibase has its own check that checks if the change log location exists making this property redundant.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.liquibase.labels",
+      "deprecation": {
+        "replacement": "spring.liquibase.label-filter",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.liquibase.show-summary",
+      "defaultValue": "summary"
+    },
+    {
+      "name": "spring.liquibase.show-summary-output",
+      "defaultValue": "log"
+    },
+    {
+      "name": "spring.liquibase.ui-service",
+      "defaultValue": "logger"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.liquibase.change-log",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.springframework.core.io.Resource"
+          }
+        }
+      ]
+    }
+  ]
+}
