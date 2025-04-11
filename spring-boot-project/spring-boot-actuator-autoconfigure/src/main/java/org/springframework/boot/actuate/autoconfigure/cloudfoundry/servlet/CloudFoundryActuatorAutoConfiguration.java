@@ -62,6 +62,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -183,15 +184,12 @@ public class CloudFoundryActuatorAutoConfiguration {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
 		public void customize(WebSecurity web) {
 			List<RequestMatcher> requestMatchers = new ArrayList<>();
 			this.pathMappedEndpoints.getAllPaths()
-				.forEach((path) -> requestMatchers
-					.add(new org.springframework.security.web.util.matcher.AntPathRequestMatcher(path + "/**")));
-			requestMatchers.add(new org.springframework.security.web.util.matcher.AntPathRequestMatcher(BASE_PATH));
-			requestMatchers
-				.add(new org.springframework.security.web.util.matcher.AntPathRequestMatcher(BASE_PATH + "/"));
+				.forEach((path) -> requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(path + "/**")));
+			requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(BASE_PATH));
+			requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(BASE_PATH + "/"));
 			web.ignoring().requestMatchers(new OrRequestMatcher(requestMatchers));
 		}
 

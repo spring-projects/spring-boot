@@ -430,7 +430,7 @@ class EndpointRequestTests {
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
-				request.setServletPath(servletPath);
+				request.setRequestURI(servletPath);
 			}
 			if (httpMethod != null) {
 				request.setMethod(httpMethod.name());
