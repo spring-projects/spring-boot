@@ -41,6 +41,7 @@ import org.springframework.util.CollectionUtils;
  * @author Stephane Nicoll
  * @author Filip Hrisafov
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 3.2.0
  */
 public class SimpleAsyncTaskExecutorBuilder {
@@ -48,6 +49,8 @@ public class SimpleAsyncTaskExecutorBuilder {
 	private final Boolean virtualThreads;
 
 	private final String threadNamePrefix;
+
+	private final boolean rejectTasksWhenLimitReached;
 
 	private final Integer concurrencyLimit;
 
@@ -58,14 +61,15 @@ public class SimpleAsyncTaskExecutorBuilder {
 	private final Duration taskTerminationTimeout;
 
 	public SimpleAsyncTaskExecutorBuilder() {
-		this(null, null, null, null, null, null);
+		this(null, null, false, null, null, null, null);
 	}
 
-	private SimpleAsyncTaskExecutorBuilder(Boolean virtualThreads, String threadNamePrefix, Integer concurrencyLimit,
-			TaskDecorator taskDecorator, Set<SimpleAsyncTaskExecutorCustomizer> customizers,
-			Duration taskTerminationTimeout) {
+	private SimpleAsyncTaskExecutorBuilder(Boolean virtualThreads, String threadNamePrefix,
+			boolean rejectTasksWhenLimitReached, Integer concurrencyLimit, TaskDecorator taskDecorator,
+			Set<SimpleAsyncTaskExecutorCustomizer> customizers, Duration taskTerminationTimeout) {
 		this.virtualThreads = virtualThreads;
 		this.threadNamePrefix = threadNamePrefix;
+		this.rejectTasksWhenLimitReached = rejectTasksWhenLimitReached;
 		this.concurrencyLimit = concurrencyLimit;
 		this.taskDecorator = taskDecorator;
 		this.customizers = customizers;
@@ -78,8 +82,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @return a new builder instance
 	 */
 	public SimpleAsyncTaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, threadNamePrefix, this.concurrencyLimit,
-				this.taskDecorator, this.customizers, this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator, this.customizers,
+				this.taskTerminationTimeout);
 	}
 
 	/**
@@ -88,8 +93,24 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @return a new builder instance
 	 */
 	public SimpleAsyncTaskExecutorBuilder virtualThreads(Boolean virtualThreads) {
-		return new SimpleAsyncTaskExecutorBuilder(virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
-				this.taskDecorator, this.customizers, this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator, this.customizers,
+				this.taskTerminationTimeout);
+	}
+
+	/**
+	 * Set whether to reject tasks when the concurrency limit has been reached. By default
+	 * {@code false} to block the caller until the submission can be accepted. Switch to
+	 * {@code true} for immediate rejection instead.
+	 * @param rejectTasksWhenLimitReached whether to reject tasks when the concurrency
+	 * limit has been reached
+	 * @return a new builder instance
+	 * @since 3.5.0
+	 */
+	public SimpleAsyncTaskExecutorBuilder rejectTasksWhenLimitReached(boolean rejectTasksWhenLimitReached) {
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator, this.customizers,
+				this.taskTerminationTimeout);
 	}
 
 	/**
@@ -98,8 +119,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @return a new builder instance
 	 */
 	public SimpleAsyncTaskExecutorBuilder concurrencyLimit(Integer concurrencyLimit) {
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, concurrencyLimit,
-				this.taskDecorator, this.customizers, this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, concurrencyLimit, this.taskDecorator, this.customizers,
+				this.taskTerminationTimeout);
 	}
 
 	/**
@@ -108,8 +130,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @return a new builder instance
 	 */
 	public SimpleAsyncTaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
-				taskDecorator, this.customizers, this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, taskDecorator, this.customizers,
+				this.taskTerminationTimeout);
 	}
 
 	/**
@@ -119,8 +142,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @since 3.2.1
 	 */
 	public SimpleAsyncTaskExecutorBuilder taskTerminationTimeout(Duration taskTerminationTimeout) {
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
-				this.taskDecorator, this.customizers, taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator, this.customizers,
+				taskTerminationTimeout);
 	}
 
 	/**
@@ -149,8 +173,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	public SimpleAsyncTaskExecutorBuilder customizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
-				this.taskDecorator, append(null, customizers), this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator, append(null, customizers),
+				this.taskTerminationTimeout);
 	}
 
 	/**
@@ -177,8 +202,9 @@ public class SimpleAsyncTaskExecutorBuilder {
 	public SimpleAsyncTaskExecutorBuilder additionalCustomizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
-		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
-				this.taskDecorator, append(this.customizers, customizers), this.taskTerminationTimeout);
+		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix,
+				this.rejectTasksWhenLimitReached, this.concurrencyLimit, this.taskDecorator,
+				append(this.customizers, customizers), this.taskTerminationTimeout);
 	}
 
 	/**
@@ -217,6 +243,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.virtualThreads).to(taskExecutor::setVirtualThreads);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
+		map.from(this.rejectTasksWhenLimitReached).to(taskExecutor::setRejectTasksWhenLimitReached);
 		map.from(this.concurrencyLimit).to(taskExecutor::setConcurrencyLimit);
 		map.from(this.taskDecorator).to(taskExecutor::setTaskDecorator);
 		map.from(this.taskTerminationTimeout).as(Duration::toMillis).to(taskExecutor::setTaskTerminationTimeout);
