@@ -1993,6 +1993,7 @@ bom {
 				"spring-boot-jetty",
 				"spring-boot-jms",
 				"spring-boot-jsonb",
+				"spring-boot-liquibase",
 				"spring-boot-loader",
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",

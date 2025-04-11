@@ -6,13 +6,8 @@ org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitia
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.reactor.ReactorEnvironmentPostProcessor
 
-# Failure Analyzers
-org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
-
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
-org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
 org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
 

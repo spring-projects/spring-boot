@@ -1,0 +1,27 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Liquibase"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-jdbc"))
+	api("org.liquibase:liquibase-core") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.h2database:h2")
+	testImplementation("com.zaxxer:HikariCP")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("org.postgresql:postgresql")
+}
