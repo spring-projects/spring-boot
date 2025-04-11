@@ -1567,16 +1567,7 @@ bom {
 	}
 	library("MongoDB", "5.4.0") {
 		group("org.mongodb") {
-			modules = [
-				"bson",
-				"bson-kotlin",
-				"bson-record-codec",
-				"mongodb-driver-core",
-				"mongodb-driver-kotlin-coroutine",
-				"mongodb-driver-legacy",
-				"mongodb-driver-reactivestreams",
-				"mongodb-driver-sync"
-			]
+			bom("mongodb-driver-bom")
 		}
 		links {
 			site("https://github.com/mongodb/mongo-java-driver")
