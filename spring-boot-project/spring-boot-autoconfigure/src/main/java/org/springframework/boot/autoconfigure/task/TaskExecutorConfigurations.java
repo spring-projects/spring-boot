@@ -135,8 +135,8 @@ class TaskExecutorConfigurations {
 			builder = builder.customizers(this.taskExecutorCustomizers.orderedStream()::iterator);
 			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			TaskExecutionProperties.Simple simple = this.properties.getSimple();
-			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
 			builder = builder.rejectTasksWhenLimitReached(simple.isRejectTasksWhenLimitReached());
+			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
 			TaskExecutionProperties.Shutdown shutdown = this.properties.getShutdown();
 			if (shutdown.isAwaitTermination()) {
 				builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
