@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -364,12 +366,6 @@ class TaskExecutionAutoConfigurationTests {
 			});
 	}
 
-	private Executor createCustomAsyncExecutor(String threadNamePrefix) {
-		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
-		executor.setThreadNamePrefix(threadNamePrefix);
-		return executor;
-	}
-
 	@Test
 	void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-")
@@ -380,6 +376,51 @@ class TaskExecutionAutoConfigurationTests {
 				String text = bean.echo("something").get();
 				assertThat(text).contains("auto-task-").contains("something");
 			});
+	}
+
+	@Test
+	void shouldAliasApplicationExecutorToBootstrapExecutor() {
+		this.contextRunner.run((context) -> {
+			String[] aliases = context.getAliases("applicationTaskExecutor");
+			assertThat(aliases).containsExactly("bootstrapExecutor");
+		});
+	}
+
+	@Test
+	void shouldNotAliasIfBootstrapExecutorIsDefined() {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			this.contextRunner.withBean("applicationTaskExecutor", Executor.class, () -> executor)
+				.withBean("bootstrapExecutor", Executor.class, () -> executor)
+				.run((context) -> {
+					assertThat(context).hasBean("applicationTaskExecutor");
+					String[] aliases = context.getAliases("applicationTaskExecutor");
+					assertThat(aliases).isEmpty();
+				});
+		}
+		finally {
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
+	void shouldNotAliasIfApplicationTaskExecutorIsMissing() {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			this.contextRunner.withBean("customExecutor", Executor.class, () -> executor).run((context) -> {
+				assertThat(context).doesNotHaveBean("applicationTaskExecutor");
+				assertThat(context).doesNotHaveBean("bootstrapExecutor");
+			});
+		}
+		finally {
+			executor.shutdownNow();
+		}
+	}
+
+	private Executor createCustomAsyncExecutor(String threadNamePrefix) {
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+		executor.setThreadNamePrefix(threadNamePrefix);
+		return executor;
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertThreadPoolTaskExecutor(

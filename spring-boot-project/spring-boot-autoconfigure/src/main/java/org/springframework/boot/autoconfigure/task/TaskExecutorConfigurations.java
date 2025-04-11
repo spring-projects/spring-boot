@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -156,6 +157,26 @@ class TaskExecutorConfigurations {
 				public Executor getAsyncExecutor() {
 					return beanFactory.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 							Executor.class);
+				}
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BootstrapExecutorConfiguration {
+
+		private static final String BOOTSTRAP_EXECUTOR_NAME = "bootstrapExecutor";
+
+		@Bean
+		static BeanFactoryPostProcessor bootstrapExecutorAliasPostProcessor() {
+			return (beanFactory) -> {
+				boolean hasBootstrapExecutor = beanFactory.containsBean(BOOTSTRAP_EXECUTOR_NAME);
+				boolean hasApplicationTaskExecutor = beanFactory
+					.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+				if (!hasBootstrapExecutor && hasApplicationTaskExecutor) {
+					beanFactory.registerAlias(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+							BOOTSTRAP_EXECUTOR_NAME);
 				}
 			};
 		}
