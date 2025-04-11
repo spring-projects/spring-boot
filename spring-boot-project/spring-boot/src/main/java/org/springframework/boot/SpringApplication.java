@@ -248,9 +248,9 @@ public class SpringApplication {
 
 	private boolean allowCircularReferences;
 
-	private boolean isCustomEnvironment = false;
+	private boolean isCustomEnvironment;
 
-	private boolean lazyInitialization = false;
+	private boolean lazyInitialization;
 
 	private String environmentPrefix;
 
