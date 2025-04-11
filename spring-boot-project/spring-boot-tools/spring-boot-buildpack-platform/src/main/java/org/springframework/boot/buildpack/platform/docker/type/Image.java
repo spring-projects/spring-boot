@@ -98,7 +98,7 @@ public class Image extends MappedObject {
 	 * @return the image OS
 	 */
 	public String getOs() {
-		return (!StringUtils.hasText(this.os)) ? "linux" : this.os;
+		return (StringUtils.hasText(this.os)) ? this.os : "linux";
 	}
 
 	/**
