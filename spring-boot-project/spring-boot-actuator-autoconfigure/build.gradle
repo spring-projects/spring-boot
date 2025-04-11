@@ -41,6 +41,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
+	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional(project(":spring-boot-project:spring-boot-mail"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))

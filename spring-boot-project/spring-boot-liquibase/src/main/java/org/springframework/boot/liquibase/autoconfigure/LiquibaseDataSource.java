@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * second data source, the other (main) one would normally be marked as {@code @Primary}.
  *
  * @author Eddú Meléndez
- * @since 1.4.1
+ * @since 4.0.0
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

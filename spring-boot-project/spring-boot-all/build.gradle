@@ -67,9 +67,6 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.jooq:jooq")
-	optional("org.liquibase:liquibase-core") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
 	optional("org.postgresql:postgresql")
 	optional("org.slf4j:jul-to-slf4j")
 	optional("org.slf4j:slf4j-api")

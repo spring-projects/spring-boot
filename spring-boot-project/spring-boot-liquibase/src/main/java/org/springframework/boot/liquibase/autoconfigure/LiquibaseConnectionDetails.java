@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -23,7 +23,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
  * Details required for Liquibase to establish a connection to an SQL service using JDBC.
  *
  * @author Andy Wilkinson
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface LiquibaseConnectionDetails extends ConnectionDetails {
 

@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.liquibase;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

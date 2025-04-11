@@ -31,6 +31,7 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
@@ -75,6 +76,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")

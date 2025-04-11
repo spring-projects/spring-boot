@@ -29,6 +29,7 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("com.redis:testcontainers-redis")
@@ -55,6 +56,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional("com.hazelcast:hazelcast")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("org.mongodb:mongodb-driver-core")

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +31,7 @@ import org.springframework.util.ReflectionUtils;
  * {@link DataSource} once the database has been migrated.
  *
  * @author Andy Wilkinson
- * @since 2.0.6
+ * @since 4.0.0
  */
 public class DataSourceClosingSpringLiquibase extends SpringLiquibase implements DisposableBean {
 
