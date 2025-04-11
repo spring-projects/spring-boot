@@ -1,6 +1,0 @@
-# AutoConfigureDataRedis auto-configuration imports
-org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
-org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
-optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

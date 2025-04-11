@@ -1,8 +1,0 @@
-plugins {
-	id 'org.springframework.boot' version '{version}'
-	id 'war'
-}
-
-tasks.configureEach {
-	println "Configuring ${it.path}"
-}

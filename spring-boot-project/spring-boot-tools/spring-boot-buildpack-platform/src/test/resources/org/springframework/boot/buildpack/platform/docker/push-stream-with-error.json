@@ -1,7 +1,0 @@
-{
-	"status":"The push refers to repository [localhost:5000/ubuntu]"
-}
-{"status":"Preparing","progressDetail":{},"id":"782f5f011dda"}
-{"status":"Preparing","progressDetail":{},"id":"90ac32a0d9ab"}
-{"status":"Preparing","progressDetail":{},"id":"d42a4fdf4b2a"}
-{"errorDetail":{"message":"test message"},"error":"test error"}
