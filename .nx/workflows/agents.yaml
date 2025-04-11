@@ -1,5 +1,8 @@
 launch-templates:
   linux-extra-large-plus-jvm:
+    env:
+      DOCKER_HOST: ""
+      SERVICES_HOST: ""
     resource-class: 'docker_linux_amd64/extra_large+'
     image: 'ubuntu22.04-node20.11-v10'
     init-steps:
