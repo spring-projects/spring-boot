@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.autoconfigure;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -23,7 +23,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
  * Details required for Liquibase to establish a connection to an SQL service using JDBC.
  *
  * @author Andy Wilkinson
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface LiquibaseConnectionDetails extends ConnectionDetails {
 
