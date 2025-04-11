@@ -52,7 +52,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -216,10 +216,9 @@ class ManagementWebSecurityAutoConfigurationTests {
 	static class CustomSecurityConfiguration {
 
 		@Bean
-		@SuppressWarnings("removal")
 		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
+				requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/foo")).permitAll();
 				requests.anyRequest().authenticated();
 			});
 			http.formLogin(withDefaults());
@@ -246,9 +245,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
-		@SuppressWarnings("removal")
 		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.securityMatcher(new AntPathRequestMatcher("/**"));
+			http.securityMatcher(PathPatternRequestMatcher.withDefaults().matcher("/**"));
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
 			http.csrf((csrf) -> csrf.disable());
 			return http.build();

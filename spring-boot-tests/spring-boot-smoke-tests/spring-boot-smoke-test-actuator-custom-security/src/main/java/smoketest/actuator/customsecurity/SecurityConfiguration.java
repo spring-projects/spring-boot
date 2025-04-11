@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -68,9 +68,9 @@ public class SecurityConfiguration {
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-			requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
+			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/foo")).permitAll();
 			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/error")).permitAll();
-			requests.requestMatchers(new AntPathRequestMatcher("/**")).hasRole("USER");
+			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/**")).hasRole("USER");
 		});
 		http.cors(withDefaults());
 		http.httpBasic(withDefaults());
