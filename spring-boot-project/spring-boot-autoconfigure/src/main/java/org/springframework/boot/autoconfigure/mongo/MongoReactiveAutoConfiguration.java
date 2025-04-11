@@ -21,9 +21,7 @@ import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.connection.TransportSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.IoHandlerFactory;
-import io.netty.channel.MultiThreadIoEventLoopGroup;
-import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import reactor.core.publisher.Flux;
 
@@ -88,7 +86,7 @@ public class MongoReactiveAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ SocketChannel.class, MultiThreadIoEventLoopGroup.class })
+	@ConditionalOnClass({ SocketChannel.class, NioEventLoopGroup.class })
 	static class NettyDriverConfiguration {
 
 		@Bean
@@ -117,8 +115,7 @@ public class MongoReactiveAutoConfiguration {
 		@Override
 		public void customize(Builder builder) {
 			if (!isCustomTransportConfiguration(this.settings.getIfAvailable())) {
-				IoHandlerFactory ioHandlerFactory = NioIoHandler.newFactory();
-				MultiThreadIoEventLoopGroup eventLoopGroup = new MultiThreadIoEventLoopGroup(ioHandlerFactory);
+				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 				this.eventLoopGroup = eventLoopGroup;
 				builder.transportSettings(TransportSettings.nettyBuilder().eventLoopGroup(eventLoopGroup).build());
 			}
