@@ -1653,6 +1653,10 @@ bom {
 			contains ".RC"
 			because "we don't want alphas, betas, or release candidates"
 		}
+		prohibit {
+			versionRange "[4.2.0,)"
+			because "Reactor Netty will not support it in time for 3.5.x"
+		}
 		group("io.netty") {
 			bom("netty-bom")
 		}
@@ -1915,6 +1919,10 @@ bom {
 		}
 	}
 	library("Rabbit Stream Client", "0.23.0") {
+		prohibit {
+			versionRange "[0.24.0,)"
+			because "It requires Netty 4.2.0"
+		}
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
