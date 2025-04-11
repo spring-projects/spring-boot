@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -156,15 +157,18 @@ class StaticResourceRequestTests {
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);
+				request.setRequestURI(servletPath + path);
 			}
-			request.setPathInfo(path);
+			else {
+				request.setRequestURI(path);
+			}
 			return request;
 		}
 
 		private String getRequestPath(HttpServletRequest request) {
 			String url = request.getServletPath();
-			if (request.getPathInfo() != null) {
-				url += request.getPathInfo();
+			if (StringUtils.hasText(request.getRequestURI())) {
+				url += request.getRequestURI();
 			}
 			return url;
 		}

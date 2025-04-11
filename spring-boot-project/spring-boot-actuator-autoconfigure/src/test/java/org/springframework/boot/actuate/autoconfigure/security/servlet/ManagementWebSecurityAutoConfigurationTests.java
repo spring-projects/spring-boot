@@ -206,7 +206,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
-		request.setServletPath(path);
+		request.setRequestURI(path);
 		request.setMethod("GET");
 		filterChainProxy.doFilter(request, response, new MockFilterChain());
 		return HttpStatus.valueOf(response.getStatus());
