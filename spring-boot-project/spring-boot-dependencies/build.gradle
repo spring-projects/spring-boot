@@ -77,6 +77,11 @@ bom {
 		}
 	}
 	library("AssertJ", "${assertjVersion}") {
+		prohibit {
+			contains "-M"
+			contains "-RC"
+			because "we don't want milestones or release candidates"
+		}
 		group("org.assertj") {
 			bom("assertj-bom")
 		}
@@ -329,6 +334,12 @@ bom {
 		}
 	}
 	library("Elasticsearch Client", "8.17.4") {
+		prohibit {
+			contains "-alpha"
+			contains "-beta"
+			contains "-rc"
+			because "we don't want preview releases"
+		}
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-elasticsearch"
@@ -444,7 +455,7 @@ bom {
 	library("GraphQL Java", "23.0") {
 		prohibit {
 			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
-			because "These are snapshots that we don't want to see"
+			because "we don't want thses snapshots"
 		}
 		alignWith {
 			version {
@@ -607,6 +618,12 @@ bom {
 		}
 	}
 	library("HttpAsyncClient", "4.1.5") {
+		prohibit {
+			contains "-alpha"
+			contains "-beta"
+			contains "-rc"
+			because "we don't want preview releases"
+		}
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpasyncclient" {
@@ -616,6 +633,12 @@ bom {
 		}
 	}
 	library("HttpClient5", "5.4.3") {
+		prohibit {
+			contains "-alpha"
+			contains "-beta"
+			contains "-rc"
+			because "we don't want preview releases"
+		}
 		group("org.apache.httpcomponents.client5") {
 			modules = [
 				"httpclient5",
@@ -664,6 +687,10 @@ bom {
 		}
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
+		prohibit {
+			contains "-rc"
+			because "we don't want release candidates"
+		}
 		group("com.fasterxml.jackson") {
 			bom("jackson-bom")
 		}
