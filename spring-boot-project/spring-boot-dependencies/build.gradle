@@ -1455,13 +1455,13 @@ bom {
 		group("org.mongodb") {
 			modules = [
 				"bson",
-				"bson-record-codec",
 				"bson-kotlin",
+				"bson-record-codec",
 				"mongodb-driver-core",
+				"mongodb-driver-kotlin-coroutine",
 				"mongodb-driver-legacy",
 				"mongodb-driver-reactivestreams",
-				"mongodb-driver-sync",
-				"mongodb-driver-kotlin-coroutine"
+				"mongodb-driver-sync"
 			]
 		}
 		links {
