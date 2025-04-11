@@ -55,7 +55,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 
 	private EnumSet<DispatcherType> dispatcherTypes;
 
-	private boolean matchAfter = false;
+	private boolean matchAfter;
 
 	/**
 	 * Create a new instance to be registered with the specified

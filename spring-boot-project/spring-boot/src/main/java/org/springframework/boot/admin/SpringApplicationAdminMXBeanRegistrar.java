@@ -61,9 +61,9 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	private final ObjectName objectName;
 
-	private boolean ready = false;
+	private boolean ready;
 
-	private boolean embeddedWebApplication = false;
+	private boolean embeddedWebApplication;
 
 	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);

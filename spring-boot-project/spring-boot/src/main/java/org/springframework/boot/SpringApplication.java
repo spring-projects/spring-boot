@@ -233,7 +233,7 @@ public class SpringApplication {
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
-	private boolean isCustomEnvironment = false;
+	private boolean isCustomEnvironment;
 
 	private String environmentPrefix;
 

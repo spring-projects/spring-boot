@@ -116,7 +116,7 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private boolean finished = false;
+	private boolean finished;
 
 	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<>();
 

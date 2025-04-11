@@ -186,7 +186,7 @@ public class BomExtension {
 
 		private final AlignWithHandler alignWith;
 
-		private boolean considerSnapshots = false;
+		private boolean considerSnapshots;
 
 		private String version;
 

@@ -104,7 +104,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private boolean eagerFilterInit = true;
 
-	private boolean preservePathOnForward = false;
+	private boolean preservePathOnForward;
 
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.

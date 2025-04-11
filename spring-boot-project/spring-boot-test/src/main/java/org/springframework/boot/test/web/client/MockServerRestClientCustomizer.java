@@ -68,7 +68,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 
 	private final Supplier<? extends RequestExpectationManager> expectationManagerSupplier;
 
-	private boolean bufferContent = false;
+	private boolean bufferContent;
 
 	public MockServerRestClientCustomizer() {
 		this(SimpleRequestExpectationManager::new);

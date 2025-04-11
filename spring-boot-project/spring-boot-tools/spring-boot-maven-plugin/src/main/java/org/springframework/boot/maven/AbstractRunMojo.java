@@ -89,7 +89,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.addResources", defaultValue = "false")
-	private boolean addResources = false;
+	private boolean addResources;
 
 	/**
 	 * Path to agent jars.
@@ -105,7 +105,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.noverify")
-	private boolean noverify = false;
+	private boolean noverify;
 
 	/**
 	 * Current working directory to use for the application. If not specified, basedir

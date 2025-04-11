@@ -1224,7 +1224,7 @@ class FlywayAutoConfigurationTests {
 	@Component
 	static class MockFlywayMigrationStrategy implements FlywayMigrationStrategy {
 
-		private boolean called = false;
+		private boolean called;
 
 		@Override
 		public void migrate(Flyway flyway) {

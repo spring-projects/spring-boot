@@ -68,7 +68,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	private Session session = new Session();
 
-	private boolean registerDefaultServlet = false;
+	private boolean registerDefaultServlet;
 
 	private MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 

@@ -69,7 +69,7 @@ class UndertowWebServerFactoryDelegate {
 
 	private String accessLogSuffix;
 
-	private boolean accessLogEnabled = false;
+	private boolean accessLogEnabled;
 
 	private boolean accessLogRotate = true;
 

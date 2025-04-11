@@ -509,9 +509,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private final Class<?>[] additionalContextInterfaces;
 
-		private boolean allowBeanDefinitionOverriding = false;
+		private boolean allowBeanDefinitionOverriding;
 
-		private boolean allowCircularReferences = false;
+		private boolean allowCircularReferences;
 
 		private List<ApplicationContextInitializer<? super C>> initializers = Collections.emptyList();
 

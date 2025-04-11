@@ -70,7 +70,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	private boolean detectRootUri = true;
 
-	private boolean bufferContent = false;
+	private boolean bufferContent;
 
 	public MockServerRestTemplateCustomizer() {
 		this(SimpleRequestExpectationManager::new);
