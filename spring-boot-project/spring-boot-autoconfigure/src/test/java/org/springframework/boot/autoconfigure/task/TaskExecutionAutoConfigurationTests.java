@@ -82,10 +82,12 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.task.execution.thread-name-prefix=mytest-",
 					"spring.task.execution.simple.concurrency-limit=1",
+					"spring.task.execution.simple.reject-tasks-when-limit-reached=true",
 					"spring.task.execution.shutdown.await-termination=true",
 					"spring.task.execution.shutdown.await-termination-period=30s")
 			.run(assertSimpleAsyncTaskExecutor((taskExecutor) -> {
 				assertThat(taskExecutor.getConcurrencyLimit()).isEqualTo(1);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("rejectTasksWhenLimitReached", true);
 				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("taskTerminationTimeout", 30000L);
 			}));

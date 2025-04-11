@@ -40,6 +40,7 @@ import static org.mockito.Mockito.spy;
  * @author Stephane Nicoll
  * @author Filip Hrisafov
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class SimpleAsyncTaskExecutorBuilderTests {
 
@@ -62,6 +63,12 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	void concurrencyLimitShouldApply() {
 		SimpleAsyncTaskExecutor executor = this.builder.concurrencyLimit(1).build();
 		assertThat(executor.getConcurrencyLimit()).isEqualTo(1);
+	}
+
+	@Test
+	void rejectTasksWhenLimitReachedShouldApply() {
+		SimpleAsyncTaskExecutor executor = this.builder.rejectTasksWhenLimitReached(true).build();
+		assertThat(executor).extracting("rejectTasksWhenLimitReached").isEqualTo(true);
 	}
 
 	@Test

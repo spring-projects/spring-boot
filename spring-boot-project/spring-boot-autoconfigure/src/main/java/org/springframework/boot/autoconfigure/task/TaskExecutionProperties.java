@@ -83,12 +83,25 @@ public class TaskExecutionProperties {
 		 */
 		private Integer concurrencyLimit;
 
+		/**
+		 * Specify whether to reject tasks when the concurrency limit has been reached.
+		 */
+		private boolean rejectTasksWhenLimitReached;
+
 		public Integer getConcurrencyLimit() {
 			return this.concurrencyLimit;
 		}
 
 		public void setConcurrencyLimit(Integer concurrencyLimit) {
 			this.concurrencyLimit = concurrencyLimit;
+		}
+
+		public boolean isRejectTasksWhenLimitReached() {
+			return this.rejectTasksWhenLimitReached;
+		}
+
+		public void setRejectTasksWhenLimitReached(boolean rejectTasksWhenLimitReached) {
+			this.rejectTasksWhenLimitReached = rejectTasksWhenLimitReached;
 		}
 
 	}
