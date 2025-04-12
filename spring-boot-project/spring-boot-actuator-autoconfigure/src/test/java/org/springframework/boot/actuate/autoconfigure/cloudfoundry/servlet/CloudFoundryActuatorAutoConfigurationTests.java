@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,8 +182,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				testCloudFoundrySecurity(request, BASE_PATH + "/test", chain);
 				testCloudFoundrySecurity(request, BASE_PATH + "/test/a", chain);
 				request.setServletPath(BASE_PATH + "/other-path");
+				request.setRequestURI(BASE_PATH + "/other-path");
 				assertThat(chain.matches(request)).isFalse();
 				request.setServletPath("/some-other-path");
+				request.setRequestURI("/some-other-path");
 				assertThat(chain.matches(request)).isFalse();
 			});
 	}
@@ -209,9 +211,9 @@ class CloudFoundryActuatorAutoConfigurationTests {
 		throw new IllegalStateException("No FilterChainProxy found");
 	}
 
-	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String servletPath,
+	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String requestUri,
 			SecurityFilterChain chain) {
-		request.setServletPath(servletPath);
+		request.setRequestURI(requestUri);
 		assertThat(chain.matches(request)).isTrue();
 	}
 

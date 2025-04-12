@@ -413,24 +413,24 @@ class EndpointRequestTests {
 			assertThat(this.matcher.matches(request)).as("Matches " + getRequestPath(request)).isTrue();
 		}
 
-		void doesNotMatch(String servletPath) {
-			doesNotMatch(mockRequest(null, servletPath));
+		void doesNotMatch(String requestUri) {
+			doesNotMatch(mockRequest(null, requestUri));
 		}
 
-		void doesNotMatch(HttpMethod httpMethod, String servletPath) {
-			doesNotMatch(mockRequest(httpMethod, servletPath));
+		void doesNotMatch(HttpMethod httpMethod, String requestUri) {
+			doesNotMatch(mockRequest(httpMethod, requestUri));
 		}
 
 		private void doesNotMatch(HttpServletRequest request) {
 			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
-		private MockHttpServletRequest mockRequest(HttpMethod httpMethod, String servletPath) {
+		private MockHttpServletRequest mockRequest(HttpMethod httpMethod, String requestUri) {
 			MockServletContext servletContext = new MockServletContext();
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
-			if (servletPath != null) {
-				request.setServletPath(servletPath);
+			if (requestUri != null) {
+				request.setRequestURI(requestUri);
 			}
 			if (httpMethod != null) {
 				request.setMethod(httpMethod.name());

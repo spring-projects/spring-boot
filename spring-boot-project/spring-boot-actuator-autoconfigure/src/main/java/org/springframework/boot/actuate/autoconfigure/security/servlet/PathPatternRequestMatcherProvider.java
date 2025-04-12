@@ -19,29 +19,26 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import java.util.function.Function;
 
 import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * {@link RequestMatcherProvider} that provides an {@link AntPathRequestMatcher}.
+ * {@link RequestMatcherProvider} that provides an {@link PathPatternRequestMatcher}.
  *
  * @author Madhura Bhave
  * @author Chris Bono
  */
-class AntPathRequestMatcherProvider implements RequestMatcherProvider {
+class PathPatternRequestMatcherProvider implements RequestMatcherProvider {
 
 	private final Function<String, String> pathFactory;
 
-	AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+	PathPatternRequestMatcherProvider(Function<String, String> pathFactory) {
 		this.pathFactory = pathFactory;
 	}
 
 	@Override
-	@SuppressWarnings("removal")
 	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
-		String path = this.pathFactory.apply(pattern);
-		return new org.springframework.security.web.util.matcher.AntPathRequestMatcher(path,
-				(httpMethod != null) ? httpMethod.name() : null);
+		return PathPatternRequestMatcher.withDefaults().matcher(httpMethod, this.pathFactory.apply(pattern));
 	}
 
 }
