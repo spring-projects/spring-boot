@@ -211,9 +211,9 @@ class CloudFoundryActuatorAutoConfigurationTests {
 		throw new IllegalStateException("No FilterChainProxy found");
 	}
 
-	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String servletPath,
+	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String requestUri,
 			SecurityFilterChain chain) {
-		request.setRequestURI(servletPath);
+		request.setRequestURI(requestUri);
 		assertThat(chain.matches(request)).isTrue();
 	}
 

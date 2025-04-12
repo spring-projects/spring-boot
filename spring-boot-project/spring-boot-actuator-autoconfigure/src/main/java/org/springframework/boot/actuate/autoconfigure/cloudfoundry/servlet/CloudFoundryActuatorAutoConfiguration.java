@@ -185,12 +185,15 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public void customize(WebSecurity web) {
-			List<RequestMatcher> requestMatchers = new ArrayList<>();
-			this.pathMappedEndpoints.getAllPaths()
-				.forEach((path) -> requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(path + "/**")));
-			requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(BASE_PATH));
-			requestMatchers.add(PathPatternRequestMatcher.withDefaults().matcher(BASE_PATH + "/"));
-			web.ignoring().requestMatchers(new OrRequestMatcher(requestMatchers));
+			List<RequestMatcher> matchers = new ArrayList<>();
+			this.pathMappedEndpoints.getAllPaths().forEach((path) -> matchers.add(pathMatcher(path + "/**")));
+			matchers.add(pathMatcher(BASE_PATH));
+			matchers.add(pathMatcher(BASE_PATH + "/"));
+			web.ignoring().requestMatchers(new OrRequestMatcher(matchers));
+		}
+
+		private PathPatternRequestMatcher pathMatcher(String path) {
+			return PathPatternRequestMatcher.withDefaults().matcher(path);
 		}
 
 	}

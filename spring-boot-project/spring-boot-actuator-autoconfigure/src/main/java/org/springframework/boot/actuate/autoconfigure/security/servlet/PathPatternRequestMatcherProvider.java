@@ -28,18 +28,17 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * @author Madhura Bhave
  * @author Chris Bono
  */
-class AntPathRequestMatcherProvider implements RequestMatcherProvider {
+class PathPatternRequestMatcherProvider implements RequestMatcherProvider {
 
 	private final Function<String, String> pathFactory;
 
-	AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+	PathPatternRequestMatcherProvider(Function<String, String> pathFactory) {
 		this.pathFactory = pathFactory;
 	}
 
 	@Override
 	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
-		String path = this.pathFactory.apply(pattern);
-		return PathPatternRequestMatcher.withDefaults().matcher(httpMethod, path);
+		return PathPatternRequestMatcher.withDefaults().matcher(httpMethod, this.pathFactory.apply(pattern));
 	}
 
 }
