@@ -303,6 +303,12 @@ spring:
                 - "phone"
                 - "address"
             require-authorization-consent: true
+            token:
+              authorization-code-time-to-live: 5m
+              access-token-time-to-live: 10m
+              access-token-format: "reference"
+              reuse-refresh-tokens: false
+              refresh-token-time-to-live: 30m
           my-client-2:
             registration:
               client-id: "efgh"
