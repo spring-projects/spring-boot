@@ -31,7 +31,6 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.EvaluationResult;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.DirectoryProperty;
@@ -49,6 +48,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.VerificationException;
 
 /**
  * {@link Task} that checks for architecture problems.
@@ -86,7 +86,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
 		writeViolationReport(violations, outputFile);
 		if (!violations.isEmpty()) {
-			throw new GradleException("Architecture check failed. See '" + outputFile + "' for details.");
+			throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
 		}
 	}
 
