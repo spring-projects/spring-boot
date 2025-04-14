@@ -34,7 +34,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.RegularFile;
@@ -44,6 +43,7 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.VerificationException;
 
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
@@ -94,7 +94,7 @@ public abstract class CheckBom extends DefaultTask {
 			System.out.println();
 			errors.forEach(System.out::println);
 			System.out.println();
-			throw new GradleException("Bom check failed. See previous output for details.");
+			throw new VerificationException("Bom check failed. See previous output for details.");
 		}
 	}
 
