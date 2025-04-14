@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,15 +43,22 @@ class OAuth2AuthorizationServerJwtAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(OAuth2AuthorizationServerJwtAutoConfiguration.class));
 
 	@Test
-	void autoConfigurationConditionalOnClassOauth2Authorization() {
+	void autoConfigurationConditionalOnClassOAuth2Authorization() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(OAuth2Authorization.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(OAuth2AuthorizationServerJwtAutoConfiguration.class));
+	}
+
+	@Test
+	void autoConfigurationConditionalOnClassJWKSource() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(JWKSource.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(OAuth2AuthorizationServerJwtAutoConfiguration.class));
 	}
 
 	@Test
 	void jwtDecoderConditionalOnClassJwtDecoder() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(JwtDecoder.class))
-			.run((context) -> assertThat(context).doesNotHaveBean("jwtDecoder"));
+			.run((context) -> assertThat(context).hasSingleBean(OAuth2AuthorizationServerJwtAutoConfiguration.class)
+				.doesNotHaveBean("jwtDecoder"));
 	}
 
 	@Test

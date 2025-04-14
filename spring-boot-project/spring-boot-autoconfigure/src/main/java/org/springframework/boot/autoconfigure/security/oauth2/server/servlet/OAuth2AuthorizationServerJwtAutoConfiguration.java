@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
@@ -49,16 +50,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
  * @since 3.1.0
  */
 @AutoConfiguration(after = UserDetailsServiceAutoConfiguration.class)
-@ConditionalOnClass(OAuth2Authorization.class)
+@ConditionalOnClass({ OAuth2Authorization.class, JWKSource.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OAuth2AuthorizationServerJwtAutoConfiguration {
-
-	@Bean
-	@ConditionalOnClass(JwtDecoder.class)
-	@ConditionalOnMissingBean
-	JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-	}
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -90,6 +84,18 @@ public class OAuth2AuthorizationServerJwtAutoConfiguration {
 			throw new IllegalStateException(ex);
 		}
 		return keyPair;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JwtDecoder.class)
+	static class JwtDecoderConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+			return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+		}
+
 	}
 
 }
