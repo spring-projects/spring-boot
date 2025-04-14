@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
@@ -40,6 +39,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.VerificationException;
 
 /**
  * {@link SourceTask} that checks {@code spring-configuration-metadata.json} files.
@@ -70,7 +70,7 @@ public abstract class CheckSpringConfigurationMetadata extends DefaultTask {
 		File reportFile = getReportLocation().get().getAsFile();
 		Files.write(reportFile.toPath(), report, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		if (report.hasProblems()) {
-			throw new GradleException(
+			throw new VerificationException(
 					"Problems found in Spring configuration metadata. See " + reportFile + " for details.");
 		}
 	}
