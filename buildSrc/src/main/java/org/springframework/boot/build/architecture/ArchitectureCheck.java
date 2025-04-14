@@ -18,11 +18,15 @@ package org.springframework.boot.build.architecture;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -33,11 +37,13 @@ import com.tngtech.archunit.lang.EvaluationResult;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.Transformer;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -58,6 +64,7 @@ import org.gradle.api.tasks.VerificationException;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Phillip Webb
+ * @author Dmytro Nosan
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -80,14 +87,17 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	}
 
 	@TaskAction
-	void checkArchitecture() throws IOException {
-		JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
-		List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
-		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
-		writeViolationReport(violations, outputFile);
-		if (!violations.isEmpty()) {
-			throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
-		}
+	void checkArchitecture() throws Exception {
+		withCompileClasspath(() -> {
+			JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
+			List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
+			File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
+			writeViolationReport(violations, outputFile);
+			if (!violations.isEmpty()) {
+				throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
+			}
+			return null;
+		});
 	}
 
 	private List<Path> classFilesPaths() {
@@ -98,8 +108,24 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		return getRules().get().stream().map((rule) -> rule.evaluate(javaClasses));
 	}
 
+	private void withCompileClasspath(Callable<?> callable) throws Exception {
+		ClassLoader previous = Thread.currentThread().getContextClassLoader();
+		try {
+			List<URL> urls = new ArrayList<>();
+			for (File file : getCompileClasspath().getFiles()) {
+				urls.add(file.toURI().toURL());
+			}
+			ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+			Thread.currentThread().setContextClassLoader(classLoader);
+			callable.call();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previous);
+		}
+	}
+
 	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) throws IOException {
-		outputFile.getParentFile().mkdirs();
+		Files.createDirectories(outputFile.getParentFile().toPath());
 		StringBuilder report = new StringBuilder();
 		for (EvaluationResult violation : violations) {
 			report.append(violation.getFailureReport());
@@ -125,6 +151,10 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	final FileTree getInputClasses() {
 		return this.classes.getAsFileTree();
 	}
+
+	@InputFiles
+	@Classpath
+	public abstract ConfigurableFileCollection getCompileClasspath();
 
 	@Optional
 	@InputFiles
