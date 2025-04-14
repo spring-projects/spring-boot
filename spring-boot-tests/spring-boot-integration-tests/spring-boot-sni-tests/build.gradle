@@ -27,17 +27,17 @@ dependencies {
 	intTestImplementation("org.testcontainers:testcontainers")
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
 	into layout.buildDirectory.dir("int-test-maven-repository")
 }
 
-task syncReactiveServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncReactiveServerAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-reactive-app")
 	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-reactive-app"))
 }
 
-task buildReactiveServerApps(type: GradleBuild) {
+tasks.register("buildReactiveServerApps", GradleBuild) {
 	dependsOn syncReactiveServerAppSource, syncMavenRepository
 	dir = layout.buildDirectory.dir("spring-boot-sni-reactive-app")
 	startParameter.buildCacheEnabled = false
@@ -48,12 +48,12 @@ task buildReactiveServerApps(type: GradleBuild) {
 	]
 }
 
-task syncServletServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncServletServerAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-servlet-app")
 	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-servlet-app"))
 }
 
-task buildServletServerApps(type: GradleBuild) {
+tasks.register("buildServletServerApps", GradleBuild) {
 	dependsOn syncServletServerAppSource, syncMavenRepository
 	dir = layout.buildDirectory.dir("spring-boot-sni-servlet-app")
 	startParameter.buildCacheEnabled = false
@@ -63,12 +63,12 @@ task buildServletServerApps(type: GradleBuild) {
 	]
 }
 
-task syncClientAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncClientAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-client-app")
 	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-client-app"))
 }
 
-task buildClientApp(type: GradleBuild) {
+tasks.register("buildClientApp", GradleBuild) {
 	dependsOn syncClientAppSource, syncMavenRepository
 	dir = layout.buildDirectory.dir("spring-boot-sni-client-app")
 	startParameter.buildCacheEnabled = false

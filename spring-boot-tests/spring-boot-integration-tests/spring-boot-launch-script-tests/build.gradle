@@ -23,24 +23,24 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
 	into layout.buildDirectory.dir("docker-test-maven-repository")
 }
 
-task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-launch-script-tests-app")
 	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-launch-script-tests-app"))
 }
 
-task buildApp(type: GradleBuild) {
+tasks.register("buildApp", GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
 	dir = layout.buildDirectory.dir("spring-boot-launch-script-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
 
-task downloadJdk(type: Download) {
+tasks.register("downloadJdk", Download) {
 	def destFolder = new File(project.gradle.gradleUserHomeDir, "caches/springboot/downloads/jdk/bellsoft")
 	destFolder.mkdirs()
 	src "https://download.bell-sw.com/java/${jdkVersion}/bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
@@ -50,7 +50,7 @@ task downloadJdk(type: Download) {
 	retries 3
 }
 
-task syncJdkDownloads(type: Sync) {
+tasks.register("syncJdkDownloads", Sync) {
 	dependsOn downloadJdk
 	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/bellsoft/"
 	include "bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
