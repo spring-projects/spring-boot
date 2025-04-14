@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,38 +69,51 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
-				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
-				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
-				"org.example.Test", "message", "message", "mdc-1", "mdc-v-1", "ecs.version", "8.11"));
+		Map<String, Object> expected = new HashMap<>();
+		expected.put("@timestamp", "2024-07-02T08:49:53Z");
+		expected.put("message", "message");
+		expected.put("mdc-1", "mdc-v-1");
+		expected.put("ecs", Map.of("version", "8.11"));
+		expected.put("process", map("pid", 1, "thread", map("name", "main")));
+		expected.put("log", map("level", "INFO", "logger", "org.example.Test"));
+		expected.put("service",
+				map("name", "name", "version", "1.0.0", "environment", "test", "node", map("name", "node-1")));
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(expected);
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void shouldFormatException() {
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized)
-			.containsAllEntriesOf(map("error.type", "java.lang.RuntimeException", "error.message", "Boom"));
-		String stackTrace = (String) deserialized.get("error.stack_trace");
-		assertThat(stackTrace).startsWith(
-				"""
-						java.lang.RuntimeException: Boom
-						\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
-		assertThat(json).contains(
-				"""
-						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
+		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		Map<String, Object> expectedError = new HashMap<>();
+		expectedError.put("type", "java.lang.RuntimeException");
+		expectedError.put("message", "Boom");
+		assertThat(error).containsAllEntriesOf(expectedError);
+		String stackTrace = (String) error.get("stack_trace");
+		assertThat(stackTrace)
+			.startsWith(String.format("java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.log4j2."
+					+ "ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException"));
+		assertThat(json).contains(String
+			.format("java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.log4j2."
+					+ "ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException")
+			.replace("\n", "\\n")
+			.replace("\r", "\\r"));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
 				this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
-		String stackTrace = (String) deserialized.get("error.stack_trace");
+		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		String stackTrace = (String) error.get("stack_trace");
 		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}
 
@@ -111,10 +125,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
 		Map<String, Object> expectedMessage = Map.of("foo", true, "bar", 1.0);
-		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
-				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
-				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
-				"org.example.Test", "message", expectedMessage, "ecs.version", "8.11"));
+		assertThat(deserialized.get("message")).isEqualTo(expectedMessage);
 	}
 
 	@Test
@@ -131,11 +142,8 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
-				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
-				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
-				"org.example.Test", "message", "message", "ecs.version", "8.11", "tags",
-				List.of("grandchild", "grandparent", "grandparent1", "parent", "parent1")));
+		assertThat(deserialized.get("tags"))
+			.isEqualTo(List.of("grandchild", "grandparent", "grandparent1", "parent", "parent1"));
 	}
 
 }

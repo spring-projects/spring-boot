@@ -77,9 +77,17 @@ class ElasticCommonSchemaPropertiesTests {
 		ElasticCommonSchemaProperties properties = new ElasticCommonSchemaProperties(
 				new Service("spring", "1.2.3", "prod", "boot"));
 		JsonWriter<ElasticCommonSchemaProperties> writer = JsonWriter.of(properties::jsonMembers);
-		assertThat(writer.writeToString(properties))
-			.isEqualTo("{\"service.name\":\"spring\",\"service.version\":\"1.2.3\","
-					+ "\"service.environment\":\"prod\",\"service.node.name\":\"boot\"}");
+		assertThat(writer.writeToString(properties)).isEqualToNormalizingNewlines("""
+				{
+				  "service": {
+				    "name": "spring",
+				    "version": "1.2.3",
+				    "environment": "prod",
+				    "node": {
+				      "name": "boot"
+				    }
+				  }
+				}""".replaceAll("\\s+", ""));
 	}
 
 	@Test

@@ -62,12 +62,14 @@ class StructuredLogLayoutTests extends AbstractStructuredLoggingTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void shouldSupportEcsCommonFormat() {
 		StructuredLogLayout layout = newBuilder().setFormat("ecs").build();
 		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsKey("ecs.version");
-		assertThat(deserialized.get("error.stack_trace")).isEqualTo("stacktrace:RuntimeException");
+		assertThat(deserialized).containsEntry("ecs", Map.of("version", "8.11"));
+		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		assertThat(error.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test
