@@ -226,38 +226,38 @@ task aggregatedJavadoc(type: Javadoc) {
 	}
 }
 
-task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
+tasks.register("documentTestSlices", org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
 	outputFile = layout.buildDirectory.file("generated/docs/test-auto-configuration/documented-slices.adoc")
 }
 
-task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
+tasks.register("documentStarters", org.springframework.boot.build.starters.DocumentStarters) {
 	outputDir = layout.buildDirectory.dir("generated/docs/using/starters/")
 }
 
-task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
+tasks.register("documentAutoConfigurationClasses", org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
 	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
-task documentDependencyVersionCoordinates(type: org.springframework.boot.build.docs.DocumentManagedDependencies) {
+tasks.register("documentDependencyVersionCoordinates", org.springframework.boot.build.docs.DocumentManagedDependencies) {
 	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-coordinates.adoc")
 	resolvedBoms = configurations.resolvedBom
 }
 
-task documentDependencyVersionProperties(type: org.springframework.boot.build.docs.DocumentVersionProperties) {
+tasks.register("documentDependencyVersionProperties", org.springframework.boot.build.docs.DocumentVersionProperties) {
 	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-properties.adoc")
 	resolvedBoms = configurations.resolvedBom
 }
 
-task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
 }
 
-task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
+tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
 
-task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runRemoteSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.remoteSpringApplicationExample
 	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
 	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
@@ -267,7 +267,7 @@ task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs
 	normalizeLiveReloadPort()
 }
 
-task runSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--server.port=0"]
@@ -276,7 +276,7 @@ task runSpringApplicationExample(type: org.springframework.boot.build.docs.Appli
 	normalizeTomcatPort()
 }
 
-task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runLoggingFormatExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--spring.main.banner-mode=off", "--server.port=0", "--spring.application.name=myapp"]

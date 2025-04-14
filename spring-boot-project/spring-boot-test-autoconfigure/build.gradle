@@ -133,7 +133,7 @@ test {
 	include "**/*Tests.class"
 }
 
-task testSliceMetadata(type: org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
+tasks.register("testSliceMetadata", org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
 	sourceSet = sourceSets.main
 	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
 }

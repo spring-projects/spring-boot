@@ -151,7 +151,7 @@ dependencies {
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
 }
 
-task extractTomcatConfigProperties(type: Sync) {
+tasks.register("extractTomcatConfigProperties", Sync) {
 	destinationDir = file(tomcatConfigProperties)
 	from {
 		zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {

@@ -24,7 +24,7 @@ repositories {
 	}
 }
 
-task slf4jVersion {
+tasks.register("slf4jVersion") {
 	doLast {
 		println dependencyManagement.managedVersions['org.slf4j:slf4j-api']
 	}

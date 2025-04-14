@@ -7,7 +7,7 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 // end::apply[]
 
-task verify {
+tasks.register("verify") {
 	doLast {
 		plugins.getPlugin(org.gradle.api.plugins.JavaPlugin.class)
 		plugins.getPlugin(io.spring.gradle.dependencymanagement.DependencyManagementPlugin.class)
