@@ -31,6 +31,7 @@ import jakarta.servlet.ServletContext;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -167,7 +168,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 * @since 3.2.0
 	 */
 	public EnumSet<DispatcherType> determineDispatcherTypes() {
-		if (this.dispatcherTypes == null) {
+		if (CollectionUtils.isEmpty(this.dispatcherTypes)) {
 			T filter = getFilter();
 			if (ClassUtils.isPresent("org.springframework.web.filter.OncePerRequestFilter",
 					filter.getClass().getClassLoader()) && filter instanceof OncePerRequestFilter) {

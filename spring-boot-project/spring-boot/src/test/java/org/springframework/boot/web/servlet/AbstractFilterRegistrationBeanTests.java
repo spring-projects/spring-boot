@@ -25,14 +25,22 @@ import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -47,6 +55,7 @@ import static org.mockito.Mockito.never;
  * Abstract base for {@link AbstractFilterRegistrationBean} tests.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 @ExtendWith(MockitoExtension.class)
 abstract class AbstractFilterRegistrationBeanTests {
@@ -227,6 +236,42 @@ abstract class AbstractFilterRegistrationBeanTests {
 		}).doesNotThrowAnyException();
 	}
 
+	@Test
+	void shouldDetermineDispatcherTypesIfNotSet() {
+		AbstractFilterRegistrationBean<SimpleFilter> simpleFilter = new AbstractFilterRegistrationBean<>() {
+			@Override
+			public SimpleFilter getFilter() {
+				return new SimpleFilter();
+			}
+		};
+		assertThat(simpleFilter.determineDispatcherTypes()).containsExactly(DispatcherType.REQUEST);
+	}
+
+	@Test
+	void shouldDetermineDispatcherTypesForOncePerRequestFilters() {
+		AbstractFilterRegistrationBean<SimpleOncePerRequestFilter> simpleFilter = new AbstractFilterRegistrationBean<>() {
+			@Override
+			public SimpleOncePerRequestFilter getFilter() {
+				return new SimpleOncePerRequestFilter();
+			}
+		};
+		assertThat(simpleFilter.determineDispatcherTypes())
+			.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
+	}
+
+	@Test
+	void shouldDetermineDispatcherTypesForSetDispatcherTypes() {
+		AbstractFilterRegistrationBean<SimpleFilter> simpleFilter = new AbstractFilterRegistrationBean<>() {
+			@Override
+			public SimpleFilter getFilter() {
+				return new SimpleFilter();
+			}
+		};
+		simpleFilter.setDispatcherTypes(DispatcherType.INCLUDE, DispatcherType.FORWARD);
+		assertThat(simpleFilter.determineDispatcherTypes()).containsExactlyInAnyOrder(DispatcherType.INCLUDE,
+				DispatcherType.FORWARD);
+	}
+
 	protected abstract Filter getExpectedFilter();
 
 	protected abstract AbstractFilterRegistrationBean<?> createFilterRegistrationBean(
@@ -236,6 +281,25 @@ abstract class AbstractFilterRegistrationBeanTests {
 		ServletRegistrationBean<?> bean = new ServletRegistrationBean<>();
 		bean.setName(name);
 		return bean;
+	}
+
+	private static final class SimpleFilter implements Filter {
+
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+
+		}
+
+	}
+
+	private static final class SimpleOncePerRequestFilter extends OncePerRequestFilter {
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+				FilterChain filterChain) {
+
+		}
+
 	}
 
 }
