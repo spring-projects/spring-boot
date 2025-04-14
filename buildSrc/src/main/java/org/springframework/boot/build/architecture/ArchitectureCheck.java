@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.tngtech.archunit.ArchConfiguration;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -33,11 +34,13 @@ import com.tngtech.archunit.lang.EvaluationResult;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.Transformer;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -58,6 +61,7 @@ import org.gradle.api.tasks.VerificationException;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Phillip Webb
+ * @author Dmytro Nosan
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -80,14 +84,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	}
 
 	@TaskAction
-	void checkArchitecture() throws IOException {
-		JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
-		List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
-		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
-		writeViolationReport(violations, outputFile);
-		if (!violations.isEmpty()) {
-			throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
-		}
+	void checkArchitecture() {
+		ArchConfiguration.withThreadLocalScope((configuration) -> {
+			configuration.setClassResolver(CompileClasspathClassResolver.class);
+			configuration.setProperty(CompileClasspathClassResolver.PROPERTY_NAME, getCompileClasspath().getAsPath());
+			JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
+			List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
+			File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
+			writeViolationReport(violations, outputFile);
+			if (!violations.isEmpty()) {
+				throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
+			}
+		});
 	}
 
 	private List<Path> classFilesPaths() {
@@ -98,15 +106,21 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		return getRules().get().stream().map((rule) -> rule.evaluate(javaClasses));
 	}
 
-	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) throws IOException {
-		outputFile.getParentFile().mkdirs();
-		StringBuilder report = new StringBuilder();
-		for (EvaluationResult violation : violations) {
-			report.append(violation.getFailureReport());
-			report.append(String.format("%n"));
+	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) {
+		try {
+			Files.createDirectories(outputFile.getParentFile().toPath());
+			StringBuilder report = new StringBuilder();
+			for (EvaluationResult violation : violations) {
+				report.append(violation.getFailureReport());
+				report.append(String.format("%n"));
+			}
+			Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
+					StandardOpenOption.TRUNCATE_EXISTING);
 		}
-		Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING);
+		catch (IOException ex) {
+			throw new VerificationException(
+					"Failed to write violation report to '" + outputFile + "' " + ex.getMessage());
+		}
 	}
 
 	public void setClasses(FileCollection classes) {
@@ -125,6 +139,10 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	final FileTree getInputClasses() {
 		return this.classes.getAsFileTree();
 	}
+
+	@InputFiles
+	@Classpath
+	public abstract ConfigurableFileCollection getCompileClasspath();
 
 	@Optional
 	@InputFiles

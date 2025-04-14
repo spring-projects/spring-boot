@@ -211,12 +211,12 @@ class HttpEncodingAutoConfigurationTests {
 	static class MinimalWebAutoConfiguration {
 
 		@Bean
-		MockServletWebServerFactory MockServletWebServerFactory() {
+		MockServletWebServerFactory mockServletWebServerFactory() {
 			return new MockServletWebServerFactory();
 		}
 
 		@Bean
-		WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+		static WebServerFactoryCustomizerBeanPostProcessor servletWebServerCustomizerBeanPostProcessor() {
 			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
