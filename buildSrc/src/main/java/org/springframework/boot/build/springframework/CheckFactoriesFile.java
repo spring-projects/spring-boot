@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
@@ -43,6 +42,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.VerificationException;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -112,7 +112,7 @@ public abstract class CheckFactoriesFile extends DefaultTask {
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
 		writeReport(factoriesFile, problems, outputFile);
 		if (!problems.isEmpty()) {
-			throw new GradleException("%s check failed. See '%s' for details".formatted(this.path, outputFile));
+			throw new VerificationException("%s check failed. See '%s' for details".formatted(this.path, outputFile));
 		}
 	}
 
