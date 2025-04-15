@@ -3,7 +3,13 @@
 
 Class Data Sharing (CDS) is a https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
 
-To use it, you should first perform a training run on your application in extracted form:
+In Java 24, CDS is succeeded by the AOT Cache via https://openjdk.org/jeps/483[JEP 483].
+Spring Boot supports both CDS and AOT cache, and it is recommended that you use the latter if it is available in the JVM version you are using (Java 24+).
+
+[[packaging.class-data-sharing.cds]]
+== CDS
+
+To use CDS, you should first perform a training run on your application in extracted form:
 
 [source,shell]
 ----
@@ -12,9 +18,9 @@ $ cd application
 $ java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar my-app.jar
 ----
 
-This creates an `application.jsa` file that can be reused as long as the application is not updated.
+This creates an `application.jsa` archive file that can be reused as long as the application is not updated.
 
-To use the cache, you need to add an extra parameter when starting the application:
+To use the archive file, you need to add an extra parameter when starting the application:
 
 [source,shell]
 ----
@@ -22,3 +28,26 @@ $ java -XX:SharedArchiveFile=application.jsa -jar my-app.jar
 ----
 
 NOTE: For more details about CDS, refer to the xref:how-to:class-data-sharing.adoc[CDS how-to guide] and the {url-spring-framework-docs}/integration/cds.html[Spring Framework reference documentation].
+
+[[packaging.class-data-sharing.aot-cache]]
+== AOT Cache
+
+To use the AOT cache, you should first perform a training run on your application in extracted form:
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract --destination application
+$ cd application
+$ java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf -Dspring.context.exit=onRefresh -jar my-app.jar
+$ java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot -jar my-app.jar
+----
+
+This creates an `app.aot` cache file that can be reused as long as the application is not updated.
+The intermediate `app.aotconf` file is no longer needed and can be safely deleted.
+
+To use the cache file, you need to add an extra parameter when starting the application:
+
+[source,shell]
+----
+$ java -XX:AOTCache=app.aot -jar my-app.jar
+----
