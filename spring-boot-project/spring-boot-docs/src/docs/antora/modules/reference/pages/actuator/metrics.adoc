@@ -522,6 +522,8 @@ management:
 
 Custom headers, for example for authentication, can also be provided using configprop:management.otlp.metrics.export.headers.*[] properties.
 
+If an `OtlpMetricsSender` bean is available, it will be configured on the `OtlpMeterRegistry` that Spring Boot auto-configures.
+
 
 
 [[actuator.metrics.export.prometheus]]

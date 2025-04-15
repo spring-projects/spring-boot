@@ -19,7 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import io.micrometer.registry.otlp.OtlpMeterRegistry.Builder;
+import io.micrometer.registry.otlp.OtlpMetricsSender;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
@@ -76,16 +79,24 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
-		return new OtlpMeterRegistry(otlpConfig, clock);
+	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		Builder builder = OtlpMeterRegistry.builder(otlpConfig).clock(clock);
+		metricsSender.ifAvailable(builder::metricsSender);
+		return builder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
-	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock) {
+	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
 		VirtualThreadTaskExecutor taskExecutor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
-		return new OtlpMeterRegistry(otlpConfig, clock, taskExecutor.getVirtualThreadFactory());
+		Builder builder = OtlpMeterRegistry.builder(otlpConfig)
+			.clock(clock)
+			.threadFactory(taskExecutor.getVirtualThreadFactory());
+		metricsSender.ifAvailable(builder::metricsSender);
+		return builder.build();
 	}
 
 	/**

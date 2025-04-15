@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import io.micrometer.registry.otlp.OtlpMetricsSender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -132,6 +133,32 @@ class OtlpMetricsExportAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void allowsCustomMetricsSenderToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+				OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+				assertThat(registry).extracting("metricsSender")
+					.satisfies((sender) -> assertThat(sender)
+						.isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void allowsCustomMetricsSenderToBeUsedWithVirtualThreads() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+				OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+				assertThat(registry).extracting("metricsSender")
+					.satisfies((sender) -> assertThat(sender)
+						.isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
@@ -170,6 +197,19 @@ class OtlpMetricsExportAutoConfigurationTests {
 		@Bean
 		OtlpMetricsConnectionDetails otlpConnectionDetails() {
 			return () -> "http://localhost:12345/v1/metrics";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomMetricsSenderConfiguration {
+
+		static OtlpMetricsSender customMetricsSender = (request) -> {
+		};
+
+		@Bean
+		OtlpMetricsSender customMetricsSender() {
+			return customMetricsSender;
 		}
 
 	}
