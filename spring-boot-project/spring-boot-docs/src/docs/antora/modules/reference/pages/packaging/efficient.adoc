@@ -12,7 +12,7 @@ Certain PaaS implementations may also choose to extract archives before they run
 For example, Cloud Foundry operates this way.
 
 Spring Boot supports extracting your application to a directory using different layouts.
-The default layout is the most efficient, and is xref:reference:packaging/class-data-sharing.adoc[CDS friendly].
+The default layout is the most efficient, and it is xref:reference:packaging/class-data-sharing.adoc#packaging.class-data-sharing.cds[CDS] and xref:reference:packaging/class-data-sharing.adoc#packaging.class-data-sharing.aot-cache[AOT cache] friendly.
 
 In this layout, the libraries are extracted to a `lib/` folder, and the application jar
 contains the application classes and a manifest which references the libraries in the `lib/` folder.
