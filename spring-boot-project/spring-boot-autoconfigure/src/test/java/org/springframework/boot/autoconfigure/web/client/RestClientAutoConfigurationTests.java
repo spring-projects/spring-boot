@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.mock;
  * @author Arjen Poutsma
  * @author Moritz Halbritter
  * @author Dmytro Nosan
+ * @author Dmitry Sulman
  */
 class RestClientAutoConfigurationTests {
 
@@ -287,14 +289,32 @@ class RestClientAutoConfigurationTests {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
-	void whenReactiveWebApplicationAndVirtualThreadsAreEnabledOnJava21AndLaterRestClientIsConfigured() {
+	void whenReactiveWebApplicationAndVirtualThreadsEnabledAndTaskExecutorBean() {
 		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
-			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(RestClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
 				assertThat(context).hasSingleBean(RestClient.Builder.class);
 			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsDisabled() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=false")
+			.withConfiguration(
+					AutoConfigurations.of(RestClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsEnabledAndNoTaskExecutorBean() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

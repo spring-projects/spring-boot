@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
@@ -51,9 +52,9 @@ import org.springframework.web.client.RestClient.Builder;
  * @since 3.2.0
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		SslAutoConfiguration.class })
+		SslAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
-@Conditional(NotReactiveWebApplicationOrVirtualThreadsEnabledCondition.class)
+@Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
 public class RestClientAutoConfiguration {
 
 	@Bean

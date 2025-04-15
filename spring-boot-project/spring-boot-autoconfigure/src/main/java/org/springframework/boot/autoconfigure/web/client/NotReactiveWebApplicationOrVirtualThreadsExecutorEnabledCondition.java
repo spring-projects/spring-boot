@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.web.client;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.context.annotation.Conditional;
 
@@ -28,10 +30,10 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Dmitry Sulman
  */
-class NotReactiveWebApplicationOrVirtualThreadsEnabledCondition extends AnyNestedCondition {
+class NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition extends AnyNestedCondition {
 
-	NotReactiveWebApplicationOrVirtualThreadsEnabledCondition() {
-		super(ConfigurationPhase.PARSE_CONFIGURATION);
+	NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition() {
+		super(ConfigurationPhase.REGISTER_BEAN);
 	}
 
 	@Conditional(NotReactiveWebApplicationCondition.class)
@@ -40,6 +42,7 @@ class NotReactiveWebApplicationOrVirtualThreadsEnabledCondition extends AnyNeste
 	}
 
 	@ConditionalOnThreading(Threading.VIRTUAL)
+	@ConditionalOnBean(name = TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
 	private static final class VirtualThreadsEnabled {
 
 	}
