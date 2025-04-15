@@ -20,17 +20,22 @@ import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +58,7 @@ import static org.mockito.Mockito.mock;
  * @author Arjen Poutsma
  * @author Moritz Halbritter
  * @author Dmytro Nosan
+ * @author Dmitry Sulman
  */
 class RestClientAutoConfigurationTests {
 
@@ -258,6 +264,57 @@ class RestClientAutoConfigurationTests {
 				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2,
 						context.getBean(HttpMessageConvertersRestClientCustomizer.class)));
 			});
+	}
+
+	@Test
+	void whenReactiveWebApplicationRestClientIsNotConfigured() {
+		new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).doesNotHaveBean(RestClientBuilderConfigurer.class);
+				assertThat(context).doesNotHaveBean(RestClient.Builder.class);
+			});
+	}
+
+	@Test
+	void whenServletWebApplicationRestClientIsConfigured() {
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
+				assertThat(context).hasSingleBean(RestClient.Builder.class);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsEnabledAndTaskExecutorBean() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(
+					AutoConfigurations.of(RestClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
+				assertThat(context).hasSingleBean(RestClient.Builder.class);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsDisabled() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=false")
+			.withConfiguration(
+					AutoConfigurations.of(RestClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenReactiveWebApplicationAndVirtualThreadsEnabledAndNoTaskExecutorBean() {
+		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
