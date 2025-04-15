@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.gradle.testkit.runner.BuildResult;
@@ -61,9 +63,13 @@ class WarPluginActionIntegrationTests {
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
-		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
-				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
-				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-plain.war"));
+		List<File> expected = new ArrayList<>();
+		expected.add(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+		expected.add(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-plain.war"));
+		if (this.gradleBuild.gradleVersionIsAtLeast("9.0-milestone-2")) {
+			expected.add(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-plain.jar"));
+		}
+		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrderElementsOf(expected);
 	}
 
 	@TestTemplate
