@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,22 @@ import java.time.Duration;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import smoketest.integration.SampleIntegrationApplication;
 import smoketest.integration.ServiceProperties;
 import smoketest.integration.producer.ProducerApplication;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 /**
@@ -45,12 +49,14 @@ import static org.hamcrest.Matchers.containsString;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 class SampleIntegrationApplicationTests {
 
 	private ConfigurableApplicationContext context;
 
 	@AfterEach
-	void stop() {
+	void stopAndCheck(CapturedOutput output) {
+		assertThat(output).doesNotContain("WARN");
 		if (this.context != null) {
 			this.context.close();
 		}
