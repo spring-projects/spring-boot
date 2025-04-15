@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import io.micrometer.registry.otlp.OtlpMetricsSender;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
@@ -76,16 +78,25 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
-		return new OtlpMeterRegistry(otlpConfig, clock);
+	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		return builder(otlpConfig, clock, metricsSender).build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
-	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock) {
-		VirtualThreadTaskExecutor taskExecutor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
-		return new OtlpMeterRegistry(otlpConfig, clock, taskExecutor.getVirtualThreadFactory());
+	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		VirtualThreadTaskExecutor executor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
+		return builder(otlpConfig, clock, metricsSender).threadFactory(executor.getVirtualThreadFactory()).build();
+	}
+
+	private OtlpMeterRegistry.Builder builder(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		OtlpMeterRegistry.Builder builder = OtlpMeterRegistry.builder(otlpConfig).clock(clock);
+		metricsSender.ifAvailable(builder::metricsSender);
+		return builder;
 	}
 
 	/**
