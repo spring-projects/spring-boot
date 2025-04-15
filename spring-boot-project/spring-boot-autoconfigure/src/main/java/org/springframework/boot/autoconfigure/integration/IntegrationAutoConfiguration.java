@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -48,6 +47,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -213,14 +213,21 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
-		public IntegrationMBeanExporter integrationMbeanExporter(BeanFactory beanFactory, JmxProperties properties) {
-			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = properties.getDefaultDomain();
-			if (StringUtils.hasLength(defaultDomain)) {
-				exporter.setDefaultDomain(defaultDomain);
-			}
-			exporter.setServer(beanFactory.getBean(properties.getServer(), MBeanServer.class));
-			return exporter;
+		public static IntegrationMBeanExporter integrationMbeanExporter(ApplicationContext applicationContext) {
+			return new IntegrationMBeanExporter() {
+
+				@Override
+				public void afterSingletonsInstantiated() {
+					JmxProperties properties = applicationContext.getBean(JmxProperties.class);
+					String defaultDomain = properties.getDefaultDomain();
+					if (StringUtils.hasLength(defaultDomain)) {
+						setDefaultDomain(defaultDomain);
+					}
+					setServer(applicationContext.getBean(properties.getServer(), MBeanServer.class));
+					super.afterSingletonsInstantiated();
+				}
+
+			};
 		}
 
 	}

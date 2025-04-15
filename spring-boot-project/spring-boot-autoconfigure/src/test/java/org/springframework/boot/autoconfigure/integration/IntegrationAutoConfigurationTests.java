@@ -152,7 +152,7 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			assertThat(mBeanServer.getDomains()).contains("org.springframework.integration",
-					"org.springframework.integration.monitor");
+					"org.springframework.boot.autoconfigure.integration");
 			assertThat(context).hasBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
 		});
 	}
