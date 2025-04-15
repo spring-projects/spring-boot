@@ -111,26 +111,22 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		@Override
 		public String chooseEngineClientAlias(String[] keyTypes, Principal[] issuers, SSLEngine sslEngine) {
-			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases)
-				.orElseGet(() -> this.delegate.chooseEngineClientAlias(keyTypes, issuers, sslEngine));
+			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases).orElse(null);
 		}
 
 		@Override
 		public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine sslEngine) {
-			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases)
-				.orElseGet(() -> this.delegate.chooseEngineServerAlias(keyType, issuers, sslEngine));
+			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases).orElse(null);
 		}
 
 		@Override
 		public String chooseClientAlias(String[] keyTypes, Principal[] issuers, Socket socket) {
-			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases)
-				.orElseGet(() -> this.delegate.chooseClientAlias(keyTypes, issuers, socket));
+			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases).orElse(null);
 		}
 
 		@Override
 		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
-			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases)
-				.orElseGet(() -> this.delegate.chooseServerAlias(keyType, issuers, socket));
+			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases).orElse(null);
 		}
 
 		@Override
