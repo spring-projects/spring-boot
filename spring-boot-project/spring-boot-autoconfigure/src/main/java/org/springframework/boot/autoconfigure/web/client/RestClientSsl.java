@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.function.Consumer;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -34,8 +35,11 @@ import org.springframework.web.client.RestClient;
  *     RestClient restClient = restClientBuilder.apply(ssl.fromBundle("mybundle")).build();
  *     return new MyBean(restClient);
  * }
- * </pre> NOTE: Apply SSL configuration will replace any previously
+ * </pre> NOTE: Applying SSL configuration will replace any previously
  * {@link RestClient.Builder#requestFactory configured} {@link ClientHttpRequestFactory}.
+ * The replacement {@link ClientHttpRequestFactory} will apply only configured
+ * {@link ClientHttpRequestFactorySettings} and the appropriate {@link SslBundle}.
+ * <p>
  * If you need to configure {@link ClientHttpRequestFactory} with more than just SSL
  * consider using a {@link ClientHttpRequestFactoryBuilder}.
  *
