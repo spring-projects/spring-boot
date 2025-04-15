@@ -60,14 +60,14 @@ class AliasKeyManagerFactoryTests {
 	}
 
 	@Test
-	void chooseEngineServerAliasReturnsDelegateAliasWhenTestAliasIsUnknown() throws Exception {
+	void chooseEngineServerAliasReturnsNullWhenTestAliasIsUnknown() throws Exception {
 
 		final String delegateSupportedAlgorithm = "supported-alg";
 		final String[] delegateSupportedAlias = new String[] { "alias0", "alias1", "alias2" };
 		final String delegateChosenAlias = delegateSupportedAlias[0];
 		final String testAlias = "unknown-alias";
 		final String testAlgorithm = delegateSupportedAlgorithm;
-		final String expectedAlias = delegateChosenAlias;
+		final String expectedAlias = null;
 
 		KeyManagerFactory delegate = mockServerKeyManagerFactory(delegateSupportedAlgorithm, delegateSupportedAlias,
 				delegateChosenAlias);
@@ -117,14 +117,14 @@ class AliasKeyManagerFactoryTests {
 	}
 
 	@Test
-	void chooseServerAliasReturnsDelegateAliasWhenTestAliasIsUnknown() throws Exception {
+	void chooseServerAliasReturnsNullWhenTestAliasIsUnknown() throws Exception {
 
 		final String delegateSupportedAlgorithm = "supported-alg";
 		final String[] delegateSupportedAlias = new String[] { "alias0", "alias1", "alias2" };
 		final String delegateChosenAlias = delegateSupportedAlias[0];
 		final String testAlias = "unknown-alias";
 		final String testAlgorithm = delegateSupportedAlgorithm;
-		final String expectedAlias = delegateChosenAlias;
+		final String expectedAlias = null;
 
 		KeyManagerFactory delegate = mockServerKeyManagerFactory(delegateSupportedAlgorithm, delegateSupportedAlias,
 				delegateChosenAlias);
@@ -174,14 +174,14 @@ class AliasKeyManagerFactoryTests {
 	}
 
 	@Test
-	void chooseEngineClientAliasReturnsDelegateAliasWhenTestAliasIsUnknown() throws Exception {
+	void chooseEngineClientAliasReturnsNullWhenTestAliasIsUnknown() throws Exception {
 
 		final String delegateSupportedAlgorithm = "supported-alg";
 		final String[] delegateSupportedAlias = new String[] { "alias0", "alias1", "alias2" };
 		final String delegateChosenAlias = delegateSupportedAlias[0];
 		final String testAlias = "unknown-alias";
 		final String[] testAlgorithms = new String[] { delegateSupportedAlgorithm };
-		final String expectedAlias = delegateChosenAlias;
+		final String expectedAlias = null;
 
 		KeyManagerFactory delegate = mockClientKeyManagerFactory(delegateSupportedAlgorithm, delegateSupportedAlias,
 				delegateChosenAlias);
@@ -231,14 +231,14 @@ class AliasKeyManagerFactoryTests {
 	}
 
 	@Test
-	void chooseClientAliasReturnsDelegateAliasWhenTestAliasIsUnknown() throws Exception {
+	void chooseClientAliasReturnsNullWhenTestAliasIsUnknown() throws Exception {
 
 		final String delegateSupportedAlgorithm = "supported-alg";
 		final String[] delegateSupportedAlias = new String[] { "alias0", "alias1", "alias2" };
 		final String delegateChosenAlias = delegateSupportedAlias[0];
 		final String testAlias = "unknown-alias";
 		final String[] testAlgorithms = new String[] { delegateSupportedAlgorithm };
-		final String expectedAlias = delegateChosenAlias;
+		final String expectedAlias = null;
 
 		KeyManagerFactory delegate = mockClientKeyManagerFactory(delegateSupportedAlgorithm, delegateSupportedAlias,
 				delegateChosenAlias);
