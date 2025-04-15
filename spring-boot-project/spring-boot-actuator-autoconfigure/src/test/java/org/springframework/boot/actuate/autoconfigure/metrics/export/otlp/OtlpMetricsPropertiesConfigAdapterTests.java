@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -111,6 +112,20 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsNotSetAdapterHistogramFlavorReturnsEmptyMap() {
+		assertThat(createAdapter().histogramFlavorPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsSetAdapterHistogramFlavorPerMeterReturnsIt() {
+		Meter meterProperties = new Meter();
+		meterProperties.setHistogramFlavor(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+		this.properties.getMeter().put("my.histograms", meterProperties);
+		assertThat(createAdapter().histogramFlavorPerMeter()).containsEntry("my.histograms",
+				HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+	}
+
+	@Test
 	void whenPropertiesMaxScaleIsNotSetAdapterMaxScaleReturns20() {
 		assertThat(createAdapter().maxScale()).isEqualTo(20);
 	}
@@ -130,6 +145,19 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	void whenPropertiesMaxBucketCountIsSetAdapterMaxBucketCountReturnsIt() {
 		this.properties.setMaxBucketCount(6);
 		assertThat(createAdapter().maxBucketCount()).isEqualTo(6);
+	}
+
+	@Test
+	void whenPropertiesMaxBucketsPerMeterIsNotSetAdapterMaxBucketsPerMeterReturnsEmptyMap() {
+		assertThat(createAdapter().maxBucketsPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesMaxBucketsPerMeterIsSetAdapterMaxBucketsPerMeterReturnsIt() {
+		Meter meterProperties = new Meter();
+		meterProperties.setMaxBucketCount(111);
+		this.properties.getMeter().put("my.histograms", meterProperties);
+		assertThat(createAdapter().maxBucketsPerMeter()).containsEntry("my.histograms", 111);
 	}
 
 	@Test

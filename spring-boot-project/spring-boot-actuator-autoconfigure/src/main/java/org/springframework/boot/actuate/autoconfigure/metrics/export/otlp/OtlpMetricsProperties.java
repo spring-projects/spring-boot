@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private Map<String, String> headers;
 
 	/**
-	 * Histogram type to be preferred when histogram publishing is enabled.
+	 * Default histogram type when histogram publishing is enabled.
 	 */
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
 
@@ -63,8 +64,8 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private int maxScale = 20;
 
 	/**
-	 * Maximum number of buckets to be used for exponential histograms, if configured.
-	 * This has no effect on explicit bucket histograms.
+	 * Default maximum number of buckets to be used for exponential histograms, if
+	 * configured. This has no effect on explicit bucket histograms.
 	 */
 	private int maxBucketCount = 160;
 
@@ -72,6 +73,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	 * Time unit for exported metrics.
 	 */
 	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
+
+	/**
+	 * Per-meter properties that can be used to override defaults.
+	 */
+	private Map<String, Meter> meter = new LinkedHashMap<>();
 
 	public String getUrl() {
 		return this.url;
@@ -127,6 +133,44 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
 		this.baseTimeUnit = baseTimeUnit;
+	}
+
+	public Map<String, Meter> getMeter() {
+		return this.meter;
+	}
+
+	/**
+	 * Per-meter settings.
+	 */
+	public static class Meter {
+
+		/**
+		 * Maximum number of buckets to be used for exponential histograms, if configured.
+		 * This has no effect on explicit bucket histograms.
+		 */
+		private Integer maxBucketCount;
+
+		/**
+		 * Histogram type when histogram publishing is enabled.
+		 */
+		private HistogramFlavor histogramFlavor;
+
+		public Integer getMaxBucketCount() {
+			return this.maxBucketCount;
+		}
+
+		public void setMaxBucketCount(Integer maxBucketCount) {
+			this.maxBucketCount = maxBucketCount;
+		}
+
+		public HistogramFlavor getHistogramFlavor() {
+			return this.histogramFlavor;
+		}
+
+		public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+			this.histogramFlavor = histogramFlavor;
+		}
+
 	}
 
 }

@@ -20,15 +20,18 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.HistogramFlavor;
 import io.micrometer.registry.otlp.OtlpConfig;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryResourceAttributes;
 import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Adapter to convert {@link OtlpMetricsProperties} to an {@link OtlpConfig}.
@@ -89,6 +92,16 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	}
 
 	@Override
+	public Map<String, HistogramFlavor> histogramFlavorPerMeter() {
+		return get(perMeter(Meter::getHistogramFlavor), OtlpConfig.super::histogramFlavorPerMeter);
+	}
+
+	@Override
+	public Map<String, Integer> maxBucketsPerMeter() {
+		return get(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
+	}
+
+	@Override
 	public int maxScale() {
 		return get(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
@@ -101,6 +114,23 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 	@Override
 	public TimeUnit baseTimeUnit() {
 		return get(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
+	}
+
+	private <V> Function<OtlpMetricsProperties, Map<String, V>> perMeter(Function<Meter, V> getter) {
+		return (properties) -> {
+			if (CollectionUtils.isEmpty(properties.getMeter())) {
+				return null;
+			}
+			Map<String, V> perMeter = new LinkedHashMap<>();
+			properties.getMeter().forEach((key, meterProperties) -> {
+				V value = getter.apply(meterProperties);
+				if (value != null) {
+					perMeter.put(key, value);
+				}
+			});
+			return (!perMeter.isEmpty()) ? perMeter : null;
+		};
+
 	}
 
 }

@@ -40,6 +40,7 @@ class OtlpMetricsPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getMaxScale()).isEqualTo(config.maxScale());
 		assertThat(properties.getMaxBucketCount()).isEqualTo(config.maxBucketCount());
 		assertThat(properties.getBaseTimeUnit()).isSameAs(config.baseTimeUnit());
+		assertThat(properties.getMeter()).isEmpty();
 	}
 
 }
