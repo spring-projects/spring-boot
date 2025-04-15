@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -117,8 +118,9 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 
 	@Test
 	void whenPropertiesHistogramFlavorPerMeterIsSetAdapterHistogramFlavorPerMeterReturnsIt() {
-		this.properties
-			.setHistogramFlavorPerMeter(Map.of("my.histograms", HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM));
+		Meter meterProperties = new Meter();
+		meterProperties.setHistogramFlavor(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+		this.properties.getMeter().put("my.histograms", meterProperties);
 		assertThat(createAdapter().histogramFlavorPerMeter()).containsEntry("my.histograms",
 				HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
 	}
@@ -152,7 +154,9 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 
 	@Test
 	void whenPropertiesMaxBucketsPerMeterIsSetAdapterMaxBucketsPerMeterReturnsIt() {
-		this.properties.setMaxBucketsPerMeter(Map.of("my.histograms", 111));
+		Meter meterProperties = new Meter();
+		meterProperties.setMaxBucketCount(111);
+		this.properties.getMeter().put("my.histograms", meterProperties);
 		assertThat(createAdapter().maxBucketsPerMeter()).containsEntry("my.histograms", 111);
 	}
 

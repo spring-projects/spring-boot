@@ -59,11 +59,6 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
 
 	/**
-	 * Per meter histogram type to be preferred when histogram publishing is enabled.
-	 */
-	private Map<String, HistogramFlavor> histogramFlavorPerMeter = new LinkedHashMap<>();
-
-	/**
 	 * Max scale to use for exponential histograms, if configured.
 	 */
 	private int maxScale = 20;
@@ -75,15 +70,14 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	private int maxBucketCount = 160;
 
 	/**
-	 * Per meter number of max buckets used for exponential histograms, if configured.
-	 * This has no effect on explicit bucket histograms.
-	 */
-	private Map<String, Integer> maxBucketsPerMeter = new LinkedHashMap<>();
-
-	/**
 	 * Time unit for exported metrics.
 	 */
 	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
+
+	/**
+	 * Per-meter properties that can be used to override defaults.
+	 */
+	private Map<String, Meter> meter = new LinkedHashMap<>();
 
 	public String getUrl() {
 		return this.url;
@@ -117,14 +111,6 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.histogramFlavor = histogramFlavor;
 	}
 
-	public Map<String, HistogramFlavor> getHistogramFlavorPerMeter() {
-		return this.histogramFlavorPerMeter;
-	}
-
-	public void setHistogramFlavorPerMeter(Map<String, HistogramFlavor> histogramFlavorPerMeter) {
-		this.histogramFlavorPerMeter = histogramFlavorPerMeter;
-	}
-
 	public int getMaxScale() {
 		return this.maxScale;
 	}
@@ -141,20 +127,50 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.maxBucketCount = maxBucketCount;
 	}
 
-	public Map<String, Integer> getMaxBucketsPerMeter() {
-		return this.maxBucketsPerMeter;
-	}
-
-	public void setMaxBucketsPerMeter(Map<String, Integer> maxBucketsPerMeter) {
-		this.maxBucketsPerMeter = maxBucketsPerMeter;
-	}
-
 	public TimeUnit getBaseTimeUnit() {
 		return this.baseTimeUnit;
 	}
 
 	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
 		this.baseTimeUnit = baseTimeUnit;
+	}
+
+	public Map<String, Meter> getMeter() {
+		return this.meter;
+	}
+
+	/**
+	 * Per-meter settings.
+	 */
+	public static class Meter {
+
+		/**
+		 * Maximum number of buckets to be used for exponential histograms, if configured.
+		 * This has no effect on explicit bucket histograms.
+		 */
+		private Integer maxBucketCount;
+
+		/**
+		 * Histogram type when histogram publishing is enabled.
+		 */
+		private HistogramFlavor histogramFlavor;
+
+		public Integer getMaxBucketCount() {
+			return this.maxBucketCount;
+		}
+
+		public void setMaxBucketCount(Integer maxBucketCount) {
+			this.maxBucketCount = maxBucketCount;
+		}
+
+		public HistogramFlavor getHistogramFlavor() {
+			return this.histogramFlavor;
+		}
+
+		public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+			this.histogramFlavor = histogramFlavor;
+		}
+
 	}
 
 }
