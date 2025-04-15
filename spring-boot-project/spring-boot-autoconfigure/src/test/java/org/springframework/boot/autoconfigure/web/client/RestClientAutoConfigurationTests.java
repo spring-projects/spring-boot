@@ -52,6 +52,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Arjen Poutsma
  * @author Moritz Halbritter
+ * @author Dmytro Nosan
  */
 class RestClientAutoConfigurationTests {
 
@@ -84,10 +85,8 @@ class RestClientAutoConfigurationTests {
 				assertThat(context).hasSingleBean(RestClientSsl.class);
 				RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
 				assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
-				assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactoryBuilder",
-						clientHttpRequestFactoryBuilder);
-				assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactorySettings",
-						clientHttpRequestFactorySettings);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("builder", clientHttpRequestFactoryBuilder);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("settings", clientHttpRequestFactorySettings);
 			});
 	}
 
@@ -100,9 +99,9 @@ class RestClientAutoConfigurationTests {
 				.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
 			RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
 			assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
-			assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactoryBuilder",
+			assertThat(restClientSsl).hasFieldOrPropertyWithValue("builder",
 					context.getBean(ClientHttpRequestFactoryBuilder.class));
-			assertThat(restClientSsl).hasFieldOrPropertyWithValue("clientHttpRequestFactorySettings",
+			assertThat(restClientSsl).hasFieldOrPropertyWithValue("settings",
 					context.getBean(ClientHttpRequestFactorySettings.class));
 		});
 	}

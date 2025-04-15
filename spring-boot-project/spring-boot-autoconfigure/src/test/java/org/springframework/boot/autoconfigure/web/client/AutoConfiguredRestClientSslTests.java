@@ -18,12 +18,11 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.time.Duration;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -42,11 +41,11 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link AutoConfiguredRestClientSsl}.
  *
  * @author Dmytro Nosan
+ * @author Phillip Webb
  */
-@ExtendWith(MockitoExtension.class)
 class AutoConfiguredRestClientSslTests {
 
-	private final ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings
+	private final ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings
 		.ofSslBundle(mock(SslBundle.class, "Default SslBundle"))
 		.withRedirects(Redirects.DONT_FOLLOW)
 		.withReadTimeout(Duration.ofSeconds(10))
@@ -56,47 +55,41 @@ class AutoConfiguredRestClientSslTests {
 	private SslBundles sslBundles;
 
 	@Mock
-	private ClientHttpRequestFactoryBuilder<ClientHttpRequestFactory> clientHttpRequestFactoryBuilder;
+	private ClientHttpRequestFactoryBuilder<ClientHttpRequestFactory> factoryBuilder;
 
 	@Mock
-	private ClientHttpRequestFactory clientHttpRequestFactory;
+	private ClientHttpRequestFactory factory;
+
+	private AutoConfiguredRestClientSsl restClientSsl;
+
+	@BeforeEach
+	void setup() {
+		MockitoAnnotations.openMocks(this);
+		this.restClientSsl = new AutoConfiguredRestClientSsl(this.factoryBuilder, this.settings, this.sslBundles);
+	}
 
 	@Test
 	void shouldConfigureRestClientUsingBundleName() {
 		String bundleName = "test";
 		SslBundle sslBundle = mock(SslBundle.class, "SslBundle named '%s'".formatted(bundleName));
-
 		given(this.sslBundles.getBundle(bundleName)).willReturn(sslBundle);
-		given(this.clientHttpRequestFactoryBuilder
-			.build(this.clientHttpRequestFactorySettings.withSslBundle(sslBundle)))
-			.willReturn(this.clientHttpRequestFactory);
-
-		assertThat(applySslBundle((restClientSsl) -> restClientSsl.fromBundle(bundleName)))
-			.hasFieldOrPropertyWithValue("clientRequestFactory", this.clientHttpRequestFactory);
-
+		given(this.factoryBuilder.build(this.settings.withSslBundle(sslBundle))).willReturn(this.factory);
+		RestClient restClient = build(this.restClientSsl.fromBundle(bundleName));
+		assertThat(restClient).hasFieldOrPropertyWithValue("clientRequestFactory", this.factory);
 	}
 
 	@Test
 	void shouldConfigureRestClientUsingBundle() {
 		SslBundle sslBundle = mock(SslBundle.class, "Custom SslBundle");
-
-		given(this.clientHttpRequestFactoryBuilder
-			.build(this.clientHttpRequestFactorySettings.withSslBundle(sslBundle)))
-			.willReturn(this.clientHttpRequestFactory);
-
-		assertThat(applySslBundle((restClientSsl) -> restClientSsl.fromBundle(sslBundle)))
-			.hasFieldOrPropertyWithValue("clientRequestFactory", this.clientHttpRequestFactory);
+		given(this.factoryBuilder.build(this.settings.withSslBundle(sslBundle))).willReturn(this.factory);
+		RestClient restClient = build(this.restClientSsl.fromBundle(sslBundle));
+		assertThat(restClient).hasFieldOrPropertyWithValue("clientRequestFactory", this.factory);
 	}
 
-	private RestClient applySslBundle(Function<RestClientSsl, Consumer<Builder>> applySslBundle) {
+	private RestClient build(Consumer<RestClient.Builder> customizer) {
 		Builder builder = RestClient.builder();
-		applySslBundle.apply(getRestClientSsl()).accept(builder);
+		customizer.accept(builder);
 		return builder.build();
-	}
-
-	private RestClientSsl getRestClientSsl() {
-		return new AutoConfiguredRestClientSsl(this.clientHttpRequestFactoryBuilder,
-				this.clientHttpRequestFactorySettings, this.sslBundles);
 	}
 
 }

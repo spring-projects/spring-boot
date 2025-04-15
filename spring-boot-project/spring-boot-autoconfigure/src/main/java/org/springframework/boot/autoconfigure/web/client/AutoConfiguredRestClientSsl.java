@@ -29,19 +29,20 @@ import org.springframework.web.client.RestClient;
  * An auto-configured {@link RestClientSsl} implementation.
  *
  * @author Phillip Webb
+ * @author Dmytro Nosan
  */
 class AutoConfiguredRestClientSsl implements RestClientSsl {
 
-	private final ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder;
+	private final ClientHttpRequestFactoryBuilder<?> builder;
 
-	private final ClientHttpRequestFactorySettings clientHttpRequestFactorySettings;
+	private final ClientHttpRequestFactorySettings settings;
 
 	private final SslBundles sslBundles;
 
 	AutoConfiguredRestClientSsl(ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder,
 			ClientHttpRequestFactorySettings clientHttpRequestFactorySettings, SslBundles sslBundles) {
-		this.clientHttpRequestFactoryBuilder = clientHttpRequestFactoryBuilder;
-		this.clientHttpRequestFactorySettings = clientHttpRequestFactorySettings;
+		this.builder = clientHttpRequestFactoryBuilder;
+		this.settings = clientHttpRequestFactorySettings;
 		this.sslBundles = sslBundles;
 	}
 
@@ -52,11 +53,11 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 
 	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
-		return (builder) -> {
-			ClientHttpRequestFactorySettings settings = this.clientHttpRequestFactorySettings.withSslBundle(bundle);
-			ClientHttpRequestFactory requestFactory = this.clientHttpRequestFactoryBuilder.build(settings);
-			builder.requestFactory(requestFactory);
-		};
+		return (builder) -> builder.requestFactory(requestFactory(bundle));
+	}
+
+	private ClientHttpRequestFactory requestFactory(SslBundle bundle) {
+		return this.builder.build(this.settings.withSslBundle(bundle));
 	}
 
 }
