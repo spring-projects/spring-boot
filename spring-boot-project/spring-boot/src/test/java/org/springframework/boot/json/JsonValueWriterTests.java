@@ -241,16 +241,14 @@ class JsonValueWriterTests {
 			.isThrownBy(() -> valueWriter.end(Series.ARRAY)));
 	}
 
-	// https://github.com/spring-projects/spring-boot/issues/44502
-	@Test
+	@Test // gh-44502
 	void writeJavaNioPathWhenSingleElementShouldBeSerializedAsString() {
-		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("overflow")))).isEqualTo(quoted("overflow"));
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a")))).isEqualTo(quoted("a"));
 	}
 
-	@Test
-	void writeJavaNioPathShouldShouldBeSerializedAsString() {
-		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("stack/overflow/error"))))
-			.isEqualTo(quoted("stack\\/overflow\\/error"));
+	@Test // gh-44502
+	void writeJavaNioPathShouldBeSerializedAsString() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c")))).isEqualTo(quoted("a\\/b\\/c"));
 	}
 
 	private <V> String write(V value) {

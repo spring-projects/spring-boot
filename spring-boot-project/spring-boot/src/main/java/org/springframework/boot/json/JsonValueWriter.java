@@ -115,7 +115,6 @@ class JsonValueWriter {
 				throw new UncheckedIOException(ex);
 			}
 		}
-		// https://github.com/spring-projects/spring-boot/issues/44502
 		else if (value instanceof Path p) {
 			writeString(p.toString());
 		}
