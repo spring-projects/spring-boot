@@ -21,7 +21,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} to configure settings that
- * apply to Spring's reactive client HTTP connectors.
+ * apply to Spring's blocking HTTP clients.
  *
  * @author Phillip Webb
  * @since 3.5.0
