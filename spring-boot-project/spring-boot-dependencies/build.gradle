@@ -1876,7 +1876,7 @@ bom {
 			releaseNotes("https://github.com/r2dbc/r2dbc-mssql/releases/tag/v{version}")
 		}
 	}
-	library("R2DBC MySQL", "1.4.0") {
+	library("R2DBC MySQL", "1.4.1") {
 		group("io.asyncer") {
 			modules = [
 				"r2dbc-mysql"
