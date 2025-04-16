@@ -16,6 +16,7 @@
 
 package org.springframework.boot.json;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -248,7 +249,8 @@ class JsonValueWriterTests {
 
 	@Test // gh-44502
 	void writeJavaNioPathShouldBeSerializedAsString() {
-		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c")))).isEqualTo(quoted("a\\/b\\/c"));
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c"))))
+			.isEqualTo(quoted("a\\%1$sb\\%1$sc".formatted(File.separator)));
 	}
 
 	private <V> String write(V value) {
