@@ -18,6 +18,7 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -113,6 +114,9 @@ class JsonValueWriter {
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
+		}
+		else if (value instanceof Path p) {
+			writeString(p.toString());
 		}
 		else if (value instanceof Iterable<?> iterable) {
 			writeArray(iterable::forEach);
