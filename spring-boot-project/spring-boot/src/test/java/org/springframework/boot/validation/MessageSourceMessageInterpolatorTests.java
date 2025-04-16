@@ -62,8 +62,21 @@ class MessageSourceMessageInterpolatorTests {
 	void interpolateWhenParametersAreUnknownUsingCodeAsDefaultShouldLeaveThemUnchanged() {
 		this.messageSource.setUseCodeAsDefaultMessage(true);
 		this.messageSource.addMessage("top", Locale.getDefault(), "{child}+{child}");
+		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context))
+			.isEqualTo("{foo}{child}+{child}{bar}");
+	}
+
+	@Test
+	void interpolateShouldReplaceParameterThatReferencesAMessageThatMatchesItsCode() {
 		this.messageSource.addMessage("foo", Locale.getDefault(), "foo");
-		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context)).isEqualTo("foo{child}+{child}{bar}");
+		assertThat(this.interpolator.interpolate("{foo}", this.context)).isEqualTo("foo");
+	}
+
+	@Test
+	void interpolateUsingCodeAsDefaultShouldReplaceParameterThatReferencesAMessageThatMatchesItsCode() {
+		this.messageSource.setUseCodeAsDefaultMessage(true);
+		this.messageSource.addMessage("foo", Locale.getDefault(), "foo");
+		assertThat(this.interpolator.interpolate("{foo}", this.context)).isEqualTo("foo");
 	}
 
 	@Test
