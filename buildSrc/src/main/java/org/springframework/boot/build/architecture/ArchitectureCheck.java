@@ -18,15 +18,18 @@ package org.springframework.boot.build.architecture;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.tngtech.archunit.ArchConfiguration;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -84,10 +87,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	}
 
 	@TaskAction
-	void checkArchitecture() {
-		ArchConfiguration.withThreadLocalScope((configuration) -> {
-			configuration.setClassResolver(CompileClasspathClassResolver.class);
-			configuration.setProperty(CompileClasspathClassResolver.PROPERTY_NAME, getCompileClasspath().getAsPath());
+	void checkArchitecture() throws Exception {
+		withCompileClasspath(() -> {
 			JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
 			List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
 			File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
@@ -95,6 +96,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			if (!violations.isEmpty()) {
 				throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");
 			}
+			return null;
 		});
 	}
 
@@ -106,21 +108,31 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		return getRules().get().stream().map((rule) -> rule.evaluate(javaClasses));
 	}
 
-	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) {
+	private void withCompileClasspath(Callable<?> callable) throws Exception {
+		ClassLoader previous = Thread.currentThread().getContextClassLoader();
 		try {
-			Files.createDirectories(outputFile.getParentFile().toPath());
-			StringBuilder report = new StringBuilder();
-			for (EvaluationResult violation : violations) {
-				report.append(violation.getFailureReport());
-				report.append(String.format("%n"));
+			List<URL> urls = new ArrayList<>();
+			for (File file : getCompileClasspath().getFiles()) {
+				urls.add(file.toURI().toURL());
 			}
-			Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
-					StandardOpenOption.TRUNCATE_EXISTING);
+			ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+			Thread.currentThread().setContextClassLoader(classLoader);
+			callable.call();
 		}
-		catch (IOException ex) {
-			throw new VerificationException(
-					"Failed to write violation report to '" + outputFile + "' " + ex.getMessage());
+		finally {
+			Thread.currentThread().setContextClassLoader(previous);
 		}
+	}
+
+	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) throws IOException {
+		Files.createDirectories(outputFile.getParentFile().toPath());
+		StringBuilder report = new StringBuilder();
+		for (EvaluationResult violation : violations) {
+			report.append(violation.getFailureReport());
+			report.append(String.format("%n"));
+		}
+		Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	public void setClasses(FileCollection classes) {
