@@ -62,7 +62,7 @@ bom {
 			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-{version}")
 		}
 	}
-	library("AspectJ", "1.9.23") {
+	library("AspectJ", "1.9.24") {
 		group("org.aspectj") {
 			modules = [
 				"aspectjrt",
