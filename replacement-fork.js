@@ -20,7 +20,7 @@ class ForkedProcessTaskRunner {
         this.cliPath = (0, utils_1.getCliPath)();
         this.verbose = process.env.NX_VERBOSE_LOGGING === 'true';
         this.processes = new Set();
-        this.finishedBatchProcesses = new Set();
+        this.finishedProcesses = new Set();
         this.pseudoTerminal = pseudo_terminal_1.PseudoTerminal.isSupported()
             ? (0, pseudo_terminal_1.getPseudoTerminal)()
             : null;
@@ -35,6 +35,7 @@ class ForkedProcessTaskRunner {
     // TODO: vsavkin delegate terminal output printing
     forkProcessForBatch({ executorName, taskGraph: batchTaskGraph }, projectGraph, fullTaskGraph, env) {
         return new Promise((res, rej) => {
+            let p;
             try {
                 const count = Object.keys(batchTaskGraph.tasks).length;
                 if (count > 1) {
@@ -44,7 +45,7 @@ class ForkedProcessTaskRunner {
                     const args = (0, utils_1.getPrintableCommandArgsForTask)(Object.values(batchTaskGraph.tasks)[0]);
                     output_1.output.logCommand(args.join(' '));
                 }
-                const p = (0, child_process_1.fork)(workerPath, {
+                p = (0, child_process_1.fork)(workerPath, {
                     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
                     env,
                 });
@@ -57,12 +58,16 @@ class ForkedProcessTaskRunner {
                         rej(new Error(`"${executorName}" exited unexpectedly with code: ${code}`));
                     }
                 });
+                p.on('error', (err) => {
+                    this.processes.delete(p);
+                    rej(err || new Error(`"${executorName}" exited unexpectedly`));
+                });
                 p.on('message', (message) => {
                     console.log('batch process received message', message);
                     switch (message.type) {
                         case batch_messages_1.BatchMessageType.CompleteBatchExecution: {
                             res(message.results);
-                            this.finishedBatchProcesses.add(p);
+                            this.finishedProcesses.add(p);
                             break;
                         }
                         case batch_messages_1.BatchMessageType.RunTasks: {
@@ -71,7 +76,6 @@ class ForkedProcessTaskRunner {
                         case 'endCommand': {
                             // this is a message from the main process that the command has completed
                             // we need to exit the child process
-                            console.log('endCommand message received');
                             p.kill();
                             break;
                         }
@@ -94,15 +98,21 @@ class ForkedProcessTaskRunner {
             }
             catch (e) {
                 rej(e);
+                if (p) {
+                    this.processes.delete(p);
+                    p.kill();
+                }
             }
         });
     }
-    cleanupBatchProcesses() {
-        if (this.finishedBatchProcesses.size > 0) {
-            this.finishedBatchProcesses.forEach((p) => {
-                p.kill();
+    cleanUpBatchProcesses() {
+        if (this.finishedProcesses.size > 0) {
+            this.finishedProcesses.forEach((p) => {
+                if ('connected' in p ? p.connected : p.isAlive) {
+                    p.kill();
+                }
             });
-            this.finishedBatchProcesses.clear();
+            this.finishedProcesses.clear();
         }
     }
     async forkProcessLegacy(task, { temporaryOutputPath, streamOutput, pipeOutput, taskGraph, env, }) {
@@ -240,7 +250,7 @@ class ForkedProcessTaskRunner {
                 p.stderr.on('data', (chunk) => {
                     outWithErr.push(chunk.toString());
                 });
-                p.on('exit', (code, signal) => {
+                p.once('exit', (code, signal) => {
                     this.processes.delete(p);
                     if (code === null)
                         code = (0, exit_codes_1.signalToCode)(signal);
@@ -331,7 +341,7 @@ class ForkedProcessTaskRunner {
                 process.send(message);
             });
         }
-        const messageLisnter = (message) => {
+        const messageHandler = (message) => {
             // this.publisher.publish(message.toString());
             console.log('message from parent', message);
             if (typeof message === 'object' &&
@@ -355,31 +365,32 @@ class ForkedProcessTaskRunner {
             });
         };
         // When the nx process gets a message, it will be sent into the task's process
-        process.on('message', messageLisnter);
-        const cleanupListeners = (signal) => {
+        process.on('message', messageHandler);
+        const cleanUp = (signal) => {
             this.processes.forEach((p) => {
                 if ('connected' in p ? p.connected : p.isAlive) {
                     p.kill(signal);
                 }
             });
-            process.off('message', messageLisnter);
+            process.off('message', messageHandler);
+            this.cleanUpBatchProcesses();
         };
         // Terminate any task processes on exit
         process.once('exit', () => {
-            cleanupListeners();
+            cleanUp();
         });
         process.once('SIGINT', () => {
-            cleanupListeners('SIGINT');
+            cleanUp('SIGTERM');
             // we exit here because we don't need to write anything to cache.
             process.exit((0, exit_codes_1.signalToCode)('SIGINT'));
         });
         process.once('SIGTERM', () => {
-            cleanupListeners('SIGTERM');
+            cleanUp('SIGTERM');
             // no exit here because we expect child processes to terminate which
             // will store results to the cache and will terminate this process
         });
         process.once('SIGHUP', () => {
-            cleanupListeners('SIGHUP');
+            cleanUp('SIGTERM');
             // no exit here because we expect child processes to terminate which
             // will store results to the cache and will terminate this process
         });
