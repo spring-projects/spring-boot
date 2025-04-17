@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -61,7 +62,6 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/.well-known/openid-configuration",
 				HttpMethod.GET, null, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
 		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(entity.getBody()).build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
 		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
@@ -80,7 +80,6 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = this.restTemplate
 			.exchange("/.well-known/oauth-authorization-server", HttpMethod.GET, null, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
 		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(entity.getBody())
 			.build();
 		assertThat(config.getIssuer()).hasToString("https://provider.com");
@@ -95,7 +94,8 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 	@Test
 	void anonymousShouldRedirectToLogin() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
+		ResponseEntity<String> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+			.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
@@ -160,8 +160,8 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
 		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
-				MAP_TYPE_REFERENCE);
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+			.exchange("/token", HttpMethod.POST, request, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
