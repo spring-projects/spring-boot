@@ -200,29 +200,32 @@ dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
-task aggregatedJavadoc(type: Javadoc) {
-	project.rootProject.gradle.projectsEvaluated {
-		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
-			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !it.path.contains(":spring-boot-tools:") ||
-						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
-						(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
-			.findAll { !it.name.startsWith('spring-boot-starter') }
+def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
+	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
+	options {
+		author = true
+		docTitle = "Spring Boot ${project.version} API"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot ${project.version} API"
+	}
+	doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
+}
+
+project.rootProject.gradle.projectsEvaluated {
+	Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
+		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+		.findAll { !it.path.contains(":spring-boot-tools:") ||
+					it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
+					it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
+					(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
+		.findAll { !it.name.startsWith('spring-boot-starter') }
+	aggregatedJavadoc.configure {
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
-		destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
-		options {
-			author = true
-			docTitle = "Spring Boot ${project.version} API"
-			memberLevel = "protected"
-			outputLevel = "quiet"
-			splitIndex = true
-			use = true
-			windowTitle = "Spring Boot ${project.version} API"
-		}
-		doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
 	}
 }
 
