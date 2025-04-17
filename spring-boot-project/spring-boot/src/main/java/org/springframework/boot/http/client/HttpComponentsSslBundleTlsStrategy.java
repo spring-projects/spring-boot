@@ -37,6 +37,9 @@ final class HttpComponentsSslBundleTlsStrategy {
 	}
 
 	static DefaultClientTlsStrategy get(SslBundle sslBundle) {
+		if (sslBundle == null) {
+			return null;
+		}
 		SslOptions options = sslBundle.getOptions();
 		SSLContext sslContext = sslBundle.createSslContext();
 		return new DefaultClientTlsStrategy(sslContext, options.getEnabledProtocols(), options.getCiphers(), null,

@@ -119,7 +119,9 @@ public final class HttpComponentsHttpClientBuilder {
 	 * Return a new {@link HttpComponentsHttpClientBuilder} with a replacement
 	 * {@link TlsSocketStrategy} factory.
 	 * @param tlsSocketStrategyFactory the new factory used to create a
-	 * {@link TlsSocketStrategy} for a given {@link SslBundle}
+	 * {@link TlsSocketStrategy}. The function will be provided with a {@link SslBundle}
+	 * or {@code null} if no bundle is selected. Only non {@code null} results will be
+	 * applied.
 	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
 	 */
 	public HttpComponentsHttpClientBuilder withTlsSocketStrategyFactory(
@@ -166,9 +168,9 @@ public final class HttpComponentsHttpClientBuilder {
 	private PoolingHttpClientConnectionManager createConnectionManager(HttpClientSettings settings) {
 		PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create()
 			.useSystemProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultSocketConfig(createSocketConfig(settings));
-		map.from(settings::sslBundle).as(this.tlsSocketStrategyFactory).to(builder::setTlsSocketStrategy);
+		map.from(settings::sslBundle).as(this.tlsSocketStrategyFactory).whenNonNull().to(builder::setTlsSocketStrategy);
 		this.connectionManagerCustomizer.accept(builder);
 		return builder.build();
 	}
