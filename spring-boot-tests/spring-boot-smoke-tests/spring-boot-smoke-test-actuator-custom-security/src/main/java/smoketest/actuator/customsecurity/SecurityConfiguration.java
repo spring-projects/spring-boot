@@ -30,7 +30,6 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -58,18 +57,17 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	@SuppressWarnings("removal")
 	SecurityFilterChain configure(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector)
 			throws Exception {
 		http.authorizeHttpRequests((requests) -> {
-			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/actuator/beans"))
+			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/actuator/beans"))
 				.hasRole("BEANS");
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
 			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/foo")).permitAll();
-			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/error")).permitAll();
+			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/error")).permitAll();
 			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/**")).hasRole("USER");
 		});
 		http.cors(withDefaults());
