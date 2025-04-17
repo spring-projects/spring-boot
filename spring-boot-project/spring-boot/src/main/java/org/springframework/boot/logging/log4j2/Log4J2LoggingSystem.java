@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -68,6 +69,7 @@ import org.springframework.core.Conventions;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -84,6 +86,8 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
+
+	private static final String OPTIONAL_PREFIX = "optional:";
 
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
@@ -269,21 +273,22 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		try {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();
-			configurations.add(load(location, context));
+			ResourceLoader resourceLoader = ApplicationResourceLoader.get();
+			configurations.add(load(resourceLoader.getResource(location), context));
 			for (String override : overrides) {
-				configurations.add(load(override, context));
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
+				if (overrideConfiguration != null) {
+					configurations.add(overrideConfiguration);
+				}
 			}
-			Configuration configuration = (configurations.size() > 1) ? createComposite(configurations)
-					: configurations.iterator().next();
-			context.start(configuration);
+			context.start(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 
-	private Configuration load(String location, LoggerContext context) throws IOException {
-		Resource resource = ApplicationResourceLoader.get().getResource(location);
+	private Configuration load(Resource resource, LoggerContext context) throws IOException {
 		ConfigurationFactory factory = ConfigurationFactory.getInstance();
 		if (resource.isFile()) {
 			try (InputStream inputStream = resource.getInputStream()) {
@@ -303,7 +308,24 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private CompositeConfiguration createComposite(List<Configuration> configurations) {
+	private Configuration loadOverride(ResourceLoader resourceLoader, String location, LoggerContext context)
+			throws IOException {
+		if (location.startsWith(OPTIONAL_PREFIX)) {
+			Resource resource = resourceLoader.getResource(location.substring(OPTIONAL_PREFIX.length()));
+			try {
+				return (resource.exists()) ? load(resource, context) : null;
+			}
+			catch (FileNotFoundException ex) {
+				return null;
+			}
+		}
+		return load(resourceLoader.getResource(location), context);
+	}
+
+	private Configuration mergeConfigurations(List<Configuration> configurations) {
+		if (configurations.size() == 1) {
+			return configurations.iterator().next();
+		}
 		return new CompositeConfiguration(configurations.stream().map(AbstractConfiguration.class::cast).toList());
 	}
 
@@ -321,19 +343,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void reinitializeWithOverrides(List<String> overrides) {
 		LoggerContext context = getLoggerContext();
-		Configuration base = context.getConfiguration();
-		List<AbstractConfiguration> configurations = new ArrayList<>();
-		configurations.add((AbstractConfiguration) base);
+		List<Configuration> configurations = new ArrayList<>();
+		configurations.add(context.getConfiguration());
+		ResourceLoader resourceLoader = ApplicationResourceLoader.get();
 		for (String override : overrides) {
 			try {
-				configurations.add((AbstractConfiguration) load(override, context));
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
+				if (overrideConfiguration != null) {
+					configurations.add(overrideConfiguration);
+				}
 			}
 			catch (IOException ex) {
 				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
-		CompositeConfiguration composite = new CompositeConfiguration(configurations);
-		context.reconfigure(composite);
+		context.reconfigure(mergeConfigurations(configurations));
 	}
 
 	@Override

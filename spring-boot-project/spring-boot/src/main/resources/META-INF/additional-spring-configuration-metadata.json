@@ -126,7 +126,7 @@
     {
       "name": "logging.log4j2.config.override",
       "type": "java.util.List<java.lang.String>",
-      "description": "Overriding configuration files used to create a composite configuration."
+      "description": "Overriding configuration files used to create a composite configuration. Can be prefixed with 'optional:' to only load the override if it exists."
     },
     {
       "name": "logging.logback.rollingpolicy.clean-history-on-start",
