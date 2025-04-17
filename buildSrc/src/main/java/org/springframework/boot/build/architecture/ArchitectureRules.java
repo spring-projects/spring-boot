@@ -136,8 +136,11 @@ final class ArchitectureRules {
 
 	private static DescribedPredicate<JavaClass> notAnnotatedWithRoleInfrastructure() {
 		return is("not annotated with @Role(BeanDefinition.ROLE_INFRASTRUCTURE", (candidate) -> {
+			if (!candidate.isAnnotatedWith(Role.class)) {
+				return true;
+			}
 			Role role = candidate.getAnnotationOfType(Role.class);
-			return (role == null) || (role.value() != BeanDefinition.ROLE_INFRASTRUCTURE);
+			return role.value() != BeanDefinition.ROLE_INFRASTRUCTURE;
 		});
 	}
 
