@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
@@ -57,7 +57,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class,
 		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, ReactiveOAuth2ClientAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, ReactiveOAuth2ClientWebSecurityAutoConfiguration.class,
 				ReactiveOAuth2ResourceServerAutoConfiguration.class,
 				ReactiveUserDetailsServiceAutoConfiguration.class })
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })

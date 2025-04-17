@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OAuth client support.
@@ -31,11 +24,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * @author Madhura Bhave
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@link org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration}
  */
-@AutoConfiguration(before = SecurityAutoConfiguration.class)
-@ConditionalOnClass({ EnableWebSecurity.class, ClientRegistration.class })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({ OAuth2ClientRegistrationRepositoryConfiguration.class, OAuth2WebSecurityConfiguration.class })
+@Deprecated(since = "3.5.0", forRemoval = true)
 public class OAuth2ClientAutoConfiguration {
 
 }
