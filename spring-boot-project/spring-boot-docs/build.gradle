@@ -201,15 +201,16 @@ dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
-task aggregatedJavadoc(type: Javadoc) {
-	project.rootProject.gradle.projectsEvaluated {
-		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
-			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !it.path.contains(":spring-boot-tools:") ||
-						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
-						(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
-			.findAll { !it.name.startsWith('spring-boot-starter') }
+tasks.register('aggregatedJavadoc', Javadoc)
+project.rootProject.gradle.projectsEvaluated {
+	Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
+		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+		.findAll { !it.path.contains(":spring-boot-tools:") ||
+					it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
+					it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
+					(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
+		.findAll { !it.name.startsWith('spring-boot-starter') }
+	tasks.named('aggregatedJavadoc', Javadoc).configure {
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
