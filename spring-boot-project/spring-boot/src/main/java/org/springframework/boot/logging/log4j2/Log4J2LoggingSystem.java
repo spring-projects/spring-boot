@@ -274,41 +274,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();
 			ResourceLoader resourceLoader = ApplicationResourceLoader.get();
-			configurations.add(loadConfiguration(resourceLoader, location, context));
+			configurations.add(load(resourceLoader.getResource(location), context));
 			for (String override : overrides) {
-				Configuration overrideConfiguration = loadOptionalConfiguration(resourceLoader, override, context);
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
 				if (overrideConfiguration != null) {
 					configurations.add(overrideConfiguration);
 				}
 			}
-			context.start(createCompositeConfigurationIfNecessary(configurations));
+			context.start(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 
-	private Configuration loadOptionalConfiguration(ResourceLoader resourceLoader, String location,
-			LoggerContext context) throws IOException {
-		if (location.startsWith(OPTIONAL_PREFIX)) {
-			Resource resource = resourceLoader.getResource(location.substring(OPTIONAL_PREFIX.length()));
-			try {
-				return (resource.exists()) ? loadConfiguration(resource, context) : null;
-			}
-			catch (FileNotFoundException ex) {
-				return null;
-			}
-		}
-		return loadConfiguration(resourceLoader, location, context);
-	}
-
-	private Configuration loadConfiguration(ResourceLoader resourceLoader, String location, LoggerContext context)
-			throws IOException {
-		Resource resource = resourceLoader.getResource(location);
-		return loadConfiguration(resource, context);
-	}
-
-	private Configuration loadConfiguration(Resource resource, LoggerContext context) throws IOException {
+	private Configuration load(Resource resource, LoggerContext context) throws IOException {
 		ConfigurationFactory factory = ConfigurationFactory.getInstance();
 		if (resource.isFile()) {
 			try (InputStream inputStream = resource.getInputStream()) {
@@ -328,7 +308,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private Configuration createCompositeConfigurationIfNecessary(List<Configuration> configurations) {
+	private Configuration loadOverride(ResourceLoader resourceLoader, String location, LoggerContext context)
+			throws IOException {
+		if (location.startsWith(OPTIONAL_PREFIX)) {
+			Resource resource = resourceLoader.getResource(location.substring(OPTIONAL_PREFIX.length()));
+			try {
+				return (resource.exists()) ? load(resource, context) : null;
+			}
+			catch (FileNotFoundException ex) {
+				return null;
+			}
+		}
+		return load(resourceLoader.getResource(location), context);
+	}
+
+	private Configuration mergeConfigurations(List<Configuration> configurations) {
 		if (configurations.size() == 1) {
 			return configurations.iterator().next();
 		}
@@ -354,7 +348,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		ResourceLoader resourceLoader = ApplicationResourceLoader.get();
 		for (String override : overrides) {
 			try {
-				Configuration overrideConfiguration = loadOptionalConfiguration(resourceLoader, override, context);
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
 				if (overrideConfiguration != null) {
 					configurations.add(overrideConfiguration);
 				}
@@ -363,7 +357,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
-		context.reconfigure(createCompositeConfigurationIfNecessary(configurations));
+		context.reconfigure(mergeConfigurations(configurations));
 	}
 
 	@Override
