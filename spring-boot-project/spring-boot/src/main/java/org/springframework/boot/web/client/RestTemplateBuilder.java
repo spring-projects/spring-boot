@@ -750,11 +750,22 @@ public class RestTemplateBuilder {
 	 * @since 2.2.0
 	 */
 	public ClientHttpRequestFactory buildRequestFactory() {
+		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = requestFactoryBuilder();
+		return (requestFactoryBuilder != null) ? requestFactoryBuilder.build(this.requestFactorySettings) : null;
+	}
+
+	/**
+	 * Return a {@link ClientHttpRequestFactoryBuilder} instance using the settings of
+	 * this builder.
+	 * @return a {@link ClientHttpRequestFactoryBuilder} or {@code null}
+	 * @since 3.5.0
+	 */
+	public ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder() {
 		if (this.requestFactoryBuilder != null) {
-			return this.requestFactoryBuilder.build(this.requestFactorySettings);
+			return this.requestFactoryBuilder;
 		}
 		if (this.detectRequestFactory) {
-			return ClientHttpRequestFactoryBuilder.detect().build(this.requestFactorySettings);
+			return ClientHttpRequestFactoryBuilder.detect();
 		}
 		return null;
 	}
