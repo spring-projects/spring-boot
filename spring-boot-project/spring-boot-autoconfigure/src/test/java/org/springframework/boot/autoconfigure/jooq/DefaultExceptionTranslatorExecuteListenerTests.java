@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,7 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 
 	static Object[] exceptionTranslatesSqlExceptions() {
 		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802") },
+				new Object[] { SQLDialect.DERBY, new SQLSyntaxErrorException() },
 				new Object[] { SQLDialect.H2, sqlException(42000) },
 				new Object[] { SQLDialect.H2, new SQLSyntaxErrorException() },
 				new Object[] { SQLDialect.HSQLDB, sqlException(-22) },
@@ -104,9 +105,8 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 				new Object[] { SQLDialect.MYSQL, new SQLSyntaxErrorException() },
 				new Object[] { SQLDialect.POSTGRES, sqlException("03000") },
 				new Object[] { SQLDialect.POSTGRES, new SQLSyntaxErrorException() },
-				new Object[] { SQLDialect.SQLITE, new SQLSyntaxErrorException() },
 				new Object[] { SQLDialect.SQLITE, sqlException("21000") },
-		};
+				new Object[] { SQLDialect.SQLITE, new SQLSyntaxErrorException() } };
 	}
 
 	private static SQLException sqlException(String sqlState) {
