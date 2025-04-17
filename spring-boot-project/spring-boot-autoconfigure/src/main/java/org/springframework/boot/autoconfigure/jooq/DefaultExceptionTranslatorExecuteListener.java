@@ -26,8 +26,8 @@ import org.jooq.SQLDialect;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionSubclassTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.util.Assert;
 
 /**
@@ -114,7 +114,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 		private SQLExceptionTranslator apply(SQLDialect dialect) {
 			String dbName = getSpringDbName(dialect);
 			return (dbName != null) ? new SQLErrorCodeSQLExceptionTranslator(dbName)
-					: new SQLStateSQLExceptionTranslator();
+					: new SQLExceptionSubclassTranslator();
 		}
 
 		private String getSpringDbName(SQLDialect dialect) {
