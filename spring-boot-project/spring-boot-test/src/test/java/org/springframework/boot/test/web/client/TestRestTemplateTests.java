@@ -163,9 +163,9 @@ class TestRestTemplateTests {
 	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
-		assertThat(getRedirectStrategy((RestTemplateBuilder) null)).matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy((RestTemplateBuilder) null)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(null, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(builder)).matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy(builder)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW))).matches(this::isDontFollowStrategy);
 		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
@@ -175,12 +175,21 @@ class TestRestTemplateTests {
 	@Test
 	void withRequestFactorySettingsRedirectsForHttpComponents() {
 		TestRestTemplate template = new TestRestTemplate();
-		assertThat(getRedirectStrategy(template)).matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(template
 			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW))))
 			.matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(template.withRequestFactorySettings(
 				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW))))
+			.matches(this::isDontFollowStrategy);
+	}
+
+	@Test
+	void withRedirects() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.FOLLOW))).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.DONT_FOLLOW)))
 			.matches(this::isDontFollowStrategy);
 	}
 

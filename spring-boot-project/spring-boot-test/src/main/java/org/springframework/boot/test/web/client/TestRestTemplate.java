@@ -163,8 +163,9 @@ public class TestRestTemplate {
 		if (requestFactoryBuilder instanceof HttpComponentsClientHttpRequestFactoryBuilder) {
 			builder = builder.requestFactoryBuilder(applyHttpClientOptions(
 					(HttpComponentsClientHttpRequestFactoryBuilder) requestFactoryBuilder, httpClientOptions));
-			builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
-					? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
+			if (HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)) {
+				builder = builder.redirects(Redirects.FOLLOW);
+			}
 		}
 		if (username != null || password != null) {
 			builder = builder.basicAuthentication(username, password);
@@ -975,6 +976,19 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will apply the given {@link Redirects}. The request factory used is
+	 * a new instance of the underlying {@link RestTemplate}'s request factory type (when
+	 * possible).
+	 * @param redirects the new redirect settings
+	 * @return the new template
+	 * @since 3.5.0
+	 */
+	public TestRestTemplate withRedirects(Redirects redirects) {
+		return withRequestFactorySettings((settings) -> settings.withRedirects(redirects));
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
 	 * except that it will apply the given {@link ClientHttpRequestFactorySettings}. The
 	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
 	 * request factory type (when possible).
@@ -1045,7 +1059,10 @@ public class TestRestTemplate {
 
 		/**
 		 * Enable redirects.
+		 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+		 * {@link TestRestTemplate#withRedirects(Redirects)}
 		 */
+		@Deprecated(since = "3.5.0", forRemoval = true)
 		ENABLE_REDIRECTS,
 
 		/**
