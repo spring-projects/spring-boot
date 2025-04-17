@@ -32,6 +32,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.util.Instantiator;
@@ -47,11 +48,12 @@ import org.springframework.core.env.Environment;
  * @param stackTrace stack trace properties
  * @param customizer the fully qualified names of
  * {@link StructuredLoggingJsonMembersCustomizer} implementations
+ * @param context context specific properties
  * @author Phillip Webb
  * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, StackTrace stackTrace,
+		Map<String, String> add, StackTrace stackTrace, Context context,
 		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
 	StructuredLoggingJsonProperties {
@@ -145,6 +147,18 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			LAST, FIRST
 
 		}
+
+	}
+
+	/**
+	 * Properties that influence context values (usually elements propagated from the
+	 * logging MDC).
+	 *
+	 * @param include if context elements should be included
+	 * @param prefix the prefix to use for context elements
+	 * @since 3.5.0
+	 */
+	record Context(@DefaultValue("true") boolean include, String prefix) {
 
 	}
 

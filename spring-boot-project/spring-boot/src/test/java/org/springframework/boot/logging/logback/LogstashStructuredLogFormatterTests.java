@@ -29,6 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -46,7 +48,8 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 	@BeforeEach
 	void setUp() {
 		super.setUp();
-		this.formatter = new LogstashStructuredLogFormatter(null, getThrowableProxyConverter(), this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(null, TestContextPairs.include(),
+				getThrowableProxyConverter(), this.customizer);
 	}
 
 	@Test
@@ -92,8 +95,8 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@Test
 	void shouldFormatExceptionWithStackTracePrinter() {
-		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), getThrowableProxyConverter(),
-				this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), TestContextPairs.include(),
+				getThrowableProxyConverter(), this.customizer);
 		LoggingEvent event = createEvent();
 		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));
 		event.setMDCPropertyMap(Collections.emptyMap());

@@ -28,6 +28,7 @@ import org.apache.logging.log4j.message.MapMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +55,8 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		this.environment.setProperty("logging.structured.ecs.service.environment", "test");
 		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		this.environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null, this.customizer);
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null,
+				TestContextPairs.include(), this.customizer);
 	}
 
 	@Test
@@ -107,7 +109,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@SuppressWarnings("unchecked")
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
-				this.customizer);
+				TestContextPairs.include(), this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));

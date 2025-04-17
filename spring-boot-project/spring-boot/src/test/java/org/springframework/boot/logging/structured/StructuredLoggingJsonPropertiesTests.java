@@ -31,6 +31,7 @@ import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.logging.TestException;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.Context;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace.Root;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StructuredLoggingJsonPropertiesRuntimeHints;
@@ -52,7 +53,7 @@ class StructuredLoggingJsonPropertiesTests {
 		setupJsonProperties(environment);
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
-				Map.of("e", "f"), Map.of("g", "h"), null, Set.of(TestCustomizer.class)));
+				Map.of("e", "f"), Map.of("g", "h"), null, null, Set.of(TestCustomizer.class)));
 	}
 
 	@Test
@@ -91,11 +92,14 @@ class StructuredLoggingJsonPropertiesTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(StructuredLoggingJsonProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
-					Map.class, StackTrace.class, Set.class))
+					Map.class, StackTrace.class, Context.class, Set.class))
 			.invoke()).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructor(StackTrace.class.getDeclaredConstructor(String.class, Root.class, Integer.class,
 					Integer.class, Boolean.class, Boolean.class))
+			.invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onConstructor(Context.class.getDeclaredConstructor(boolean.class, String.class))
 			.invoke()).accepts(hints);
 	}
 

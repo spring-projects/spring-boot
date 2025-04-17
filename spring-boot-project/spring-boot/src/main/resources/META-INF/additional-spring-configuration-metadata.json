@@ -267,6 +267,16 @@
       "description": "Additional members that should be added to structured logging JSON"
     },
     {
+      "name": "logging.structured.json.context.include",
+      "type": "java.lang.Boolean",
+      "description": "Whether context data should be included in the JSON."
+    },
+    {
+      "name": "logging.structured.json.context.prefix",
+      "type": "java.lang.String",
+      "description": "The prefix to use when inserting context data."
+    },
+    {
       "name": "logging.structured.json.customizer",
       "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
       "description": "Fully qualified class names of StructuredLoggingJsonMembersCustomizer implementations"

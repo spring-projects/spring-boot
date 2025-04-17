@@ -31,6 +31,7 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -44,12 +45,13 @@ import org.springframework.util.CollectionUtils;
  */
 class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter,
+	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
 			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(stackTracePrinter, members), customizer);
+		super((members) -> jsonMembers(stackTracePrinter, contextPairs, members), customizer);
 	}
 
-	private static void jsonMembers(StackTracePrinter stackTracePrinter, JsonWriter.Members<LogEvent> members) {
+	private static void jsonMembers(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
@@ -60,7 +62,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 		members.add("level_value", LogEvent::getLevel).as(Level::intLevel);
 		members.from(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
-			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
+			.usingPairs(contextPairs.flat("_", LogstashStructuredLogFormatter::addContextDataPairs));
 		members.add("tags", LogEvent::getMarker)
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
@@ -73,6 +75,10 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 			.plusNanos(instant.getNanoOfMillisecond());
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(javaInstant, ZoneId.systemDefault());
 		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
+	}
+
+	private static void addContextDataPairs(ContextPairs.Pairs<ReadOnlyStringMap> contextPairs) {
+		contextPairs.add((contextData, pairs) -> contextData.forEach(pairs::accept));
 	}
 
 	private static Set<String> getMarkers(Marker marker) {

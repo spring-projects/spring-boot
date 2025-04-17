@@ -31,6 +31,7 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
@@ -113,25 +114,29 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, jsonMembersCustomizer);
+			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
+					jsonMembersCustomizer);
 		}
 
 		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter,
+			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
 					jsonMembersCustomizer);
 		}
 
 		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new LogstashStructuredLogFormatter(stackTracePrinter, jsonMembersCustomizer);
+			return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, jsonMembersCustomizer);
 		}
 
 	}

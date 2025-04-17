@@ -19,7 +19,7 @@ package org.springframework.boot.logging.log4j2;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -36,13 +36,13 @@ import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.WritableJson;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -72,12 +72,12 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
 	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, members), customizer);
+			ContextPairs contextPairs, StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members), customizer);
 	}
 
 	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
-			JsonWriter.Members<LogEvent> members) {
+			ContextPairs contextPairs, JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("version", "1.1");
 		members.add("short_message", LogEvent::getMessage)
@@ -93,7 +93,8 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add("_log_logger", LogEvent::getLoggerName);
 		members.from(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
-			.usingPairs(GraylogExtendedLogFormatStructuredLogFormatter::createAdditionalFields);
+			.usingPairs(contextPairs.flat(additionalFieldJoiner(),
+					GraylogExtendedLogFormatStructuredLogFormatter::addContextDataPairs));
 		members.add()
 			.whenNotNull(LogEvent::getThrownProxy)
 			.usingMembers((thrownProxyMembers) -> throwableMembers(thrownProxyMembers, extractor));
@@ -135,25 +136,23 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add("_error_message", (event) -> event.getThrownProxy().getMessage());
 	}
 
-	private static void createAdditionalFields(ReadOnlyStringMap contextData, BiConsumer<Object, Object> pairs) {
-		contextData.forEach((name, value) -> createAdditionalField(name, value, pairs));
+	private static void addContextDataPairs(ContextPairs.Pairs<ReadOnlyStringMap> contextPairs) {
+		contextPairs.add((contextData, pairs) -> contextData.forEach(pairs::accept));
 	}
 
-	private static void createAdditionalField(String name, Object value, BiConsumer<Object, Object> pairs) {
-		Assert.notNull(name, "'name' must not be null");
-		if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {
-			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", name));
-			return;
-		}
-		if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(name)) {
-			logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", name));
-			return;
-		}
-		pairs.accept(asAdditionalFieldName(name), value);
-	}
-
-	private static Object asAdditionalFieldName(String name) {
-		return (!name.startsWith("_")) ? "_" + name : name;
+	private static BinaryOperator<String> additionalFieldJoiner() {
+		return (prefix, name) -> {
+			name = prefix + name;
+			if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {
+				logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", name));
+				return null;
+			}
+			if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(name)) {
+				logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", name));
+				return null;
+			}
+			return (!name.startsWith("_")) ? "_" + name : name;
+		};
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.Context;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
@@ -86,6 +87,7 @@ public class StructuredLogFormatterFactory<E> {
 			allAvailableParameters.add(StructuredLoggingJsonMembersCustomizer.class,
 					(type) -> getStructuredLoggingJsonMembersCustomizer(properties));
 			allAvailableParameters.add(StackTracePrinter.class, (type) -> getStackTracePrinter(properties));
+			allAvailableParameters.add(ContextPairs.class, (type) -> getContextPairs(properties));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}
@@ -120,6 +122,12 @@ public class StructuredLogFormatterFactory<E> {
 
 	private StackTracePrinter getStackTracePrinter(StructuredLoggingJsonProperties properties) {
 		return (properties != null && properties.stackTrace() != null) ? properties.stackTrace().createPrinter() : null;
+	}
+
+	private ContextPairs getContextPairs(StructuredLoggingJsonProperties properties) {
+		Context contextProperties = (properties != null) ? properties.context() : null;
+		contextProperties = (contextProperties != null) ? contextProperties : new Context(true, null);
+		return new ContextPairs(contextProperties.include(), contextProperties.prefix());
 	}
 
 	/**

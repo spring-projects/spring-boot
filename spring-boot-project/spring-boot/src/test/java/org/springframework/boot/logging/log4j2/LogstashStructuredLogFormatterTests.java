@@ -29,6 +29,8 @@ import org.apache.logging.log4j.message.MapMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -45,7 +47,7 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@BeforeEach
 	void setUp() {
-		this.formatter = new LogstashStructuredLogFormatter(null, this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(null, TestContextPairs.include(), this.customizer);
 	}
 
 	@Test
@@ -88,7 +90,8 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@Test
 	void shouldFormatExceptionWithStackTracePrinter() {
-		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), this.customizer);
+		this.formatter = new LogstashStructuredLogFormatter(new SimpleStackTracePrinter(), TestContextPairs.include(),
+				this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);

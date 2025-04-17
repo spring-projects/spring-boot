@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +58,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		this.environment.setProperty("spring.application.pid", "1");
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null,
-				getThrowableProxyConverter(), this.customizer);
+				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
 	}
 
 	@Test
@@ -114,7 +115,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@SuppressWarnings("unchecked")
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
-				getThrowableProxyConverter(), this.customizer);
+				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Collections.emptyMap());
 		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));

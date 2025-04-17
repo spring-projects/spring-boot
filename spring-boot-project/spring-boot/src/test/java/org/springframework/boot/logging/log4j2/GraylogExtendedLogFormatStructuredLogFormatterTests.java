@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
@@ -52,7 +53,8 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		this.environment.setProperty("logging.structured.gelf.host", "name");
 		this.environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
 		this.environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null, this.customizer);
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null,
+				TestContextPairs.include(), this.customizer);
 	}
 
 	@Test
@@ -154,7 +156,7 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@Test
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment,
-				new SimpleStackTracePrinter(), this.customizer);
+				new SimpleStackTracePrinter(), TestContextPairs.include(), this.customizer);
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);

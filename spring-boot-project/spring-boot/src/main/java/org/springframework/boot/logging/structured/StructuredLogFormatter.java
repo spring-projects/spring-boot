@@ -31,6 +31,7 @@ import org.springframework.core.env.Environment;
  * <li>{@link Environment}</li>
  * <li>{@link StructuredLoggingJsonMembersCustomizer}</li>
  * <li>{@link StackTracePrinter} (may be {@code null})</li>
+ * <li>{@link ContextPairs}</li>
  * </ul>
  * When using Logback, implementing classes can also use the following parameter types in
  * the constructor:

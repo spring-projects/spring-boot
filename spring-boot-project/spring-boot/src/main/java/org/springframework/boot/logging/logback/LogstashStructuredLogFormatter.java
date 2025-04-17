@@ -35,6 +35,7 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -50,12 +51,12 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ThrowableProxyConverter throwableProxyConverter,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(stackTracePrinter, throwableProxyConverter, members), customizer);
+	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter, StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(stackTracePrinter, contextPairs, throwableProxyConverter, members), customizer);
 	}
 
-	private static void jsonMembers(StackTracePrinter stackTracePrinter,
+	private static void jsonMembers(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
 			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
@@ -65,10 +66,10 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 		members.add("thread_name", ILoggingEvent::getThreadName);
 		members.add("level", ILoggingEvent::getLevel);
 		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
-		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
-		members.from(ILoggingEvent::getKeyValuePairs)
-			.whenNotEmpty()
-			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
+		members.add().usingPairs(contextPairs.flat("_", (pairs) -> {
+			pairs.addMapEntries(ILoggingEvent::getMDCPropertyMap);
+			pairs.add(ILoggingEvent::getKeyValuePairs, keyValuePairExtractor);
+		}));
 		members.add("tags", ILoggingEvent::getMarkerList)
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
