@@ -573,7 +573,7 @@ The following activation properties are available:
 | Property | Note
 
 | `on-profile`
-| A profile expression that must match for the document to be active.
+| A profile expression that must match for the document to be active, or a list of profile expressions of which at least one must match for the document to be active.
 
 | `on-cloud-platform`
 | The javadoc:org.springframework.boot.cloud.CloudPlatform[] that must be detected for the document to be active.
