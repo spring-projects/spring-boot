@@ -231,7 +231,6 @@ class ArchitectureCheckTests {
 	private void runGradle(Consumer<GradleRunner> callback) {
 		callback.accept(GradleRunner.create()
 			.withProjectDir(this.projectDir.toFile())
-			// .withArguments("checkArchitectureMain", "-Dorg.gradle.debug=true")
 			.withArguments("checkArchitectureMain")
 			.withPluginClasspath());
 	}

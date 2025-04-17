@@ -125,7 +125,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	}
 
 	private void writeViolationReport(List<EvaluationResult> violations, File outputFile) throws IOException {
-		Files.createDirectories(outputFile.getParentFile().toPath());
+		outputFile.getParentFile().mkdirs();
 		StringBuilder report = new StringBuilder();
 		for (EvaluationResult violation : violations) {
 			report.append(violation.getFailureReport());
