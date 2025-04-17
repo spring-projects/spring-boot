@@ -1081,7 +1081,7 @@ public class TestRestTemplate {
 	 *
 	 * @deprecated since 3.5.0 for removal in 4.0.0
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	protected static class CustomHttpComponentsClientHttpRequestFactory extends HttpComponentsClientHttpRequestFactory {
 
 		private final String cookieSpec;
@@ -1178,7 +1178,7 @@ public class TestRestTemplate {
 	 * Factory used to create a {@link TlsSocketStrategy} supporting self-signed
 	 * certificates.
 	 */
-	private static class SelfSignedTlsSocketStrategyFactory implements Function<SslBundle, TlsSocketStrategy> {
+	private static final class SelfSignedTlsSocketStrategyFactory implements Function<SslBundle, TlsSocketStrategy> {
 
 		private static final String[] SUPPORTED_PROTOCOLS = { TLS.V_1_3.getId(), TLS.V_1_2.getId() };
 
