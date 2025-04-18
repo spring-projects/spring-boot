@@ -1,0 +1,6 @@
+spring:
+  bar: bar
+  foo: baz
+---
+spring:
+  foo: baz
