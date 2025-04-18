@@ -9,6 +9,9 @@ defaultTasks 'build'
 
 allprojects {
 	group = "org.springframework.boot"
+	repositories {
+		mavenCentral()
+	}
 }
 
 subprojects {
