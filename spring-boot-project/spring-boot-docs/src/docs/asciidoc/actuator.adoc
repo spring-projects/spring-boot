@@ -1,0 +1,30 @@
+[[actuator.endpoints.configfile]]
+=== configfile
+
+The `configfile` endpoint exposes the current configuration from `application.yaml` or `application.properties`.
+It is **disabled by default**.
+
+You can enable it with:
+
+[source,yaml]
+----
+management:
+  endpoint:
+    configfile:
+      enabled: true
+      sensitive-keys:
+        - password
+        - token
+        - secret
+----
+
+Sensitive keys are redacted with `****`.
+
+.Example output
+[source,json]
+----
+{
+  "server.port": "8080",
+  "db.password": "****"
+}
+----
