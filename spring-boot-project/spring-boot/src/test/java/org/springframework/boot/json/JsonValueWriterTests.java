@@ -18,6 +18,7 @@ package org.springframework.boot.json;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -251,6 +252,36 @@ class JsonValueWriterTests {
 	void writeJavaNioPathShouldBeSerializedAsString() {
 		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c"))))
 			.isEqualTo(quoted("a\\%1$sb\\%1$sc".formatted(File.separator)));
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenCollectionExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(list))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenMapExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("foo", Map.of("bar", map));
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(map))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: foo.bar.foo.bar.foo.bar.foo");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenIterableExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write((Iterable<Object>) list::iterator))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
 	}
 
 	private <V> String write(V value) {
