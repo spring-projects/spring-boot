@@ -137,7 +137,7 @@ public class DockerComposeProperties {
 		return this.readiness;
 	}
 
-	public static DockerComposeProperties get(Binder binder) {
+	static DockerComposeProperties get(Binder binder) {
 		return binder.bind(NAME, DockerComposeProperties.class).orElseGet(DockerComposeProperties::new);
 	}
 
