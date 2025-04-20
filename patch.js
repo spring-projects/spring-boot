@@ -1,7 +1,7 @@
 const { readFileSync, writeFileSync } = require("fs");
 
 console.log("Patching NX...");
-
+/* 
 console.log(
   require
     .resolve("nx/src/tasks-runner/forked-process-task-runner.js")
