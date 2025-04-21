@@ -97,19 +97,24 @@ The following table summarizes the available parameters for `docker.builderRegis
 |===
 | Parameter | Description
 
-| `username`
+| `username` +
+(`spring-boot.build-image.docker.[builderRegistry \| publishRegistry].username`)
 | Username for the Docker image registry user. Required for user authentication.
 
-| `password`
+| `password` +
+(`spring-boot.build-image.docker.[builderRegistry \| publishRegistry].password`)
 | Password for the Docker image registry user. Required for user authentication.
 
-| `url`
+| `url` +
+(`spring-boot.build-image.docker.[builderRegistry \| publishRegistry].url`)
 | Address of the Docker image registry. Optional for user authentication.
 
-| `email`
+| `email` +
+(`spring-boot.build-image.docker.[builderRegistry \| publishRegistry].email`)
 | E-mail address for the Docker image registry user. Optional for user authentication.
 
-| `token`
+| `token` +
+(`spring-boot.build-image.docker.[builderRegistry \| publishRegistry].token`)
 | Identity token for the Docker image registry user. Required for token authentication.
 |===
 
@@ -428,20 +433,12 @@ When using the `publish` option on the command line with authentication, you can
 [source,shell]
 ----
 $ mvn spring-boot:build-image \
-      -Ddocker.publishRegistry.username=user \
-      -Ddocker.publishRegistry.password=secret \
-      -Ddocker.publishRegistry.url=docker.example.com \
+      -Dspring-boot.build-image.docker.publishRegistry.username=user \
+      -Dspring-boot.build-image.docker.publishRegistry.password=secret \
+      -Dspring-boot.build-image.docker.publishRegistry.url=docker.example.com \
       -Dspring-boot.build-image.publish=true \
       -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
 ----
-
-and reference the properties in the XML configuration:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-include::example$packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
-----
-
 
 
 [[build-image.examples.caches]]
@@ -543,3 +540,21 @@ If the builder or run image is stored in a private Docker registry that supports
 ----
 include::example$packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
 ----
+
+In addition to configuring credentials directly in the POM you can  set these same credentials as system properties.
+
+[source,shell]
+----
+$ mvn spring-boot:build-image \
+      -Dspring-boot.build-image.docker.builderRegistry.username=user \
+      -Dspring-boot.build-image.docker.builderRegistry.password=secret \
+      -Dspring-boot.build-image.docker.builderRegistry.url=docker.example.com \
+----
+
+Another option to externalizing credentials is to set the credentials in your global Maven `settings.xml` file.
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-registry-global-settings.xml[tags=docker-registry-global-settings]
+----
+

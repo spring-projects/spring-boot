@@ -49,6 +49,7 @@ import org.springframework.boot.loader.tools.ImagePackager;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.boot.maven.Docker.DockerRegistry;
 import org.springframework.util.StringUtils;
 
 /**
@@ -173,6 +174,86 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String applicationDirectory;
 
 	/**
+	 * Alias for the builder registry {@link DockerRegistry#username} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.builderRegistry.username", readonly = true)
+	String builderRegistryUsername;
+
+	/**
+	 * Alias for the builder registry {@link DockerRegistry#password} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.builderRegistry.password", readonly = true)
+	String builderRegistryPassword;
+
+	/**
+	 * Alias for the builder registry {@link DockerRegistry#username} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.builderRegistry.email", readonly = true)
+	String builderRegistryEmail;
+
+	/**
+	 * Alias for the builder registry {@link DockerRegistry#token} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.builderRegistry.token", readonly = true)
+	String builderRegistryToken;
+
+	/**
+	 * Alias for the builder registry {@link DockerRegistry#url} to support configuration
+	 * through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.builderRegistry.url", readonly = true)
+	String builderRegistryUrl;
+
+	/**
+	 * Alias for the publish registry {@link DockerRegistry#username} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.publishRegistry.username", readonly = true)
+	String publishRegistryUsername;
+
+	/**
+	 * Alias for the publish registry {@link DockerRegistry#password} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.publishRegistry.password", readonly = true)
+	String publishRegistryPassword;
+
+	/**
+	 * Alias for the publish registry {@link DockerRegistry#username} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.publishRegistry.email", readonly = true)
+	String publishRegistryEmail;
+
+	/**
+	 * Alias for the publish registry {@link DockerRegistry#token} to support
+	 * configuration through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.publishRegistry.token", readonly = true)
+	String publishRegistryToken;
+
+	/**
+	 * Alias for the publish registry {@link DockerRegistry#url} to support configuration
+	 * through command-line property.
+	 * @since 3.3.11
+	 */
+	@Parameter(property = "spring-boot.build-image.docker.publishRegistry.url", readonly = true)
+	String publishRegistryUrl;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -247,14 +328,54 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
 			BuildRequest request = getBuildRequest(libraries);
-			DockerConfiguration dockerConfiguration = (this.docker != null)
-					? this.docker.asDockerConfiguration(request.isPublish())
-					: new Docker().asDockerConfiguration(request.isPublish());
+			if (this.docker == null) {
+				this.docker = new Docker();
+			}
+			DockerRegistry builderRegistry = configureBuilderRegistry(this.docker.getBuilderRegistry());
+			DockerRegistry publisherRegistry = configurePublishRegistry(this.docker.getPublishRegistry());
+			this.docker.setBuilderRegistry(builderRegistry);
+			this.docker.setPublishRegistry(publisherRegistry);
+
+			DockerConfiguration dockerConfiguration = this.docker.asDockerConfiguration(request.isPublish());
 			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			builder.build(request);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
+		}
+	}
+
+	private DockerRegistry configurePublishRegistry(DockerRegistry dockerRegistry) {
+		if (dockerRegistry == null) {
+			dockerRegistry = new DockerRegistry();
+		}
+		checkAndSetDockerRegistry(this.publishRegistryEmail, dockerRegistry.getEmail(), dockerRegistry::setEmail);
+		checkAndSetDockerRegistry(this.publishRegistryPassword, dockerRegistry.getPassword(),
+				dockerRegistry::setPassword);
+		checkAndSetDockerRegistry(this.publishRegistryToken, dockerRegistry.getToken(), dockerRegistry::setToken);
+		checkAndSetDockerRegistry(this.publishRegistryUrl, dockerRegistry.getUrl(), dockerRegistry::setUrl);
+		checkAndSetDockerRegistry(this.publishRegistryUsername, dockerRegistry.getUsername(),
+				dockerRegistry::setUsername);
+		return dockerRegistry;
+	}
+
+	private DockerRegistry configureBuilderRegistry(DockerRegistry dockerRegistry) {
+		if (dockerRegistry == null) {
+			dockerRegistry = new DockerRegistry();
+		}
+		checkAndSetDockerRegistry(this.builderRegistryEmail, dockerRegistry.getEmail(), dockerRegistry::setEmail);
+		checkAndSetDockerRegistry(this.builderRegistryPassword, dockerRegistry.getPassword(),
+				dockerRegistry::setPassword);
+		checkAndSetDockerRegistry(this.builderRegistryToken, dockerRegistry.getToken(), dockerRegistry::setToken);
+		checkAndSetDockerRegistry(this.builderRegistryUrl, dockerRegistry.getUrl(), dockerRegistry::setUrl);
+		checkAndSetDockerRegistry(this.builderRegistryUsername, dockerRegistry.getUsername(),
+				dockerRegistry::setUsername);
+		return dockerRegistry;
+	}
+
+	private void checkAndSetDockerRegistry(String value, String currentValue, Consumer<String> setter) {
+		if (StringUtils.hasText(value) && !StringUtils.hasText(currentValue)) {
+			setter.accept(value);
 		}
 	}
 

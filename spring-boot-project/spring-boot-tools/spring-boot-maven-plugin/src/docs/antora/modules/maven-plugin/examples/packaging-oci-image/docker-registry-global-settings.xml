@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::docker-registry-global-settings[] -->
+<profile>
+	<id>spring-boot-docker-creds</id>
+	<activation>
+		<activeByDefault>true</activeByDefault>
+	</activation>
+	<properties>
+		<spring-boot.build-image.builder>my-custom/image-builder:1.0.0</spring-boot.build-image.builder>
+		<spring-boot.build-image.docker.builderRegistry.username>demo-user</spring-boot.build-image.docker.builderRegistry.username>
+		<spring-boot.build-image.docker.builderRegistry.email>demo-user@example.com</spring-boot.build-image.docker.builderRegistry.email>
+		<spring-boot.build-image.docker.builderRegistry.password>demo-user-password</spring-boot.build-image.docker.builderRegistry.password>
+	</properties>
+</profile>
+<!-- end::docker-registry-global-settings[] -->
