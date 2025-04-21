@@ -105,8 +105,8 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples.do
 [[build-image.customization]]
 == Image Customizations
 
-The plugin invokes a {url-buildpacks-docs}/concepts/components/builder/[builder] to orchestrate the generation of an image.
-The builder includes multiple {url-buildpacks-docs}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
+The plugin invokes a {url-buildpacks-docs}/for-app-developers/concepts/builder/[builder] to orchestrate the generation of an image.
+The builder includes multiple {url-buildpacks-docs}/for-app-developers/concepts/buildpack/[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
 The name of the generated image is deduced from project properties.
 
@@ -123,7 +123,7 @@ The following table summarizes the available properties and their default values
 
 | `trustBuilder`
 | `--trustBuilder`
-| Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
+| Whether to treat the builder as {url-buildpacks-docs}/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
 | `true` if the builder is one of `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
 
 | `imagePlatform`
@@ -232,7 +232,7 @@ The value can be a named volume or a bind mount location.
 | `--createdDate`
 | A date that will be used to set the `Created` field in the generated image's metadata.
 The value must be a string in the ISO 8601 instant format, or `now` to use the current date and time.
-| A fixed date that enables https://buildpacks.io/docs/features/reproducibility/[build reproducibility].
+| A fixed date that enables {url-buildpacks-docs}/for-app-developers/concepts/reproducibility/[build reproducibility].
 
 | `applicationDirectory`
 | `--applicationDirectory`
@@ -459,7 +459,7 @@ A path to a gzipped tar file containing buildpack content:
 * `\file:///path/to/buildpack.tgz`
 * `/path/to/buildpack.tgz`
 
-An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/package-a-buildpack/[packaged buildpack]:
+An OCI image containing a {url-buildpacks-docs}/for-buildpack-authors/how-to/distribute-buildpacks/package-buildpack/[packaged buildpack]:
 
 * `docker://example/buildpack`
 * `docker:///example/buildpack:latest`
