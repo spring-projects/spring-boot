@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+
 /**
  * Docker registry authentication configuration.
  *
@@ -27,7 +29,26 @@ public interface DockerRegistryAuthentication {
 	/**
 	 * Returns the auth header that should be used for docker authentication.
 	 * @return the auth header
+	 * @throws IllegalStateException if the auth header cannot be created
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #getAuthHeader(ImageReference)}
+	 *
 	 */
-	String getAuthHeader();
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	default String getAuthHeader() {
+		throw new IllegalStateException("Use getAuthHeader(ImageReference) instead of getAuthHeader()");
+	}
+
+	/**
+	 * Returns the auth header that should be used for docker authentication.
+	 * @param imageReference the image reference
+	 * @return the auth header
+	 * @throws IllegalStateException if the auth header cannot be created
+	 * @since 3.5.0
+	 *
+	 */
+	default String getAuthHeader(ImageReference imageReference) {
+		return getAuthHeader();
+	}
 
 }

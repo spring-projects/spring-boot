@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.StreamUtils;
 
@@ -34,17 +35,21 @@ import org.springframework.util.StreamUtils;
  */
 class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 
+	private final ImageReference imageReference = ImageReference.of("ubuntu:18.04");
+
 	@Test
 	void createMinimalAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret",
 				"https://docker.example.com", "docker@example.com");
-		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader()), true);
+		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader(this.imageReference)),
+				true);
 	}
 
 	@Test
 	void createFullAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret", null, null);
-		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(auth.getAuthHeader()), false);
+		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(auth.getAuthHeader(this.imageReference)),
+				false);
 	}
 
 	private String jsonContent(String s) throws IOException {

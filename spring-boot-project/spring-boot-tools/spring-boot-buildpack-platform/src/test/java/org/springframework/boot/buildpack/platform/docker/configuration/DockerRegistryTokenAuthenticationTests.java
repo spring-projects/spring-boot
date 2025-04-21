@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.StreamUtils;
 
@@ -37,7 +38,7 @@ class DockerRegistryTokenAuthenticationTests extends AbstractJsonTests {
 	@Test
 	void createAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryTokenAuthentication auth = new DockerRegistryTokenAuthentication("tokenvalue");
-		String header = auth.getAuthHeader();
+		String header = auth.getAuthHeader(ImageReference.of("ubuntu:18.04"));
 		String expectedJson = StreamUtils.copyToString(getContent("auth-token.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, new String(Base64.getUrlDecoder().decode(header)), true);
 	}

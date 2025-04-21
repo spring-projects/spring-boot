@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -34,17 +36,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class DockerTests {
 
+	private final ImageReference imageReference = ImageReference.of("ubuntu:22.04");
+
 	@Test
-	void asDockerConfigurationWithDefaults() {
+	void asDockerConfigurationWithDefaults() throws ClassNotFoundException {
 		Docker docker = new Docker();
 		DockerConfiguration dockerConfiguration = createDockerConfiguration(docker);
 		assertThat(dockerConfiguration.getHost()).isNull();
-		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
-			.contains("\"password\" : \"\"")
-			.contains("\"email\" : \"\"")
-			.contains("\"serveraddress\" : \"\"");
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
 	}
 
 	@Test
@@ -60,12 +62,10 @@ class DockerTests {
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(host.getContext()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
-		assertThat(createDockerConfiguration(docker).getBuilderRegistryAuthentication()).isNull();
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
-			.contains("\"password\" : \"\"")
-			.contains("\"email\" : \"\"")
-			.contains("\"serveraddress\" : \"\"");
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
 	}
 
 	@Test
@@ -79,12 +79,10 @@ class DockerTests {
 		assertThat(host.isSecure()).isFalse();
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
-		assertThat(createDockerConfiguration(docker).getBuilderRegistryAuthentication()).isNull();
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
-			.contains("\"password\" : \"\"")
-			.contains("\"email\" : \"\"")
-			.contains("\"serveraddress\" : \"\"");
+		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
 	}
 
 	@Test
@@ -109,12 +107,10 @@ class DockerTests {
 		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
-		assertThat(createDockerConfiguration(docker).getBuilderRegistryAuthentication()).isNull();
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
-			.contains("\"password\" : \"\"")
-			.contains("\"email\" : \"\"")
-			.contains("\"serveraddress\" : \"\"");
+		assertThat(createDockerConfiguration(docker).getBuilderRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
+			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
 	}
 
 	@Test
@@ -125,12 +121,12 @@ class DockerTests {
 		docker.setPublishRegistry(
 				new Docker.DockerRegistry("user2", "secret2", "https://docker2.example.com", "docker2@example.com"));
 		DockerConfiguration dockerConfiguration = createDockerConfiguration(docker);
-		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
+		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader(this.imageReference)))
 			.contains("\"username\" : \"user1\"")
 			.contains("\"password\" : \"secret1\"")
 			.contains("\"email\" : \"docker1@example.com\"")
 			.contains("\"serveraddress\" : \"https://docker1.example.com\"");
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader(this.imageReference)))
 			.contains("\"username\" : \"user2\"")
 			.contains("\"password\" : \"secret2\"")
 			.contains("\"email\" : \"docker2@example.com\"")
@@ -170,9 +166,9 @@ class DockerTests {
 		docker.setBuilderRegistry(new Docker.DockerRegistry("token1"));
 		docker.setPublishRegistry(new Docker.DockerRegistry("token2"));
 		DockerConfiguration dockerConfiguration = createDockerConfiguration(docker);
-		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
+		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader(this.imageReference)))
 			.contains("\"identitytoken\" : \"token1\"");
-		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader(this.imageReference)))
 			.contains("\"identitytoken\" : \"token2\"");
 	}
 
@@ -203,6 +199,12 @@ class DockerTests {
 	private DockerConfiguration createDockerConfiguration(Docker docker) {
 		return docker.asDockerConfiguration(true);
 
+	}
+
+	private Class<?> getDockerRegistryConfigFileAuthenticationClass() {
+		return ClassUtils.resolveClassName(
+				"org.springframework.boot.buildpack.platform.docker.configuration.DefaultDockerRegistryAuthentication",
+				getClass().getClassLoader());
 	}
 
 	String decoded(String value) {

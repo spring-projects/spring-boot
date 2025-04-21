@@ -142,11 +142,14 @@ class BuilderTests {
 			.withPublishRegistryTokenAuthentication("publish token");
 		given(docker.image()
 			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)))))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
-					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+					any(),
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")))))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true);
@@ -156,13 +159,15 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should()
 			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))));
 		then(docker.image()).should()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
-					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))));
 		then(docker.image()).should()
 			.push(eq(request.getName()), any(),
-					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader(request.getName())));
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
@@ -388,11 +393,14 @@ class BuilderTests {
 			.withPublishRegistryTokenAuthentication("publish token");
 		given(docker.image()
 			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)))))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
-					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+					any(),
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")))))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true).withTags(ImageReference.of("my-application:1.2.3"));
@@ -403,17 +411,20 @@ class BuilderTests {
 
 		then(docker.image()).should()
 			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+					eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))));
 		then(docker.image()).should()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
-					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication()
+						.getAuthHeader(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))));
 		then(docker.image()).should()
 			.push(eq(request.getName()), any(),
-					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader(request.getName())));
 		then(docker.image()).should().tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
 		then(docker.image()).should()
 			.push(eq(ImageReference.of("my-application:1.2.3")), any(),
-					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+					eq(dockerConfiguration.getPublishRegistryAuthentication()
+						.getAuthHeader(ImageReference.of("my-application:1.2.3"))));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
@@ -485,42 +496,6 @@ class BuilderTests {
 		BuildRequest request = getTestRequest();
 		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> builder.build(request))
 			.withMessage("Builder lifecycle 'creator' failed with status code 9");
-	}
-
-	@Test
-	void buildWhenDetectedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
-		TestPrintStream out = new TestPrintStream();
-		DockerApi docker = mockDockerApi();
-		Image builderImage = loadImage("image-with-run-image-different-registry.json");
-		DockerConfiguration dockerConfiguration = new DockerConfiguration()
-			.withBuilderRegistryTokenAuthentication("builder token");
-		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-			.willAnswer(withPulledImage(builderImage));
-		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
-		BuildRequest request = getTestRequest();
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
-			.withMessage(
-					"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
-	}
-
-	@Test
-	void buildWhenRequestedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
-		TestPrintStream out = new TestPrintStream();
-		DockerApi docker = mockDockerApi();
-		Image builderImage = loadImage("image.json");
-		DockerConfiguration dockerConfiguration = new DockerConfiguration()
-			.withBuilderRegistryTokenAuthentication("builder token");
-		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-			.willAnswer(withPulledImage(builderImage));
-		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
-		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
-			.withMessage(
-					"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
 	}
 
 	@Test

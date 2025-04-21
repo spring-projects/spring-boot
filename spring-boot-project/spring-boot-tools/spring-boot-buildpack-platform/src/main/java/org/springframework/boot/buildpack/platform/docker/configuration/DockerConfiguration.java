@@ -94,6 +94,11 @@ public final class DockerConfiguration {
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
 
+	public DockerConfiguration withBuilderRegistryDefaultAuthentication() {
+		return new DockerConfiguration(this.host, new DefaultDockerRegistryAuthentication(), this.publishAuthentication,
+				this.bindHostToBuilder);
+	}
+
 	public DockerConfiguration withPublishRegistryTokenAuthentication(String token) {
 		Assert.notNull(token, "'token' must not be null");
 		return new DockerConfiguration(this.host, this.builderAuthentication,
@@ -111,6 +116,11 @@ public final class DockerConfiguration {
 	public DockerConfiguration withEmptyPublishRegistryAuthentication() {
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryUserAuthentication("", "", "", ""), this.bindHostToBuilder);
+	}
+
+	public DockerConfiguration withPublishRegistryDefaultAuthentication() {
+		return new DockerConfiguration(this.host, this.builderAuthentication, new DefaultDockerRegistryAuthentication(),
+				this.bindHostToBuilder);
 	}
 
 	public static class DockerHostConfiguration {

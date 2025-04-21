@@ -27,6 +27,7 @@ import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListe
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -102,9 +103,8 @@ public class Builder {
 		Assert.notNull(request, "'request' must not be null");
 		this.log.start(request);
 		validateBindings(request.getBindings());
-		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
+		ImageFetcher imageFetcher = new ImageFetcher(getBuilderRegistryAuthentication(), pullPolicy,
 				request.getImagePlatform());
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
@@ -203,18 +203,20 @@ public class Builder {
 	private void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
-		this.docker.image().push(reference, listener, getPublishAuthHeader());
+		this.docker.image().push(reference, listener, getPublishAuthHeader(reference));
 		this.log.pushedImage(reference);
 	}
 
-	private String getBuilderAuthHeader() {
-		return (this.dockerConfiguration != null && this.dockerConfiguration.getBuilderRegistryAuthentication() != null)
-				? this.dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader() : null;
+	private DockerRegistryAuthentication getBuilderRegistryAuthentication() {
+		if (this.dockerConfiguration != null) {
+			return this.dockerConfiguration.getBuilderRegistryAuthentication();
+		}
+		return null;
 	}
 
-	private String getPublishAuthHeader() {
+	private String getPublishAuthHeader(ImageReference imageReference) {
 		return (this.dockerConfiguration != null && this.dockerConfiguration.getPublishRegistryAuthentication() != null)
-				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
+				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader(imageReference) : null;
 	}
 
 	/**
@@ -222,17 +224,14 @@ public class Builder {
 	 */
 	private class ImageFetcher {
 
-		private final String domain;
-
-		private final String authHeader;
+		private final DockerRegistryAuthentication authentication;
 
 		private final PullPolicy pullPolicy;
 
 		private ImagePlatform defaultPlatform;
 
-		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy, ImagePlatform platform) {
-			this.domain = domain;
-			this.authHeader = authHeader;
+		ImageFetcher(DockerRegistryAuthentication authentication, PullPolicy pullPolicy, ImagePlatform platform) {
+			this.authentication = authentication;
 			this.pullPolicy = pullPolicy;
 			this.defaultPlatform = platform;
 		}
@@ -240,27 +239,25 @@ public class Builder {
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
 			Assert.notNull(type, "'type' must not be null");
 			Assert.notNull(reference, "'reference' must not be null");
-			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
-					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
-							StringUtils.capitalize(type.getDescription()), reference, this.domain));
+			String authHeader = getAuthHeader(reference);
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
-				return checkPlatformMismatch(pullImage(reference, type), reference);
+				return checkPlatformMismatch(pullImage(authHeader, reference, type), reference);
 			}
 			try {
 				return checkPlatformMismatch(Builder.this.docker.image().inspect(reference), reference);
 			}
 			catch (DockerEngineException ex) {
 				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
-					return checkPlatformMismatch(pullImage(reference, type), reference);
+					return checkPlatformMismatch(pullImage(authHeader, reference, type), reference);
 				}
 				throw ex;
 			}
 		}
 
-		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
+		private Image pullImage(String authHeader, ImageReference reference, ImageType imageType) throws IOException {
 			TotalProgressPullListener listener = new TotalProgressPullListener(
 					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
-			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, this.authHeader);
+			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, authHeader);
 			Builder.this.log.pulledImage(image, imageType);
 			if (this.defaultPlatform == null) {
 				this.defaultPlatform = ImagePlatform.from(image);
@@ -276,6 +273,10 @@ public class Builder {
 				}
 			}
 			return image;
+		}
+
+		private String getAuthHeader(ImageReference reference) {
+			return (this.authentication != null) ? this.authentication.getAuthHeader(reference) : null;
 		}
 
 	}
