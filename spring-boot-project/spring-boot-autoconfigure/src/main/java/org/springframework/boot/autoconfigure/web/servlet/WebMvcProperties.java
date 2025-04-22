@@ -36,6 +36,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Eddú Meléndez
  * @author Brian Clozel
  * @author Vedran Pavic
+ * @author daewon kim
  * @since 2.0.0
  */
 @ConfigurationProperties("spring.mvc")
@@ -90,6 +91,8 @@ public class WebMvcProperties {
 	private final Servlet servlet = new Servlet();
 
 	private final View view = new View();
+
+	private final Jsp jsp = new Jsp();
 
 	private final Contentnegotiation contentnegotiation = new Contentnegotiation();
 
@@ -175,6 +178,10 @@ public class WebMvcProperties {
 
 	public View getView() {
 		return this.view;
+	}
+
+	public Jsp getJsp() {
+		return this.jsp;
 	}
 
 	public Contentnegotiation getContentnegotiation() {
@@ -279,6 +286,36 @@ public class WebMvcProperties {
 
 		/**
 		 * Spring MVC view suffix.
+		 */
+		private String suffix;
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return this.suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
+
+	}
+
+	public static class Jsp {
+
+		/**
+		 * Spring MVC jsp prefix.
+		 */
+		private String prefix;
+
+		/**
+		 * Spring MVC jsp suffix.
 		 */
 		private String suffix;
 
