@@ -152,3 +152,4 @@ org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoCon
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration
 org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
 org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAutoConfiguration
+org.springframework.boot.autoconfigure.logging.JsonLoggingAutoConfiguration

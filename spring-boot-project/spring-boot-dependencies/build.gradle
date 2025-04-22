@@ -2638,6 +2638,11 @@ bom {
 			site("https://github.com/eclipse-ee4j/yasson")
 			releaseNotes("https://github.com/eclipse-ee4j/yasson/releases/tag/{version}")
 		}
+
+		dependencies {
+			api "net.logstash.logback:logstash-logback-encoder:7.4"
+		}
+
 	}
 }
 
