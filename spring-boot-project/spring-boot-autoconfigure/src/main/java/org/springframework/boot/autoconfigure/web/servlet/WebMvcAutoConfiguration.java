@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -139,6 +140,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
  * @author Scott Frederick
+ * @author daewon kim
  * @since 2.0.0
  */
 @AutoConfiguration(after = { DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class,
@@ -282,10 +284,20 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "spring.mvc.view", name = {"prefix", "suffix"})
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			resolver.setPrefix(this.mvcProperties.getView().getPrefix());
 			resolver.setSuffix(this.mvcProperties.getView().getSuffix());
+			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.mvc.jsp", name = {"prefix", "suffix"})
+		public InternalResourceViewResolver jspViewResolver() {
+			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+			resolver.setPrefix(this.mvcProperties.getJsp().getPrefix());
+			resolver.setSuffix(this.mvcProperties.getJsp().getSuffix());
 			return resolver;
 		}
 
