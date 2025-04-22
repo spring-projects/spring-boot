@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,8 @@ class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation> imp
 	}
 
 	private Stream<String> getAdditionalPaths(WebServerNamespace webServerNamespace, AdditionalPathsMapper mapper) {
-		return mapper.getAdditionalPaths(getEndpointId(), webServerNamespace).stream();
+		List<String> additionalPaths = mapper.getAdditionalPaths(getEndpointId(), webServerNamespace);
+		return (additionalPaths != null) ? additionalPaths.stream() : Stream.empty();
 	}
 
 }

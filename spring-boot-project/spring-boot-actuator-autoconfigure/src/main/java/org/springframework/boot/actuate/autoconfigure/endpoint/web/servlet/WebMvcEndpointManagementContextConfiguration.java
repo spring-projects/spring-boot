@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Yongjun Hong
  * @since 2.0.0
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
@@ -94,18 +93,6 @@ public class WebMvcEndpointManagementContextConfiguration {
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		String basePath = webEndpointProperties.getBasePath();
 		EndpointMapping endpointMapping = new EndpointMapping(basePath);
-
-		if (basePath.isEmpty() && ManagementPortType.get(environment).equals(ManagementPortType.SAME)) {
-			for (ExposableWebEndpoint endpoint : webEndpoints) {
-				if ("/".equals(endpoint.getRootPath())) {
-					throw new IllegalStateException(
-							"Management endpoints and endpoint path are both mapped to '/' on the server port which will "
-									+ "block access to other endpoints. Please use a different path for management endpoints or "
-									+ "map them to a dedicated management port.");
-				}
-			}
-		}
-
 		boolean shouldRegisterLinksMapping = shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
 		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints, endpointMediaTypes,
 				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
