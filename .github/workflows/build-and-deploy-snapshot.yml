@@ -1,5 +1,6 @@
 name: Build and Deploy Snapshot
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
