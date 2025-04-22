@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,14 @@ import java.util.Map;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
+import org.springframework.boot.buildpack.platform.docker.type.ImageArchive.Update;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
+import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A short-lived builder that is created for each {@link Lifecycle} run.
@@ -37,13 +40,17 @@ class EphemeralBuilder {
 
 	static final String BUILDER_FOR_LABEL_NAME = "org.springframework.boot.builderFor";
 
+	private ImageReference name;
+
 	private final BuildOwner buildOwner;
+
+	private final Creator creator;
 
 	private final BuilderMetadata builderMetadata;
 
-	private final ImageArchive archive;
+	private final Image builderImage;
 
-	private final Creator creator;
+	private final IOConsumer<Update> archiveUpdate;
 
 	/**
 	 * Create a new {@link EphemeralBuilder} instance.
@@ -54,26 +61,25 @@ class EphemeralBuilder {
 	 * @param creator the builder creator
 	 * @param env the builder env
 	 * @param buildpacks an optional set of buildpacks to apply
-	 * @throws IOException on IO error
 	 */
 	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, ImageReference targetImage,
-			BuilderMetadata builderMetadata, Creator creator, Map<String, String> env, Buildpacks buildpacks)
-			throws IOException {
-		ImageReference name = ImageReference.random("pack.local/builder/").inTaggedForm();
+			BuilderMetadata builderMetadata, Creator creator, Map<String, String> env, Buildpacks buildpacks) {
+		this.name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
 		this.creator = creator;
 		this.builderMetadata = builderMetadata.copy(this::updateMetadata);
-		this.archive = ImageArchive.from(builderImage, (update) -> {
+		this.builderImage = builderImage;
+		this.archiveUpdate = (update) -> {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
 			update.withUpdatedConfig((config) -> config.withLabel(BUILDER_FOR_LABEL_NAME, targetImage.toString()));
-			update.withTag(name);
+			update.withTag(this.name);
 			if (!CollectionUtils.isEmpty(env)) {
 				update.withNewLayer(getEnvLayer(env));
 			}
 			if (buildpacks != null) {
 				buildpacks.apply(update::withNewLayer);
 			}
-		});
+		};
 	}
 
 	private void updateMetadata(BuilderMetadata.Update update) {
@@ -95,7 +101,7 @@ class EphemeralBuilder {
 	 * @return the ephemeral builder name
 	 */
 	ImageReference getName() {
-		return this.archive.getTag();
+		return this.name;
 	}
 
 	/**
@@ -116,15 +122,26 @@ class EphemeralBuilder {
 
 	/**
 	 * Return the contents of ephemeral builder for passing to Docker.
+	 * @param applicationDirectory the application directory
 	 * @return the ephemeral builder archive
+	 * @throws IOException on IO error
 	 */
-	ImageArchive getArchive() {
-		return this.archive;
+	ImageArchive getArchive(String applicationDirectory) throws IOException {
+		return ImageArchive.from(this.builderImage, (update) -> {
+			this.archiveUpdate.accept(update);
+			if (StringUtils.hasLength(applicationDirectory)) {
+				update.withNewLayer(applicationDirectoryLayer(applicationDirectory));
+			}
+		});
+	}
+
+	private Layer applicationDirectoryLayer(String applicationDirectory) throws IOException {
+		return Layer.of((layout) -> layout.directory(applicationDirectory, this.buildOwner));
 	}
 
 	@Override
 	public String toString() {
-		return this.archive.getTag().toString();
+		return this.name.toString();
 	}
 
 }
