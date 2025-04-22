@@ -61,6 +61,15 @@ class WebMvcPropertiesTests {
 			.satisfies((ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("'path' must not contain wildcards"));
 	}
 
+	@Test
+	void jspViewPropertiesBindingCorrectly() {
+		bind("spring.mvc.jsp.prefix", "/WEB-INF/views/");
+		bind("spring.mvc.jsp.suffix", ".jsp");
+
+		assertThat(this.properties.getJsp().getPrefix()).isEqualTo("/WEB-INF/views/");
+		assertThat(this.properties.getJsp().getSuffix()).isEqualTo(".jsp");
+	}
+
 	private void bind(String name, String value) {
 		bind(Collections.singletonMap(name, value));
 	}
