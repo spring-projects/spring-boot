@@ -284,7 +284,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.mvc.view", name = {"prefix", "suffix"})
+		@ConditionalOnProperty(prefix = "spring.mvc.view", name = { "prefix", "suffix" })
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			resolver.setPrefix(this.mvcProperties.getView().getPrefix());
@@ -293,7 +293,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.mvc.jsp", name = {"prefix", "suffix"})
+		@ConditionalOnProperty(prefix = "spring.mvc.jsp", name = { "prefix", "suffix" })
 		public InternalResourceViewResolver jspViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			resolver.setPrefix(this.mvcProperties.getJsp().getPrefix());

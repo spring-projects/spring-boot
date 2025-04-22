@@ -142,6 +142,7 @@ import org.springframework.web.servlet.support.SessionFlashMapManager;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.util.UrlPathHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -160,6 +161,7 @@ import static org.mockito.Mockito.mock;
  * @author Artsiom Yudovin
  * @author Scott Frederick
  * @author Vedran Pavic
+ * @author daewon kim
  */
 class WebMvcAutoConfigurationTests {
 
@@ -1026,6 +1028,22 @@ class WebMvcAutoConfigurationTests {
 				.asInstanceOf(InstanceOfAssertFactories.list(Class.class))
 				.containsExactly(HighestOrderedControllerAdvice.class, ProblemDetailsExceptionHandler.class,
 						OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class));
+	}
+
+	@Test
+	void jspViewResolverIsAutoConfiguredWhenJspPrefixIsSet() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
+			.withPropertyValues("spring.mvc.jsp.prefix=/WEB-INF/views/", "spring.mvc.jsp.suffix=.jsp")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(InternalResourceViewResolver.class);
+
+				InternalResourceViewResolver resolver = context.getBean(InternalResourceViewResolver.class);
+				String prefix = (String) ReflectionTestUtils.getField(resolver, "prefix");
+				String suffix = (String) ReflectionTestUtils.getField(resolver, "suffix");
+
+				assertThat(prefix).isEqualTo("/WEB-INF/views/");
+				assertThat(suffix).isEqualTo(".jsp");
+			});
 	}
 
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
