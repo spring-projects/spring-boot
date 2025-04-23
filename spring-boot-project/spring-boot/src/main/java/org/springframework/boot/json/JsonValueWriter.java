@@ -115,10 +115,7 @@ class JsonValueWriter {
 				throw new UncheckedIOException(ex);
 			}
 		}
-		else if (value instanceof Path p) {
-			writeString(p.toString());
-		}
-		else if (value instanceof Iterable<?> iterable) {
+		else if (value instanceof Iterable<?> iterable && canWriteAsArray(iterable)) {
 			writeArray(iterable::forEach);
 		}
 		else if (ObjectUtils.isArray(value)) {
@@ -133,6 +130,10 @@ class JsonValueWriter {
 		else {
 			writeString(value);
 		}
+	}
+
+	private <V> boolean canWriteAsArray(Iterable<?> iterable) {
+		return !(iterable instanceof Path);
 	}
 
 	/**
