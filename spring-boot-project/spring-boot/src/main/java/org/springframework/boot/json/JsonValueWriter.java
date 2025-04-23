@@ -47,7 +47,7 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 class JsonValueWriter {
 
-	private static final int DEFAULT_MAX_NESTING_DEPTH = 1000;
+	private static final int DEFAULT_MAX_NESTING_DEPTH = 500;
 
 	private final Appendable out;
 
@@ -160,7 +160,10 @@ class JsonValueWriter {
 	 */
 	void start(Series series) {
 		if (series != null) {
-			validateNestingDepth();
+			int nestingDepth = this.activeSeries.size();
+			Assert.state(nestingDepth <= this.maxNestingDepth,
+					() -> "JSON nesting depth (%s) exceeds maximum depth of %s (current path: %s)"
+						.formatted(nestingDepth, this.maxNestingDepth, this.path));
 			this.activeSeries.push(new ActiveSeries(series));
 			append(series.openChar);
 		}
@@ -285,13 +288,6 @@ class JsonValueWriter {
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private void validateNestingDepth() {
-		if (this.activeSeries.size() > this.maxNestingDepth) {
-			throw new IllegalStateException("JSON nesting depth (%s) exceeds maximum depth of %s (current path: %s)"
-				.formatted(this.activeSeries.size(), this.maxNestingDepth, this.path));
 		}
 	}
 
