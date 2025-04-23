@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void getNameHasRandomName() throws Exception {
+	void getNameHasRandomName() {
 		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
 		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
@@ -101,7 +101,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveHasCreatedByConfig() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		ImageConfig config = builder.getArchive().getImageConfig();
+		ImageConfig config = builder.getArchive(null).getImageConfig();
 		BuilderMetadata ephemeralMetadata = BuilderMetadata.fromImageConfig(config);
 		assertThat(ephemeralMetadata.getCreatedBy().getName()).isEqualTo("Spring Boot");
 		assertThat(ephemeralMetadata.getCreatedBy().getVersion()).isEqualTo("dev");
@@ -111,7 +111,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveHasTag() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		ImageReference tag = builder.getArchive().getTag();
+		ImageReference tag = builder.getArchive(null).getTag();
 		assertThat(tag.toString()).startsWith("pack.local/builder/").endsWith(":latest");
 	}
 
@@ -119,7 +119,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveHasFixedCreatedDate() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		Instant createInstant = builder.getArchive().getCreateDate();
+		Instant createInstant = builder.getArchive(null).getCreateDate();
 		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
 		assertThat(createDateTime.getYear()).isEqualTo(1980);
 		assertThat(createDateTime.getMonthValue()).isOne();
@@ -133,7 +133,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveContainsEnvLayer() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		File directory = unpack(getLayer(builder.getArchive(), EXISTING_IMAGE_LAYER_COUNT), "env");
+		File directory = unpack(getLayer(builder.getArchive(null), EXISTING_IMAGE_LAYER_COUNT), "env");
 		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
 	}
@@ -142,7 +142,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void getArchiveHasBuilderForLabel() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
-		ImageConfig config = builder.getArchive().getImageConfig();
+		ImageConfig config = builder.getArchive(null).getImageConfig();
 		assertThat(config.getLabels())
 			.contains(entry(EphemeralBuilder.BUILDER_FOR_LABEL_NAME, this.targetImage.toString()));
 	}
@@ -162,13 +162,21 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 				"/cnb/buildpacks/example_buildpack2/0.0.2/buildpack.toml");
 		assertBuildpackLayerContent(builder, EXISTING_IMAGE_LAYER_COUNT + 2,
 				"/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
-		File orderDirectory = unpack(getLayer(builder.getArchive(), EXISTING_IMAGE_LAYER_COUNT + 3), "order");
+		File orderDirectory = unpack(getLayer(builder.getArchive(null), EXISTING_IMAGE_LAYER_COUNT + 3), "order");
 		assertThat(new File(orderDirectory, "cnb/order.toml")).usingCharset(StandardCharsets.UTF_8)
 			.hasContent(content("order.toml"));
 	}
 
+	@Test
+	void getArchiveHasApplicationDirectoryLayer() throws Exception {
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
+				this.creator, this.env, this.buildpacks);
+		File directory = unpack(getLayer(builder.getArchive("/myapp"), EXISTING_IMAGE_LAYER_COUNT + 1), "appdir");
+		assertThat(new File(directory, "myapp")).isDirectory();
+	}
+
 	private void assertBuildpackLayerContent(EphemeralBuilder builder, int index, String s) throws Exception {
-		File buildpackDirectory = unpack(getLayer(builder.getArchive(), index), "buildpack");
+		File buildpackDirectory = unpack(getLayer(builder.getArchive(null), index), "buildpack");
 		assertThat(new File(buildpackDirectory, s)).usingCharset(StandardCharsets.UTF_8).hasContent("[test]");
 	}
 

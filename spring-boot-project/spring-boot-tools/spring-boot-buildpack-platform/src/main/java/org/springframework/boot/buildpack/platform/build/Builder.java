@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.configuration.Resolved
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
@@ -115,16 +116,10 @@ public class Builder {
 		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata, buildpackLayersMetadata);
 		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, request.getName(),
 				builderMetadata, request.getCreator(), request.getEnv(), buildpacks);
-		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
-		try {
-			executeLifecycle(request, ephemeralBuilder);
-			tagImage(request.getName(), request.getTags());
-			if (request.isPublish()) {
-				pushImages(request.getName(), request.getTags());
-			}
-		}
-		finally {
-			this.docker.image().remove(ephemeralBuilder.getName(), true);
+		executeLifecycle(request, ephemeralBuilder);
+		tagImage(request.getName(), request.getTags());
+		if (request.isPublish()) {
+			pushImages(request.getName(), request.getTags());
 		}
 	}
 
@@ -170,13 +165,25 @@ public class Builder {
 	}
 
 	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
-		ResolvedDockerHost dockerHost = null;
-		if (this.dockerConfiguration != null && this.dockerConfiguration.isBindHostToBuilder()) {
-			dockerHost = ResolvedDockerHost.from(this.dockerConfiguration.getHost());
+		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, getDockerHost(), request, builder)) {
+			executeLifecycle(builder, lifecycle);
 		}
-		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, dockerHost, request, builder)) {
+	}
+
+	private void executeLifecycle(EphemeralBuilder builder, Lifecycle lifecycle) throws IOException {
+		ImageArchive archive = builder.getArchive(lifecycle.getApplicationDirectory());
+		this.docker.image().load(archive, UpdateListener.none());
+		try {
 			lifecycle.execute();
 		}
+		finally {
+			this.docker.image().remove(builder.getName(), true);
+		}
+	}
+
+	private ResolvedDockerHost getDockerHost() {
+		boolean bindHostToBuilder = this.dockerConfiguration != null && this.dockerConfiguration.isBindHostToBuilder();
+		return (bindHostToBuilder) ? ResolvedDockerHost.from(this.dockerConfiguration.getHost()) : null;
 	}
 
 	private void tagImage(ImageReference sourceReference, List<ImageReference> tags) throws IOException {
