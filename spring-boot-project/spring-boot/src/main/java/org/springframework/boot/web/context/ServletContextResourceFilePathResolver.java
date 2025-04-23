@@ -16,17 +16,18 @@
 
 package org.springframework.boot.web.context;
 
-import org.springframework.boot.io.ResourceFilePathResolver;
+import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.support.ServletContextResource;
 
 /**
- * {@link ResourceFilePathResolver} for {@link ServletContextResource}.
+ * {@link FilePathResolver} for {@link ServletContextResource}.
  *
  * @author Phillip Webb
  */
-class ServletContextResourceFilePathResolver implements ResourceFilePathResolver {
+class ServletContextResourceFilePathResolver implements ApplicationResourceLoader.FilePathResolver {
 
 	private static final String RESOURCE_CLASS_NAME = "org.springframework.web.context.support.ServletContextResource";
 
