@@ -53,7 +53,6 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:couchbase")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
-	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
@@ -70,7 +69,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
-	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
@@ -173,7 +171,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-rest-webmvc")
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-mongodb")
-	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql")
