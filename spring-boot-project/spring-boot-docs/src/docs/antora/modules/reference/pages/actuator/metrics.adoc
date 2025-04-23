@@ -909,6 +909,9 @@ The following cache libraries are supported:
 * Any compliant JCache (JSR-107) implementation
 * Redis
 
+WARNING: Metrics should be enabled for the auto-configuration to pick them up.
+Refer to the documentation of the cache library you are using for more details.
+
 Metrics are tagged by the name of the cache and by the name of the javadoc:org.springframework.cache.CacheManager[], which is derived from the bean name.
 
 NOTE: Only caches that are configured on startup are bound to the registry.
