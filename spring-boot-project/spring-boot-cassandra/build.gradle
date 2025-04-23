@@ -1,0 +1,28 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Cassandra"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.apache.cassandra:java-driver-core")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:cassandra")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

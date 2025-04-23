@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.testcontainers.containers.CassandraContainer;
 
-import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
+import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
