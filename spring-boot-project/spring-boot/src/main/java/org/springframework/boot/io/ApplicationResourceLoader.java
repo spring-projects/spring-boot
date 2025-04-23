@@ -16,9 +16,9 @@
 
 package org.springframework.boot.io;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ContextResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
@@ -27,7 +27,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -131,9 +130,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * {@code spring.factories}. The factories file will be resolved using the default
 	 * class loader at the time this call is made.
 	 * @param resourceLoader the delegate resource loader
-	 * @param preferFileResolution if file based resolution is preferred over
-	 * {@code ServletContextResource}, {@code FilteredReactiveWebContextResource} or
-	 * {@link ClassPathResource} when no resource prefix is provided.
+	 * @param preferFileResolution if file based resolution is preferred when a suitable
+	 * {@link ResourceFilePathResolver} support the resource
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.4.1
 	 */
@@ -161,8 +159,10 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 			boolean preferFileResolution) {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		Assert.notNull(springFactoriesLoader, "'springFactoriesLoader' must not be null");
-		return new ProtocolResolvingResourceLoader(resourceLoader, springFactoriesLoader.load(ProtocolResolver.class),
-				preferFileResolution);
+		List<ProtocolResolver> protocolResolvers = springFactoriesLoader.load(ProtocolResolver.class);
+		List<ResourceFilePathResolver> filePathResolvers = (preferFileResolution)
+				? springFactoriesLoader.load(ResourceFilePathResolver.class) : Collections.emptyList();
+		return new ProtocolResolvingResourceLoader(resourceLoader, protocolResolvers, filePathResolvers);
 	}
 
 	/**
@@ -210,28 +210,17 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 */
 	private static class ProtocolResolvingResourceLoader implements ResourceLoader {
 
-		private static final String SERVLET_CONTEXT_RESOURCE_CLASS_NAME = "org.springframework.web.context.support.ServletContextResource";
-
-		private static final String FILTERED_REACTIVE_WEB_CONTEXT_RESOURCE_CLASS_NAME = "org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResource";
-
 		private final ResourceLoader resourceLoader;
 
 		private final List<ProtocolResolver> protocolResolvers;
 
-		private final boolean preferFileResolution;
-
-		private final Class<?> servletContextResourceClass;
-
-		private final Class<?> filteredReactiveWebContextResourceClass;
+		private final List<ResourceFilePathResolver> filePathResolvers;
 
 		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers,
-				boolean preferFileResolution) {
+				List<ResourceFilePathResolver> filePathResolvers) {
 			this.resourceLoader = resourceLoader;
 			this.protocolResolvers = protocolResolvers;
-			this.preferFileResolution = preferFileResolution;
-			this.servletContextResourceClass = resolveServletContextResourceClass(resourceLoader);
-			this.filteredReactiveWebContextResourceClass = resolveFilteredReactiveWebContextResourceClass(
-					resourceLoader);
+			this.filePathResolvers = filePathResolvers;
 		}
 
 		@Override
@@ -250,47 +239,18 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 				}
 			}
 			Resource resource = this.resourceLoader.getResource(location);
-			if (shouldUseFileResolution(location, resource)) {
-				return new ApplicationResource(location);
+			String fileSystemPath = getFileSystemPath(location, resource);
+			return (fileSystemPath != null) ? new ApplicationResource(fileSystemPath) : resource;
+		}
+
+		private String getFileSystemPath(String location, Resource resource) {
+			for (ResourceFilePathResolver filePathResolver : this.filePathResolvers) {
+				String filePath = filePathResolver.resolveFilePath(location, resource);
+				if (filePath != null) {
+					return filePath;
+				}
 			}
-			return resource;
-		}
-
-		private boolean shouldUseFileResolution(String location, Resource resource) {
-			if (!this.preferFileResolution) {
-				return false;
-			}
-			return isClassPathResourceByPath(location, resource) || isServletContextResource(resource)
-					|| isFilteredReactiveWebContextResource(resource);
-		}
-
-		private boolean isClassPathResourceByPath(String location, Resource resource) {
-			return (resource instanceof ClassPathResource) && !location.startsWith(CLASSPATH_URL_PREFIX);
-		}
-
-		private boolean isServletContextResource(Resource resource) {
-			return (this.servletContextResourceClass != null) && this.servletContextResourceClass.isInstance(resource);
-		}
-
-		private boolean isFilteredReactiveWebContextResource(Resource resource) {
-			return (this.filteredReactiveWebContextResourceClass != null)
-					&& this.filteredReactiveWebContextResourceClass.isInstance(resource);
-		}
-
-		private static Class<?> resolveServletContextResourceClass(ResourceLoader resourceLoader) {
-			return resolveClassName(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, resourceLoader.getClass().getClassLoader());
-		}
-
-		private static Class<?> resolveFilteredReactiveWebContextResourceClass(ResourceLoader resourceLoader) {
-			return resolveClassName(FILTERED_REACTIVE_WEB_CONTEXT_RESOURCE_CLASS_NAME,
-					resourceLoader.getClass().getClassLoader());
-		}
-
-		private static Class<?> resolveClassName(String clazz, ClassLoader classLoader) {
-			if (!ClassUtils.isPresent(clazz, classLoader)) {
-				return null;
-			}
-			return ClassUtils.resolveClassName(clazz, classLoader);
+			return null;
 		}
 
 	}
