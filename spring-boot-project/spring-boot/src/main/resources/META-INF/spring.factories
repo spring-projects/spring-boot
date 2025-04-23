@@ -107,3 +107,9 @@ org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitiali
 # Resource Locator Protocol Resolvers
 org.springframework.core.io.ProtocolResolver=\
 org.springframework.boot.io.Base64ProtocolResolver
+
+# Resource File Path Resolvers
+org.springframework.boot.io.ResourceFilePathResolver=\
+org.springframework.boot.io.ClassPathResourceFilePathResolver,\
+org.springframework.boot.web.context.ServletContextResourceFilePathResolver,\
+org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver
