@@ -97,7 +97,10 @@ public abstract class AutoConfigurationPackages {
 		else {
 			RootBeanDefinition beanDefinition = new RootBeanDefinition(BasePackages.class);
 			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			// 将 packageNames 赋值给 BasePackages 的 packages
 			addBasePackages(beanDefinition, packageNames);
+			// 注册名为 AutoConfigurationPackages 的 BasePackages 类型的 Bean Definition
+			// BasePackages 作为一个管理注册包路径的类，在后续的流程中，如 JPA 实体、MyBatis Mapper 会根据 BasePackages 的 packages 属性来获取需要扫描的包路径。
 			registry.registerBeanDefinition(BEAN, beanDefinition);
 		}
 	}
