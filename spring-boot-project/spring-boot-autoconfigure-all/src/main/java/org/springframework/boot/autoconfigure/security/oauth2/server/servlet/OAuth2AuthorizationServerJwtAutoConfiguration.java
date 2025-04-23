@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
@@ -49,7 +48,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
  * @author Steve Riesenberg
  * @since 3.1.0
  */
-@AutoConfiguration(after = UserDetailsServiceAutoConfiguration.class)
+@AutoConfiguration(
+		afterName = "org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration")
 @ConditionalOnClass({ OAuth2Authorization.class, JWKSource.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OAuth2AuthorizationServerJwtAutoConfiguration {

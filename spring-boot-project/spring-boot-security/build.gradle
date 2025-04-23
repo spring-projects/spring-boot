@@ -1,0 +1,53 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Security"
+
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
+	}
+}
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework.security:spring-security-config")
+	api("org.springframework.security:spring-security-web")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-h2console"))
+	optional(project(":spring-boot-project:spring-boot-rsocket"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("io.projectreactor:reactor-core")
+	optional("org.springframework:spring-messaging")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework.security:spring-security-data")
+	optional("org.springframework.security:spring-security-messaging")
+	optional("org.springframework.security:spring-security-rsocket")
+	optional("org.springframework.security:spring-security-saml2-service-provider")
+
+	testImplementation(project(":spring-boot-project:spring-boot-http"))
+	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	testImplementation(project(":spring-boot-project:spring-boot-jpa"))
+	testImplementation(project(":spring-boot-project:spring-boot-rsocket"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.springframework.security:spring-security-oauth2-client")
+	testImplementation("org.springframework.security:spring-security-oauth2-jose")
+	testImplementation("org.springframework.security:spring-security-oauth2-resource-server")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.zaxxer:HikariCP")
+	testRuntimeOnly("org.hsqldb:hsqldb")
+}
