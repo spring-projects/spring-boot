@@ -153,7 +153,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * class loader at the time this call is made.
 	 * @param resourceLoader the delegate resource loader
 	 * @param preferFileResolution if file based resolution is preferred when a suitable
-	 * {@link ResourceFilePathResolver} support the resource
+	 * {@link FilePathResolver} support the resource
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.4.1
 	 */
@@ -182,8 +182,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		Assert.notNull(springFactoriesLoader, "'springFactoriesLoader' must not be null");
 		List<ProtocolResolver> protocolResolvers = springFactoriesLoader.load(ProtocolResolver.class);
-		List<ResourceFilePathResolver> filePathResolvers = (preferFileResolution)
-				? springFactoriesLoader.load(ResourceFilePathResolver.class) : Collections.emptyList();
+		List<FilePathResolver> filePathResolvers = (preferFileResolution)
+				? springFactoriesLoader.load(FilePathResolver.class) : Collections.emptyList();
 		return new ProtocolResolvingResourceLoader(resourceLoader, protocolResolvers, filePathResolvers);
 	}
 
@@ -243,6 +243,28 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	}
 
 	/**
+	 * Strategy interface registered in {@code spring.factories} and used by
+	 * {@link ApplicationResourceLoader} to determine the file path of loaded resource
+	 * when it can also be represented as a {@link FileSystemResource}.
+	 *
+	 * @author Phillip Webb
+	 * @since 3.4.5
+	 */
+	public interface FilePathResolver {
+
+		/**
+		 * Return the {@code path} of the given resource if it can also be represented as
+		 * a {@link FileSystemResource}.
+		 * @param location the location used to create the resource
+		 * @param resource the resource to check
+		 * @return the file path of the resource or {@code null} if the it is not possible
+		 * to represent the resource as a {@link FileSystemResource}.
+		 */
+		String resolveFilePath(String location, Resource resource);
+
+	}
+
+	/**
 	 * An application {@link Resource}.
 	 */
 	private static final class ApplicationResource extends FileSystemResource implements ContextResource {
@@ -272,10 +294,10 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 
 		private final List<ProtocolResolver> protocolResolvers;
 
-		private final List<ResourceFilePathResolver> filePathResolvers;
+		private final List<FilePathResolver> filePathResolvers;
 
 		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers,
-				List<ResourceFilePathResolver> filePathResolvers) {
+				List<FilePathResolver> filePathResolvers) {
 			this.resourceLoader = resourceLoader;
 			this.protocolResolvers = protocolResolvers;
 			this.filePathResolvers = filePathResolvers;
@@ -297,12 +319,12 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 				}
 			}
 			Resource resource = this.resourceLoader.getResource(location);
-			String fileSystemPath = getFileSystemPath(location, resource);
-			return (fileSystemPath != null) ? new ApplicationResource(fileSystemPath) : resource;
+			String filePath = getFilePath(location, resource);
+			return (filePath != null) ? new ApplicationResource(filePath) : resource;
 		}
 
-		private String getFileSystemPath(String location, Resource resource) {
-			for (ResourceFilePathResolver filePathResolver : this.filePathResolvers) {
+		private String getFilePath(String location, Resource resource) {
+			for (FilePathResolver filePathResolver : this.filePathResolvers) {
 				String filePath = filePathResolver.resolveFilePath(location, resource);
 				if (filePath != null) {
 					return filePath;

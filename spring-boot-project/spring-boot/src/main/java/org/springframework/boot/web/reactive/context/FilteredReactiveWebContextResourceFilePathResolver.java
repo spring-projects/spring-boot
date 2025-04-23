@@ -16,15 +16,16 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.springframework.boot.io.ResourceFilePathResolver;
+import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.Resource;
 
 /**
- * {@link ResourceFilePathResolver} for {@link FilteredReactiveWebContextResource}.
+ * {@link FilePathResolver} for {@link FilteredReactiveWebContextResource}.
  *
  * @author Dmytro Nosan
  */
-class FilteredReactiveWebContextResourceFilePathResolver implements ResourceFilePathResolver {
+class FilteredReactiveWebContextResourceFilePathResolver implements ApplicationResourceLoader.FilePathResolver {
 
 	@Override
 	public String resolveFilePath(String location, Resource resource) {

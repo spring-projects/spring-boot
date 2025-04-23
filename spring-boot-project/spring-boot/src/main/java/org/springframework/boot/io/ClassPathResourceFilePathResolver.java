@@ -16,16 +16,17 @@
 
 package org.springframework.boot.io;
 
+import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 /**
- * {@link ResourceFilePathResolver} for {@link ClassPathResource}.
+ * {@link FilePathResolver} for {@link ClassPathResource}.
  *
  * @author Phillip Webb
  */
-class ClassPathResourceFilePathResolver implements ResourceFilePathResolver {
+class ClassPathResourceFilePathResolver implements ApplicationResourceLoader.FilePathResolver {
 
 	@Override
 	public String resolveFilePath(String location, Resource resource) {
