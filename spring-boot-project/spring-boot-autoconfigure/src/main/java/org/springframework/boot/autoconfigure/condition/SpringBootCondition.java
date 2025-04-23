@@ -39,11 +39,12 @@ import org.springframework.util.StringUtils;
 public abstract class SpringBootCondition implements Condition {
 
 	private final Log logger = LogFactory.getLog(getClass());
-
+	// OnXXXCondition 注解判断的入口逻辑
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		try {
+			// getOutcome 方法是 SpringBootCondition 抽象类中的抽象方法，具体的实现由子类 OnXXXCondition 实现
 			ConditionOutcome outcome = getMatchOutcome(context, metadata);
 			logOutcome(classOrMethodName, outcome);
 			recordEvaluation(context, classOrMethodName, outcome);

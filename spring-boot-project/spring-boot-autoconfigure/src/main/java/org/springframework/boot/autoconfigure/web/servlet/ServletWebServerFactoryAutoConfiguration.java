@@ -53,7 +53,16 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for servlet web servers.
- *
+ * <p>
+ *	ServletWebServerFactoryAutoConfiguration 是 Spring Boot 的一个 自动配置类，用于配置 内嵌 Servlet 容器，
+ *	比如 Tomcat、Jetty 或 Undertow。它是 Spring Boot Web 应用启动过程中非常关键的一环。</p>
+ * 🌐 作用简介<p>
+ * <p>
+ * Spring Boot 支持通过嵌入式 Web Server 来启动 Web 应用，而不需要外部容器（比如传统的外部 Tomcat）。这个类就是用于自动配置这些内嵌的 Servlet 容器的。</p>
+ * ✅ 它负责的事情：<p>
+ * 	<p>检测并创建 ServletWebServerFactory 的实例（Tomcat、Jetty、Undertow）</p>
+ * 	<p>配置端口、上下文路径、编码、HTTPS 等 Web Server 属性</p>
+ * 	<p>实例化并启动 Web 服务器（Tomcat/Jetty/Undertow）</p>
  * @author Phillip Webb
  * @author Dave Syer
  * @author Ivan Sopov

@@ -46,6 +46,9 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 	@Override
 	public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
 		ConditionEvaluationReport report = ConditionEvaluationReport.find(this.beanFactory);
+		// 先根据 spring-autoconfigure-metadata.properties 做一轮初步筛选
+		// 通过 classLoader 判断 @ConditionalOnXXX 注解定义的类是否已经加载到 JVM 中
+		// 加载到 JVM 中则继续进行后续的 match 条件判断
 		ConditionOutcome[] outcomes = getOutcomes(autoConfigurationClasses, autoConfigurationMetadata);
 		boolean[] match = new boolean[outcomes.length];
 		for (int i = 0; i < outcomes.length; i++) {

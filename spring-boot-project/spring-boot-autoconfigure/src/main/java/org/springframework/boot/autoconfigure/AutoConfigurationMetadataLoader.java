@@ -32,7 +32,10 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 final class AutoConfigurationMetadataLoader {
-
+	// 由 spring-boot-autoconfigure-processor 自动生成
+	// 会扫描所有ConditionalOnXXX注解，并生成key-value值到配置文件
+	// @ConditionalOnClass(SomeLib.class)
+	// com.example.autoconfig.MyAutoConfiguration.ConditionalOnClass=some.library.SomeLib
 	private static final String PATH = "META-INF/spring-autoconfigure-metadata.properties";
 
 	private AutoConfigurationMetadataLoader() {
