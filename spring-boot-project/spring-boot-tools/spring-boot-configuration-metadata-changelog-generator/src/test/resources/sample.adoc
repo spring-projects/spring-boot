@@ -32,4 +32,8 @@ _None_.
 | `test.delete.deprecated`
 | `test.add`
 | it was just bad
+
+| `test.removed.directly`
+| `test.new.property`
+| Removed in Upgrade 10
 |======================
