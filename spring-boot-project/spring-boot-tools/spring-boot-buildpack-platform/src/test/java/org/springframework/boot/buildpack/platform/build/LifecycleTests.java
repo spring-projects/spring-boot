@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
@@ -362,7 +362,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest(trustBuilder);
-		createLifecycle(request, ResolvedDockerHost.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376")))
+		createLifecycle(request,
+				ResolvedDockerHost.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376")))
 			.execute();
 		if (trustBuilder) {
 			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-remote.json"));
@@ -384,7 +385,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest(trustBuilder);
-		createLifecycle(request, ResolvedDockerHost.from(DockerHostConfiguration.forAddress("/var/alt.sock")))
+		createLifecycle(request, ResolvedDockerHost.from(new DockerConnectionConfiguration.Host("/var/alt.sock")))
 			.execute();
 		if (trustBuilder) {
 			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-local.json"));

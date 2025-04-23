@@ -26,7 +26,8 @@ import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -54,7 +55,7 @@ public class Builder {
 
 	private final DockerApi docker;
 
-	private final DockerConfiguration dockerConfiguration;
+	private final BuilderDockerConfiguration dockerConfiguration;
 
 	/**
 	 * Create a new builder instance.
@@ -67,8 +68,22 @@ public class Builder {
 	 * Create a new builder instance.
 	 * @param dockerConfiguration the docker configuration
 	 * @since 2.4.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #Builder(BuilderDockerConfiguration)}
 	 */
-	public Builder(DockerConfiguration dockerConfiguration) {
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public Builder(
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
+		this(BuildLog.toSystemOut(), dockerConfiguration);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param dockerConfiguration the docker configuration
+	 * @since 3.5.0
+	 */
+	public Builder(BuilderDockerConfiguration dockerConfiguration) {
 		this(BuildLog.toSystemOut(), dockerConfiguration);
 	}
 
@@ -85,17 +100,45 @@ public class Builder {
 	 * @param log a logger used to record output
 	 * @param dockerConfiguration the docker configuration
 	 * @since 2.4.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #Builder(BuildLog, BuilderDockerConfiguration)}
 	 */
-	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
-		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null,
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public Builder(BuildLog log,
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
+		this(log, adaptDeprecatedConfiguration(dockerConfiguration));
+	}
+
+	@SuppressWarnings("removal")
+	private static BuilderDockerConfiguration adaptDeprecatedConfiguration(
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration configuration) {
+		if (configuration == null) {
+			return null;
+		}
+		DockerConnectionConfiguration connection = org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration
+			.asConnectionConfiguration(configuration.getHost());
+		return new BuilderDockerConfiguration(connection, configuration.isBindHostToBuilder(),
+				configuration.getBuilderRegistryAuthentication(), configuration.getPublishRegistryAuthentication());
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 * @param dockerConfiguration the docker configuration
+	 * @since 3.5.0
+	 */
+	public Builder(BuildLog log, BuilderDockerConfiguration dockerConfiguration) {
+		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.connection() : null,
 				BuildLogAdapter.get(log)), dockerConfiguration);
 	}
 
-	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
+	Builder(BuildLog log, DockerApi docker, BuilderDockerConfiguration dockerConfiguration) {
 		Assert.notNull(log, "'log' must not be null");
 		this.log = log;
 		this.docker = docker;
-		this.dockerConfiguration = dockerConfiguration;
+		this.dockerConfiguration = (dockerConfiguration != null) ? dockerConfiguration
+				: new BuilderDockerConfiguration();
 	}
 
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
@@ -104,8 +147,8 @@ public class Builder {
 		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
-				request.getImagePlatform());
+		ImageFetcher imageFetcher = new ImageFetcher(domain, this.dockerConfiguration.builderRegistryAuthentication(),
+				pullPolicy, request.getImagePlatform());
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
@@ -182,8 +225,8 @@ public class Builder {
 	}
 
 	private ResolvedDockerHost getDockerHost() {
-		boolean bindHostToBuilder = this.dockerConfiguration != null && this.dockerConfiguration.isBindHostToBuilder();
-		return (bindHostToBuilder) ? ResolvedDockerHost.from(this.dockerConfiguration.getHost()) : null;
+		boolean bindToBuilder = this.dockerConfiguration.bindHostToBuilder();
+		return (bindToBuilder) ? ResolvedDockerHost.from(this.dockerConfiguration.connection()) : null;
 	}
 
 	private void tagImage(ImageReference sourceReference, List<ImageReference> tags) throws IOException {
@@ -203,18 +246,13 @@ public class Builder {
 	private void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
-		this.docker.image().push(reference, listener, getPublishAuthHeader());
+		String authHeader = authHeader(this.dockerConfiguration.publishRegistryAuthentication());
+		this.docker.image().push(reference, listener, authHeader);
 		this.log.pushedImage(reference);
 	}
 
-	private String getBuilderAuthHeader() {
-		return (this.dockerConfiguration != null && this.dockerConfiguration.getBuilderRegistryAuthentication() != null)
-				? this.dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader() : null;
-	}
-
-	private String getPublishAuthHeader() {
-		return (this.dockerConfiguration != null && this.dockerConfiguration.getPublishRegistryAuthentication() != null)
-				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
+	private static String authHeader(DockerRegistryAuthentication authentication) {
+		return (authentication != null) ? authentication.getAuthHeader() : null;
 	}
 
 	/**
@@ -224,15 +262,16 @@ public class Builder {
 
 		private final String domain;
 
-		private final String authHeader;
+		private final DockerRegistryAuthentication registryAuthentication;
 
 		private final PullPolicy pullPolicy;
 
 		private ImagePlatform defaultPlatform;
 
-		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy, ImagePlatform platform) {
+		ImageFetcher(String domain, DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
+				ImagePlatform platform) {
 			this.domain = domain;
-			this.authHeader = authHeader;
+			this.registryAuthentication = registryAuthentication;
 			this.pullPolicy = pullPolicy;
 			this.defaultPlatform = platform;
 		}
@@ -240,7 +279,8 @@ public class Builder {
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
 			Assert.notNull(type, "'type' must not be null");
 			Assert.notNull(reference, "'reference' must not be null");
-			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
+			String authHeader = authHeader(this.registryAuthentication);
+			Assert.state(authHeader == null || reference.getDomain().equals(this.domain),
 					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
 							StringUtils.capitalize(type.getDescription()), reference, this.domain));
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
@@ -260,7 +300,8 @@ public class Builder {
 		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 			TotalProgressPullListener listener = new TotalProgressPullListener(
 					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
-			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, this.authHeader);
+			String authHeader = authHeader(this.registryAuthentication);
+			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, authHeader);
 			Builder.this.log.pulledImage(image, imageType);
 			if (this.defaultPlatform == null) {
 				this.defaultPlatform = ImagePlatform.from(image);

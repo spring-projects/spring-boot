@@ -23,7 +23,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.core5.http.HttpHost;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 
@@ -42,14 +42,7 @@ class RemoteHttpClientTransportTests {
 
 	@Test
 	void createIfPossibleWhenDockerHostIsNotSetReturnsNull() {
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(null);
-		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
-		assertThat(transport).isNull();
-	}
-
-	@Test
-	void createIfPossibleWhenDockerHostIsDefaultReturnsNull() {
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(DockerHostConfiguration.forAddress(null));
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from((DockerConnectionConfiguration) null);
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
 		assertThat(transport).isNull();
 	}
@@ -57,7 +50,7 @@ class RemoteHttpClientTransportTests {
 	@Test
 	void createIfPossibleWhenDockerHostIsFileReturnsNull() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
-			.from(DockerHostConfiguration.forAddress("unix:///var/run/socket.sock"));
+			.from(new DockerConnectionConfiguration.Host("unix:///var/run/socket.sock"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
 		assertThat(transport).isNull();
 	}
@@ -65,7 +58,7 @@ class RemoteHttpClientTransportTests {
 	@Test
 	void createIfPossibleWhenDockerHostIsAddressReturnsTransport() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
-			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376"));
+			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
 		assertThat(transport).isNotNull();
 	}
@@ -73,7 +66,7 @@ class RemoteHttpClientTransportTests {
 	@Test
 	void createIfPossibleWhenNoTlsVerifyUsesHttp() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
-			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376"));
+			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost);
 		assertThat(transport.getHost()).satisfies(hostOf("http", "192.168.1.2", 2376));
 	}
@@ -83,7 +76,7 @@ class RemoteHttpClientTransportTests {
 		SslContextFactory sslContextFactory = mock(SslContextFactory.class);
 		given(sslContextFactory.forDirectory("/test-cert-path")).willReturn(SSLContext.getDefault());
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
-			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376", true, "/test-cert-path"));
+			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376", true, "/test-cert-path"));
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(dockerHost, sslContextFactory);
 		assertThat(transport.getHost()).satisfies(hostOf("https", "192.168.1.2", 2376));
 	}
@@ -91,7 +84,7 @@ class RemoteHttpClientTransportTests {
 	@Test
 	void createIfPossibleWhenTlsVerifyWithMissingCertPathThrowsException() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
-			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376", true, null));
+			.from(new DockerConnectionConfiguration.Host("tcp://192.168.1.2:2376", true, null));
 		assertThatIllegalStateException().isThrownBy(() -> RemoteHttpClientTransport.createIfPossible(dockerHost))
 			.withMessageContaining("Docker host TLS verification requires trust material");
 	}
