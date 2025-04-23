@@ -24,12 +24,11 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -54,7 +53,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
 		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, OAuth2ClientWebSecurityAutoConfiguration.class,
-				OAuth2ResourceServerAutoConfiguration.class, Saml2RelyingPartyAutoConfiguration.class })
+				OAuth2ResourceServerAutoConfiguration.class },
+		afterName = "org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnDefaultWebSecurity
 public class ManagementWebSecurityAutoConfiguration {

@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -59,7 +58,7 @@ import org.springframework.http.server.ServerHttpRequest;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@AutoConfiguration(after = SecurityAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
 @ConditionalOnEnabledDevTools
 @ConditionalOnProperty("spring.devtools.remote.secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
