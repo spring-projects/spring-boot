@@ -1,0 +1,83 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.data.neo4j.auto-index",
+      "description": "Auto index mode.",
+      "defaultValue": "none",
+      "deprecation": {
+        "reason": "Automatic index creation is no longer supported.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.embedded.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable embedded mode if the embedded driver is available.",
+      "deprecation": {
+        "reason": "Embedded mode is no longer supported, please use Testcontainers instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.open-in-view",
+      "type": "java.lang.Boolean",
+      "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.password",
+      "type": "java.lang.String",
+      "description": "Login password of the server.",
+      "deprecation": {
+        "replacement": "spring.neo4j.authentication.password",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.repositories.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Neo4j repositories.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.neo4j.repositories.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Neo4j repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.neo4j.uri",
+      "type": "java.lang.String",
+      "description": "URI used by the driver. Auto-detected by default.",
+      "deprecation": {
+        "replacement": "spring.neo4j.uri",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.use-native-types",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use Neo4j native types wherever possible.",
+      "deprecation": {
+        "reason": "Native type support is now built-in.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.username",
+      "type": "java.lang.String",
+      "description": "Login user of the server.",
+      "deprecation": {
+        "replacement": "spring.neo4j.authentication.username",
+        "level": "error"
+      }
+    }
+  ]
+}
