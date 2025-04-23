@@ -24,8 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
+import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
+import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;

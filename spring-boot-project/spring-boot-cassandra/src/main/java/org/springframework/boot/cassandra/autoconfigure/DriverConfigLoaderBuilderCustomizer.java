@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.autoconfigure;
 
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
@@ -25,7 +25,7 @@ import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBui
  * retaining default auto-configuration.
  *
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
 public interface DriverConfigLoaderBuilderCustomizer {
 

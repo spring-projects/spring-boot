@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.autoconfigure;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;

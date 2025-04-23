@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.autoconfigure;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
@@ -25,7 +25,7 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
  * auto-configuration.
  *
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface CqlSessionBuilderCustomizer {

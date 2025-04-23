@@ -125,7 +125,7 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.activemq.ArtemisContainer[]
 
-| javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
+| javadoc:org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails[]
 | Containers of type javadoc:org.testcontainers.cassandra.CassandraContainer[]
 
 | javadoc:org.springframework.boot.couchbase.autoconfigure.CouchbaseConnectionDetails[]

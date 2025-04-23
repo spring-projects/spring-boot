@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.autoconfigure;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -39,14 +39,14 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Connection;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Controlconnection;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Request;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Ssl;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Throttler;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.ThrottlerType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.Connection;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.Controlconnection;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.Request;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.Ssl;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.Throttler;
+import org.springframework.boot.cassandra.autoconfigure.CassandraProperties.ThrottlerType;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -72,7 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(CqlSession.class)

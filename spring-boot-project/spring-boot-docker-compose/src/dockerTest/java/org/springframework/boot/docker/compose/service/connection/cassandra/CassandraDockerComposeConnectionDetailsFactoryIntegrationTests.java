@@ -18,8 +18,8 @@ package org.springframework.boot.docker.compose.service.connection.cassandra;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
-import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails.Node;
+import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails;
+import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails.Node;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 

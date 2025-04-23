@@ -29,6 +29,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	api("org.testcontainers:testcontainers")
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-cassandra"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-couchbase"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
@@ -76,6 +77,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))

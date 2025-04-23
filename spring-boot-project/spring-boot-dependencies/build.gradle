@@ -1992,6 +1992,7 @@ bom {
 				"spring-boot-autoconfigure-processor",
 				"spring-boot-batch",
 				"spring-boot-buildpack-platform",
+				"spring-boot-cassandra",
 				"spring-boot-configuration-metadata",
 				"spring-boot-configuration-processor",
 				"spring-boot-couchbase",
