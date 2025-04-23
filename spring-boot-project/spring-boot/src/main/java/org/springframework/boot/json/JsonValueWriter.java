@@ -47,7 +47,11 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 class JsonValueWriter {
 
+	private static final int DEFAULT_MAX_NESTING_DEPTH = 500;
+
 	private final Appendable out;
+
+	private final int maxNestingDepth;
 
 	private MemberPath path = MemberPath.ROOT;
 
@@ -60,7 +64,18 @@ class JsonValueWriter {
 	 * @param out the {@link Appendable} used to receive the JSON output
 	 */
 	JsonValueWriter(Appendable out) {
+		this(out, DEFAULT_MAX_NESTING_DEPTH);
+	}
+
+	/**
+	 * Create a new {@link JsonValueWriter} instance.
+	 * @param out the {@link Appendable} used to receive the JSON output
+	 * @param maxNestingDepth the maximum allowed nesting depth for JSON objects and
+	 * arrays
+	 */
+	JsonValueWriter(Appendable out, int maxNestingDepth) {
 		this.out = out;
+		this.maxNestingDepth = maxNestingDepth;
 	}
 
 	void pushProcessors(JsonWriterFiltersAndProcessors jsonProcessors) {
@@ -115,10 +130,7 @@ class JsonValueWriter {
 				throw new UncheckedIOException(ex);
 			}
 		}
-		else if (value instanceof Path p) {
-			writeString(p.toString());
-		}
-		else if (value instanceof Iterable<?> iterable) {
+		else if (value instanceof Iterable<?> iterable && canWriteAsArray(iterable)) {
 			writeArray(iterable::forEach);
 		}
 		else if (ObjectUtils.isArray(value)) {
@@ -135,6 +147,10 @@ class JsonValueWriter {
 		}
 	}
 
+	private <V> boolean canWriteAsArray(Iterable<?> iterable) {
+		return !(iterable instanceof Path);
+	}
+
 	/**
 	 * Start a new {@link Series} (JSON object or array).
 	 * @param series the series to start
@@ -144,6 +160,10 @@ class JsonValueWriter {
 	 */
 	void start(Series series) {
 		if (series != null) {
+			int nestingDepth = this.activeSeries.size();
+			Assert.state(nestingDepth <= this.maxNestingDepth,
+					() -> "JSON nesting depth (%s) exceeds maximum depth of %s (current path: %s)"
+						.formatted(nestingDepth, this.maxNestingDepth, this.path));
 			this.activeSeries.push(new ActiveSeries(series));
 			append(series.openChar);
 		}
