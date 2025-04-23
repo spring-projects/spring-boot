@@ -89,7 +89,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis"
 
-| javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
+| javadoc:org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails[]
 | Containers named "cassandra" or "bitnami/cassandra"
 
 | javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]

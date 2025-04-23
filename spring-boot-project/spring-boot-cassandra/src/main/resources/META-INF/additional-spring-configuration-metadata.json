@@ -1,0 +1,68 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.cassandra.compression",
+      "defaultValue": "none"
+    },
+    {
+      "name": "spring.cassandra.connection.connect-timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.cassandra.connection.init-query-timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.cassandra.contact-points",
+      "defaultValue": [
+        "127.0.0.1:9042"
+      ]
+    },
+    {
+      "name": "spring.cassandra.controlconnection.timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.cassandra.pool.idle-timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.cassandra.request.page-size",
+      "defaultValue": 5000
+    },
+    {
+      "name": "spring.cassandra.request.throttler.type",
+      "defaultValue": "none"
+    },
+    {
+      "name": "spring.cassandra.request.timeout",
+      "defaultValue": "2s"
+    },
+    {
+      "name": "spring.cassandra.ssl",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.cassandra.ssl.enabled",
+        "level": "error"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.cassandra.schema-action",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.springframework.data.cassandra.config.SchemaAction"
+          }
+        }
+      ]
+    }
+  ]
+}

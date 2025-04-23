@@ -25,7 +25,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -60,7 +59,7 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  * @author Christoph Strobl
  * @since 1.3.0
  */
-@AutoConfiguration(after = CassandraAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration")
 @ConditionalOnClass({ CqlSession.class, CassandraAdminOperations.class })
 @ConditionalOnBean(CqlSession.class)
 public class CassandraDataAutoConfiguration {
