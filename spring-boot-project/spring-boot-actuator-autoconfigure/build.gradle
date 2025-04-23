@@ -32,6 +32,9 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	implementation(project(":spring-boot-project:spring-boot-security")) {
+		exclude(group: "org.springframework.security")
+	}
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))

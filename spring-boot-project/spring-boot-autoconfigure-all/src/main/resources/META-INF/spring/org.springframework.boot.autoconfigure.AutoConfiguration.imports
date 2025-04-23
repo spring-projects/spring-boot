@@ -18,13 +18,6 @@ org.springframework.boot.autoconfigure.http.client.reactive.service.ReactiveHttp
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
-org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
-org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
-org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
-org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
-org.springframework.boot.autoconfigure.security.rsocket.RSocketSecurityAutoConfiguration
-org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration

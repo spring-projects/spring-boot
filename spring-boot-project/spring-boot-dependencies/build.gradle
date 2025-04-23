@@ -2046,6 +2046,7 @@ bom {
 				"spring-boot-r2dbc",
 				"spring-boot-reactor-netty",
 				"spring-boot-rsocket",
+				"spring-boot-security",
 				"spring-boot-sendgrid",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",

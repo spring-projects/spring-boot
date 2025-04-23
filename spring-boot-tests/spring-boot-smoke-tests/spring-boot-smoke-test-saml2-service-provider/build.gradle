@@ -20,17 +20,18 @@ plugins {
 
 description = "Spring Boot SAML 2 service provider smoke test"
 
-dependencies {
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	implementation("org.opensaml:opensaml-core:4.0.1")
-	implementation("org.opensaml:opensaml-saml-api:4.0.1")
-	implementation("org.opensaml:opensaml-saml-impl:4.0.1")
-	implementation("org.springframework.security:spring-security-config")
-	implementation("org.springframework.security:spring-security-saml2-service-provider") {
-		exclude group: "org.opensaml", module: "opensaml-core"
-		exclude group: "org.opensaml", module: "opensaml-saml-api"
-		exclude group: "org.opensaml", module: "opensaml-saml-impl"
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
 	}
+}
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation("org.springframework.security:spring-security-saml2-service-provider")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")

@@ -17,14 +17,14 @@ Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ----
 
-NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.autoconfigure.security` category is set to log `WARN`-level messages.
+NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.security.autoconfigure` category is set to log `WARN`-level messages.
 Otherwise, the default password is not printed.
 
 You can change the username and password by providing a `spring.security.user.name` and `spring.security.user.password`.
 
 The basic features you get by default in a web application are:
 
-* A javadoc:org.springframework.security.core.userdetails.UserDetailsService[] (or javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties$User[] for the properties of the user).
+* A javadoc:org.springframework.security.core.userdetails.UserDetailsService[] (or javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.security.autoconfigure.SecurityProperties$User[] for the properties of the user).
 * Form-based login or HTTP Basic security (depending on the `Accept` header in the request) for the entire application (including actuator endpoints if actuator is on the classpath).
 * A javadoc:org.springframework.security.authentication.DefaultAuthenticationEventPublisher[] for publishing authentication events.
 
@@ -35,8 +35,8 @@ You can provide a different javadoc:org.springframework.security.authentication.
 [[web.security.spring-mvc]]
 == MVC Security
 
-The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] for authentication.
+The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration[] for authentication.
 
 To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type javadoc:org.springframework.security.web.SecurityFilterChain[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.UserDetailsService[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.authentication.AuthenticationManager[].
@@ -52,7 +52,7 @@ To use javadoc:org.springframework.security.core.userdetails.UserDetailsService[
 Access rules can be overridden by adding a custom javadoc:org.springframework.security.web.SecurityFilterChain[] bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
 javadoc:org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] that is based on the configprop:management.endpoints.web.base-path[] property.
-javadoc:org.springframework.boot.autoconfigure.security.servlet.PathRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] for resources in commonly used locations.
+javadoc:org.springframework.boot.security.autoconfigure.servlet.PathRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] for resources in commonly used locations.
 
 
 
@@ -60,8 +60,8 @@ javadoc:org.springframework.boot.autoconfigure.security.servlet.PathRequest[] ca
 == WebFlux Security
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
-The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.reactive.UserDetailsServiceAutoConfiguration[] for authentication.
+The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration[] for authentication.
 In addition to reactive web applications, the latter is also auto-configured when RSocket is in use.
 
 To completely switch off the default web application security configuration, including Actuator security, add a bean of type javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration).
@@ -78,7 +78,7 @@ Access rules and the use of multiple Spring Security components such as OAuth 2 
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
 javadoc:org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest[] can be used to create a javadoc:org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher[] that is based on the configprop:management.endpoints.web.base-path[] property.
 
-javadoc:org.springframework.boot.autoconfigure.security.reactive.PathRequest[] can be used to create a javadoc:org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher[] for resources in commonly used locations.
+javadoc:org.springframework.boot.security.autoconfigure.PathRequest[] can be used to create a javadoc:org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher[] for resources in commonly used locations.
 
 For example, you can customize your security configuration by adding something like:
 
@@ -356,7 +356,7 @@ Additional information can be found in the {url-spring-authorization-server-docs
 === Relying Party
 
 If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
-This configuration makes use of the properties under javadoc:org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties[].
+This configuration makes use of the properties under javadoc:org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyProperties[].
 
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
 You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:

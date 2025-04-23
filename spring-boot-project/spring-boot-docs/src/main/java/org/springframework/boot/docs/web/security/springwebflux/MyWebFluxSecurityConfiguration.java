@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.web.security.springwebflux;
 
-import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
+import org.springframework.boot.security.autoconfigure.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;

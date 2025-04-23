@@ -782,7 +782,7 @@ The preceding POJO defines the following properties:
 * `my.service.enabled`, with a value of `false` by default.
 * `my.service.remote-address`, with a type that can be coerced from javadoc:java.lang.String[].
 * `my.service.security.username`, with a nested "security" object whose name is determined by the name of the property.
-  In particular, the type is not used at all there and could have been javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties[].
+  In particular, the type is not used at all there and could have been javadoc:org.springframework.boot.security.autoconfigure.SecurityProperties[].
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of javadoc:java.lang.String[] that defaults to `USER`.
 

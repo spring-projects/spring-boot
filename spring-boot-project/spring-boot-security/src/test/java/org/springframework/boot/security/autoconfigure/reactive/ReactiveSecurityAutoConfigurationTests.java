@@ -1,0 +1,117 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.security.autoconfigure.reactive;
+
+import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.WebFilterChainProxy;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+/**
+ * Tests for {@link ReactiveSecurityAutoConfiguration}.
+ *
+ * @author Madhura Bhave
+ */
+class ReactiveSecurityAutoConfigurationTests {
+
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class));
+
+	@Test
+	void backsOffWhenWebFilterChainProxyBeanPresent() {
+		this.contextRunner.withUserConfiguration(WebFilterChainProxyConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
+	}
+
+	@Test
+	void autoConfiguresDenyAllReactiveAuthenticationManagerWhenNoAlternativeIsAvailable() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveSecurityAutoConfiguration.class)
+			.hasBean("denyAllAuthenticationManager"));
+	}
+
+	@Test
+	void enablesWebFluxSecurityWhenUserDetailsServiceIsPresent() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(WebFilterChainProxy.class);
+			assertThat(context).doesNotHaveBean("denyAllAuthenticationManager");
+		});
+	}
+
+	@Test
+	void enablesWebFluxSecurityWhenReactiveAuthenticationManagerIsPresent() {
+		this.contextRunner
+			.withBean(ReactiveAuthenticationManager.class, () -> mock(ReactiveAuthenticationManager.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(WebFilterChainProxy.class);
+				assertThat(context).doesNotHaveBean("denyAllAuthenticationManager");
+			});
+	}
+
+	@Test
+	void enablesWebFluxSecurityWhenSecurityWebFilterChainIsPresent() {
+		this.contextRunner.withBean(SecurityWebFilterChain.class, () -> mock(SecurityWebFilterChain.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(WebFilterChainProxy.class);
+				assertThat(context).doesNotHaveBean("denyAllAuthenticationManager");
+			});
+	}
+
+	@Test
+	void autoConfigurationIsConditionalOnClass() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class,
+					WebFluxConfigurer.class))
+			.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(WebFilterChainProxy.class));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebFilterChainProxyConfiguration {
+
+		@Bean
+		WebFilterChainProxy webFilterChainProxy() {
+			return mock(WebFilterChainProxy.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDetailsServiceConfiguration {
+
+		@Bean
+		MapReactiveUserDetailsService userDetailsService() {
+			return new MapReactiveUserDetailsService(
+					User.withUsername("alice").password("secret").roles("admin").build());
+		}
+
+	}
+
+}
