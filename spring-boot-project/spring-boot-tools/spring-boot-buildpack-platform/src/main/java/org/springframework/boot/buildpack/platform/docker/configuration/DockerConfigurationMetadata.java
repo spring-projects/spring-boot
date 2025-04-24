@@ -24,9 +24,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HexFormat;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,11 +34,14 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.boot.buildpack.platform.system.Environment;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Docker configuration stored in metadata files managed by the Docker CLI.
  *
  * @author Scott Frederick
+ * @author Dmytro Nosan
  */
 final class DockerConfigurationMetadata {
 
@@ -162,22 +163,8 @@ final class DockerConfigurationMetadata {
 			super(node, MethodHandles.lookup());
 			this.currentContext = valueAt("/currentContext", String.class);
 			this.credsStore = valueAt("/credsStore", String.class);
-			this.credHelpers = extractCredHelpers();
-			this.auths = extractAuths();
-		}
-
-		private Map<String, Auth> extractAuths() {
-			Map<String, Auth> auths = new LinkedHashMap<>();
-			getNode().at("/auths")
-				.fields()
-				.forEachRemaining((entry) -> auths.put(entry.getKey(), new Auth(entry.getValue())));
-			return Map.copyOf(auths);
-		}
-
-		@SuppressWarnings("unchecked")
-		private Map<String, String> extractCredHelpers() {
-			Map<String, String> credHelpers = valueAt("/credHelpers", Map.class);
-			return (credHelpers != null) ? Map.copyOf(credHelpers) : Collections.emptyMap();
+			this.credHelpers = mapAt("/credHelpers", JsonNode::textValue);
+			this.auths = mapAt("/auths", Auth::new);
 		}
 
 		String getCurrentContext() {
@@ -216,18 +203,17 @@ final class DockerConfigurationMetadata {
 
 		Auth(JsonNode node) {
 			super(node, MethodHandles.lookup());
-			String username = valueAt("/username", String.class);
-			String password = valueAt("/password", String.class);
 			String auth = valueAt("/auth", String.class);
-			if (auth != null) {
+			if (StringUtils.hasText(auth)) {
 				String[] parts = new String(Base64.getDecoder().decode(auth)).split(":", 2);
-				if (parts.length == 2) {
-					username = parts[0];
-					password = parts[1];
-				}
+				Assert.state(parts.length == 2, "Malformed auth in docker configuration metadata");
+				this.username = parts[0];
+				this.password = parts[1];
 			}
-			this.username = username;
-			this.password = password;
+			else {
+				this.username = valueAt("/username", String.class);
+				this.password = valueAt("/password", String.class);
+			}
 			this.email = valueAt("/email", String.class);
 		}
 

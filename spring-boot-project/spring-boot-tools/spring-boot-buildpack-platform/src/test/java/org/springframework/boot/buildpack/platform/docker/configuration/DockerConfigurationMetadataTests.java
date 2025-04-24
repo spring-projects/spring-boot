@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link DockerConfigurationMetadata}.
  *
  * @author Scott Frederick
+ * @author Dmytro Nosan
  */
 class DockerConfigurationMetadataTests extends AbstractJsonTests {
 
