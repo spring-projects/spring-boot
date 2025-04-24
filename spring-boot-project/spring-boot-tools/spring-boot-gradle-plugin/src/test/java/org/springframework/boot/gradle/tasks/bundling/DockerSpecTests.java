@@ -59,9 +59,9 @@ class DockerSpecTests {
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		assertThat(dockerConfiguration.getHost()).isNull();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 	}
 
 	@Test
@@ -77,9 +77,9 @@ class DockerSpecTests {
 		assertThat(host.getContext()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 	}
 
 	@Test
@@ -93,9 +93,9 @@ class DockerSpecTests {
 		assertThat(host.getContext()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 	}
 
 	@Test
@@ -109,9 +109,9 @@ class DockerSpecTests {
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 	}
 
 	@Test
@@ -133,9 +133,9 @@ class DockerSpecTests {
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthentication());
 	}
 
 	@Test
@@ -214,7 +214,7 @@ class DockerSpecTests {
 		return new String(Base64.getDecoder().decode(value));
 	}
 
-	private Class<?> getDockerRegistryConfigFileAuthenticationClass() {
+	private Class<?> getDefaultDockerRegistryAuthentication() {
 		return ClassUtils.resolveClassName(
 				"org.springframework.boot.buildpack.platform.docker.configuration.DefaultDockerRegistryAuthentication",
 				getClass().getClassLoader());

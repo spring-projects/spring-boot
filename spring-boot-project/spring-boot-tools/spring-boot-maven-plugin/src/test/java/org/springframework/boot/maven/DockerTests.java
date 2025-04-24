@@ -39,14 +39,14 @@ class DockerTests {
 	private final ImageReference imageReference = ImageReference.of("ubuntu:22.04");
 
 	@Test
-	void asDockerConfigurationWithDefaults() throws ClassNotFoundException {
+	void asDockerConfigurationWithDefaults() {
 		Docker docker = new Docker();
 		DockerConfiguration dockerConfiguration = createDockerConfiguration(docker);
 		assertThat(dockerConfiguration.getHost()).isNull();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 	}
 
 	@Test
@@ -63,9 +63,9 @@ class DockerTests {
 		assertThat(host.getContext()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 	}
 
 	@Test
@@ -80,9 +80,9 @@ class DockerTests {
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 	}
 
 	@Test
@@ -108,9 +108,9 @@ class DockerTests {
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(createDockerConfiguration(docker).getBuilderRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 		assertThat(dockerConfiguration.getPublishRegistryAuthentication())
-			.isInstanceOf(getDockerRegistryConfigFileAuthenticationClass());
+			.isInstanceOf(getDefaultDockerRegistryAuthenticationClass());
 	}
 
 	@Test
@@ -201,7 +201,7 @@ class DockerTests {
 
 	}
 
-	private Class<?> getDockerRegistryConfigFileAuthenticationClass() {
+	private Class<?> getDefaultDockerRegistryAuthenticationClass() {
 		return ClassUtils.resolveClassName(
 				"org.springframework.boot.buildpack.platform.docker.configuration.DefaultDockerRegistryAuthentication",
 				getClass().getClassLoader());
