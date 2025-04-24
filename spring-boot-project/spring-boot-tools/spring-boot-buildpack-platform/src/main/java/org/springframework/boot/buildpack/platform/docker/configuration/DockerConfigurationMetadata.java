@@ -63,6 +63,8 @@ final class DockerConfigurationMetadata {
 
 	private static final String CONTEXT_FILE_NAME = "meta.json";
 
+	private static volatile DockerConfigurationMetadata systemEnvironmentConfigurationMetadata;
+
 	private final String configLocation;
 
 	private final DockerConfig config;
@@ -88,11 +90,24 @@ final class DockerConfigurationMetadata {
 	}
 
 	static DockerConfigurationMetadata from(Environment environment) {
-		String configLocation = (environment.get(DOCKER_CONFIG) != null) ? environment.get(DOCKER_CONFIG)
-				: Path.of(System.getProperty("user.home"), CONFIG_DIR).toString();
+		DockerConfigurationMetadata dockerConfigurationMetadata = (environment == Environment.SYSTEM)
+				? DockerConfigurationMetadata.systemEnvironmentConfigurationMetadata : null;
+		if (dockerConfigurationMetadata != null) {
+			return dockerConfigurationMetadata;
+		}
+		String configLocation = environment.get(DOCKER_CONFIG);
+		configLocation = (configLocation != null) ? configLocation : getUserHomeConfigLocation();
 		DockerConfig dockerConfig = createDockerConfig(configLocation);
 		DockerContext dockerContext = createDockerContext(configLocation, dockerConfig.getCurrentContext());
-		return new DockerConfigurationMetadata(configLocation, dockerConfig, dockerContext);
+		dockerConfigurationMetadata = new DockerConfigurationMetadata(configLocation, dockerConfig, dockerContext);
+		if (environment == Environment.SYSTEM) {
+			DockerConfigurationMetadata.systemEnvironmentConfigurationMetadata = dockerConfigurationMetadata;
+		}
+		return dockerConfigurationMetadata;
+	}
+
+	private static String getUserHomeConfigLocation() {
+		return Path.of(System.getProperty("user.home"), CONFIG_DIR).toString();
 	}
 
 	private static DockerConfig createDockerConfig(String configLocation) {

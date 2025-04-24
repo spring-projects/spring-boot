@@ -246,13 +246,13 @@ public class Builder {
 	private void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
-		String authHeader = authHeader(this.dockerConfiguration.publishRegistryAuthentication());
+		String authHeader = authHeader(this.dockerConfiguration.publishRegistryAuthentication(), reference);
 		this.docker.image().push(reference, listener, authHeader);
 		this.log.pushedImage(reference);
 	}
 
-	private static String authHeader(DockerRegistryAuthentication authentication) {
-		return (authentication != null) ? authentication.getAuthHeader() : null;
+	private static String authHeader(DockerRegistryAuthentication authentication, ImageReference reference) {
+		return (authentication != null) ? authentication.getAuthHeader(reference) : null;
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class Builder {
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
 			Assert.notNull(type, "'type' must not be null");
 			Assert.notNull(reference, "'reference' must not be null");
-			String authHeader = authHeader(this.registryAuthentication);
+			String authHeader = authHeader(this.registryAuthentication, reference);
 			Assert.state(authHeader == null || reference.getDomain().equals(this.domain),
 					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
 							StringUtils.capitalize(type.getDescription()), reference, this.domain));
@@ -300,7 +300,7 @@ public class Builder {
 		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 			TotalProgressPullListener listener = new TotalProgressPullListener(
 					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
-			String authHeader = authHeader(this.registryAuthentication);
+			String authHeader = authHeader(this.registryAuthentication, reference);
 			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, authHeader);
 			Builder.this.log.pulledImage(image, imageType);
 			if (this.defaultPlatform == null) {
