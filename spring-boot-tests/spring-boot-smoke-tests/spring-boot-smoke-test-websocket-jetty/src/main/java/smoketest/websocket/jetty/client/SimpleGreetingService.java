@@ -18,9 +18,19 @@ package smoketest.websocket.jetty.client;
 
 public class SimpleGreetingService implements GreetingService {
 
-	@Override
-	public String getGreeting() {
-		return "Hello world!";
-	}
+    private static final List<String> GREETINGS = Arrays.asList(
+        "Hello world!",
+        "Welcome to Spring Boot!",
+        "Hi there!",
+        "Greetings from the SimpleGreetingService!",
+        "Have a great day!"
+    );
 
+    private final Random random = new Random();
+
+    @Override
+    public String getGreeting() {
+        // Return a random greeting from the list
+        return GREETINGS.get(random.nextInt(GREETINGS.size()));
+    }
 }
