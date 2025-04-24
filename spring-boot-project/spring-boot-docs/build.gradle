@@ -203,6 +203,7 @@ dokkatoo {
 }
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
+	dependsOn configurations.resolvedBom
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	options {
 		author = true
