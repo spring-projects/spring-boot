@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,11 +217,18 @@ public final class EndpointRequest {
 			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
 				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
+			if (delegateMatchers.isEmpty()) {
+				return EMPTY_MATCHER;
+			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
 
 		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints pathMappedEndpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
+			return source.stream()
+				.filter(Objects::nonNull)
+				.map(this::getEndpointId)
+				.map(pathMappedEndpoints::getPath)
+				.filter(Objects::nonNull);
 		}
 
 		@Override
@@ -234,6 +241,7 @@ public final class EndpointRequest {
 		}
 
 		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
+			Assert.notNull(path, "'path' must not be null");
 			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
 		}
 
