@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ class SniIntegrationTests {
 
 		protected ApplicationContainer(String appName, String fileSuffix, String... entryPointArgs) {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.jar", findJarFile(appName, fileSuffix))
-				.withDockerfileFromBuilder((builder) -> builder.from("eclipse-temurin:17-jre-jammy")
+				.withDockerfileFromBuilder((builder) -> builder.from("eclipse-temurin:17-jre-noble")
 					.add("spring-boot.jar", "/spring-boot.jar")
 					.entryPoint(buildEntryPoint(entryPointArgs))));
 			withExposedPorts(SERVER_PORT);
