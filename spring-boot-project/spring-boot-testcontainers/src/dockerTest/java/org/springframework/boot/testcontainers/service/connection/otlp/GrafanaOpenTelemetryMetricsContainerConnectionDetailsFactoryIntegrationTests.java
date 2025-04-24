@@ -76,7 +76,7 @@ class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTes
 			.untilAsserted(() -> {
 				Response response = RestAssured.given()
 					.queryParam("query", "{job=\"test\"}")
-					.get("%s/api/v1/query".formatted(container.getPromehteusHttpUrl()))
+					.get("%s/api/v1/query".formatted(container.getPrometheusHttpUrl()))
 					.prettyPeek()
 					.thenReturn();
 				assertThat(response.getStatusCode()).isEqualTo(200);

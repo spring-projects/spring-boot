@@ -61,7 +61,7 @@ class LLdapContainerConnectionDetailsFactory
 
 		@Override
 		public String getPassword() {
-			return getContainer().getUserPass();
+			return getContainer().getPassword();
 		}
 
 	}
