@@ -16,6 +16,8 @@
 
 package org.springframework.boot.maven;
 
+import org.apache.maven.plugin.logging.Log;
+
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 
@@ -141,15 +143,16 @@ public class Docker {
 	 * Returns this configuration as a {@link BuilderDockerConfiguration} instance. This
 	 * method should only be called when the configuration is complete and will no longer
 	 * be changed.
+	 * @param log the output log
 	 * @param publish whether the image should be published
 	 * @return the Docker configuration
 	 */
-	BuilderDockerConfiguration asDockerConfiguration(boolean publish) {
+	BuilderDockerConfiguration asDockerConfiguration(Log log, boolean publish) {
 		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
 		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(this.bindHostToBuilder);
-		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
-		dockerConfiguration = customizePublishAuthentication(dockerConfiguration, publish);
+		dockerConfiguration = customizeBuilderAuthentication(log, dockerConfiguration);
+		dockerConfiguration = customizePublishAuthentication(log, dockerConfiguration, publish);
 		return dockerConfiguration;
 	}
 
@@ -167,18 +170,23 @@ public class Docker {
 		return dockerConfiguration;
 	}
 
-	private BuilderDockerConfiguration customizeBuilderAuthentication(BuilderDockerConfiguration dockerConfiguration) {
-		return dockerConfiguration
-			.withBuilderRegistryAuthentication(getRegistryAuthentication("builder", this.builderRegistry, null));
+	private BuilderDockerConfiguration customizeBuilderAuthentication(Log log,
+			BuilderDockerConfiguration dockerConfiguration) {
+		DockerRegistryAuthentication authentication = DockerRegistryAuthentication.configuration(null,
+				(message, ex) -> log.warn(message));
+		return dockerConfiguration.withBuilderRegistryAuthentication(
+				getRegistryAuthentication("builder", this.builderRegistry, authentication));
 	}
 
-	private BuilderDockerConfiguration customizePublishAuthentication(BuilderDockerConfiguration dockerConfiguration,
-			boolean publish) {
+	private BuilderDockerConfiguration customizePublishAuthentication(Log log,
+			BuilderDockerConfiguration dockerConfiguration, boolean publish) {
 		if (!publish) {
 			return dockerConfiguration;
 		}
+		DockerRegistryAuthentication authentication = DockerRegistryAuthentication
+			.configuration(DockerRegistryAuthentication.EMPTY_USER, (message, ex) -> log.warn(message));
 		return dockerConfiguration.withPublishRegistryAuthentication(
-				getRegistryAuthentication("publish", this.publishRegistry, DockerRegistryAuthentication.EMPTY_USER));
+				getRegistryAuthentication("publish", this.publishRegistry, authentication));
 	}
 
 	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistry registry,

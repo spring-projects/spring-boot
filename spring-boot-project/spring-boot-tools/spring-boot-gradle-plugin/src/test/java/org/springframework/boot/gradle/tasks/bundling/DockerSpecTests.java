@@ -54,7 +54,7 @@ class DockerSpecTests {
 	void asDockerConfigurationWithDefaults() {
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		assertThat(dockerConfiguration.connection()).isNull();
-		assertThat(dockerConfiguration.builderRegistryAuthentication()).isNull();
+		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
 		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
 			.contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
@@ -73,7 +73,7 @@ class DockerSpecTests {
 		assertThat(host.secure()).isTrue();
 		assertThat(host.certificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication()).isNull();
+		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
 		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
 			.contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
@@ -90,7 +90,7 @@ class DockerSpecTests {
 		assertThat(host.secure()).isFalse();
 		assertThat(host.certificatePath()).isNull();
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication()).isNull();
+		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
 		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
 			.contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
@@ -106,7 +106,7 @@ class DockerSpecTests {
 			.connection();
 		assertThat(host.context()).isEqualTo("test-context");
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication()).isNull();
+		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
 		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
 			.contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
@@ -132,7 +132,7 @@ class DockerSpecTests {
 		assertThat(host.secure()).isFalse();
 		assertThat(host.certificatePath()).isNull();
 		assertThat(dockerConfiguration.bindHostToBuilder()).isTrue();
-		assertThat(dockerConfiguration.builderRegistryAuthentication()).isNull();
+		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
 		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
 			.contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
@@ -213,7 +213,7 @@ class DockerSpecTests {
 	}
 
 	String decoded(String value) {
-		return new String(Base64.getDecoder().decode(value));
+		return (value != null) ? new String(Base64.getDecoder().decode(value)) : value;
 	}
 
 }
