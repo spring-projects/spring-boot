@@ -102,7 +102,7 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples.do
 
 [NOTE]
 ====
-By default, the plugin reads the user's existing Docker configuration file (usually located at `$HOME/.docker/config.json`) to retrieve authentication details. Based on it, the plugin supports the following authentication methods:
+By default, *if credentials are not provided*, the plugin reads the user's existing Docker configuration file (usually located at `$HOME/.docker/config.json`) to retrieve authentication details. Based on it, the plugin supports the following authentication methods:
 
 - *Credential Helpers*: External tools configured in the Docker configuration file to provide credentials for specific registries. For example, tools like `osxkeychain` or `ecr-login` handle authentication for certain registries.
 - *Credential Store*: A default fallback mechanism that securely stores and retrieves credentials (e.g., `desktop` for Docker Desktop).
