@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -148,13 +152,48 @@ final class DockerConfigurationMetadata {
 
 		private final String currentContext;
 
+		private final String credsStore;
+
+		private final Map<String, String> credHelpers;
+
+		private final Map<String, Auth> auths;
+
 		private DockerConfig(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			this.currentContext = valueAt("/currentContext", String.class);
+			this.credsStore = valueAt("/credsStore", String.class);
+			this.credHelpers = extractCredHelpers();
+			this.auths = extractAuths();
+		}
+
+		private Map<String, Auth> extractAuths() {
+			Map<String, Auth> auths = new LinkedHashMap<>();
+			getNode().at("/auths")
+				.fields()
+				.forEachRemaining((entry) -> auths.put(entry.getKey(), new Auth(entry.getValue())));
+			return Map.copyOf(auths);
+		}
+
+		@SuppressWarnings("unchecked")
+		private Map<String, String> extractCredHelpers() {
+			Map<String, String> credHelpers = valueAt("/credHelpers", Map.class);
+			return (credHelpers != null) ? Map.copyOf(credHelpers) : Collections.emptyMap();
 		}
 
 		String getCurrentContext() {
 			return this.currentContext;
+		}
+
+		String getCredsStore() {
+			return this.credsStore;
+		}
+
+		Map<String, String> getCredHelpers() {
+			return this.credHelpers;
+		}
+
+		Map<String, Auth> getAuths() {
+			return this.auths;
 		}
 
 		static DockerConfig fromJson(String json) throws JsonProcessingException {
@@ -163,6 +202,45 @@ final class DockerConfigurationMetadata {
 
 		static DockerConfig empty() {
 			return new DockerConfig(NullNode.instance);
+		}
+
+	}
+
+	static final class Auth extends MappedObject {
+
+		private final String username;
+
+		private final String password;
+
+		private final String email;
+
+		Auth(JsonNode node) {
+			super(node, MethodHandles.lookup());
+			String username = valueAt("/username", String.class);
+			String password = valueAt("/password", String.class);
+			String auth = valueAt("/auth", String.class);
+			if (auth != null) {
+				String[] parts = new String(Base64.getDecoder().decode(auth)).split(":", 2);
+				if (parts.length == 2) {
+					username = parts[0];
+					password = parts[1];
+				}
+			}
+			this.username = username;
+			this.password = password;
+			this.email = valueAt("/email", String.class);
+		}
+
+		String getUsername() {
+			return this.username;
+		}
+
+		String getPassword() {
+			return this.password;
+		}
+
+		String getEmail() {
+			return this.email;
 		}
 
 	}
