@@ -362,11 +362,18 @@ public final class EndpointRequest {
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
+			if (delegateMatchers.isEmpty()) {
+				return EMPTY_MATCHER;
+			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
 
 		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints endpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(endpoints::getPath);
+			return source.stream()
+				.filter(Objects::nonNull)
+				.map(this::getEndpointId)
+				.map(endpoints::getPath)
+				.filter(Objects::nonNull);
 		}
 
 		@Override
@@ -484,6 +491,7 @@ public final class EndpointRequest {
 		RequestMatcher antPath(RequestMatcherProvider matcherProvider, HttpMethod httpMethod, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
+				Assert.notNull(part, "'part' must not be null");
 				pattern.append(part);
 			}
 			return matcherProvider.getRequestMatcher(pattern.toString(), httpMethod);

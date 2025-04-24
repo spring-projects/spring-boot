@@ -190,6 +190,7 @@ public final class EndpointRequest {
 		}
 
 		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path, HttpMethod httpMethod) {
+			Assert.notNull(path, "'path' must not be null");
 			return new PathPatternParserServerWebExchangeMatcher(path + "/**", httpMethod);
 		}
 
@@ -328,11 +329,18 @@ public final class EndpointRequest {
 			if (this.includeLinks && StringUtils.hasText(endpoints.getBasePath())) {
 				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
+			if (delegateMatchers.isEmpty()) {
+				return EMPTY_MATCHER;
+			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
 
 		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints endpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(endpoints::getPath);
+			return source.stream()
+				.filter(Objects::nonNull)
+				.map(this::getEndpointId)
+				.map(endpoints::getPath)
+				.filter(Objects::nonNull);
 		}
 
 		@Override
