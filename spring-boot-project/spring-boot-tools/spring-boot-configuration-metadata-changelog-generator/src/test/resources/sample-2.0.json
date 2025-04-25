@@ -31,6 +31,17 @@
         "replacement": "test.add",
         "reason": "it was just bad"
       }
+    },
+    {
+      "name": "test.removed.directly",
+      "type": "java.lang.String",
+      "description": "Test property removed without prior deprecation.",
+      "defaultValue": "directlyRemoved",
+      "deprecation": {
+        "level": "error",
+        "replacement": "test.new.property",
+        "reason": "removed in third-party library without deprecation"
+      }
     }
   ]
 }
