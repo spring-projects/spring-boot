@@ -133,8 +133,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 	}
 
 	private CredentialHelper getCredentialHelper(String serverUrl) {
-		String name = this.dockerConfig.getCredHelpers().get(serverUrl);
-		name = (StringUtils.hasText(name)) ? name : this.dockerConfig.getCredsStore();
+		String name = this.dockerConfig.getCredHelpers().getOrDefault(serverUrl, this.dockerConfig.getCredsStore());
 		return (name != null) ? this.credentialHelperFactory.apply(name.trim()) : null;
 	}
 
