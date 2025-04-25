@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -30,6 +31,7 @@ import org.springframework.boot.task.ThreadPoolTaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
+import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -42,6 +44,14 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * @author Moritz Halbritter
  */
 class TaskSchedulingConfigurations {
+
+	private static TaskDecorator getTaskDecorator(ObjectProvider<TaskDecorator> taskDecorator) {
+		List<TaskDecorator> taskDecorators = taskDecorator.orderedStream().toList();
+		if (taskDecorators.size() == 1) {
+			return taskDecorators.get(0);
+		}
+		return (!taskDecorators.isEmpty()) ? new CompositeTaskDecorator(taskDecorators) : null;
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
@@ -76,7 +86,7 @@ class TaskSchedulingConfigurations {
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.taskDecorator(taskDecorator.getIfUnique());
+			builder = builder.taskDecorator(getTaskDecorator(taskDecorator));
 			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
 			return builder;
 		}
@@ -117,7 +127,7 @@ class TaskSchedulingConfigurations {
 		private SimpleAsyncTaskSchedulerBuilder builder() {
 			SimpleAsyncTaskSchedulerBuilder builder = new SimpleAsyncTaskSchedulerBuilder();
 			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
-			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+			builder = builder.taskDecorator(getTaskDecorator(this.taskDecorator));
 			builder = builder.customizers(this.taskSchedulerCustomizers.orderedStream()::iterator);
 			TaskSchedulingProperties.Simple simple = this.properties.getSimple();
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
