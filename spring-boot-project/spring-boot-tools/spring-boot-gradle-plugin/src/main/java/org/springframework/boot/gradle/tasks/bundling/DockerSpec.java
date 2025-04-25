@@ -145,13 +145,14 @@ public abstract class DockerSpec {
 	}
 
 	private BuilderDockerConfiguration customizeBuilderAuthentication(BuilderDockerConfiguration dockerConfiguration) {
-		return dockerConfiguration
-			.withBuilderRegistryAuthentication(getRegistryAuthentication("builder", this.builderRegistry, null));
+		return dockerConfiguration.withBuilderRegistryAuthentication(getRegistryAuthentication("builder",
+				this.builderRegistry, DockerRegistryAuthentication.configuration(null)));
 	}
 
 	private BuilderDockerConfiguration customizePublishAuthentication(BuilderDockerConfiguration dockerConfiguration) {
-		return dockerConfiguration.withPublishRegistryAuthentication(
-				getRegistryAuthentication("publish", this.publishRegistry, DockerRegistryAuthentication.EMPTY_USER));
+		return dockerConfiguration
+			.withPublishRegistryAuthentication(getRegistryAuthentication("publish", this.publishRegistry,
+					DockerRegistryAuthentication.configuration(DockerRegistryAuthentication.EMPTY_USER)));
 	}
 
 	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistrySpec registry,

@@ -16,12 +16,17 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import java.util.function.BiConsumer;
+
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+
 /**
  * Docker registry authentication configuration.
  *
  * @author Scott Frederick
  * @since 2.4.0
  */
+@FunctionalInterface
 public interface DockerRegistryAuthentication {
 
 	/**
@@ -29,6 +34,17 @@ public interface DockerRegistryAuthentication {
 	 * @since 3.5.0
 	 */
 	DockerRegistryAuthentication EMPTY_USER = DockerRegistryAuthentication.user("", "", "", "");
+
+	/**
+	 * Returns the auth header that should be used for docker authentication for the given
+	 * image reference.
+	 * @param imageReference the image reference or {@code null}
+	 * @return the auth header
+	 * @since 3.5.0
+	 */
+	default String getAuthHeader(ImageReference imageReference) {
+		return getAuthHeader();
+	}
 
 	/**
 	 * Returns the auth header that should be used for docker authentication.
@@ -61,6 +77,35 @@ public interface DockerRegistryAuthentication {
 	 */
 	static DockerRegistryAuthentication user(String username, String password, String serverAddress, String email) {
 		return new DockerRegistryUserAuthentication(username, password, serverAddress, email);
+	}
+
+	/**
+	 * Factory method that returns a new {@link DockerRegistryAuthentication} instance
+	 * that uses the standard docker JSON config (including support for credential
+	 * helpers) to generate auth headers.
+	 * @param fallback the fallback authentication to use if no suitable config is found
+	 * @return a new {@link DockerRegistryAuthentication} instance
+	 * @since 3.5.0
+	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
+	 */
+	static DockerRegistryAuthentication configuration(DockerRegistryAuthentication fallback) {
+		return configuration(fallback, (message, ex) -> System.out.println(message));
+	}
+
+	/**
+	 * Factory method that returns a new {@link DockerRegistryAuthentication} instance
+	 * that uses the standard docker JSON config (including support for credential
+	 * helpers) to generate auth headers.
+	 * @param fallback the fallback authentication to use if no suitable config is found
+	 * @param credentialHelperExceptionHandler callback that should handle credential
+	 * helper exceptions
+	 * @return a new {@link DockerRegistryAuthentication} instance
+	 * @since 3.5.0
+	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
+	 */
+	static DockerRegistryAuthentication configuration(DockerRegistryAuthentication fallback,
+			BiConsumer<String, Exception> credentialHelperExceptionHandler) {
+		return new DockerRegistryConfigAuthentication(fallback, credentialHelperExceptionHandler);
 	}
 
 }
