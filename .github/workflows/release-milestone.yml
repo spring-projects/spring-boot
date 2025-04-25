@@ -10,7 +10,7 @@ jobs:
   build-and-stage-release:
     name: Build and Stage Release
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
-    runs-on: ${{ vars.UBUNTU_MEDIUIM || 'ubuntu-latest' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
