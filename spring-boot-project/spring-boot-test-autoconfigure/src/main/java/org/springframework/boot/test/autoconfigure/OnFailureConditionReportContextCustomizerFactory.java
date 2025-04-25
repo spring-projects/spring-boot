@@ -90,10 +90,7 @@ class OnFailureConditionReportContextCustomizerFactory implements ContextCustomi
 		}
 
 		private static boolean shouldPrintReport(ConfigurableApplicationContext context) {
-			if (context == null) {
-				return true;
-			}
-			return context.getEnvironment()
+			return (context == null) || context.getEnvironment()
 				.getProperty("spring.test.print-condition-evaluation-report", Boolean.class, true);
 		}
 
