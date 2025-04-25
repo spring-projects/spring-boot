@@ -39,7 +39,7 @@ class CredentialHelper {
 
 	private static final String USR_LOCAL_BIN = "/usr/local/bin/";
 
-	Set<String> CREDENTIAL_NOT_FOUND_MESSAGES = Set.of("credentials not found in native keychain",
+	private static final Set<String> CREDENTIAL_NOT_FOUND_MESSAGES = Set.of("credentials not found in native keychain",
 			"no credentials server URL", "no credentials username");
 
 	private final String executable;
@@ -73,12 +73,12 @@ class CredentialHelper {
 		}
 	}
 
-	private ProcessBuilder processBuilder(String string) {
+	private ProcessBuilder processBuilder(String action) {
 		ProcessBuilder processBuilder = new ProcessBuilder().redirectErrorStream(true);
 		if (Platform.isWindows()) {
 			processBuilder.command("cmd", "/c");
 		}
-		processBuilder.command(this.executable, string);
+		processBuilder.command(this.executable, action);
 		return processBuilder;
 	}
 
@@ -90,14 +90,21 @@ class CredentialHelper {
 			if (!Platform.isMac()) {
 				throw ex;
 			}
-			List<String> command = new ArrayList<>(processBuilder.command());
-			command.set(0, USR_LOCAL_BIN + command.get(0));
-			return processBuilder.command(command).start();
+			try {
+				List<String> command = new ArrayList<>(processBuilder.command());
+				command.set(0, USR_LOCAL_BIN + command.get(0));
+				return processBuilder.command(command).start();
+			}
+			catch (Exception suppressed) {
+				// Suppresses the exception and rethrows the original exception
+				ex.addSuppressed(suppressed);
+				throw ex;
+			}
 		}
 	}
 
-	private boolean isCredentialsNotFoundError(String message) {
-		return this.CREDENTIAL_NOT_FOUND_MESSAGES.contains(message.trim());
+	private static boolean isCredentialsNotFoundError(String message) {
+		return CREDENTIAL_NOT_FOUND_MESSAGES.contains(message.trim());
 	}
 
 }

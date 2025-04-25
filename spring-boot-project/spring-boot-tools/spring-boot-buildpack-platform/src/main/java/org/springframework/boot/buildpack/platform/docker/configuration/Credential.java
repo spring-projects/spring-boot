@@ -40,7 +40,7 @@ class Credential extends MappedObject {
 
 	private final String secret;
 
-	private String serverUrl;
+	private final String serverUrl;
 
 	Credential(JsonNode node) {
 		super(node, MethodHandles.lookup());
