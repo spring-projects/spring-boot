@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,14 @@ class OnFailureConditionReportContextCustomizerFactory implements ContextCustomi
 
 		@Override
 		public void onApplicationEvent(ApplicationFailedEvent event) {
-			System.err.println(new ConditionEvaluationReportMessage(this.reportSupplier.get()));
+			if (shouldPrintReport(event.getApplicationContext())) {
+				System.err.println(new ConditionEvaluationReportMessage(this.reportSupplier.get()));
+			}
+		}
+
+		private static boolean shouldPrintReport(ConfigurableApplicationContext context) {
+			return (context == null) || context.getEnvironment()
+				.getProperty("spring.test.print-condition-evaluation-report", Boolean.class, true);
 		}
 
 	}
