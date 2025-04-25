@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,6 +37,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * Docker configuration stored in metadata files managed by the Docker CLI.
@@ -63,7 +65,8 @@ final class DockerConfigurationMetadata {
 
 	private static final String CONTEXT_FILE_NAME = "meta.json";
 
-	private static volatile DockerConfigurationMetadata systemEnvironmentConfigurationMetadata;
+	private static final Supplier<DockerConfigurationMetadata> systemEnvironmentConfigurationMetadata = SingletonSupplier
+		.of(() -> DockerConfigurationMetadata.create(Environment.SYSTEM));
 
 	private final String configLocation;
 
@@ -90,20 +93,18 @@ final class DockerConfigurationMetadata {
 	}
 
 	static DockerConfigurationMetadata from(Environment environment) {
-		DockerConfigurationMetadata dockerConfigurationMetadata = (environment == Environment.SYSTEM)
-				? DockerConfigurationMetadata.systemEnvironmentConfigurationMetadata : null;
-		if (dockerConfigurationMetadata != null) {
-			return dockerConfigurationMetadata;
+		if (environment == Environment.SYSTEM) {
+			return systemEnvironmentConfigurationMetadata.get();
 		}
+		return create(environment);
+	}
+
+	private static DockerConfigurationMetadata create(Environment environment) {
 		String configLocation = environment.get(DOCKER_CONFIG);
 		configLocation = (configLocation != null) ? configLocation : getUserHomeConfigLocation();
 		DockerConfig dockerConfig = createDockerConfig(configLocation);
 		DockerContext dockerContext = createDockerContext(configLocation, dockerConfig.getCurrentContext());
-		dockerConfigurationMetadata = new DockerConfigurationMetadata(configLocation, dockerConfig, dockerContext);
-		if (environment == Environment.SYSTEM) {
-			DockerConfigurationMetadata.systemEnvironmentConfigurationMetadata = dockerConfigurationMetadata;
-		}
-		return dockerConfigurationMetadata;
+		return new DockerConfigurationMetadata(configLocation, dockerConfig, dockerContext);
 	}
 
 	private static String getUserHomeConfigLocation() {

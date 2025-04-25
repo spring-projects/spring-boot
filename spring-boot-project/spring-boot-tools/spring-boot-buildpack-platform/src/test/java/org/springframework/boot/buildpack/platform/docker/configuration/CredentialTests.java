@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dmytro Nosan
  */
-class CredentialsTests {
+class CredentialTests {
 
 	@Test
 	@WithResource(name = "credentials.json", content = """
