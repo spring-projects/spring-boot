@@ -7,7 +7,8 @@
         "testTargetName": "test",
         "classesTargetName": "classes",
         "buildTargetName": "build",
-        "ciTargetName": "ci"
+        "ciTestTargetName": "ci",
+        "ciIntTestTargetName": "ciIntTest"
       }
     }
   ],
