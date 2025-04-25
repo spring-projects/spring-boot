@@ -73,7 +73,7 @@ import org.springframework.util.StringUtils;
  * <li>{@link Test} tasks are configured:
  * <ul>
  * <li>to use JUnit Platform
- * <li>with a max heap of 1024M
+ * <li>with a max heap of 1536M
  * <li>to run after any Checkstyle and format checking tasks
  * <li>to enable retries with a maximum of three attempts when running on CI
  * <li>to use predictive test selection when the value of the
@@ -186,7 +186,7 @@ class JavaConventions {
 	private void configureTestConventions(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
-			test.setMaxHeapSize("1024M");
+			test.setMaxHeapSize("1536M");
 			project.getTasks().withType(Checkstyle.class, test::mustRunAfter);
 			project.getTasks().withType(CheckFormat.class, test::mustRunAfter);
 			configureTestRetries(test);
