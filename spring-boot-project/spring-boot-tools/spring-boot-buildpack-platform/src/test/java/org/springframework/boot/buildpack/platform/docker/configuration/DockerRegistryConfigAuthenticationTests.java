@@ -37,8 +37,11 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link DockerRegistryConfigAuthentication}.
@@ -53,7 +56,7 @@ class DockerRegistryConfigAuthenticationTests {
 
 	private final Map<String, Exception> helperExceptions = new LinkedHashMap<>();
 
-	private Map<String, CredentialHelper> credentialHelpers = new HashMap<>();
+	private final Map<String, CredentialHelper> credentialHelpers = new HashMap<>();
 
 	@BeforeEach
 	void cleanup() {
@@ -315,6 +318,7 @@ class DockerRegistryConfigAuthenticationTests {
 			throws Exception {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("gcr.io/ubuntu:latest");
+		CredentialHelper desktopHelper = mockHelper("desktop");
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
 		// The Docker CLI appears to prioritize the credential helper over the
 		// credential store, even when the helper is empty.
@@ -323,6 +327,25 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("username", "")
 			.containsEntry("password", "")
 			.containsEntry("email", "");
+		then(desktopHelper).should(never()).get(any(String.class));
+	}
+
+	@WithResource(name = "config.json", content = """
+			{
+			  "credsStore": "desktop"
+			}
+			""")
+	@Test
+	void getAuthHeaderReturnsFallbackWhenImageReferenceNull(@ResourcesRoot Path directory) throws Exception {
+		this.environment.put("DOCKER_CONFIG", directory.toString());
+		CredentialHelper desktopHelper = mockHelper("desktop");
+		String authHeader = getAuthHeader(null, DockerRegistryAuthentication.EMPTY_USER);
+		assertThat(decode(authHeader)).hasSize(4)
+			.containsEntry("serveraddress", "")
+			.containsEntry("username", "")
+			.containsEntry("password", "")
+			.containsEntry("email", "");
+		then(desktopHelper).should(never()).get(any(String.class));
 	}
 
 	private String getAuthHeader(ImageReference imageReference) {
