@@ -26,6 +26,15 @@
       "deprecation": {
         "level": "warning"
       }
+    },
+    {
+      "name": "test.delete.error",
+      "type": "java.lang.String",
+      "description": "Test delete error.",
+      "defaultValue": "delete",
+      "deprecation": {
+        "level": "error"
+      }
     }
   ]
 }

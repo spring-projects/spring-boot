@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
-import org.springframework.boot.configurationmetadata.Deprecation;
+import org.springframework.boot.configurationmetadata.Deprecation.Level;
 
 /**
  * A changelog containing differences computed from two repositories of configuration
@@ -50,19 +50,14 @@ record Changelog(String oldVersionNumber, String newVersionNumber, List<Differen
 			String id = oldProperty.getId();
 			seenIds.add(id);
 			ConfigurationMetadataProperty newProperty = newMetadata.getAllProperties().get(id);
-			if (newProperty == null) {
-				differences.add(new Difference(DifferenceType.DELETED, oldProperty, null));
-			}
-			else {
-				Difference difference = Difference.compute(oldProperty, newProperty);
-				if (difference != null) {
-					differences.add(difference);
-				}
+			Difference difference = Difference.compute(oldProperty, newProperty);
+			if (difference != null) {
+				differences.add(difference);
 			}
 		}
 		for (ConfigurationMetadataProperty newProperty : newMetadata.getAllProperties().values()) {
 			if (!seenIds.contains(newProperty.getId())) {
-				if (newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Deprecation.Level.ERROR) {
+				if (newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
 					differences.add(new Difference(DifferenceType.DELETED, null, newProperty));
 				}
 				else if (!newProperty.isDeprecated()) {

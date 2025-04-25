@@ -40,7 +40,7 @@
       "deprecation": {
         "level": "error",
         "replacement": "test.new.property",
-        "reason": "Removed in Upgrade 10"
+        "reason": "removed in third-party library without deprecation"
       }
     }
   ]

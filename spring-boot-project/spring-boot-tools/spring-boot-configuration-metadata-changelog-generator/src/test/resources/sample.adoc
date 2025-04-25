@@ -35,5 +35,5 @@ _None_.
 
 | `test.removed.directly`
 | `test.new.property`
-| Removed in Upgrade 10
+| removed in third-party library without deprecation
 |======================
