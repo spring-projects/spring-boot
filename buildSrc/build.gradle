@@ -1,5 +1,5 @@
 plugins {
-	id "dev.nx.gradle.project-graph" version "0.0.1-alpha.4"
+	id "dev.nx.gradle.project-graph" version "0.1.0"
 	id "java-gradle-plugin"
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
