@@ -42,7 +42,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 
 	private static final String INDEX_URL = "https://index.docker.io/v1/";
 
-	private static Map<String, Credential> credentialFromHelperCache = new ConcurrentHashMap<>();
+	static Map<String, Credential> credentialFromHelperCache = new ConcurrentHashMap<>();
 
 	private final DockerRegistryAuthentication fallback;
 

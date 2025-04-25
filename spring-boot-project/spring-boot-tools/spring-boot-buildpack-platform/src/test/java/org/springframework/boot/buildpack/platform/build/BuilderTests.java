@@ -446,41 +446,6 @@ class BuilderTests {
 	}
 
 	@Test
-	void buildWhenDetectedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
-		TestPrintStream out = new TestPrintStream();
-		DockerApi docker = mockDockerApi();
-		Image builderImage = loadImage("image-with-run-image-different-registry.json");
-		DockerRegistryAuthentication builderToken = DockerRegistryAuthentication.token("builder token");
-		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration()
-			.withBuilderRegistryAuthentication(builderToken);
-		ImageReference builderImageReference = DEFAULT_BUILDER;
-		given(docker.image().pull(eq(builderImageReference), any(), any(), regAuthEq(builderToken)))
-			.willAnswer(withPulledImage(builderImage));
-		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
-		BuildRequest request = getTestRequest();
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
-			.withMessage(
-					"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
-	}
-
-	@Test
-	void buildWhenRequestedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
-		TestPrintStream out = new TestPrintStream();
-		DockerApi docker = mockDockerApi();
-		Image builderImage = loadImage("image.json");
-		DockerRegistryAuthentication builderToken = DockerRegistryAuthentication.token("builder token");
-		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration()
-			.withBuilderRegistryAuthentication(builderToken);
-		given(docker.image().pull(eq(DEFAULT_BUILDER), any(), any(), regAuthEq(builderToken)))
-			.willAnswer(withPulledImage(builderImage));
-		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
-		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
-			.withMessage(
-					"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
-	}
-
-	@Test
 	void buildWhenRequestedBuildpackNotInBuilderThrowsException() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApiLifecycleError();

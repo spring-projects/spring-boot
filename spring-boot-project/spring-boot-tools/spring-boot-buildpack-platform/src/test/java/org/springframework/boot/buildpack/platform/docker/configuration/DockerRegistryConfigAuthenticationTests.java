@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -53,6 +54,11 @@ class DockerRegistryConfigAuthenticationTests {
 	private final Map<String, Exception> helperExceptions = new LinkedHashMap<>();
 
 	private Map<String, CredentialHelper> credentialHelpers = new HashMap<>();
+
+	@BeforeEach
+	void cleanup() {
+		DockerRegistryConfigAuthentication.credentialFromHelperCache.clear();
+	}
 
 	@WithResource(name = "config.json", content = """
 			{
@@ -310,6 +316,8 @@ class DockerRegistryConfigAuthenticationTests {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("gcr.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);
+		// The Docker CLI appears to prioritize the credential helper over the
+		// credential store, even when the helper is empty.
 		assertThat(decode(authHeader)).hasSize(4)
 			.containsEntry("serveraddress", "")
 			.containsEntry("username", "")

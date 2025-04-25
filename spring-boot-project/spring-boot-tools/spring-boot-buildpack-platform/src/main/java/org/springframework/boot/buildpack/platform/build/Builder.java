@@ -145,9 +145,8 @@ public class Builder {
 		Assert.notNull(request, "'request' must not be null");
 		this.log.start(request);
 		validateBindings(request.getBindings());
-		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, this.dockerConfiguration.builderRegistryAuthentication(),
+		ImageFetcher imageFetcher = new ImageFetcher(this.dockerConfiguration.builderRegistryAuthentication(),
 				pullPolicy, request.getImagePlatform());
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
@@ -260,17 +259,14 @@ public class Builder {
 	 */
 	private class ImageFetcher {
 
-		private final String domain;
-
 		private final DockerRegistryAuthentication registryAuthentication;
 
 		private final PullPolicy pullPolicy;
 
 		private ImagePlatform defaultPlatform;
 
-		ImageFetcher(String domain, DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
+		ImageFetcher(DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
 				ImagePlatform platform) {
-			this.domain = domain;
 			this.registryAuthentication = registryAuthentication;
 			this.pullPolicy = pullPolicy;
 			this.defaultPlatform = platform;
@@ -279,10 +275,6 @@ public class Builder {
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
 			Assert.notNull(type, "'type' must not be null");
 			Assert.notNull(reference, "'reference' must not be null");
-			String authHeader = authHeader(this.registryAuthentication, reference);
-			Assert.state(authHeader == null || reference.getDomain().equals(this.domain),
-					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
-							StringUtils.capitalize(type.getDescription()), reference, this.domain));
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
 				return checkPlatformMismatch(pullImage(reference, type), reference);
 			}
