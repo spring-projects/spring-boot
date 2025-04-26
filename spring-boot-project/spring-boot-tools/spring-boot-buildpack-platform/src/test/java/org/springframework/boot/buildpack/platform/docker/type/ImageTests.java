@@ -68,6 +68,18 @@ class ImageTests extends AbstractJsonTests {
 	}
 
 	@Test
+	void getOsWhenOsIsNotDefaultOsReturnsOs() throws Exception {
+		Image image = Image.of(getContent("image-non-default-os.json"));
+		assertThat(image.getOs()).isEqualTo("windows");
+	}
+
+	@Test
+	void getOsWhenOsIsEmptyReturnsDefaultOs() throws Exception {
+		Image image = Image.of(getContent("image-empty-os.json"));
+		assertThat(image.getOs()).isEqualTo("linux");
+	}
+
+	@Test
 	void getCreatedReturnsDate() throws Exception {
 		Image image = getImage();
 		assertThat(image.getCreated()).isEqualTo("2019-10-30T19:34:56.296666503Z");
