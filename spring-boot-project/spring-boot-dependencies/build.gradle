@@ -2041,6 +2041,7 @@ bom {
 				"spring-boot-mongodb",
 				"spring-boot-mustache",
 				"spring-boot-neo4j",
+				"spring-boot-netty",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
 				"spring-boot-quartz",
@@ -2123,8 +2124,7 @@ bom {
 				"spring-boot-undertow",
 				"spring-boot-validation",
 				"spring-boot-webflux",
-				"spring-boot-webmvc",
-				"spring-boot-webservices"
+				"spring-boot-webmvc"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

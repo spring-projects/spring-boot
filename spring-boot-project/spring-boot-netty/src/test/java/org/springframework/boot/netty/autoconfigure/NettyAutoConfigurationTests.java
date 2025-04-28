@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.netty;
+package org.springframework.boot.netty.autoconfigure;
 
 import io.netty.util.ResourceLeakDetector;
 import org.junit.jupiter.api.AfterEach;

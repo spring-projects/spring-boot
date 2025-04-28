@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.netty;
+package org.springframework.boot.netty.autoconfigure;
 
 import io.netty.util.NettyRuntime;
 import io.netty.util.ResourceLeakDetector;
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for Netty.
  *
  * @author Brian Clozel
- * @since 2.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(NettyRuntime.class)

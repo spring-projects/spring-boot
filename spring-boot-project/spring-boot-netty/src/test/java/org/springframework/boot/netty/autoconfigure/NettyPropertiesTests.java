@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.netty.autoconfigure;
+
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Auto-configuration for the Netty library.
+ * Tests for {@link NettyProperties}
+ *
+ * @author Brian Clozel
  */
-package org.springframework.boot.autoconfigure.netty;
+class NettyPropertiesTests {
+
+	@Test
+	void defaultValueShouldBeConsistent() {
+		ResourceLeakDetector.Level defaultLevel = (Level) ReflectionTestUtils.getField(ResourceLeakDetector.class,
+				"DEFAULT_LEVEL");
+		assertThat(defaultLevel).isEqualTo(Level.SIMPLE);
+	}
+
+}

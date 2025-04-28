@@ -20,29 +20,17 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Data Redis"
+description = "Spring Boot Netty"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	api("io.lettuce:lettuce-core")
-	api("org.springframework.data:spring-data-redis")
 
-	implementation(project(":spring-boot-project:spring-boot-netty"))
+	implementation("io.netty:netty-common")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("redis.clients:jedis")
-
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
-	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
-	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
