@@ -47,10 +47,10 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
 		SpringOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
-			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
-			return SpringOpaqueTokenIntrospector.withIntrospectionUri(opaqueToken.getIntrospectionUri())
-				.clientId(opaqueToken.getClientId())
-				.clientSecret(opaqueToken.getClientSecret())
+			OAuth2ResourceServerProperties.Opaquetoken opaquetoken = properties.getOpaquetoken();
+			return SpringOpaqueTokenIntrospector.withIntrospectionUri(opaquetoken.getIntrospectionUri())
+				.clientId(opaquetoken.getClientId())
+				.clientSecret(opaquetoken.getClientSecret())
 				.build();
 		}
 
