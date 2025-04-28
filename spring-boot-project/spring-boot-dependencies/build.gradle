@@ -2041,6 +2041,7 @@ bom {
 				"spring-boot-mongodb",
 				"spring-boot-mustache",
 				"spring-boot-neo4j",
+				"spring-boot-netty",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
 				"spring-boot-quartz",

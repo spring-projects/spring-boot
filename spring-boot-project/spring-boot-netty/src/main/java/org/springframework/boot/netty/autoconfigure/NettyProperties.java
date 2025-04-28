@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.netty;
+package org.springframework.boot.netty.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * These properties apply globally to the Netty library, used as a client or a server.
  *
  * @author Brian Clozel
- * @since 2.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.netty")
 public class NettyProperties {
