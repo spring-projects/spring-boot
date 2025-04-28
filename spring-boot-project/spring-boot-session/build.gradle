@@ -34,6 +34,7 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-web")
 
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))

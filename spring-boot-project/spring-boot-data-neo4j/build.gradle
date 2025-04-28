@@ -32,7 +32,7 @@ dependencies {
 	api("org.springframework.data:spring-data-neo4j")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("io.projectreactor:reactor-core")
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))

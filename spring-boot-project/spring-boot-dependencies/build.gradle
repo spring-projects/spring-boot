@@ -2045,6 +2045,7 @@ bom {
 				"spring-boot-pulsar",
 				"spring-boot-quartz",
 				"spring-boot-r2dbc",
+				"spring-boot-reactor",
 				"spring-boot-reactor-netty",
 				"spring-boot-rsocket",
 				"spring-boot-security",

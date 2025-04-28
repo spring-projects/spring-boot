@@ -34,7 +34,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	implementation(project(":spring-boot-project:spring-boot-reactor"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-mongodb-reactive"))
-	implementation("io.projectreactor:reactor-core")
 }

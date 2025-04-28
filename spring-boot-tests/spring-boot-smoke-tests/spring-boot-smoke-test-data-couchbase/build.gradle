@@ -22,11 +22,11 @@ plugins {
 description = "Spring Boot Data Couchbase smoke test"
 
 dependencies {
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-reactor"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
-	dockerTestImplementation("io.projectreactor:reactor-core")
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.apache.httpcomponents.client5:httpclient5")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")

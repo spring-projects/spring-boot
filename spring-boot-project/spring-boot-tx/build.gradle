@@ -41,5 +41,5 @@ dependencies {
 	testImplementation("org.springframework:spring-jdbc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("io.projectreactor:reactor-core")
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-reactor"))
 }

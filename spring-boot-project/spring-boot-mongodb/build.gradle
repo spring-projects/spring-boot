@@ -29,8 +29,8 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("io.netty:netty-transport")
-	optional("io.projectreactor:reactor-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 
