@@ -188,8 +188,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
 			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
+			// 获取 TomcatServletWebServerFactory（在ServletWebServerFactoryConfiguration中创建）
 			ServletWebServerFactory factory = getWebServerFactory();
 			createWebServer.tag("factory", factory.getClass().toString());
+			// 创建并start Tomcat
 			this.webServer = factory.getWebServer(getSelfInitializer());
 			createWebServer.end();
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",

@@ -66,6 +66,7 @@ class ServletWebServerFactoryConfiguration {
 	static class EmbeddedTomcat {
 
 		@Bean
+		// 创建 TomcatServletWebServerFactory 实例作为生产 Tomcat 的工厂
 		TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,

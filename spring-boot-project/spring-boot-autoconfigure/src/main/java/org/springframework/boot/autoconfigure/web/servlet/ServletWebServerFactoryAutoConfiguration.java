@@ -73,9 +73,13 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+// 引入Tomcat相关jar包后，满足此条件
 @ConditionalOnClass(ServletRequest.class)
+// 满足条件：当前应用类型为 Servlet 类型，并且是 Web 应用类型（即 Web 应用程序）。
 @ConditionalOnWebApplication(type = Type.SERVLET)
+// 启用 ServerProperties 配置类（server.*)
 @EnableConfigurationProperties(ServerProperties.class)
+// 根据环境选择注入 Tomcat / Jetty / Undertow 相关的配置类
 @Import({ ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class,
 		ServletWebServerFactoryConfiguration.EmbeddedTomcat.class,
 		ServletWebServerFactoryConfiguration.EmbeddedJetty.class,
