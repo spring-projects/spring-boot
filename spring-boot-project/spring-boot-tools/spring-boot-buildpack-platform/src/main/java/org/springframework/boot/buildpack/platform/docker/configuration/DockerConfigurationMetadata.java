@@ -219,11 +219,11 @@ final class DockerConfigurationMetadata {
 		Auth(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			String auth = valueAt("/auth", String.class);
-			if (StringUtils.hasText(auth)) {
+			if (StringUtils.hasLength(auth)) {
 				String[] parts = new String(Base64.getDecoder().decode(auth)).split(":", 2);
 				Assert.state(parts.length == 2, "Malformed auth in docker configuration metadata");
 				this.username = parts[0];
-				this.password = parts[1];
+				this.password = trim(parts[1], Character.MIN_VALUE);
 			}
 			else {
 				this.username = valueAt("/username", String.class);
@@ -242,6 +242,11 @@ final class DockerConfigurationMetadata {
 
 		String getEmail() {
 			return this.email;
+		}
+
+		private static String trim(String source, char character) {
+			source = StringUtils.trimLeadingCharacter(source, character);
+			return StringUtils.trimTrailingCharacter(source, character);
 		}
 
 	}
