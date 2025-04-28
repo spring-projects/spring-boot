@@ -15,6 +15,8 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -26,8 +28,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "org.elasticsearch.client", module: "transport"
 	}
-	optional("io.projectreactor:reactor-core")
-	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))

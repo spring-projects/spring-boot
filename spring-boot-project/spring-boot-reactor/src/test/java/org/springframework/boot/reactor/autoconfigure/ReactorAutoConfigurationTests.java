@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.reactor.autoconfigure;
 
 import java.util.concurrent.atomic.AtomicReference;
 
