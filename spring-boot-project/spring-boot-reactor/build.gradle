@@ -23,24 +23,17 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Security OAuth2 Client"
+description = "Spring Boot Reactor"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	api("org.springframework.security:spring-security-oauth2-client")
-
-	implementation(project(":spring-boot-project:spring-boot-security"))
+	api("io.projectreactor:reactor-core")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional(project(":spring-boot-project:spring-boot-reactor"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
-	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("io.micrometer:context-propagation")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("org.springframework:spring-webflux")
 }

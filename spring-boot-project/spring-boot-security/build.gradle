@@ -40,10 +40,10 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-h2console"))
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("jakarta.servlet:jakarta.servlet-api")
-	optional("io.projectreactor:reactor-core")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.security:spring-security-data")

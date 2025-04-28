@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.reactor.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Reactor.
  *
  * @author Brian Clozel
- * @since 3.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.reactor")
 public class ReactorProperties {

@@ -33,7 +33,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-security"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("io.projectreactor:reactor-core")
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

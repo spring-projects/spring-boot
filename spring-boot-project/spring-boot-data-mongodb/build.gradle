@@ -30,7 +30,7 @@ dependencies {
 	api("org.springframework.data:spring-data-mongodb")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("io.projectreactor:reactor-core")
+	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 
