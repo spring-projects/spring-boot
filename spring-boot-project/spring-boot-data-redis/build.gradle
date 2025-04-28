@@ -13,6 +13,8 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("io.lettuce:lettuce-core")
 	api("org.springframework.data:spring-data-redis")
+	
+	implementation(project(":spring-boot-project:spring-boot-netty"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
