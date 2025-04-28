@@ -14,6 +14,8 @@ dependencies {
 	api("io.lettuce:lettuce-core")
 	api("org.springframework.data:spring-data-redis")
 
+	implementation(project(":spring-boot-project:spring-boot-netty"))
+
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("redis.clients:jedis")
 
