@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Reactor.
  */
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.reactor.autoconfigure;

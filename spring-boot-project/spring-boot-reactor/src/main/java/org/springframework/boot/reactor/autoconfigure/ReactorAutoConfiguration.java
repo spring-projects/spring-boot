@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.reactor.autoconfigure;
 
 import reactor.core.publisher.Hooks;
 
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
  *
  * @author Brian Clozel
- * @since 3.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Hooks.class)

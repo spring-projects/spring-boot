@@ -5,7 +5,6 @@ org.springframework.boot.autoconfigure.http.client.service.HttpServiceClientAuto
 org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.reactive.service.ReactiveHttpServiceClientAutoConfiguration
 org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration
-org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration
