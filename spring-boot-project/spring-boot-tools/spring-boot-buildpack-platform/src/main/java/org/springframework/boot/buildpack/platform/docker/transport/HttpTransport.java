@@ -24,7 +24,6 @@ import java.net.URI;
 
 import org.apache.hc.core5.http.Header;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
@@ -109,7 +108,8 @@ public interface HttpTransport {
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
 	@SuppressWarnings("removal")
-	static HttpTransport create(DockerConfiguration.DockerHostConfiguration dockerHost) {
+	static HttpTransport create(
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration dockerHost) {
 		ResolvedDockerHost host = ResolvedDockerHost.from(dockerHost);
 		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(host);
 		return (remote != null) ? remote : LocalHttpClientTransport.create(host);
