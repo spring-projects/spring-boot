@@ -22,6 +22,5 @@ description = "Starter for building WebSocket applications using Spring Framewor
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-	api("org.springframework:spring-messaging")
-	api("org.springframework:spring-websocket")
+	api(project(":spring-boot-project:spring-boot-websocket"))
 }

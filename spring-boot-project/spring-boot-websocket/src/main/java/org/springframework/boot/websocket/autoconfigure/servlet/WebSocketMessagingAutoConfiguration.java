@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket.servlet;
+package org.springframework.boot.websocket.autoconfigure.servlet;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * @author Andy Wilkinson
  * @author Lasse Wulff
  * @author Moritz Halbritter
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnWebApplication(type = Type.SERVLET)
