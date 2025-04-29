@@ -1,4 +1,3 @@
-org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.service.HttpServiceClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration
