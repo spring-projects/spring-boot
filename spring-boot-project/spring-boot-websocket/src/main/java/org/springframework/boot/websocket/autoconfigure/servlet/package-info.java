@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for WebSocket support in servlet web servers.
  */
-package org.springframework.boot.autoconfigure.websocket.servlet;
+package org.springframework.boot.websocket.autoconfigure.servlet;
