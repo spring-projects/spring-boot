@@ -16,9 +16,7 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -55,7 +53,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 	DockerRegistryConfigAuthentication(DockerRegistryAuthentication fallback,
 			BiConsumer<String, Exception> credentialHelperExceptionHandler) {
 		this(fallback, credentialHelperExceptionHandler, Environment.SYSTEM,
-				(helper) -> new CredentialHelper("docker-credential-" + helper.trim()));
+				(helper) -> new CredentialHelper("docker-credential-" + helper));
 	}
 
 	DockerRegistryConfigAuthentication(DockerRegistryAuthentication fallback,
@@ -106,14 +104,14 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 		}
 		String username = credentialsFromHelper.getUsername();
 		String password = credentialsFromHelper.getSecret();
-		String serverAddress = (credentialsFromHelper.getServerUrl() != null
-				&& !credentialsFromHelper.getServerUrl().isEmpty()) ? credentialsFromHelper.getServerUrl() : serverUrl;
+		String serverAddress = (StringUtils.hasLength(credentialsFromHelper.getServerUrl()))
+				? credentialsFromHelper.getServerUrl() : serverUrl;
 		String email = (authConfig != null) ? authConfig.getEmail() : null;
 		return DockerRegistryAuthentication.user(username, password, serverAddress, email);
 	}
 
 	private Credential getCredentialsFromHelper(String serverUrl) {
-		return (StringUtils.hasText(serverUrl))
+		return StringUtils.hasLength(serverUrl)
 				? credentialFromHelperCache.computeIfAbsent(serverUrl, this::computeCredentialsFromHelper) : null;
 	}
 
@@ -123,7 +121,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 			try {
 				return credentialHelper.get(serverUrl);
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				String message = "Error retrieving credentials for '%s' due to: %s".formatted(serverUrl,
 						ex.getMessage());
 				this.credentialHelperExceptionHandler.accept(message, ex);
@@ -134,10 +132,10 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 
 	private CredentialHelper getCredentialHelper(String serverUrl) {
 		String name = this.dockerConfig.getCredHelpers().getOrDefault(serverUrl, this.dockerConfig.getCredsStore());
-		return (name != null) ? this.credentialHelperFactory.apply(name.trim()) : null;
+		return (StringUtils.hasLength(name)) ? this.credentialHelperFactory.apply(name) : null;
 	}
 
-	private Entry<String, Auth> getAuthConfigEntry(String serverUrl) {
+	private Map.Entry<String, Auth> getAuthConfigEntry(String serverUrl) {
 		for (Map.Entry<String, Auth> candidate : this.dockerConfig.getAuths().entrySet()) {
 			if (candidate.getKey().equals(serverUrl) || candidate.getKey().endsWith("://" + serverUrl)) {
 				return candidate;
