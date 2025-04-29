@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 import java.util.function.BiConsumer;
 
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.util.Assert;
 
 /**
  * Docker registry authentication configuration.
@@ -83,7 +84,8 @@ public interface DockerRegistryAuthentication {
 	 * Factory method that returns a new {@link DockerRegistryAuthentication} instance
 	 * that uses the standard docker JSON config (including support for credential
 	 * helpers) to generate auth headers.
-	 * @param fallback the fallback authentication to use if no suitable config is found
+	 * @param fallback the fallback authentication to use if no suitable config is found,
+	 * may be null {@code}
 	 * @return a new {@link DockerRegistryAuthentication} instance
 	 * @since 3.5.0
 	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
@@ -96,15 +98,17 @@ public interface DockerRegistryAuthentication {
 	 * Factory method that returns a new {@link DockerRegistryAuthentication} instance
 	 * that uses the standard docker JSON config (including support for credential
 	 * helpers) to generate auth headers.
-	 * @param fallback the fallback authentication to use if no suitable config is found
+	 * @param fallback the fallback authentication to use if no suitable config is found,
+	 * may be {@code null}
 	 * @param credentialHelperExceptionHandler callback that should handle credential
-	 * helper exceptions
+	 * helper exceptions, never {@code null}
 	 * @return a new {@link DockerRegistryAuthentication} instance
 	 * @since 3.5.0
 	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
 	 */
 	static DockerRegistryAuthentication configuration(DockerRegistryAuthentication fallback,
 			BiConsumer<String, Exception> credentialHelperExceptionHandler) {
+		Assert.notNull(credentialHelperExceptionHandler, () -> "'credentialHelperExceptionHandler' must not be null");
 		return new DockerRegistryConfigAuthentication(fallback, credentialHelperExceptionHandler);
 	}
 

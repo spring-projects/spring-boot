@@ -89,10 +89,17 @@ class CredentialHelperTests {
 	}
 
 	@Test
-	void getWhenCommandDoesNotExistErrorThrowsException() {
-		String name = "docker-credential-%s".formatted(UUID.randomUUID().toString());
-		assertThatIOException().isThrownBy(() -> new CredentialHelper(name).get("invalid.example.com"))
-			.withMessageContaining(name);
+	void getWhenExecutableDoesNotExistErrorThrowsException() {
+		String executable = "docker-credential-%s".formatted(UUID.randomUUID().toString());
+		assertThatIOException().isThrownBy(() -> new CredentialHelper(executable).get("invalid.example.com"))
+			.withMessageContaining(executable)
+			.satisfies((ex) -> {
+				if (Platform.isMac()) {
+					assertThat(ex.getMessage()).doesNotContain("/usr/local/bin/");
+					assertThat(ex.getSuppressed()).allSatisfy((suppressed) -> assertThat(suppressed)
+						.hasMessageContaining("/usr/local/bin/" + executable));
+				}
+			});
 	}
 
 }
