@@ -21,9 +21,9 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
             : Array.isArray(input.args)
                 ? input.args
                 : [];
-        if (overrides.__overrides_unparsed__.length) {
+        /* if (overrides.__overrides_unparsed__.length) {
             args.push(...overrides.__overrides_unparsed__);
-        }
+        } */
         let dependsOn = [];
         const gradlewTaskIdsToRun = Object.keys(taskGraph.tasks);
         const gradlewTasksToRun = gradlewTaskIdsToRun.reduce((gradlewTasksToRun, taskId) => {
@@ -34,11 +34,16 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
                 taskName: gradlewTaskName,
                 testClassName: testClassName,
             };
+            console.log("taskGraph.dependencies", taskGraph.dependencies, taskId);
             if (taskGraph.dependencies?.[taskId]?.length) {
+                // console.log("taskGraph.dependencies", taskGraph.dependencies?.[taskId]);
                 dependsOn = [...dependsOn, ...taskGraph.dependencies?.[taskId].filter((taskId) => gradlewTaskIdsToRun.indexOf(taskId) === -1)];
+                console.log("dependsOn", dependsOn);
             }
             return gradlewTasksToRun;
         }, {});
+        console.log("gradlewTaskIdsToRun", gradlewTaskIdsToRun);
+        console.log(dependsOn);
         // remove duplicates
         dependsOn = [...new Set(dependsOn)];
         if (dependsOn.length) {
