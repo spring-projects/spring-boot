@@ -47,10 +47,10 @@ public class OAuth2ResourceServerProperties {
 		return this.jwt;
 	}
 
-	private final Opaquetoken opaqueToken = new Opaquetoken();
+	private final Opaquetoken opaquetoken = new Opaquetoken();
 
 	public Opaquetoken getOpaquetoken() {
-		return this.opaqueToken;
+		return this.opaquetoken;
 	}
 
 	public static class Jwt {
