@@ -14,23 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.dao;
+package org.springframework.boot.transaction.autoconfigure;
 
+import java.io.Serializable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,16 +102,16 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
-		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class, TestConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext(JpaConfiguration.class, TestConfiguration.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
 	}
 
 	@Test
+	@WithMetaInfPersistenceXmlResource
 	void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
-		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext(JpaConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
 			.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
@@ -123,6 +138,106 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 
 		void doSomething() {
 			this.entityManager.persist(null);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JpaConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			HikariDataSource dataSource = new HikariDataSource();
+			dataSource.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+			dataSource.setJdbcUrl("jdbc:hsqldb:mem:tx");
+			dataSource.setUsername("sa");
+			return dataSource;
+		}
+
+		@Bean
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource) {
+			LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+			localContainerEntityManagerFactoryBean.setDataSource(dataSource);
+			localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+			localContainerEntityManagerFactoryBean.setJpaPropertyMap(configureJpaProperties());
+			return localContainerEntityManagerFactoryBean;
+		}
+
+		private static Map<String, ?> configureJpaProperties() {
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return properties;
+		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/persistence.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence https://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+						<persistence-unit name="manually-configured">
+							<class>org.springframework.boot.transaction.autoconfigure.PersistenceExceptionTranslationAutoConfigurationTests$City</class>
+							<exclude-unlisted-classes>true</exclude-unlisted-classes>
+						</persistence-unit>
+					</persistence>
+					""")
+	@interface WithMetaInfPersistenceXmlResource {
+
+	}
+
+	@Entity
+	public static class City implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		@Id
+		@GeneratedValue
+		private Long id;
+
+		@Column(nullable = false)
+		private String name;
+
+		@Column(nullable = false)
+		private String state;
+
+		@Column(nullable = false)
+		private String country;
+
+		@Column(nullable = false)
+		private String map;
+
+		protected City() {
+		}
+
+		City(String name, String state, String country, String map) {
+			this.name = name;
+			this.state = state;
+			this.country = country;
+			this.map = map;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getState() {
+			return this.state;
+		}
+
+		public String getCountry() {
+			return this.country;
+		}
+
+		public String getMap() {
+			return this.map;
+		}
+
+		@Override
+		public String toString() {
+			return getName() + "," + getState() + "," + getCountry();
 		}
 
 	}

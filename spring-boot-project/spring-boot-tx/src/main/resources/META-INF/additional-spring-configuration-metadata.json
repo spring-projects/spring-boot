@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.dao.exceptiontranslation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the PersistenceExceptionTranslationPostProcessor.",
+      "defaultValue": true
+    }
+  ]
+}

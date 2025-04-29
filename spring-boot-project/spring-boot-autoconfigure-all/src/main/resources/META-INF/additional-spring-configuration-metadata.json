@@ -2,12 +2,6 @@
   "groups": [],
   "properties": [
     {
-      "name": "spring.dao.exceptiontranslation.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the PersistenceExceptionTranslationPostProcessor.",
-      "defaultValue": true
-    },
-    {
       "name": "spring.http.encoding.charset",
       "type": "java.nio.charset.Charset",
       "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
