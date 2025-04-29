@@ -37,9 +37,13 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.github.h-thurow:simple-jndi")
 	testImplementation("com.zaxxer:HikariCP")
+	testImplementation("jakarta.persistence:jakarta.persistence-api")
+	testImplementation("org.hibernate.orm:hibernate-core")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.springframework:spring-jdbc")
+	testImplementation("org.springframework:spring-orm")
 
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-reactor"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-reactor"))
 }
