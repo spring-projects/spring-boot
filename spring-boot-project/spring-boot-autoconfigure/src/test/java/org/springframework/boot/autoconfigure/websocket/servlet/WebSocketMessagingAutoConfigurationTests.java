@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.SimpleMessageConverter;
@@ -61,7 +60,6 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.security.util.FieldUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -139,27 +137,25 @@ class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	@Test
-	void predefinedThreadExecutorIsSelectedForInboundChannel() throws Throwable {
+	void predefinedThreadExecutorIsSelectedForInboundChannel() {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientInboundChannel(registration);
-		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(executor).isEqualTo(expectedExecutor);
+		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
 	}
 
 	@Test
-	void predefinedThreadExecutorIsSelectedForOutboundChannel() throws Throwable {
+	void predefinedThreadExecutorIsSelectedForOutboundChannel() {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientOutboundChannel(registration);
-		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(executor).isEqualTo(expectedExecutor);
+		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
 	}
 
 	private List<MessageConverter> getCustomizedConverters() {
