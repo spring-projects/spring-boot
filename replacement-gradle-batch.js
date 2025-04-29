@@ -47,6 +47,8 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
             });
         }
         const gradlewBatchStart = performance.mark(`gradlew-batch:start`);
+
+        console.log("args", args);
         const batchResults = (0, child_process_1.execSync)(`java -jar ${exports.batchRunnerPath} --tasks='${JSON.stringify(gradlewTasksToRun)}' --workspaceRoot=${root} --args='${args
             .join(' ')
             .replaceAll("'", '"')}' ${process.env.NX_VERBOSE_LOGGING === 'true' ? '' : '--quiet'}`, {
