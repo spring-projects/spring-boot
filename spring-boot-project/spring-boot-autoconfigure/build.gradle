@@ -29,6 +29,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("org.aspectj:aspectjweaver")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.money:money-api")
@@ -51,6 +52,7 @@ dependencies {
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("org.springframework:spring-context-support")
+	testImplementation("org.springframework.security:spring-security-config")
 
 	testRuntimeOnly("com.github.ben-manes.caffeine:caffeine")
 	testRuntimeOnly("org.springframework:spring-webflux")
