@@ -288,6 +288,18 @@
       }
     },
     {
+      "name": "spring.aop.auto",
+      "type": "java.lang.Boolean",
+      "description": "Add @EnableAspectJAutoProxy.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.aop.proxy-target-class",
+      "type": "java.lang.Boolean",
+      "description": "Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).",
+      "defaultValue": true
+    },
+    {
       "name": "spring.application.admin.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable admin features for the application.",
