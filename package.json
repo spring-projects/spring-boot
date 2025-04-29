@@ -5,7 +5,7 @@
         "postci": "node patch.js"
     },
     "dependencies": {
-        "@nx/gradle": "0.0.0-pr-30457-516640c",
-        "nx": "0.0.0-pr-30457-516640c"
+        "@nx/gradle": "0.0.0-pr-30913-0d71145",
+        "nx": "0.0.0-pr-30913-0d71145"
     }
 }
