@@ -9,4 +9,3 @@ org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpCo
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
-org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration
