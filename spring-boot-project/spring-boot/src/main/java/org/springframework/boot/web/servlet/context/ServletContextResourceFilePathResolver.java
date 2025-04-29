@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.context;
+package org.springframework.boot.web.servlet.context;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
