@@ -18,6 +18,7 @@ package org.springframework.boot.web.server.servlet;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerFactory;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
  * Factory interface that can be used to create a {@link WebServer}.

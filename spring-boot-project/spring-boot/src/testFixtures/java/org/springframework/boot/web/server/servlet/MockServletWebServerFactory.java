@@ -22,6 +22,7 @@ import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.servlet.MockServletWebServer.RegisteredServlet;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 import static org.mockito.Mockito.spy;
 

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.util.Assert;
 
