@@ -38,6 +38,7 @@ dependencies {
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testFixturesImplementation("io.projectreactor:reactor-core")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
@@ -45,6 +46,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

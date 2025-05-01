@@ -26,7 +26,7 @@ plugins {
 description = "Spring Boot Reactor Netty"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-web-server"))
 	api("io.projectreactor.netty:reactor-netty-http")
 	api("org.springframework:spring-web")
 
@@ -37,7 +37,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework:spring-webflux")

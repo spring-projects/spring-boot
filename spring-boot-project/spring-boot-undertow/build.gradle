@@ -26,7 +26,7 @@ plugins {
 description = "Spring Boot Undertow"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-web-server"))
 	api("io.undertow:undertow-servlet")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
@@ -35,7 +35,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")

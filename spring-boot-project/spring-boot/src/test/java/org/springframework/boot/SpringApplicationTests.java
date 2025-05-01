@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import reactor.core.publisher.Mono;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.factory.BeanCreationException;
@@ -50,6 +48,7 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -77,11 +76,6 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
-import org.springframework.boot.web.context.reactive.StandardReactiveWebEnvironment;
-import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
-import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextException;
@@ -117,16 +111,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
-import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -431,40 +422,6 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void defaultApplicationContextForWeb() {
-		SpringApplication application = new SpringApplication(ExampleWebConfig.class);
-		application.setWebApplicationType(WebApplicationType.SERVLET);
-		this.context = application.run();
-		assertThat(this.context).isInstanceOf(AnnotationConfigServletWebServerApplicationContext.class);
-	}
-
-	@Test
-	void defaultApplicationContextForReactiveWeb() {
-		SpringApplication application = new SpringApplication(ExampleReactiveWebConfig.class);
-		application.setWebApplicationType(WebApplicationType.REACTIVE);
-		this.context = application.run();
-		assertThat(this.context).isInstanceOf(AnnotationConfigReactiveWebServerApplicationContext.class);
-	}
-
-	@Test
-	void environmentForWeb() {
-		SpringApplication application = new SpringApplication(ExampleWebConfig.class);
-		application.setWebApplicationType(WebApplicationType.SERVLET);
-		this.context = application.run();
-		assertThat(this.context.getEnvironment()).isInstanceOf(StandardServletEnvironment.class);
-		assertThat(this.context.getEnvironment().getClass().getName()).endsWith("ApplicationServletEnvironment");
-	}
-
-	@Test
-	void environmentForReactiveWeb() {
-		SpringApplication application = new SpringApplication(ExampleReactiveWebConfig.class);
-		application.setWebApplicationType(WebApplicationType.REACTIVE);
-		this.context = application.run();
-		assertThat(this.context.getEnvironment()).isInstanceOf(StandardReactiveWebEnvironment.class);
-		assertThat(this.context.getEnvironment().getClass().getName()).endsWith("ApplicationReactiveWebEnvironment");
-	}
-
-	@Test
 	void customEnvironment() {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -487,26 +444,14 @@ class SpringApplicationTests {
 	@Test
 	void customResourceLoaderFromConstructor() {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
-		TestSpringApplication application = new TestSpringApplication(resourceLoader, ExampleWebConfig.class);
+		TestSpringApplication application = new TestSpringApplication(resourceLoader, ExampleConfig.class);
 		this.context = application.run();
 		then(application.getLoader()).should().setResourceLoader(resourceLoader);
 	}
 
 	@Test
 	void customBeanNameGenerator() {
-		TestSpringApplication application = new TestSpringApplication(ExampleWebConfig.class);
-		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-		application.setBeanNameGenerator(beanNameGenerator);
-		this.context = application.run();
-		then(application.getLoader()).should().setBeanNameGenerator(beanNameGenerator);
-		Object actualGenerator = this.context.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
-		assertThat(actualGenerator).isSameAs(beanNameGenerator);
-	}
-
-	@Test
-	void customBeanNameGeneratorWithNonWebApplication() {
-		TestSpringApplication application = new TestSpringApplication(ExampleWebConfig.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
@@ -838,13 +783,13 @@ class SpringApplicationTests {
 
 	@Test
 	void run() {
-		this.context = SpringApplication.run(ExampleWebConfig.class);
+		this.context = SpringApplication.run(ExampleConfig.class);
 		assertThat(this.context).isNotNull();
 	}
 
 	@Test
 	void runComponents() {
-		this.context = SpringApplication.run(new Class<?>[] { ExampleWebConfig.class, Object.class }, new String[0]);
+		this.context = SpringApplication.run(new Class<?>[] { ExampleConfig.class, Object.class }, new String[0]);
 		assertThat(this.context).isNotNull();
 	}
 
@@ -1024,7 +969,7 @@ class SpringApplicationTests {
 	@Test
 	void applicationListenerFromApplicationIsCalledWhenContextFailsRefreshBeforeListenerRegistration() {
 		ApplicationListener<ApplicationEvent> listener = mock(ApplicationListener.class);
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		SpringApplication application = new SpringApplication(BrokenBeanFactoryPostProcessing.class);
 		application.addListeners(listener);
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(application::run);
 		verifyRegisteredListenerFailedFromApplicationEvents(listener);
@@ -1055,7 +1000,7 @@ class SpringApplicationTests {
 	@Test
 	void applicationListenerFromContextIsCalledWhenContextFailsRefreshBeforeListenerRegistration() {
 		final ApplicationListener<ApplicationEvent> listener = mock(ApplicationListener.class);
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		SpringApplication application = new SpringApplication(BrokenBeanFactoryPostProcessing.class);
 		application.addInitializers((applicationContext) -> applicationContext.addApplicationListener(listener));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(application::run);
 		then(listener).should().onApplicationEvent(isA(ApplicationFailedEvent.class));
@@ -1111,57 +1056,11 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void webApplicationSwitchedOffInListener() {
-		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
-		application.addListeners((ApplicationListener<ApplicationEnvironmentPreparedEvent>) (event) -> {
-			assertThat(event.getEnvironment().getClass().getName()).endsWith("ApplicationServletEnvironment");
-			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(event.getEnvironment(), "foo=bar");
-			event.getSpringApplication().setWebApplicationType(WebApplicationType.NONE);
-		});
-		this.context = application.run();
-		assertThat(this.context.getEnvironment()).isNotInstanceOf(StandardServletEnvironment.class);
-		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
-		Iterator<PropertySource<?>> iterator = this.context.getEnvironment().getPropertySources().iterator();
-		assertThat(iterator.next().getName()).isEqualTo("configurationProperties");
-		assertThat(iterator.next().getName())
-			.isEqualTo(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
-	}
-
-	@Test
 	void nonWebApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
 		ConfigurableApplicationContext context = new SpringApplication(ExampleConfig.class)
 			.run("--spring.main.web-application-type=none");
 		assertThat(context).isNotInstanceOfAny(WebApplicationContext.class, ReactiveWebApplicationContext.class);
 		assertThat(context.getEnvironment()).isNotInstanceOfAny(ConfigurableWebEnvironment.class);
-	}
-
-	@Test
-	void webApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
-		ConfigurableApplicationContext context = new SpringApplication(ExampleWebConfig.class)
-			.run("--spring.main.web-application-type=servlet");
-		assertThat(context).isInstanceOf(WebApplicationContext.class);
-		assertThat(context.getEnvironment()).isInstanceOf(StandardServletEnvironment.class);
-		assertThat(context.getEnvironment().getClass().getName()).endsWith("ApplicationServletEnvironment");
-	}
-
-	@Test
-	void reactiveApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
-		ConfigurableApplicationContext context = new SpringApplication(ExampleReactiveWebConfig.class)
-			.run("--spring.main.web-application-type=reactive");
-		assertThat(context).isInstanceOf(ReactiveWebApplicationContext.class);
-		assertThat(context.getEnvironment()).isInstanceOf(StandardReactiveWebEnvironment.class);
-		assertThat(context.getEnvironment().getClass().getName()).endsWith("ApplicationReactiveWebEnvironment");
-	}
-
-	@Test
-	@WithResource(name = "application-withwebapplicationtype.yml",
-			content = "spring.main.web-application-type: reactive")
-	void environmentIsConvertedIfTypeDoesNotMatch() {
-		ConfigurableApplicationContext context = new SpringApplication(ExampleReactiveWebConfig.class)
-			.run("--spring.profiles.active=withwebapplicationtype");
-		assertThat(context).isInstanceOf(ReactiveWebApplicationContext.class);
-		assertThat(context.getEnvironment()).isInstanceOf(StandardReactiveWebEnvironment.class);
-		assertThat(context.getEnvironment().getClass().getName()).endsWith("ApplicationReactiveWebEnvironment");
 	}
 
 	@Test
@@ -1716,6 +1615,18 @@ class SpringApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class BrokenBeanFactoryPostProcessing {
+
+		@Bean
+		static BeanFactoryPostProcessor brokenBeanFactoryPostProcessor() {
+			return (beanFactory) -> {
+				throw new ApplicationContextException("broken");
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class ListenerConfig {
 
 		@Bean
@@ -1731,31 +1642,6 @@ class SpringApplicationTests {
 		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
 		ApplicationEventMulticaster applicationEventMulticaster() {
 			return spy(new SimpleApplicationEventMulticaster());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ExampleWebConfig {
-
-		@Bean
-		MockServletWebServerFactory webServer() {
-			return new MockServletWebServerFactory();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ExampleReactiveWebConfig {
-
-		@Bean
-		MockReactiveWebServerFactory webServerFactory() {
-			return new MockReactiveWebServerFactory();
-		}
-
-		@Bean
-		HttpHandler httpHandler() {
-			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
 	}

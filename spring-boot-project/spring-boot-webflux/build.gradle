@@ -30,6 +30,7 @@ dependencies {
 	api("org.springframework:spring-webflux")
 
 	implementation(project(":spring-boot-project:spring-boot-http-codec"))
+	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
@@ -38,7 +39,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation("org.aspectj:aspectjweaver")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

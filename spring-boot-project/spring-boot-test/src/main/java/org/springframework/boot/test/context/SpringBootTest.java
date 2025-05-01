@@ -31,7 +31,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
-import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
@@ -155,8 +154,8 @@ public @interface SpringBootTest {
 		RANDOM_PORT(true),
 
 		/**
-		 * Creates a (reactive) web application context without defining any
-		 * {@code server.port=0} {@link Environment} property.
+		 * Creates a web application context (reactive or servlet based) without defining
+		 * any {@code server.port=0} {@link Environment} property.
 		 */
 		DEFINED_PORT(true),
 
@@ -174,8 +173,8 @@ public @interface SpringBootTest {
 		}
 
 		/**
-		 * Return if the environment uses an {@link ServletWebServerApplicationContext}.
-		 * @return if an {@link ServletWebServerApplicationContext} is used.
+		 * Return if the environment uses an embedded web server.
+		 * @return if an embedded web server is used
 		 */
 		public boolean isEmbedded() {
 			return this.embedded;

@@ -40,7 +40,7 @@ class TransactionManagerCustomizationAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresTransactionManagerCustomizers() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.transaction.default-timeout=30s").run((context) -> {
 			TransactionManagerCustomizers customizers = context.getBean(TransactionManagerCustomizers.class);
 			assertThat(customizers).extracting("customizers")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)

@@ -54,16 +54,6 @@ dependencies {
 	optional("org.yaml:snakeyaml")
 
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testFixturesCompileOnly("io.projectreactor:reactor-test")
-	testFixturesCompileOnly("io.projectreactor.netty:reactor-netty-http")
-	testFixturesCompileOnly("org.apache.httpcomponents.client5:httpclient5")
-	testFixturesCompileOnly("org.apache.tomcat.embed:tomcat-embed-jasper")
-	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client")
-	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
-	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
-	testFixturesCompileOnly("org.mockito:mockito-core")
-	testFixturesCompileOnly("org.springframework:spring-tx")
-	testFixturesCompileOnly("org.springframework:spring-web")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.projectreactor:reactor-test")
