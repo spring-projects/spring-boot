@@ -348,6 +348,36 @@ class DockerRegistryConfigAuthenticationTests {
 		then(desktopHelper).should(never()).get(any(String.class));
 	}
 
+	@WithResource(name = "config.json", content = """
+			{
+			  "auths": {
+			    "https://my-registry.example.com": {
+			      "email": "test@gmail.com"
+			    }
+			  },
+			  "credsStore": "desktop"
+			}
+			""")
+	@WithResource(name = "credentials.json", content = """
+			{
+			  "Username": "username",
+			  "Secret": "secret"
+			}
+			""")
+	@Test
+	void getAuthHeaderWhenUsingHelperFromCredHelpersUsesImageReferenceServerUrlAsFallback(@ResourcesRoot Path directory)
+			throws Exception {
+		this.environment.put("DOCKER_CONFIG", directory.toString());
+		mockHelper("desktop", "my-registry.example.com", "credentials.json");
+		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
+		String authHeader = getAuthHeader(imageReference);
+		assertThat(decode(authHeader)).hasSize(4)
+			.containsEntry("serveraddress", "my-registry.example.com")
+			.containsEntry("username", "username")
+			.containsEntry("password", "secret")
+			.containsEntry("email", "test@gmail.com");
+	}
+
 	private String getAuthHeader(ImageReference imageReference) {
 		return getAuthHeader(imageReference, null);
 	}

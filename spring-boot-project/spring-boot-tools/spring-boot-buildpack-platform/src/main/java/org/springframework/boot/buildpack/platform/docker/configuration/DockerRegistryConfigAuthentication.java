@@ -85,14 +85,13 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 	private DockerRegistryAuthentication getAuthentication(String serverUrl) {
 		Credential credentialsFromHelper = getCredentialsFromHelper(serverUrl);
 		Map.Entry<String, Auth> authConfigEntry = getAuthConfigEntry(serverUrl);
-		serverUrl = (authConfigEntry != null) ? authConfigEntry.getKey() : serverUrl;
 		Auth authConfig = (authConfigEntry != null) ? authConfigEntry.getValue() : null;
 		if (credentialsFromHelper != null) {
 			return getAuthentication(credentialsFromHelper, authConfig, serverUrl);
 		}
-		if (authConfigEntry != null) {
-			return DockerRegistryAuthentication.user(authConfig.getUsername(), authConfig.getPassword(), serverUrl,
-					authConfig.getEmail());
+		if (authConfig != null) {
+			return DockerRegistryAuthentication.user(authConfig.getUsername(), authConfig.getPassword(),
+					authConfigEntry.getKey(), authConfig.getEmail());
 		}
 		return this.fallback;
 	}
