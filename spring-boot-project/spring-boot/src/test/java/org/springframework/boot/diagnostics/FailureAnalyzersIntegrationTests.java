@@ -24,8 +24,8 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
@@ -50,7 +50,7 @@ class FailureAnalyzersIntegrationTests {
 
 		@PostConstruct
 		void fail() {
-			throw new PortInUseException(8080);
+			new PathPatternParser().parse("{ }");
 		}
 
 	}

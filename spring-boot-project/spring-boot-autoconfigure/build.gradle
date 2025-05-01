@@ -27,14 +27,13 @@ description = "Spring Boot AutoConfigure"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("org.aspectj:aspectjweaver")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.money:money-api")
-	optional("org.springframework:spring-web")
-	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-web")
 	optional("org.springframework.data:spring-data-commons")
 
@@ -43,11 +42,14 @@ dependencies {
 	testFixturesCompileOnly("javax.cache:cache-api")
 	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-api")
 	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-client-api")
+
 	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("io.projectreactor:reactor-core")

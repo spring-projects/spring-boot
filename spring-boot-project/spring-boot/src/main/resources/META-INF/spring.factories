@@ -21,11 +21,6 @@ org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
 org.springframework.boot.context.config.StandardConfigDataLoader,\
 org.springframework.boot.context.config.SystemEnvironmentConfigDataLoader
 
-# Application Context Factories
-org.springframework.boot.ApplicationContextFactory=\
-org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContextFactory,\
-org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContextFactory
-
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
 org.springframework.boot.context.event.EventPublishingRunListener
@@ -38,8 +33,7 @@ org.springframework.boot.diagnostics.FailureAnalyzers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer,\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
-org.springframework.boot.io.ProtocolResolverApplicationContextInitializer,\
-org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer
+org.springframework.boot.io.ProtocolResolverApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
@@ -77,9 +71,7 @@ org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
-org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\
-org.springframework.boot.web.server.PortInUseFailureAnalyzer,\
-org.springframework.boot.web.server.context.MissingWebServerFactoryBeanFailureAnalyzer
+org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\

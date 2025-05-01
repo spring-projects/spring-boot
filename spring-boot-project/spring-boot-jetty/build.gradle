@@ -26,7 +26,7 @@ plugins {
 description = "Spring Boot Jetty"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-web-server"))
 	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
 	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 
@@ -40,7 +40,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 

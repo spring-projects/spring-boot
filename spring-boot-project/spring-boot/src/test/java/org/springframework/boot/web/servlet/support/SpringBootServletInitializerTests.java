@@ -21,7 +21,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
@@ -41,13 +40,9 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
@@ -127,64 +122,43 @@ class SpringBootServletInitializerTests {
 
 	@Test
 	void errorPageFilterRegistrationCanBeDisabled() {
-		AtomicReference<Map<String, ErrorPageFilter>> errorPageFilterBeans = new AtomicReference<>();
-		WebServer webServer = new MockServletWebServerFactory().getWebServer((servletContext) -> {
-			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
-				.createRootApplicationContext(servletContext)) {
-				errorPageFilterBeans.set(context.getBeansOfType(ErrorPageFilter.class));
-			}
-		});
-		try {
-			webServer.start();
-			assertThat(errorPageFilterBeans.get()).isEmpty();
-		}
-		finally {
-			webServer.stop();
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+			.createRootApplicationContext(this.servletContext)) {
+			Map<String, ErrorPageFilter> errorPageFilterBeans = context.getBeansOfType(ErrorPageFilter.class);
+			assertThat(errorPageFilterBeans).isEmpty();
 		}
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void errorPageFilterIsRegisteredWithNearHighestPrecedence() {
-		AtomicReference<Map<String, FilterRegistrationBean>> registrationsReference = new AtomicReference<>();
-		WebServer webServer = new MockServletWebServerFactory().getWebServer((servletContext) -> {
-			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
-				.createRootApplicationContext(servletContext)) {
-				registrationsReference.set(context.getBeansOfType(FilterRegistrationBean.class));
-			}
-		});
-		try {
-			webServer.start();
-			Map<String, FilterRegistrationBean> registrations = registrationsReference.get();
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
+		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+			.createRootApplicationContext(servletContext)) {
+			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
 			assertThat(registrations).hasSize(1);
 			FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
 			assertThat(errorPageFilterRegistration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
-		}
-		finally {
-			webServer.stop();
 		}
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void errorPageFilterIsRegisteredForRequestAndAsyncDispatch() {
-		AtomicReference<Map<String, FilterRegistrationBean>> registrationsReference = new AtomicReference<>();
-		WebServer webServer = new MockServletWebServerFactory().getWebServer((servletContext) -> {
-			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
-				.createRootApplicationContext(servletContext)) {
-				registrationsReference.set(context.getBeansOfType(FilterRegistrationBean.class));
-			}
-		});
-		try {
-			webServer.start();
-			Map<String, FilterRegistrationBean> registrations = registrationsReference.get();
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(Collections.emptyEnumeration());
+		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
+		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+			.createRootApplicationContext(servletContext)) {
+			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
 			assertThat(registrations).hasSize(1);
 			FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
 			assertThat(errorPageFilterRegistration).hasFieldOrPropertyWithValue("dispatcherTypes",
 					EnumSet.of(DispatcherType.ASYNC, DispatcherType.REQUEST));
-		}
-		finally {
-			webServer.stop();
 		}
 	}
 
@@ -331,11 +305,6 @@ class SpringBootServletInitializerTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class ExecutableWar extends SpringBootServletInitializer {
-
-		@Bean
-		ServletWebServerFactory webServerFactory() {
-			return new MockServletWebServerFactory();
-		}
 
 	}
 

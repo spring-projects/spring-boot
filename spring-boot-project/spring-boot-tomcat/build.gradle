@@ -32,7 +32,7 @@ configurations {
 }
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-web-server"))
 	api("org.apache.tomcat.embed:tomcat-embed-core") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}
@@ -48,7 +48,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 
