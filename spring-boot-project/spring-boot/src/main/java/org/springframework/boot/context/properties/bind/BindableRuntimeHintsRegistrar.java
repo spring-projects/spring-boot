@@ -221,6 +221,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				if (setter != null) {
 					hints.registerMethod(setter, ExecutableMode.INVOKE);
 				}
+				Field field = property.getField();
+				if (field != null) {
+					hints.registerField(field);
+				}
 				handleProperty(hints, name, property.getType());
 			});
 		}

@@ -460,6 +460,10 @@ class JavaBeanBinder implements DataObjectBinder {
 			return this.setter;
 		}
 
+		Field getField() {
+			return this.field;
+		}
+
 	}
 
 }
