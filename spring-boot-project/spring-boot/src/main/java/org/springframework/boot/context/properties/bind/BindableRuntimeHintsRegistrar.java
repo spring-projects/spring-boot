@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,6 +220,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				Method setter = property.getSetter();
 				if (setter != null) {
 					hints.registerMethod(setter, ExecutableMode.INVOKE);
+				}
+				Field field = property.getField();
+				if (field != null) {
+					hints.registerField(field);
 				}
 				handleProperty(hints, name, property.getType());
 			});

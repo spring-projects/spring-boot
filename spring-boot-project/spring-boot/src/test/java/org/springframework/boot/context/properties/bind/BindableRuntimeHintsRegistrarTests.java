@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ExecutableHint;
+import org.springframework.aot.hint.FieldHint;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
@@ -108,15 +109,15 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenJavaBeanWithSeveralConstructors() throws NoSuchMethodException {
 		RuntimeHints runtimeHints = registerHints(WithSeveralConstructors.class);
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
-			.satisfies(javaBeanBinding(WithSeveralConstructors.class,
-					WithSeveralConstructors.class.getDeclaredConstructor()));
+			.satisfies(javaBeanBinding(WithSeveralConstructors.class)
+				.constructor(WithSeveralConstructors.class.getDeclaredConstructor()));
 	}
 
 	@Test
 	void registerHintsWhenJavaBeanWithMapOfPojo() {
 		RuntimeHints runtimeHints = registerHints(WithMap.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
-			.anySatisfy(javaBeanBinding(WithMap.class, "getAddresses"))
+			.anySatisfy(javaBeanBinding(WithMap.class).methods("getAddresses"))
 			.anySatisfy(javaBeanBinding(Address.class));
 	}
 
@@ -124,7 +125,7 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenJavaBeanWithListOfPojo() {
 		RuntimeHints runtimeHints = registerHints(WithList.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
-			.anySatisfy(javaBeanBinding(WithList.class, "getAllAddresses"))
+			.anySatisfy(javaBeanBinding(WithList.class).methods("getAllAddresses"))
 			.anySatisfy(javaBeanBinding(Address.class));
 	}
 
@@ -132,7 +133,7 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenJavaBeanWitArrayOfPojo() {
 		RuntimeHints runtimeHints = registerHints(WithArray.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
-			.anySatisfy(javaBeanBinding(WithArray.class, "getAllAddresses"))
+			.anySatisfy(javaBeanBinding(WithArray.class).methods("getAllAddresses"))
 			.anySatisfy(javaBeanBinding(Address.class));
 	}
 
@@ -140,7 +141,7 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenJavaBeanWithListOfJavaType() {
 		RuntimeHints runtimeHints = registerHints(WithSimpleList.class);
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
-			.satisfies(javaBeanBinding(WithSimpleList.class, "getNames"));
+			.satisfies(javaBeanBinding(WithSimpleList.class).methods("getNames"));
 	}
 
 	@Test
@@ -177,9 +178,10 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenWhenHasNestedExternalType() {
 		RuntimeHints runtimeHints = registerHints(WithExternalNested.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(3)
-			.anySatisfy(
-					javaBeanBinding(WithExternalNested.class, "getName", "setName", "getSampleType", "setSampleType"))
-			.anySatisfy(javaBeanBinding(SampleType.class, "getNested"))
+			.anySatisfy(javaBeanBinding(WithExternalNested.class)
+				.methods("getName", "setName", "getSampleType", "setSampleType")
+				.fields("name", "sampleType"))
+			.anySatisfy(javaBeanBinding(SampleType.class).methods("getNested").fields("nested"))
 			.anySatisfy(javaBeanBinding(SampleType.Nested.class));
 	}
 
@@ -187,8 +189,9 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenHasRecursiveType() {
 		RuntimeHints runtimeHints = registerHints(WithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
-			.anySatisfy(javaBeanBinding(WithRecursive.class, "getRecursive", "setRecursive"))
-			.anySatisfy(javaBeanBinding(Recursive.class, "getRecursive", "setRecursive"));
+			.anySatisfy(
+					javaBeanBinding(WithRecursive.class).methods("getRecursive", "setRecursive").fields("recursive"))
+			.anySatisfy(javaBeanBinding(Recursive.class).methods("getRecursive", "setRecursive").fields("recursive"));
 	}
 
 	@Test
@@ -203,24 +206,28 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenHasWellKnownTypes() {
 		RuntimeHints runtimeHints = registerHints(WithWellKnownTypes.class);
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
-			.satisfies(javaBeanBinding(WithWellKnownTypes.class, "getApplicationContext", "setApplicationContext",
-					"getEnvironment", "setEnvironment"));
+			.satisfies(javaBeanBinding(WithWellKnownTypes.class)
+				.methods("getApplicationContext", "setApplicationContext", "getEnvironment", "setEnvironment")
+				.fields("applicationContext", "environment"));
 	}
 
 	@Test
 	void registerHintsWhenHasCrossReference() {
 		RuntimeHints runtimeHints = registerHints(WithCrossReference.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(3)
-			.anySatisfy(javaBeanBinding(WithCrossReference.class, "getCrossReferenceA", "setCrossReferenceA"))
-			.anySatisfy(javaBeanBinding(CrossReferenceA.class, "getCrossReferenceB", "setCrossReferenceB"))
-			.anySatisfy(javaBeanBinding(CrossReferenceB.class, "getCrossReferenceA", "setCrossReferenceA"));
+			.anySatisfy(javaBeanBinding(WithCrossReference.class).methods("getCrossReferenceA", "setCrossReferenceA")
+				.fields("crossReferenceA"))
+			.anySatisfy(javaBeanBinding(CrossReferenceA.class).methods("getCrossReferenceB", "setCrossReferenceB")
+				.fields("crossReferenceB"))
+			.anySatisfy(javaBeanBinding(CrossReferenceB.class).methods("getCrossReferenceA", "setCrossReferenceA")
+				.fields("crossReferenceA"));
 	}
 
 	@Test
 	void registerHintsWhenHasUnresolvedGeneric() {
 		RuntimeHints runtimeHints = registerHints(WithGeneric.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
-			.anySatisfy(javaBeanBinding(WithGeneric.class, "getGeneric"))
+			.anySatisfy(javaBeanBinding(WithGeneric.class).methods("getGeneric").fields("generic"))
 			.anySatisfy(javaBeanBinding(GenericObject.class));
 	}
 
@@ -246,8 +253,9 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenHasPackagePrivateGettersAndSetters() {
 		RuntimeHints runtimeHints = registerHints(PackagePrivateGettersAndSetters.class);
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
-			.satisfies(javaBeanBinding(PackagePrivateGettersAndSetters.class, "getAlpha", "setAlpha", "getBravo",
-					"setBravo"));
+			.satisfies(javaBeanBinding(PackagePrivateGettersAndSetters.class)
+				.methods("getAlpha", "setAlpha", "getBravo", "setBravo")
+				.fields("alpha", "bravo"));
 	}
 
 	@Test
@@ -260,9 +268,9 @@ class BindableRuntimeHintsRegistrarTests {
 				.containsExactlyInAnyOrder("getInheritedNested", "setInheritedNested");
 		});
 		assertThat(runtimeHints.reflection().getTypeHint(ExtendingProperties.class))
-			.satisfies(javaBeanBinding(ExtendingProperties.class, "getBravo", "setBravo"));
+			.satisfies(javaBeanBinding(ExtendingProperties.class).methods("getBravo", "setBravo").fields("bravo"));
 		assertThat(runtimeHints.reflection().getTypeHint(InheritedNested.class))
-			.satisfies(javaBeanBinding(InheritedNested.class, "getAlpha", "setAlpha"));
+			.satisfies(javaBeanBinding(InheritedNested.class).methods("getAlpha", "setAlpha").fields("alpha"));
 	}
 
 	@Test
@@ -275,11 +283,11 @@ class BindableRuntimeHintsRegistrarTests {
 				.containsExactlyInAnyOrder("getCount", "setCount");
 		});
 		assertThat(runtimeHints.reflection().getTypeHint(ListenerRetry.class))
-			.satisfies(javaBeanBinding(ListenerRetry.class, "isStateless", "setStateless"));
+			.satisfies(javaBeanBinding(ListenerRetry.class).methods("isStateless", "setStateless").fields("stateless"));
 		assertThat(runtimeHints.reflection().getTypeHint(Simple.class))
-			.satisfies(javaBeanBinding(Simple.class, "getRetry"));
+			.satisfies(javaBeanBinding(Simple.class).methods("getRetry").fields("retry"));
 		assertThat(runtimeHints.reflection().getTypeHint(ComplexNestedProperties.class))
-			.satisfies(javaBeanBinding(ComplexNestedProperties.class, "getSimple"));
+			.satisfies(javaBeanBinding(ComplexNestedProperties.class).methods("getSimple").fields("simple"));
 	}
 
 	@Test
@@ -292,17 +300,8 @@ class BindableRuntimeHintsRegistrarTests {
 		assertThatNoException().isThrownBy(() -> registerHints(PoolProperties.class));
 	}
 
-	private Consumer<TypeHint> javaBeanBinding(Class<?> type, String... expectedMethods) {
-		return javaBeanBinding(type, type.getDeclaredConstructors()[0], expectedMethods);
-	}
-
-	private Consumer<TypeHint> javaBeanBinding(Class<?> type, Constructor<?> constructor, String... expectedMethods) {
-		return (entry) -> {
-			assertThat(entry.getType()).isEqualTo(TypeReference.of(type));
-			assertThat(entry.constructors()).singleElement().satisfies(match(constructor));
-			assertThat(entry.getMemberCategories()).isEmpty();
-			assertThat(entry.methods()).extracting(ExecutableHint::getName).containsExactlyInAnyOrder(expectedMethods);
-		};
+	private JavaBeanBinding javaBeanBinding(Class<?> type) {
+		return new JavaBeanBinding(type);
 	}
 
 	private Consumer<TypeHint> valueObjectBinding(Class<?> type) {
@@ -318,7 +317,7 @@ class BindableRuntimeHintsRegistrarTests {
 		};
 	}
 
-	private Consumer<ExecutableHint> match(Constructor<?> constructor) {
+	private static Consumer<ExecutableHint> match(Constructor<?> constructor) {
 		return (executableHint) -> {
 			assertThat(executableHint.getName()).isEqualTo("<init>");
 			assertThat(Arrays.stream(constructor.getParameterTypes()).map(TypeReference::of).toList())
@@ -800,6 +799,51 @@ class BindableRuntimeHintsRegistrarTests {
 				this.stateless = stateless;
 			}
 
+		}
+
+	}
+
+	private static final class JavaBeanBinding implements Consumer<TypeHint> {
+
+		private final Class<?> type;
+
+		private Constructor<?> constructor;
+
+		private List<String> expectedMethods = Collections.emptyList();
+
+		private List<String> expectedFields = Collections.emptyList();
+
+		private JavaBeanBinding(Class<?> type) {
+			this.type = type;
+			this.constructor = this.type.getDeclaredConstructors()[0];
+		}
+
+		@Override
+		public void accept(TypeHint entry) {
+			assertThat(entry.getType()).isEqualTo(TypeReference.of(this.type));
+			assertThat(entry.constructors()).singleElement().satisfies(match(this.constructor));
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).as("Methods requiring reflection")
+				.extracting(ExecutableHint::getName)
+				.containsExactlyInAnyOrderElementsOf(this.expectedMethods);
+			assertThat(entry.fields()).as("Fields requiring reflection")
+				.extracting(FieldHint::getName)
+				.containsExactlyInAnyOrderElementsOf(this.expectedFields);
+		}
+
+		private JavaBeanBinding constructor(Constructor<?> constructor) {
+			this.constructor = constructor;
+			return this;
+		}
+
+		private JavaBeanBinding methods(String... methods) {
+			this.expectedMethods = List.of(methods);
+			return this;
+		}
+
+		private JavaBeanBinding fields(String... fields) {
+			this.expectedFields = List.of(fields);
+			return this;
 		}
 
 	}
