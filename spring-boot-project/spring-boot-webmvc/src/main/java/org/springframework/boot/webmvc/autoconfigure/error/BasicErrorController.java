@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
-import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.error.ErrorPageRegistrar;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,8 +41,9 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Basic global error {@link Controller @Controller}, rendering {@link ErrorAttributes}.
  * More specific errors can be handled either using Spring MVC abstractions (e.g.
- * {@code @ExceptionHandler}) or by adding servlet
- * {@link ConfigurableServletWebServerFactory#setErrorPages server error pages}.
+ * {@code @ExceptionHandler}) or by
+ * {@link ErrorPageRegistrar#registerErrorPages(org.springframework.boot.web.error.ErrorPageRegistry)
+ * registering error pages}.
  *
  * @author Dave Syer
  * @author Phillip Webb

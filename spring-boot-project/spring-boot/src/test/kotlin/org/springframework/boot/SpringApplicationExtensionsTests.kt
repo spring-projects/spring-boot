@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.kotlinsample.TestKotlinApplication
-import org.springframework.boot.web.servlet.mock.MockFilter
-import org.springframework.boot.web.server.servlet.MockServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.StandardEnvironment
@@ -36,14 +34,14 @@ class SpringApplicationExtensionsTests {
 
 	@Test
 	fun `Kotlin runApplication() top level function`() {
-		val context = runApplication<ExampleWebConfig>()
+		val context = runApplication<ExampleConfig>()
 		assertThat(context).isNotNull()
 	}
 
 	@Test
 	fun `Kotlin runApplication() top level function with a custom environment`() {
 		val environment = StandardEnvironment()
-		val context = runApplication<ExampleWebConfig> {
+		val context = runApplication<ExampleConfig> {
 			setEnvironment(environment)
 		}
 		assertThat(context).isNotNull()
@@ -52,7 +50,7 @@ class SpringApplicationExtensionsTests {
 
 	@Test
 	fun `Kotlin runApplication(arg1, arg2) top level function`() {
-		val context = runApplication<ExampleWebConfig>("--debug", "spring", "boot")
+		val context = runApplication<ExampleConfig>("--debug", "spring", "boot")
 		val args = context.getBean<ApplicationArguments>()
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
 		assertThat(args.containsOption("debug")).isTrue()
@@ -61,7 +59,7 @@ class SpringApplicationExtensionsTests {
 	@Test
 	fun `Kotlin runApplication(arg1, arg2) top level function with a custom environment`() {
 		val environment = StandardEnvironment()
-		val context = runApplication<ExampleWebConfig>("--debug", "spring", "boot") {
+		val context = runApplication<ExampleConfig>("--debug", "spring", "boot") {
 			setEnvironment(environment)
 		}
 		val args = context.getBean<ApplicationArguments>()
@@ -72,42 +70,50 @@ class SpringApplicationExtensionsTests {
 
 	@Test
 	fun `Kotlin fromApplication() top level function`() {
-		val context = fromApplication<TestKotlinApplication>().with(ExampleWebConfig::class).run().applicationContext
-		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull()
+		val context = fromApplication<TestKotlinApplication>().with(ExampleConfig::class).run().applicationContext
+		assertThat(context.getBean<ExampleBean>()).isNotNull()
 	}
 
 	@Test
 	fun `Kotlin fromApplication() top level function with multiple sources`() {
 		val context = fromApplication<TestKotlinApplication>()
-				.with(ExampleWebConfig::class, ExampleFilterConfig::class).run().applicationContext
-		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull()
-		assertThat(context.getBean<MockFilter>()).isNotNull()
+				.with(ExampleConfig::class, AnotherExampleConfig::class).run().applicationContext
+		assertThat(context.getBean<ExampleBean>()).isNotNull()
+		assertThat(context.getBean<AnotherExampleBean>()).isNotNull()
 	}
 
 	@Test
 	fun `Kotlin fromApplication() top level function when no main`() {
-		assertThatIllegalStateException().isThrownBy { fromApplication<ExampleWebConfig>().run() }
+		assertThatIllegalStateException().isThrownBy { fromApplication<ExampleConfig>().run() }
 			.withMessage("Unable to use 'fromApplication' with " +
-					"org.springframework.boot.SpringApplicationExtensionsTests.ExampleWebConfig")
+					"org.springframework.boot.SpringApplicationExtensionsTests.ExampleConfig")
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	internal open class ExampleWebConfig {
+	internal open class ExampleConfig {
 
 		@Bean
-		open fun webServer(): MockServletWebServerFactory {
-			return MockServletWebServerFactory()
+		open fun exampleBean(): ExampleBean {
+			return ExampleBean()
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	internal open class ExampleFilterConfig {
+	internal open class AnotherExampleConfig {
 
 		@Bean
-		open fun filter(): MockFilter {
-			return MockFilter()
+		open fun anotherExampleBean(): AnotherExampleBean {
+			return AnotherExampleBean()
 		}
+
+	}
+
+	class ExampleBean {
+
+	}
+
+	class AnotherExampleBean {
 
 	}
 

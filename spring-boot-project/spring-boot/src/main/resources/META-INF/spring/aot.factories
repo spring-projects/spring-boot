@@ -11,8 +11,7 @@ org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.logging.structured.ElasticCommonSchemaProperties$ElasticCommonSchemaPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties$GraylogExtendedLogFormatPropertiesRuntimeHints,\
-org.springframework.boot.logging.structured.StructuredLoggingJsonProperties$StructuredLoggingJsonPropertiesRuntimeHints,\
-org.springframework.boot.web.server.MimeMappings$MimeMappingsRuntimeHints
+org.springframework.boot.logging.structured.StructuredLoggingJsonProperties$StructuredLoggingJsonPropertiesRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor,\

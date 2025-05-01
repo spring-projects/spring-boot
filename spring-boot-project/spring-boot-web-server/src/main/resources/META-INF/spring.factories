@@ -1,0 +1,13 @@
+# Application Context Factories
+org.springframework.boot.ApplicationContextFactory=\
+org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContextFactory,\
+org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContextFactory
+
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.web.server.PortInUseFailureAnalyzer,\
+org.springframework.boot.web.server.context.MissingWebServerFactoryBeanFailureAnalyzer
