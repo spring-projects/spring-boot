@@ -36,7 +36,6 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
             };
             return gradlewTasksToRun;
         }, {});
-        console.log(context.projectGraph);
         console.log(Object.values(taskGraph.tasks).map((task) => ({
             project: task.target.project,
             target: task.target.target,

@@ -35,3 +35,6 @@ writeFileSync('node_modules/@nx/gradle/src/executors/gradle/gradle-batch.impl.js
     require('path').join(__dirname, 'replacement-gradle-batch.js')
 ));
  
+writeFileSync('node_modules/@nx/gradle/src/executors/gradle/get-exclude-task.js', readFileSync(
+  require('path').join(__dirname, 'replacement-get-exclude-task.js')
+));

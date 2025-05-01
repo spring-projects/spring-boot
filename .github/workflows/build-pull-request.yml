@@ -21,7 +21,7 @@ jobs:
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
       # Uncomment this line to enable task distribution
-      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_CLOUD_NO_TIMEOUTS=true NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx-cloud start-ci-run --distribute-on="5 linux-extra-large-plus-jvm" --require-explicit-completion
+      - run: NX_CLOUD_RETRIEVAL_CONCURRENCY=8 NX_CLOUD_NO_TIMEOUTS=true NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx-cloud start-ci-run --distribute-on="1 linux-extra-large-plus-jvm" --require-explicit-completion
       - name: Build
         id: build
         uses: ./.github/actions/build
