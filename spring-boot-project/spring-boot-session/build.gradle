@@ -19,15 +19,15 @@ dependencies {
 
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
-	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testFixturesImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testFixturesImplementation("org.assertj:assertj-core")
 	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
-	
+
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
