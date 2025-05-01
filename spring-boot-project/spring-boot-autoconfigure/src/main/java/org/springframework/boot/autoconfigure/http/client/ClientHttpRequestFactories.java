@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.client.AbstractHttpClientProperties.Ssl;
 import org.springframework.boot.autoconfigure.http.client.AbstractHttpRequestFactoryProperties.Factory;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
@@ -37,25 +37,26 @@ import org.springframework.util.StringUtils;
  * {@link ClientHttpRequestFactorySettings}.
  *
  * @author Phillip Webb
+ * @since 4.0.0
  */
-class ClientHttpRequestFactories {
+public final class ClientHttpRequestFactories {
 
-	private final ObjectProvider<SslBundles> sslBundles;
+	private final ObjectFactory<SslBundles> sslBundles;
 
 	private final AbstractHttpRequestFactoryProperties[] orderedProperties;
 
-	ClientHttpRequestFactories(ObjectProvider<SslBundles> sslBundles,
+	public ClientHttpRequestFactories(ObjectFactory<SslBundles> sslBundles,
 			AbstractHttpRequestFactoryProperties... orderedProperties) {
 		this.sslBundles = sslBundles;
 		this.orderedProperties = orderedProperties;
 	}
 
-	ClientHttpRequestFactoryBuilder<?> builder(ClassLoader classLoader) {
+	public ClientHttpRequestFactoryBuilder<?> builder(ClassLoader classLoader) {
 		Factory factory = getProperty(AbstractHttpRequestFactoryProperties::getFactory);
 		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect(classLoader);
 	}
 
-	ClientHttpRequestFactorySettings settings() {
+	public ClientHttpRequestFactorySettings settings() {
 		HttpRedirects redirects = getProperty(AbstractHttpRequestFactoryProperties::getRedirects);
 		Duration connectTimeout = getProperty(AbstractHttpRequestFactoryProperties::getConnectTimeout);
 		Duration readTimeout = getProperty(AbstractHttpRequestFactoryProperties::getReadTimeout);
