@@ -7,6 +7,7 @@ const run_commands_impl_1 = require("nx/src/executors/run-commands/run-commands.
 const exec_gradle_1 = require("../../utils/exec-gradle");
 const path_1 = require("path");
 const child_process_1 = require("child_process");
+const get_exclude_task_1 = require("./get-exclude-task");
 exports.batchRunnerPath = (0, path_1.join)(__dirname, '../../../batch-runner/build/libs/batch-runner-all.jar');
 async function gradleBatch(taskGraph, inputs, overrides, context) {
     try {
@@ -24,8 +25,6 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
         if (overrides.__overrides_unparsed__.length) {
             args.push(...overrides.__overrides_unparsed__);
         }
-        console.log('args', args, input.args);
-        let dependsOn = [];
         const gradlewTaskIdsToRun = Object.keys(taskGraph.tasks);
         const gradlewTasksToRun = gradlewTaskIdsToRun.reduce((gradlewTasksToRun, taskId) => {
             const task = taskGraph.tasks[taskId];
@@ -35,22 +34,22 @@ async function gradleBatch(taskGraph, inputs, overrides, context) {
                 taskName: gradlewTaskName,
                 testClassName: testClassName,
             };
-            if (taskGraph.dependencies?.[taskId]?.length) {
-                dependsOn = [
-                    ...dependsOn,
-                    ...taskGraph.dependencies?.[taskId].filter((taskId) => gradlewTaskIdsToRun.indexOf(taskId) === -1),
-                ];
-            }
             return gradlewTasksToRun;
         }, {});
-        // remove duplicates
-        dependsOn = [...new Set(dependsOn)];
-        if (dependsOn.length) {
-            dependsOn.forEach((taskId) => {
-                args.push('--exclude-task', taskId);
-            });
-        }
-        console.log("args", args);
+        console.log(context.projectGraph);
+        console.log(Object.values(taskGraph.tasks).map((task) => ({
+            project: task.target.project,
+            target: task.target.target,
+        })));
+        console.log(gradlewTaskIdsToRun);
+        (0, get_exclude_task_1.getExcludeTasksArgs)(context.projectGraph, Object.values(taskGraph.tasks).map((task) => ({
+            project: task.target.project,
+            target: task.target.target,
+        })), gradlewTaskIdsToRun).forEach((arg) => {
+            if (arg) {
+                args.push(arg);
+            }
+        });
         const gradlewBatchStart = performance.mark(`gradlew-batch:start`);
         const batchResults = (0, child_process_1.execSync)(`java -jar ${exports.batchRunnerPath} --tasks='${JSON.stringify(gradlewTasksToRun)}' --workspaceRoot=${root} --args='${args
             .join(' ')
