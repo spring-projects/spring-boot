@@ -68,7 +68,7 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx run spring-boot:assemble --parallel=32 --batch
+      run: NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx run build --parallel=32 --batch
     - name: Read Version From gradle.properties
       id: read-version
       shell: bash
