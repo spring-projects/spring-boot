@@ -61,7 +61,7 @@ bom {
 			]
 		}
 	}
-	library("CycloneDX Gradle Plugin", "2.2.0") {
+	library("CycloneDX Gradle Plugin", "2.3.0") {
 		group("org.cyclonedx") {
 			modules = [
 				"cyclonedx-gradle-plugin"

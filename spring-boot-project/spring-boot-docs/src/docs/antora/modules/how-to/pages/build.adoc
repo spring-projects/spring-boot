@@ -112,7 +112,7 @@ Gradle users can achieve the same result by using the {url-cyclonedx-docs-gradle
 [source,gradle]
 ----
 plugins {
-    id 'org.cyclonedx.bom' version '2.2.0'
+    id 'org.cyclonedx.bom' version '2.3.0'
 }
 ----
 
