@@ -24,10 +24,10 @@ import smoketest.actuator.ManagementPortSampleActuatorApplicationTests.CustomErr
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalManagementPort;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.server.test.LocalManagementPort;
+import org.springframework.boot.web.server.test.LocalServerPort;
+import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;

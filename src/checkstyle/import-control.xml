@@ -139,6 +139,9 @@
 					<allow pkg="org.springframework.boot.web.context.servlet" />
 				</subpackage>
 			</subpackage>
+			<subpackage name="test">
+				<allow pkg=".*" regex="true" />
+			</subpackage>
 		</subpackage>
 
 		<!-- Servlet -->

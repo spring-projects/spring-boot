@@ -29,7 +29,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -60,11 +59,7 @@ import org.springframework.web.context.WebApplicationContext;
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
  * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
- * random} port.</li>
- * <li>Registers a {@link org.springframework.boot.test.web.client.TestRestTemplate
- * TestRestTemplate} and/or
- * {@link org.springframework.test.web.reactive.server.WebTestClient WebTestClient} bean
- * for use in web tests that are using a fully running web server.</li>
+ * random} port when {@code spring-boot-web-server-test} is on the classpath.</li>
  * </ul>
  *
  * @author Phillip Webb
@@ -148,14 +143,16 @@ public @interface SpringBootTest {
 		/**
 		 * Creates a web application context (reactive or servlet based) and sets a
 		 * {@code server.port=0} {@link Environment} property (which usually triggers
-		 * listening on a random port). Often used in conjunction with a
-		 * {@link LocalServerPort @LocalServerPort} injected field on the test.
+		 * listening on a random port). Requires a dependency on
+		 * {@code spring-boot-web-server-test}. Often used in conjunction with a
+		 * {@code @LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
 
 		/**
 		 * Creates a web application context (reactive or servlet based) without defining
-		 * any {@code server.port=0} {@link Environment} property.
+		 * any {@code server.port=0} {@link Environment} property. Requires a dependency
+		 * on {@code spring-boot-web-server-test}.
 		 */
 		DEFINED_PORT(true),
 
