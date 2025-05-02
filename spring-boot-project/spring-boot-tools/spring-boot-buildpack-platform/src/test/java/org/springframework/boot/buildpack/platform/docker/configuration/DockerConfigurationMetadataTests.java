@@ -126,7 +126,7 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		assertThat(configuration.getAuths()).hasSize(3).hasEntrySatisfying("https://index.docker.io/v1/", (auth) -> {
 			assertThat(auth.getUsername()).isEqualTo("username");
 			assertThat(auth.getPassword()).isEqualTo("pass\u0000word");
-			assertThat(auth.getEmail()).isEqualTo("test@gmail.com");
+			assertThat(auth.getEmail()).isEqualTo("test@example.com");
 		}).hasEntrySatisfying("custom-registry.example.com", (auth) -> {
 			assertThat(auth.getUsername()).isEqualTo("customUser");
 			assertThat(auth.getPassword()).isEqualTo("customPass");

@@ -68,7 +68,7 @@ class DockerRegistryConfigAuthenticationTests {
 			  "auths": {
 			    "https://index.docker.io/v1/": {
 			      "auth": "dXNlcm5hbWU6cGFzc3dvcmQ=",
-			      "email": "test@gmail.com"
+			      "email": "test@example.com"
 			    }
 			  }
 			}
@@ -82,7 +82,7 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("serveraddress", "https://index.docker.io/v1/")
 			.containsEntry("username", "username")
 			.containsEntry("password", "password")
-			.containsEntry("email", "test@gmail.com");
+			.containsEntry("email", "test@example.com");
 	}
 
 	@WithResource(name = "config.json", content = """
@@ -90,7 +90,7 @@ class DockerRegistryConfigAuthenticationTests {
 			  "auths": {
 			    "https://index.docker.io/v1/": {
 			      "auth": "dXNlcm5hbWU6cGFzc3dvcmQ=",
-			      "email": "test@gmail.com"
+			      "email": "test@example.com"
 			    }
 			  }
 			}
@@ -104,7 +104,7 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("serveraddress", "https://index.docker.io/v1/")
 			.containsEntry("username", "username")
 			.containsEntry("password", "password")
-			.containsEntry("email", "test@gmail.com");
+			.containsEntry("email", "test@example.com");
 	}
 
 	@WithResource(name = "config.json", content = """
@@ -190,7 +190,7 @@ class DockerRegistryConfigAuthenticationTests {
 			{
 			  "auths": {
 			    "gcr.io": {
-			      "email": "test@gmail.com"
+			      "email": "test@example.com"
 			    }
 			  },
 			  "credsStore": "desktop",
@@ -216,7 +216,7 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("serveraddress", "https://my-gcr.io")
 			.containsEntry("username", "username")
 			.containsEntry("password", "secret")
-			.containsEntry("email", "test@gmail.com");
+			.containsEntry("email", "test@example.com");
 	}
 
 	@WithResource(name = "config.json", content = """
@@ -252,7 +252,7 @@ class DockerRegistryConfigAuthenticationTests {
 			"auths": {
 			    "gcr.io": {
 			      "auth": "dXNlcm5hbWU6cGFzc3dvcmQ=",
-			      "email": "test@gmail.com"
+			      "email": "test@example.com"
 			    }
 			  },
 			  "credsStore": "desktop",
@@ -273,7 +273,7 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("serveraddress", "gcr.io")
 			.containsEntry("username", "username")
 			.containsEntry("password", "password")
-			.containsEntry("email", "test@gmail.com");
+			.containsEntry("email", "test@example.com");
 		assertThat(this.helperExceptions).hasSize(1);
 		assertThat(this.helperExceptions.keySet().iterator().next())
 			.contains("Error retrieving credentials for 'gcr.io' due to: Failed to obtain credentials for registry");
@@ -352,7 +352,7 @@ class DockerRegistryConfigAuthenticationTests {
 			{
 			  "auths": {
 			    "https://my-registry.example.com": {
-			      "email": "test@gmail.com"
+			      "email": "test@example.com"
 			    }
 			  },
 			  "credsStore": "desktop"
@@ -375,7 +375,7 @@ class DockerRegistryConfigAuthenticationTests {
 			.containsEntry("serveraddress", "my-registry.example.com")
 			.containsEntry("username", "username")
 			.containsEntry("password", "secret")
-			.containsEntry("email", "test@gmail.com");
+			.containsEntry("email", "test@example.com");
 	}
 
 	private String getAuthHeader(ImageReference imageReference) {

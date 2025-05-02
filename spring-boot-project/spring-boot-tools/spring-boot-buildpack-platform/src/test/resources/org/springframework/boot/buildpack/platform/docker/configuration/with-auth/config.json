@@ -2,7 +2,7 @@
   "auths": {
     "https://index.docker.io/v1/": {
       "auth": "dXNlcm5hbWU6AABwYXNzAHdvcmQAAA==",
-      "email": "test@gmail.com"
+      "email": "test@example.com"
     },
     "custom-registry.example.com": {
       "auth": "Y3VzdG9tVXNlcjpjdXN0b21QYXNz"
