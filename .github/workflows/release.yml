@@ -36,6 +36,13 @@ jobs:
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
           username: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_USERNAME || secrets.ARTIFACTORY_USERNAME }}
+      - name: Send Notification
+        if: failure()
+        uses: ./.github/actions/send-notification
+        with:
+          run-name: ${{ format('{0} | Release Staging | {1}', github.ref_name, inputs.version) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
   verify:
