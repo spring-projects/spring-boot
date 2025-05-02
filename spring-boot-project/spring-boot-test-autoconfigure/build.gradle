@@ -32,7 +32,7 @@ configurations.all {
 }
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-all"))
+	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 

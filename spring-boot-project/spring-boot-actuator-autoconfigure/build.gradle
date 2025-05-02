@@ -35,7 +35,6 @@ configurations.all {
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator"))
-	api(project(":spring-boot-project:spring-boot-all"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 
 	implementation("com.fasterxml.jackson.core:jackson-databind")
