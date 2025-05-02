@@ -3263,7 +3263,7 @@
         },
         {
           "value": "truncate",
-          "description": "Truncate the tabless in the schema."
+          "description": "Truncate the tables in the schema."
         },
         {
           "value": "update",
