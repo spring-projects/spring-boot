@@ -1,17 +1,13 @@
 {
-  "installation": {
-    "version": "0.0.0-pr-29464-f9a8c49",
-    "plugins": {
-      "@nx/gradle": "0.0.0-pr-29464-f9a8c49"
-    }
-  },
   "plugins": [
     {
       "plugin": "@nx/gradle",
       "options": {
         "testTargetName": "test",
         "classesTargetName": "classes",
-        "buildTargetName": "build"
+        "buildTargetName": "build",
+        "ciTestTargetName": "ci",
+        "ciIntTestTargetName": "ciIntTest"
       }
     }
   ],
@@ -23,5 +19,8 @@
       "default",
       "!{projectRoot}/src/test/**/*"
     ]
-  }
+  },
+  "nxCloudUrl": "https://snapshot.nx.app",
+  "nxCloudId": "67dad8ae45125407e384edab"
 }
+

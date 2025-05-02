@@ -31,7 +31,7 @@ runs:
       uses: actions/setup-java@v4
       with:
         distribution: 'liberica'
-        java-version: '17'
+        java-version: '21
     - name: Publish
       shell: bash
       working-directory: ${{ github.action_path }}
