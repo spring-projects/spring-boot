@@ -18,7 +18,7 @@ package org.springframework.boot.docs.howto.webserver.discoverport
 
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
-import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.boot.web.server.test.LocalServerPort
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MyWebIntegrationTests {

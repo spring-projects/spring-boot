@@ -35,7 +35,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
@@ -52,11 +51,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Base class for testing sub-classes of {@link ServletWebServerConfiguration}.
@@ -165,15 +166,15 @@ public abstract class AbstractServletWebServerAutoConfigurationTests {
 				WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext())
 					.getWebServer();
 				int port = webServer.getPort();
-				TestRestTemplate rest = new TestRestTemplate();
+				RestTemplate rest = new RestTemplate();
 				RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port)
 					.header("Upgrade", "websocket")
 					.header("Connection", "upgrade")
 					.header("Sec-WebSocket-Version", "13")
 					.header("Sec-WebSocket-Key", "key")
 					.build();
-				ResponseEntity<Void> response = rest.exchange(request, Void.class);
-				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+				assertThatExceptionOfType(HttpClientErrorException.Unauthorized.class)
+					.isThrownBy(() -> rest.exchange(request, Void.class));
 			});
 	}
 

@@ -15,7 +15,6 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.deployed"
@@ -40,16 +39,9 @@ dependencies {
 	optional("org.assertj:assertj-core")
 	optional("org.hamcrest:hamcrest-core")
 	optional("org.hamcrest:hamcrest-library")
-	optional("org.htmlunit:htmlunit")
-	optional("org.jetbrains.kotlin:kotlin-stdlib")
-	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.mockito:mockito-core")
 	optional("org.skyscreamer:jsonassert")
-	optional("org.seleniumhq.selenium:htmlunit3-driver") {
-		exclude(group: "com.sun.activation", module: "jakarta.activation")
-	}
-	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql-test")
@@ -61,6 +53,8 @@ dependencies {
 	testImplementation("org.apache.groovy:groovy")
 	testImplementation("org.apache.groovy:groovy-xml")
 	testImplementation("org.eclipse:yasson")
+	testImplementation("org.jetbrains.kotlin:kotlin-reflect")
+	testImplementation("org.jetbrains.kotlin:kotlin-stdlib")
 	testImplementation("org.slf4j:slf4j-api")
 	testImplementation("org.spockframework:spock-core")
 	testImplementation("org.springframework:spring-webmvc")

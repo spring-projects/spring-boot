@@ -18,7 +18,7 @@ package org.springframework.boot.docs.testing.utilities.testresttemplate
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.server.test.client.TestRestTemplate
 
 class MyTests {
 
