@@ -24,6 +24,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot-web-server-test"))
 	api("com.jayway.jsonpath:json-path")
 	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("net.minidev:json-smart")

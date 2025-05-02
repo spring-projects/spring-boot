@@ -17,7 +17,7 @@
 package smoketest.secure.jersey;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.server.test.LocalServerPort;
 
 /**
  * Integration tests for actuator endpoints with custom security configuration.

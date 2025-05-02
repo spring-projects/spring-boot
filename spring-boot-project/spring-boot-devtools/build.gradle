@@ -47,6 +47,7 @@ dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-web-server-test"))
 	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
 	intTestImplementation("net.bytebuddy:byte-buddy")
 
