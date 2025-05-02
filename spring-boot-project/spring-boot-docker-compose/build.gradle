@@ -25,7 +25,7 @@ plugins {
 description = "Spring Boot Docker Compose Support"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-all"))
+	api(project(":spring-boot-project:spring-boot"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
