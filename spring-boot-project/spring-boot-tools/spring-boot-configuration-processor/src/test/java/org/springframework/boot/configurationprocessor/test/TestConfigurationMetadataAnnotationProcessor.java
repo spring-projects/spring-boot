@@ -36,6 +36,7 @@ import org.springframework.boot.configurationprocessor.ConfigurationMetadataAnno
  * @author Scott Frederick
  */
 @SupportedAnnotationTypes({ TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+		TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION,
 		TestConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
 		TestConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
 		TestConfigurationMetadataAnnotationProcessor.JMX_ENDPOINT_ANNOTATION,
@@ -47,6 +48,8 @@ import org.springframework.boot.configurationprocessor.ConfigurationMetadataAnno
 public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationMetadataAnnotationProcessor {
 
 	public static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
+
+	public static final String CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationPropertiesSource";
 
 	public static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
 
@@ -84,6 +87,11 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	@Override
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
+	}
+
+	@Override
+	protected String configurationPropertiesSourceAnnotation() {
+		return CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION;
 	}
 
 	@Override

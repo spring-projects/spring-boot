@@ -72,6 +72,16 @@ public class ItemHint implements Comparable<ItemHint> {
 		return Collections.unmodifiableList(this.providers);
 	}
 
+	/**
+	 * Return an {@link ItemHint} with the given prefix applied.
+	 * @param prefix the prefix to apply
+	 * @return a new {@link ItemHint} with the same of this instance whose property name
+	 * has the prefix applied to it
+	 */
+	public ItemHint applyPrefix(String prefix) {
+		return new ItemHint(ConventionUtils.toDashedCase(prefix) + "." + this.name, this.values, this.providers);
+	}
+
 	@Override
 	public int compareTo(ItemHint other) {
 		return getName().compareTo(other.getName());

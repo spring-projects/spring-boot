@@ -27,6 +27,7 @@ import org.springframework.core.test.tools.TestCompiler;
  * Read the contents of metadata generated from the {@link TestCompiler}.
  *
  * @author Scott Frederick
+ * @author Stephane Nicoll
  */
 public final class CompiledMetadataReader {
 
@@ -36,7 +37,11 @@ public final class CompiledMetadataReader {
 	}
 
 	public static ConfigurationMetadata getMetadata(Compiled compiled) {
-		InputStream inputStream = compiled.getClassLoader().getResourceAsStream(METADATA_FILE);
+		return getMetadata(compiled, METADATA_FILE);
+	}
+
+	public static ConfigurationMetadata getMetadata(Compiled compiled, String location) {
+		InputStream inputStream = compiled.getClassLoader().getResourceAsStream(location);
 		try {
 			if (inputStream != null) {
 				return new JsonMarshaller().read(inputStream);
@@ -46,7 +51,7 @@ public final class CompiledMetadataReader {
 			}
 		}
 		catch (Exception ex) {
-			throw new RuntimeException("Failed to read metadata", ex);
+			throw new RuntimeException("Failed to read metadata fom '%s'".formatted(location), ex);
 		}
 	}
 

@@ -32,6 +32,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
+import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
+
 /**
  * Resolve {@link PropertyDescriptor} instances.
  *
@@ -91,11 +93,13 @@ class PropertyDescriptorResolver {
 		ExecutableElement setter = members.getPublicSetter(name, type);
 		VariableElement field = members.getFields().get(name);
 		RecordComponentElement recordComponent = members.getRecordComponents().get(name);
-		return (recordComponent != null)
+		SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
+		PropertyDescriptor propertyDescriptor = (recordComponent != null)
 				? new RecordParameterPropertyDescriptor(name, type, parameter, declaringElement, getter,
 						recordComponent)
 				: new ConstructorParameterPropertyDescriptor(name, type, parameter, declaringElement, getter, setter,
 						field);
+		return sourceMetadata.createPropertyDescriptor(name, propertyDescriptor);
 	}
 
 	private String getPropertyName(VariableElement parameter) {
@@ -118,16 +122,23 @@ class PropertyDescriptorResolver {
 			VariableElement field = members.getFields().get(name);
 			ExecutableElement getter = findMatchingGetter(members, getters, field);
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates, new JavaBeanPropertyDescriptor(getPropertyName(field, name), propertyType,
-					declaringElement, getter, members.getPublicSetter(name, propertyType), field, factoryMethod));
+			SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
+			register(candidates,
+					sourceMetadata.createPropertyDescriptor(getPropertyName(field, name),
+							(propertyName) -> new JavaBeanPropertyDescriptor(propertyName, propertyType,
+									declaringElement, getter, members.getPublicSetter(name, propertyType), field,
+									factoryMethod)));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
 			TypeMirror propertyType = field.asType();
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
-			register(candidates, new LombokPropertyDescriptor(getPropertyName(field, name), propertyType,
-					declaringElement, getter, setter, field, factoryMethod));
+			SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
+			register(candidates,
+					sourceMetadata.createPropertyDescriptor(getPropertyName(field, name),
+							(propertyName) -> new LombokPropertyDescriptor(propertyName, propertyType, declaringElement,
+									getter, setter, field, factoryMethod)));
 		});
 		return candidates.values().stream();
 	}
