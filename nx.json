@@ -20,7 +20,7 @@
       "!{projectRoot}/src/test/**/*"
     ]
   },
-  "bustCache": 1,
+  "bustCache": 49,
   "nxCloudUrl": "https://staging.nx.app",
   "nxCloudId": "67a56832eb5d9093e3ebe776"
 }
