@@ -274,7 +274,7 @@ If you have already directly xref:features/external-config.adoc#features.externa
 [[features.external-config.files.importing]]
 === Importing Additional Data
 
-Application properties may import further config data from other locations using the `spring.config.import` property.
+Application properties may import further config data from other locations using the configprop:spring.config.import[] property.
 Imports are processed as they are discovered, and are treated as additional documents inserted immediately below the one that declares the import.
 
 For example, you might have the following in your classpath `application.properties` file:
@@ -293,6 +293,46 @@ Values from the imported `dev.properties` will take precedence over the file tha
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
 
 An import will only be imported once no matter how many times it is declared.
+
+
+
+[[features.external-config.files.importing.fixed-and-relative-paths]]
+==== Using "`Fixed`" and "`Import Relative`" Locations
+
+Imports may be specified as _fixed_ or _import relative_ locations.
+An fixed location always resolves to the same underlying resource, regardless of the where the configprop:spring.config.import[] property is declared.
+An import relative location resolves relative to file that declares the the configprop:spring.config.import[] property.
+
+A location starting with a forward slash (`/`) or a URL style prefix (`file:`, `classpath:`, etc) is considered fixed.
+All other locations are considered import relative.
+
+NOTE: `optional:` prefixes are not considered when determining if a location is fixed or import relative.
+
+As an example, say we have a `/demo` directory containing our `application.jar` file.
+We might add a `/demo/application.properties` file with the following content:
+
+[,properties]
+----
+spring.config.import=optional:core/core.properties
+----
+
+This is an import relative location and so will attempt to load the file `/demo/core/core.properties` if it exists.
+
+If `/demo/core/core.properties` has the following content:
+
+[,properties]
+----
+spring.config.import=optional:extra/extra.properties
+----
+
+It will attempt to load `/demo/core/extra/extra.properties`.
+The `optional:extra/extra.properties` is relative to `/demo/core/core.properties` so the full directory is `/demo/core/` + `extra/extra.properties`.
+
+
+
+[[features.external-config.files.importing.import-property-order]]
+==== Property Ordering
+
 The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
