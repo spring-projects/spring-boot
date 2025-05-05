@@ -168,7 +168,7 @@ class StandardConfigDataLocationResolverTests {
 	@WithResource(name = "config/1-first/testproperties.properties", content = "first.property=apple")
 	@WithResource(name = "config/2-second/testproperties.properties", content = "second.property=ball")
 	@WithResource(name = "config/nested/3-third/testproperties.properties", content = "third.property=shouldnotbefound")
-	void resolveWhenLocationIsWildcardDirectoriesSortsAlphabeticallyBasedOnAbsolutePath(
+	void resolveWhenLocationIsWildcardDirectoriesSortsAlphabeticallyBasedOnFixedPath(
 			@ResourcesRoot Path resourcesRoot) {
 		ConfigDataLocation location = ConfigDataLocation.of("file:" + resourcesRoot + "/config/*/");
 		this.environment.setProperty("spring.config.name", "testproperties");

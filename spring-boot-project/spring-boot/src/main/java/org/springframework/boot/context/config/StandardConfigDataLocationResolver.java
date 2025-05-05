@@ -186,8 +186,8 @@ public class StandardConfigDataLocationResolver
 	private String getResourceLocation(ConfigDataLocationResolverContext context,
 			ConfigDataLocation configDataLocation) {
 		String resourceLocation = configDataLocation.getNonPrefixedValue(PREFIX);
-		boolean isAbsolute = resourceLocation.startsWith("/") || URL_PREFIX.matcher(resourceLocation).matches();
-		if (isAbsolute) {
+		boolean isFixedPath = resourceLocation.startsWith("/") || URL_PREFIX.matcher(resourceLocation).matches();
+		if (isFixedPath) {
 			return resourceLocation;
 		}
 		ConfigDataResource parent = context.getParent();
