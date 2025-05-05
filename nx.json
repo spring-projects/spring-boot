@@ -20,7 +20,21 @@
       "!{projectRoot}/src/test/**/*"
     ]
   },
-  "bustCache": 50,
+  "targetDefaults": {
+    "homebrewFormula": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    },
+    "antora": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    }
+  },
+  "bustCache": 12,
   "nxCloudUrl": "https://staging.nx.app",
   "nxCloudId": "67a56832eb5d9093e3ebe776"
 }

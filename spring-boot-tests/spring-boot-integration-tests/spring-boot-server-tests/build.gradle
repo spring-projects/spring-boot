@@ -24,6 +24,7 @@ dependencies {
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-undertow", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-logging", configuration: "mavenRepository"))
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 }

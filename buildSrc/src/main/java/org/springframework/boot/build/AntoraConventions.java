@@ -42,6 +42,7 @@ import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -163,6 +164,17 @@ public class AntoraConventions {
 			TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		antoraTask.setGroup("Documentation");
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
+
+		antoraTask.getInputs()
+			.file(generateAntoraPlaybookTask.flatMap(GenerateAntoraPlaybook::getOutputFile))
+			.withPropertyName("antoraPlaybookFile")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		antoraTask.getInputs()
+			.dir(project.getLayout().getBuildDirectory().dir(".gradle"))
+			.withPropertyName("gradleBuildDir")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
 		antoraTask.setPlaybook("antora-playbook.yml");
 		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
 		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArs(project, antoraTask)));

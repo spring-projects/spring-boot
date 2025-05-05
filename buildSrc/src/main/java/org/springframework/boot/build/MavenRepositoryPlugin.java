@@ -70,6 +70,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	}
 
 	private void setUpProjectRepository(Project project, Task publishTask, File repositoryLocation) {
+		publishTask.getOutputs().dir(repositoryLocation);
 		publishTask.doFirst(new CleanAction(repositoryLocation));
 		Configuration projectRepository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
 		project.getArtifacts()
