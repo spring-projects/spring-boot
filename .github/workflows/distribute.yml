@@ -26,7 +26,8 @@ jobs:
           curl -s -u "${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}:${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}" \
             -X POST -H "X-JFrog-Signing-Key-Name: packagesKey" -H "Content-Type: application/json" \
             "https://usw1.packages.broadcom.com/lifecycle/api/v2/release_bundle?project=spring" \
-            -d '{"release_bundle_name": "TNZ-spring-boot-commercial", "release_bundle_version": "${{ inputs.version }}", "skip_docker_manifest_resolution": true, "source_type": "builds", "source": {"builds": [ {"build_repository": "spring-build-info", "build_name": "spring-boot-commercial-${{ inputs.version }}", "build_number": "${{ inputs.build-number }}", "include_dependencies": false}]}}'
+            -d '{"release_bundle_name": "TNZ-spring-boot-commercial", "release_bundle_version": "${{ inputs.version }}", "skip_docker_manifest_resolution": true, "source_type": "builds", "source": {"builds": [ {"build_repository": "spring-build-info", "build_name": "spring-boot-commercial-${{ inputs.version }}", "build_number": "${{ inputs.build-number }}", "include_dependencies": false}]}}' | \
+            jq -e 'if has("repository_key") then . else halt_error end'
       - name: Sleep
         if: ${{ vars.COMMERCIAL && inputs.create-bundle }}
         shell: bash
@@ -38,4 +39,5 @@ jobs:
           curl -s -u "${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}:${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}" \
             -X POST -H "Content-Type: application/json" \
             "https://usw1.packages.broadcom.com/lifecycle/api/v2/distribution/distribute/TNZ-spring-boot-commercial/${{ inputs.version }}?project=spring" \
-            -d '{"auto_create_missing_repositories": "false", "distribution_rules": [{"site_name": "JP-SaaS"}], "modifications": {"mappings": [{"input": "spring-enterprise-maven-prod-local/(.*)", "output": "spring-enterprise/$1"}]}}'
+            -d '{"auto_create_missing_repositories": "false", "distribution_rules": [{"site_name": "JP-SaaS"}], "modifications": {"mappings": [{"input": "spring-enterprise-maven-prod-local/(.*)", "output": "spring-enterprise/$1"}]}}' | \
+            jq -e 'if has("id") then . else halt_error end'
