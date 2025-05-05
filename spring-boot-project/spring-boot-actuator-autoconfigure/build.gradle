@@ -214,6 +214,10 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
+tasks.named("generateAntoraPlaybook") {
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
+}
+
 antoraContributions {
 	'actuator-rest-api' {
 		aggregateContent {
