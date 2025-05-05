@@ -18,54 +18,54 @@ jobs:
     if: github.repository_owner == 'spring-projects'
     runs-on: ubuntu-latest
     steps:
-    - name: Check Out
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Fetch Main Branch
-      run: git fetch origin main:main
-    - name: Set Up Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-    - name: Check Out 'package.json' From Main
-      run: node run.js --only-checkout
-    - name: Cache Files
-      uses: actions/cache@v4
-      with:
-        key: antora-${{ hashFiles('package-lock.json', 'antora-playbook.yml') }}
-        path: |
-          ~/.npm
-          ~/.cache/antora
-    - name: Install and Run Antora
-      env:
-        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
-        BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      run: node run.js --no-checkout
-    - name: Sync Documentation
-      uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.20
-      with:
-        docs-username: ${{ secrets.DOCS_USERNAME }}
-        docs-host: ${{ secrets.DOCS_HOST }}
-        docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
-        docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
-        httpdocs-path: /spring-boot/antora/reference
-      env:
-        BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
-        BUILD_VERSION: ${{ github.event.inputs.build-version }}
-    - name: Bust Cloudflare Cache
-      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
-      with:
-        context-root: spring-boot
-        context-path: /
-        cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-        cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
-    - name: Send Notification
-      if: failure()
-      uses: ./.github/actions/send-notification
-      with:
-        run-name: ${{ format('{0} | Build and Deploy Docs', github.ref_name) }}
-        status: ${{ job.status }}
-        webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+      - name: Check Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch Main Branch
+        run: git fetch origin main:main
+      - name: Set Up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check Out 'package.json' From Main
+        run: node run.js --only-checkout
+      - name: Cache Files
+        uses: actions/cache@v4
+        with:
+          key: antora-${{ hashFiles('package-lock.json', 'antora-playbook.yml') }}
+          path: |
+            ~/.npm
+            ~/.cache/antora
+      - name: Install and Run Antora
+        env:
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
+          BUILD_VERSION: ${{ github.event.inputs.build-version }}
+        run: node run.js --no-checkout
+      - name: Sync Documentation
+        uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.20
+        with:
+          docs-username: ${{ secrets.DOCS_USERNAME }}
+          docs-host: ${{ secrets.DOCS_HOST }}
+          docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
+          docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
+          httpdocs-path: /spring-boot/antora
+        env:
+          BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
+          BUILD_VERSION: ${{ github.event.inputs.build-version }}
+      - name: Bust Cloudflare Cache
+        uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
+        with:
+          context-root: spring-boot
+          context-path: /
+          cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
+      - name: Send Notification
+        if: failure()
+        uses: ./.github/actions/send-notification
+        with:
+          run-name: ${{ format('{0} | Build and Deploy Docs', github.ref_name) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
