@@ -3553,13 +3553,7 @@
         "name": "spring.datasource.hikari.credentials"
       },
       {
-        "name": "spring.datasource.hikari.data-source-properties"
-      },
-      {
         "name": "spring.datasource.hikari.exception-override"
-      },
-      {
-        "name": "spring.datasource.hikari.health-check-properties"
       },
       {
         "name": "spring.datasource.hikari.metrics-tracker-factory"
@@ -3568,22 +3562,10 @@
         "name": "spring.datasource.hikari.scheduled-executor"
       },
       {
-        "name": "spring.datasource.oracleucp.connection-factory-properties"
-      },
-      {
-        "name": "spring.datasource.oracleucp.connection-properties"
-      },
-      {
         "name": "spring.datasource.oracleucp.connection-wait-duration-in-millis"
       },
       {
         "name": "spring.datasource.oracleucp.hostname-resolver"
-      },
-      {
-        "name": "spring.datasource.oracleucp.pdb-roles"
-      },
-      {
-        "name": "spring.datasource.tomcat.db-properties"
       }
     ]
   }
