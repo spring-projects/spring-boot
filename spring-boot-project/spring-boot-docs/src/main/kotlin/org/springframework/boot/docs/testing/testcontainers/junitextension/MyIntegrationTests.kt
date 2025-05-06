@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections;
+package org.springframework.boot.docs.testing.testcontainers.junitextension
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
@@ -22,19 +22,22 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 @Testcontainers
 @SpringBootTest
 class MyIntegrationTests {
 
-	@Container
-	@ServiceConnection
-	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
-
 	@Test
-	void myTest() {
-		/**/ System.out.println(neo4j);
+	fun myTest() {
+		/**/ println()
 	}
 
+	companion object {
+
+		@Container
+		@JvmStatic
+		val neo4j = Neo4jContainer("neo4j:5");
+
+	}
 }
+

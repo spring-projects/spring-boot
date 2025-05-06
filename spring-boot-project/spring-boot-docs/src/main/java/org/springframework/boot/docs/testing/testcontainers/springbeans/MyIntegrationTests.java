@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.vanilla
+package org.springframework.boot.docs.testing.testcontainers.springbeans;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.containers.MongoDBContainer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.context.annotation.Import;
 
-@Testcontainers
 @SpringBootTest
+@Import(MyTestConfiguration.class)
 class MyIntegrationTests {
 
+	@Autowired
+	private MongoDBContainer mongo;
+
 	@Test
-	fun myTest() {
-		// ...
+	void myTest() {
+		/**/ System.out.println(this.mongo);
 	}
 
-	companion object {
-		@Container
-		@JvmStatic
-		val neo4j = Neo4jContainer("neo4j:5");
-	}
 }
-

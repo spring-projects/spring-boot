@@ -82,6 +82,7 @@
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
 	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
+	<suppress files="MyInterface\.java" checks="InterfaceIsType" />
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
 	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
 	<suppress files="ConfigurationPropertyCaching\.java" checks="SpringJavadoc" message="\@since"/>
