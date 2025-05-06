@@ -85,7 +85,7 @@ jobs:
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@45d604504ed4cf717138383936c447afab73a0be # v4.5.10
+        uses: jfrog/setup-jfrog-cli@ff5cb544114ffc152db9cea1cd3d5978d5074946 # v4.5.11
         env:
           JF_ENV_SPRING: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_JF_ARTIFACTORY_SPRING || secrets.JF_ARTIFACTORY_SPRING }}
       - name: Promote open source build
