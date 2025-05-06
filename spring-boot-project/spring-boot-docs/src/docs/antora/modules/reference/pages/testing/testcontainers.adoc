@@ -5,12 +5,93 @@ The https://www.testcontainers.org/[Testcontainers] library provides a way to ma
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 
-Testcontainers can be used in a Spring Boot test as follows:
+In following sections we will describe some of the methods you can use to integrate Testcontainers with your tests.
 
-include-code::vanilla/MyIntegrationTests[]
 
-This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
-In most cases, you will need to configure the application to connect to the service running in the container.
+[[testing.testcontainers.spring-beans]]
+== Using Spring Beans
+
+The containers provided by Testcontainers can be managed by Spring Boot as beans.
+
+To declare a container as a bean, add a javadoc:org.springframework.context.annotation.Bean[format=annotation] method to your test configuration:
+
+include-code::MyTestConfiguration[]
+
+You can then inject and use the container by importing the configuration class in the test class:
+
+include-code::MyIntegrationTests[]
+
+TIP: This method of managing containers is often used in combination with xref:#testing.testcontainers.service-connections[service connection annotations].
+
+
+
+[[testing.testcontainers.junit-extension]]
+== Using the JUnit Extension
+
+Testcontainers provides a JUnit extension which can be used to manage containers in your tests.
+The extension is activated by applying the javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation from Testcontainers to your test class.
+
+You can then use the javadoc:org.testcontainers.junit.jupiter.Container[format=annotation] annotation on static container fields.
+
+The javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation can be used on vanilla JUnit tests, or in combination with javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]:
+
+include-code::MyIntegrationTests[]
+
+The example above will start up a Neo4j container before any of the tests are run.
+The lifecycle of the container instance is managed by Testcontainers, as described in {url-testcontainers-docs}/test_framework_integration/junit_5/#extension[their official documentation].
+
+NOTE: In most cases, you will additionally need to configure the application to connect to the service running in the container.
+
+
+
+[[testing.testcontainers.importing-configuration-interfaces]]
+== Importing Container Configuration Interfaces
+
+A common pattern with Testcontainers is to declare the container instances as static fields in an interface.
+
+For example, the following interface declares two containers, one named `mongo` of type javadoc:org.testcontainers.containers.MongoDBContainer[] and another named `neo4j` of type javadoc:org.testcontainers.containers.Neo4jContainer.Neo4jContainer[]:
+
+include-code::MyContainers[]
+
+When you have containers declared in this way, you can reuse their configuration in multiple tests by having the test classes implement the interface.
+
+It's also possible to use the same interface configuration in your Spring Boot tests.
+To do so, add javadoc:org.springframework.boot.testcontainers.context.ImportTestcontainers[format=annotation] to your test configuration class:
+
+include-code::MyTestConfiguration[]
+
+
+
+[[testing.testcontainers.lifecycle]]
+== Lifecycle of Managed Containers
+
+If you have used the annotations and extensions provided by Testcontainers, then the lifecycle of container instances is managed entirely by Testcontainers.
+Please refer to the {url-testcontainers-docs}[offical Testcontainers documentation] for the information.
+
+When the containers are managed by Spring as beans, then their lifecycle is managed by Spring:
+
+* Container beans are created and started before all other beans.
+
+* Container beans are stopped after the destruction of all other beans.
+
+This process ensures that any beans, which rely on functionality provided by the containers, can use those functionalities.
+It also ensures that they are cleaned up whilst the container is still available.
+
+TIP: When your application beans rely on functionality of containers, prefer configuring the containers as Spring beans to ensure the correct lifecycle behavior.
+
+NOTE: Having containers managed by Testcontainers instead of as Spring beans provides no guarantee of the order in which beans and containers will shutdown.
+It can happen that containers are shutdown before the beans relying on container functionality are cleaned up.
+This can lead to exceptions being thrown by client beans, for example, due to loss of connection.
+
+Container beans are created and started once per application context managed by Spring's TestContext Framework.
+For details about how TestContext Framework manages the underlying application contexts and beans therein, please refer to the {url-spring-framework-docs}[Spring Framework documentation].
+
+Container beans are stopped as part of the TestContext Framework's standard application context shutdown process.
+When the application context gets shutdown, the containers are shutdown as well.
+This usually happens after all tests using that specific cached application context have finished executing.
+It may also happen earlier, depending on the caching behavior configured in TestContext Framework.
+
+NOTE: A single test container instance can, and often is, retained across execution of tests from multiple test classes.
 
 
 

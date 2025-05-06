@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections;
+package org.springframework.boot.docs.testing.testcontainers.junitextension;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
@@ -22,14 +22,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 @Testcontainers
 @SpringBootTest
 class MyIntegrationTests {
 
 	@Container
-	@ServiceConnection
 	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	@Test

@@ -29,7 +29,7 @@ class MyIntegrationTests {
 
 	@Test
 	fun myTest() {
-		// ...
+		/**/ println()
 	}
 
 	companion object {
