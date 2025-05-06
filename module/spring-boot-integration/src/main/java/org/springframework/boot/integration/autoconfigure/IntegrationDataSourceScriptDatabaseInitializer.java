@@ -16,15 +16,13 @@
 
 package org.springframework.boot.integration.autoconfigure;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
-import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
-import org.springframework.boot.sql.init.DatabaseInitializationSettings;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Integration database. May be
@@ -32,9 +30,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Vedran Pavic
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 4.0.0
  */
-public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
+public class IntegrationDataSourceScriptDatabaseInitializer
+		extends PropertiesBasedDataSourceScriptDatabaseInitializer<IntegrationJdbcProperties> {
 
 	/**
 	 * Create a new {@link IntegrationDataSourceScriptDatabaseInitializer} instance.
@@ -43,45 +43,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 	 * @see #getSettings
 	 */
 	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource, IntegrationJdbcProperties properties) {
-		this(dataSource, getSettings(dataSource, properties));
-	}
-
-	/**
-	 * Create a new {@link IntegrationDataSourceScriptDatabaseInitializer} instance.
-	 * @param dataSource the Spring Integration data source
-	 * @param settings the database initialization settings
-	 * @see #getSettings
-	 */
-	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource,
-			DatabaseInitializationSettings settings) {
-		super(dataSource, settings);
-	}
-
-	/**
-	 * Adapts {@link IntegrationJdbcProperties Spring Integration JDBC properties} to
-	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
-	 * placeholders.
-	 * @param dataSource the Spring Integration data source
-	 * @param properties the Spring Integration JDBC properties
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 * @see #IntegrationDataSourceScriptDatabaseInitializer(DataSource,
-	 * DatabaseInitializationSettings)
-	 */
-	static DatabaseInitializationSettings getSettings(DataSource dataSource, IntegrationJdbcProperties properties) {
-		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
-		settings.setMode(properties.getInitializeSchema());
-		settings.setContinueOnError(true);
-		return settings;
-	}
-
-	private static List<String> resolveSchemaLocations(DataSource dataSource, IntegrationJdbcProperties properties) {
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
-		if (StringUtils.hasText(properties.getPlatform())) {
-			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
-		}
-		return platformResolver.resolveAll(dataSource, properties.getSchema());
+		super(dataSource, properties, Map.of(DatabaseDriver.MARIADB, "mysql"));
 	}
 
 }
