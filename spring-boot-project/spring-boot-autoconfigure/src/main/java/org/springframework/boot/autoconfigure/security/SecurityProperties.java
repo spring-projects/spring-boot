@@ -50,7 +50,10 @@ public class SecurityProperties {
 	/**
 	 * Order applied to the {@code WebSecurityCustomizer} that ignores standard static
 	 * resource paths.
+	 * @deprecated since 3.5.0 for removal in 4.0.0 since Spring Security no longer
+	 * recommends using the {@code .ignoring()} method
 	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**

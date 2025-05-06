@@ -48,7 +48,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -60,8 +59,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -158,7 +159,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	}
 
 	/**
-	 * {@link WebSecurityConfigurer} to tell Spring Security to ignore cloudfoundry
+	 * {@link WebSecurityConfigurer} to tell Spring Security to permit cloudfoundry
 	 * specific paths. The Cloud foundry endpoints are protected by their own security
 	 * interceptor.
 	 */
@@ -166,30 +167,25 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
+		private static final int FILTER_CHAIN_ORDER = -1;
+
 		@Bean
-		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer(
-				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
-			return new IgnoredCloudFoundryPathsWebSecurityCustomizer(handlerMapping);
+		@Order(FILTER_CHAIN_ORDER)
+		SecurityFilterChain cloudFoundrySecurityFilterChain(HttpSecurity http,
+				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) throws Exception {
+			RequestMatcher cloudFoundryRequest = getRequestMatcher(handlerMapping);
+			http.securityMatchers((matches) -> matches.requestMatchers(cloudFoundryRequest))
+				.authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll());
+			return http.build();
 		}
 
-	}
-
-	@Order(SecurityProperties.IGNORED_ORDER)
-	static class IgnoredCloudFoundryPathsWebSecurityCustomizer implements WebSecurityCustomizer {
-
-		private final PathMappedEndpoints pathMappedEndpoints;
-
-		IgnoredCloudFoundryPathsWebSecurityCustomizer(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
-			this.pathMappedEndpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
-		}
-
-		@Override
-		public void customize(WebSecurity web) {
+		private RequestMatcher getRequestMatcher(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
+			PathMappedEndpoints endpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
 			List<RequestMatcher> matchers = new ArrayList<>();
-			this.pathMappedEndpoints.getAllPaths().forEach((path) -> matchers.add(pathMatcher(path + "/**")));
+			endpoints.getAllPaths().forEach((path) -> matchers.add(pathMatcher(path + "/**")));
 			matchers.add(pathMatcher(BASE_PATH));
 			matchers.add(pathMatcher(BASE_PATH + "/"));
-			web.ignoring().requestMatchers(new OrRequestMatcher(matchers));
+			return new OrRequestMatcher(matchers);
 		}
 
 		private PathPatternRequestMatcher pathMatcher(String path) {

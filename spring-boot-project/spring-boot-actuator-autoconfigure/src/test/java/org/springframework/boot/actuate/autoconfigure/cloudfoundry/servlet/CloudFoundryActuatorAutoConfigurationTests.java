@@ -175,7 +175,6 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 			.run((context) -> {
 				SecurityFilterChain chain = getSecurityFilterChain(context);
-				assertThat(chain.getFilters()).isEmpty();
 				MockHttpServletRequest request = new MockHttpServletRequest();
 				testCloudFoundrySecurity(request, BASE_PATH, chain);
 				testCloudFoundrySecurity(request, BASE_PATH + "/", chain);
