@@ -721,9 +721,12 @@ If `max` is provided, then `value` is the minimum value and `max` is the maximum
 
 Spring Boot supports setting a prefix for environment properties.
 This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.
-The prefix for system environment properties can be set directly on javadoc:org.springframework.boot.SpringApplication[].
+The prefix for system environment properties can be set directly on javadoc:org.springframework.boot.SpringApplication[] by calling the `setEnvironmentPrefix(...)` method before the application is run.
 
-For example, if you set the prefix to `input`, a property such as `remote.timeout` will also be resolved as `input.remote.timeout` in the system environment.
+For example, if you set the prefix to `input`, a property such as `remote.timeout` will be resolved as `INPUT_REMOTE_TIMEOUT` in the system environment.
+
+NOTE: The prefix _only_ applies to system environment properties.
+The example above would continue to use `remote.timeout` when reading properties from other sources.
 
 
 
