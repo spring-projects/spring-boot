@@ -300,8 +300,8 @@ An import will only be imported once no matter how many times it is declared.
 ==== Using "`Fixed`" and "`Import Relative`" Locations
 
 Imports may be specified as _fixed_ or _import relative_ locations.
-An fixed location always resolves to the same underlying resource, regardless of the where the configprop:spring.config.import[] property is declared.
-An import relative location resolves relative to file that declares the the configprop:spring.config.import[] property.
+A fixed location always resolves to the same underlying resource, regardless of where the configprop:spring.config.import[] property is declared.
+An import relative location resolves relative to the file that declares the configprop:spring.config.import[] property.
 
 A location starting with a forward slash (`/`) or a URL style prefix (`file:`, `classpath:`, etc) is considered fixed.
 All other locations are considered import relative.
