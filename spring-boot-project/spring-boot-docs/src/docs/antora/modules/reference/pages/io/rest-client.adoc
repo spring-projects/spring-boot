@@ -156,9 +156,9 @@ TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttpr
 [[io.rest-client.restclient.ssl]]
 === RestClient SSL Support
 
-If you need custom SSL configuration on the javadoc:org.springframework.http.client.ClientHttpRequestFactory[] used by the javadoc:org.springframework.web.client.RestClient[], you can inject a javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] instance that can be used with the builder's `apply` method.
+If you need custom SSL configuration on the javadoc:org.springframework.http.client.ClientHttpRequestFactory[] used by the javadoc:org.springframework.web.client.RestClient[], you can inject a javadoc:org.springframework.boot.http.client.rest.autoconfigure.RestClientSsl[] instance that can be used with the builder's `apply` method.
 
-The javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
+The javadoc:org.springframework.boot.http.client.rest.autoconfigure.RestClientSsl[] interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
 
 The following code shows a typical example:
 

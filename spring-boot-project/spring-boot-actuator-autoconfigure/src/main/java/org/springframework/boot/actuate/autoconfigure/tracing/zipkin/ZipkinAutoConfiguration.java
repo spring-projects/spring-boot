@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -39,7 +38,7 @@ import org.springframework.context.annotation.Import;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-@AutoConfiguration(after = RestTemplateAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration")
 @ConditionalOnClass(Encoding.class)
 @Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)

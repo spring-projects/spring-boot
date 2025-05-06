@@ -22,8 +22,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.client.AbstractHttpClientProperties.Ssl;
 import org.springframework.boot.autoconfigure.http.client.reactive.AbstractClientHttpConnectorProperties.Connector;
+import org.springframework.boot.autoconfigure.http.client.reactive.AbstractClientHttpConnectorProperties.Ssl;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;

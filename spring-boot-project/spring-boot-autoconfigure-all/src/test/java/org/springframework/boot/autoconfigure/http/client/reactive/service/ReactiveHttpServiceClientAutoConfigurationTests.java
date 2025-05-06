@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.client.service.HttpServiceClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
@@ -59,9 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(HttpServiceClientAutoConfiguration.class,
-				ReactiveHttpServiceClientAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class,
-				WebClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpServiceClientAutoConfiguration.class,
+				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {

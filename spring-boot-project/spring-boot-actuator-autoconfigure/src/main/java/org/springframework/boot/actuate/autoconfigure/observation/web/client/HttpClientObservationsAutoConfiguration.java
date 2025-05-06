@@ -31,8 +31,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,8 +50,11 @@ import org.springframework.core.annotation.Order;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-@AutoConfiguration(after = { ObservationAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		RestTemplateAutoConfiguration.class, WebClientAutoConfiguration.class, RestClientAutoConfiguration.class })
+@AutoConfiguration(
+		after = { ObservationAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+				WebClientAutoConfiguration.class },
+		afterName = { "org.springframework.boot.http.client.rest.autoconfigure.RestClientAutoConfiguration",
+				"org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration" })
 @ConditionalOnClass(Observation.class)
 @ConditionalOnBean(ObservationRegistry.class)
 @Import({ RestTemplateObservationConfiguration.class, WebClientObservationConfiguration.class,
