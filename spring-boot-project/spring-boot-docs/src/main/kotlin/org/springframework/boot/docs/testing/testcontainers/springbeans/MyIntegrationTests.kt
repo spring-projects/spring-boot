@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.boot.docs.testing.testcontainers.springbeans
 
-package org.springframework.boot.docs.testing.testcontainers.importcontainers;
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.testcontainers.containers.MongoDBContainer
 
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
+@SpringBootTest
+@Import(MyTestConfiguration::class)
+class MyIntegrationTests {
 
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+	@Autowired
+	private val mongo: MongoDBContainer? = null
 
-interface MyInterface {
-
-	@Container
-	@ServiceConnection
-	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
-
-	@Container
-	@ServiceConnection
-	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
+	@Test
+	fun myTest() {
+		/**/ println()
+	}
 
 }

@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.beandeclaration;
+package org.springframework.boot.docs.testing.testcontainers.importingconfigurationinterfaces;
 
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
 
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Bean;
+interface MyContainers {
 
-@TestConfiguration(proxyBeanMethods = false)
-class BeanDeclarationConfig {
+	@Container
+	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
 
-	@ServiceConnection
-	@Bean
-	MongoDBContainer container() {
-		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
-	}
+	@Container
+	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
 
 }

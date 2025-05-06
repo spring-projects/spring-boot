@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.importcontainers;
+package org.springframework.boot.docs.testing.testcontainers.springbeans;
 
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.context.ImportTestcontainers;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MongoDBContainer;
 
-@TestConfiguration(proxyBeanMethods = false)
-@ImportTestcontainers(MyInterface.class)
-class MyConfiguration {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+
+@SpringBootTest
+@Import(MyTestConfiguration.class)
+class MyIntegrationTests {
+
+	@Autowired
+	private MongoDBContainer mongo;
+
+	@Test
+	void myTest() {
+		/**/ System.out.println(this.mongo);
+	}
 
 }

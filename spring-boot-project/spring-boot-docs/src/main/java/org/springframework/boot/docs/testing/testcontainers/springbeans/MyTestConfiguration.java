@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.testcontainers.springbeans;
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.utility.DockerImageName;
+
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 
 @TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
+class MyTestConfiguration {
 
 	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+	MongoDBContainer mongoDbContainer() {
+		return new MongoDBContainer(DockerImageName.parse("mongo:5.0"));
 	}
 
 }
