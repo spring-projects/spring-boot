@@ -37,7 +37,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -315,16 +314,6 @@ class RestClientAutoConfigurationTests {
 		new ReactiveWebApplicationContextRunner().withPropertyValues("spring.threads.virtual.enabled=true")
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CodecConfiguration {
-
-		@Bean
-		CodecCustomizer myCodecCustomizer() {
-			return mock(CodecCustomizer.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
