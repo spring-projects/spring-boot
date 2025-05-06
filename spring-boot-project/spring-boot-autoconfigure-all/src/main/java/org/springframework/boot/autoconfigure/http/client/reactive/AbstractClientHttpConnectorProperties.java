@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.http.client.reactive;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
-import org.springframework.boot.autoconfigure.http.client.AbstractHttpClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.http.client.reactive.ClientHttpConnector;
@@ -32,12 +33,60 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  * @since 3.5.0
  * @see ClientHttpConnectorSettings
  */
-public abstract class AbstractClientHttpConnectorProperties extends AbstractHttpClientProperties {
+public abstract class AbstractClientHttpConnectorProperties {
+
+	/**
+	 * Handling for HTTP redirects.
+	 */
+	private HttpRedirects redirects;
+
+	/**
+	 * Default connect timeout for a client HTTP request.
+	 */
+	private Duration connectTimeout;
+
+	/**
+	 * Default read timeout for a client HTTP request.
+	 */
+	private Duration readTimeout;
+
+	/**
+	 * Default SSL configuration for a client HTTP request.
+	 */
+	private final Ssl ssl = new Ssl();
 
 	/**
 	 * Default connector used for a client HTTP request.
 	 */
 	private Connector connector;
+
+	public HttpRedirects getRedirects() {
+		return this.redirects;
+	}
+
+	public void setRedirects(HttpRedirects redirects) {
+		this.redirects = redirects;
+	}
+
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
+	}
+
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
 
 	public Connector getConnector() {
 		return this.connector;
@@ -45,6 +94,26 @@ public abstract class AbstractClientHttpConnectorProperties extends AbstractHttp
 
 	public void setConnector(Connector connector) {
 		this.connector = connector;
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * SSL bundle to use.
+		 */
+		private String bundle;
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 	/**

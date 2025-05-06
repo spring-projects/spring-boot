@@ -24,7 +24,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
  * apply to Spring's reactive client HTTP connectors.
  *
  * @author Phillip Webb
- * @since 3.5.0
+ * @since 4.0.0
  * @see ClientHttpConnectorSettings
  */
 @ConfigurationProperties("spring.http.reactiveclient")

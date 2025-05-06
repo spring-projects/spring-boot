@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.http.client.HttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectors;
 import org.springframework.boot.autoconfigure.http.client.reactive.HttpReactiveClientProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -39,7 +38,7 @@ import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
  * A {@link RestClientHttpServiceGroupConfigurer} that configures the group and its
- * underlying {@link RestClient} using {@link HttpClientProperties}.
+ * underlying {@link RestClient} using {@link HttpReactiveClientProperties}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Phillip Webb
