@@ -81,6 +81,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class QuartzAutoConfigurationTests {
@@ -556,7 +557,7 @@ class QuartzAutoConfigurationTests {
 		@Bean
 		QuartzDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
 				QuartzProperties properties) {
-			return new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties);
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
 		}
 
 	}
