@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.web.reactive.webflux.httpcodecs
 
-import org.springframework.boot.web.codec.CodecCustomizer
+import org.springframework.boot.http.codec.CodecCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.http.codec.CodecConfigurer
 import org.springframework.http.codec.ServerSentEventHttpMessageReader

@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.web.server.test.client.reactive.WebTestClientBuilderCustomizer;
 import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;

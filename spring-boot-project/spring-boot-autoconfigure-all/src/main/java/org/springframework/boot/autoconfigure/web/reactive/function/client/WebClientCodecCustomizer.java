@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.util.List;
 
-import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.web.reactive.function.client.WebClient;
 
