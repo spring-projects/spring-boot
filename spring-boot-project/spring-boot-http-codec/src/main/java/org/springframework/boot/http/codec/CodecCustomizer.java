@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.codec;
+package org.springframework.boot.http.codec;
 
 import org.springframework.http.codec.CodecConfigurer;
 
@@ -23,7 +23,7 @@ import org.springframework.http.codec.CodecConfigurer;
  * client and/or server with a {@link CodecConfigurer}.
  *
  * @author Brian Clozel
- * @since 2.0.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface CodecCustomizer {

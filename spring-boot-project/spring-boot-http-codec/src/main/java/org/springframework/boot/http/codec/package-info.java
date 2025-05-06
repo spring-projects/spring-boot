@@ -17,4 +17,4 @@
 /**
  * Support for web-based codecs.
  */
-package org.springframework.boot.web.codec;
+package org.springframework.boot.http.codec;

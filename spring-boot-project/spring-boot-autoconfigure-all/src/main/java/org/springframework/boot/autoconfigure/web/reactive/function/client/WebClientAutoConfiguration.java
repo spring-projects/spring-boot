@@ -26,8 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
+import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
