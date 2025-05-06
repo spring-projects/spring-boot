@@ -30,7 +30,6 @@ import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Red
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -223,16 +222,6 @@ class RestClientAutoConfigurationTests {
 				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2,
 						context.getBean(HttpMessageConvertersRestClientCustomizer.class)));
 			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CodecConfiguration {
-
-		@Bean
-		CodecCustomizer myCodecCustomizer() {
-			return mock(CodecCustomizer.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
