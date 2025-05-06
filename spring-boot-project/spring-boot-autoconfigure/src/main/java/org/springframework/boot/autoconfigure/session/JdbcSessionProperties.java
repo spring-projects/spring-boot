@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
 
@@ -25,10 +25,11 @@ import org.springframework.session.SaveMode;
  * Configuration properties for JDBC backed Spring Session.
  *
  * @author Vedran Pavic
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties("spring.session.jdbc")
-public class JdbcSessionProperties {
+public class JdbcSessionProperties extends DatabaseInitializationProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "session/jdbc/schema-@@platform@@.sql";
@@ -36,17 +37,6 @@ public class JdbcSessionProperties {
 	private static final String DEFAULT_TABLE_NAME = "SPRING_SESSION";
 
 	private static final String DEFAULT_CLEANUP_CRON = "0 * * * * *";
-
-	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
-
-	/**
-	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
-	 * Auto-detected by default.
-	 */
-	private String platform;
 
 	/**
 	 * Name of the database table used to store sessions.
@@ -59,11 +49,6 @@ public class JdbcSessionProperties {
 	private String cleanupCron = DEFAULT_CLEANUP_CRON;
 
 	/**
-	 * Database schema initialization mode.
-	 */
-	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
-
-	/**
 	 * Sessions flush mode. Determines when session changes are written to the session
 	 * store.
 	 */
@@ -74,22 +59,6 @@ public class JdbcSessionProperties {
 	 * session store.
 	 */
 	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
-
-	public String getSchema() {
-		return this.schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	public String getPlatform() {
-		return this.platform;
-	}
-
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
 
 	public String getTableName() {
 		return this.tableName;
@@ -107,14 +76,6 @@ public class JdbcSessionProperties {
 		this.cleanupCron = cleanupCron;
 	}
 
-	public DatabaseInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
-	}
-
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
-	}
-
 	public FlushMode getFlushMode() {
 		return this.flushMode;
 	}
@@ -129,6 +90,11 @@ public class JdbcSessionProperties {
 
 	public void setSaveMode(SaveMode saveMode) {
 		this.saveMode = saveMode;
+	}
+
+	@Override
+	public String getDefaultSchemaLocation() {
+		return DEFAULT_SCHEMA_LOCATION;
 	}
 
 }
