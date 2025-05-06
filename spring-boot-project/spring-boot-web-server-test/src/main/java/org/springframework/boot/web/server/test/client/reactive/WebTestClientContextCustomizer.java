@@ -32,8 +32,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.server.reactive.AbstractReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -56,6 +56,13 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
  * @author Stephane Nicoll
  */
 class WebTestClientContextCustomizer implements ContextCustomizer {
+
+	private static final boolean codecCustomizerPresent;
+
+	static {
+		ClassLoader loader = WebTestClientContextCustomizerFactory.class.getClassLoader();
+		codecCustomizerPresent = ClassUtils.isPresent("org.springframework.boot.http.codec.CodecCustomizer", loader);
+	}
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
@@ -172,7 +179,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			String baseUrl = getBaseUrl(sslEnabled, port);
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
 			customizeWebTestClientBuilder(builder, this.applicationContext);
-			customizeWebTestClientCodecs(builder, this.applicationContext);
+			if (codecCustomizerPresent) {
+				WebTestClientCodecCustomizer.customizeWebTestClientCodecs(builder, this.applicationContext);
+			}
 			return builder.baseUrl(baseUrl).build();
 		}
 
@@ -231,14 +240,19 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder, ApplicationContext context) {
-			Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
-			if (!CollectionUtils.isEmpty(codecCustomizers)) {
-				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
-					.codecs((codecs) -> codecCustomizers
-						.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
-					.build());
+		private static final class WebTestClientCodecCustomizer {
+
+			private static void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder,
+					ApplicationContext context) {
+				Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
+				if (!CollectionUtils.isEmpty(codecCustomizers)) {
+					clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs((codecs) -> codecCustomizers
+							.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
+						.build());
+				}
 			}
+
 		}
 
 	}
