@@ -992,11 +992,7 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jersey", "3.1.10") {
-		prohibit {
-			versionRange "[4.0.0-M1,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Jersey", "4.0.0-M2") {
 		group("org.glassfish.jersey") {
 			bom("jersey-bom")
 		}
