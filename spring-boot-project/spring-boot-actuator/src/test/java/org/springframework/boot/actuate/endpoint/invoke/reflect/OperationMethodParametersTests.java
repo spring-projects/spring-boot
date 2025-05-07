@@ -17,10 +17,12 @@
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,6 +45,8 @@ import static org.mockito.Mockito.mock;
  */
 class OperationMethodParametersTests {
 
+	private static final Predicate<Parameter> NON_OPTIONAL = (parameter) -> false;
+
 	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
 	private final Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
@@ -50,48 +54,50 @@ class OperationMethodParametersTests {
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
+			.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class), NON_OPTIONAL))
 			.withMessageContaining("'method' must not be null");
 	}
 
 	@Test
 	void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null, NON_OPTIONAL))
 			.withMessageContaining("'parameterNameDiscoverer' must not be null");
 	}
 
 	@Test
 	void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, mock(ParameterNameDiscoverer.class)))
+			.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, mock(ParameterNameDiscoverer.class),
+					NON_OPTIONAL))
 			.withMessageContaining("Failed to extract parameter names");
 	}
 
 	@Test
 	void hasParametersWhenHasParametersShouldReturnTrue() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
-				new DefaultParameterNameDiscoverer());
+				new DefaultParameterNameDiscoverer(), NON_OPTIONAL);
 		assertThat(parameters.hasParameters()).isTrue();
 	}
 
 	@Test
 	void hasParametersWhenHasNoParametersShouldReturnFalse() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleNoParamsMethod,
-				new DefaultParameterNameDiscoverer());
+				new DefaultParameterNameDiscoverer(), NON_OPTIONAL);
 		assertThat(parameters.hasParameters()).isFalse();
 	}
 
 	@Test
 	void getParameterCountShouldReturnParameterCount() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
-				new DefaultParameterNameDiscoverer());
+				new DefaultParameterNameDiscoverer(), NON_OPTIONAL);
 		assertThat(parameters.getParameterCount()).isOne();
 	}
 
 	@Test
 	void iteratorShouldIterateOperationParameters() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
-				new DefaultParameterNameDiscoverer());
+				new DefaultParameterNameDiscoverer(), NON_OPTIONAL);
 		Iterator<OperationParameter> iterator = parameters.iterator();
 		assertParameters(
 				StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false));
@@ -100,7 +106,7 @@ class OperationMethodParametersTests {
 	@Test
 	void streamShouldStreamOperationParameters() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
-				new DefaultParameterNameDiscoverer());
+				new DefaultParameterNameDiscoverer(), NON_OPTIONAL);
 		assertParameters(parameters.stream());
 	}
 

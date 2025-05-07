@@ -28,10 +28,10 @@ import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import io.prometheus.metrics.model.snapshots.MetricSnapshots;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link Endpoint @Endpoint} that outputs metrics in a format that can be scraped by the
@@ -68,7 +68,8 @@ public class PrometheusScrapeEndpoint {
 	}
 
 	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
-	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format, @Nullable Set<String> includedNames) {
+	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format,
+			@OptionalParameter Set<String> includedNames) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(this.nextMetricsScrapeSize);
 			MetricSnapshots metricSnapshots = (includedNames != null)

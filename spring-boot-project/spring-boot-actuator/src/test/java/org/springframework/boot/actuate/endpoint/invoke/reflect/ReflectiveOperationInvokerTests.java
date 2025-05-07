@@ -16,6 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +33,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.lang.Nullable;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +58,7 @@ class ReflectiveOperationInvokerTests {
 	void setup() {
 		this.target = new Example();
 		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse",
-				ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
+				ApiVersion.class, SecurityContext.class, String.class), OperationType.READ, this::isOptional);
 		this.parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 	}
 
@@ -87,7 +93,7 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	void invokeWhenMissingNonNullableArgumentShouldThrowException() {
+	void invokeWhenMissingNonOptionalArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, this.operationMethod,
 				this.parameterValueMapper);
 		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(() -> invoker
@@ -95,9 +101,10 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	void invokeWhenMissingNullableArgumentShouldInvoke() {
+	void invokeWhenMissingOptionalArgumentShouldInvoke() {
 		OperationMethod operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class,
-				"reverseNullable", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
+				"reverseOptional", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ,
+				this::isOptional);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
@@ -114,6 +121,10 @@ class ReflectiveOperationInvokerTests {
 		assertThat(result).isEqualTo("4321");
 	}
 
+	private boolean isOptional(Parameter parameter) {
+		return MergedAnnotations.from(parameter).isPresent(TestOptional.class);
+	}
+
 	static class Example {
 
 		String reverse(ApiVersion apiVersion, SecurityContext securityContext, String name) {
@@ -122,11 +133,18 @@ class ReflectiveOperationInvokerTests {
 			return new StringBuilder(name).reverse().toString();
 		}
 
-		String reverseNullable(ApiVersion apiVersion, SecurityContext securityContext, @Nullable String name) {
+		String reverseOptional(ApiVersion apiVersion, SecurityContext securityContext, @TestOptional String name) {
 			assertThat(apiVersion).isEqualTo(ApiVersion.LATEST);
 			assertThat(securityContext).isNotNull();
 			return new StringBuilder(String.valueOf(name)).reverse().toString();
 		}
+
+	}
+
+	@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestOptional {
 
 	}
 

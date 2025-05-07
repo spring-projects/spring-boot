@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,7 +171,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
-		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
+		project.replaceText(IncrementalEndpoint.class, "@OptionalParameter String param", "String param");
 		metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));

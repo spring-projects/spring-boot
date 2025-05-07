@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
@@ -33,7 +38,7 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.lang.Nullable;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -158,38 +163,47 @@ class CachingOperationInvokerAdvisorTests {
 
 	private OperationMethod getOperationMethod(String methodName, Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName, parameterTypes);
-		return new OperationMethod(method, OperationType.READ);
+		return new OperationMethod(method, OperationType.READ,
+				(parameter) -> MergedAnnotations.from(parameter).isPresent(TestOptional.class));
 	}
 
+	@SuppressWarnings("deprecation")
 	static class TestOperations {
 
 		String get() {
 			return "";
 		}
 
-		String getWithParameters(@Nullable String foo, String bar) {
+		String getWithParameters(@TestOptional String foo, String bar) {
 			return "";
 		}
 
-		String getWithAllOptionalParameters(@Nullable String foo, @Nullable String bar) {
+		String getWithAllOptionalParameters(@TestOptional String foo, @TestOptional String bar) {
 			return "";
 		}
 
-		String getWithSecurityContext(SecurityContext securityContext, @Nullable String bar) {
+		String getWithSecurityContext(SecurityContext securityContext, @TestOptional String bar) {
 			return "";
 		}
 
-		String getWithApiVersion(ApiVersion apiVersion, @Nullable String bar) {
+		String getWithApiVersion(ApiVersion apiVersion, @TestOptional String bar) {
 			return "";
 		}
 
-		String getWithServerNamespace(WebServerNamespace serverNamespace, @Nullable String bar) {
+		String getWithServerNamespace(WebServerNamespace serverNamespace, @TestOptional String bar) {
 			return "";
 		}
 
 		String getWithServerNamespaceAndOtherMandatory(WebServerNamespace serverNamespace, String bar) {
 			return "";
 		}
+
+	}
+
+	@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestOptional {
 
 	}
 

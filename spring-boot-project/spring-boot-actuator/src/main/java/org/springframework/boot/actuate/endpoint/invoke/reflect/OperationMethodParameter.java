@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
@@ -27,7 +28,6 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * {@link OperationParameter} created from an {@link OperationMethod}.
@@ -43,14 +43,18 @@ class OperationMethodParameter implements OperationParameter {
 
 	private final Parameter parameter;
 
+	private final Predicate<Parameter> optional;
+
 	/**
 	 * Create a new {@link OperationMethodParameter} instance.
 	 * @param name the parameter name
 	 * @param parameter the parameter
+	 * @param optionalParameters predicate to test if a parameter is optional
 	 */
-	OperationMethodParameter(String name, Parameter parameter) {
+	OperationMethodParameter(String name, Parameter parameter, Predicate<Parameter> optionalParameters) {
 		this.name = name;
 		this.parameter = parameter;
+		this.optional = optionalParameters;
 	}
 
 	@Override
@@ -65,13 +69,18 @@ class OperationMethodParameter implements OperationParameter {
 
 	@Override
 	public boolean isMandatory() {
-		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
+		if (isOptional()) {
 			return false;
 		}
 		if (jsr305Present) {
 			return new Jsr305().isMandatory(this.parameter);
 		}
 		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	private boolean isOptional() {
+		return this.parameter.getAnnotationsByType(Nullable.class).length > 0 || this.optional.test(this.parameter);
 	}
 
 	@Override

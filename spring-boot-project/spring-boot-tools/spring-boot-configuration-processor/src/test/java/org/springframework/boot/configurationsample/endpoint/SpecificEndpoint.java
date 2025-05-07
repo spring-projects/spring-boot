@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
+import org.springframework.boot.configurationsample.OptionalParameter;
 import org.springframework.boot.configurationsample.ReadOperation;
 import org.springframework.boot.configurationsample.WebEndpoint;
-import org.springframework.lang.Nullable;
 
 /**
  * A meta-annotated endpoint. Also with a package private read operation that has an
@@ -31,7 +31,7 @@ import org.springframework.lang.Nullable;
 public class SpecificEndpoint {
 
 	@ReadOperation
-	String invoke(@Nullable String param) {
+	String invoke(@OptionalParameter String param) {
 		return "test";
 	}
 

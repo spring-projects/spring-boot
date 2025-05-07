@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -42,20 +43,24 @@ class OperationMethodParameters implements OperationParameters {
 	 * Create a new {@link OperationMethodParameters} instance.
 	 * @param method the source method
 	 * @param parameterNameDiscoverer the parameter name discoverer
+	 * @param optionalParameters predicate to test if a parameter is optional
 	 */
-	OperationMethodParameters(Method method, ParameterNameDiscoverer parameterNameDiscoverer) {
+	OperationMethodParameters(Method method, ParameterNameDiscoverer parameterNameDiscoverer,
+			Predicate<Parameter> optionalParameters) {
 		Assert.notNull(method, "'method' must not be null");
 		Assert.notNull(parameterNameDiscoverer, "'parameterNameDiscoverer' must not be null");
+		Assert.notNull(optionalParameters, "'optionalParameters' must not be null");
 		String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
 		Assert.state(parameterNames != null, () -> "Failed to extract parameter names for " + method);
-		this.operationParameters = getOperationParameters(parameters, parameterNames);
+		this.operationParameters = getOperationParameters(parameters, parameterNames, optionalParameters);
 	}
 
-	private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names) {
+	private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names,
+			Predicate<Parameter> optionalParameters) {
 		List<OperationParameter> operationParameters = new ArrayList<>(parameters.length);
 		for (int i = 0; i < names.length; i++) {
-			operationParameters.add(new OperationMethodParameter(names[i], parameters[i]));
+			operationParameters.add(new OperationMethodParameter(names[i], parameters[i], optionalParameters));
 		}
 		return Collections.unmodifiableList(operationParameters);
 	}

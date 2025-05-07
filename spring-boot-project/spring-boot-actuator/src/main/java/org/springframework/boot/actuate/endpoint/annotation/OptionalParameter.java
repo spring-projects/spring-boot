@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint.incremental;
+package org.springframework.boot.actuate.endpoint.annotation;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.OptionalParameter;
-import org.springframework.boot.configurationsample.ReadOperation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An endpoint that is enabled by default.
+ * Annotation that indicates that an operation parameter is optional.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 4.0.0
  */
-@Endpoint(id = "incremental")
-public class IncrementalEndpoint {
-
-	@ReadOperation
-	public String invoke(@OptionalParameter String param) {
-		return "test";
-	}
+@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface OptionalParameter {
 
 }

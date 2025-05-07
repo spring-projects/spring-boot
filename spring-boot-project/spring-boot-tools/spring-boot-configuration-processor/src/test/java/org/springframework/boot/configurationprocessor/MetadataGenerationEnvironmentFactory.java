@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 				TestConfigurationMetadataAnnotationProcessor.AUTOWIRED_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEFAULT_VALUE_ANNOTATION, endpointAnnotations,
 				TestConfigurationMetadataAnnotationProcessor.READ_OPERATION_ANNOTATION,
+				TestConfigurationMetadataAnnotationProcessor.OPTIONAL_PARAMETER_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NAME_ANNOTATION);
 	}
 
