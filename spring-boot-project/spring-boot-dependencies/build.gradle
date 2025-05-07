@@ -839,11 +839,7 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.transaction")
 		}
 	}
-	library("Jakarta Validation", "3.0.2") {
-		prohibit {
-			versionRange "[3.1.0-M1,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Jakarta Validation", "3.1.0") {
 		group("jakarta.validation") {
 			modules = [
 				"jakarta.validation-api"

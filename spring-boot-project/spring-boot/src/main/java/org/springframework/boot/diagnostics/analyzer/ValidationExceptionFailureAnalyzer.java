@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import jakarta.validation.NoProviderFoundException;
 import jakarta.validation.ValidationException;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
@@ -38,7 +39,8 @@ class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<Validat
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
-		if (cause.getMessage().startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
+		if (cause instanceof NoProviderFoundException
+				|| cause.getMessage().startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
 				|| cause.getMessage().startsWith(JAKARTA_MISSING_IMPLEMENTATION_MESSAGE)) {
 			return new FailureAnalysis(
 					"The Bean Validation API is on the classpath but no implementation could be found",
