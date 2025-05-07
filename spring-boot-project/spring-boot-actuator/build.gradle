@@ -53,9 +53,7 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("org.flywaydb:flyway-core")
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
@@ -79,9 +77,7 @@ dependencies {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	optional("org.springframework.data:spring-data-couchbase")
-	optional("org.springframework.data:spring-data-elasticsearch")  {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")

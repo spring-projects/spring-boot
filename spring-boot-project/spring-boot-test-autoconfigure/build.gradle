@@ -43,12 +43,9 @@ dependencies {
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
 	optional("org.hibernate.orm:hibernate-core")
-	optional("org.htmlunit:htmlunit") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.htmlunit:htmlunit")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {
-		exclude(group: "commons-logging", module: "commons-logging")
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")

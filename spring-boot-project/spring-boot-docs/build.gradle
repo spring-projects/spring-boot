@@ -102,9 +102,7 @@ dependencies {
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
-	implementation("org.apache.commons:commons-dbcp2") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")
 	implementation("org.apache.logging.log4j:log4j-to-slf4j")
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
@@ -119,7 +117,6 @@ dependencies {
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
 	implementation("org.htmlunit:htmlunit") {
-		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "xml-apis", module: "xml-apis"
 	}
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -142,9 +139,7 @@ dependencies {
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-cassandra")
 	implementation("org.springframework.data:spring-data-couchbase")
-	implementation("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.springframework.data:spring-data-elasticsearch")
 	implementation("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
@@ -159,9 +154,7 @@ dependencies {
 	implementation("org.springframework.graphql:spring-graphql")
 	implementation("org.springframework.graphql:spring-graphql-test")
 	implementation("org.springframework.kafka:spring-kafka")
-	implementation("org.springframework.kafka:spring-kafka-test") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.springframework.kafka:spring-kafka-test")
 	implementation("org.springframework.pulsar:spring-pulsar")
 	implementation("org.springframework.pulsar:spring-pulsar-reactive")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")

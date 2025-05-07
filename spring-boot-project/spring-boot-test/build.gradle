@@ -23,16 +23,13 @@ dependencies {
 	optional("org.assertj:assertj-core")
 	optional("org.hamcrest:hamcrest-core")
 	optional("org.hamcrest:hamcrest-library")
-	optional("org.htmlunit:htmlunit") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.htmlunit:htmlunit")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.mockito:mockito-core")
 	optional("org.skyscreamer:jsonassert")
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {
-		exclude(group: "commons-logging", module: "commons-logging")
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")

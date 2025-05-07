@@ -39,9 +39,7 @@ dependencies {
 	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
 		exclude(group: "org.apache.maven", module: "maven-core")
 	}
-	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

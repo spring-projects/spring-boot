@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.gradle.api.tasks.TaskAction;
 public abstract class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	private static final Set<String> PROHIBITED_GROUPS = Set.of("org.codehaus.groovy", "org.eclipse.jetty.toolchain",
-			"commons-logging", "org.apache.geronimo.specs", "com.sun.activation");
+			"org.apache.geronimo.specs", "com.sun.activation");
 
 	private static final Set<String> PERMITTED_JAVAX_GROUPS = Set.of("javax.batch", "javax.cache", "javax.money");
 

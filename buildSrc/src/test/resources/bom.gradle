@@ -7,18 +7,14 @@ bom {
 				"activemq-broker",
 				"activemq-camel",
 				"activemq-client",
-				"activemq-console" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"activemq-console",
 				"activemq-http",
 				"activemq-jaas",
 				"activemq-jdbc-store",
 				"activemq-jms-pool",
 				"activemq-kahadb-store",
 				"activemq-karaf",
-				"activemq-leveldb-store" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"activemq-leveldb-store",
 				"activemq-log4j-appender",
 				"activemq-mqtt",
 				"activemq-openwire-generator",
@@ -30,9 +26,7 @@ bom {
 				"activemq-run",
 				"activemq-runtime-config",
 				"activemq-shiro",
-				"activemq-spring" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
+				"activemq-spring",
 				"activemq-stomp",
 				"activemq-web"
 			]

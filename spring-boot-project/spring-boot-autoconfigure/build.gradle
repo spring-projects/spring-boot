@@ -40,9 +40,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:pulsar")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
-	optional("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("co.elastic.clients:elasticsearch-java")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
@@ -79,15 +77,9 @@ dependencies {
 	optional("javax.money:money-api")
 	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.activemq:activemq-client")
-	optional("org.apache.activemq:artemis-jakarta-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.apache.activemq:artemis-jakarta-server") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.apache.commons:commons-dbcp2") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.apache.activemq:artemis-jakarta-client")
+	optional("org.apache.activemq:artemis-jakarta-server")
+	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
 	optional("org.apache.kafka:kafka-streams")
@@ -100,9 +92,7 @@ dependencies {
 	optional("org.eclipse.angus:angus-mail")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
-	optional("com.sendgrid:sendgrid-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("com.sendgrid:sendgrid-java")
 	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
@@ -117,12 +107,8 @@ dependencies {
 			classifier = 'jakarta'
 		}
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.elasticsearch.client:elasticsearch-rest-client")
+	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
 	optional("org.flywaydb:flyway-core")
 	optional("org.flywaydb:flyway-database-postgresql")
 	optional("org.flywaydb:flyway-database-oracle")
@@ -260,9 +246,7 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
-	testImplementation("org.springframework.kafka:spring-kafka-test") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")

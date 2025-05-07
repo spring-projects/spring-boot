@@ -16,19 +16,13 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	dockerTestImplementation("co.elastic.clients:elasticsearch-java")
 	dockerTestImplementation("com.couchbase.client:java-client")
 	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
-	dockerTestImplementation("io.rest-assured:rest-assured") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	dockerTestImplementation("io.rest-assured:rest-assured")
 	dockerTestImplementation("org.apache.activemq:activemq-client")
-	dockerTestImplementation("org.apache.activemq:artemis-jakarta-client") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	dockerTestImplementation("org.apache.activemq:artemis-jakarta-client")
 	dockerTestImplementation("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
