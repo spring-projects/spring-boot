@@ -85,7 +85,7 @@ public interface DockerRegistryAuthentication {
 	 * that uses the standard docker JSON config (including support for credential
 	 * helpers) to generate auth headers.
 	 * @param fallback the fallback authentication to use if no suitable config is found,
-	 * may be null {@code}
+	 * may be {@code null}
 	 * @return a new {@link DockerRegistryAuthentication} instance
 	 * @since 3.5.0
 	 * @see #configuration(DockerRegistryAuthentication, BiConsumer)
