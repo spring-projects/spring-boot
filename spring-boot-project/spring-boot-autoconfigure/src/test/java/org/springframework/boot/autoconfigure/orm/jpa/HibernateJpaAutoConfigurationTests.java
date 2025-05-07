@@ -37,9 +37,9 @@ import jakarta.transaction.Synchronization;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
-import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
 import org.hibernate.cfg.ManagedBeanSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
 import org.hibernate.dialect.H2Dialect;
@@ -617,7 +617,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		RuntimeHints hints = new RuntimeHints();
 		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		for (Class<?> noJtaPlatformClass : Arrays.asList(SpringImplicitNamingStrategy.class,
-				CamelCaseToUnderscoresNamingStrategy.class)) {
+				PhysicalNamingStrategySnakeCaseImpl.class)) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(noJtaPlatformClass)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
@@ -737,7 +737,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 		@Bean
 		PhysicalNamingStrategy testPhysicalNamingStrategy() {
-			return new CamelCaseToUnderscoresNamingStrategy();
+			return new PhysicalNamingStrategySnakeCaseImpl();
 		}
 
 	}
@@ -745,7 +745,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Configuration(proxyBeanMethods = false)
 	static class TestHibernatePropertiesCustomizerConfiguration {
 
-		private final PhysicalNamingStrategy physicalNamingStrategy = new CamelCaseToUnderscoresNamingStrategy();
+		private final PhysicalNamingStrategy physicalNamingStrategy = new PhysicalNamingStrategySnakeCaseImpl();
 
 		private final ImplicitNamingStrategy implicitNamingStrategy = new SpringImplicitNamingStrategy();
 

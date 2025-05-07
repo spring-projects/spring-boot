@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
 import org.hibernate.cfg.MappingSettings;
 import org.hibernate.cfg.PersistenceSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
@@ -152,7 +152,7 @@ public class HibernateProperties {
 			applyNamingStrategy(properties, MappingSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
 					SpringImplicitNamingStrategy.class::getName);
 			applyNamingStrategy(properties, MappingSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
-					CamelCaseToUnderscoresNamingStrategy.class::getName);
+					PhysicalNamingStrategySnakeCaseImpl.class::getName);
 		}
 
 		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,

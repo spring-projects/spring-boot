@@ -534,11 +534,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "6.6.13.Final") {
-		prohibit {
-			versionRange "[7.0.0.Alpha1,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Hibernate", "7.0.0.Beta3") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
@@ -794,11 +790,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Persistence", "3.1.0") {
-		prohibit {
-			versionRange "[3.2.0-B01,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Jakarta Persistence", "3.2.0") {
 		group("jakarta.persistence") {
 			modules = [
 				"jakarta.persistence-api"

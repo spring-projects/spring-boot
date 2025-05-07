@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurehibernatenamingstrategy.spring;
 
-import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
+import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
 import org.springframework.context.annotation.Bean;
@@ -26,12 +27,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyHibernateConfiguration {
 
 	@Bean
-	public CamelCaseToUnderscoresNamingStrategy caseSensitivePhysicalNamingStrategy() {
-		return new CamelCaseToUnderscoresNamingStrategy() {
+	public PhysicalNamingStrategySnakeCaseImpl caseSensitivePhysicalNamingStrategy() {
+		return new PhysicalNamingStrategySnakeCaseImpl() {
 
 			@Override
-			protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
-				return false;
+			public Identifier toPhysicalColumnName(Identifier logicalName, JdbcEnvironment jdbcEnvironment) {
+				return logicalName;
 			}
 
 		};

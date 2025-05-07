@@ -54,6 +54,7 @@ public class Review implements Serializable {
 
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
+	@SuppressWarnings("deprecation")
 	private Date checkInDate;
 
 	@Column(nullable = false)
