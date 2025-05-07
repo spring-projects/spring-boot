@@ -12,10 +12,9 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-web")
 
-	implementation("org.springframework:spring-webflux")
-
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
+	optional("org.springframework:spring-webflux")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

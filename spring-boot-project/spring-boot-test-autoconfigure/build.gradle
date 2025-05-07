@@ -62,6 +62,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-hateoas"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-http-client"))
+	optional(project(":spring-boot-project:spring-boot-http-client-reactive"))
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
