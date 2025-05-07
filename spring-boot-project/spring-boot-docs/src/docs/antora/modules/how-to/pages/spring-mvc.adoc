@@ -55,7 +55,7 @@ NOTE: To get the server to render XML instead of JSON, you might have to send an
 [[howto.spring-mvc.customize-jackson-objectmapper]]
 == Customize the Jackson ObjectMapper
 
-Spring MVC (client and server side) uses javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] to negotiate content conversion in an HTTP exchange.
+Spring MVC (client and server side) uses javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] to negotiate content conversion in an HTTP exchange.
 If Jackson is on the classpath, you already get the default converter(s) provided by javadoc:org.springframework.http.converter.json.Jackson2ObjectMapperBuilder[], an instance of which is auto-configured for you.
 
 The javadoc:com.fasterxml.jackson.databind.ObjectMapper[] (or javadoc:com.fasterxml.jackson.dataformat.xml.XmlMapper[] for Jackson XML converter) instance (created by default) has the following customized properties:
@@ -125,7 +125,7 @@ When defining an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean, mar
 Note that, in either case, doing so disables all auto-configuration of the javadoc:com.fasterxml.jackson.databind.ObjectMapper[].
 
 If you provide any javadoc:java.beans.Beans[format=annotation] of type javadoc:org.springframework.http.converter.json.MappingJackson2HttpMessageConverter[], they replace the default value in the MVC configuration.
-Also, a convenience bean of type javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
+Also, a convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
 See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
@@ -135,10 +135,10 @@ See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[]
 [[howto.spring-mvc.customize-responsebody-rendering]]
 == Customize the @ResponseBody Rendering
 
-Spring uses javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] to render javadoc:org.springframework.web.bind.annotation.ResponseBody[format=annotation] (or responses from javadoc:org.springframework.web.bind.annotation.RestController[format=annotation]).
+Spring uses javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] to render javadoc:org.springframework.web.bind.annotation.ResponseBody[format=annotation] (or responses from javadoc:org.springframework.web.bind.annotation.RestController[format=annotation]).
 You can contribute additional converters by adding beans of the appropriate type in a Spring Boot context.
 If a bean you add is of a type that would have been included by default anyway (such as javadoc:org.springframework.http.converter.json.MappingJackson2HttpMessageConverter[] for JSON conversions), it replaces the default value.
-A convenience bean of type javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] is provided and is always available if you use the default MVC configuration.
+A convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided and is always available if you use the default MVC configuration.
 It has some useful methods to access the default and user-enhanced message converters (For example, it can be useful if you want to manually inject them into a custom javadoc:org.springframework.web.client.RestTemplate[]).
 
 As in normal MVC usage, any javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] beans that you provide can also contribute converters by overriding the `configureMessageConverters` method.
