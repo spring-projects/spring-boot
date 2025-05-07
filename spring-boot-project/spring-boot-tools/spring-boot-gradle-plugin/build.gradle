@@ -47,7 +47,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
+	testImplementation("com.tngtech.archunit:archunit-junit5:1.4.0")
 	testImplementation("net.java.dev.jna:jna-platform")
 	testImplementation("org.apache.commons:commons-compress")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
