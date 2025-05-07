@@ -26,9 +26,9 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Lasse Wulff
  * @author Moritz Halbritter
  */
-@DirtiesUrlFactories
 class ServerPropertiesTests {
 
 	private final ServerProperties properties = new ServerProperties();

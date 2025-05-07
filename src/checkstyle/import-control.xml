@@ -120,6 +120,13 @@
 			<allow pkg="org.springframework.boot.web.error" />
 			<allow pkg="org.springframework.boot.web.server" />
 			<disallow pkg="org.springframework.context" />
+			<subpackage name="autoconfigure">
+				<allow pkg="org.springframework.context" />
+				<subpackage name="servlet">
+					<allow pkg="jakarta.servlet" />
+					<allow pkg="org.springframework.boot.web.servlet" />
+				</subpackage>
+			</subpackage>
 			<subpackage name="context">
 				<allow pkg="org.springframework.context" />
 			</subpackage>

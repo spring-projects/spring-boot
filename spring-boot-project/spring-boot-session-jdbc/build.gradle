@@ -31,6 +31,7 @@ dependencies {
 	api("org.springframework.session:spring-session-jdbc")
 
 	implementation(project(":spring-boot-project:spring-boot-jdbc"))
+	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 

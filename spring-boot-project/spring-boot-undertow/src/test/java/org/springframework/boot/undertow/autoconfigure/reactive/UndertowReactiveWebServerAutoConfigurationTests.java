@@ -19,11 +19,11 @@ package org.springframework.boot.undertow.autoconfigure.reactive;
 import io.undertow.Undertow.Builder;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.server.reactive.AbstractReactiveWebServerAutoConfigurationTests;
 import org.springframework.boot.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.undertow.reactive.UndertowReactiveWebServerFactory;
 import org.springframework.boot.undertow.servlet.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.reactive.AbstractReactiveWebServerAutoConfigurationTests;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

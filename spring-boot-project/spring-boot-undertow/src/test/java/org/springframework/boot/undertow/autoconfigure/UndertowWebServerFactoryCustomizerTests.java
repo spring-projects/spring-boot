@@ -29,12 +29,12 @@ import org.xnio.Option;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.undertow.ConfigurableUndertowWebServerFactory;
 import org.springframework.boot.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;

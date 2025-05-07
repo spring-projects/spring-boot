@@ -28,8 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.remote.server.AccessManager;
 import org.springframework.boot.devtools.remote.server.Dispatcher;
@@ -43,6 +41,8 @@ import org.springframework.boot.devtools.restart.server.DefaultSourceDirectoryUr
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.HttpRestartServerHandler;
 import org.springframework.boot.devtools.restart.server.SourceDirectoryUrlFilter;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties.Servlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -61,7 +61,7 @@ import org.springframework.http.server.ServerHttpRequest;
 @AutoConfiguration(afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
 @ConditionalOnEnabledDevTools
 @ConditionalOnProperty("spring.devtools.remote.secret")
-@ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
+@ConditionalOnClass({ Filter.class, ServerHttpRequest.class, ServerProperties.class })
 @Import(RemoteDevtoolsSecurityConfiguration.class)
 @EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
 public class RemoteDevToolsAutoConfiguration {

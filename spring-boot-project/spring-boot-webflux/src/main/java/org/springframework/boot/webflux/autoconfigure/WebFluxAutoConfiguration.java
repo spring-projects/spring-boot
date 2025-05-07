@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.WebResourcesRuntimeHints;
@@ -47,6 +46,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Format;
 import org.springframework.boot.webflux.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;

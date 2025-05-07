@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes related to the auto-configuration of a reactive web server.
+ * Classes related to the auto-configuration of a web server.
  */
-package org.springframework.boot.autoconfigure.web.server.reactive;
+package org.springframework.boot.web.server.autoconfigure;

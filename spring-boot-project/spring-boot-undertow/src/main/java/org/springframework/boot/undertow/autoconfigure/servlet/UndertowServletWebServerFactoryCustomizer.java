@@ -16,10 +16,10 @@
 
 package org.springframework.boot.undertow.autoconfigure.servlet;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.undertow.autoconfigure.UndertowServerProperties;
 import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 
 /**
  * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Undertow

@@ -20,11 +20,11 @@ import java.time.Duration;
 
 import io.netty.channel.ChannelOption;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 

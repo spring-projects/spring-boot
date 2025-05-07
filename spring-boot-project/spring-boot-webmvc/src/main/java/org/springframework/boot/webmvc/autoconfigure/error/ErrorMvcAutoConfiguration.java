@@ -44,13 +44,13 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.error.ErrorPageRegistrar;
 import org.springframework.boot.web.error.ErrorPageRegistry;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
@@ -84,7 +84,7 @@ import org.springframework.web.util.HtmlUtils;
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfiguration(before = WebMvcAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServerProperties.class })
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
 public class ErrorMvcAutoConfiguration {
 

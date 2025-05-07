@@ -29,12 +29,12 @@ import io.undertow.UndertowOptions;
 import org.xnio.Option;
 import org.xnio.Options;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.undertow.ConfigurableUndertowWebServerFactory;
 import org.springframework.boot.undertow.autoconfigure.UndertowServerProperties.Accesslog;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;

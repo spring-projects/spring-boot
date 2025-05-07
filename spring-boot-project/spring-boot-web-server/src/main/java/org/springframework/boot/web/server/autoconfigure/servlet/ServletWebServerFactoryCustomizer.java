@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.servlet;
+package org.springframework.boot.web.server.autoconfigure.servlet;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
 import org.springframework.boot.web.server.servlet.WebListenerRegistrar;

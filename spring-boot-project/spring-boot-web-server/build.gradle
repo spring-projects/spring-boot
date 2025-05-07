@@ -18,6 +18,7 @@
 plugins {
 	id "java-library"
 	id "java-test-fixtures"
+	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -28,10 +29,12 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-web")
 
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-test")
 
+	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-test"))
 	testFixturesCompileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testFixturesCompileOnly("io.projectreactor:reactor-test")
 	testFixturesCompileOnly("io.projectreactor.netty:reactor-netty-http")
@@ -40,10 +43,13 @@ dependencies {
 	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client")
 	testFixturesCompileOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
 	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-api")
+	testFixturesCompileOnly("jakarta.websocket:jakarta.websocket-client-api")
 	testFixturesCompileOnly("org.mockito:mockito-core")
 	testFixturesCompileOnly("org.springframework:spring-tx")
 	testFixturesCompileOnly("org.springframework:spring-webflux")
 
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")

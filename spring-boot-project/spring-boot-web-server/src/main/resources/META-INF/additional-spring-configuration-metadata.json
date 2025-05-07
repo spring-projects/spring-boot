@@ -1,0 +1,217 @@
+{
+  "properties": [
+    {
+      "name": "server.connection-timeout",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "reason": "Each server behaves differently. Use server specific properties instead.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.error.include-binding-errors",
+      "description": "When to include \"errors\" attribute.",
+      "defaultValue": "never"
+    },
+    {
+      "name": "server.error.include-exception",
+      "description": "Include the \"exception\" attribute.",
+      "defaultValue": false
+    },
+    {
+      "name": "server.error.include-message",
+      "description": "When to include the \"message\" attribute.",
+      "defaultValue": "never"
+    },
+    {
+      "name": "server.error.include-path",
+      "description": "When to include the \"path\" attribute.",
+      "defaultValue": "always"
+    },
+    {
+      "name": "server.error.include-stacktrace",
+      "description": "When to include the \"trace\" attribute.",
+      "defaultValue": "never"
+    },
+    {
+      "name": "server.error.path",
+      "description": "Path of the error controller",
+      "defaultValue": "/error"
+    },
+    {
+      "name": "server.error.whitelabel.enabled",
+      "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
+      "defaultValue": true 
+    },
+    {
+      "name": "server.max-http-header-size",
+      "deprecation": {
+        "replacement": "server.max-http-request-header-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.max-http-post-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum size in bytes of the HTTP post content.",
+      "defaultValue": 0,
+      "deprecation": {
+        "reason": "Use dedicated property for each container.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.port",
+      "defaultValue": 8080
+    },
+    {
+      "name": "server.reactive.session.cookie.domain",
+      "description": "Domain for the cookie."
+    },
+    {
+      "name": "server.reactive.session.cookie.http-only",
+      "description": "Whether to use \"HttpOnly\" cookies for the cookie."
+    },
+    {
+      "name": "server.reactive.session.cookie.max-age",
+      "description": "Maximum age of the cookie. If a duration suffix is not specified, seconds will be used. A positive value indicates when the cookie expires relative to the current time. A value of 0 means the cookie should expire immediately. A negative value means no \"Max-Age\"."
+    },
+    {
+      "name": "server.reactive.session.cookie.name",
+      "description": "Name for the cookie."
+    },
+    {
+      "name": "server.reactive.session.cookie.partitioned",
+      "description": "Whether the generated cookie carries the Partitioned attribute."
+    },
+    {
+      "name": "server.reactive.session.cookie.path",
+      "description": "Path of the cookie."
+    },
+    {
+      "name": "server.reactive.session.cookie.same-site",
+      "description": "SameSite setting for the cookie."
+    },
+    {
+      "name": "server.reactive.session.cookie.secure",
+      "description": "Whether to always mark the cookie as secure."
+    },
+    {
+      "name": "server.servlet.encoding.charset",
+      "type": "java.nio.charset.Charset",
+      "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
+      "deprecation": {
+        "replacement": "spring.servlet.encoding.charset",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.encoding.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable http encoding support.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.servlet.encoding.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.encoding.force",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests and responses.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.servlet.encoding.force",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.encoding.force-request",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when force has not been specified.",
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.servlet.encoding.force-request",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.encoding.force-response",
+      "type": "java.lang.Boolean",
+      "description": "Whether to force the encoding to the configured charset on HTTP responses.",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.servlet.encoding.force-response",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.jsp.class-name",
+      "description": "Class name of the servlet to use for JSPs. If registered is true and this class\n\t * is on the classpath then it will be registered.",
+      "defaultValue": "org.apache.jasper.servlet.JspServlet"
+    },
+    {
+      "name": "server.servlet.jsp.init-parameters",
+      "description": "Init parameters used to configure the JSP servlet."
+    },
+    {
+      "name": "server.servlet.path",
+      "type": "java.lang.String",
+      "description": "Path of the main dispatcher servlet.",
+      "defaultValue": "/",
+      "deprecation": {
+        "replacement": "spring.mvc.servlet.path",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.servlet.session.cookie.comment",
+      "description": "Comment for the cookie.",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.ssl.protocol",
+      "description": "SSL protocol to use.",
+      "defaultValue": "TLS"
+    },
+    {
+      "name": "server.ssl.server-name-bundles",
+      "description": "Mapping of host names to SSL bundles for SNI configuration."
+    },
+    {
+      "name": "server.ssl.trust-certificate",
+      "description": "Path to a PEM-encoded SSL certificate authority file."
+    },
+    {
+      "name": "server.ssl.trust-certificate-private-key",
+      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
+    },
+    {
+      "name": "server.ssl.trust-store",
+      "description": "Trust store that holds SSL certificates."
+    },
+    {
+      "name": "server.ssl.trust-store-password",
+      "description": "Password used to access the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-provider",
+      "description": "Provider for the trust store."
+    },
+    {
+      "name": "server.ssl.trust-store-type",
+      "description": "Type of the trust store."
+    },
+    {
+      "name": "server.use-forward-headers",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "reason": "Replaced to support additional strategies.",
+        "replacement": "server.forward-headers-strategy",
+        "level": "error"
+      }
+    }
+  ]
+}

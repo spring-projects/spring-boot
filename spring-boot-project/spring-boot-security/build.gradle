@@ -43,6 +43,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional(project(":spring-boot-project:spring-boot-web-server"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")

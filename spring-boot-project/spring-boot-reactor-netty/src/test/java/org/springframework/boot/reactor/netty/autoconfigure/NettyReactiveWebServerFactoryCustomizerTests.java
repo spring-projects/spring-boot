@@ -30,10 +30,10 @@ import reactor.netty.http.Http2SettingsSpec;
 import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.reactor.netty.NettyServerCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.unit.DataSize;
 

@@ -21,11 +21,11 @@ import io.undertow.servlet.api.DeploymentInfo;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.server.servlet.AbstractServletWebServerAutoConfigurationTests;
 import org.springframework.boot.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.undertow.servlet.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.servlet.AbstractServletWebServerAutoConfigurationTests;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

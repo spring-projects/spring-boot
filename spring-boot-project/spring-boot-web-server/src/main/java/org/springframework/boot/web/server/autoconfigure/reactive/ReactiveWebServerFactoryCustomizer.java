@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.reactive;
+package org.springframework.boot.web.server.autoconfigure.reactive;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory;
 import org.springframework.core.Ordered;
 
