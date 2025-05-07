@@ -18,18 +18,21 @@ package org.springframework.boot.http.client.reactive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import io.netty.channel.ChannelOption;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link ReactorClientHttpConnectorBuilder} and
@@ -42,6 +45,25 @@ class ReactorClientHttpConnectorBuilderTests
 
 	ReactorClientHttpConnectorBuilderTests() {
 		super(ReactorClientHttpConnector.class, ClientHttpConnectorBuilder.reactor());
+	}
+
+	@Test
+	void withwithHttpClientFactory() {
+		boolean[] called = new boolean[1];
+		Supplier<HttpClient> httpClientFactory = () -> {
+			called[0] = true;
+			return HttpClient.create();
+		};
+		ClientHttpConnectorBuilder.reactor().withHttpClientFactory(httpClientFactory).build();
+		assertThat(called).containsExactly(true);
+	}
+
+	@Test
+	void withReactorResourceFactory() {
+		ReactorResourceFactory resourceFactory = spy(new ReactorResourceFactory());
+		ClientHttpConnectorBuilder.reactor().withReactorResourceFactory(resourceFactory).build();
+		then(resourceFactory).should().getConnectionProvider();
+		then(resourceFactory).should().getLoopResources();
 	}
 
 	@Test

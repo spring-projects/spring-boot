@@ -19,11 +19,13 @@ package org.springframework.boot.http.client.reactive;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -58,6 +60,30 @@ public final class ReactorClientHttpConnectorBuilder
 	public ReactorClientHttpConnectorBuilder withCustomizers(
 			Collection<Consumer<ReactorClientHttpConnector>> customizers) {
 		return new ReactorClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link ReactorClientHttpConnectorBuilder} that uses the given
+	 * {@link ReactorResourceFactory} to create the underlying {@link HttpClient}.
+	 * @param reactorResourceFactory the {@link ReactorResourceFactory} to use
+	 * @return a new {@link ReactorClientHttpConnectorBuilder} instance
+	 */
+	public ReactorClientHttpConnectorBuilder withReactorResourceFactory(ReactorResourceFactory reactorResourceFactory) {
+		Assert.notNull(reactorResourceFactory, "'reactorResourceFactory' must not be null");
+		return new ReactorClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withReactorResourceFactory(reactorResourceFactory));
+	}
+
+	/**
+	 * Return a new {@link ReactorClientHttpConnectorBuilder} that uses the given factory
+	 * to create the underlying {@link HttpClient}.
+	 * @param factory the factory to use
+	 * @return a new {@link ReactorClientHttpConnectorBuilder} instance
+	 */
+	public ReactorClientHttpConnectorBuilder withHttpClientFactory(Supplier<HttpClient> factory) {
+		Assert.notNull(factory, "'factory' must not be null");
+		return new ReactorClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientFactory(factory));
 	}
 
 	/**

@@ -20,12 +20,14 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -61,6 +63,33 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	public ReactorClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<ReactorClientHttpRequestFactory>> customizers) {
 		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link ReactorClientHttpRequestFactoryBuilder} that uses the given
+	 * {@link ReactorResourceFactory} to create the underlying {@link HttpClient}.
+	 * @param reactorResourceFactory the {@link ReactorResourceFactory} to use
+	 * @return a new {@link ReactorClientHttpRequestFactoryBuilder} instance
+	 * @since 3.5.0
+	 */
+	public ReactorClientHttpRequestFactoryBuilder withReactorResourceFactory(
+			ReactorResourceFactory reactorResourceFactory) {
+		Assert.notNull(reactorResourceFactory, "'reactorResourceFactory' must not be null");
+		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withReactorResourceFactory(reactorResourceFactory));
+	}
+
+	/**
+	 * Return a new {@link ReactorClientHttpRequestFactoryBuilder} that uses the given
+	 * factory to create the underlying {@link HttpClient}.
+	 * @param factory the factory to use
+	 * @return a new {@link ReactorClientHttpRequestFactoryBuilder} instance
+	 * @since 3.5.0
+	 */
+	public ReactorClientHttpRequestFactoryBuilder withHttpClientFactory(Supplier<HttpClient> factory) {
+		Assert.notNull(factory, "'factory' must not be null");
+		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientFactory(factory));
 	}
 
 	/**

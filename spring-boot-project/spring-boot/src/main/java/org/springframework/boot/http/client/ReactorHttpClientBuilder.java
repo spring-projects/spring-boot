@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLException;
@@ -30,6 +31,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.function.ThrowingConsumer;
 
@@ -43,14 +45,40 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 public final class ReactorHttpClientBuilder {
 
+	private final Supplier<HttpClient> factory;
+
 	private final UnaryOperator<HttpClient> customizer;
 
 	public ReactorHttpClientBuilder() {
-		this(UnaryOperator.identity());
+		this(HttpClient::create, UnaryOperator.identity());
 	}
 
-	private ReactorHttpClientBuilder(UnaryOperator<HttpClient> customizer) {
+	private ReactorHttpClientBuilder(Supplier<HttpClient> httpClientFactory, UnaryOperator<HttpClient> customizer) {
+		this.factory = httpClientFactory;
 		this.customizer = customizer;
+	}
+
+	/**
+	 * Return a new {@link ReactorHttpClientBuilder} that uses the given
+	 * {@link ReactorResourceFactory} to create the {@link HttpClient}.
+	 * @param reactorResourceFactory the {@link ReactorResourceFactory} to use
+	 * @return a new {@link ReactorHttpClientBuilder} instance
+	 */
+	public ReactorHttpClientBuilder withReactorResourceFactory(ReactorResourceFactory reactorResourceFactory) {
+		Assert.notNull(reactorResourceFactory, "'reactorResourceFactory' must not be null");
+		return new ReactorHttpClientBuilder(() -> HttpClient.create(reactorResourceFactory.getConnectionProvider()),
+				(httpClient) -> this.customizer.apply(httpClient).runOn(reactorResourceFactory.getLoopResources()));
+	}
+
+	/**
+	 * Return a new {@link ReactorHttpClientBuilder} that uses the given factory to create
+	 * the {@link HttpClient}.
+	 * @param factory the factory to use
+	 * @return a new {@link ReactorHttpClientBuilder} instance
+	 */
+	public ReactorHttpClientBuilder withHttpClientFactory(Supplier<HttpClient> factory) {
+		Assert.notNull(factory, "'factory' must not be null");
+		return new ReactorHttpClientBuilder(factory, this.customizer);
 	}
 
 	/**
@@ -72,7 +100,7 @@ public final class ReactorHttpClientBuilder {
 	 */
 	public HttpClient build(HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
-		HttpClient httpClient = applyDefaults(HttpClient.create());
+		HttpClient httpClient = applyDefaults(this.factory.get());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		httpClient = map.from(settings::connectTimeout).to(httpClient, this::setConnectTimeout);
 		httpClient = map.from(settings::readTimeout).to(httpClient, HttpClient::responseTimeout);
