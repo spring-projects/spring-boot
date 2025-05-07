@@ -2014,6 +2014,8 @@ bom {
 				"spring-boot-elasticsearch",
 				"spring-boot-flyway",
 				"spring-boot-freemarker",
+				"spring-boot-graphql",
+				"spring-boot-graphql-test",
 				"spring-boot-groovy-templates",
 				"spring-boot-gson",
 				"spring-boot-h2console",

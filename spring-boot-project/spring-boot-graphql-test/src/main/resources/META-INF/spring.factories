@@ -1,0 +1,3 @@
+# Spring Test Context Customizer Factories
+org.springframework.test.context.ContextCustomizerFactory=\
+org.springframework.boot.test.graphql.tester.HttpGraphQlTesterContextCustomizerFactory
