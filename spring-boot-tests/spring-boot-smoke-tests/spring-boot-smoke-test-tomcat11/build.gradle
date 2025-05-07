@@ -29,7 +29,7 @@ configurations.all {
 }
 
 dependencies {
-	implementation(project(":spring-boot-project:spring-boot-http"))
+	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
 	implementation(project(":spring-boot-project:spring-boot-webmvc"))

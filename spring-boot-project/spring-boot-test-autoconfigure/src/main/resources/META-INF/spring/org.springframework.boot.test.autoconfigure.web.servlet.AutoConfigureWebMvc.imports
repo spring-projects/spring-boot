@@ -2,7 +2,7 @@
 optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 optional:org.springframework.boot.groovy.template.autoconfigure.GroovyTemplateAutoConfiguration
 optional:org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration
-optional:org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration
+optional:org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration
 optional:org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration
 optional:org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration

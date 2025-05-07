@@ -56,7 +56,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
-	optional(project(":spring-boot-project:spring-boot-http"))
+	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-http-client"))
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
 	optional(project(":spring-boot-project:spring-boot-integration"))

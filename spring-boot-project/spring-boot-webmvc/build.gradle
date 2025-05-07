@@ -32,7 +32,7 @@ dependencies {
 
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
-	implementation(project(":spring-boot-project:spring-boot-http"))
+	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
