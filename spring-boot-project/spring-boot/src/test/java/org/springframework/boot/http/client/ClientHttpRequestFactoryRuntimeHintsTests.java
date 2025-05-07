@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		Field requestFactoryField = ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class,
 				"requestFactory");
 		assertThat(requestFactoryField).isNotNull();
-		assertThat(reflection.onField(requestFactoryField)).accepts(hints);
+		assertThat(reflection.onFieldAccess(requestFactoryField)).accepts(hints);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		new ClientHttpRequestFactoryRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection
-			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+			.onMethodInvocation(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
 	}
 
@@ -67,9 +67,11 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoryRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(JettyClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
-		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setReadTimeout", long.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(JettyClientHttpRequestFactory.class, "setReadTimeout", long.class)))
 			.accepts(hints);
 	}
 
@@ -78,9 +80,11 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoryRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		assertThat(reflection.onMethod(method(ReactorClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(ReactorClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
-		assertThat(reflection.onMethod(method(ReactorClientHttpRequestFactory.class, "setReadTimeout", long.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(ReactorClientHttpRequestFactory.class, "setReadTimeout", long.class)))
 			.accepts(hints);
 	}
 
@@ -89,9 +93,11 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoryRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
-		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
+		assertThat(reflection
+			.onMethodInvocation(method(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
 			.accepts(hints);
 	}
 

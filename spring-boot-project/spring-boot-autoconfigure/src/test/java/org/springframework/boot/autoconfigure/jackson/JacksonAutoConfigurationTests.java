@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
@@ -56,7 +55,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
@@ -501,17 +499,9 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void shouldRegisterPropertyNamingStrategyHints() {
-		shouldRegisterPropertyNamingStrategyHints(PropertyNamingStrategies.class, "LOWER_CAMEL_CASE",
-				"UPPER_CAMEL_CASE", "SNAKE_CASE", "UPPER_SNAKE_CASE", "LOWER_CASE", "KEBAB_CASE", "LOWER_DOT_CASE");
-	}
-
-	private void shouldRegisterPropertyNamingStrategyHints(Class<?> type, String... fieldNames) {
 		RuntimeHints hints = new RuntimeHints();
 		new JacksonAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		Stream.of(fieldNames)
-			.map((name) -> reflection.onField(type, name))
-			.forEach((predicate) -> assertThat(predicate).accepts(hints));
+		assertThat(RuntimeHintsPredicates.reflection().onType(PropertyNamingStrategies.class)).accepts(hints);
 	}
 
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode, Class<?>... configClasses) {

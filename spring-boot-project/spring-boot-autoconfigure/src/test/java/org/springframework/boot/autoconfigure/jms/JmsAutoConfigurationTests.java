@@ -416,7 +416,7 @@ class JmsAutoConfigurationTests {
 			context.register(TestConfiguration2.class, JmsAutoConfiguration.class);
 			TestGenerationContext generationContext = new TestGenerationContext();
 			new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
-			assertThat(RuntimeHintsPredicates.reflection().onMethod(AcknowledgeMode.class, "of").invoke())
+			assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(AcknowledgeMode.class, "of"))
 				.accepts(generationContext.getRuntimeHints());
 		}
 	}

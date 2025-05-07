@@ -37,7 +37,7 @@ class WebFluxEndpointHandlerMappingTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new WebFluxEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebFluxLinksHandler.class, "links").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(WebFluxLinksHandler.class, "links"))
 			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}

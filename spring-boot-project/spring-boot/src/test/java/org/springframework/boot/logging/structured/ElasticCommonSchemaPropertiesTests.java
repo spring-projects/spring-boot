@@ -96,12 +96,12 @@ class ElasticCommonSchemaPropertiesTests {
 		new ElasticCommonSchemaPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ElasticCommonSchemaProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(ElasticCommonSchemaProperties.class.getConstructor(Service.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(ElasticCommonSchemaProperties.class.getConstructor(Service.class))).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Service.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(Service.class.getConstructor(String.class, String.class, String.class, String.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(
+					Service.class.getConstructor(String.class, String.class, String.class, String.class)))
+			.accepts(hints);
 	}
 
 	@Test

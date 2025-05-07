@@ -188,8 +188,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			serializationTypes(this.model).forEach(serializationHints::registerType);
 			reflectionTypes(this.model).forEach((type) -> generationContext.getRuntimeHints()
 				.reflection()
-				.registerType(TypeReference.of(type), MemberCategory.INTROSPECT_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+				.registerType(TypeReference.of(type), MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 		}
 
 		private byte[] serializeModel() {

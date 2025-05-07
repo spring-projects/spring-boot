@@ -227,7 +227,7 @@ public class LiquibaseAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPattern("db/changelog/*");
+			hints.resources().registerPattern("db/changelog/**");
 		}
 
 	}

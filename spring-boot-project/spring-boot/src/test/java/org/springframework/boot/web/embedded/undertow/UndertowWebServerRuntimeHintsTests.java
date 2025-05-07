@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.util.function.Predicate;
+
 import io.undertow.Undertow;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.ReflectionHintsPredicates.FieldHintPredicate;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.web.embedded.undertow.UndertowWebServer.UndertowWebServerRuntimeHints;
 import org.springframework.util.ReflectionUtils;
@@ -38,17 +39,19 @@ class UndertowWebServerRuntimeHintsTests {
 	void registersHints() throws ClassNotFoundException {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new UndertowWebServerRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onField(Undertow.class, "listeners")).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onField(Undertow.class, "channels")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onFieldAccess(Undertow.class, "listeners"))
+			.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onFieldAccess(Undertow.class, "channels")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "type")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "port")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.protocols.ssl.UndertowAcceptingSslChannel", "ssl"))
 			.accepts(runtimeHints);
 	}
 
-	private FieldHintPredicate reflectionOnField(String className, String fieldName) throws ClassNotFoundException {
+	private Predicate<RuntimeHints> reflectionOnField(String className, String fieldName)
+			throws ClassNotFoundException {
 		return RuntimeHintsPredicates.reflection()
-			.onField(ReflectionUtils.findField(Class.forName(className), fieldName));
+			.onFieldAccess(ReflectionUtils.findField(Class.forName(className), fieldName));
 	}
 
 }

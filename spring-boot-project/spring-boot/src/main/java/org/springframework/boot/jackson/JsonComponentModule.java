@@ -192,7 +192,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
 			this.innerComponents.forEach((outer, inners) -> {
-				reflection.registerType(outer, MemberCategory.DECLARED_CLASSES);
+				reflection.registerType(outer);
 				inners.forEach((inner) -> reflection.registerType(inner, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
 			});
 		}

@@ -114,10 +114,8 @@ class ConfigDataLocationRuntimeHintsTests {
 	}
 
 	private Consumer<ResourcePatternHints> includes(String... patterns) {
-		return (hint) -> {
-			assertThat(hint.getIncludes().stream().map(ResourcePatternHint::getPattern)).contains(patterns);
-			assertThat(hint.getExcludes()).isEmpty();
-		};
+		return (hint) -> assertThat(hint.getIncludes().stream().map(ResourcePatternHint::getPattern))
+			.contains(patterns);
 	}
 
 	static class TestConfigDataLocationRuntimeHints extends ConfigDataLocationRuntimeHints {

@@ -55,7 +55,7 @@ class HazelcastCacheMeterBinderProviderTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new HazelcastCacheMeterBinderProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(HazelcastCache.class, "getNativeCache").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(HazelcastCache.class, "getNativeCache"))
 			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(HazelcastCacheMetrics.class)).accepts(runtimeHints);
 	}

@@ -164,16 +164,17 @@ class LoggersEndpointTests {
 		new ReflectiveRuntimeHintsRegistrar().registerRuntimeHints(runtimeHints, LoggersEndpoint.class);
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onType(LoggerLevelsDescriptor.class)).accepts(runtimeHints);
-		assertThat(reflection.onMethod(LoggerLevelsDescriptor.class, "getConfiguredLevel").invoke())
+		assertThat(reflection.onMethodInvocation(LoggerLevelsDescriptor.class, "getConfiguredLevel"))
 			.accepts(runtimeHints);
 		assertThat(reflection.onType(SingleLoggerLevelsDescriptor.class)).accepts(runtimeHints);
-		assertThat(reflection.onMethod(SingleLoggerLevelsDescriptor.class, "getEffectiveLevel").invoke())
+		assertThat(reflection.onMethodInvocation(SingleLoggerLevelsDescriptor.class, "getEffectiveLevel"))
 			.accepts(runtimeHints);
-		assertThat(reflection.onMethod(SingleLoggerLevelsDescriptor.class, "getConfiguredLevel").invoke())
+		assertThat(reflection.onMethodInvocation(SingleLoggerLevelsDescriptor.class, "getConfiguredLevel"))
 			.accepts(runtimeHints);
 		assertThat(reflection.onType(GroupLoggerLevelsDescriptor.class)).accepts(runtimeHints);
-		assertThat(reflection.onMethod(GroupLoggerLevelsDescriptor.class, "getMembers").invoke()).accepts(runtimeHints);
-		assertThat(reflection.onMethod(GroupLoggerLevelsDescriptor.class, "getConfiguredLevel").invoke())
+		assertThat(reflection.onMethodInvocation(GroupLoggerLevelsDescriptor.class, "getMembers"))
+			.accepts(runtimeHints);
+		assertThat(reflection.onMethodInvocation(GroupLoggerLevelsDescriptor.class, "getConfiguredLevel"))
 			.accepts(runtimeHints);
 	}
 

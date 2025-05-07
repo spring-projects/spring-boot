@@ -205,7 +205,7 @@ public class GraphQlAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPattern("graphql/*.graphqls").registerPattern("graphql/*.gqls");
+			hints.resources().registerPattern("graphql/**/*.graphqls").registerPattern("graphql/**/*.gqls");
 		}
 
 	}

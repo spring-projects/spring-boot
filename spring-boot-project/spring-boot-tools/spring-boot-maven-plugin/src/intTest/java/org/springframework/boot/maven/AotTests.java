@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,9 +54,7 @@ class AotTests {
 			Path targetClasses = project.toPath().resolve("target/classes");
 			assertThat(collectRelativePaths(targetClasses)).contains(
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
-							"reflect-config.json"),
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
-							"resource-config.json"),
+							"reachability-metadata.json"),
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
 							"native-image.properties"),
 					Path.of("generated-resource"), Path.of("nested/generated-resource"));
@@ -69,11 +67,7 @@ class AotTests {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
 			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).contains(
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
-							"reflect-config.json"),
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
-							"resource-config.json"),
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
-							"proxy-config.json"),
+							"reachability-metadata.json"),
 					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-jdk-proxy",
 							"native-image.properties"));
 		});
@@ -155,9 +149,7 @@ class AotTests {
 		mavenBuild.project("aot-jdk-proxy").goals("package").execute((project) -> {
 			Path classesDirectory = project.toPath().resolve("target/classes/META-INF/native-image");
 			assertThat(collectRelativePaths(classesDirectory)).contains(
-					Path.of("org.springframework.boot.maven.it", "aot-jdk-proxy", "reflect-config.json"),
-					Path.of("org.springframework.boot.maven.it", "aot-jdk-proxy", "resource-config.json"),
-					Path.of("org.springframework.boot.maven.it", "aot-jdk-proxy", "proxy-config.json"),
+					Path.of("org.springframework.boot.maven.it", "aot-jdk-proxy", "reachability-metadata.json"),
 					Path.of("org.springframework.boot.maven.it", "aot-jdk-proxy", "native-image.properties"));
 		});
 	}
@@ -179,7 +171,7 @@ class AotTests {
 					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.java"));
 			Path testClassesDirectory = project.toPath().resolve("target/test-classes");
 			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("META-INF", "native-image",
-					"org.springframework.boot.maven.it", "aot-test", "reflect-config.json"));
+					"org.springframework.boot.maven.it", "aot-test", "reachability-metadata.json"));
 			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("org", "test",
 					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.class"));
 		});

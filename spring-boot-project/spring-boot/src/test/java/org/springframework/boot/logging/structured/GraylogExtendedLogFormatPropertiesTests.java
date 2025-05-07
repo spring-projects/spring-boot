@@ -109,12 +109,13 @@ class GraylogExtendedLogFormatPropertiesTests {
 		new GraylogExtendedLogFormatPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(GraylogExtendedLogFormatProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(GraylogExtendedLogFormatProperties.class.getConstructor(String.class, Service.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(
+					GraylogExtendedLogFormatProperties.class.getConstructor(String.class, Service.class)))
+			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Service.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(GraylogExtendedLogFormatProperties.Service.class.getConstructor(String.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(GraylogExtendedLogFormatProperties.Service.class.getConstructor(String.class)))
+			.accepts(hints);
 	}
 
 	@Test

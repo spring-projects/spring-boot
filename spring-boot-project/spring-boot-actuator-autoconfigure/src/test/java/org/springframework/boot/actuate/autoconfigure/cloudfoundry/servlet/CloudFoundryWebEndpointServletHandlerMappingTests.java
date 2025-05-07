@@ -38,7 +38,7 @@ class CloudFoundryWebEndpointServletHandlerMappingTests {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new CloudFoundryWebEndpointServletHandlerMappingRuntimeHints().registerHints(runtimeHints,
 				getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(CloudFoundryLinksHandler.class, "links"))
 			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}

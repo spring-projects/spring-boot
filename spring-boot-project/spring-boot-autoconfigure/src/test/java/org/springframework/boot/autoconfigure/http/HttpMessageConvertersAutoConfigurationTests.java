@@ -335,11 +335,12 @@ class HttpMessageConvertersAutoConfigurationTests {
 		RuntimeHints hints = new RuntimeHints();
 		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "getCharset")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "setCharset")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "isForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "setForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "shouldForce"))
+			.rejects(hints);
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {

@@ -37,7 +37,7 @@ class WebMvcEndpointHandlerMappingTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new WebMvcEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(WebMvcLinksHandler.class, "links").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(WebMvcLinksHandler.class, "links"))
 			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}

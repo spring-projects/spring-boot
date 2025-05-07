@@ -90,17 +90,17 @@ class StructuredLoggingJsonPropertiesTests {
 		RuntimeHints hints = new RuntimeHints();
 		new StructuredLoggingJsonPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(StructuredLoggingJsonProperties.class)).accepts(hints);
+		assertThat(
+				RuntimeHintsPredicates.reflection()
+					.onConstructorInvocation(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class,
+							Set.class, Map.class, Map.class, StackTrace.class, Context.class, Set.class)))
+			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
-					Map.class, StackTrace.class, Context.class, Set.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(StackTrace.class.getDeclaredConstructor(String.class, Root.class, Integer.class,
+					Integer.class, Boolean.class, Boolean.class)))
+			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(StackTrace.class.getDeclaredConstructor(String.class, Root.class, Integer.class,
-					Integer.class, Boolean.class, Boolean.class))
-			.invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection()
-			.onConstructor(Context.class.getDeclaredConstructor(boolean.class, String.class))
-			.invoke()).accepts(hints);
+			.onConstructorInvocation(Context.class.getDeclaredConstructor(boolean.class, String.class))).accepts(hints);
 	}
 
 	@Test

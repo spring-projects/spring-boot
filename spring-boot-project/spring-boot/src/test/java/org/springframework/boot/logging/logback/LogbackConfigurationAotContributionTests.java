@@ -267,8 +267,7 @@ class LogbackConfigurationAotContributionTests {
 	private Predicate<RuntimeHints> invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Class<?> type) {
 		return RuntimeHintsPredicates.reflection()
 			.onType(TypeReference.of(type))
-			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INTROSPECT_PUBLIC_METHODS,
-					MemberCategory.INVOKE_PUBLIC_METHODS);
+			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS);
 	}
 
 	private Consumer<RuntimeHints> hasValidTypeName(Class<?> type) {

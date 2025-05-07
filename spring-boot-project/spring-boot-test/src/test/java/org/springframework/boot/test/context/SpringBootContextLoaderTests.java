@@ -268,7 +268,7 @@ class SpringBootContextLoaderTests {
 			.buildMergedContextConfiguration();
 		RuntimeHints runtimeHints = new RuntimeHints();
 		contextLoader.loadContextForAotProcessing(contextConfiguration, runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ConfigWithMain.class, "main").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ConfigWithMain.class, "main"))
 			.accepts(runtimeHints);
 	}
 

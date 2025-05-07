@@ -52,13 +52,13 @@ class ApplicationPropertiesTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ApplicationPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ApplicationProperties.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setBannerMode").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ApplicationProperties.class, "setBannerMode"))
 			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getSources").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ApplicationProperties.class, "getSources"))
 			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setSources").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ApplicationProperties.class, "setSources"))
 			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getBannerMode"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ApplicationProperties.class, "getBannerMode"))
 			.rejects(hints);
 	}
 

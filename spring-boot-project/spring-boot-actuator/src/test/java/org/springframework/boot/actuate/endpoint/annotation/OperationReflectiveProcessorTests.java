@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class OperationReflectiveProcessorTests {
 	void shouldRegisterMethodAsInvokable() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "string");
 		runProcessor(method);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(method)).accepts(this.runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(method)).accepts(this.runtimeHints);
 	}
 
 	@Test
@@ -82,12 +82,10 @@ class OperationReflectiveProcessorTests {
 	private void assertHintsForDto() {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(Dto.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(this.runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(NestedDto.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(this.runtimeHints);
 	}
 
 	private void runProcessor(Method method) {

@@ -38,7 +38,7 @@ class ConfigDataPropertiesRuntimeHintsTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(ConfigDataProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(ConfigDataLocation.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Activate.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ConfigDataLocation.class, "of").invoke())
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ConfigDataLocation.class, "of"))
 			.accepts(hints);
 	}
 
