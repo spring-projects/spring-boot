@@ -2023,6 +2023,7 @@ bom {
 				"spring-boot-hazelcast",
 				"spring-boot-http-converter",
 				"spring-boot-http-client",
+				"spring-boot-http-client-reactive",
 				"spring-boot-http-codec",
 				"spring-boot-integration",
 				"spring-boot-jackson",
