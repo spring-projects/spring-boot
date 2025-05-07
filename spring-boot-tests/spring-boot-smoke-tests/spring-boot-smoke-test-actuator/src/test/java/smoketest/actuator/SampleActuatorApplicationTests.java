@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class SampleActuatorApplicationTests {
 	void testHomeIsSecure() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
+		assertThat(entity.getHeaders().headerNames()).doesNotContain("Set-Cookie");
 	}
 
 	@Test

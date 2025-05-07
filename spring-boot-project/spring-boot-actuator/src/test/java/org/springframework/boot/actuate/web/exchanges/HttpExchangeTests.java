@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -47,14 +44,11 @@ import static org.mockito.Mockito.mock;
  */
 class HttpExchangeTests {
 
-	private static final Map<String, List<String>> AUTHORIZATION_HEADER = Map.of(HttpHeaders.AUTHORIZATION,
-			Arrays.asList("secret"));
+	private static final HttpHeaders AUTHORIZATION_HEADER = ofSingleHttpHeader(HttpHeaders.AUTHORIZATION, "secret");
 
-	private static final Map<String, List<String>> COOKIE_HEADER = Map.of(HttpHeaders.COOKIE,
-			Arrays.asList("test=test"));
+	private static final HttpHeaders COOKIE_HEADER = ofSingleHttpHeader(HttpHeaders.COOKIE, "test=test");
 
-	private static final Map<String, List<String>> SET_COOKIE_HEADER = Map.of(HttpHeaders.SET_COOKIE,
-			Arrays.asList("test=test"));
+	private static final HttpHeaders SET_COOKIE_HEADER = ofSingleHttpHeader(HttpHeaders.SET_COOKIE, "test=test");
 
 	private static final Supplier<Principal> NO_PRINCIPAL = () -> null;
 
@@ -298,31 +292,33 @@ class HttpExchangeTests {
 	}
 
 	private RecordableHttpRequest createRequest() {
-		return createRequest(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
+		return createRequest(ofSingleHttpHeader(HttpHeaders.ACCEPT, "application/json"));
 	}
 
-	private RecordableHttpRequest createRequest(Map<String, List<String>> headers) {
+	@SuppressWarnings("removal")
+	private RecordableHttpRequest createRequest(HttpHeaders headers) {
 		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getMethod()).willReturn("GET");
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
-		given(request.getHeaders()).willReturn(new HashMap<>(headers));
+		given(request.getHeaders()).willReturn(new HashMap<>(headers.asMultiValueMap()));
 		given(request.getRemoteAddress()).willReturn("127.0.0.1");
 		return request;
 	}
 
 	private RecordableHttpResponse createResponse() {
-		return createResponse(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
+		return createResponse(ofSingleHttpHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
 	}
 
-	private RecordableHttpResponse createResponse(Map<String, List<String>> headers) {
+	@SuppressWarnings("removal")
+	private RecordableHttpResponse createResponse(HttpHeaders headers) {
 		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		given(response.getStatus()).willReturn(204);
-		given(response.getHeaders()).willReturn(new HashMap<>(headers));
+		given(response.getHeaders()).willReturn(new HashMap<>(headers.asMultiValueMap()));
 		return response;
 	}
 
-	private Map<String, List<String>> mixedCase(Map<String, List<String>> headers) {
-		Map<String, List<String>> result = new LinkedHashMap<>();
+	private HttpHeaders mixedCase(HttpHeaders headers) {
+		HttpHeaders result = new HttpHeaders();
 		headers.forEach((key, value) -> result.put(mixedCase(key), value));
 		return result;
 	}
@@ -334,6 +330,12 @@ class HttpExchangeTests {
 			output.append((i % 2 != 0) ? Character.toUpperCase(ch) : Character.toLowerCase(ch));
 		}
 		return output.toString();
+	}
+
+	private static HttpHeaders ofSingleHttpHeader(String header, String... values) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.put(header, List.of(values));
+		return httpHeaders;
 	}
 
 }

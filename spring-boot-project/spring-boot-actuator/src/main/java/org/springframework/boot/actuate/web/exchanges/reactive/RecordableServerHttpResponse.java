@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.web.exchanges.reactive;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,9 @@ class RecordableServerHttpResponse implements RecordableHttpResponse {
 
 	RecordableServerHttpResponse(ServerHttpResponse response) {
 		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
-		this.headers = new LinkedHashMap<>(response.getHeaders());
+		Map<String, List<String>> headers = new LinkedHashMap<>();
+		response.getHeaders().forEach(headers::put);
+		this.headers = Collections.unmodifiableMap(headers);
 	}
 
 	@Override

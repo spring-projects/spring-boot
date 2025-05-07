@@ -44,7 +44,7 @@ class BasicAuthentication {
 	}
 
 	void applyTo(HttpHeaders headers) {
-		if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
+		if (!headers.containsHeader(HttpHeaders.AUTHORIZATION)) {
 			headers.setBasicAuth(this.username, this.password, this.charset);
 		}
 	}

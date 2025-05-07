@@ -481,10 +481,10 @@ class TestRestTemplateTests {
 		ClientHttpRequest request = ReflectionTestUtils.invokeMethod(testRestTemplate.getRestTemplate(),
 				"createRequest", URI.create("http://localhost"), HttpMethod.POST);
 		if (username == null) {
-			assertThat(request.getHeaders()).doesNotContainKey(HttpHeaders.AUTHORIZATION);
+			assertThat(request.getHeaders().headerNames()).doesNotContain(HttpHeaders.AUTHORIZATION);
 		}
 		else {
-			assertThat(request.getHeaders()).containsKeys(HttpHeaders.AUTHORIZATION);
+			assertThat(request.getHeaders().headerNames()).contains(HttpHeaders.AUTHORIZATION);
 			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic "
 					+ Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
 		}

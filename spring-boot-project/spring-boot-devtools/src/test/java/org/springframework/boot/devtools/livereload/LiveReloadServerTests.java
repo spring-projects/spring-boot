@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -342,7 +342,7 @@ class LiveReloadServerTests {
 			requestHeaders.forEach((key, value) -> uppercaseRequestHeaders.put(key.toUpperCase(Locale.ROOT), value));
 			requestHeaders.clear();
 			requestHeaders.putAll(uppercaseRequestHeaders);
-			requestHeaders.putAll(this.headers);
+			this.headers.forEach(requestHeaders::put);
 		}
 
 		@Override

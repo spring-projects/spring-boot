@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class MessageControllerWebTests {
 		assertThat(this.mvc.post().uri("/").param("text", "FOO text").param("summary", "FOO"))
 			.hasStatus(HttpStatus.FOUND)
 			.headers()
-			.hasEntrySatisfying("Location",
+			.hasHeaderSatisfying("Location",
 					(values) -> assertThat(values).hasSize(1)
 						.element(0)
 						.satisfies(HamcrestCondition.matching(RegexMatcher.matches("/[0-9]+"))));

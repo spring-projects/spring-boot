@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import zipkin2.reporter.BaseHttpSender;
@@ -27,8 +29,6 @@ import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier.Factory;
 
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -61,20 +61,20 @@ abstract class HttpSender extends BaseHttpSender<URI, byte[]> {
 
 	@Override
 	protected void postSpans(URI endpoint, byte[] body) throws IOException {
-		MultiValueMap<String, String> headers = getDefaultHeaders();
+		Map<String, String> headers = getDefaultHeaders();
 		if (needsCompression(body)) {
 			body = compress(body);
-			headers.add("Content-Encoding", "gzip");
+			headers.put("Content-Encoding", "gzip");
 		}
 		postSpans(endpoint, headers, body);
 	}
 
-	abstract void postSpans(URI endpoint, MultiValueMap<String, String> headers, byte[] body) throws IOException;
+	abstract void postSpans(URI endpoint, Map<String, String> headers, byte[] body) throws IOException;
 
-	MultiValueMap<String, String> getDefaultHeaders() {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("b3", "0");
-		headers.add("Content-Type", this.encoding.mediaType());
+	Map<String, String> getDefaultHeaders() {
+		Map<String, String> headers = new LinkedHashMap<>();
+		headers.put("b3", "0");
+		headers.put("Content-Type", this.encoding.mediaType());
 		return headers;
 	}
 
