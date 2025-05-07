@@ -84,7 +84,7 @@ class PropertyDescriptorResolverTests {
 					assertThat(itemMetadataList).map(ItemMetadata::getDefaultValue)
 						.containsExactly("three", "two", "one");
 					assertThat(itemMetadataList).map(ItemMetadata::getDescription)
-						.containsExactly("I'm third", "I'm second", "I'm first");
+						.containsExactly("Concrete property.", "Parent property.", "Grandparent property.");
 				});
 	}
 
