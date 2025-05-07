@@ -22,6 +22,7 @@ description = "Starter for testing Spring Boot applications with libraries inclu
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-http-client"))
+	api(project(":spring-boot-project:spring-boot-http-client-reactive"))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))

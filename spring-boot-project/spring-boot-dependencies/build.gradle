@@ -2024,6 +2024,7 @@ bom {
 				"spring-boot-http-codec",
 				"spring-boot-http-converter",
 				"spring-boot-http-client",
+				"spring-boot-http-client-reactive",
 				"spring-boot-integration",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",

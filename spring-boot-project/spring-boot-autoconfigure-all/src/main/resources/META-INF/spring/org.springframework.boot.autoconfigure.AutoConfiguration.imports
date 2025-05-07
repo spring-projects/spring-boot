@@ -1,6 +1,2 @@
-org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration
-org.springframework.boot.autoconfigure.http.client.reactive.service.ReactiveHttpServiceClientAutoConfiguration
-org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration
-org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
