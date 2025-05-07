@@ -44,7 +44,6 @@ import org.springframework.util.Assert;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -107,6 +106,7 @@ public class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@EnableConfigurationProperties(ManagementServerProperties.class)
 	static class DifferentManagementContextConfiguration {
 
 		@Bean

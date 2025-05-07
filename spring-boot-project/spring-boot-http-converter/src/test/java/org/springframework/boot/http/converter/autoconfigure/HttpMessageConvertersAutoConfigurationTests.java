@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -262,16 +261,6 @@ class HttpMessageConvertersAutoConfigurationTests {
 				assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
 				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
 					.isEqualTo(StandardCharsets.UTF_16);
-			});
-	}
-
-	@Test // gh-21789
-	void whenAutoConfigurationIsActiveThenServerPropertiesConfigurationPropertiesAreNotEnabled() {
-		new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(HttpMessageConverters.class);
-				assertThat(context).doesNotHaveBean(ServerProperties.class);
 			});
 	}
 

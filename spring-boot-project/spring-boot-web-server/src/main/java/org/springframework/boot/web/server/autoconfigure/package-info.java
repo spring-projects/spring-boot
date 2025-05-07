@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.servlet;
-
-import org.springframework.web.filter.ForwardedHeaderFilter;
-
 /**
- * Customizer for the auto-configured {@link ForwardedHeaderFilter}.
- *
- * @author Andy Wilkinson
- * @since 4.0.0
+ * Classes related to the auto-configuration of a web server.
  */
-public interface ForwardedHeaderFilterCustomizer {
-
-	/**
-	 * Customizes the given {@code filter}.
-	 * @param filter the filter to customize
-	 */
-	void customize(ForwardedHeaderFilter filter);
-
-}
+package org.springframework.boot.web.server.autoconfigure;
