@@ -538,7 +538,6 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer.start();
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
-		assertThat(context.getClearReferencesObjectStreamClassCaches()).isFalse();
 		assertThat(context.getClearReferencesRmiTargets()).isFalse();
 		assertThat(context.getClearReferencesThreadLocals()).isFalse();
 	}

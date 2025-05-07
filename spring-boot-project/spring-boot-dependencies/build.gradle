@@ -2514,10 +2514,6 @@ bom {
 		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
-		prohibit {
-			versionRange "[11.0.0-M1,)"
-			because "it exceeds our Jakarte EE 10 baseline"
-		}
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
