@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class PropertyDescriptorResolverTests {
 
@@ -79,9 +80,13 @@ class PropertyDescriptorResolverTests {
 						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
 						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
 								"HierarchicalPropertiesParent");
-					assertThat(resolver.resolve(type, null)
+					List<ItemMetadata> itemMetadataList = resolver.resolve(type, null)
 						.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-						.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
+						.toList();
+					assertThat(itemMetadataList).map(ItemMetadata::getDefaultValue)
+						.containsExactly("three", "two", "one");
+					assertThat(itemMetadataList).map(ItemMetadata::getDescription)
+						.containsExactly("Concrete property.", "Parent property.", "Grandparent property.");
 				});
 	}
 
