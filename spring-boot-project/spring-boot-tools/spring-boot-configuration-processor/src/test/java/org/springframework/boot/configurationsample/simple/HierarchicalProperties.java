@@ -26,6 +26,9 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @ConfigurationProperties("hierarchical")
 public class HierarchicalProperties extends HierarchicalPropertiesParent {
 
+	/**
+	 * Concrete property.
+	 */
 	private String third = "three";
 
 	public String getThird() {
