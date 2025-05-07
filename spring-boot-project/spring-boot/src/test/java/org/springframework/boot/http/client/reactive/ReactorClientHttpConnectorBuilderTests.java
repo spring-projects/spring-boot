@@ -55,7 +55,7 @@ class ReactorClientHttpConnectorBuilderTests
 			httpClients.add(httpClient);
 			return httpClient;
 		};
-		ClientHttpRequestFactoryBuilder.reactor()
+		ClientHttpConnectorBuilder.reactor()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.build();

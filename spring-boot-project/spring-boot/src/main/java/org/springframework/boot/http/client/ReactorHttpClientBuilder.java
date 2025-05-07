@@ -61,7 +61,8 @@ public final class ReactorHttpClientBuilder {
 	 */
 	public ReactorHttpClientBuilder withHttpClientCustomizer(UnaryOperator<HttpClient> customizer) {
 		Assert.notNull(customizer, "'customizer' must not be null");
-		return new ReactorHttpClientBuilder((t) -> customizer.apply(this.customizer.apply(t)));
+		return new ReactorHttpClientBuilder(this.factory,
+				(httpClient) -> customizer.apply(this.customizer.apply(httpClient)));
 	}
 
 	/**
