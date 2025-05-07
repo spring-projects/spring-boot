@@ -805,11 +805,7 @@ bom {
 				.formatted(version.major(), version.minor(), version))
 		}
 	}
-	library("Jakarta Servlet", "6.0.0") {
-		prohibit {
-			versionRange "[6.1.0-M1,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Jakarta Servlet", "6.1.0") {
 		group("jakarta.servlet") {
 			modules = [
 				"jakarta.servlet-api"
