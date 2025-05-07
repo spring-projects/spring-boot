@@ -847,11 +847,7 @@ bom {
 			releaseNotes("https://github.com/jakartaee/validation/releases/tag/{version}")
 		}
 	}
-	library("Jakarta WebSocket", "2.1.1") {
-		prohibit {
-			versionRange "[2.2.0-M1,)"
-			because "it exceeds our Jakarta EE 10 baseline"
-		}
+	library("Jakarta WebSocket", "2.2.0") {
 		group("jakarta.websocket") {
 			modules = [
 				"jakarta.websocket-api",
