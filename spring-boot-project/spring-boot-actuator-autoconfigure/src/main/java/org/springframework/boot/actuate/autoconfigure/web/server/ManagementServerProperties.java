@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.net.InetAddress;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.util.StringUtils;
 
 /**

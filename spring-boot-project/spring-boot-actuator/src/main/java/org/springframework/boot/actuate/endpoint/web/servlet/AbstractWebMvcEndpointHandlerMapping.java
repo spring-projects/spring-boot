@@ -316,20 +316,24 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
 				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
 						() -> headers.get("Accept"));
-				OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
-					.of(WebServerNamespace.class, () -> {
-						WebApplicationContext applicationContext = WebApplicationContextUtils
-							.getRequiredWebApplicationContext(request.getServletContext());
-						return WebServerNamespace
-							.from(WebServerApplicationContext.getServerNamespace(applicationContext));
-					});
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
+						serverNamespaceArgumentResolver(request), producibleOperationArgumentResolver);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
 				throw new InvalidEndpointBadRequestException(ex);
 			}
+		}
+
+		private OperationArgumentResolver serverNamespaceArgumentResolver(HttpServletRequest request) {
+			if (ClassUtils.isPresent("org.springframework.boot.web.server.context.WebServerApplicationContext", null)) {
+				return OperationArgumentResolver.of(WebServerNamespace.class, () -> {
+					WebApplicationContext applicationContext = WebApplicationContextUtils
+						.getRequiredWebApplicationContext(request.getServletContext());
+					return WebServerNamespace.from(WebServerApplicationContext.getServerNamespace(applicationContext));
+				});
+			}
+			return OperationArgumentResolver.of(WebServerNamespace.class, () -> null);
 		}
 
 		@Override

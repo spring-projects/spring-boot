@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.servlet;
+package org.springframework.boot.web.server.autoconfigure.servlet;
 
 import org.springframework.web.filter.ForwardedHeaderFilter;
 

@@ -21,8 +21,8 @@ import java.time.Duration;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.security.autoconfigure.StaticResourceLocation;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;

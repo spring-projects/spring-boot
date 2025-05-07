@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.reactive;
+package org.springframework.boot.web.server.autoconfigure.reactive;
 
 import org.junit.jupiter.api.Test;
 

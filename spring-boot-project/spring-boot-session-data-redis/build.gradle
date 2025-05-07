@@ -32,14 +32,13 @@ dependencies {
 	api("org.springframework.session:spring-session-data-redis")
 
 	implementation(project(":spring-boot-project:spring-boot-data-redis"))
+	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-webflux"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-session")))
 	dockerTestImplementation("com.redis:testcontainers-redis")

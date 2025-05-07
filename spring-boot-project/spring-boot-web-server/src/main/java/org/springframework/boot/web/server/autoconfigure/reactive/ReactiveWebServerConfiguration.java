@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.server.servlet;
-
-import jakarta.servlet.DispatcherType;
+package org.springframework.boot.web.server.autoconfigure.reactive;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -25,67 +23,50 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.error.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
-import org.springframework.boot.web.server.servlet.WebListenerRegistrar;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.filter.ForwardedHeaderFilter;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 /**
- * {@link Configuration Configuration} for a servlet web server.
+ * {@link Configuration Configuration} for a reactive web server.
  *
- * @author Phillip Webb
- * @author Dave Syer
- * @author Ivan Sopov
  * @author Brian Clozel
- * @author Stephane Nicoll
  * @author Scott Frederick
  * @since 4.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ServerProperties.class)
-@Import(ServletWebServerConfiguration.BeanPostProcessorsRegistrar.class)
-public class ServletWebServerConfiguration {
+@Import(ReactiveWebServerConfiguration.BeanPostProcessorsRegistrar.class)
+public class ReactiveWebServerConfiguration {
 
 	@Bean
-	ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
-			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
-			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers, ObjectProvider<SslBundles> sslBundles) {
-		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
-				cookieSameSiteSuppliers.orderedStream().toList(), sslBundles.getIfAvailable());
+	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
-	FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
-			ObjectProvider<ForwardedHeaderFilterCustomizer> customizerProvider) {
-		ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
-		customizerProvider.ifAvailable((customizer) -> customizer.customize(filter));
-		FilterRegistrationBean<ForwardedHeaderFilter> registration = new FilterRegistrationBean<>(filter);
-		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return registration;
+	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
+		return new ForwardedHeaderTransformer();
 	}
 
 	/**
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
@@ -104,8 +85,6 @@ public class ServletWebServerConfiguration {
 			}
 			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
 					WebServerFactoryCustomizerBeanPostProcessor.class);
-			registerSyntheticBeanIfMissing(registry, "errorPageRegistrarBeanPostProcessor",
-					ErrorPageRegistrarBeanPostProcessor.class);
 		}
 
 		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,

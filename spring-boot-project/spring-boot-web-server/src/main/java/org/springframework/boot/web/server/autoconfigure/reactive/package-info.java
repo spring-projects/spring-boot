@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-	id "java"
-}
-
-description = "Spring Boot property validation smoke test"
-
-dependencies {
-	annotationProcessor(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"))
-
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-
-	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-web-server"))
-}
+/**
+ * Classes related to the auto-configuration of a reactive web server.
+ */
+package org.springframework.boot.web.server.autoconfigure.reactive;
