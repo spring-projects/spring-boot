@@ -1,5 +1,5 @@
 # AutoConfigureWebClient auto-configuration imports
-optional:org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration
+optional:org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration
 optional:org.springframework.boot.http.client.rest.autoconfigure.RestClientAutoConfiguration
 optional:org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration
 optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration

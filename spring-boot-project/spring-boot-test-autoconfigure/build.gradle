@@ -60,7 +60,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-graphql"))
 	optional(project(":spring-boot-project:spring-boot-groovy-templates"))
 	optional(project(":spring-boot-project:spring-boot-hateoas"))
-	optional(project(":spring-boot-project:spring-boot-http"))
+	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-http-client"))
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))

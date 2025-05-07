@@ -40,7 +40,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 * Inclusion of javadoc:org.springframework.web.servlet.view.ContentNegotiatingViewResolver[] and javadoc:org.springframework.web.servlet.view.BeanNameViewResolver[] beans.
 * Support for serving static resources, including support for WebJars (covered xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[later in this document]).
 * Automatic registration of javadoc:org.springframework.core.convert.converter.Converter[], javadoc:org.springframework.core.convert.converter.GenericConverter[], and javadoc:org.springframework.format.Formatter[] beans.
-* Support for javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-converters[later in this document]).
+* Support for javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-converters[later in this document]).
 * Automatic registration of javadoc:org.springframework.validation.MessageCodesResolver[] (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-codes[later in this document]).
 * Static `index.html` support.
 * Automatic use of a javadoc:org.springframework.web.bind.support.ConfigurableWebBindingInitializer[] bean (covered xref:web/servlet.adoc#web.servlet.spring-mvc.binding-initializer[later in this document]).
@@ -97,11 +97,11 @@ By default, strings are encoded in `UTF-8`.
 Any javadoc:org.springframework.http.converter.HttpMessageConverter[] bean that is present in the context is added to the list of converters.
 You can also override default converters in the same way.
 
-If you need to add or customize converters, you can use Spring Boot's javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] class, as shown in the following listing:
+If you need to add or customize converters, you can use Spring Boot's javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] class, as shown in the following listing:
 
 include-code::MyHttpMessageConvertersConfiguration[]
 
-For further control, you can also sub-class javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] and override its `postProcessConverters` and/or `postProcessPartConverters` methods.
+For further control, you can also sub-class javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and override its `postProcessConverters` and/or `postProcessPartConverters` methods.
 This can be useful when you want to re-order or remove some of the converters that Spring MVC configures by default.
 
 
