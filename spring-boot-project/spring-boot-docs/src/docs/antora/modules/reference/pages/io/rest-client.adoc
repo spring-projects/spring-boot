@@ -127,7 +127,7 @@ The javadoc:org.springframework.web.client.RestClient[] interface provides a fun
 
 Spring Boot creates and pre-configures a prototype javadoc:org.springframework.web.client.RestClient$Builder[] bean for you.
 It is strongly advised to inject it in your components and use it to create javadoc:org.springframework.web.client.RestClient[] instances.
-Spring Boot is configuring that builder with javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[].
+Spring Boot is configuring that builder with javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[].
 
 The following code shows a typical example:
 
@@ -178,7 +178,7 @@ You might choose to use javadoc:org.springframework.web.client.RestTemplate[] wh
 
 Since javadoc:org.springframework.web.client.RestTemplate[] instances often need to be customized before being used, Spring Boot does not provide any single auto-configured javadoc:org.springframework.web.client.RestTemplate[] bean.
 It does, however, auto-configure a javadoc:org.springframework.boot.web.client.RestTemplateBuilder[], which can be used to create javadoc:org.springframework.web.client.RestTemplate[] instances when needed.
-The auto-configured javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] ensures that sensible javadoc:org.springframework.boot.http.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[] are applied to javadoc:org.springframework.web.client.RestTemplate[] instances.
+The auto-configured javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] ensures that sensible javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and an appropriate javadoc:org.springframework.http.client.ClientHttpRequestFactory[] are applied to javadoc:org.springframework.web.client.RestTemplate[] instances.
 
 The following code shows a typical example:
 

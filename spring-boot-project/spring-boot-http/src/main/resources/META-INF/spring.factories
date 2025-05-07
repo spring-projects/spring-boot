@@ -1,3 +1,0 @@
-# Background Preinitializers
-org.springframework.boot.autoconfigure.preinitialize.BackgroundPreinitializer=\
-org.springframework.boot.http.autoconfigure.MessageConverterBackgroundPreinitializer

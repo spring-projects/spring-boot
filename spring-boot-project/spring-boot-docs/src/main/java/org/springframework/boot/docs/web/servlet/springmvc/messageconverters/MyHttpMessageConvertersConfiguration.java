@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.messageconverters;
 
-import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;

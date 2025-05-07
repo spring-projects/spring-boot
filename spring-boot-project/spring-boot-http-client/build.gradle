@@ -28,7 +28,7 @@ description = "Spring Boot HTTP Client"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	implementation(project(":spring-boot-project:spring-boot-http"))
+	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("io.projectreactor.netty:reactor-netty-http")

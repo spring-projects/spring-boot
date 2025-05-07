@@ -19,7 +19,7 @@ package org.springframework.boot.http.client.rest.autoconfigure;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;

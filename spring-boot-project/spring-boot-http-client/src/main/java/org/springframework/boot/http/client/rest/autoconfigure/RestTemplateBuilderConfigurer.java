@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.springframework.boot.http.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
