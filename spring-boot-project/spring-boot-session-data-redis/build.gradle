@@ -27,6 +27,7 @@ dependencies {
 	dockerTestRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 	
 	implementation(project(":spring-boot-project:spring-boot-data-redis"))
+	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 

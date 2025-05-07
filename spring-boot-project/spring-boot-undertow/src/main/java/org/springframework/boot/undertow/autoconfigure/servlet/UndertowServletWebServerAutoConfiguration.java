@@ -29,13 +29,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.server.servlet.ServletWebServerConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.undertow.autoconfigure.UndertowServerProperties;
 import org.springframework.boot.undertow.autoconfigure.UndertowWebServerConfiguration;
 import org.springframework.boot.undertow.servlet.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.autoconfigure.servlet.ServletWebServerConfiguration;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -24,12 +24,8 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
 import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -37,7 +33,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.server.servlet.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -266,28 +261,6 @@ class HttpMessageConvertersAutoConfigurationTests {
 				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
 					.isEqualTo(StandardCharsets.UTF_16);
 			});
-	}
-
-	@Test // gh-21789
-	void whenAutoConfigurationIsActiveThenServerPropertiesConfigurationPropertiesAreNotEnabled() {
-		new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(HttpMessageConverters.class);
-				assertThat(context).doesNotHaveBean(ServerProperties.class);
-			});
-	}
-
-	@Test
-	void shouldRegisterHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce").invoke()).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {

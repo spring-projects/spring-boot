@@ -16,8 +16,9 @@
 
 package org.springframework.boot.http.converter.autoconfigure;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,16 +27,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
-import org.springframework.boot.web.server.servlet.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -61,7 +57,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
-@ImportRuntimeHints(HttpMessageConvertersAutoConfigurationRuntimeHints.class)
 public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
@@ -79,8 +74,9 @@ public class HttpMessageConvertersAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter(Environment environment) {
-			Encoding encoding = Binder.get(environment).bindOrCreate("server.servlet.encoding", Encoding.class);
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(encoding.getCharset());
+			Charset charset = environment.getProperty("server.servlet.encoding.charset", Charset.class,
+					StandardCharsets.UTF_8);
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(charset);
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}
@@ -96,15 +92,6 @@ public class HttpMessageConvertersAutoConfiguration {
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		private static final class ReactiveWebApplication {
 
-		}
-
-	}
-
-	static class HttpMessageConvertersAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
-
-		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			BindableRuntimeHintsRegistrar.forTypes(Encoding.class).registerHints(hints, classLoader);
 		}
 
 	}

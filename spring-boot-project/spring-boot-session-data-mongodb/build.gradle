@@ -14,6 +14,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-session"))
 	api("org.springframework.session:spring-session-data-mongodb")
 	
+	
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-webflux"))
@@ -30,6 +31,7 @@ dependencies {
 	dockerTestRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 	
 	implementation(project(":spring-boot-project:spring-boot-data-mongodb"))
+	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 }
