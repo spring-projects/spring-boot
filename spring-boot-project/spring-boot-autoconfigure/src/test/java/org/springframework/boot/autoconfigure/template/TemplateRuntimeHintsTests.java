@@ -25,6 +25,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,8 +47,9 @@ class TemplateRuntimeHintsTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/test.html")
 	void contributeWhenTemplateLocationExists() {
-		RuntimeHints runtimeHints = contribute(getClass().getClassLoader());
+		RuntimeHints runtimeHints = contribute(Thread.currentThread().getContextClassLoader());
 		assertThat(TEST_PREDICATE.test(runtimeHints)).isTrue();
 	}
 

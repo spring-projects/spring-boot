@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.template;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -25,7 +29,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -71,11 +77,14 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
+	@WithTestTemplateAvailabilityProvider
 	void createWhenUsingApplicationContextShouldLoadProviders() {
 		ApplicationContext applicationContext = mock(ApplicationContext.class);
-		given(applicationContext.getClassLoader()).willReturn(this.classLoader);
+		given(applicationContext.getClassLoader()).willReturn(Thread.currentThread().getContextClassLoader());
 		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(applicationContext);
-		assertThat(providers.getProviders()).isNotEmpty();
+		assertThat(providers.getProviders()).extracting((provider) -> (Class) provider.getClass())
+			.containsExactly(TestTemplateAvailabilityProvider.class);
 		then(applicationContext).should().getClassLoader();
 	}
 
@@ -86,8 +95,10 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@WithTestTemplateAvailabilityProvider
 	void createWhenUsingClassLoaderShouldLoadProviders() {
-		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(this.classLoader);
+		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
+				Thread.currentThread().getContextClassLoader());
 		assertThat(providers.getProviders()).isNotEmpty();
 	}
 
@@ -185,6 +196,25 @@ class TemplateAvailabilityProvidersTests {
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
 		then(this.provider).should(times(2))
 			.isTemplateAvailable(this.view, this.environment, this.classLoader, this.resourceLoader);
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "META-INF/spring.factories",
+			content = "org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider="
+					+ "org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvidersTests$TestTemplateAvailabilityProvider")
+	@interface WithTestTemplateAvailabilityProvider {
+
+	}
+
+	static class TestTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+
+		@Override
+		public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+				ResourceLoader resourceLoader) {
+			return false;
+		}
+
 	}
 
 }
