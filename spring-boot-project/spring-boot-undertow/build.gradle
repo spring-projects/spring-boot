@@ -46,6 +46,7 @@ dependencies {
 	testRuntimeOnly("org.eclipse.jetty:jetty-client")
 	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client")
 	testRuntimeOnly("org.eclipse.jetty.http2:jetty-http2-client-transport")
+	testRuntimeOnly("org.springframework:spring-webmvc")
 }
 
 test {
