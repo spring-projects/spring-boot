@@ -170,11 +170,6 @@ public class AntoraConventions {
 			.withPropertyName("antoraPlaybookFile")
 			.withPathSensitivity(PathSensitivity.RELATIVE);
 
-		antoraTask.getInputs()
-			.dir(project.getLayout().getBuildDirectory().dir(".gradle"))
-			.withPropertyName("gradleBuildDir")
-			.withPathSensitivity(PathSensitivity.RELATIVE);
-
 		antoraTask.setPlaybook("antora-playbook.yml");
 		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
 		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArs(project, antoraTask)));

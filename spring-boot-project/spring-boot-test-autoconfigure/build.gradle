@@ -131,9 +131,22 @@ artifacts {
 
 test {
 	include "**/*Tests.class"
+	dependsOn processResources
 }
 
 tasks.register("testSliceMetadata", org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
 	sourceSet = sourceSets.main
 	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
+}
+
+testSliceMetadata {
+	dependsOn processResources
+}
+
+jar {
+	dependsOn processResources
+}
+
+javadoc {
+	dependsOn processResources
 }

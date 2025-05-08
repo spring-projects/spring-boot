@@ -224,7 +224,7 @@ project.rootProject.gradle.projectsEvaluated {
 					(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 	aggregatedJavadoc.configure {
-		dependsOn publishedProjects.javadoc
+		dependsOn publishedProjects.javadoc, processResources
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
 	}
