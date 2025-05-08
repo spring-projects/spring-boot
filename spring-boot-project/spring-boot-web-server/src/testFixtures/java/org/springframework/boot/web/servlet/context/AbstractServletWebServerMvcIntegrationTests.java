@@ -21,19 +21,16 @@ import java.net.URI;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
-import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
-import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -49,16 +46,21 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ServletWebServerApplicationContext} and {@link WebServer}s
- * running Spring MVC.
+ * Base class for integration testing of {@link ServletWebServerApplicationContext} and
+ * {@link WebServer}s running Spring MVC.
  *
  * @author Phillip Webb
  * @author Ivan Sopov
  */
-@DirtiesUrlFactories
-class ServletWebServerMvcIntegrationTests {
+public abstract class AbstractServletWebServerMvcIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
+
+	private Class<?> webServerConfiguration;
+
+	protected AbstractServletWebServerMvcIntegrationTests(Class<?> webServerConfiguration) {
+		this.webServerConfiguration = webServerConfiguration;
+	}
 
 	@AfterEach
 	void closeContext() {
@@ -71,27 +73,17 @@ class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
-	void tomcat() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(TomcatConfig.class);
-		doTest(this.context, "/hello");
-	}
-
-	@Test
-	void jetty() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(JettyConfig.class);
-		doTest(this.context, "/hello");
-	}
-
-	@Test
-	void undertow() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(UndertowConfig.class);
+	void basicConfig() throws Exception {
+		this.context = new AnnotationConfigServletWebServerApplicationContext(this.webServerConfiguration,
+				Config.class);
 		doTest(this.context, "/hello");
 	}
 
 	@Test
 	@WithResource(name = "conf.properties", content = "context=/example")
 	void advancedConfig() throws Exception {
-		this.context = new AnnotationConfigServletWebServerApplicationContext(AdvancedConfig.class);
+		this.context = new AnnotationConfigServletWebServerApplicationContext(this.webServerConfiguration,
+				AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
 	}
 
@@ -105,45 +97,6 @@ class ServletWebServerMvcIntegrationTests {
 		}
 	}
 
-	// Simple main method for testing in a browser
-	@SuppressWarnings("resource")
-	static void main(String[] args) {
-		new AnnotationConfigServletWebServerApplicationContext(JettyServletWebServerFactory.class, Config.class);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(Config.class)
-	static class TomcatConfig {
-
-		@Bean
-		ServletWebServerFactory webServerFactory() {
-			return new TomcatServletWebServerFactory(0);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(Config.class)
-	static class JettyConfig {
-
-		@Bean
-		ServletWebServerFactory webServerFactory() {
-			return new JettyServletWebServerFactory(0);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(Config.class)
-	static class UndertowConfig {
-
-		@Bean
-		ServletWebServerFactory webServerFactory() {
-			return new UndertowServletWebServerFactory(0);
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class Config {
@@ -151,9 +104,6 @@ class ServletWebServerMvcIntegrationTests {
 		@Bean
 		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
-			// Alternatively you can use ServletContextInitializer beans including
-			// ServletRegistration and FilterRegistration. Read the
-			// EmbeddedWebApplicationContext Javadoc for details.
 		}
 
 		@Bean
@@ -175,10 +125,16 @@ class ServletWebServerMvcIntegrationTests {
 		}
 
 		@Bean
-		ServletWebServerFactory webServerFactory() {
-			JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
-			factory.setContextPath(this.env.getProperty("context"));
-			return factory;
+		static WebServerFactoryCustomizerBeanPostProcessor webServerFactoryCustomizerBeanPostProcessor() {
+			return new WebServerFactoryCustomizerBeanPostProcessor();
+		}
+
+		@Bean
+		WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> contextPathCustomizer() {
+			return (factory) -> {
+				String contextPath = this.env.getProperty("context");
+				factory.setContextPath(contextPath);
+			};
 		}
 
 		@Bean
