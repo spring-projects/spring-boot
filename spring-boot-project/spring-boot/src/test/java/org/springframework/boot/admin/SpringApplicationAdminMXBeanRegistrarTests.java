@@ -17,6 +17,7 @@
 package org.springframework.boot.admin;
 
 import java.lang.management.ManagementFactory;
+import java.util.Map;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
@@ -34,6 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -109,6 +111,19 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		assertThat(isApplicationEmbeddedWebApplication(objectName)).isFalse();
 		assertThat(getProperty(objectName, "foo.bar")).isEqualTo("blam");
 		assertThat(getProperty(objectName, "does.not.exist.test")).isNull();
+	}
+
+	@Test
+	void whenEnvironmentContainsServerPortsPropertySourceEmbeddedWebApplicationIsDetected() {
+		final ObjectName objectName = createObjectName(OBJECT_NAME);
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.addInitializers((context) -> context.getEnvironment()
+			.getPropertySources()
+			.addLast(new MapPropertySource("server.ports", Map.of("local.server.port", "8910"))));
+		this.context = application.run("--foo.bar=blam");
+		assertThat(isApplicationReady(objectName)).isTrue();
+		assertThat(isApplicationEmbeddedWebApplication(objectName)).isTrue();
 	}
 
 	@Test
