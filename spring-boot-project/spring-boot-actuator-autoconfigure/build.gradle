@@ -16,7 +16,6 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -210,8 +209,6 @@ dependencies {
 	testImplementation("org.springframework:spring-orm")
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.integration:spring-integration-jmx")
-	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 
@@ -233,44 +230,6 @@ dependencies {
 
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-	filter {
-		excludeTestsMatching("*DocumentationTests")
-	}
-}
-
-def documentationTest = tasks.register("documentationTest", Test) {
-	testClassesDirs = testing.suites.test.sources.output.classesDirs
-	classpath = testing.suites.test.sources.runtimeClasspath
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-	filter {
-		includeTestsMatching("*DocumentationTests")
-	}
-	outputs.dir(layout.buildDirectory.dir("generated-snippets"))
-	develocity {
-		predictiveTestSelection {
-			enabled = false
-		}
-	}
-}
-
-tasks.named("generateAntoraPlaybook") {
-	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
-}
-
-antoraContributions {
-	'actuator-rest-api' {
-		aggregateContent {
-			from(documentationTest.map { layout.buildDirectory.dir("generated-snippets") }) {
-				into "modules/api/partials/rest/actuator"
-			}
-		}
-		localAggregateContent {
-			from(tasks.named("generateAntoraYml")) {
-				into "modules"
-			}
-		}
-		source()
-	}
 }
 
 tasks.getByName("checkAutoConfigurationClasses") {

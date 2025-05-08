@@ -476,7 +476,7 @@ def getRelativeExamplesPath(var outputs) {
 
 antoraDependencies {
 	'actuator-rest-api' {
-		path = ":spring-boot-project:spring-boot-actuator-autoconfigure"
+		path = ":spring-boot-project:spring-boot-actuator-docs"
 		source()
 		aggregateContent()
 	}
