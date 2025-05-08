@@ -2169,11 +2169,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2025.0.0-SNAPSHOT") {
-		prohibit {
-			versionRange "[2025.1.0-M1,)"
-			because "it exceeds our baseline"
-		}
+	library("Spring Data Bom", "2025.1.0-M2") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
@@ -2186,10 +2182,6 @@ bom {
 		}
 	}
 	library("Spring Framework", "${springFrameworkVersion}") {
-		prohibit {
-			versionRange "[7.0.0-M1,)"
-			because "it exceeds our baseline"
-		}
 		considerSnapshots()
 		group("org.springframework") {
 			bom("spring-framework-bom")
@@ -2225,11 +2217,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "2.5.0-RC1") {
-		prohibit {
-			versionRange "[3.0.0-M1,)"
-			because "it exceeds our baseline"
-		}
+	library("Spring HATEOAS", "3.0.0-M2") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -2261,7 +2249,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "3.3.6-SNAPSHOT") {
+	library("Spring Kafka", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
@@ -2314,7 +2302,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
-	library("Spring RESTDocs", "3.0.3") {
+	library("Spring RESTDocs", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.restdocs") {
 			bom("spring-restdocs-bom")
@@ -2342,7 +2330,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "6.5.0-SNAPSHOT") {
+	library("Spring Security", "7.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
