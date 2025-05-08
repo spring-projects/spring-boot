@@ -48,6 +48,7 @@ dependencies {
 	testFixturesCompileOnly("org.mockito:mockito-core")
 	testFixturesCompileOnly("org.springframework:spring-tx")
 	testFixturesCompileOnly("org.springframework:spring-webflux")
+	testFixturesCompileOnly("org.springframework:spring-webmvc")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
