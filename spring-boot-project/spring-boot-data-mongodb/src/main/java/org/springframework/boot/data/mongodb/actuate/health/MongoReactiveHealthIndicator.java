@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.data.mongo;
+package org.springframework.boot.data.mongodb.actuate.health;
 
 import org.bson.Document;
 import reactor.core.publisher.Mono;
