@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.data.mongo;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.data.mongo.MongoHealthIndicator;
-import org.springframework.boot.actuate.data.mongo.MongoReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.data.mongodb.actuate.health.MongoReactiveHealthIndicator;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
