@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.jms;
+package org.springframework.boot.jms.actuate.health;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  * {@link HealthIndicator} for a JMS {@link ConnectionFactory}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class JmsHealthIndicator extends AbstractHealthIndicator {
 

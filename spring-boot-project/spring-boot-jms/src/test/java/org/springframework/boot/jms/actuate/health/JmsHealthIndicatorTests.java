@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.jms;
+package org.springframework.boot.jms.actuate.health;
 
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;

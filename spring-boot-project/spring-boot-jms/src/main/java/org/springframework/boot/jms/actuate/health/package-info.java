@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for JMS.
+ * Health integration for JMS.
  */
-package org.springframework.boot.actuate.jms;
+package org.springframework.boot.jms.actuate.health;
