@@ -20,13 +20,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
-import org.springframework.boot.actuate.cache.CachesEndpoint;
-import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint;
+import org.springframework.boot.cache.actuate.endpoint.CachesEndpointWebExtension;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.1.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration")
-@ConditionalOnClass(CacheManager.class)
+@ConditionalOnClass({ CacheManager.class, CachesEndpoint.class })
 @ConditionalOnAvailableEndpoint(CachesEndpoint.class)
 public class CachesEndpointAutoConfiguration {
 
