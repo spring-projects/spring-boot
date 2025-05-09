@@ -48,7 +48,7 @@ class ReactorClientHttpConnectorBuilderTests
 	}
 
 	@Test
-	void withwithHttpClientFactory() {
+	void withHttpClientFactory() {
 		boolean[] called = new boolean[1];
 		Supplier<HttpClient> httpClientFactory = () -> {
 			called[0] = true;

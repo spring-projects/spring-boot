@@ -85,7 +85,7 @@ class SystemEnvironmentConfigDataResource extends ConfigDataResource {
 
 	@Override
 	public String toString() {
-		return "system envionement variable [" + this.variableName + "] content loaded using "
+		return "system environment variable [" + this.variableName + "] content loaded using "
 				+ ClassUtils.getShortName(this.loader.getClass());
 	}
 
