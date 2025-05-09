@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.elasticsearch;
+package org.springframework.boot.elasticsearch.actuate.health;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
