@@ -21,12 +21,15 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:elasticsearch")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
