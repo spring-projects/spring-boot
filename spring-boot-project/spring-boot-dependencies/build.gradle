@@ -1799,7 +1799,7 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/r2dbc-postgresql/releases/tag/v{version}")
 		}
 	}
-	library("R2DBC Proxy", "1.1.5.RELEASE") {
+	library("R2DBC Proxy", "1.1.6.RELEASE") {
 		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
