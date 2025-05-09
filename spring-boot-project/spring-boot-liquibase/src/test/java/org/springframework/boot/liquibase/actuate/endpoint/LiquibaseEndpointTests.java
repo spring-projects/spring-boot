@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,11 +27,11 @@ import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBeanDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.liquibase.actuate.endpoint.LiquibaseEndpoint.LiquibaseBeanDescriptor;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -213,7 +213,7 @@ class LiquibaseEndpointTests {
 
 		private DataSource createEmbeddedDatabase() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-				.setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.setType(EmbeddedDatabaseConnection.H2.getType())
 				.build();
 		}
 

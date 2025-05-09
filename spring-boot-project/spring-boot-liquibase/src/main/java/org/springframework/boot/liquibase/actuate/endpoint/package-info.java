@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Liquibase.
+ * Actuator endpoint for Liquibase.
  */
-package org.springframework.boot.actuate.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint;
