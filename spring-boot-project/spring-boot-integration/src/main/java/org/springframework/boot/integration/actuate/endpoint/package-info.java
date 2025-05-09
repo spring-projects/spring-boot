@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Spring Integration.
+ * Actuator endpoint for Spring Integration.
  */
-package org.springframework.boot.actuate.integration;
+package org.springframework.boot.integration.actuate.endpoint;

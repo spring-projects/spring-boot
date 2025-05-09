@@ -42,7 +42,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
-	optional(project(":spring-boot-project:spring-boot-integration"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
