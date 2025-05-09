@@ -77,7 +77,6 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")
