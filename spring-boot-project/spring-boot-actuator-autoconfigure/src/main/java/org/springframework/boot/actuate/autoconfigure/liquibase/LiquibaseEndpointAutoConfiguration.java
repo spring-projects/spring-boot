@@ -21,12 +21,12 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.liquibase.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.liquibase.autoconfigure.DataSourceClosingSpringLiquibase;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration(after = LiquibaseAutoConfiguration.class)
-@ConditionalOnClass(SpringLiquibase.class)
+@ConditionalOnClass({ SpringLiquibase.class, LiquibaseEndpoint.class })
 @ConditionalOnAvailableEndpoint(LiquibaseEndpoint.class)
 public class LiquibaseEndpointAutoConfiguration {
 
