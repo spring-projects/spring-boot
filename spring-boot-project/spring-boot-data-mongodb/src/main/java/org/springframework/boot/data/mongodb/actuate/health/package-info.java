@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Mongo dependent on Spring Data.
+ * MongoDB health integration using Spring Data MongoDB.
  */
-package org.springframework.boot.actuate.data.mongo;
+package org.springframework.boot.data.mongodb.actuate.health;
