@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.amqp;
+package org.springframework.boot.amqp.actuate.metrics;
 
 import com.rabbitmq.client.ConnectionFactory;
 import io.micrometer.core.instrument.Tags;

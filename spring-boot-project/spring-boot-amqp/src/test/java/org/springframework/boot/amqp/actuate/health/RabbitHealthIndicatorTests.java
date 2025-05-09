@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.amqp;
+package org.springframework.boot.amqp.actuate.health;
 
 import java.util.Collections;
 
