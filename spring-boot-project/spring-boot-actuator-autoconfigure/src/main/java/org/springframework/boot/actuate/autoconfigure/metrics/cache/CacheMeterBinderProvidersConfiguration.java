@@ -23,13 +23,13 @@ import org.cache2k.Cache2kBuilder;
 import org.cache2k.extra.micrometer.Cache2kCacheMetrics;
 import org.cache2k.extra.spring.SpringCache2kCache;
 
-import org.springframework.boot.actuate.metrics.cache.Cache2kCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.CaffeineCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.RedisCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.cache.actuate.metrics.Cache2kCacheMeterBinderProvider;
+import org.springframework.boot.cache.actuate.metrics.CacheMeterBinderProvider;
+import org.springframework.boot.cache.actuate.metrics.CaffeineCacheMeterBinderProvider;
+import org.springframework.boot.cache.actuate.metrics.HazelcastCacheMeterBinderProvider;
+import org.springframework.boot.cache.actuate.metrics.JCacheCacheMeterBinderProvider;
+import org.springframework.boot.cache.actuate.metrics.RedisCacheMeterBinderProvider;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ import org.springframework.data.redis.cache.RedisCache;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(MeterBinder.class)
+@ConditionalOnClass({ MeterBinder.class, CacheMeterBinderProvider.class })
 class CacheMeterBinderProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

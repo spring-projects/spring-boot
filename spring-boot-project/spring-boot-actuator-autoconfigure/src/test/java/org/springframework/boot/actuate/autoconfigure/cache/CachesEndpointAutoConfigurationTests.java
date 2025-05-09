@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.cache.CachesEndpoint;
-import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint;
+import org.springframework.boot.cache.actuate.endpoint.CachesEndpointWebExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
 

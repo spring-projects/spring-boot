@@ -16,6 +16,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -28,7 +29,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-cache"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-neo4j"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
@@ -76,8 +76,6 @@ dependencies {
 	optional("javax.cache:cache-api")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.cache2k:cache2k-micrometer")
-	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.angus:angus-mail")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
@@ -109,6 +107,17 @@ dependencies {
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
+
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-http-converter"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-jersey"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tomcat"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-webflux"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-webmvc"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-hazelcast"))
