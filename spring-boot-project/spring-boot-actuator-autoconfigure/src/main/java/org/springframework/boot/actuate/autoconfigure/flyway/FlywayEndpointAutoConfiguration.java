@@ -19,12 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.flyway;
 import org.flywaydb.core.Flyway;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.flyway.FlywayEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration(after = FlywayAutoConfiguration.class)
-@ConditionalOnClass(Flyway.class)
+@ConditionalOnClass({ Flyway.class, FlywayEndpoint.class })
 @ConditionalOnAvailableEndpoint(FlywayEndpoint.class)
 public class FlywayEndpointAutoConfiguration {
 
