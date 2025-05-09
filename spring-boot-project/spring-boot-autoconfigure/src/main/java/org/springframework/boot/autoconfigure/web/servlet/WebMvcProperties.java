@@ -431,7 +431,10 @@ public class WebMvcProperties {
 
 		/**
 		 * Use the {@code AntPathMatcher} implementation.
+		 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
+		 * {@link #PATH_PATTERN_PARSER}
 		 */
+		@Deprecated(since = "4.0.0", forRemoval = true)
 		ANT_PATH_MATCHER,
 
 		/**

@@ -238,6 +238,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		@SuppressWarnings("removal")
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
 				.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
