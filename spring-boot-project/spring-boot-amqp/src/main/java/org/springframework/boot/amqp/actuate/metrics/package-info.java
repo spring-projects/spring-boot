@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for RabbitMQ Java Client metrics.
+ * Metrics for AMQP and RabbitMQ.
  */
-package org.springframework.boot.actuate.metrics.amqp;
+package org.springframework.boot.amqp.actuate.metrics;

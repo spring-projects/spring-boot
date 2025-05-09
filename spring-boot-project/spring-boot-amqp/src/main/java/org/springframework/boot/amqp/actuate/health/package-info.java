@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for AMQP and RabbitMQ.
+ * Health integration for AMQP and RabbitMQ.
  */
-package org.springframework.boot.actuate.amqp;
+package org.springframework.boot.amqp.actuate.health;

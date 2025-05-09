@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.Tags;
 
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.metrics.amqp.RabbitMetrics;
+import org.springframework.boot.amqp.actuate.metrics.RabbitMetrics;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;

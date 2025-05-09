@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.amqp.actuate.metrics.RabbitMetrics;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -37,9 +37,9 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, RabbitAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
-@ConditionalOnClass({ ConnectionFactory.class, AbstractConnectionFactory.class })
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
+		afterName = "org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration")
+@ConditionalOnClass({ ConnectionFactory.class, AbstractConnectionFactory.class, RabbitMetrics.class })
 @ConditionalOnBean({ org.springframework.amqp.rabbit.connection.ConnectionFactory.class, MeterRegistry.class })
 public class RabbitMetricsAutoConfiguration {
 
