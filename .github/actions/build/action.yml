@@ -68,7 +68,7 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: NX_BATCH_MODE=true NX_CLOUD_DEREFERENCE_SYMLINKS=true NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx run-many -t assemble,test-ci --parallel=32 --batch
+      run: NX_BATCH_MODE=true NX_CLOUD_DEREFERENCE_SYMLINKS=true NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx run-many -t assemble,check-ci --parallel=32 --batch
 #    - name: Publish
 #      id: publish
 #      if: ${{ inputs.publish == 'true' }}
