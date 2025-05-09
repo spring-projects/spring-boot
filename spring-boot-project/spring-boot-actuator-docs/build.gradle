@@ -24,8 +24,9 @@ description = "Spring Boot Actuator Docs"
 
 dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	testImplementation(project(":spring-boot-project:spring-boot-http-converter"))
+	testImplementation(project(":spring-boot-project:spring-boot-cache"))
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
+	testImplementation(project(":spring-boot-project:spring-boot-http-converter"))
 	testImplementation(project(":spring-boot-project:spring-boot-integration"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testImplementation(project(":spring-boot-project:spring-boot-jdbc"))
