@@ -29,7 +29,7 @@ class MyService(webClientBuilder: WebClient.Builder) {
 		webClient = webClientBuilder.baseUrl("https://example.org").build()
 	}
 
-	fun someRestCall(name: String?): Mono<Details> {
+	fun someRestCall(name: String): Mono<Details> {
 		return webClient.get().uri("/{name}/details", name)
 				.retrieve().bodyToMono(Details::class.java)
 	}

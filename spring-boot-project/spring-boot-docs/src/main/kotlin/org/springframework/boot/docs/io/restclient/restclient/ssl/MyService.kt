@@ -31,7 +31,7 @@ class MyService(restClientBuilder: RestClient.Builder, ssl: RestClientSsl) {
 				.apply(ssl.fromBundle("mybundle")).build()
 	}
 
-	fun someRestCall(name: String?): Details {
+	fun someRestCall(name: String): Details {
 		return restClient.get().uri("/{name}/details", name)
 				.retrieve().body(Details::class.java)!!
 	}

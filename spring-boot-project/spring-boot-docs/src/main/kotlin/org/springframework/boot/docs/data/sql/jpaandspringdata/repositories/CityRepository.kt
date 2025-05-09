@@ -21,9 +21,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.Repository
 
-interface CityRepository : Repository<City?, Long?> {
+interface CityRepository : Repository<City, Long> {
 
-	fun findAll(pageable: Pageable?): Page<City?>?
+	fun findAll(pageable: Pageable?): Page<City>?
 
 	fun findByNameAndStateAllIgnoringCase(name: String?, state: String?): City?
 

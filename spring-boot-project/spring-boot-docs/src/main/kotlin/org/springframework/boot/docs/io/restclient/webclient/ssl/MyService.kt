@@ -31,7 +31,7 @@ class MyService(webClientBuilder: WebClient.Builder, ssl: WebClientSsl) {
 				.apply(ssl.fromBundle("mybundle")).build()
 	}
 
-	fun someRestCall(name: String?): Mono<Details> {
+	fun someRestCall(name: String): Mono<Details> {
 		return webClient.get().uri("/{name}/details", name)
 				.retrieve().bodyToMono(Details::class.java)
 	}

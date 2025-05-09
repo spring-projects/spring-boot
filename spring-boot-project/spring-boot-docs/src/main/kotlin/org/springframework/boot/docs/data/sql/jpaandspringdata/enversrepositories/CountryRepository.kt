@@ -23,9 +23,9 @@ import org.springframework.data.repository.Repository
 import org.springframework.data.repository.history.RevisionRepository
 
 interface CountryRepository :
-		RevisionRepository<Country?, Long?, Int>,
-		Repository<Country?, Long?> {
+		RevisionRepository<Country, Long, Int>,
+		Repository<Country, Long> {
 
-	fun findAll(pageable: Pageable?): Page<Country?>?
+	fun findAll(pageable: Pageable?): Page<Country>?
 
 }

@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono
 class MyRestController(private val userRepository: UserRepository, private val customerRepository: CustomerRepository) {
 
 	@GetMapping("/{userId}")
-	fun getUser(@PathVariable userId: Long): Mono<User?> {
+	fun getUser(@PathVariable userId: Long): Mono<User> {
 		return userRepository.findById(userId)
 	}
 

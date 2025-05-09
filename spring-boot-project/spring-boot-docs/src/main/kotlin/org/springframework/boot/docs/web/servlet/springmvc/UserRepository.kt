@@ -18,4 +18,4 @@ package org.springframework.boot.docs.web.servlet.springmvc
 
 import org.springframework.data.repository.CrudRepository
 
-interface UserRepository : CrudRepository<User?, Long?>
+interface UserRepository : CrudRepository<User, Long>

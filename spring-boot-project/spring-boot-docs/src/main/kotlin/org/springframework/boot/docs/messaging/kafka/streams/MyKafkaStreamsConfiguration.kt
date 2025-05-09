@@ -38,7 +38,7 @@ class MyKafkaStreamsConfiguration {
 		return stream
 	}
 
-	private fun uppercaseValue(key: Int, value: String): KeyValue<Int?, String?> {
+	private fun uppercaseValue(key: Int, value: String): KeyValue<Int, String> {
 		return KeyValue(key, value.uppercase())
 	}
 
