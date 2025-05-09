@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.jms;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.jms.JmsHealthIndicator;
 import org.springframework.boot.artemis.autoconfigure.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jms.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
