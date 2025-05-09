@@ -63,7 +63,7 @@ class SystemEnvironmentConfigDataLoaderTests {
 	void loadWhenNoContentThrowsException() {
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
 			.isThrownBy(() -> this.loader.load(this.context, createResource("VAR1")))
-			.withMessage("Config data resource 'system envionement variable [VAR1] content "
+			.withMessage("Config data resource 'system environment variable [VAR1] content "
 					+ "loaded using PropertiesPropertySourceLoader' cannot be found");
 	}
 

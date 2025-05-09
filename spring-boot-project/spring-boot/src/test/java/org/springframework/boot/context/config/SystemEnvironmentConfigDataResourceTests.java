@@ -73,7 +73,7 @@ class SystemEnvironmentConfigDataResourceTests {
 	void toStringReturnsString() {
 		SystemEnvironmentConfigDataResource resource = createResource("VAR1");
 		assertThat(resource)
-			.hasToString("system envionement variable [VAR1] content loaded using PropertiesPropertySourceLoader");
+			.hasToString("system environment variable [VAR1] content loaded using PropertiesPropertySourceLoader");
 	}
 
 	private SystemEnvironmentConfigDataResource createResource(String variableName) {
