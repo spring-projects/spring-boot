@@ -29,11 +29,15 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("com.hazelcast:hazelcast")
 
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
 	optional("com.hazelcast:hazelcast-spring")
 	optional("org.slf4j:slf4j-api")
 
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
