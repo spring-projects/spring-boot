@@ -333,7 +333,7 @@ bom {
 			releaseNotes("https://github.com/ehcache/ehcache3/releases/tag/v{version}")
 		}
 	}
-	library("Elasticsearch Client", "8.18.1") {
+	library("Elasticsearch Client", "8.17.4") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
@@ -1607,7 +1607,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.28.5") {
+	library("Neo4j Java Driver", "5.28.4") {
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-neo4j"
