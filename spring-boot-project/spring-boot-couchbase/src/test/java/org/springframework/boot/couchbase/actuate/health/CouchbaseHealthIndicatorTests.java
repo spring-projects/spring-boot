@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.couchbase;
+package org.springframework.boot.couchbase.actuate.health;
 
 import java.util.Arrays;
 import java.util.Collections;

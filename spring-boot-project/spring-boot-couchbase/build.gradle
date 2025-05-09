@@ -30,6 +30,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("com.couchbase.client:java-client")
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 

@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Couchbase.
+ * Health integration for Couchbase.
  */
-package org.springframework.boot.actuate.couchbase;
+package org.springframework.boot.couchbase.actuate.health;
