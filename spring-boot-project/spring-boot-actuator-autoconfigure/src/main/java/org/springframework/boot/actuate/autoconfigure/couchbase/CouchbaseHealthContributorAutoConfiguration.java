@@ -21,13 +21,13 @@ import com.couchbase.client.java.Cluster;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.couchbase.actuate.health.CouchbaseHealthIndicator;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = CouchbaseReactiveHealthContributorAutoConfiguration.class,
 		afterName = "org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration")
-@ConditionalOnClass(Cluster.class)
+@ConditionalOnClass({ Cluster.class, CouchbaseHealthIndicator.class })
 @ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")
 public class CouchbaseHealthContributorAutoConfiguration
