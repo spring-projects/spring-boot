@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint @Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Endpoint(id = "liquibase")
 public class LiquibaseEndpoint {
