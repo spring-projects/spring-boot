@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.redis;
+package org.springframework.boot.data.redis.actuate.health;
 
 import java.time.Duration;
 import java.util.Properties;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.redis.RedisConnectionFailureException;

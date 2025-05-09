@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Redis dependent on Spring Data.
+ * Redis health integration using Spring Data Redis.
  */
-package org.springframework.boot.actuate.data.redis;
+package org.springframework.boot.data.redis.actuate.health;

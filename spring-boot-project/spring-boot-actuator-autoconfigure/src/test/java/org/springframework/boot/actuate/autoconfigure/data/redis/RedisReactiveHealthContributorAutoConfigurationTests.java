@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.data.redis;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.data.redis.RedisHealthIndicator;
-import org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.data.redis.actuate.health.RedisHealthIndicator;
+import org.springframework.boot.data.redis.actuate.health.RedisReactiveHealthIndicator;
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.data.redis;
+package org.springframework.boot.data.redis.actuate.health;
 
 import java.util.Properties;
 
