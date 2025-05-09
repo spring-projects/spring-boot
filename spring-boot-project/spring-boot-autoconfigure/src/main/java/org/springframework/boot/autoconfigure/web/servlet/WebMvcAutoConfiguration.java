@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -80,13 +79,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.filter.FormContentFilter;
@@ -461,15 +456,6 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		@Bean
-		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
-		@Deprecated(since = "3.0.0", forRemoval = false)
-		@SuppressWarnings("deprecation")
-		public org.springframework.web.servlet.ThemeResolver themeResolver() {
-			return super.themeResolver();
-		}
-
-		@Override
-		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.FLASH_MAP_MANAGER_BEAN_NAME)
 		public FlashMapManager flashMapManager() {
 			return super.flashMapManager();
@@ -580,22 +566,6 @@ public class WebMvcAutoConfiguration {
 			}
 		}
 
-		@Bean
-		@Override
-		@SuppressWarnings("deprecation")
-		public ContentNegotiationManager mvcContentNegotiationManager() {
-			ContentNegotiationManager manager = super.mvcContentNegotiationManager();
-			List<ContentNegotiationStrategy> strategies = manager.getStrategies();
-			ListIterator<ContentNegotiationStrategy> iterator = strategies.listIterator();
-			while (iterator.hasNext()) {
-				ContentNegotiationStrategy strategy = iterator.next();
-				if (strategy instanceof org.springframework.web.accept.PathExtensionContentNegotiationStrategy) {
-					iterator.set(new OptionalPathExtensionContentNegotiationStrategy(strategy));
-				}
-			}
-			return manager;
-		}
-
 		@Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
 			this.resourceLoader = resourceLoader;
@@ -679,35 +649,6 @@ public class WebMvcAutoConfiguration {
 		@Order(0)
 		ProblemDetailsExceptionHandler problemDetailsExceptionHandler() {
 			return new ProblemDetailsExceptionHandler();
-		}
-
-	}
-
-	/**
-	 * Decorator to make
-	 * {@link org.springframework.web.accept.PathExtensionContentNegotiationStrategy}
-	 * optional depending on a request attribute.
-	 */
-	static class OptionalPathExtensionContentNegotiationStrategy implements ContentNegotiationStrategy {
-
-		@SuppressWarnings("deprecation")
-		private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class
-			.getName() + ".SKIP";
-
-		private final ContentNegotiationStrategy delegate;
-
-		OptionalPathExtensionContentNegotiationStrategy(ContentNegotiationStrategy delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
-				throws HttpMediaTypeNotAcceptableException {
-			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-			if (skip != null && Boolean.parseBoolean(skip.toString())) {
-				return MEDIA_TYPE_ALL_LIST;
-			}
-			return this.delegate.resolveMediaTypes(webRequest);
 		}
 
 	}

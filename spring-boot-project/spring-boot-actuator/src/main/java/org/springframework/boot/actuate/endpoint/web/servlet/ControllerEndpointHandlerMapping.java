@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -161,11 +160,6 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	@Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mapping) {
 		return this.corsConfiguration;
-	}
-
-	@Override
-	protected void extendInterceptors(List<Object> interceptors) {
-		interceptors.add(new SkipPathExtensionContentNegotiation());
 	}
 
 }

@@ -159,15 +159,6 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void dispatcherServletThrowExceptionIfNoHandlerFoundDefaultConfig() {
-		this.contextRunner.run((context) -> {
-			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
-		});
-	}
-
-	@Test
 	void dispatcherServletCustomConfig() {
 		this.contextRunner
 			.withPropertyValues("spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",

@@ -249,11 +249,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return null;
 	}
 
-	@Override
-	protected void extendInterceptors(List<Object> interceptors) {
-		interceptors.add(new SkipPathExtensionContentNegotiation());
-	}
-
 	/**
 	 * Return the Handler providing actuator links at the root endpoint.
 	 * @return the links handler

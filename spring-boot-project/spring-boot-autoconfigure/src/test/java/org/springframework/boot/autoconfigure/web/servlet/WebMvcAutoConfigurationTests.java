@@ -110,7 +110,6 @@ import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -866,32 +865,12 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultContentNegotiation() {
-		this.contextRunner.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-			ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
-			assertThat(contentNegotiationManager.getStrategies()).doesNotHaveAnyElementsOfTypes(
-					WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
-		});
-	}
-
-	@Test
 	void queryParameterContentNegotiation() {
 		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.favor-parameter:true").run((context) -> {
 			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
 			ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
 			assertThat(contentNegotiationManager.getStrategies())
 				.hasAtLeastOneElementOfType(ParameterContentNegotiationStrategy.class);
-		});
-	}
-
-	@Test
-	void customConfigurerAppliedAfterAutoConfig() {
-		this.contextRunner.withUserConfiguration(CustomConfigurer.class).run((context) -> {
-			ContentNegotiationManager manager = context.getBean(ContentNegotiationManager.class);
-			assertThat(manager.getStrategies())
-				.anyMatch((strategy) -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
-					.isAssignableFrom(strategy.getClass()));
 		});
 	}
 
@@ -1320,17 +1299,6 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		HttpMessageConverter<?> customHttpMessageConverter(ConversionService conversionService) {
 			return mock(HttpMessageConverter.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomConfigurer implements WebMvcConfigurer {
-
-		@Override
-		@SuppressWarnings("deprecation")
-		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			configurer.favorPathExtension(true);
 		}
 
 	}
