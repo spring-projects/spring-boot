@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Flyway.
+ * Actuator endpoint for Flyway.
  */
-package org.springframework.boot.actuate.flyway;
+package org.springframework.boot.flyway.actuate.endpoint;

@@ -24,8 +24,8 @@ import org.flywaydb.core.api.MigrationState;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
-import org.springframework.boot.actuate.flyway.FlywayEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
