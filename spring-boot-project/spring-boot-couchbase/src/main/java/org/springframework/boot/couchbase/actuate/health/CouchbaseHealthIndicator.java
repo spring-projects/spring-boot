@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.couchbase;
+package org.springframework.boot.couchbase.actuate.health;
 
 import com.couchbase.client.core.diagnostics.DiagnosticsResult;
 import com.couchbase.client.java.Cluster;
@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
