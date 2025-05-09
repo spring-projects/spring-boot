@@ -11,12 +11,17 @@ description = "Spring Boot LDAP"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework.ldap:spring-ldap-core")
+	
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("com.unboundid:unboundid-ldapsdk")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.apache.commons:commons-pool2")
