@@ -169,6 +169,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@PreAuthorize("hasRole('USER')")
 		@Nullable
+		@SuppressWarnings("deprecation")
 		Mono<Book> getBookdById(String id) {
 			return Mono.justOrEmpty(GraphQlTestDataFetchers.getBookById(id));
 		}

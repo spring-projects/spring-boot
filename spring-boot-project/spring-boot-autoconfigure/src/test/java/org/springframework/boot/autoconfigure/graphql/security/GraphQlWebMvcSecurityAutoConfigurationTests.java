@@ -158,6 +158,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 		@PreAuthorize("hasRole('USER')")
 		@Nullable
+		@SuppressWarnings("deprecation")
 		Book getBookdById(String id) {
 			return GraphQlTestDataFetchers.getBookById(id);
 		}
