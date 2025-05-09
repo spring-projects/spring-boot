@@ -3,6 +3,7 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -12,14 +13,26 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-context-support")
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-data-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
 	optional("com.hazelcast:hazelcast-spring")
-	optional("org.cache2k:cache2k-spring")
+	optional("io.micrometer:micrometer-core")
 	optional("javax.cache:cache-api")
+	optional("org.cache2k:cache2k-micrometer")
+	optional("org.cache2k:cache2k-spring")
 	optional("org.ehcache:ehcache") {
 		artifact {
 			classifier = 'jakarta'
@@ -36,6 +49,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
