@@ -47,7 +47,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
+import org.springframework.http.server.reactive.ServletHttpHandlerAdapter;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -110,7 +110,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
-		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
+		ServletHttpHandlerAdapter servlet = new ServletHttpHandlerAdapter(httpHandler);
 		Server server = createJettyServer(servlet);
 		return new JettyWebServer(server, getPort() >= 0);
 	}
@@ -176,7 +176,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return this.resourceFactory;
 	}
 
-	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
+	protected Server createJettyServer(ServletHttpHandlerAdapter servlet) {
 		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
