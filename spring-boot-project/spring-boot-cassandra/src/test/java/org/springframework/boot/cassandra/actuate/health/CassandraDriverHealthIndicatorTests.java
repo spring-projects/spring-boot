@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cassandra;
+package org.springframework.boot.cassandra.actuate.health;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,8 +30,6 @@ import com.datastax.oss.driver.api.core.metadata.Metadata;
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.api.core.metadata.NodeState;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -43,93 +40,72 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CassandraDriverReactiveHealthIndicator}.
+ * Tests for {@link CassandraDriverHealthIndicator}.
  *
  * @author Alexandre Dutra
  * @author Stephane Nicoll
  */
-class CassandraDriverReactiveHealthIndicatorTests {
+class CassandraDriverHealthIndicatorTests {
 
 	@Test
 	void createWhenCqlSessionIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverReactiveHealthIndicator(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverHealthIndicator(null));
 	}
 
 	@Test
 	void healthWithOneHealthyNodeShouldReturnUp() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void healthWithOneUnhealthyNodeShouldReturnDown() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.DOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
 	void healthWithOneUnknownNodeShouldReturnDown() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UNKNOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
 	void healthWithOneForcedDownNodeShouldReturnDown() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.FORCED_DOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
 	void healthWithOneHealthyNodeAndOneUnhealthyNodeShouldReturnUp() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.DOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void healthWithOneHealthyNodeAndOneUnknownNodeShouldReturnUp() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.UNKNOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
 	void healthWithOneHealthyNodeAndOneForcedDownNodeShouldReturnUp() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.FORCED_DOWN);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health)
-			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-			.expectComplete()
-			.verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
@@ -141,39 +117,30 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		given(node.getState()).willReturn(NodeState.UP);
 		given(node.getCassandraVersion()).willReturn(Version.V4_0_0);
 		given(metadata.getNodes()).willReturn(createNodesWithRandomUUID(Collections.singletonList(node)));
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> {
-			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("version");
-			assertThat(h.getDetails()).containsEntry("version", Version.V4_0_0);
-		}).expectComplete().verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("version", Version.V4_0_0);
 	}
 
 	@Test
 	void healthWithoutNodeVersionShouldNotAddVersionDetail() {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP);
-		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
-		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> {
-			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).doesNotContainKey("version");
-		}).expectComplete().verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).doesNotContainKey("version");
 	}
 
 	@Test
 	void healthWithCassandraDownShouldReturnDown() {
 		CqlSession session = mock(CqlSession.class);
 		given(session.getMetadata()).willThrow(new DriverTimeoutException("Test Exception"));
-		CassandraDriverReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraDriverReactiveHealthIndicator(
-				session);
-		Mono<Health> health = cassandraReactiveHealthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> {
-			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
-			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails()).containsEntry("error",
-					DriverTimeoutException.class.getName() + ": Test Exception");
-		}).expectComplete().verify(Duration.ofSeconds(30));
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).containsEntry("error",
+				DriverTimeoutException.class.getName() + ": Test Exception");
 	}
 
 	private CqlSession mockCqlSessionWithNodeState(NodeState... nodeStates) {
