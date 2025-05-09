@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.graphql.security;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.assertj.core.api.ThrowingConsumer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -80,6 +81,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
+@Disabled("Waiting on compatible release")
 class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()

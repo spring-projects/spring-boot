@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -80,6 +81,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
+@Disabled("Waiting on compatible release")
 class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/graphql";
