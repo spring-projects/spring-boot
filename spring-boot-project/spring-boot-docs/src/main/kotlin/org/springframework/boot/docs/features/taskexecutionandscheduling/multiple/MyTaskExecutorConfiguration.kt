@@ -33,7 +33,7 @@ class MyTaskExecutorConfiguration {
 	@Bean("taskExecutor")
 	fun taskExecutor(): ThreadPoolTaskExecutor {
 		val threadPoolTaskExecutor = ThreadPoolTaskExecutor()
-		threadPoolTaskExecutor.threadNamePrefix = "async-"
+		threadPoolTaskExecutor.setThreadNamePrefix("async-")
 		return threadPoolTaskExecutor
 	}
 
