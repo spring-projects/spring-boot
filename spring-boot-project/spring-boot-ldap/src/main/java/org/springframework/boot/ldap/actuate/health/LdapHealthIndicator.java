@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.ldap;
+package org.springframework.boot.ldap.actuate.health;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class LdapHealthIndicator extends AbstractHealthIndicator {
 

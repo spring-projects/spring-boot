@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for LDAP.
+ * Health integration for LDAP.
  */
-package org.springframework.boot.actuate.ldap;
+package org.springframework.boot.ldap.actuate.health;
