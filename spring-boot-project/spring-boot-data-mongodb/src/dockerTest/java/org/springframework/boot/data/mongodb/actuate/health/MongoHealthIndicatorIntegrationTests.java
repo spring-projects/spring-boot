@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.mongo;
-
-import java.time.Duration;
+package org.springframework.boot.data.mongodb.actuate.health;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.boot.actuate.data.mongo.MongoReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MongoReactiveHealthIndicator}.
+ * Integration tests for {@link MongoHealthIndicator}.
  *
  * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
-class MongoReactiveHealthIndicatorIntegrationTests {
+class MongoHealthIndicatorIntegrationTests {
 
 	@Container
 	static MongoDBContainer mongo = TestImage.container(MongoDBContainer.class);
@@ -73,9 +70,8 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 		}
 		MongoClientSettings settings = settingsBuilder.build();
 		MongoClient mongoClient = MongoClients.create(settings);
-		MongoReactiveHealthIndicator healthIndicator = new MongoReactiveHealthIndicator(
-				new ReactiveMongoTemplate(mongoClient, "db"));
-		return healthIndicator.getHealth(true).block(Duration.ofSeconds(30));
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(new MongoTemplate(mongoClient, "db"));
+		return healthIndicator.getHealth(true);
 	}
 
 }

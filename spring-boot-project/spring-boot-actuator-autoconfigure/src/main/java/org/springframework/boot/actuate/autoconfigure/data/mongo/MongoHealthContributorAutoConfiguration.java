@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.data.mongo;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.data.mongo.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -38,7 +38,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @AutoConfiguration(after = MongoReactiveHealthContributorAutoConfiguration.class,
 		afterName = { "org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration",
 				"org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration" })
-@ConditionalOnClass(MongoTemplate.class)
+@ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class })
 @ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
 public class MongoHealthContributorAutoConfiguration
