@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.amqp;
+package org.springframework.boot.amqp.actuate.metrics;
 
 import java.util.Collections;
 
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Arnaud Cogoluègnes
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class RabbitMetrics implements MeterBinder {
 

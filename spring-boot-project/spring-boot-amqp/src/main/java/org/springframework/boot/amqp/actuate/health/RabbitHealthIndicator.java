@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.amqp;
+package org.springframework.boot.amqp.actuate.health;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  * RabbitMQ messaging system.
  *
  * @author Christian Dupuis
- * @since 1.1.0
+ * @since 4.0.0
  */
 public class RabbitHealthIndicator extends AbstractHealthIndicator {
 

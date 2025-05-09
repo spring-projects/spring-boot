@@ -5,6 +5,7 @@
 	<disallow pkg="io.micrometer" />
 	<disallow pkg="org.springframework.lang" />
 	<allow pkg=".*" regex="true" />
+
 	<subpackage name="autoconfigure">
 		<disallow class="org.springframework.boot.autoconfigure.jdbc.DataSourceProperties"/>
 		<subpackage name="web">
@@ -45,6 +46,17 @@
 					<allow pkg="org.springframework.boot.web.error" />
 				</subpackage>
 			</subpackage>
+		</subpackage>
+	</subpackage>
+
+	<subpackage name="[^.]+\.actuate" regex="true">
+		<subpackage name="endpoint">
+			<file name=".*Endpoint(WebExtension)?" regex="true">
+				<allow pkg="org.springframework.lang"/>
+			</file>
+		</subpackage>
+		<subpackage name="metrics">
+			<allow pkg="io.micrometer" />
 		</subpackage>
 	</subpackage>
 
@@ -189,4 +201,5 @@
 		</subpackage>
 
 	</subpackage>
+
 </import-control>
