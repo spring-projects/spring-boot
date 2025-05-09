@@ -97,7 +97,6 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.graphql:spring-graphql")
-	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")

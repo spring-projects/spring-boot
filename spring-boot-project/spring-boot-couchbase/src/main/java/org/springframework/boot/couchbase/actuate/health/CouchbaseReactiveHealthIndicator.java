@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.couchbase;
+package org.springframework.boot.couchbase.actuate.health;
 
 import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Mono;
@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
  *
  * @author Mikalai Lushchytski
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 

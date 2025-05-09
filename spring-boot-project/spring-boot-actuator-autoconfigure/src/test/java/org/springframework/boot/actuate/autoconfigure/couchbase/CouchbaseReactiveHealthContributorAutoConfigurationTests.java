@@ -20,9 +20,9 @@ import com.couchbase.client.java.Cluster;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
-import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.couchbase.actuate.health.CouchbaseHealthIndicator;
+import org.springframework.boot.couchbase.actuate.health.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
