@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cassandra;
+package org.springframework.boot.cassandra.actuate.health;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  *
  * @author Alexandre Dutra
  * @author Tomasz Lelek
- * @since 2.4.0
+ * @since 4.0.0
  */
 public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
 
