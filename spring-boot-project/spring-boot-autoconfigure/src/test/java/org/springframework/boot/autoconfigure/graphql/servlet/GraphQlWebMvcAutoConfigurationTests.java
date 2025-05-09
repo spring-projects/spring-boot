@@ -224,8 +224,8 @@ class GraphQlWebMvcAutoConfigurationTests {
 				.content("{\"query\": \"" + query + "\"}"))
 				.satisfies((result) -> assertThat(result).hasStatusOk()
 					.headers()
-					.containsEntry(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, List.of("https://example.com"))
-					.containsEntry(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, List.of("true")));
+					.hasValue(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com")
+					.hasValue(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
 		});
 	}
 
