@@ -20,8 +20,8 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.cassandra.CassandraDriverHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.cassandra.actuate.health.CassandraDriverHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;

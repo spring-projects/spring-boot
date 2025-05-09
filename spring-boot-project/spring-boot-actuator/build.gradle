@@ -42,7 +42,6 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
-	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))

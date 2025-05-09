@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Cassandra.
+ * Health integration for Cassandra.
  */
-package org.springframework.boot.actuate.cassandra;
+package org.springframework.boot.cassandra.actuate.health;
