@@ -31,8 +31,12 @@ dependencies {
 	api("io.lettuce:lettuce-core")
 	api("org.springframework.data:spring-data-redis")
 
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
 	implementation(project(":spring-boot-project:spring-boot-netty"))
 
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("redis.clients:jedis")
 
@@ -44,8 +48,11 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

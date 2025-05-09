@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.data.redis;
+package org.springframework.boot.data.redis.actuate.health;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Richard Santana
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
 

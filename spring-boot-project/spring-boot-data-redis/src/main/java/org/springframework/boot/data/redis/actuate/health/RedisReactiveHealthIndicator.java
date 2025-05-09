@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.data.redis;
+package org.springframework.boot.data.redis.actuate.health;
 
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  * @author Mark Paluch
  * @author Artsiom Yudovin
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 

@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.data.redis;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.data.redis.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.data.redis.actuate.health.RedisHealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -40,7 +40,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  */
 @AutoConfiguration(after = RedisReactiveHealthContributorAutoConfiguration.class,
 		afterName = "org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration")
-@ConditionalOnClass(RedisConnectionFactory.class)
+@ConditionalOnClass({ RedisConnectionFactory.class, RedisHealthIndicator.class })
 @ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")
 public class RedisHealthContributorAutoConfiguration
