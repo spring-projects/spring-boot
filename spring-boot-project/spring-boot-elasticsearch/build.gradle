@@ -15,6 +15,7 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("co.elastic.clients:elasticsearch-java") {

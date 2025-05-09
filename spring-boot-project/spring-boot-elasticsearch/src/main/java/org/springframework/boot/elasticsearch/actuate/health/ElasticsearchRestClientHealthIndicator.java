@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.elasticsearch;
+package org.springframework.boot.elasticsearch.actuate.health;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +39,7 @@ import org.springframework.util.StreamUtils;
  * @author Artsiom Yudovin
  * @author Brian Clozel
  * @author Filip Hrisafov
- * @since 2.7.0
+ * @since 4.0.0
  */
 public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndicator {
 
