@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.integration;
+package org.springframework.boot.integration.actuate.endpoint;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,7 +32,7 @@ import org.springframework.integration.graph.LinkNode;
  * {@link Endpoint @Endpoint} to expose the Spring Integration graph.
  *
  * @author Tim Ysewyn
- * @since 2.1.0
+ * @since 4.0.0
  */
 @Endpoint(id = "integrationgraph")
 public class IntegrationGraphEndpoint {
