@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.flyway;
+package org.springframework.boot.flyway.actuate.endpoint;
 
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.flyway.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;

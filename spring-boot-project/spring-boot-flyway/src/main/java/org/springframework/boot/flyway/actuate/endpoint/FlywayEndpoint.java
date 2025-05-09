@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.flyway;
+package org.springframework.boot.flyway.actuate.endpoint;
 
 import java.time.Instant;
 import java.util.Date;
@@ -39,7 +39,7 @@ import org.springframework.context.ApplicationContext;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Endpoint(id = "flyway")
 public class FlywayEndpoint {
