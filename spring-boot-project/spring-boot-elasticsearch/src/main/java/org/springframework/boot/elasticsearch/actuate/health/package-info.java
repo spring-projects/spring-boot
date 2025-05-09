@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Elasticsearch.
+ * Health integration for Elasticsearch.
  */
-package org.springframework.boot.actuate.elasticsearch;
+package org.springframework.boot.elasticsearch.actuate.health;
