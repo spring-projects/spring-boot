@@ -84,6 +84,13 @@ bom {
 			]
 		}
 	}
+	library("Findbugs JSR 305", "3.0.2") {
+		group("com.google.code.findbugs") {
+			modules = [
+				"jsr305"
+			]
+		}
+	}	
 	library("Janino", "3.1.12") {
 		group("org.codehaus.janino") {
 			bom("janino") {

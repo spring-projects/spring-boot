@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Elasticsearch dependent on Spring Data.
+ * Elasticsearch health integration using Spring Data Elasticsearch.
  */
-package org.springframework.boot.actuate.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.actuate.health;

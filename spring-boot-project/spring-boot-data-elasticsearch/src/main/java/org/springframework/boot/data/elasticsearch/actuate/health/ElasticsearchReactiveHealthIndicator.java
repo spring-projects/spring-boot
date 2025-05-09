@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.actuate.health;
 
 import co.elastic.clients.elasticsearch._types.HealthStatus;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
@@ -33,7 +33,7 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
  * @author Brian Clozel
  * @author Aleksander Lech
  * @author Scott Frederick
- * @since 2.3.2
+ * @since 4.0.0
  */
 public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 

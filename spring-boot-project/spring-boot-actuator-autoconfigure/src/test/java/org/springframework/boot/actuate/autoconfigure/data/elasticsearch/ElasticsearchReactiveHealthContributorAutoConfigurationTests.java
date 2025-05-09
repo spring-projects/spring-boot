@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticsearchRestHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.data.elasticsearch.ElasticsearchReactiveHealthIndicator;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.data.elasticsearch.actuate.health.ElasticsearchReactiveHealthIndicator;
 import org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
