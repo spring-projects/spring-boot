@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 package org.springframework.boot.autoconfigure.data.jdbc;
 
 import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
+import org.springframework.data.jdbc.core.dialect.JdbcH2Dialect;
+import org.springframework.data.jdbc.core.dialect.JdbcHsqlDbDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
+import org.springframework.data.jdbc.core.dialect.JdbcOracleDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcSqlServerDialect;
 import org.springframework.data.relational.core.dialect.Dialect;
-import org.springframework.data.relational.core.dialect.H2Dialect;
-import org.springframework.data.relational.core.dialect.HsqlDbDialect;
-import org.springframework.data.relational.core.dialect.MariaDbDialect;
-import org.springframework.data.relational.core.dialect.MySqlDialect;
-import org.springframework.data.relational.core.dialect.OracleDialect;
 
 /**
  * List of database dialects that can be configured in Boot for use with Spring Data JDBC.
@@ -41,29 +39,29 @@ public enum JdbcDatabaseDialect {
 	DB2(JdbcDb2Dialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link H2Dialect}.
+	 * Provides an instance of {@link JdbcH2Dialect}.
 	 */
-	H2(H2Dialect.INSTANCE),
+	H2(JdbcH2Dialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link HsqlDbDialect}.
+	 * Provides an instance of {@link JdbcHsqlDbDialect}.
 	 */
-	HSQL(HsqlDbDialect.INSTANCE),
-
-	/**
-	 * Provides an instance of {@link MariaDbDialect}.
-	 */
-	MARIA(MySqlDialect.INSTANCE),
+	HSQL(JdbcHsqlDbDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcMySqlDialect}.
 	 */
-	MYSQL(MySqlDialect.INSTANCE),
+	MARIA(JdbcMySqlDialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link OracleDialect}.
+	 * Provides an instance of {@link JdbcMySqlDialect}.
 	 */
-	ORACLE(OracleDialect.INSTANCE),
+	MYSQL(JdbcMySqlDialect.INSTANCE),
+
+	/**
+	 * Provides an instance of {@link JdbcOracleDialect}.
+	 */
+	ORACLE(JdbcOracleDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcPostgresDialect}.
