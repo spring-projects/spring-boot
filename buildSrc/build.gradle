@@ -49,9 +49,10 @@ dependencies {
 	implementation("org.springframework:spring-web")
 	implementation("org.yaml:snakeyaml:${snakeYamlVersion}")
 
+	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
 	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
-	testImplementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core:${mockitoVersion}")
 	testImplementation("org.springframework:spring-test")
 
