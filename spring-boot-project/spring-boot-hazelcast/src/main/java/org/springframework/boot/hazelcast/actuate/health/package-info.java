@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Hazelcast.
+ * Health integration for Hazelcast.
  */
-package org.springframework.boot.actuate.hazelcast;
+package org.springframework.boot.hazelcast.actuate.health;

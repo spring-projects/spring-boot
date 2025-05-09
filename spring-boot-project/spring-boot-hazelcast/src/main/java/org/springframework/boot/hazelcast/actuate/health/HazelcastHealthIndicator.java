@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.hazelcast;
+package org.springframework.boot.hazelcast.actuate.health;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Dmytro Nosan
  * @author Stephane Nicoll
- * @since 2.2.0
+ * @since 4.0.0
  */
 public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 

@@ -57,7 +57,6 @@ dependencies {
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.google.code.findbugs:jsr305")
-	optional("com.hazelcast:hazelcast-spring")
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
@@ -111,7 +110,6 @@ dependencies {
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-webmvc"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
-	testImplementation(project(":spring-boot-project:spring-boot-hazelcast"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testImplementation(project(":spring-boot-project:spring-boot-jersey"))
 	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
