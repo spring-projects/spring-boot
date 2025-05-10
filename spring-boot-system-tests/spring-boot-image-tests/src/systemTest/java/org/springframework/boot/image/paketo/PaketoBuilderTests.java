@@ -502,12 +502,12 @@ class PaketoBuilderTests {
 						"/layers/sbom/launch/paketo-buildpacks_" + buildpack + "/sbom.cdx.json");
 			layer.jsonEntry("/layers/sbom/launch/paketo-buildpacks_" + buildpack + "/sbom.syft.json",
 					(json) -> json.extractingJsonPathArrayValue("$.artifacts.[*].name")
-						.contains("spring-beans", "spring-boot", "spring-boot-autoconfigure", "spring-context",
-								"spring-core", "spring-expression", "spring-jcl", "spring-web", "spring-webmvc"));
+						.contains("commons-logging", "spring-beans", "spring-boot", "spring-boot-autoconfigure",
+								"spring-context", "spring-core", "spring-expression", "spring-web", "spring-webmvc"));
 			layer.jsonEntry("/layers/sbom/launch/paketo-buildpacks_" + buildpack + "/sbom.cdx.json",
 					(json) -> json.extractingJsonPathArrayValue("$.components.[*].name")
-						.contains("spring-beans", "spring-boot", "spring-boot-autoconfigure", "spring-context",
-								"spring-core", "spring-expression", "spring-jcl", "spring-web", "spring-webmvc"));
+						.contains("commons-logging", "spring-beans", "spring-boot", "spring-boot-autoconfigure",
+								"spring-context", "spring-core", "spring-expression", "spring-web", "spring-webmvc"));
 		});
 	}
 
