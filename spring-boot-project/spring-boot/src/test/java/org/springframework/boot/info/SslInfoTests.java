@@ -23,10 +23,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
@@ -46,13 +49,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SslInfo}.
  *
  * @author Jonatan Ivanov
+ * @author Joshua Chen
  */
 class SslInfoTests {
 
-	@Test
+	@ParameterizedTest
+	@EnumSource(StoreType.class)
 	@WithPackageResources("test.p12")
-	void validCertificatesShouldProvideSslInfo() {
-		SslInfo sslInfo = createSslInfo("classpath:test.p12");
+	void validCertificatesShouldProvideSslInfo(StoreType storeType) {
+		SslInfo sslInfo = createSslInfo(storeType, "classpath:test.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-0");
@@ -62,10 +67,10 @@ class SslInfoTests {
 		assertThat(bundle.getCertificateChains().get(1).getAlias()).isEqualTo("test-alias");
 		assertThat(bundle.getCertificateChains().get(1).getCertificates()).hasSize(1);
 		assertThat(bundle.getCertificateChains().get(2).getAlias()).isEqualTo("spring-boot-cert");
-		assertThat(bundle.getCertificateChains().get(2).getCertificates()).isEmpty();
+		assertThat(bundle.getCertificateChains().get(2).getCertificates()).hasSize(1);
 		assertThat(bundle.getCertificateChains().get(3).getAlias()).isEqualTo("test-alias-cert");
-		assertThat(bundle.getCertificateChains().get(3).getCertificates()).isEmpty();
-		CertificateInfo cert1 = bundle.getCertificateChains().get(0).getCertificates().get(0);
+		assertThat(bundle.getCertificateChains().get(3).getCertificates()).hasSize(1);
+		CertificateInfo cert1 = bundle.getCertificateChains().get(0).getCertificates().iterator().next();
 		assertThat(cert1.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert1.getIssuer()).isEqualTo(cert1.getSubject());
 		assertThat(cert1.getSerialNumber()).isNotEmpty();
@@ -76,7 +81,7 @@ class SslInfoTests {
 		assertThat(cert1.getValidity()).isNotNull();
 		assertThat(cert1.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert1.getValidity().getMessage()).isNull();
-		CertificateInfo cert2 = bundle.getCertificateChains().get(1).getCertificates().get(0);
+		CertificateInfo cert2 = bundle.getCertificateChains().get(1).getCertificates().iterator().next();
 		assertThat(cert2.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert2.getIssuer()).isEqualTo(cert2.getSubject());
 		assertThat(cert2.getSerialNumber()).isNotEmpty();
@@ -89,19 +94,20 @@ class SslInfoTests {
 		assertThat(cert2.getValidity().getMessage()).isNull();
 	}
 
-	@Test
+	@ParameterizedTest
+	@EnumSource(StoreType.class)
 	@WithPackageResources("test-not-yet-valid.p12")
-	void notYetValidCertificateShouldProvideSslInfo() {
-		SslInfo sslInfo = createSslInfo("classpath:test-not-yet-valid.p12");
+	void notYetValidCertificateShouldProvideSslInfo(StoreType storeType) {
+		SslInfo sslInfo = createSslInfo(storeType, "classpath:test-not-yet-valid.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-0");
 		assertThat(bundle.getCertificateChains()).hasSize(1);
 		CertificateChainInfo certificateChain = bundle.getCertificateChains().get(0);
 		assertThat(certificateChain.getAlias()).isEqualTo("spring-boot");
-		List<CertificateInfo> certs = certificateChain.getCertificates();
+		Set<CertificateInfo> certs = certificateChain.getCertificates();
 		assertThat(certs).hasSize(1);
-		CertificateInfo cert = certs.get(0);
+		CertificateInfo cert = certs.iterator().next();
 		assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
 		assertThat(cert.getSerialNumber()).isNotEmpty();
@@ -124,9 +130,9 @@ class SslInfoTests {
 		assertThat(bundle.getCertificateChains()).hasSize(1);
 		CertificateChainInfo certificateChain = bundle.getCertificateChains().get(0);
 		assertThat(certificateChain.getAlias()).isEqualTo("spring-boot");
-		List<CertificateInfo> certs = certificateChain.getCertificates();
+		Set<CertificateInfo> certs = certificateChain.getCertificates();
 		assertThat(certs).hasSize(1);
-		CertificateInfo cert = certs.get(0);
+		CertificateInfo cert = certs.iterator().next();
 		assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
 		assertThat(cert.getSerialNumber()).isNotEmpty();
@@ -150,9 +156,9 @@ class SslInfoTests {
 		assertThat(bundle.getCertificateChains()).hasSize(1);
 		CertificateChainInfo certificateChain = bundle.getCertificateChains().get(0);
 		assertThat(certificateChain.getAlias()).isEqualTo("spring-boot");
-		List<CertificateInfo> certs = certificateChain.getCertificates();
+		Set<CertificateInfo> certs = certificateChain.getCertificates();
 		assertThat(certs).hasSize(1);
-		CertificateInfo cert = certs.get(0);
+		CertificateInfo cert = certs.iterator().next();
 		assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 		assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
 		assertThat(cert.getSerialNumber()).isNotEmpty();
@@ -178,7 +184,7 @@ class SslInfoTests {
 			.flatMap((bundle) -> bundle.getCertificateChains().stream())
 			.flatMap((certificateChain) -> certificateChain.getCertificates().stream())
 			.toList();
-		assertThat(certs).hasSize(5);
+		assertThat(certs).hasSize(7);
 		assertThat(certs).allSatisfy((cert) -> {
 			assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
 			assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
@@ -227,10 +233,20 @@ class SslInfoTests {
 	}
 
 	private SslInfo createSslInfo(String... locations) {
+		return createSslInfo(StoreType.KEYSTORE, locations);
+	}
+
+	private SslInfo createSslInfo(StoreType storeType, String... locations) {
 		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
 		for (int i = 0; i < locations.length; i++) {
-			JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(locations[i]).withPassword("secret");
-			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+			JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation(locations[i]).withPassword("secret");
+			SslStoreBundle sslStoreBundle;
+			if (storeType == StoreType.TRUSTSTORE) {
+				sslStoreBundle = new JksSslStoreBundle(null, storeDetails);
+			}
+			else {
+				sslStoreBundle = new JksSslStoreBundle(storeDetails, null);
+			}
 			sslBundleRegistry.registerBundle("test-%d".formatted(i), SslBundle.of(sslStoreBundle));
 		}
 		return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
@@ -268,6 +284,12 @@ class SslInfoTests {
 		// @formatter:on
 		processBuilder.redirectErrorStream(true);
 		return processBuilder;
+	}
+
+	private enum StoreType {
+
+		KEYSTORE, TRUSTSTORE
+
 	}
 
 }
