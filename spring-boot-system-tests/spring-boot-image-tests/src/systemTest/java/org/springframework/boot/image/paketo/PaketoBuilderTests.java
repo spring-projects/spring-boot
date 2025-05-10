@@ -309,6 +309,9 @@ class PaketoBuilderTests {
 		this.gradleBuild
 			.expectDeprecationMessages("has been deprecated. This is scheduled to be removed in Gradle 9.0");
 		this.gradleBuild.expectDeprecationMessages("upgrading_version_8.html#deprecated_access_to_convention");
+		// these deprecations are from native image buildpacks
+		this.gradleBuild.expectDeprecationMessages("Using a deprecated option --report-unsupported-elements-at-runtime",
+				"The option is deprecated and will be removed in the future.");
 		writeMainClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));

@@ -21,6 +21,10 @@ repositories {
 	spring.mavenRepositories()
 }
 
+tasks.named("bootBuildImage") {
+	environment["BP_JVM_VERSION"] = "24"
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:{bootVersion}")
 }
