@@ -89,7 +89,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	}
 
 	@Test
-	void customizeWhenHasAddAddsMemeber() {
+	void customizeWhenHasAddAddsMember() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
 				Collections.emptySet(), Collections.emptyMap(), Map.of("z", "z"), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
