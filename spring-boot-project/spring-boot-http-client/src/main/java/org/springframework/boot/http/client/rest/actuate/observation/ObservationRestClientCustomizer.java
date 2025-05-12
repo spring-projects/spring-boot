@@ -14,42 +14,45 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.client;
+package org.springframework.boot.http.client.rest.actuate.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 
-import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
- * {@link RestTemplateCustomizer} that configures the {@link RestTemplate} to record
- * request observations.
+ * {@link RestClientCustomizer} that configures the {@link Builder RestClient builder} to
+ * record request observations.
  *
- * @author Brian Clozel
- * @since 3.0.0
+ * @author Moritz Halbritter
+ * @since 4.0.0
  */
-public class ObservationRestTemplateCustomizer implements RestTemplateCustomizer {
+public class ObservationRestClientCustomizer implements RestClientCustomizer {
 
 	private final ObservationRegistry observationRegistry;
 
 	private final ClientRequestObservationConvention observationConvention;
 
 	/**
-	 * Create a new {@code ObservationRestTemplateCustomizer}.
-	 * @param observationConvention the observation convention
+	 * Create a new {@link ObservationRestClientCustomizer}.
 	 * @param observationRegistry the observation registry
+	 * @param observationConvention the observation convention
 	 */
-	public ObservationRestTemplateCustomizer(ObservationRegistry observationRegistry,
+	public ObservationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ClientRequestObservationConvention observationConvention) {
-		this.observationConvention = observationConvention;
+		Assert.notNull(observationConvention, "'observationConvention' must not be null");
+		Assert.notNull(observationRegistry, "'observationRegistry' must not be null");
 		this.observationRegistry = observationRegistry;
+		this.observationConvention = observationConvention;
 	}
 
 	@Override
-	public void customize(RestTemplate restTemplate) {
-		restTemplate.setObservationConvention(this.observationConvention);
-		restTemplate.setObservationRegistry(this.observationRegistry);
+	public void customize(Builder restClientBuilder) {
+		restClientBuilder.observationRegistry(this.observationRegistry);
+		restClientBuilder.observationConvention(this.observationConvention);
 	}
 
 }

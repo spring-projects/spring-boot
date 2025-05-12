@@ -37,6 +37,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
