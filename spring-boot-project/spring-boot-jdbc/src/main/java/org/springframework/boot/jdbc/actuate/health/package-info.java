@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for JDBC metrics.
+ * Health integration for JDBC.
  */
-package org.springframework.boot.actuate.metrics.jdbc;
+package org.springframework.boot.jdbc.actuate.health;

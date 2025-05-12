@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for JDBC.
+ * Metrics for JDBC.
  */
-package org.springframework.boot.actuate.jdbc;
+package org.springframework.boot.jdbc.actuate.metrics;
