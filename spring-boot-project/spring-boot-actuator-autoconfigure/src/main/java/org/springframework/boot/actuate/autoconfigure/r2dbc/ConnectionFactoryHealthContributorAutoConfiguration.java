@@ -22,12 +22,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.r2dbc.ConnectionFactoryHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.r2dbc.actuate.health.ConnectionFactoryHealthIndicator;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.3.0
  */
 @AutoConfiguration(after = R2dbcAutoConfiguration.class)
-@ConditionalOnClass(ConnectionFactory.class)
+@ConditionalOnClass({ ConnectionFactory.class, ConnectionFactoryHealthIndicator.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("r2dbc")
 public class ConnectionFactoryHealthContributorAutoConfiguration

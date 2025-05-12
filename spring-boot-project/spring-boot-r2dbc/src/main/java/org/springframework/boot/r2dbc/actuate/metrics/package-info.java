@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for R2DBC.
+ * Metrics for R2DBC.
  */
-package org.springframework.boot.actuate.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics;

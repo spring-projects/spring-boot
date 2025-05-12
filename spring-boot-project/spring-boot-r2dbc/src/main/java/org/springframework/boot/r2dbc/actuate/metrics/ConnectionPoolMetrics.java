@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Gauge.Builder;
@@ -30,7 +30,7 @@ import io.r2dbc.pool.PoolMetrics;
  *
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
 public class ConnectionPoolMetrics implements MeterBinder {
 

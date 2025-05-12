@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.r2dbc;
+package org.springframework.boot.r2dbc.actuate.health;
 
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
 public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndicator {
 

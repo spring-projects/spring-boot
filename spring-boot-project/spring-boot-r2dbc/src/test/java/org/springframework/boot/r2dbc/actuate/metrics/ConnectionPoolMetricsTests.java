@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics;
 
 import java.time.Duration;
 import java.util.Collections;

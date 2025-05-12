@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for R2DBC metrics.
+ * Health integration for R2DBC.
  */
-package org.springframework.boot.actuate.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.health;
