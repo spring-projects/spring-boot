@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for R2DBC metrics.
+ * Health integration for R2DBC.
  */
-package org.springframework.boot.actuate.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.health;
