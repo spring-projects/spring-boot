@@ -14,68 +14,63 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.session;
+package org.springframework.boot.session.actuate.endpoint;
 
-import java.util.Map;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.boot.actuate.session.SessionsDescriptor.SessionDescriptor;
-import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.boot.session.actuate.endpoint.SessionsDescriptor.SessionDescriptor;
+import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
+import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.SessionRepository;
 import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint @Endpoint} to expose information about HTTP {@link Session}s on a
- * Servlet stack.
+ * reactive stack.
  *
  * @author Vedran Pavic
- * @since 2.0.0
+ * @author Moritz Halbritter
+ * @since 3.3.0
  */
 @Endpoint(id = "sessions")
-public class SessionsEndpoint {
+public class ReactiveSessionsEndpoint {
 
-	private final SessionRepository<? extends Session> sessionRepository;
+	private final ReactiveSessionRepository<? extends Session> sessionRepository;
 
-	private final FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
+	private final ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
 
 	/**
-	 * Create a new {@link SessionsEndpoint} instance.
+	 * Create a new {@link ReactiveSessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
 	 * @param indexedSessionRepository the indexed session repository
-	 * @since 3.3.0
 	 */
-	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
-			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
+	public ReactiveSessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository,
+			ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
 		Assert.notNull(sessionRepository, "'sessionRepository' must not be null");
 		this.sessionRepository = sessionRepository;
 		this.indexedSessionRepository = indexedSessionRepository;
 	}
 
 	@ReadOperation
-	public SessionsDescriptor sessionsForUsername(String username) {
+	public Mono<SessionsDescriptor> sessionsForUsername(String username) {
 		if (this.indexedSessionRepository == null) {
-			return null;
+			return Mono.empty();
 		}
-		Map<String, ? extends Session> sessions = this.indexedSessionRepository.findByPrincipalName(username);
-		return new SessionsDescriptor(sessions);
+		return this.indexedSessionRepository.findByPrincipalName(username).map(SessionsDescriptor::new);
 	}
 
 	@ReadOperation
-	public SessionDescriptor getSession(@Selector String sessionId) {
-		Session session = this.sessionRepository.findById(sessionId);
-		if (session == null) {
-			return null;
-		}
-		return new SessionDescriptor(session);
+	public Mono<SessionDescriptor> getSession(@Selector String sessionId) {
+		return this.sessionRepository.findById(sessionId).map(SessionDescriptor::new);
 	}
 
 	@DeleteOperation
-	public void deleteSession(@Selector String sessionId) {
-		this.sessionRepository.deleteById(sessionId);
+	public Mono<Void> deleteSession(@Selector String sessionId) {
+		return this.sessionRepository.deleteById(sessionId);
 	}
 
 }

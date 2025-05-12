@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.session;
+package org.springframework.boot.session.actuate.endpoint;
 
 import java.time.Instant;
 import java.util.List;

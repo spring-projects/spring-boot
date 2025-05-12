@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Spring Session.
+ * Actuator endpoint for Spring Session.
  */
-package org.springframework.boot.actuate.session;
+package org.springframework.boot.session.actuate.endpoint;

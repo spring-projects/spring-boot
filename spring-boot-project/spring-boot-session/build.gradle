@@ -32,7 +32,9 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-web")
 
@@ -47,8 +49,11 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
+	testImplementation("net.minidev:json-smart")
+	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }

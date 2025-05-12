@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.session;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.session.ReactiveSessionsEndpoint;
-import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.session.actuate.endpoint.ReactiveSessionsEndpoint;
+import org.springframework.boot.session.actuate.endpoint.SessionsEndpoint;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

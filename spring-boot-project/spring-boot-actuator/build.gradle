@@ -71,7 +71,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-rest-webmvc")
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework.session:spring-session-core")
 
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-http-converter"))
