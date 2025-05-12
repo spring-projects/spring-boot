@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.mail;
+package org.springframework.boot.mail.actuate.health;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Johannes Edmeier
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class MailHealthIndicator extends AbstractHealthIndicator {
 
