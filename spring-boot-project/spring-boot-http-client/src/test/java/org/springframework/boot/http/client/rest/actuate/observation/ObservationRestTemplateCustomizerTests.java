@@ -14,39 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.client;
+package org.springframework.boot.http.client.rest.actuate.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ObservationRestClientCustomizer}.
+ * Tests for {@link ObservationRestTemplateCustomizer}.
  *
  * @author Brian Clozel
- * @author Moritz Halbritter
  */
-class ObservationRestClientCustomizerTests {
+class ObservationRestTemplateCustomizerTests {
 
 	private static final String TEST_METRIC_NAME = "http.test.metric.name";
 
 	private final ObservationRegistry observationRegistry = TestObservationRegistry.create();
 
-	private final RestClient.Builder restClientBuilder = RestClient.builder();
+	private final RestTemplate restTemplate = new RestTemplate();
 
-	private final ObservationRestClientCustomizer customizer = new ObservationRestClientCustomizer(
+	private final ObservationRestTemplateCustomizer customizer = new ObservationRestTemplateCustomizer(
 			this.observationRegistry, new DefaultClientRequestObservationConvention(TEST_METRIC_NAME));
 
 	@Test
 	void shouldCustomizeObservationConfiguration() {
-		this.customizer.customize(this.restClientBuilder);
-		assertThat(this.restClientBuilder).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
-		assertThat(this.restClientBuilder).extracting("observationConvention")
+		this.customizer.customize(this.restTemplate);
+		assertThat(this.restTemplate).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
+		assertThat(this.restTemplate).extracting("observationConvention")
 			.isInstanceOf(DefaultClientRequestObservationConvention.class)
 			.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}

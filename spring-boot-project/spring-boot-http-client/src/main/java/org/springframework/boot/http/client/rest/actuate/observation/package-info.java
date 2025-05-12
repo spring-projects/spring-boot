@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for web client metrics.
+ * Observation integration for RestClient and RestTemplate.
  */
-package org.springframework.boot.actuate.metrics.web.client;
+package org.springframework.boot.http.client.rest.actuate.observation;

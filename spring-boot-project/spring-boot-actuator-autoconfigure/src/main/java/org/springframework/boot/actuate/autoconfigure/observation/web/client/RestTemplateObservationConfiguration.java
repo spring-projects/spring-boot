@@ -20,9 +20,9 @@ import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.http.client.rest.actuate.observation.ObservationRestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Brian Clozel
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RestTemplate.class)
+@ConditionalOnClass({ RestTemplate.class, ObservationRestTemplateCustomizer.class })
 @ConditionalOnBean(RestTemplateBuilder.class)
 class RestTemplateObservationConfiguration {
 
