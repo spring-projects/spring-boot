@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testsupport.container.TestImage;

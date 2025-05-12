@@ -24,9 +24,9 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAu
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
-import org.springframework.boot.actuate.neo4j.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.neo4j.actuate.health.Neo4jHealthIndicator;
+import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
