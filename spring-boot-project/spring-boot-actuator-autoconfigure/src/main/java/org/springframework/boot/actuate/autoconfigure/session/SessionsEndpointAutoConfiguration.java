@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.session;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.session.ReactiveSessionsEndpoint;
-import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -27,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.session.actuate.endpoint.ReactiveSessionsEndpoint;
+import org.springframework.boot.session.actuate.endpoint.SessionsEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -42,7 +42,7 @@ import org.springframework.session.SessionRepository;
  * @since 2.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.session.autoconfigure.SessionAutoConfiguration")
-@ConditionalOnClass(Session.class)
+@ConditionalOnClass({ Session.class, SessionsEndpoint.class })
 @ConditionalOnAvailableEndpoint(SessionsEndpoint.class)
 public class SessionsEndpointAutoConfiguration {
 

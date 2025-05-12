@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.session;
+package org.springframework.boot.session.actuate.endpoint;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.session.SessionsDescriptor.SessionDescriptor;
+import org.springframework.boot.session.actuate.endpoint.SessionsDescriptor.SessionDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;

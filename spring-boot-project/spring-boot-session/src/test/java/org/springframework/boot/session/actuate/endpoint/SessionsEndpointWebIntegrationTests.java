@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.session;
+package org.springframework.boot.session.actuate.endpoint;
 
 import java.util.Collections;
 
 import net.minidev.json.JSONArray;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest.Infrastructure;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
-import org.springframework.session.ReactiveFindByIndexNameSessionRepository;
-import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -35,34 +33,31 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration tests for {@link ReactiveSessionsEndpoint} exposed by WebFlux.
+ * Integration tests for {@link SessionsEndpoint} exposed by Jersey, Spring MVC, and
+ * WebFlux.
  *
  * @author Vedran Pavic
- * @author Moritz Halbritter
  */
-class ReactiveSessionsEndpointWebIntegrationTests {
+class SessionsEndpointWebIntegrationTests {
 
 	private static final Session session = new MapSession();
 
 	@SuppressWarnings("unchecked")
-	private static final ReactiveSessionRepository<Session> sessionRepository = mock(ReactiveSessionRepository.class);
+	private static final FindByIndexNameSessionRepository<Session> repository = mock(
+			FindByIndexNameSessionRepository.class);
 
-	@SuppressWarnings("unchecked")
-	private static final ReactiveFindByIndexNameSessionRepository<Session> indexedSessionRepository = mock(
-			ReactiveFindByIndexNameSessionRepository.class);
-
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameWithoutUsernameParam(WebTestClient client) {
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions").build())
 			.exchange()
 			.expectStatus()
-			.is4xxClientError();
+			.isBadRequest();
 	}
 
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameNoResults(WebTestClient client) {
-		given(indexedSessionRepository.findByPrincipalName("user")).willReturn(Mono.just(Collections.emptyMap()));
+		given(repository.findByPrincipalName("user")).willReturn(Collections.emptyMap());
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
 			.exchange()
@@ -73,10 +68,9 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 			.isEmpty();
 	}
 
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionsForUsernameFound(WebTestClient client) {
-		given(indexedSessionRepository.findByPrincipalName("user"))
-			.willReturn(Mono.just(Collections.singletonMap(session.getId(), session)));
+		given(repository.findByPrincipalName("user")).willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions").queryParam("username", "user").build())
 			.exchange()
@@ -87,32 +81,17 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 			.isEqualTo(new JSONArray().appendElement(session.getId()));
 	}
 
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
-	void sessionForIdFound(WebTestClient client) {
-		given(sessionRepository.findById(session.getId())).willReturn(Mono.just(session));
-		client.get()
-			.uri((builder) -> builder.path("/actuator/sessions/{id}").build(session.getId()))
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("id")
-			.isEqualTo(session.getId());
-	}
-
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void sessionForIdNotFound(WebTestClient client) {
-		given(sessionRepository.findById("not-found")).willReturn(Mono.empty());
 		client.get()
-			.uri((builder) -> builder.path("/actuator/sessions/not-found").build())
+			.uri((builder) -> builder.path("/actuator/sessions/session-id-not-found").build())
 			.exchange()
 			.expectStatus()
 			.isNotFound();
 	}
 
-	@WebEndpointTest(infrastructure = Infrastructure.WEBFLUX)
+	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
 	void deleteSession(WebTestClient client) {
-		given(sessionRepository.deleteById(session.getId())).willReturn(Mono.empty());
 		client.delete()
 			.uri((builder) -> builder.path("/actuator/sessions/{id}").build(session.getId()))
 			.exchange()
@@ -124,8 +103,8 @@ class ReactiveSessionsEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		ReactiveSessionsEndpoint sessionsEndpoint() {
-			return new ReactiveSessionsEndpoint(sessionRepository, indexedSessionRepository);
+		SessionsEndpoint sessionsEndpoint() {
+			return new SessionsEndpoint(repository, repository);
 		}
 
 	}
