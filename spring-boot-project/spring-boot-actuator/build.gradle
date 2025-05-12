@@ -61,7 +61,6 @@ dependencies {
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
-	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-context-support")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-messaging")

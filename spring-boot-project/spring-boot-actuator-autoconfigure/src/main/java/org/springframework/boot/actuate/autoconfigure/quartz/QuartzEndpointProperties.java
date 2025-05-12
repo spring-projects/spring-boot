@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint;
 
 /**
  * Configuration properties for {@link QuartzEndpoint}.

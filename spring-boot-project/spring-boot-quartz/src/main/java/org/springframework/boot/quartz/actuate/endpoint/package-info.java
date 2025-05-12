@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Quartz Scheduler.
+ * Actuator endpoint for Quartz Scheduler.
  */
-package org.springframework.boot.actuate.quartz;
+package org.springframework.boot.quartz.actuate.endpoint;
