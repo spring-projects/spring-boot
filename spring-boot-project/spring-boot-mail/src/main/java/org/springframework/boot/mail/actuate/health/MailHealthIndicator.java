@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.mail;
+package org.springframework.boot.mail.actuate.health;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Johannes Edmeier
  * @author Scott Frederick
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class MailHealthIndicator extends AbstractHealthIndicator {
 
