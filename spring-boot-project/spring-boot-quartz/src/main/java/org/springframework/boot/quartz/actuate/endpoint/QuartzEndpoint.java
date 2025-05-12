@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.quartz;
+package org.springframework.boot.quartz.actuate.endpoint;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -62,7 +62,7 @@ import org.springframework.util.Assert;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 2.5.0
+ * @since 4.0.0
  */
 @Endpoint(id = "quartz")
 public class QuartzEndpoint {
