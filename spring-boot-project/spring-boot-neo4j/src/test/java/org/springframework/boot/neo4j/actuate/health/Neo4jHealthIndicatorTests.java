@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.neo4j;
+package org.springframework.boot.neo4j.actuate.health;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

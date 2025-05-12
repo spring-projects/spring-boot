@@ -19,7 +19,6 @@ plugins {
 	id "java-test-fixtures"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.deployed"
 }
 
@@ -27,17 +26,6 @@ description = "Spring Boot Actuator"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-neo4j"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
-	dockerTestImplementation("org.assertj:assertj-core")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.springframework:spring-test")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:neo4j")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
@@ -75,7 +63,6 @@ dependencies {
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
-	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-context-support")
 	optional("org.springframework:spring-jdbc")

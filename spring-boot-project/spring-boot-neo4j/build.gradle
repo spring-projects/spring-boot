@@ -30,6 +30,9 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.neo4j.driver:neo4j-java-driver")
 
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
@@ -38,8 +41,11 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:neo4j")
 
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

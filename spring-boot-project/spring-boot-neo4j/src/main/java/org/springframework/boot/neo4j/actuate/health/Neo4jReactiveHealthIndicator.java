@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.neo4j;
+package org.springframework.boot.neo4j.actuate.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
  * @author Michael J. Simons
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 

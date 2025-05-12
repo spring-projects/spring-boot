@@ -24,10 +24,10 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthCont
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
-import org.springframework.boot.actuate.neo4j.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.neo4j.actuate.health.Neo4jHealthIndicator;
+import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 class Neo4jHealthContributorConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Neo4jHealthIndicator.class)
 	static class Neo4jConfiguration extends CompositeHealthContributorConfiguration<Neo4jHealthIndicator, Driver> {
 
 		Neo4jConfiguration() {
@@ -55,7 +56,7 @@ class Neo4jHealthContributorConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Flux.class)
+	@ConditionalOnClass({ Flux.class, Neo4jReactiveHealthIndicator.class })
 	static class Neo4jReactiveConfiguration
 			extends CompositeReactiveHealthContributorConfiguration<Neo4jReactiveHealthIndicator, Driver> {
 
