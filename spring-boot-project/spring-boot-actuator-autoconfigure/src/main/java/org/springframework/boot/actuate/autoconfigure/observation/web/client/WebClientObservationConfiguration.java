@@ -21,8 +21,8 @@ import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.http.client.reactive.web.actuate.observation.ObservationWebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
@@ -35,7 +35,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(WebClient.class)
+@ConditionalOnClass({ WebClient.class, ObservationWebClientCustomizer.class })
 class WebClientObservationConfiguration {
 
 	@Bean
