@@ -176,7 +176,3 @@ tasks.named("generateAntoraPlaybook") {
 tasks.named("dockerTest").configure {
 	dependsOn tasks.named("prepareMavenBinaries")
 }
-
-syncPluginDescriptorInputs {
-	dependsOn formatHelpMojoSource
-}
