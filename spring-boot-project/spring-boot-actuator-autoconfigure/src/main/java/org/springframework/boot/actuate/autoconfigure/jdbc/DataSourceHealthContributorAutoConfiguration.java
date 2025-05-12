@@ -34,13 +34,13 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.NamedContributor;
-import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
@@ -64,7 +64,7 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
-@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
+@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class, DataSourceHealthIndicator.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
 @EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)

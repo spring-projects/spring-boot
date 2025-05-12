@@ -30,14 +30,18 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-sql"))
 	api("org.springframework:spring-jdbc")
 
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
 	implementation(project(":spring-boot-project:spring-boot-tx"))
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("com.h2database:h2")
 	optional("com.mchange:c3p0")
 	optional("com.oracle.database.jdbc:ojdbc11")
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.zaxxer:HikariCP")
+	optional("io.micrometer:micrometer-core")
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}

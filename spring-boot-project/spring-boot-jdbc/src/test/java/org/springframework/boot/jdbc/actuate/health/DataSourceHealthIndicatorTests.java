@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.jdbc;
+package org.springframework.boot.jdbc.actuate.health;
 
 import java.sql.Connection;
 import java.sql.SQLException;

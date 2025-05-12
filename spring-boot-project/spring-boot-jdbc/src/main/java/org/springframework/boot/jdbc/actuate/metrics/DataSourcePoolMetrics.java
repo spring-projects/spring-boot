@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.jdbc;
+package org.springframework.boot.jdbc.actuate.metrics;
 
 import java.util.Collection;
 import java.util.Map;
@@ -39,7 +39,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  *
  * @author Jon Schneider
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class DataSourcePoolMetrics implements MeterBinder {
 
