@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.neo4j;
+package org.springframework.boot.neo4j.actuate.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +38,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  * @author Eric Spiegelberg
  * @author Stephane Nicoll
  * @author Michael J. Simons
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 
