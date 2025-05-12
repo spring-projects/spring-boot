@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.reactive.client;
+package org.springframework.boot.http.client.reactive.web.actuate.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 

@@ -15,7 +15,6 @@
  */
 
 /**
- * Actuator support for {@link org.springframework.web.reactive.function.client.WebClient}
- * metrics.
+ * Observation integration for WebClient.
  */
-package org.springframework.boot.actuate.metrics.web.reactive.client;
+package org.springframework.boot.http.client.reactive.web.actuate.observation;
