@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.jdbc;
+package org.springframework.boot.jdbc.actuate.health;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Arthur Kalimullin
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
 
