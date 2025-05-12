@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint;
 
 /**
  * Configuration properties for {@link QuartzEndpoint}.

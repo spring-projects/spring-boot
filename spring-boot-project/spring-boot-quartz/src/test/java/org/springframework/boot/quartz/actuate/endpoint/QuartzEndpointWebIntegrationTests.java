@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.quartz;
+package org.springframework.boot.quartz.actuate.endpoint;
 
 import java.util.ArrayList;
 import java.util.Collections;

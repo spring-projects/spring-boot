@@ -22,14 +22,14 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint;
-import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint;
+import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpointWebExtension;
 import org.springframework.boot.quartz.autoconfigure.QuartzAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.5.0
  */
 @AutoConfiguration(after = QuartzAutoConfiguration.class)
-@ConditionalOnClass(Scheduler.class)
+@ConditionalOnClass({ Scheduler.class, QuartzEndpoint.class })
 @ConditionalOnAvailableEndpoint(QuartzEndpoint.class)
 @EnableConfigurationProperties(QuartzEndpointProperties.class)
 public class QuartzEndpointAutoConfiguration {
