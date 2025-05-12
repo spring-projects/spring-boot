@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 /**
- * Actuator support for {@link org.springframework.web.reactive.function.client.WebClient}
- * metrics.
+ * Observation integration for WebClient.
  */
-package org.springframework.boot.actuate.metrics.web.reactive.client;
+package org.springframework.boot.http.client.reactive.web.actuate.observation;
