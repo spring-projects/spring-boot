@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for JavaMail.
+ * Health integration for JavaMail.
  */
-package org.springframework.boot.actuate.mail;
+package org.springframework.boot.mail.actuate.health;

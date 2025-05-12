@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.mail;
+package org.springframework.boot.mail.actuate.health;
 
 import java.util.Properties;
 
