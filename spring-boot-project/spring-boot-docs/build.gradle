@@ -202,6 +202,7 @@ dokkatoo {
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 	dependsOn configurations.resolvedBom
+	dependsOn ':spring-boot-project:spring-boot-test-autoconfigure:processResources'
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	options {
 		author = true
