@@ -828,7 +828,7 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.transaction")
 		}
 	}
-	library("Jakarta Validation", "3.1.0") {
+	library("Jakarta Validation", "3.1.1") {
 		group("jakarta.validation") {
 			modules = [
 				"jakarta.validation-api"
