@@ -229,7 +229,3 @@ antoraContributions {
 		source()
 	}
 }
-
-nxProjectReport {
-	atomized = false
-}
