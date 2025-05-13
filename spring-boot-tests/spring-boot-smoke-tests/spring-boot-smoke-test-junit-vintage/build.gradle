@@ -13,7 +13,7 @@ dependencies {
 }
 
 test {
-	testLogging {
+	/* testLogging {
 		afterSuite { description, result ->
 			if (!description.parent) {
 				if (!result.testCount) {
@@ -21,7 +21,7 @@ test {
 				}
 			}
 		}
-	}
+	}*/
 	develocity {
 		predictiveTestSelection {
 			enabled = false

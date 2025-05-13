@@ -180,7 +180,3 @@ tasks.named("dockerTest").configure {
 syncPluginDescriptorInputs {
 	dependsOn formatHelpMojoSource
 }
-
-nxProjectReport {
-	atomized = false
-}
