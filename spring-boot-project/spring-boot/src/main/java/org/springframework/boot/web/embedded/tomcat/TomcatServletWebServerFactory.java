@@ -964,6 +964,16 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 
 		@Override
+		public void setAllowLinking(boolean allowLinking) {
+			this.delegate.setAllowLinking(allowLinking);
+		}
+
+		@Override
+		public boolean getAllowLinking() {
+			return this.delegate.getAllowLinking();
+		}
+
+		@Override
 		protected void initInternal() throws LifecycleException {
 			if (this.delegate instanceof LifecycleBase) {
 				try {
