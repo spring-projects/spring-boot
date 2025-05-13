@@ -23,6 +23,7 @@ import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link ContextCustomizerFactory} for {@link TestRestTemplate}.
@@ -32,9 +33,16 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class TestRestTemplateContextCustomizerFactory implements ContextCustomizerFactory {
 
+	private static final boolean REST_TEMPLATE_BUILDER_PRESENT = ClassUtils.isPresent(
+			"org.springframework.boot.restclient.RestTemplateBuilder",
+			TestRestTemplateContextCustomizerFactory.class.getClassLoader());
+
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
+		if (!REST_TEMPLATE_BUILDER_PRESENT) {
+			return null;
+		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
 		return (springBootTest != null) ? new TestRestTemplateContextCustomizer() : null;

@@ -45,6 +45,7 @@ dependencies {
 	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-restclient"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-web-server-test"))

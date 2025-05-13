@@ -50,9 +50,9 @@ import org.springframework.core.annotation.Order;
  * @since 3.0.0
  */
 @AutoConfiguration(after = { ObservationAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class },
-		afterName = { "org.springframework.boot.http.client.reactive.web.autoconfigure.WebClientAutoConfiguration",
-				"org.springframework.boot.http.client.rest.autoconfigure.RestClientAutoConfiguration",
-				"org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration" })
+		afterName = { "org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration",
+				"org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration",
+				"org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration" })
 @ConditionalOnClass(Observation.class)
 @ConditionalOnBean(ObservationRegistry.class)
 @Import({ RestTemplateObservationConfiguration.class, WebClientObservationConfiguration.class,

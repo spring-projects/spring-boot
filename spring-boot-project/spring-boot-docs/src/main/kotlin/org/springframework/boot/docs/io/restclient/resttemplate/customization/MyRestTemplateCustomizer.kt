@@ -23,7 +23,7 @@ import org.apache.hc.client5.http.routing.HttpRoutePlanner
 import org.apache.hc.core5.http.HttpException
 import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.http.protocol.HttpContext
-import org.springframework.boot.web.client.RestTemplateCustomizer
+import org.springframework.boot.restclient.RestTemplateCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
 

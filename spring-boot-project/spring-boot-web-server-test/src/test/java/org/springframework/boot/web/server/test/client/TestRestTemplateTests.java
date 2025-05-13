@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.web.server.test.client.TestRestTemplate.HttpClientOption;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;

@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;

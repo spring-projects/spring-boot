@@ -39,6 +39,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-web-server"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
+	testImplementation(project(":spring-boot-project:spring-boot-restclient"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
