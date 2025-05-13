@@ -9,7 +9,7 @@ bom {
 	upgrade {
 		policy = "same-minor-version"
 		gitHub {
-			issueLabels = ["type: dependency-upgrade"]
+			issueLabels = ["type: task"]
 		}
 	}
 	library("ActiveMQ", "6.1.6") {
