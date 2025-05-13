@@ -78,12 +78,12 @@ org.springframework.boot.diagnostics.analyzer.MutuallyExclusiveConfigurationProp
 org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
-org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\
 org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
 org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer,\
-org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer
+org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer,\
+org.springframework.boot.web.server.PortInUseFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
