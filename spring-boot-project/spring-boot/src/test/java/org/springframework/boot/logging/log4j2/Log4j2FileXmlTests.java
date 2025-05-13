@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class Log4j2FileXmlTests extends Log4j2XmlTests {
 
@@ -78,6 +79,12 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 	void whenLogDateformatPatternIsSetThenFileAppenderUsesIt() {
 		withSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN.getEnvironmentVariableName(), "dd-MM-yyyy",
 				() -> assertThat(fileAppenderPattern()).contains("dd-MM-yyyy"));
+	}
+
+	@Test
+	void whenFileLogStructuredFormatIsEmptyThenFallbackToPatternLayout() {
+		withSystemProperty(LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "",
+				() -> assertThat(fileAppenderPattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
 	}
 
 	@Override

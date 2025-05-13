@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class Log4j2XmlTests {
 
@@ -77,6 +78,12 @@ class Log4j2XmlTests {
 	void whenLogDateformatPatternIsSetThenConsoleUsesIt() {
 		withSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN.getEnvironmentVariableName(), "dd-MM-yyyy",
 				() -> assertThat(consolePattern()).contains("dd-MM-yyyy"));
+	}
+
+	@Test
+	void whenConsoleStructuredFormatIsEmptyThenFallbackToPatternLayout() {
+		withSystemProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "",
+				() -> assertThat(consolePattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
 	}
 
 	protected void withSystemProperty(String name, String value, Runnable action) {

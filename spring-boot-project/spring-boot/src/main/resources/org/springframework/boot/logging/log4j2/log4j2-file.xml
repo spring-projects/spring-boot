@@ -10,6 +10,9 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<Select>
+				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED_FORMAT" propertyValue="">
+					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</SystemPropertyArbiter>
 				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED_FORMAT">
 					<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
 				</SystemPropertyArbiter>
@@ -23,6 +26,9 @@
 		</Console>
 		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<Select>
+				<SystemPropertyArbiter propertyName="FILE_LOG_STRUCTURED_FORMAT" propertyValue="">
+					<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>
+				</SystemPropertyArbiter>
 				<SystemPropertyArbiter propertyName="FILE_LOG_STRUCTURED_FORMAT">
 					<StructuredLogLayout format="${sys:FILE_LOG_STRUCTURED_FORMAT}" charset="${sys:FILE_LOG_CHARSET}"/>
 				</SystemPropertyArbiter>
