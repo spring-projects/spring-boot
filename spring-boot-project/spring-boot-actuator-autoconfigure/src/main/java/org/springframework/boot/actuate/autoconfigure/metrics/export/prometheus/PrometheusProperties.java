@@ -101,7 +101,7 @@ public class PrometheusProperties {
 		/**
 		 * Enable publishing over a Prometheus Pushgateway.
 		 */
-		private Boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Address (host:port) for the Pushgateway.
@@ -153,11 +153,11 @@ public class PrometheusProperties {
 		 */
 		private ShutdownOperation shutdownOperation = ShutdownOperation.NONE;
 
-		public Boolean getEnabled() {
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
