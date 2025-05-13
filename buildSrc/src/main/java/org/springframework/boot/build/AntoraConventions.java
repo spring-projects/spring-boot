@@ -122,6 +122,16 @@ public class AntoraConventions {
 		environment.put("npm_config_update_notifier", "false");
 		npmInstallTask.getEnvironment().set(environment);
 		npmInstallTask.getNpmCommand().set(List.of("ci", "--silent", "--no-progress"));
+
+		npmInstallTask.getInputs()
+			.files(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"))
+			.withPropertyName("antoraNodeJs")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		npmInstallTask.getInputs()
+			.files(getNodeProjectDir(project))
+			.withPropertyName("antoraNodeProjectDir")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
 	}
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
@@ -168,6 +178,16 @@ public class AntoraConventions {
 		antoraTask.getInputs()
 			.file(generateAntoraPlaybookTask.flatMap(GenerateAntoraPlaybook::getOutputFile))
 			.withPropertyName("antoraPlaybookFile")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		antoraTask.getInputs()
+			.files(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"))
+			.withPropertyName("antoraNodeJs")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		antoraTask.getInputs()
+			.files(getNodeProjectDir(project))
+			.withPropertyName("antoraNodeProjectDir")
 			.withPathSensitivity(PathSensitivity.RELATIVE);
 
 		antoraTask.setPlaybook("antora-playbook.yml");

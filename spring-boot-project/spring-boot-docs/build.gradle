@@ -385,3 +385,7 @@ dokkatoo {
 		includes.from("src/docs/dokkatoo/dokka-overview.md")
 	}
 }
+
+test {
+	dependsOn processResources
+}
