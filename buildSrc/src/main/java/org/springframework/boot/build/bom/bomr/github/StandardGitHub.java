@@ -45,8 +45,7 @@ final class StandardGitHub implements GitHub {
 
 	@Override
 	public GitHubRepository getRepository(String organization, String name) {
-		RestTemplate restTemplate = new RestTemplate(
-				Collections.singletonList(new MappingJackson2HttpMessageConverter(new ObjectMapper())));
+		RestTemplate restTemplate = createRestTemplate();
 		restTemplate.getInterceptors().add((request, body, execution) -> {
 			request.getHeaders().add("User-Agent", StandardGitHub.this.username);
 			request.getHeaders()
@@ -59,6 +58,11 @@ final class StandardGitHub implements GitHub {
 				"https://api.github.com/repos/" + organization + "/" + name + "/");
 		restTemplate.setUriTemplateHandler(uriTemplateHandler);
 		return new StandardGitHubRepository(restTemplate);
+	}
+
+	@SuppressWarnings("removal")
+	private RestTemplate createRestTemplate() {
+		return new RestTemplate(Collections.singletonList(new MappingJackson2HttpMessageConverter(new ObjectMapper())));
 	}
 
 }

@@ -34,6 +34,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
  * @author Stephane Nicoll
  */
 @Order(0)
+@SuppressWarnings("removal")
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 	private final Jackson2ObjectMapperBuilder objectMapperBuilder;

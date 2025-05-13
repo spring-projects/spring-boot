@@ -35,6 +35,7 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
+@SuppressWarnings("removal")
 class JacksonHttpMessageConvertersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

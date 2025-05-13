@@ -66,6 +66,7 @@ public class RSocketStrategiesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ ObjectMapper.class, CBORFactory.class })
+	@SuppressWarnings("removal")
 	protected static class JacksonCborStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
@@ -85,6 +86,7 @@ public class RSocketStrategiesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
+	@SuppressWarnings("removal")
 	protected static class JacksonJsonStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_JSON,

@@ -79,6 +79,7 @@ class GsonHttpMessageConvertersConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
+		@SuppressWarnings("removal")
 		@ConditionalOnBean(MappingJackson2HttpMessageConverter.class)
 		static class JacksonAvailable {
 

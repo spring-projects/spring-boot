@@ -49,6 +49,7 @@ class RSocketStrategiesAutoConfigurationTests {
 			AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class));
 
 	@Test
+	@SuppressWarnings("removal")
 	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);

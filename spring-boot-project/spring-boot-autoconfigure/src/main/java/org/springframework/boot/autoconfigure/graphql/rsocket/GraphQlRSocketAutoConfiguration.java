@@ -54,6 +54,7 @@ public class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("removal")
 	public GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
 			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
 		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),

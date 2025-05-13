@@ -151,6 +151,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 	 * {@link OperationResponseBody} to {@link MappingJackson2HttpMessageConverter}
 	 * instances.
 	 */
+	@SuppressWarnings("removal")
 	static class EndpointObjectMapperWebMvcConfigurer implements WebMvcConfigurer {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
@@ -171,6 +172,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 			}
 		}
 
+		@SuppressWarnings("removal")
 		private void configure(MappingJackson2HttpMessageConverter converter) {
 			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 				ObjectMapper objectMapper = this.endpointObjectMapper.get();

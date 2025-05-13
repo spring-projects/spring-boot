@@ -200,6 +200,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return converters;
 	}
 
+	@SuppressWarnings("removal")
 	private void reorderXmlConvertersToEnd(List<HttpMessageConverter<?>> converters) {
 		List<HttpMessageConverter<?>> xml = new ArrayList<>();
 		for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator.hasNext();) {

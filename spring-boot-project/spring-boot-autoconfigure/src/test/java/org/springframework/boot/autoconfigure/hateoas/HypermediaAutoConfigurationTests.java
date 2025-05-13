@@ -88,6 +88,7 @@ class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void whenUsingTheDefaultConfigurationThenMappingJacksonConverterCanWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
@@ -102,6 +103,7 @@ class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void whenHalIsNotTheDefaultJsonMediaTypeThenMappingJacksonConverterCannotWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.withPropertyValues("spring.hateoas.use-hal-as-default-json-media-type:false")
 			.run((context) -> {

@@ -38,6 +38,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
+@SuppressWarnings("removal")
 public class JacksonEndpointAutoConfiguration {
 
 	@Bean

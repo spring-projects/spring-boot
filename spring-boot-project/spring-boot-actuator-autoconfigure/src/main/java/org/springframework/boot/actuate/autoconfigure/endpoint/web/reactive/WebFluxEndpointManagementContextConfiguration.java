@@ -180,6 +180,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 			}
 		}
 
+		@SuppressWarnings("removal")
 		private void process(Encoder<?> encoder) {
 			if (encoder instanceof Jackson2JsonEncoder jackson2JsonEncoder) {
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {

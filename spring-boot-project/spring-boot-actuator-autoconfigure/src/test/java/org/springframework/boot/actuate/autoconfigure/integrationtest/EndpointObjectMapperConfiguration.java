@@ -37,6 +37,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author Phillip Webb
  */
 @Configuration
+@SuppressWarnings("removal")
 class EndpointObjectMapperConfiguration {
 
 	@Bean

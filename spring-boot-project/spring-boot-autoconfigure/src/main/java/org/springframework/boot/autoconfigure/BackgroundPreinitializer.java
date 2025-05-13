@@ -164,6 +164,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for Jackson.
 	 */
+	@SuppressWarnings("removal")
 	private static final class JacksonInitializer implements Runnable {
 
 		@Override

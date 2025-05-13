@@ -29,6 +29,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @since 1.4.0
  */
 @FunctionalInterface
+@SuppressWarnings("removal")
 public interface Jackson2ObjectMapperBuilderCustomizer {
 
 	/**

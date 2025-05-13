@@ -92,6 +92,7 @@ import static org.mockito.Mockito.mock;
  * @author Ralf Ueberfuhr
  * @author Eddú Meléndez
  */
+@SuppressWarnings("removal")
 class JacksonAutoConfigurationTests {
 
 	protected final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

@@ -53,6 +53,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
 @EnableConfigurationProperties(RepositoryRestProperties.class)
 @Import(RepositoryRestMvcConfiguration.class)
+@SuppressWarnings("removal")
 public class RepositoryRestMvcAutoConfiguration {
 
 	@Bean

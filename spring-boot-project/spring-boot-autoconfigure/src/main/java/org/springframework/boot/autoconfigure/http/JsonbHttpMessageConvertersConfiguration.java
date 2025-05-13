@@ -65,6 +65,7 @@ class JsonbHttpMessageConvertersConfiguration {
 
 		}
 
+		@SuppressWarnings("removal")
 		@ConditionalOnMissingBean({ MappingJackson2HttpMessageConverter.class, GsonHttpMessageConverter.class })
 		static class JacksonAndGsonMissing {
 

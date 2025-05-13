@@ -71,6 +71,7 @@ class AuditEventTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void jsonFormat() throws Exception {
 		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
 				Collections.singletonMap("type", (Object) "BadCredentials"));

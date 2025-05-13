@@ -54,6 +54,7 @@ public class CodecsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
+	@SuppressWarnings("removal")
 	static class JacksonCodecConfiguration {
 
 		@Bean

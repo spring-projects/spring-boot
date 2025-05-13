@@ -68,6 +68,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Sebastien Deleuze
  */
+@SuppressWarnings("removal")
 class HttpMessageConvertersAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

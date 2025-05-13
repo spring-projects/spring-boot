@@ -161,6 +161,7 @@ class RepositoryRestMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
+	@SuppressWarnings("removal")
 	static class TestConfigurationWithObjectMapperBuilder {
 
 		@Bean

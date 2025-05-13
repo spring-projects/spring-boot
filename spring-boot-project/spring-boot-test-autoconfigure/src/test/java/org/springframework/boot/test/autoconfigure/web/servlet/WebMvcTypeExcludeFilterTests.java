@@ -186,6 +186,7 @@ class WebMvcTypeExcludeFilterTests {
 
 	}
 
+	@SuppressWarnings("removal")
 	static class ExampleMessageConverter extends MappingJackson2HttpMessageConverter {
 
 	}
