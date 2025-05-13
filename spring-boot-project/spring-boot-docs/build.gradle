@@ -389,3 +389,7 @@ dokkatoo {
 test {
 	dependsOn processResources
 }
+
+checkArchitectureTest {
+	dependsOn processResources
+}

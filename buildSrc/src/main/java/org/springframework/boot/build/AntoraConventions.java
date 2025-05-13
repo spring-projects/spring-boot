@@ -91,7 +91,8 @@ public class AntoraConventions {
 		TaskProvider<Copy> copyAntoraPackageJsonTask = tasks.register("copyAntoraPackageJson", Copy.class,
 				(task) -> configureCopyAntoraPackageJsonTask(project, task));
 		TaskProvider<NpmInstallTask> npmInstallTask = tasks.register("antoraNpmInstall", NpmInstallTask.class,
-				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask));
+				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask,
+						generateAntoraPlaybookTask));
 		tasks.withType(GenerateAntoraYmlTask.class,
 				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask, resolvedBom));
 		tasks.withType(AntoraTask.class,
@@ -115,8 +116,9 @@ public class AntoraConventions {
 	}
 
 	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask,
-			TaskProvider<Copy> copyAntoraPackageJson) {
+			TaskProvider<Copy> copyAntoraPackageJson, TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		npmInstallTask.dependsOn(copyAntoraPackageJson);
+		npmInstallTask.dependsOn(generateAntoraPlaybookTask);
 		Map<String, String> environment = new HashMap<>();
 		environment.put("npm_config_omit", "optional");
 		environment.put("npm_config_update_notifier", "false");
