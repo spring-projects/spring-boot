@@ -28,7 +28,7 @@ import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorB
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpReactiveClientSettingsProperties}.
+ * Tests for {@link HttpReactiveClientProperties}.
  *
  * @author Phillip Webb
  */

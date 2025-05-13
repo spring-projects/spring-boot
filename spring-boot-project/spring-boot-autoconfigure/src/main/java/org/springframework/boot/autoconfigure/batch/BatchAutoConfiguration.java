@@ -202,7 +202,7 @@ public class BatchAutoConfiguration {
 	static class OnBatchDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
 		OnBatchDatasourceInitializationCondition() {
-			super("Batch", "spring.batch.jdbc.initialize-schema", "spring.batch.initialize-schema");
+			super("Batch", "spring.batch.jdbc.initialize-schema");
 		}
 
 	}

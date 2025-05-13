@@ -397,7 +397,7 @@ class BatchAutoConfigurationTests {
 	@Test
 	void jobRepositoryBeansDependOnFlyway() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class)
-			.withPropertyValues("spring.batch.initialize-schema=never")
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never")
 			.run((context) -> {
 				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 				String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
@@ -414,7 +414,7 @@ class BatchAutoConfigurationTests {
 	void jobRepositoryBeansDependOnLiquibase() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class)
-			.withPropertyValues("spring.batch.initialize-schema=never")
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never")
 			.run((context) -> {
 				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 				String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
