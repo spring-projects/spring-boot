@@ -285,3 +285,7 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
+
+nxProjectReport {
+	atomized = false
+}
