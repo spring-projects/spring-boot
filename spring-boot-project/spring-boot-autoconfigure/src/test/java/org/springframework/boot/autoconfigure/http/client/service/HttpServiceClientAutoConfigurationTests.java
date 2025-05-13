@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfigur
 import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -212,7 +212,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 		@Bean
 		ClientHttpRequestFactorySettings requestFactorySettings() {
-			return ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW);
+			return ClientHttpRequestFactorySettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		}
 
 	}

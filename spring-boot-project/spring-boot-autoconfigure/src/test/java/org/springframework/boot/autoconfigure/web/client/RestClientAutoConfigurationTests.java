@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfigur
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -77,7 +77,7 @@ class RestClientAutoConfigurationTests {
 	void shouldSupplyRestClientSslIfSslBundlesIsThereWithCustomHttpSettingsAndBuilder() {
 		SslBundles sslBundles = mock(SslBundles.class);
 		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.DONT_FOLLOW)
+			.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.withConnectTimeout(Duration.ofHours(1))
 			.withReadTimeout(Duration.ofDays(1))
 			.withSslBundle(mock(SslBundle.class));
@@ -217,7 +217,7 @@ class RestClientAutoConfigurationTests {
 	@Test
 	void shouldSupplyRestClientBuilderConfigurerWithCustomSettings() {
 		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.DONT_FOLLOW);
+			.withRedirects(HttpRedirects.DONT_FOLLOW);
 		ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder = mock(
 				ClientHttpRequestFactoryBuilder.class);
 		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);

@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.client.AbstractHttpRequestFactoryProperties.Factory;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
@@ -88,7 +87,7 @@ class ClientHttpRequestFactoriesTests {
 		p3.getSsl().setBundle("p3");
 		ClientHttpRequestFactories factories = new ClientHttpRequestFactories(this.sslBundles, p1, p2, p3);
 		ClientHttpRequestFactorySettings settings = factories.settings();
-		assertThat(settings).isEqualTo(new ClientHttpRequestFactorySettings(Redirects.DONT_FOLLOW,
+		assertThat(settings).isEqualTo(new ClientHttpRequestFactorySettings(HttpRedirects.DONT_FOLLOW,
 				Duration.ofSeconds(1), Duration.ofSeconds(2), this.bundleRegistry.getBundle("p2")));
 	}
 

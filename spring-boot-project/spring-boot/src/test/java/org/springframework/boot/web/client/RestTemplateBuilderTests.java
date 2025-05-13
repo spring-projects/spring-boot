@@ -32,7 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -490,9 +490,9 @@ class RestTemplateBuilderTests {
 
 	@Test
 	void configureRedirects() {
-		assertThat(this.builder.redirects(Redirects.DONT_FOLLOW)).extracting("requestFactorySettings")
+		assertThat(this.builder.redirects(HttpRedirects.DONT_FOLLOW)).extracting("requestFactorySettings")
 			.extracting("redirects")
-			.isSameAs(Redirects.DONT_FOLLOW);
+			.isSameAs(HttpRedirects.DONT_FOLLOW);
 	}
 
 	private ClientHttpRequest createRequest(RestTemplate template) {

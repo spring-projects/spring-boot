@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -524,9 +524,9 @@ public class RestTemplateBuilder {
 	 * Sets the redirect strategy on the underlying {@link ClientHttpRequestFactory}.
 	 * @param redirects the redirect strategy
 	 * @return a new builder instance.
-	 * @since 3.4.1
+	 * @since 4.0.0
 	 */
-	public RestTemplateBuilder redirects(Redirects redirects) {
+	public RestTemplateBuilder redirects(HttpRedirects redirects) {
 		return new RestTemplateBuilder(this.requestFactorySettings.withRedirects(redirects), this.detectRequestFactory,
 				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,

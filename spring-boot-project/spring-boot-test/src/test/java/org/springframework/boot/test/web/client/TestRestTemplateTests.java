@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -152,9 +152,9 @@ class TestRestTemplateTests {
 	void jdkBuilderCanBeSpecifiedWithSpecificRedirects() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk());
-		TestRestTemplate templateWithRedirects = new TestRestTemplate(builder.redirects(Redirects.FOLLOW));
+		TestRestTemplate templateWithRedirects = new TestRestTemplate(builder.redirects(HttpRedirects.FOLLOW));
 		assertThat(getJdkHttpClient(templateWithRedirects).followRedirects()).isEqualTo(Redirect.NORMAL);
-		TestRestTemplate templateWithoutRedirects = new TestRestTemplate(builder.redirects(Redirects.DONT_FOLLOW));
+		TestRestTemplate templateWithoutRedirects = new TestRestTemplate(builder.redirects(HttpRedirects.DONT_FOLLOW));
 		assertThat(getJdkHttpClient(templateWithoutRedirects).followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 
@@ -167,8 +167,9 @@ class TestRestTemplateTests {
 		assertThat(getRedirectStrategy(null, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW))).matches(this::isDontFollowStrategy);
-		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
+		assertThat(getRedirectStrategy(builder.redirects(HttpRedirects.DONT_FOLLOW)))
+			.matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy(builder.redirects(HttpRedirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
 			.matches(this::isFollowStrategy);
 	}
 
@@ -176,11 +177,11 @@ class TestRestTemplateTests {
 	void withRequestFactorySettingsRedirectsForHttpComponents() {
 		TestRestTemplate template = new TestRestTemplate();
 		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(template
-			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW))))
+		assertThat(getRedirectStrategy(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(HttpRedirects.FOLLOW))))
 			.matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(template.withRequestFactorySettings(
-				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW))))
+				ClientHttpRequestFactorySettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW))))
 			.matches(this::isDontFollowStrategy);
 	}
 
@@ -188,8 +189,8 @@ class TestRestTemplateTests {
 	void withRedirects() {
 		TestRestTemplate template = new TestRestTemplate();
 		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(template.withRedirects(Redirects.FOLLOW))).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(template.withRedirects(Redirects.DONT_FOLLOW)))
+		assertThat(getRedirectStrategy(template.withRedirects(HttpRedirects.FOLLOW))).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(HttpRedirects.DONT_FOLLOW)))
 			.matches(this::isDontFollowStrategy);
 	}
 
@@ -199,7 +200,7 @@ class TestRestTemplateTests {
 				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
 		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
 		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
-				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+				ClientHttpRequestFactorySettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW)))
 			.followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 
@@ -209,7 +210,7 @@ class TestRestTemplateTests {
 				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
 		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
 		assertThat(getJdkHttpClient(
-				template.withRequestFactorySettings((settings) -> settings.withRedirects(Redirects.DONT_FOLLOW)))
+				template.withRequestFactorySettings((settings) -> settings.withRedirects(HttpRedirects.DONT_FOLLOW)))
 			.followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 

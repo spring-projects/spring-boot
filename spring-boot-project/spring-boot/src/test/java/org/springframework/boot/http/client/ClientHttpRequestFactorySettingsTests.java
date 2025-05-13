@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +37,7 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void defaults() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
-		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
+		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -47,7 +46,7 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void createWithNullsUsesDefaults() {
 		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
-		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
+		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -84,8 +83,8 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withRedirectsReturnsInstanceWithUpdatedRedirect() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.DONT_FOLLOW);
-		assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
+			.withRedirects(HttpRedirects.DONT_FOLLOW);
+		assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 	}
 
 }

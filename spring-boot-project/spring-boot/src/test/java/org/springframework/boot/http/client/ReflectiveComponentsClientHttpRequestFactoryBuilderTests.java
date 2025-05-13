@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.time.Duration;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
@@ -56,7 +55,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	@Override
 	void redirectFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.FOLLOW);
+			.withRedirects(HttpRedirects.FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}
@@ -64,7 +63,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	@Override
 	void redirectDontFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.DONT_FOLLOW);
+			.withRedirects(HttpRedirects.DONT_FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}

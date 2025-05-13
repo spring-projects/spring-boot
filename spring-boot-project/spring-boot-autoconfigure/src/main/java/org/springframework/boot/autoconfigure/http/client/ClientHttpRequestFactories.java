@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.http.client.AbstractHttpClientProp
 import org.springframework.boot.autoconfigure.http.client.AbstractHttpRequestFactoryProperties.Factory;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -64,7 +63,7 @@ public final class ClientHttpRequestFactories {
 				StringUtils::hasLength);
 		SslBundle sslBundle = (StringUtils.hasLength(sslBundleName))
 				? this.sslBundles.getObject().getBundle(sslBundleName) : null;
-		return new ClientHttpRequestFactorySettings(Redirects.of(redirects), connectTimeout, readTimeout, sslBundle);
+		return new ClientHttpRequestFactorySettings(redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
 	private <T> T getProperty(Function<AbstractHttpRequestFactoryProperties, T> accessor) {

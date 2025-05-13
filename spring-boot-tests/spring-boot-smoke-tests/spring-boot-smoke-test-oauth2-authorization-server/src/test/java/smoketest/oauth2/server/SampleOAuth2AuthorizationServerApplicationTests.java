@@ -24,7 +24,7 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -94,7 +94,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 	@Test
 	void anonymousShouldRedirectToLogin() {
-		ResponseEntity<String> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
@@ -160,7 +160,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
 		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
 		HttpEntity<Object> request = new HttpEntity<>(body, headers);
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.exchange("/token", HttpMethod.POST, request, MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));

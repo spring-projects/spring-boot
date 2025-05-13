@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -93,7 +92,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 				SSLSocketFactory socketFactory = this.settings.sslBundle().createSslContext().getSocketFactory();
 				secureConnection.setSSLSocketFactory(socketFactory);
 			}
-			if (this.settings.redirects() == Redirects.DONT_FOLLOW) {
+			if (this.settings.redirects() == HttpRedirects.DONT_FOLLOW) {
 				connection.setInstanceFollowRedirects(false);
 			}
 		}

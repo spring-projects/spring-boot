@@ -49,8 +49,8 @@ import org.apache.hc.core5.ssl.TrustStrategy;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
@@ -164,7 +164,7 @@ public class TestRestTemplate {
 			builder = builder.requestFactoryBuilder(applyHttpClientOptions(
 					(HttpComponentsClientHttpRequestFactoryBuilder) requestFactoryBuilder, httpClientOptions));
 			if (HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)) {
-				builder = builder.redirects(Redirects.FOLLOW);
+				builder = builder.redirects(HttpRedirects.FOLLOW);
 			}
 		}
 		if (username != null || password != null) {
@@ -976,14 +976,14 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will apply the given {@link Redirects}. The request factory used is
-	 * a new instance of the underlying {@link RestTemplate}'s request factory type (when
-	 * possible).
+	 * except that it will apply the given {@link HttpRedirects}. The request factory used
+	 * is a new instance of the underlying {@link RestTemplate}'s request factory type
+	 * (when possible).
 	 * @param redirects the new redirect settings
 	 * @return the new template
 	 * @since 3.5.0
 	 */
-	public TestRestTemplate withRedirects(Redirects redirects) {
+	public TestRestTemplate withRedirects(HttpRedirects redirects) {
 		return withRequestFactorySettings((settings) -> settings.withRedirects(redirects));
 	}
 
@@ -1060,7 +1060,7 @@ public class TestRestTemplate {
 		/**
 		 * Enable redirects.
 		 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-		 * {@link TestRestTemplate#withRedirects(Redirects)}
+		 * {@link TestRestTemplate#withRedirects(HttpRedirects)}
 		 */
 		@Deprecated(since = "3.5.0", forRemoval = true)
 		ENABLE_REDIRECTS,
@@ -1112,7 +1112,7 @@ public class TestRestTemplate {
 				ClientHttpRequestFactorySettings settings) {
 			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
+			this.enableRedirects = settings.redirects() != HttpRedirects.DONT_FOLLOW;
 			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));

@@ -35,14 +35,14 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
-public record ClientHttpRequestFactorySettings(Redirects redirects, Duration connectTimeout, Duration readTimeout,
+public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration connectTimeout, Duration readTimeout,
 		SslBundle sslBundle) {
 
 	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
 			null, null);
 
 	public ClientHttpRequestFactorySettings {
-		redirects = (redirects != null) ? redirects : Redirects.FOLLOW_WHEN_POSSIBLE;
+		redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 	 * @param redirects the new redirects setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withRedirects(Redirects redirects) {
+	public ClientHttpRequestFactorySettings withRedirects(HttpRedirects redirects) {
 		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
@@ -113,52 +113,6 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 	 */
 	public static ClientHttpRequestFactorySettings defaults() {
 		return defaults;
-	}
-
-	/**
-	 * Redirect strategies.
-	 */
-	public enum Redirects {
-
-		/**
-		 * Follow redirects (if the underlying library has support).
-		 */
-		FOLLOW_WHEN_POSSIBLE(HttpRedirects.FOLLOW_WHEN_POSSIBLE),
-
-		/**
-		 * Follow redirects (fail if the underlying library has no support).
-		 */
-		FOLLOW(HttpRedirects.FOLLOW),
-
-		/**
-		 * Don't follow redirects (fail if the underlying library has no support).
-		 */
-		DONT_FOLLOW(HttpRedirects.DONT_FOLLOW);
-
-		private final HttpRedirects httpClientRedirects;
-
-		Redirects(HttpRedirects httpClientRedirects) {
-			this.httpClientRedirects = httpClientRedirects;
-		}
-
-		HttpRedirects httpClientRedirects() {
-			return this.httpClientRedirects;
-		}
-
-		/**
-		 * Return the related {@link Redirects} for the given {@link HttpRedirects}.
-		 * @param httpRedirects the HTTP redirects
-		 * @return the related redirects
-		 * @since 3.5.0
-		 */
-		public static Redirects of(HttpRedirects httpRedirects) {
-			return (httpRedirects != null) ? switch (httpRedirects) {
-				case FOLLOW_WHEN_POSSIBLE -> FOLLOW_WHEN_POSSIBLE;
-				case FOLLOW -> FOLLOW;
-				case DONT_FOLLOW -> DONT_FOLLOW;
-			} : null;
-		}
-
 	}
 
 }

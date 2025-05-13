@@ -74,8 +74,8 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 	protected abstract T createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings);
 
 	protected final HttpClientSettings asHttpClientSettings(ClientHttpRequestFactorySettings settings) {
-		return (settings != null) ? new HttpClientSettings(settings.redirects().httpClientRedirects(),
-				settings.connectTimeout(), settings.readTimeout(), settings.sslBundle()) : null;
+		return (settings != null) ? new HttpClientSettings(settings.redirects(), settings.connectTimeout(),
+				settings.readTimeout(), settings.sslBundle()) : null;
 	}
 
 }

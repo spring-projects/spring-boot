@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -75,7 +74,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 
 	private void configure(ClientHttpRequestFactory requestFactory, ClientHttpRequestFactorySettings settings) {
 		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundle using reflection");
-		Assert.state(settings.redirects() == Redirects.FOLLOW_WHEN_POSSIBLE,
+		Assert.state(settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				"Unable to set redirect follow using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
