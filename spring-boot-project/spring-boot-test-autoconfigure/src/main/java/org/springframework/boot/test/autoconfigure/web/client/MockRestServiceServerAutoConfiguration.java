@@ -24,8 +24,9 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
-import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
-import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
+import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -47,6 +48,7 @@ import org.springframework.web.client.RestTemplate;
  * @see AutoConfigureMockRestServiceServer
  */
 @AutoConfiguration
+@ConditionalOnClass(MockServerRestTemplateCustomizer.class)
 @ConditionalOnBooleanProperty("spring.test.webclient.mockrestserviceserver.enabled")
 public class MockRestServiceServerAutoConfiguration {
 

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.restclient.resttemplate;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

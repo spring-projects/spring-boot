@@ -31,7 +31,9 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-test"))
 
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
+	optional(project(":spring-boot-project:spring-boot-restclient"))
 	optional(project(":spring-boot-project:spring-boot-web-server"))
+	optional(project(":spring-boot-project:spring-boot-webclient"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.jetbrains.kotlin:kotlin-reflect")

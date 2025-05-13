@@ -27,6 +27,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
 	implementation(project(":spring-boot-project:spring-boot-webmvc"))
 
+	testImplementation(project(":spring-boot-project:spring-boot-restclient"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-web-server-test"))
 	testImplementation("org.assertj:assertj-core")

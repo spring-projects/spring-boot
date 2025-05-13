@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Import;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration")
 @ConditionalOnClass(Encoding.class)
 @Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)

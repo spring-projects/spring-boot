@@ -24,10 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
+import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
-import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
-import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient.Builder;
 

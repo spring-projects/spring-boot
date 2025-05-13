@@ -1,3 +1,2 @@
 org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration
-org.springframework.boot.http.client.rest.autoconfigure.RestClientAutoConfiguration
-org.springframework.boot.http.client.rest.autoconfigure.RestTemplateAutoConfiguration
+org.springframework.boot.http.client.reactive.autoconfigure.ClientHttpConnectorAutoConfiguration

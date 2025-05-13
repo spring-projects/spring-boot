@@ -32,7 +32,6 @@ dependencies {
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-spring6")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson")
-
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
 	implementation("org.springframework:spring-web")
@@ -40,6 +39,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 
+	testImplementation(project(":spring-boot-project:spring-boot-restclient"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

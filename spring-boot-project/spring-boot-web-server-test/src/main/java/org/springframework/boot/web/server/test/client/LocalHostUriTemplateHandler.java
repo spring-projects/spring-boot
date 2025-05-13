@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.server.test.client;
 
-import org.springframework.boot.web.client.RootUriTemplateHandler;
+import org.springframework.boot.restclient.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.web.util.DefaultUriBuilderFactory;

@@ -27,6 +27,7 @@ description = "Spring Boot Web Services"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-http-client"))
 	api("org.springframework:spring-oxm")
 	api("org.springframework.ws:spring-ws-core")
 
