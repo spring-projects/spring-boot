@@ -73,10 +73,12 @@ public final class ClientHttpRequestFactories {
 	private <P, T> T getProperty(Function<AbstractHttpRequestFactoryProperties, P> accessor, Function<P, T> extractor,
 			Predicate<T> predicate) {
 		for (AbstractHttpRequestFactoryProperties properties : this.orderedProperties) {
-			P value = accessor.apply(properties);
-			T extracted = (value != null) ? extractor.apply(value) : null;
-			if (predicate.test(extracted)) {
-				return extracted;
+			if (properties != null) {
+				P value = accessor.apply(properties);
+				T extracted = (value != null) ? extractor.apply(value) : null;
+				if (predicate.test(extracted)) {
+					return extracted;
+				}
 			}
 		}
 		return null;

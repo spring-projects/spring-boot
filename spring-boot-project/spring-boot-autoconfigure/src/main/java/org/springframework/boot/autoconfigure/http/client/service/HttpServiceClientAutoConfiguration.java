@@ -30,6 +30,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
@@ -48,6 +49,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
+@Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientServiceProperties.class)
 public class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
@@ -63,12 +65,13 @@ public class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware 
 
 	@Bean
 	RestClientPropertiesHttpServiceGroupConfigurer restClientPropertiesHttpServiceGroupConfigurer(
-			ObjectProvider<SslBundles> sslBundles, HttpClientProperties httpClientProperties,
+			ObjectProvider<SslBundles> sslBundles, ObjectProvider<HttpClientProperties> httpClientProperties,
 			HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings) {
 		return new RestClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles,
-				httpClientProperties, serviceProperties, clientFactoryBuilder, clientHttpRequestFactorySettings);
+				httpClientProperties.getIfAvailable(), serviceProperties, clientFactoryBuilder,
+				clientHttpRequestFactorySettings);
 	}
 
 	@Bean
