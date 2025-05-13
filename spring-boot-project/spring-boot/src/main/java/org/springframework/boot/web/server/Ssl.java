@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.web.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
+
 /**
  * Simple server-independent abstraction for SSL configuration.
  *
@@ -28,48 +30,112 @@ import java.util.List;
  * @author Scott Frederick
  * @since 2.0.0
  */
+@ConfigurationPropertiesSource
 public class Ssl {
 
+	/**
+	 * Whether to enable SSL support.
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Name of a configured SSL bundle.
+	 */
 	private String bundle;
 
+	/**
+	 * Client authentication mode. Requires a trust store.
+	 */
 	private ClientAuth clientAuth;
 
+	/**
+	 * Supported SSL ciphers.
+	 */
 	private String[] ciphers;
 
+	/**
+	 * Enabled SSL protocols.
+	 */
 	private String[] enabledProtocols;
 
+	/**
+	 * Alias that identifies the key in the key store.
+	 */
 	private String keyAlias;
 
+	/**
+	 * Password used to access the key in the key store.
+	 */
 	private String keyPassword;
 
+	/**
+	 * Path to the key store that holds the SSL certificate (typically a jks file).
+	 */
 	private String keyStore;
 
+	/**
+	 * Password used to access the key store.
+	 */
 	private String keyStorePassword;
 
+	/**
+	 * Type of the key store.
+	 */
 	private String keyStoreType;
 
+	/**
+	 * Provider for the key store.
+	 */
 	private String keyStoreProvider;
 
+	/**
+	 * Trust store that holds SSL certificates.
+	 */
 	private String trustStore;
 
+	/**
+	 * Password used to access the trust store.
+	 */
 	private String trustStorePassword;
 
+	/**
+	 * Type of the trust store.
+	 */
 	private String trustStoreType;
 
+	/**
+	 * Provider for the trust store.
+	 */
 	private String trustStoreProvider;
 
+	/**
+	 * Path to a PEM-encoded SSL certificate file.
+	 */
 	private String certificate;
 
+	/**
+	 * Path to a PEM-encoded private key file for the SSL certificate.
+	 */
 	private String certificatePrivateKey;
 
+	/**
+	 * Path to a PEM-encoded SSL certificate authority file.
+	 */
 	private String trustCertificate;
 
+	/**
+	 * Path to a PEM-encoded private key file for the SSL certificate authority.
+	 */
 	private String trustCertificatePrivateKey;
 
+	/**
+	 * SSL protocol to use.
+	 */
 	private String protocol = "TLS";
 
+	/**
+	 * Mapping of host names to SSL bundles for SNI configuration.
+	 */
 	private List<ServerNameSslBundle> serverNameBundles = new ArrayList<>();
 
 	/**

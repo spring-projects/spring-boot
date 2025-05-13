@@ -41,6 +41,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
+import org.springframework.boot.configurationprocessor.ConfigurationPropertiesSourceResolver.SourceMetadata;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
@@ -75,11 +76,17 @@ class MetadataGenerationEnvironment {
 
 	private final FieldValuesParser fieldValuesParser;
 
+	private final ConfigurationPropertiesSourceResolver sourceResolver;
+
 	private final Map<TypeElement, Map<String, Object>> defaultValues = new HashMap<>();
+
+	private final Map<TypeElement, SourceMetadata> sources = new HashMap<>();
 
 	private final String configurationPropertiesAnnotation;
 
 	private final String nestedConfigurationPropertyAnnotation;
+
+	private final String configurationPropertiesSourceAnnotation;
 
 	private final String deprecatedConfigurationPropertyAnnotation;
 
@@ -98,15 +105,17 @@ class MetadataGenerationEnvironment {
 	private final String autowiredAnnotation;
 
 	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
-			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
-			String constructorBindingAnnotation, String autowiredAnnotation, String defaultValueAnnotation,
-			Set<String> endpointAnnotations, String readOperationAnnotation, String optionalParameterAnnotation,
-			String nameAnnotation) {
+			String configurationPropertiesSourceAnnotation, String nestedConfigurationPropertyAnnotation,
+			String deprecatedConfigurationPropertyAnnotation, String constructorBindingAnnotation,
+			String autowiredAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
+			String readOperationAnnotation, String optionalParameterAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
 		this.fieldValuesParser = resolveFieldValuesParser(environment);
+		this.sourceResolver = new ConfigurationPropertiesSourceResolver(environment, this.typeUtils);
 		this.configurationPropertiesAnnotation = configurationPropertiesAnnotation;
+		this.configurationPropertiesSourceAnnotation = configurationPropertiesSourceAnnotation;
 		this.nestedConfigurationPropertyAnnotation = nestedConfigurationPropertyAnnotation;
 		this.deprecatedConfigurationPropertyAnnotation = deprecatedConfigurationPropertyAnnotation;
 		this.constructorBindingAnnotation = constructorBindingAnnotation;
@@ -144,6 +153,22 @@ class MetadataGenerationEnvironment {
 	 */
 	Object getFieldDefaultValue(TypeElement type, String name) {
 		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
+	}
+
+	/**
+	 * Resolve the {@link SourceMetadata} for the specified property.
+	 * @param field the field of the property (can be {@code null})
+	 * @param getter the getter of the property (can be {@code null})
+	 * @return the {@link SourceMetadata} for the specified property
+	 */
+	SourceMetadata resolveSourceMetadata(VariableElement field, ExecutableElement getter) {
+		if (field != null && field.getEnclosingElement() instanceof TypeElement type) {
+			return this.sources.computeIfAbsent(type, this.sourceResolver::resolveSource);
+		}
+		if (getter != null && getter.getEnclosingElement() instanceof TypeElement type) {
+			return this.sources.computeIfAbsent(type, this.sourceResolver::resolveSource);
+		}
+		return SourceMetadata.EMPTY;
 	}
 
 	boolean isExcluded(TypeMirror type) {
@@ -312,6 +337,10 @@ class MetadataGenerationEnvironment {
 
 	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
 		return getAnnotation(element, this.configurationPropertiesAnnotation);
+	}
+
+	TypeElement getConfigurationPropertiesSourceAnnotationElement() {
+		return this.elements.getTypeElement(this.configurationPropertiesSourceAnnotation);
 	}
 
 	AnnotationMirror getNestedConfigurationPropertyAnnotation(Element element) {

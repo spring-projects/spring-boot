@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.List;
+import java.util.Arrays;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -26,6 +26,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
@@ -103,6 +104,16 @@ abstract class PropertyDescriptor {
 		if (isProperty(environment)) {
 			return resolveItemMetadataProperty(prefix, environment);
 		}
+		return null;
+	}
+
+	/**
+	 * Resolve the {@link ItemHint} for this property.
+	 * @param prefix the property prefix
+	 * @param environment the metadata generation environment
+	 * @return the item hint or {@code null}
+	 */
+	protected ItemHint resolveItemHint(String prefix, MetadataGenerationEnvironment environment) {
 		return null;
 	}
 
@@ -185,13 +196,14 @@ abstract class PropertyDescriptor {
 				deprecation);
 	}
 
-	private String resolveType(MetadataGenerationEnvironment environment) {
-		return environment.getTypeUtils().getType(getDeclaringElement(), getType());
+	protected final ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment,
+			Element... elements) {
+		boolean deprecated = Arrays.stream(elements).anyMatch(environment::isDeprecated);
+		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 
-	private ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
-		boolean deprecated = getDeprecatableElements().stream().anyMatch(environment::isDeprecated);
-		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
+	private String resolveType(MetadataGenerationEnvironment environment) {
+		return environment.getTypeUtils().getType(getDeclaringElement(), getType());
 	}
 
 	/**
@@ -209,11 +221,11 @@ abstract class PropertyDescriptor {
 	protected abstract Object resolveDefaultValue(MetadataGenerationEnvironment environment);
 
 	/**
-	 * Return all the elements that should be considered when checking for deprecation
-	 * annotations.
-	 * @return the deprecatable elements
+	 * Resolve the {@link ItemDeprecation} for this property.
+	 * @param environment the metadata generation environment
+	 * @return the deprecation or {@code null}
 	 */
-	protected abstract List<Element> getDeprecatableElements();
+	protected abstract ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment);
 
 	/**
 	 * Return true if this descriptor is for a property.

@@ -42,6 +42,8 @@ In order to offer additional content assistance for the keys, you could add the 
 ]}
 ----
 
+NOTE: Hints can also be added for xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.source[external types] and are applied whenever that type is used.
+
 TIP: We recommend that you use an javadoc:java.lang.Enum[] for those two values instead.
 If your IDE supports it, this is by far the most effective approach to auto-completion.
 

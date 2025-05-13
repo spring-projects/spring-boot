@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Duration;
@@ -28,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -48,6 +48,7 @@ import javax.tools.Diagnostic.Kind;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
@@ -64,6 +65,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+		ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.CONFIGURATION_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
@@ -77,6 +79,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String ADDITIONAL_METADATA_LOCATIONS_OPTION = "org.springframework.boot.configurationprocessor.additionalMetadataLocations";
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.context.properties.ConfigurationProperties";
+
+	static final String CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION = "org.springframework.boot.context.properties.ConfigurationPropertiesSource";
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.context.properties.NestedConfigurationProperty";
 
@@ -116,12 +120,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private MetadataStore metadataStore;
 
+	private MetadataCollectors metadataCollectors;
+
 	private MetadataCollector metadataCollector;
 
 	private MetadataGenerationEnvironment metadataEnv;
 
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
+	}
+
+	protected String configurationPropertiesSourceAnnotation() {
+		return CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION;
 	}
 
 	protected String nestedConfigurationPropertyAnnotation() {
@@ -178,21 +188,33 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
-		this.metadataStore = new MetadataStore(env);
-		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
+		TypeUtils typeUtils = new TypeUtils(env);
+		this.metadataStore = new MetadataStore(env, typeUtils);
+		this.metadataCollectors = new MetadataCollectors(env, typeUtils);
+		this.metadataCollector = this.metadataCollectors.getModuleMetadataCollector();
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
-				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
-				constructorBindingAnnotation(), autowiredAnnotation(), defaultValueAnnotation(), endpointAnnotations(),
-				readOperationAnnotation(), optionalParameterAnnotation(), nameAnnotation());
+				configurationPropertiesSourceAnnotation(), nestedConfigurationPropertyAnnotation(),
+				deprecatedConfigurationPropertyAnnotation(), constructorBindingAnnotation(), autowiredAnnotation(),
+				defaultValueAnnotation(), endpointAnnotations(), readOperationAnnotation(),
+				optionalParameterAnnotation(), nameAnnotation());
 	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-		this.metadataCollector.processing(roundEnv);
+		this.metadataCollectors.processing(roundEnv);
 		TypeElement annotationType = this.metadataEnv.getConfigurationPropertiesAnnotationElement();
 		if (annotationType != null) { // Is @ConfigurationProperties available
 			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
 				processElement(element);
+			}
+		}
+		TypeElement sourceAnnotationType = this.metadataEnv.getConfigurationPropertiesSourceAnnotationElement();
+		if (sourceAnnotationType != null) { // Is @ConfigurationPropertiesSource available
+			for (Element element : roundEnv.getElementsAnnotatedWith(sourceAnnotationType)) {
+				if (element instanceof TypeElement typeElement) {
+					MetadataCollector metadataCollector = this.metadataCollectors.getMetadataCollector(typeElement);
+					processSourceElement(metadataCollector, "", typeElement);
+				}
 			}
 		}
 		Set<TypeElement> endpointTypes = this.metadataEnv.getEndpointAnnotationElements();
@@ -203,6 +225,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 		if (roundEnv.processingOver()) {
 			try {
+				writeSourceMetadata();
 				writeMetadata();
 			}
 			catch (Exception ex) {
@@ -276,6 +299,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			seen.push(element);
 			new PropertyDescriptorResolver(this.metadataEnv).resolve(element, source).forEach((descriptor) -> {
 				this.metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
+				ItemHint itemHint = descriptor.resolveItemHint(prefix, this.metadataEnv);
+				if (itemHint != null) {
+					this.metadataCollector.add(itemHint);
+				}
 				if (descriptor.isNested(this.metadataEnv)) {
 					TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
 						.asElement(descriptor.getType());
@@ -285,6 +312,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			});
 			seen.pop();
 		}
+	}
+
+	private void processSourceElement(MetadataCollector metadataCollector, String prefix, TypeElement element) {
+		new PropertyDescriptorResolver(this.metadataEnv).resolve(element, null).forEach((descriptor) -> {
+			metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
+			if (descriptor.isNested(this.metadataEnv)) {
+				TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
+					.asElement(descriptor.getType());
+				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, descriptor.getName());
+				processSourceElement(metadataCollector, nestedPrefix, nestedTypeElement);
+			}
+		});
 	}
 
 	private void processEndpoint(Element element, List<Element> annotations) {
@@ -381,9 +420,20 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return this.metadataEnv.getAnnotationElementStringValue(annotation, "value");
 	}
 
+	protected void writeSourceMetadata() throws Exception {
+		for (TypeElement sourceType : this.metadataCollectors.getSourceTypes()) {
+			ConfigurationMetadata metadata = this.metadataCollectors.getMetadataCollector(sourceType).getMetadata();
+			metadata = mergeAdditionalMetadata(metadata, () -> this.metadataStore.readAdditionalMetadata(sourceType));
+			removeIgnored(metadata);
+			if (!metadata.getItems().isEmpty()) {
+				this.metadataStore.writeMetadata(metadata, sourceType);
+			}
+		}
+	}
+
 	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
-		metadata = mergeAdditionalMetadata(metadata);
+		metadata = mergeAdditionalMetadata(metadata, () -> this.metadataStore.readAdditionalMetadata());
 		removeIgnored(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			this.metadataStore.writeMetadata(metadata);
@@ -398,14 +448,16 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata,
+			Supplier<ConfigurationMetadata> additionalMetadataSupplier) {
 		try {
-			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
-			merged.merge(this.metadataStore.readAdditionalMetadata());
-			return merged;
-		}
-		catch (FileNotFoundException ex) {
-			// No additional metadata
+			ConfigurationMetadata additionalMetadata = additionalMetadataSupplier.get();
+			if (additionalMetadata != null) {
+				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
+				merged.merge(additionalMetadata);
+				return merged;
+			}
+			return metadata;
 		}
 		catch (InvalidConfigurationMetadataException ex) {
 			log(ex.getKind(), ex.getMessage());

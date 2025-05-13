@@ -84,9 +84,9 @@ With Gradle, declare the dependencies in the `annotationProcessor` configuration
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]
 == Automatic Metadata Generation
 
-The processor picks up both classes and methods that are annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation].
+The processor picks up both classes and methods that are annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]. It also picks classes that are annotated with javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesSource[format=annotation]
 
-NOTE: Custom annotations that are meta-annotated with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] are not supported.
+NOTE: Custom annotations that are meta-annotated with either of those annotations are not supported.
 
 If the class has a single parameterized constructor, one property is created per constructor parameter, unless the constructor is annotated with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation].
 If the class has a constructor explicitly annotated with javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation], one property is created per constructor parameter for that constructor.
@@ -100,9 +100,10 @@ include-code::MyServerProperties[]
 This exposes three properties where `my.server.name` has no default and `my.server.ip` and `my.server.port` defaults to `"127.0.0.1"` and `9797` respectively.
 The Javadoc on fields is used to populate the `description` attribute.
 For instance, the description of `my.server.ip` is "IP address to listen to.".
+
 The `description` attribute can only be populated when the type is available as source code that is being compiled.
 It will not be populated when the type is only available as a compiled class from a dependency.
-For such cases, xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[manual metadata] should be provided.
+For such cases, you can xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.source[source the metadata] or xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[provide manual entries].
 
 NOTE: You should only use plain text with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] field Javadoc, since they are not processed before being added to the JSON.
 
@@ -156,6 +157,24 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 
 
 
+[[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.source]]
+=== Configuration Properties Source
+
+If a type located in another module is used in a javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]-annotated type, some metadata elements cannot be discovered automatically.
+Reusing the example above, if `Host` is located in another module, full metadata is not available as the annotation processor does not have access to the source of `Host`.
+
+To handle this use case, add the annotation processor in the module that contains the `Host` type and annotate it with javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesSource[format=annotation]:
+
+include-code::Host[]
+
+This generates the metadata for `Host` in `META-INF/spring/configuration-metadata/com.example.Host.json` and is reused automatically by the annotation processor when it handles such type.
+
+You can also annotate a parent class located in another module that a javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]-annotated type extends from.
+
+TIP: If you need to reuse metadata for a type that you do not control, create a file named with the pattern above and it will be used as long as it is available on the classpath.
+
+
+
 [[appendix.configuration-metadata.annotation-processor.adding-additional-metadata]]
 == Adding Additional Metadata
 
@@ -163,10 +182,12 @@ Spring Boot's configuration file handling is quite flexible, and it is often the
 You may also need to tune some attributes of an existing key or to ignore the key altogether.
 To support such cases and let you provide custom "hints", the annotation processor automatically merges items from `META-INF/additional-spring-configuration-metadata.json` into the main metadata file.
 
+When generating source metadata for a type, you can also craft custom metadata for that type, for example `com.example.SomeType`, in `META-INF/spring/configuration/metadata/com.example.SomeType.json`.
+
 If you refer to a property that has been detected automatically, the description, default value, and deprecation information are overridden, if specified.
 If the manual property declaration is not identified in the current module, it is added as a new property.
 
-The format of the `additional-spring-configuration-metadata.json` file is exactly the same as the regular `spring-configuration-metadata.json`.
+The format of the additional metadata file is exactly the same as the regular `spring-configuration-metadata.json`.
 The items contained in the "`ignored.properties`" section are removed from the "`properties`" section of the generated  `spring-configuration-metadata.json` file.
 
 The additional properties file is optional.

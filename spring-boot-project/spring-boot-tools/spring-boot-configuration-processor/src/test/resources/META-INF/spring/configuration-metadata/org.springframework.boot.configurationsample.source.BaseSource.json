@@ -1,0 +1,15 @@
+{
+  "properties": [
+    {
+      "name": "enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the feature is enabled."
+    },
+    {
+      "name": "username",
+      "type": "java.lang.String",
+      "description": "User name.",
+      "defaultValue": "user"
+    }
+  ]
+}

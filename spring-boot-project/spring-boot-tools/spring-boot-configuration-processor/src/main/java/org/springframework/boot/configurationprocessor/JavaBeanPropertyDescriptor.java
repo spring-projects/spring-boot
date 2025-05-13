@@ -16,14 +16,12 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 
 /**
  * A {@link PropertyDescriptor} for a standard JavaBean property.
@@ -68,8 +66,8 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 	}
 
 	@Override
-	protected List<Element> getDeprecatableElements() {
-		return Arrays.asList(getGetter(), this.setter, this.field, this.factoryMethod);
+	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
+		return resolveItemDeprecation(environment, getGetter(), this.setter, this.field, this.factoryMethod);
 	}
 
 	@Override

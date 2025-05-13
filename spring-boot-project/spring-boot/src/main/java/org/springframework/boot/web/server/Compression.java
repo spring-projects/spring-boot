@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.server;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -26,15 +27,28 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@ConfigurationPropertiesSource
 public class Compression {
 
+	/**
+	 * Whether response compression is enabled.
+	 */
 	private boolean enabled;
 
+	/**
+	 * Comma-separated list of MIME types that should be compressed.
+	 */
 	private String[] mimeTypes = new String[] { "text/html", "text/xml", "text/plain", "text/css", "text/javascript",
 			"application/javascript", "application/json", "application/xml" };
 
+	/**
+	 * Comma-separated list of user agents for which responses should not be compressed.
+	 */
 	private String[] excludedUserAgents = null;
 
+	/**
+	 * Minimum "Content-Length" value that is required for compression to be performed.
+	 */
 	private DataSize minResponseSize = DataSize.ofKilobytes(2);
 
 	/**

@@ -42,6 +42,7 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 						TestConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION));
 		return new MetadataGenerationEnvironment(environment,
 				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_SOURCE_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NESTED_CONFIGURATION_PROPERTY_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.CONSTRUCTOR_BINDING_ANNOTATION,

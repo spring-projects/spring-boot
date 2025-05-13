@@ -2,45 +2,12 @@
   "groups": [],
   "properties": [
     {
-      "name": "server.compression.enabled",
-      "description": "Whether response compression is enabled.",
-      "defaultValue": false
-    },
-    {
-      "name": "server.compression.excluded-user-agents",
-      "description": "Comma-separated list of user agents for which responses should not be compressed."
-    },
-    {
-      "name": "server.compression.mime-types",
-      "description": "Comma-separated list of MIME types that should be compressed.",
-      "defaultValue": [
-        "text/html",
-        "text/xml",
-        "text/plain",
-        "text/css",
-        "text/javascript",
-        "application/javascript",
-        "application/json",
-        "application/xml"
-      ]
-    },
-    {
-      "name": "server.compression.min-response-size",
-      "description": "Minimum \"Content-Length\" value that is required for compression to be performed.",
-      "defaultValue": "2KB"
-    },
-    {
       "name": "server.connection-timeout",
       "type": "java.time.Duration",
       "deprecation": {
         "reason": "Each server behaves differently. Use server specific properties instead.",
         "level": "error"
       }
-    },
-    {
-      "name": "server.http2.enabled",
-      "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
-      "defaultValue": false
     },
     {
       "name": "server.jetty.accesslog.date-format",
@@ -160,31 +127,10 @@
       "description": "Whether to always mark the cookie as secure."
     },
     {
-      "name": "server.servlet.encoding.charset",
-      "description": "Charset of HTTP requests and responses. Added to the \"Content-Type\" header if not set explicitly.",
-      "defaultValue": "UTF-8"
-    },
-    {
       "name": "server.servlet.encoding.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable http encoding support.",
       "defaultValue": true
-    },
-    {
-      "name": "server.servlet.encoding.force",
-      "description": "Whether to force the encoding to the configured charset on HTTP requests and responses."
-    },
-    {
-      "name": "server.servlet.encoding.force-request",
-      "description": "Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when \"force\" has not been specified."
-    },
-    {
-      "name": "server.servlet.encoding.force-response",
-      "description": "Whether to force the encoding to the configured charset on HTTP responses."
-    },
-    {
-      "name": "server.servlet.encoding.mapping",
-      "description": "Mapping of locale to charset for response encoding."
     },
     {
       "name": "server.servlet.jsp.class-name",
@@ -194,11 +140,6 @@
     {
       "name": "server.servlet.jsp.init-parameters",
       "description": "Init parameters used to configure the JSP servlet."
-    },
-    {
-      "name": "server.servlet.jsp.registered",
-      "description": "Whether the JSP servlet is registered.",
-      "defaultValue": true
     },
     {
       "name": "server.servlet.path",
@@ -216,142 +157,6 @@
       "deprecation": {
         "level": "error"
       }
-    },
-    {
-      "name": "server.servlet.session.cookie.domain",
-      "description": "Domain for the cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.http-only",
-      "description": "Whether to use \"HttpOnly\" cookies for the cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.max-age",
-      "description": "Maximum age of the cookie. If a duration suffix is not specified, seconds will be used. A positive value indicates when the cookie expires relative to the current time. A value of 0 means the cookie should expire immediately. A negative value means no \"Max-Age\"."
-    },
-    {
-      "name": "server.servlet.session.cookie.name",
-      "description": "Name of the cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.partitioned",
-      "description": "Whether the generated cookie carries the Partitioned attribute."
-    },
-    {
-      "name": "server.servlet.session.cookie.path",
-      "description": "Path of the cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.same-site",
-      "description": "SameSite setting for the cookie."
-    },
-    {
-      "name": "server.servlet.session.cookie.secure",
-      "description": "Whether to always mark the cookie as secure."
-    },
-    {
-      "name": "server.servlet.session.persistent",
-      "description": "Whether to persist session data between restarts.",
-      "defaultValue": false
-    },
-    {
-      "name": "server.servlet.session.store-dir",
-      "description": "Directory used to store session data."
-    },
-    {
-      "name": "server.servlet.session.timeout",
-      "description": "Session timeout. If a duration suffix is not specified, seconds will be used.",
-      "defaultValue": "30m"
-    },
-    {
-      "name": "server.servlet.session.tracking-modes",
-      "description": "Session tracking modes."
-    },
-    {
-      "name": "server.ssl.bundle",
-      "description": "Name of a configured SSL bundle."
-    },
-    {
-      "name": "server.ssl.certificate",
-      "description": "Path to a PEM-encoded SSL certificate file."
-    },
-    {
-      "name": "server.ssl.certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate."
-    },
-    {
-      "name": "server.ssl.ciphers",
-      "description": "Supported SSL ciphers."
-    },
-    {
-      "name": "server.ssl.client-auth",
-      "description": "Client authentication mode. Requires a trust store."
-    },
-    {
-      "name": "server.ssl.enabled",
-      "description": "Whether to enable SSL support.",
-      "defaultValue": true
-    },
-    {
-      "name": "server.ssl.enabled-protocols",
-      "description": "Enabled SSL protocols."
-    },
-    {
-      "name": "server.ssl.key-alias",
-      "description": "Alias that identifies the key in the key store."
-    },
-    {
-      "name": "server.ssl.key-password",
-      "description": "Password used to access the key in the key store."
-    },
-    {
-      "name": "server.ssl.key-store",
-      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
-    },
-    {
-      "name": "server.ssl.key-store-password",
-      "description": "Password used to access the key store."
-    },
-    {
-      "name": "server.ssl.key-store-provider",
-      "description": "Provider for the key store."
-    },
-    {
-      "name": "server.ssl.key-store-type",
-      "description": "Type of the key store."
-    },
-    {
-      "name": "server.ssl.protocol",
-      "description": "SSL protocol to use.",
-      "defaultValue": "TLS"
-    },
-    {
-      "name": "server.ssl.server-name-bundles",
-      "description": "Mapping of host names to SSL bundles for SNI configuration."
-    },
-    {
-      "name": "server.ssl.trust-certificate",
-      "description": "Path to a PEM-encoded SSL certificate authority file."
-    },
-    {
-      "name": "server.ssl.trust-certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
-    },
-    {
-      "name": "server.ssl.trust-store",
-      "description": "Trust store that holds SSL certificates."
-    },
-    {
-      "name": "server.ssl.trust-store-password",
-      "description": "Password used to access the trust store."
-    },
-    {
-      "name": "server.ssl.trust-store-provider",
-      "description": "Provider for the trust store."
-    },
-    {
-      "name": "server.ssl.trust-store-type",
-      "description": "Type of the trust store."
     },
     {
       "name": "server.tomcat.max-http-post-size",
@@ -2697,92 +2502,6 @@
         "replacement": "spring.web.resources.static-locations",
         "level": "error"
       }
-    },
-    {
-      "name": "spring.rsocket.server.ssl.bundle",
-      "description": "Name of a configured SSL bundle."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.certificate",
-      "description": "Path to a PEM-encoded SSL certificate file."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.ciphers",
-      "description": "Supported SSL ciphers."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.client-auth",
-      "description": "Client authentication mode. Requires a trust store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.enabled",
-      "description": "Whether to enable SSL support.",
-      "defaultValue": true
-    },
-    {
-      "name": "spring.rsocket.server.ssl.enabled-protocols",
-      "description": "Enabled SSL protocols."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-alias",
-      "description": "Alias that identifies the key in the key store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-password",
-      "description": "Password used to access the key in the key store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-store",
-      "description": "Path to the key store that holds the SSL certificate (typically a jks file)."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-store-password",
-      "description": "Password used to access the key store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-store-provider",
-      "description": "Provider for the key store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.key-store-type",
-      "description": "Type of the key store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.protocol",
-      "description": "SSL protocol to use.",
-      "defaultValue": "TLS"
-    },
-    {
-      "name": "spring.rsocket.server.ssl.server-name-bundles",
-      "description": "Mapping of host names to SSL bundles for SNI configuration."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-certificate",
-      "description": "Path to a PEM-encoded SSL certificate authority file."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-certificate-private-key",
-      "description": "Path to a PEM-encoded private key file for the SSL certificate authority."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-store",
-      "description": "Trust store that holds SSL certificates."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-store-password",
-      "description": "Password used to access the trust store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-store-provider",
-      "description": "Provider for the trust store."
-    },
-    {
-      "name": "spring.rsocket.server.ssl.trust-store-type",
-      "description": "Type of the trust store."
     },
     {
       "name": "spring.security.filter.dispatcher-types",
