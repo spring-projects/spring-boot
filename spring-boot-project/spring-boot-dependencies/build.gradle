@@ -227,7 +227,7 @@ bom {
 			releaseNotes("https://commons.apache.org/proper/commons-lang/changes-report.html#a{version}")
 		}
 	}
-	library("Commons Logging", "1.3.4") {
+	library("Commons Logging", "1.3.5") {
 		group("commons-logging") {
 			modules = [
 					"commons-logging"
