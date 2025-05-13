@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.docs.io.restclient.webclient.ssl;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.http.client.reactive.web.autoconfigure.WebClientSsl;
+import org.springframework.boot.webclient.autoconfigure.WebClientSsl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 

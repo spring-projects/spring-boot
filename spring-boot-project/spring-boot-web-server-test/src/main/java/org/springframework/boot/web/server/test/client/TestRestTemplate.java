@@ -51,9 +51,9 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.RootUriTemplateHandler;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -1086,21 +1086,6 @@ public class TestRestTemplate {
 		private final String cookieSpec;
 
 		private final boolean enableRedirects;
-
-		/**
-		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
-		 * @param httpClientOptions the {@link HttpClient} options
-		 * @param settings the settings to apply
-		 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], ClientHttpRequestFactorySettings)}
-		 */
-		@Deprecated(since = "3.4.0", forRemoval = true)
-		@SuppressWarnings("removal")
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
-				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
-			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
-					settings.readTimeout(), settings.sslBundle()));
-		}
 
 		/**
 		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.

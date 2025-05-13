@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docs.io.restclient.resttemplate.customization
 
-import org.springframework.boot.http.client.rest.autoconfigure.RestTemplateBuilderConfigurer
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.autoconfigure.RestTemplateBuilderConfigurer
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration

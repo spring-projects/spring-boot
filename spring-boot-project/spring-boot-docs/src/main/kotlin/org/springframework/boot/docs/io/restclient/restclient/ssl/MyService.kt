@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.io.restclient.restclient.ssl
 
 import org.springframework.boot.docs.io.restclient.restclient.ssl.settings.Details
-import org.springframework.boot.http.client.rest.autoconfigure.RestClientSsl
+import org.springframework.boot.restclient.autoconfigure.RestClientSsl
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 
