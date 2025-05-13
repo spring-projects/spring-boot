@@ -158,7 +158,3 @@ plugins.withType(EclipsePlugin) {
 toolchain {
 	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
 }
-
-nxProjectReport {
-	atomized = false
-}
