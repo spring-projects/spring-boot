@@ -123,7 +123,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 	@Test
 	void configuresDefinedClientHttpConnectorBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.settings.connector=jetty")
+		this.contextRunner.withPropertyValues("spring.http.reactiveclient.connector=jetty")
 			.run((context) -> assertThat(context.getBean(ClientHttpConnectorBuilder.class))
 				.isInstanceOf(JettyClientHttpConnectorBuilder.class));
 	}
@@ -131,10 +131,9 @@ class ClientHttpConnectorAutoConfigurationTests {
 	@Test
 	void configuresClientHttpConnectorSettings() {
 		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
-			.withPropertyValues("spring.http.reactiveclient.settings.redirects=dont-follow",
-					"spring.http.reactiveclient.settings.connect-timeout=10s",
-					"spring.http.reactiveclient.settings.read-timeout=20s",
-					"spring.http.reactiveclient.settings.ssl.bundle=test")
+			.withPropertyValues("spring.http.reactiveclient.redirects=dont-follow",
+					"spring.http.reactiveclient.connect-timeout=10s", "spring.http.reactiveclient.read-timeout=20s",
+					"spring.http.reactiveclient.ssl.bundle=test")
 			.run((context) -> {
 				ClientHttpConnectorSettings settings = context.getBean(ClientHttpConnectorSettings.class);
 				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
@@ -156,7 +155,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 	@Test
 	void clientHttpConnectorBuilderCustomizersAreApplied() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.settings.connector=jdk")
+		this.contextRunner.withPropertyValues("spring.http.reactiveclient.connector=jdk")
 			.withUserConfiguration(ClientHttpConnectorBuilderCustomizersConfiguration.class)
 			.run((context) -> {
 				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();
