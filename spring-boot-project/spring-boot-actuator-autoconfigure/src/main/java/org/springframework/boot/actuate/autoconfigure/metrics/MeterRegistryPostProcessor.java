@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContext;
  * @author Jon Schneider
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializingSingleton {
 
@@ -116,7 +117,8 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
-		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(meterRegistry)) {
+		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(meterRegistry)
+				&& !isAutoConfiguredComposite(meterRegistry)) {
 			Metrics.addRegistry(meterRegistry);
 		}
 	}

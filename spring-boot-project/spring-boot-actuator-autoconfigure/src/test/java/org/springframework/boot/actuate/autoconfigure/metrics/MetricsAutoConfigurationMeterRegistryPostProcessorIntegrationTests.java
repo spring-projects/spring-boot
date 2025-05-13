@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Map;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link MetricsAutoConfiguration}.
  *
  * @author Jon Schneider
+ * @author Yanming Zhou
  */
 class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 
@@ -101,6 +103,20 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 				registriesByName.forEach((name,
 						registry) -> assertThat(registry.get("logback.events").tag("level", "error").counter().count())
 							.isOne());
+			});
+	}
+
+	@Test
+	void excludeAutoConfiguredCompositeFromGlobalRegistry() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+			.withPropertyValues("management.metrics.use-global-registry=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AutoConfiguredCompositeMeterRegistry.class);
+				assertThat(Metrics.globalRegistry.getRegistries()).isNotEmpty();
+				assertThat(Metrics.globalRegistry.getRegistries()
+					.stream()
+					.filter(AutoConfiguredCompositeMeterRegistry.class::isInstance)
+					.findAny()).isEmpty();
 			});
 	}
 
