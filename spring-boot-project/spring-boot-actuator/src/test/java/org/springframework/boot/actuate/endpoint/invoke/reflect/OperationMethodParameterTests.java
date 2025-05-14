@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,7 +134,7 @@ class OperationMethodParameterTests {
 	}
 
 	@SuppressWarnings("deprecation")
-	void exampleSpringNullable(String one, @Nullable String two) {
+	void exampleSpringNullable(String one, @org.springframework.lang.Nullable String two) {
 	}
 
 	void exampleJsr305(String one, @javax.annotation.Nullable String two) {

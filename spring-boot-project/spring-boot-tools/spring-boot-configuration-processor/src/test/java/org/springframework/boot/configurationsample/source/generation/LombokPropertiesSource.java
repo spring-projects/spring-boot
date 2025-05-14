@@ -29,11 +29,13 @@ public class LombokPropertiesSource {
 	/**
 	 * Description of this simple property.
 	 */
+	@SuppressWarnings("unused")
 	private String name = "boot";
 
 	/**
 	 * Whether it is enabled.
 	 */
+	@SuppressWarnings("unused")
 	private boolean enabled;
 
 }

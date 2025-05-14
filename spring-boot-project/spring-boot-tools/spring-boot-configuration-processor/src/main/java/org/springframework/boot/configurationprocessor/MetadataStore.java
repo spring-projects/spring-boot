@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ class MetadataStore {
 	/**
 	 * Write the module {@link ConfigurationMetadata} to the filesystem.
 	 * @param metadata the metadata to write
+	 * @throws IOException when the write fails
 	 */
 	void writeMetadata(ConfigurationMetadata metadata) throws IOException {
 		writeMetadata(metadata, () -> createMetadataResource(METADATA_PATH));
@@ -107,6 +108,7 @@ class MetadataStore {
 	 * filesystem.
 	 * @param metadata the metadata to write
 	 * @param typeElement the type to write metadata for
+	 * @throws IOException when the write fails
 	 */
 	void writeMetadata(ConfigurationMetadata metadata, TypeElement typeElement) throws IOException {
 		writeMetadata(metadata, () -> createMetadataResource(SOURCE_METADATA_PATH.apply(typeElement, this.typeUtils)));

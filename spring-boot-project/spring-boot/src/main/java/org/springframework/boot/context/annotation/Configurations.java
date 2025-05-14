@@ -36,7 +36,6 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -48,7 +47,7 @@ import org.springframework.util.ClassUtils;
  * {@link ApplicationContext} and/or custom {@link ImportSelector} implementations.
  * <p>
  * This class is primarily intended for use with tests that need to specify configuration
- * classes but can't use {@link SpringRunner}.
+ * classes but can't use {@link org.springframework.test.context.junit4.SpringRunner}.
  * <p>
  * Implementations of this class should be annotated with {@link Order @Order} or
  * implement {@link Ordered}.

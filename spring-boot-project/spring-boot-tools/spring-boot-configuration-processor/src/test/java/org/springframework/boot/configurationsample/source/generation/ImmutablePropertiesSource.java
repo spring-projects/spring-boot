@@ -25,11 +25,13 @@ public class ImmutablePropertiesSource {
 	/**
 	 * Description of this simple property.
 	 */
+	@SuppressWarnings("unused")
 	private final String name;
 
 	/**
 	 * Whether it is enabled.
 	 */
+	@SuppressWarnings("unused")
 	private final boolean enabled;
 
 	public ImmutablePropertiesSource(@DefaultValue("boot") String name, boolean enabled) {

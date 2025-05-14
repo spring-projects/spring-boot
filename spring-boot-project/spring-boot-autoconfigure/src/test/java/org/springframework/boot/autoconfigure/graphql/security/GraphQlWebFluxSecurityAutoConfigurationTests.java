@@ -42,7 +42,6 @@ import org.springframework.graphql.execution.ErrorType;
 import org.springframework.graphql.execution.ReactiveSecurityDataFetcherExceptionResolver;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -170,7 +169,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	static class BookService {
 
 		@PreAuthorize("hasRole('USER')")
-		@Nullable
+		@org.springframework.lang.Nullable
 		@SuppressWarnings("deprecation")
 		Mono<Book> getBookdById(String id) {
 			return Mono.justOrEmpty(GraphQlTestDataFetchers.getBookById(id));

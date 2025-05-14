@@ -22,7 +22,6 @@ import java.util.Set;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.condition.MediaTypeExpression;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 /**
@@ -70,9 +69,10 @@ public class RequestMappingConditionsDescription {
 			.toList();
 	}
 
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {
-		PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
+		org.springframework.web.servlet.mvc.condition.PatternsRequestCondition patternsCondition = requestMapping
+			.getPatternsCondition();
 		return (patternsCondition != null) ? patternsCondition.getPatterns()
 				: requestMapping.getPathPatternsCondition().getPatternValues();
 	}

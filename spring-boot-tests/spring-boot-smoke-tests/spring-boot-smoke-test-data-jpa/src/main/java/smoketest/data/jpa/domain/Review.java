@@ -27,8 +27,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import org.springframework.util.Assert;
 
@@ -53,7 +51,7 @@ public class Review implements Serializable {
 	private Rating rating;
 
 	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
+	@jakarta.persistence.Temporal(jakarta.persistence.TemporalType.DATE)
 	@SuppressWarnings("deprecation")
 	private Date checkInDate;
 

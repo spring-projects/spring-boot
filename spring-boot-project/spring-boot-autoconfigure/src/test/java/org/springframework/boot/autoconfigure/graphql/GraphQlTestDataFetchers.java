@@ -22,8 +22,6 @@ import java.util.List;
 import graphql.schema.DataFetcher;
 import reactor.core.publisher.Flux;
 
-import org.springframework.lang.Nullable;
-
 /**
  * Test utility class holding {@link DataFetcher} implementations.
  *
@@ -49,7 +47,7 @@ public final class GraphQlTestDataFetchers {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Nullable
+	@org.springframework.lang.Nullable
 	public static Book getBookById(String id) {
 		return books.stream().filter((book) -> book.getId().equals(id)).findFirst().orElse(null);
 	}

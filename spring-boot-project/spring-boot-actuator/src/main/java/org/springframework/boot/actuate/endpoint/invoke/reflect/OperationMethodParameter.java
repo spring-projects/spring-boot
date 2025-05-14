@@ -26,7 +26,6 @@ import javax.annotation.meta.When;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -80,7 +79,8 @@ class OperationMethodParameter implements OperationParameter {
 
 	@SuppressWarnings("deprecation")
 	private boolean isOptional() {
-		return this.parameter.getAnnotationsByType(Nullable.class).length > 0 || this.optional.test(this.parameter);
+		return this.parameter.getAnnotationsByType(org.springframework.lang.Nullable.class).length > 0
+				|| this.optional.test(this.parameter);
 	}
 
 	@Override

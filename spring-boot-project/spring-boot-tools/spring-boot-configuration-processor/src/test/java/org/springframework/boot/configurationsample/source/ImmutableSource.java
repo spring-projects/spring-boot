@@ -22,10 +22,13 @@ package org.springframework.boot.configurationsample.source;
  */
 public class ImmutableSource {
 
+	@SuppressWarnings("unused")
 	private final String name;
 
+	@SuppressWarnings("unused")
 	private final String description;
 
+	@SuppressWarnings("unused")
 	private final String type;
 
 	public ImmutableSource(String name, String description, String type) {

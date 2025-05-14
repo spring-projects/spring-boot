@@ -27,10 +27,13 @@ import lombok.Setter;
 @Setter
 public class LombokSource {
 
+	@SuppressWarnings("unused")
 	private String name;
 
+	@SuppressWarnings("unused")
 	private String description;
 
+	@SuppressWarnings("unused")
 	private String type;
 
 }
