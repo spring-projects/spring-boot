@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.TestApplicationEnvironment;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindException;
@@ -459,6 +460,21 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				"--spring.profiles.active[1]=other");
 		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev", "other");
 		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromotherpropertiesfile");
+	}
+
+	@Test // gh-45387
+	void runWhenProfileActivatedViaSystemEnvironmentVariableWithPrefix() {
+		this.application.setEnvironmentPrefix("example.prefix");
+		this.application.setEnvironment(new TestApplicationEnvironment() {
+
+			@Override
+			public Map<String, Object> getSystemEnvironment() {
+				return Map.of("EXAMPLE_PREFIX_SPRING_PROFILES_ACTIVE", "other,dev");
+			}
+
+		});
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev", "other");
 	}
 
 	@Test
