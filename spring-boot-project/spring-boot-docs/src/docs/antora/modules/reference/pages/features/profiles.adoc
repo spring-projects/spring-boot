@@ -53,16 +53,19 @@ spring:
     active: "metrics"
 ----
 
+The configprop:spring.profiles.active[] property follows the same ordering rules as other properties.
+The highest javadoc:org.springframework.core.env.PropertySource[] wins.
+This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
+
+TIP: See xref:features/external-config.adoc#features.external-config.order[the "`Externalized Configuration`"] for more details on the order in which property sources are considered.
+
 
 
 [[features.profiles.adding-active-profiles]]
 == Adding Active Profiles
 
-The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest javadoc:org.springframework.core.env.PropertySource[] wins.
-This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
-
 Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
-The `spring.profiles.include` property can be used to add active profiles on top of those activated by the configprop:spring.profiles.active[] property.
+The configprop:spring.profiles.include[] property can be used to add active profiles on top of those activated by the configprop:spring.profiles.active[] property.
 The javadoc:org.springframework.boot.SpringApplication[] entry point also has a Java API for setting additional profiles.
 See the `setAdditionalProfiles()` method in javadoc:org.springframework.boot.SpringApplication[].
 
@@ -76,6 +79,10 @@ spring:
       - "common"
       - "local"
 ----
+
+NOTE: Included profiles are added before any configprop:spring.profiles.active[] profiles.
+
+TIP: The configprop:spring.profiles.include[] property is processed for each property source, as such the usual xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.merging-complex-types[complex type merging rules] for lists do not apply.
 
 WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile-specific documents.
 This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
