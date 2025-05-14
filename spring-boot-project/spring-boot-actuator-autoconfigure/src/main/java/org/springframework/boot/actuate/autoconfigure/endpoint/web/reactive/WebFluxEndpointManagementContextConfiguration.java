@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
@@ -150,7 +149,8 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 	/**
 	 * {@link BeanPostProcessor} to apply {@link EndpointObjectMapper} for
-	 * {@link OperationResponseBody} to {@link Jackson2JsonEncoder} instances.
+	 * {@link OperationResponseBody} to
+	 * {@link org.springframework.http.codec.json.Jackson2JsonEncoder} instances.
 	 */
 	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
 
@@ -180,9 +180,9 @@ public class WebFluxEndpointManagementContextConfiguration {
 			}
 		}
 
-		@SuppressWarnings("removal")
+		@SuppressWarnings({ "removal", "deprecation" })
 		private void process(Encoder<?> encoder) {
-			if (encoder instanceof Jackson2JsonEncoder jackson2JsonEncoder) {
+			if (encoder instanceof org.springframework.http.codec.json.Jackson2JsonEncoder jackson2JsonEncoder) {
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
 					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));

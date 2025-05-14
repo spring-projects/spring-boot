@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,7 +93,7 @@ class HypermediaAutoConfigurationTests {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
 				.stream()
-				.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+				.filter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class::isInstance)
 				.findFirst();
 			assertThat(mappingJacksonConverter).hasValueSatisfying(
 					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
@@ -110,7 +109,7 @@ class HypermediaAutoConfigurationTests {
 				RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 				Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
 					.stream()
-					.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+					.filter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class::isInstance)
 					.findFirst();
 				assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
 						converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))

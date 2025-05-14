@@ -21,8 +21,6 @@ import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -71,11 +69,13 @@ class AuditEventTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	void jsonFormat() throws Exception {
 		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
 				Collections.singletonMap("type", (Object) "BadCredentials"));
-		String json = Jackson2ObjectMapperBuilder.json().build().writeValueAsString(event);
+		String json = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
+			.build()
+			.writeValueAsString(event);
 		JSONObject jsonObject = new JSONObject(json);
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
 		assertThat(jsonObject.getJSONObject("data").getString("type")).isEqualTo("BadCredentials");

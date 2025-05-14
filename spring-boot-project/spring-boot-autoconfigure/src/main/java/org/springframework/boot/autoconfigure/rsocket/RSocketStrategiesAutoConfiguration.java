@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.cbor.Jackson2CborDecoder;
-import org.springframework.http.codec.cbor.Jackson2CborEncoder;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
@@ -66,19 +61,22 @@ public class RSocketStrategiesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ ObjectMapper.class, CBORFactory.class })
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	protected static class JacksonCborStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
 
 		@Bean
 		@Order(0)
-		@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
-		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(Jackson2ObjectMapperBuilder builder) {
+		@ConditionalOnBean(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.class)
+		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(
+				org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.createXmlMapper(false).factory(new CBORFactory()).build();
-				strategy.decoder(new Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
-				strategy.encoder(new Jackson2CborEncoder(objectMapper, SUPPORTED_TYPES));
+				strategy.decoder(
+						new org.springframework.http.codec.cbor.Jackson2CborDecoder(objectMapper, SUPPORTED_TYPES));
+				strategy.encoder(
+						new org.springframework.http.codec.cbor.Jackson2CborEncoder(objectMapper, SUPPORTED_TYPES));
 			};
 		}
 
@@ -86,7 +84,7 @@ public class RSocketStrategiesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	protected static class JacksonJsonStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_JSON,
@@ -97,8 +95,10 @@ public class RSocketStrategiesAutoConfiguration {
 		@ConditionalOnBean(ObjectMapper.class)
 		public RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {
 			return (strategy) -> {
-				strategy.decoder(new Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));
-				strategy.encoder(new Jackson2JsonEncoder(objectMapper, SUPPORTED_TYPES));
+				strategy.decoder(
+						new org.springframework.http.codec.json.Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));
+				strategy.encoder(
+						new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper, SUPPORTED_TYPES));
 			};
 		}
 

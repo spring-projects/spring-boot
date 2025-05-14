@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,6 @@ import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.Decoder;
 import org.springframework.core.codec.Encoder;
 import org.springframework.core.codec.StringDecoder;
-import org.springframework.http.codec.cbor.Jackson2CborDecoder;
-import org.springframework.http.codec.cbor.Jackson2CborEncoder;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 
@@ -54,10 +50,12 @@ class RSocketStrategiesAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
-			assertThat(strategies.decoders()).hasAtLeastOneElementOfType(Jackson2CborDecoder.class)
-				.hasAtLeastOneElementOfType(Jackson2JsonDecoder.class);
-			assertThat(strategies.encoders()).hasAtLeastOneElementOfType(Jackson2CborEncoder.class)
-				.hasAtLeastOneElementOfType(Jackson2JsonEncoder.class);
+			assertThat(strategies.decoders())
+				.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborDecoder.class)
+				.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonDecoder.class);
+			assertThat(strategies.encoders())
+				.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborEncoder.class)
+				.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonEncoder.class);
 			assertThat(strategies.routeMatcher()).isInstanceOf(PathPatternRouteMatcher.class);
 		});
 	}

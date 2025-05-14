@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
@@ -83,8 +82,9 @@ public class WebSocketMessagingAutoConfiguration {
 
 		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			@SuppressWarnings("removal")
-			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(this.objectMapper);
+			@SuppressWarnings({ "removal", "deprecation" })
+			org.springframework.messaging.converter.MappingJackson2MessageConverter converter = new org.springframework.messaging.converter.MappingJackson2MessageConverter(
+					this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
 			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
 			converter.setContentTypeResolver(resolver);

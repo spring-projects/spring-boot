@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
@@ -164,12 +163,12 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	/**
 	 * Early initializer for Jackson.
 	 */
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	private static final class JacksonInitializer implements Runnable {
 
 		@Override
 		public void run() {
-			Jackson2ObjectMapperBuilder.json().build();
+			org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json().build();
 		}
 
 	}

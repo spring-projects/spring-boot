@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -187,7 +186,8 @@ class WebMvcTypeExcludeFilterTests {
 	}
 
 	@SuppressWarnings("removal")
-	static class ExampleMessageConverter extends MappingJackson2HttpMessageConverter {
+	static class ExampleMessageConverter
+			extends org.springframework.http.converter.json.MappingJackson2HttpMessageConverter {
 
 	}
 

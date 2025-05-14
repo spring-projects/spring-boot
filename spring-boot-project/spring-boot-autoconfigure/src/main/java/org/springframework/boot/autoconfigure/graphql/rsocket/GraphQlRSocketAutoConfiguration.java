@@ -36,7 +36,6 @@ import org.springframework.graphql.data.method.annotation.support.AnnotatedContr
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.server.GraphQlRSocketHandler;
 import org.springframework.graphql.server.RSocketGraphQlInterceptor;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 /**
@@ -54,11 +53,11 @@ public class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "removal", "deprecation" })
 	public GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
 			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
 		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),
-				new Jackson2JsonEncoder(objectMapper));
+				new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper));
 	}
 
 	@Bean

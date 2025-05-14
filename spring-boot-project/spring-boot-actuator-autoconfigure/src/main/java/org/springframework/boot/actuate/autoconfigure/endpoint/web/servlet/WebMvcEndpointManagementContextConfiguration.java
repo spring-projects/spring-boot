@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -148,7 +147,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 
 	/**
 	 * {@link WebMvcConfigurer} to apply {@link EndpointObjectMapper} for
-	 * {@link OperationResponseBody} to {@link MappingJackson2HttpMessageConverter}
+	 * {@link OperationResponseBody} to
+	 * {@link org.springframework.http.converter.json.MappingJackson2HttpMessageConverter}
 	 * instances.
 	 */
 	@SuppressWarnings("removal")
@@ -166,14 +166,14 @@ public class WebMvcEndpointManagementContextConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			for (HttpMessageConverter<?> converter : converters) {
-				if (converter instanceof MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
+				if (converter instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
 					configure(mappingJackson2HttpMessageConverter);
 				}
 			}
 		}
 
-		@SuppressWarnings("removal")
-		private void configure(MappingJackson2HttpMessageConverter converter) {
+		@SuppressWarnings({ "removal", "deprecation" })
+		private void configure(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter) {
 			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 				ObjectMapper objectMapper = this.endpointObjectMapper.get();
 				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
