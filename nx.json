@@ -23,13 +23,13 @@
       }
     },
     "antora": {
-      "executor": "@nx/gradle:gradle-one",
+      "executor": "@nx/gradle:gradle",
       "options": {
         "excludeDependsOn": false
       }
     },
     "antoraNpmInstall": {
-      "executor": "@nx/gradle:gradle-one",
+      "executor": "@nx/gradle:gradle",
       "options": {
         "excludeDependsOn": false
       }

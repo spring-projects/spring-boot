@@ -149,3 +149,15 @@ testSliceMetadata {
 test {
 	dependsOn processResources
 }
+
+compileTestJava {
+	dependsOn processResources
+}
+
+compileDockerTestJava {
+	dependsOn processResources
+}
+
+jar {
+	dependsOn processResources
+}

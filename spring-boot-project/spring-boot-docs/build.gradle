@@ -399,3 +399,7 @@ checkArchitectureTest {
 checkstyleMain {
 	dependsOn processResources
 }
+
+compileTestJava {
+	dependsOn processResources
+}

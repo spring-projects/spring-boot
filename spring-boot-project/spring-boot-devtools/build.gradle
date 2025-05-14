@@ -106,3 +106,19 @@ autoConfigurationMetadata {
 compileTestJava {
 	dependsOn processResources
 }
+
+compileIntTestJava {
+	dependsOn processResources
+}
+
+test {
+	dependsOn processResources
+}
+
+javadoc {
+	dependsOn processResources
+}
+
+intTest {
+	dependsOn processResources
+}
