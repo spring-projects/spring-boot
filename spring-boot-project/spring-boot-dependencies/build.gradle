@@ -692,7 +692,10 @@ bom {
 			because "we don't want release candidates"
 		}
 		group("com.fasterxml.jackson") {
-			bom("jackson-bom")
+			bom("jackson-bom") {
+				permit("com.fasterxml.woodstox:woodstox-core")
+				permit("org.codehaus.woodstox:stax2-api")
+			}
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")

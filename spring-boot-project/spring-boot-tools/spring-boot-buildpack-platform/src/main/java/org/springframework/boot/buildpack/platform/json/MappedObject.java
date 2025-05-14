@@ -90,8 +90,8 @@ public class MappedObject {
 	protected <V> Map<String, V> mapAt(String expression, Function<JsonNode, V> valueMapper) {
 		Map<String, V> map = new LinkedHashMap<>();
 		getNode().at(expression)
-			.fields()
-			.forEachRemaining((entry) -> map.put(entry.getKey(), valueMapper.apply(entry.getValue())));
+			.properties()
+			.forEach((entry) -> map.put(entry.getKey(), valueMapper.apply(entry.getValue())));
 		return Collections.unmodifiableMap(map);
 	}
 
