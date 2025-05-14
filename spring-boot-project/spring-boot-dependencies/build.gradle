@@ -1781,6 +1781,10 @@ bom {
 		}
 	}
 	library("Prometheus Client", "1.3.6") {
+		prohibit {
+			versionRange "[1.3.7]"
+			because "its bom has dependency management for JUnit (https://github.com/prometheus/client_java/issues/1352)"
+		}
 		group("io.prometheus") {
 			bom("prometheus-metrics-bom")
 		}
