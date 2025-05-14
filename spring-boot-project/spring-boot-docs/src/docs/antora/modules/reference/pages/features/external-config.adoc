@@ -8,6 +8,8 @@ Property values can be injected directly into your beans by using the javadoc:or
 
 Spring Boot uses a very particular javadoc:org.springframework.core.env.PropertySource[] order that is designed to allow sensible overriding of values.
 Later property sources can override the values defined in earlier ones.
+
+[[features.external-config.order]]
 Sources are considered in the following order:
 
 . Default properties (specified by setting javadoc:org.springframework.boot.SpringApplication#setDefaultProperties(java.util.Map)[]).
