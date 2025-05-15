@@ -242,19 +242,13 @@ public class AntoraAsciidocAttributes {
 
 	private void addUrlJava(Map<String, String> attributes) {
 		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api");
+		attributes.put("javadoc-location-java", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-beans", "{url-javase-javadoc}/java.desktop");
-		attributes.put("javadoc-location-java-lang", "{url-javase-javadoc}/java.base");
-		attributes.put("javadoc-location-java-net", "{url-javase-javadoc}/java.base");
-		attributes.put("javadoc-location-java-io", "{url-javase-javadoc}/java.base");
-		attributes.put("javadoc-location-java-nio", "{url-javase-javadoc}/java.base");
-		attributes.put("javadoc-location-java-security", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-sql", "{url-javase-javadoc}/java.sql");
-		attributes.put("javadoc-location-java-time", "{url-javase-javadoc}/java.base");
-		attributes.put("javadoc-location-java-util", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-javax", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-management", "{url-javase-javadoc}/java.management");
 		attributes.put("javadoc-location-javax-net", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-sql", "{url-javase-javadoc}/java.sql");
-		attributes.put("javadoc-location-javax-security", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}/java.xml");
 	}
 
