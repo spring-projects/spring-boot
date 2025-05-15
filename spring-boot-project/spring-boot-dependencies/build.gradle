@@ -455,7 +455,7 @@ bom {
 		}
 		links {
 			site("https://www.graphql-java.com")
-			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}", "graphql.schema", "graphql.execution")
+			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}", "graphql")
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
@@ -1199,7 +1199,7 @@ bom {
 		}
 		links {
 			site("https://www.liquibase.com")
-			javadoc("https://javadoc.io/doc/org.liquibase/liquibase-core/{version}", "liquibase.integration", "liquibase.report")
+			javadoc("https://javadoc.io/doc/org.liquibase/liquibase-core/{version}", "liquibase")
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
