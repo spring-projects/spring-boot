@@ -8,6 +8,7 @@ plugins {
 	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
+	id "io.gitlab.arturbosch.detekt" version "1.23.8"
 }
 
 description = "Spring Boot Docs"
@@ -198,6 +199,10 @@ dependencies {
 
 dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
+}
+
+detekt {
+	config.setFrom("detekt.yml")
 }
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
