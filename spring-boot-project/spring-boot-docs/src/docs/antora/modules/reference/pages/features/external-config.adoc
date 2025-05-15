@@ -791,7 +791,14 @@ include-code::MyProperties[]
 In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation] annotation can be used to specify which constructor to use for constructor binding.
-To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] or made `private`.
+
+To opt-out of constructor binding for a class, the parameterized constructor must be annotated with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] or made `private`.
+Kotlin developers can use an empty primary constructor to opt-out of constructor binding.
+
+For example:
+
+include-code::primaryconstructor/MyProperties[]
+
 Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation].
 
