@@ -61,12 +61,28 @@ To use it, add the following declaration for the https://github.com/git-commit-i
 [source,xml]
 ----
 <build>
-	<plugins>
-		<plugin>
-			<groupId>io.github.git-commit-id</groupId>
-			<artifactId>git-commit-id-maven-plugin</artifactId>
-		</plugin>
-	</plugins>
+  <plugins>
+    <plugin>
+      <groupId>io.github.git-commit-id</groupId>
+      <artifactId>git-commit-id-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>get-the-git-infos</id>
+          <goals>
+            <goal>revision</goal>
+          </goals>
+          <phase>initialize</phase>
+        </execution>
+      </executions>
+      <configuration>
+        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+        <generateGitPropertiesFilename>
+          ${project.build.outputDirectory}/git.properties
+        </generateGitPropertiesFilename>
+        <commitIdGenerationMode>full</commitIdGenerationMode>
+      </configuration>
+    </plugin>
+  </plugins>
 </build>
 ----
 
