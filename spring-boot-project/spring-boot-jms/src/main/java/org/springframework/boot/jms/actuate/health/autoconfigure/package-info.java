@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator JMS concerns.
+ * Auto-configuration for JMS health integration.
  */
-package org.springframework.boot.actuate.autoconfigure.jms;
+package org.springframework.boot.jms.actuate.health.autoconfigure;

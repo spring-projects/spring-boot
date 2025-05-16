@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.jms;
+package org.springframework.boot.jms.actuate.health.autoconfigure;
 
 import jakarta.jms.ConnectionFactory;
 
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jms.actuate.health.JmsHealthIndicator;
+import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -36,8 +37,7 @@ import org.springframework.context.annotation.Bean;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration",
-		"org.springframework.boot.artemis.autoconfigure.ArtemisAutoConfiguration" })
+@AutoConfiguration(after = JmsAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, JmsHealthIndicator.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("jms")

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.jms;
+package org.springframework.boot.jms.actuate.health.autoconfigure;
 
+import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.artemis.autoconfigure.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jms.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JmsHealthContributorAutoConfiguration}.
@@ -34,8 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmsHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
-				JmsHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JmsHealthContributorAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class))
+		.withBean(ConnectionFactory.class, () -> mock(ConnectionFactory.class));
 
 	@Test
 	void runShouldCreateIndicator() {
