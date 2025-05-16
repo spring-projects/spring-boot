@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.actuate.health.autoconfigure;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -36,10 +36,10 @@ import org.springframework.context.annotation.Bean;
  * {@link HazelcastHealthIndicator}.
  *
  * @author Dmytro Nosan
- * @since 2.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = HazelcastAutoConfiguration.class)
-@ConditionalOnClass({ HazelcastInstance.class, HazelcastHealthIndicator.class })
+@ConditionalOnClass({ HazelcastInstance.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(HazelcastInstance.class)
 @ConditionalOnEnabledHealthIndicator("hazelcast")
 public class HazelcastHealthContributorAutoConfiguration

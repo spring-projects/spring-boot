@@ -53,7 +53,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
-	optional(project(":spring-boot-project:spring-boot-hazelcast"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
 	optional(project(":spring-boot-project:spring-boot-integration"))

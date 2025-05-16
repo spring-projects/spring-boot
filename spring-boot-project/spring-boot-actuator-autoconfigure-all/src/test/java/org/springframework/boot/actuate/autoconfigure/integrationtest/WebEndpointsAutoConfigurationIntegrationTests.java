@@ -34,7 +34,6 @@ import org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoCo
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
@@ -80,7 +79,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jReactiveDataAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class, RedisAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, BraveAutoConfiguration.class,
 			OpenTelemetryTracingAutoConfiguration.class })
 	@SpringBootConfiguration
