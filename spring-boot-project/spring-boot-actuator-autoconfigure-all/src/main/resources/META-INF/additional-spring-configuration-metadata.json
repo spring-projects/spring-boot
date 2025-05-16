@@ -42,12 +42,6 @@
       }
     },
     {
-      "name": "management.health.db.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable database health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.defaults.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable default health indicators.",

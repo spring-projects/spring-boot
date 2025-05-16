@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator JDBC concerns.
+ * Auto-configuration for JDBC health integration.
  */
-package org.springframework.boot.actuate.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.actuate.health.autoconfigure;

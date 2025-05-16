@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.actuate.health.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
@@ -23,7 +23,7 @@ import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
  * External configuration properties for {@link DataSourceHealthIndicator}.
  *
  * @author Julio Gomez
- * @since 2.4.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("management.health.db")
 public class DataSourceHealthIndicatorProperties {

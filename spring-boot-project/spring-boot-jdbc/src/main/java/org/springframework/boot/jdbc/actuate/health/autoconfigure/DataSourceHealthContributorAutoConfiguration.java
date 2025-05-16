@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.actuate.health.autoconfigure;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -61,10 +61,10 @@ import org.springframework.util.Assert;
  * @author Arthur Kalimullin
  * @author Julio Gomez
  * @author Safeer Ansari
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
-@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class, DataSourceHealthIndicator.class })
+@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
 @EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)

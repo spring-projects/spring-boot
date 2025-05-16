@@ -34,7 +34,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-tx"))
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("com.h2database:h2")
 	optional("com.mchange:c3p0")
