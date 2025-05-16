@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cache;
+package org.springframework.boot.cache.actuate.endpoint.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.cache.actuate.endpoint.CachesEndpoint;
 import org.springframework.boot.cache.actuate.endpoint.CachesEndpointWebExtension;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 
@@ -35,10 +36,10 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration")
-@ConditionalOnClass({ CacheManager.class, CachesEndpoint.class })
+@AutoConfiguration(after = CacheAutoConfiguration.class)
+@ConditionalOnClass({ CacheManager.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(CachesEndpoint.class)
 public class CachesEndpointAutoConfiguration {
 

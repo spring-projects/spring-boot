@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cache;
+package org.springframework.boot.cache.actuate.endpoint.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,1 +1,2 @@
+org.springframework.boot.cache.actuate.endpoint.autoconfigure.CachesEndpointAutoConfiguration
 org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration
