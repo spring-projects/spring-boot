@@ -24,23 +24,28 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.security.auth.x500.X500Principal;
 
 import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.util.ObjectUtils;
 
 /**
  * Information about the certificates that the application uses.
  *
  * @author Jonatan Ivanov
+ * @author Joshua Chen
  * @since 3.4.0
  */
 public class SslInfo {
@@ -72,7 +77,21 @@ public class SslInfo {
 
 		private BundleInfo(String name, SslBundle sslBundle) {
 			this.name = name;
-			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
+			this.certificateChains = extractCertificateChains(sslBundle.getStores());
+		}
+
+		private List<CertificateChainInfo> extractCertificateChains(SslStoreBundle storeBundle) {
+			if (storeBundle == null) {
+				return Collections.emptyList();
+			}
+			List<CertificateChainInfo> certificateChains = new ArrayList<>();
+			if (storeBundle.getKeyStore() != null) {
+				certificateChains.addAll(extractCertificateChains(storeBundle.getKeyStore()));
+			}
+			if (storeBundle.getTrustStore() != null) {
+				certificateChains.addAll(extractCertificateChains(storeBundle.getTrustStore()));
+			}
+			return certificateChains;
 		}
 
 		private List<CertificateChainInfo> extractCertificateChains(KeyStore keyStore) {
@@ -107,21 +126,26 @@ public class SslInfo {
 
 		private final String alias;
 
-		private final List<CertificateInfo> certificates;
+		private final Set<CertificateInfo> certificates;
 
 		CertificateChainInfo(KeyStore keyStore, String alias) {
 			this.alias = alias;
 			this.certificates = extractCertificates(keyStore, alias);
 		}
 
-		private List<CertificateInfo> extractCertificates(KeyStore keyStore, String alias) {
+		private Set<CertificateInfo> extractCertificates(KeyStore keyStore, String alias) {
 			try {
 				Certificate[] certificates = keyStore.getCertificateChain(alias);
-				return (!ObjectUtils.isEmpty(certificates))
-						? Arrays.stream(certificates).map(CertificateInfo::new).toList() : Collections.emptyList();
+				Set<CertificateInfo> certificateInfos = new java.util.HashSet<>(!ObjectUtils.isEmpty(certificates)
+						? Arrays.stream(certificates).map(CertificateInfo::new).collect(Collectors.toSet())
+						: Collections.emptySet());
+				if (keyStore.getCertificate(alias) != null) {
+					certificateInfos.add(new CertificateInfo(keyStore.getCertificate(alias)));
+				}
+				return certificateInfos;
 			}
 			catch (KeyStoreException ex) {
-				return Collections.emptyList();
+				return Collections.emptySet();
 			}
 		}
 
@@ -129,7 +153,7 @@ public class SslInfo {
 			return this.alias;
 		}
 
-		public List<CertificateInfo> getCertificates() {
+		public Set<CertificateInfo> getCertificates() {
 			return this.certificates;
 		}
 
@@ -206,6 +230,23 @@ public class SslInfo {
 
 		private <R> R extract(Function<X509Certificate, R> extractor) {
 			return (this.certificate != null) ? extractor.apply(this.certificate) : null;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) {
+				return true;
+			}
+			if (other == null || getClass() != other.getClass()) {
+				return false;
+			}
+			return (this.certificate != null) ? this.certificate.equals(((CertificateInfo) other).certificate)
+					: super.equals(other);
+		}
+
+		@Override
+		public int hashCode() {
+			return (this.certificate != null) ? this.certificate.hashCode() : super.hashCode();
 		}
 
 	}
