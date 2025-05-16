@@ -17,13 +17,13 @@
 package org.springframework.boot.autoconfigure.data.jdbc;
 
 import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
+import org.springframework.data.jdbc.core.dialect.JdbcH2Dialect;
+import org.springframework.data.jdbc.core.dialect.JdbcHsqlDbDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
+import org.springframework.data.jdbc.core.dialect.JdbcOracleDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcSqlServerDialect;
 import org.springframework.data.relational.core.dialect.Dialect;
-import org.springframework.data.relational.core.dialect.H2Dialect;
-import org.springframework.data.relational.core.dialect.HsqlDbDialect;
-import org.springframework.data.relational.core.dialect.OracleDialect;
 
 /**
  * List of database dialects that can be configured in Boot for use with Spring Data JDBC.
@@ -39,14 +39,14 @@ public enum JdbcDatabaseDialect {
 	DB2(JdbcDb2Dialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link H2Dialect}.
+	 * Provides an instance of {@link JdbcH2Dialect}.
 	 */
-	H2(H2Dialect.INSTANCE),
+	H2(JdbcH2Dialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link HsqlDbDialect}.
+	 * Provides an instance of {@link JdbcHsqlDbDialect}.
 	 */
-	HSQL(HsqlDbDialect.INSTANCE),
+	HSQL(JdbcHsqlDbDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcMySqlDialect}.
@@ -59,9 +59,9 @@ public enum JdbcDatabaseDialect {
 	MYSQL(JdbcMySqlDialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link OracleDialect}.
+	 * Provides an instance of {@link JdbcOracleDialect}.
 	 */
-	ORACLE(OracleDialect.INSTANCE),
+	ORACLE(JdbcOracleDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcPostgresDialect}.
