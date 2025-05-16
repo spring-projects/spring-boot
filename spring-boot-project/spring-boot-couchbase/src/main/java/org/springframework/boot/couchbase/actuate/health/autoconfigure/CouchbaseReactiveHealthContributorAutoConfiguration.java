@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.actuate.health.autoconfigure;
 
 import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.couchbase.actuate.health.CouchbaseReactiveHealthIndicator;
+import org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -37,10 +38,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Mikalai Lushchytski
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration")
-@ConditionalOnClass({ Cluster.class, Flux.class, CouchbaseReactiveHealthIndicator.class })
+@AutoConfiguration(after = CouchbaseAutoConfiguration.class)
+@ConditionalOnClass({ Cluster.class, Flux.class, CouchbaseReactiveHealthIndicator.class,
+		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(Cluster.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")
 public class CouchbaseReactiveHealthContributorAutoConfiguration
