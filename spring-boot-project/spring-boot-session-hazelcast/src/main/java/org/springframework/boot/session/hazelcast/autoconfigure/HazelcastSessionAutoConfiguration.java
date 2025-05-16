@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionProperties;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -48,7 +49,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Vedran Pavic
  * @since 4.0.0
  */
-@AutoConfiguration(before = SessionAutoConfiguration.class)
+@AutoConfiguration(before = SessionAutoConfiguration.class, after = HazelcastAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(HazelcastIndexedSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
