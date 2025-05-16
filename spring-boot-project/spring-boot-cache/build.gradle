@@ -30,7 +30,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.springframework:spring-context-support")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-data-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
