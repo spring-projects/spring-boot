@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.amqp;
+package org.springframework.boot.amqp.actuate.health.autoconfigure;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -34,10 +34,10 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitHealthIndicator}.
  *
  * @author Christian Dupuis
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = RabbitAutoConfiguration.class)
-@ConditionalOnClass({ RabbitHealthIndicator.class, RabbitTemplate.class })
+@ConditionalOnClass({ RabbitHealthIndicator.class, RabbitTemplate.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(RabbitTemplate.class)
 @ConditionalOnEnabledHealthIndicator("rabbit")
 public class RabbitHealthContributorAutoConfiguration

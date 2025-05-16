@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.amqp;
+package org.springframework.boot.amqp.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
