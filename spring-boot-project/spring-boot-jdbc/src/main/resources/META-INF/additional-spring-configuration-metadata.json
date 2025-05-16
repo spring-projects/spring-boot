@@ -1,6 +1,12 @@
 {
   "properties": [
     {
+      "name": "management.health.db.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable database health check.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.datasource.continue-on-error",
       "type": "java.lang.Boolean",
       "deprecation": {
