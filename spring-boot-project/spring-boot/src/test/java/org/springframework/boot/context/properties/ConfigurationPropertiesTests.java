@@ -195,6 +195,30 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	void loadWhenIgnoreUnresolvablePlaceholdersSetsToFalseShouldFail() {
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+			.isThrownBy(() -> load(BasicConfiguration.class, "name=${FOO}",
+					"spring.configurationproperties.ignore-unresolvable-placeholders=false"))
+			.withCauseInstanceOf(BindException.class)
+			.withStackTraceContaining("Could not resolve placeholder 'FOO'");
+	}
+
+	@Test
+	void loadWhenIgnoreUnresolvablePlaceholdersSetsToTrueShouldNotFail() {
+		load(BasicConfiguration.class, "name=${FOO}",
+				"spring.configurationproperties.ignore-unresolvable-placeholders=true");
+		BasicProperties properties = this.context.getBean(BasicProperties.class);
+		assertThat(properties.name).isEqualTo("${FOO}");
+	}
+
+	@Test
+	void loadWhenIgnoreUnresolvablePlaceholdersSetsToTrueByDefaultShouldNotFail() {
+		load(BasicConfiguration.class, "name=${FOO}");
+		BasicProperties properties = this.context.getBean(BasicProperties.class);
+		assertThat(properties.name).isEqualTo("${FOO}");
+	}
+
+	@Test
 	void givenIgnoreUnknownFieldsFalseAndIgnoreInvalidFieldsTrueWhenThereAreUnknownFieldsThenBindingShouldFail() {
 		removeSystemProperties();
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
