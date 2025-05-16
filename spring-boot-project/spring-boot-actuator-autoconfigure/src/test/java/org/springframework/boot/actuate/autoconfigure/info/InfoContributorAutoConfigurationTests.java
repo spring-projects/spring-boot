@@ -16,13 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.ssl.SslHealthIndicatorProperties;
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -191,24 +189,6 @@ class InfoContributorAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SslInfoContributor.class);
 				assertThat(context).hasSingleBean(SslInfo.class);
-				Map<String, Object> content = invokeContributor(context.getBean(SslInfoContributor.class));
-				assertThat(content).containsKey("ssl");
-				assertThat(content.get("ssl")).isInstanceOf(SslInfo.class);
-			});
-	}
-
-	@Test
-	void sslInfoContributorWithWarningThreshold() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
-			.withPropertyValues("management.info.ssl.enabled=true", "server.ssl.bundle=ssltest",
-					"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks",
-					"management.health.ssl.certificate-validity-warning-threshold=1d")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SslInfoContributor.class);
-				assertThat(context).hasSingleBean(SslInfo.class);
-				assertThat(context).hasSingleBean(SslHealthIndicatorProperties.class);
-				assertThat(context.getBean(SslHealthIndicatorProperties.class).getCertificateValidityWarningThreshold())
-					.isEqualTo(Duration.ofDays(1));
 				Map<String, Object> content = invokeContributor(context.getBean(SslInfoContributor.class));
 				assertThat(content).containsKey("ssl");
 				assertThat(content.get("ssl")).isInstanceOf(SslInfo.class);

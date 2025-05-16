@@ -77,6 +77,7 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-artemis", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
@@ -160,6 +161,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-artemis", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
@@ -239,6 +241,7 @@ dependencies {
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-amqp"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-cache"))
@@ -366,7 +369,7 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))

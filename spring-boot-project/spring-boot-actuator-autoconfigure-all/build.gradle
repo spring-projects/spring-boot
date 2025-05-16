@@ -1,0 +1,243 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Actuator AutoConfigure All"
+
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.opensaml') {
+			it.useVersion '4.0.1'
+		}
+	}
+}
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	implementation(project(":spring-boot-project:spring-boot-security")) {
+		exclude(group: "org.springframework.security")
+	}
+
+	optional(project(":spring-boot-project:spring-boot-activemq"))
+	optional(project(":spring-boot-project:spring-boot-amqp"))
+	optional(project(":spring-boot-project:spring-boot-artemis"))
+	optional(project(":spring-boot-project:spring-boot-cache"))
+	optional(project(":spring-boot-project:spring-boot-couchbase"))
+	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
+	optional(project(":spring-boot-project:spring-boot-data-elasticsearch"))
+	optional(project(":spring-boot-project:spring-boot-data-jpa"))
+	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
+	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
+	optional(project(":spring-boot-project:spring-boot-data-redis"))
+	optional(project(":spring-boot-project:spring-boot-flyway"))
+	optional(project(":spring-boot-project:spring-boot-hazelcast"))
+	optional(project(":spring-boot-project:spring-boot-http-converter"))
+	optional(project(":spring-boot-project:spring-boot-http-codec"))
+	optional(project(":spring-boot-project:spring-boot-integration"))
+	optional(project(":spring-boot-project:spring-boot-jackson"))
+	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-jersey"))
+	optional(project(":spring-boot-project:spring-boot-jetty"))
+	optional(project(":spring-boot-project:spring-boot-jsonb"))
+	optional(project(":spring-boot-project:spring-boot-kafka"))
+	optional(project(":spring-boot-project:spring-boot-ldap"))
+	optional(project(":spring-boot-project:spring-boot-liquibase"))
+	optional(project(":spring-boot-project:spring-boot-mail"))
+	optional(project(":spring-boot-project:spring-boot-mongodb"))
+	optional(project(":spring-boot-project:spring-boot-quartz"))
+	optional(project(":spring-boot-project:spring-boot-r2dbc"))
+	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
+	optional(project(":spring-boot-project:spring-boot-restclient"))
+	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
+	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
+	optional(project(":spring-boot-project:spring-boot-security-saml2"))
+	optional(project(":spring-boot-project:spring-boot-session"))
+	optional(project(":spring-boot-project:spring-boot-tomcat"))
+	optional(project(":spring-boot-project:spring-boot-undertow"))
+	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional(project(":spring-boot-project:spring-boot-webclient"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional("ch.qos.logback:logback-classic")
+	optional("org.apache.cassandra:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
+	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("com.hazelcast:hazelcast-spring")
+	optional("com.zaxxer:HikariCP")
+	optional("io.lettuce:lettuce-core")
+	optional("io.micrometer:micrometer-observation")
+	optional("io.micrometer:micrometer-jakarta9")
+	optional("io.micrometer:micrometer-java21")
+	optional("io.micrometer:micrometer-tracing")
+	optional("io.micrometer:micrometer-tracing-bridge-brave")
+	optional("io.micrometer:micrometer-tracing-bridge-otel")
+	optional("io.micrometer:micrometer-registry-appoptics")
+	optional("io.micrometer:micrometer-registry-atlas") {
+		exclude group: "javax.inject", module: "javax.inject"
+	}
+	optional("io.micrometer:micrometer-registry-datadog")
+	optional("io.micrometer:micrometer-registry-dynatrace")
+	optional("io.micrometer:micrometer-registry-elastic")
+	optional("io.micrometer:micrometer-registry-ganglia")
+	optional("io.micrometer:micrometer-registry-graphite")
+	optional("io.micrometer:micrometer-registry-humio")
+	optional("io.micrometer:micrometer-registry-influx")
+	optional("io.micrometer:micrometer-registry-jmx")
+	optional("io.micrometer:micrometer-registry-kairos")
+	optional("io.micrometer:micrometer-registry-new-relic")
+	optional("io.micrometer:micrometer-registry-otlp")
+	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.micrometer:micrometer-registry-stackdriver") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("io.micrometer:micrometer-registry-signalfx")
+	optional("io.micrometer:micrometer-registry-statsd")
+	optional("io.zipkin.reporter2:zipkin-reporter-brave")
+	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
+	optional("io.opentelemetry:opentelemetry-exporter-otlp")
+	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
+	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-proxy")
+	optional("io.r2dbc:r2dbc-spi")
+	optional("io.undertow:undertow-servlet")
+	optional("jakarta.persistence:jakarta.persistence-api")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("javax.cache:cache-api")
+	optional("org.apache.activemq:activemq-broker")
+	optional("org.apache.activemq:activemq-client")
+	optional("org.apache.commons:commons-dbcp2")
+	optional("org.apache.kafka:kafka-clients")
+	optional("org.apache.kafka:kafka-streams")
+	optional("org.apache.logging.log4j:log4j-api")
+	optional("org.apache.tomcat.embed:tomcat-embed-core")
+	optional("org.apache.tomcat.embed:tomcat-embed-el")
+	optional("org.apache.tomcat:tomcat-jdbc")
+	optional("org.aspectj:aspectjweaver")
+	optional("org.cache2k:cache2k-micrometer")
+	optional("org.cache2k:cache2k-spring")
+	optional("org.eclipse.angus:angus-mail")
+	optional("org.eclipse.jetty:jetty-server") {
+		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
+	}
+	optional("org.elasticsearch.client:elasticsearch-rest-client")
+	optional("org.glassfish.jersey.core:jersey-server")
+	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	optional("org.glassfish.jersey.ext:jersey-micrometer")
+	optional("org.hibernate.orm:hibernate-core")
+	optional("org.hibernate.orm:hibernate-micrometer")
+	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.influxdb:influxdb-java")
+	optional("org.junit.platform:junit-platform-launcher")
+	optional("org.liquibase:liquibase-core") {
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+	optional("org.mongodb:mongodb-driver-reactivestreams")
+	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.neo4j.driver:neo4j-java-driver")
+	optional("org.quartz-scheduler:quartz")
+	optional("org.springframework:spring-jdbc")
+	optional("org.springframework:spring-messaging")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework:spring-webmvc")
+	optional("org.springframework.amqp:spring-rabbit")
+	optional("org.springframework.batch:spring-batch-core")
+	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-jpa")
+	optional("org.springframework.data:spring-data-ldap")
+	optional("org.springframework.data:spring-data-mongodb")
+	optional("org.springframework.data:spring-data-redis")
+	optional("org.springframework.data:spring-data-elasticsearch")
+	optional("org.springframework.graphql:spring-graphql")
+	optional("org.springframework.kafka:spring-kafka")
+	optional("org.springframework.security:spring-security-config")
+	optional("org.springframework.security:spring-security-web")
+	optional("org.springframework.session:spring-session-core")
+	optional("redis.clients:jedis")
+
+	testImplementation(project(":spring-boot-project:spring-boot-data-rest"))
+	testImplementation(project(":spring-boot-project:spring-boot-hateoas"))
+	testImplementation(project(":spring-boot-project:spring-boot-restclient-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-web-server-test"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
+	testImplementation("io.micrometer:micrometer-observation-test")
+	testImplementation("io.opentelemetry:opentelemetry-exporter-common")
+	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
+	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("io.undertow:undertow-core")
+	testImplementation("io.undertow:undertow-servlet")
+	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
+	testImplementation("org.apache.activemq:artemis-jakarta-client")
+	testImplementation("org.apache.activemq:artemis-jakarta-server")
+	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
+	testImplementation("org.aspectj:aspectjrt")
+	testImplementation("org.cache2k:cache2k-api")
+	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
+	testImplementation("org.glassfish.jersey.ext:jersey-spring6")
+	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
+	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.springframework:spring-orm")
+	testImplementation("org.springframework.data:spring-data-rest-webmvc")
+	testImplementation("org.springframework.integration:spring-integration-jmx")
+	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.yaml:snakeyaml")
+
+	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
+	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
+	testRuntimeOnly("org.cache2k:cache2k-core")
+	testRuntimeOnly("org.opensaml:opensaml-core:4.0.1")
+	testRuntimeOnly("org.opensaml:opensaml-saml-api:4.0.1")
+	testRuntimeOnly("org.opensaml:opensaml-saml-impl:4.0.1")
+	testRuntimeOnly("org.springframework:spring-aspects")
+	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
+	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
+	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider") {
+		exclude group: "org.opensaml", module: "opensaml-core"
+		exclude group: "org.opensaml", module: "opensaml-saml-api"
+		exclude group: "org.opensaml", module: "opensaml-saml-impl"
+	}
+}
+
+tasks.named("test") {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+}
+
+tasks.getByName("checkAutoConfigurationImports") {
+	enabled = false
+}
+
+tasks.getByName("checkAutoConfigurationClasses") {
+	enabled = false
+}
