@@ -13,7 +13,6 @@ org.springframework.boot.actuate.autoconfigure.data.mongo.MongoHealthContributor
 org.springframework.boot.actuate.autoconfigure.data.mongo.MongoReactiveHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.data.redis.RedisHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.data.redis.RedisReactiveHealthContributorAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticsearchRestHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration
