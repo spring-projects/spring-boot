@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	 */
 	@SuppressWarnings({ "unchecked" })
 	protected final <D> D nullSafeValue(JsonNode jsonNode, Class<D> type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		if (jsonNode == null) {
 			return null;
 		}
@@ -144,7 +144,7 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	 * @return the {@link JsonNode}
 	 */
 	protected final JsonNode getRequiredNode(JsonNode tree, String fieldName) {
-		Assert.notNull(tree, "Tree must not be null");
+		Assert.notNull(tree, "'tree' must not be null");
 		JsonNode node = tree.get(fieldName);
 		Assert.state(node != null && !(node instanceof NullNode), () -> "Missing JSON field '" + fieldName + "'");
 		return node;

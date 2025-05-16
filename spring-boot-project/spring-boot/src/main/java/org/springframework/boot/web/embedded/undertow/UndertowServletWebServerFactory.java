@@ -227,7 +227,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers = new LinkedHashSet<>(customizers);
 	}
 
@@ -237,7 +237,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -635,7 +635,10 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		private void beforeCommit(HttpServerExchange exchange) {
 			for (Cookie cookie : exchange.responseCookies()) {
 				SameSite sameSite = getSameSite(asServletCookie(cookie));
-				if (sameSite != null) {
+				if (sameSite == SameSite.OMITTED) {
+					cookie.setSameSite(false);
+				}
+				else if (sameSite != null) {
 					cookie.setSameSiteMode(sameSite.attributeValue());
 				}
 			}

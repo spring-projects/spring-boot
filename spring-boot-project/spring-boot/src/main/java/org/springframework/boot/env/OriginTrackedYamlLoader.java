@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,8 +120,11 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			List<NodeTuple> newValue = new ArrayList<>();
-			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
+			List<NodeTuple> value = node.getValue();
+			List<NodeTuple> newValue = new ArrayList<>(value.size());
+			for (NodeTuple tuple : value) {
+				newValue.add(KeyScalarNode.get(tuple));
+			}
 			node.setValue(newValue);
 		}
 

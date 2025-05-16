@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,9 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
-	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
-		return new PropertiesMongoConnectionDetails(properties);
+	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesMongoConnectionDetails(properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -70,9 +71,9 @@ public class MongoAutoConfiguration {
 
 		@Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
-				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
-			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
-					properties.getUuidRepresentation(), properties.getSsl(), sslBundles.getIfAvailable());
+				MongoConnectionDetails connectionDetails) {
+			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails,
+					properties.getUuidRepresentation());
 		}
 
 	}

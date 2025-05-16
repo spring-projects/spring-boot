@@ -1,0 +1,30 @@
+{
+  "Id": "sha256:21635a6b4880772f3fabbf8b660907fa38636558cf787cc26f1779fc4b4e2cba",
+  "RepoTags": [
+    "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+  ],
+  "RepoDigests": [
+    "ghcr.io/spring-io/spring-boot-cnb-test-builder@sha256:21635a6b4880772f3fabbf8b660907fa38636558cf787cc26f1779fc4b4e2cba"
+  ],
+  "Parent": "",
+  "Comment": "",
+  "DockerVersion": "",
+  "Author": "",
+  "Config": null,
+  "Architecture": "",
+  "Os": "windows",
+  "Size": 166797518,
+  "GraphDriver": {
+    "Data": null,
+    "Name": "overlayfs"
+  },
+  "RootFS": {},
+  "Metadata": {
+    "LastTagTime": "2025-04-10T22:41:27.520294922Z"
+  },
+  "Descriptor": {
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "digest": "sha256:21635a6b4880772f3fabbf8b660907fa38636558cf787cc26f1779fc4b4e2cba",
+    "size": 513
+  }
+}

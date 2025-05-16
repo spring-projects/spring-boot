@@ -80,7 +80,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 */
 	public MockServerRestClientCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		this(() -> BeanUtils.instantiateClass(expectationManager));
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+		Assert.notNull(expectationManager, "'expectationManager' must not be null");
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 * @since 3.0.0
 	 */
 	public MockServerRestClientCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
-		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
+		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
 		this.expectationManagerSupplier = expectationManagerSupplier;
 	}
 

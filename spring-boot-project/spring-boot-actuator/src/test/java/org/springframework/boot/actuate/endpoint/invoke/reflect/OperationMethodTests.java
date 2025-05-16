@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ class OperationMethodTests {
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
-			.withMessageContaining("Method must not be null");
+			.withMessageContaining("'method' must not be null");
 	}
 
 	@Test
 	void createWhenOperationTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
-			.withMessageContaining("OperationType must not be null");
+			.withMessageContaining("'operationType' must not be null");
 	}
 
 	@Test

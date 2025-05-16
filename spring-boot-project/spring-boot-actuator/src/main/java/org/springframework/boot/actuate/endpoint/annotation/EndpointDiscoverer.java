@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,11 +111,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	public EndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors, Collection<EndpointFilter<E>> endpointFilters,
 			Collection<OperationFilter<O>> operationFilters) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(parameterValueMapper, "ParameterValueMapper must not be null");
-		Assert.notNull(invokerAdvisors, "InvokerAdvisors must not be null");
-		Assert.notNull(endpointFilters, "EndpointFilters must not be null");
-		Assert.notNull(operationFilters, "OperationFilters must not be null");
+		Assert.notNull(applicationContext, "'applicationContext' must not be null");
+		Assert.notNull(parameterValueMapper, "'parameterValueMapper' must not be null");
+		Assert.notNull(invokerAdvisors, "'invokerAdvisors' must not be null");
+		Assert.notNull(endpointFilters, "'endpointFilters' must not be null");
+		Assert.notNull(operationFilters, "'operationFilters' must not be null");
 		this.applicationContext = applicationContext;
 		this.endpointFilters = Collections.unmodifiableCollection(endpointFilters);
 		this.operationFilters = Collections.unmodifiableCollection(operationFilters);
@@ -440,8 +440,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		 * @param description a human-readable description of the key
 		 */
 		public OperationKey(Object key, Supplier<String> description) {
-			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(description, "Description must not be null");
+			Assert.notNull(key, "'key' must not be null");
+			Assert.notNull(description, "'description' must not be null");
 			this.key = key;
 			this.description = description;
 		}

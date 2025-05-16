@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
-		Assert.notNull(requestFactorySupplier, "RequestFactorySupplier must not be null");
+		Assert.notNull(requestFactorySupplier, "'requestFactorySupplier' must not be null");
 		this.requestFactoryBuilder = ClientHttpRequestFactoryBuilder.of(requestFactorySupplier);
 		return this;
 	}
@@ -97,7 +97,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
-		Assert.notNull(requestFactoryFunction, "RequestFactoryFunction must not be null");
+		Assert.notNull(requestFactoryFunction, "'requestFactoryFunction' must not be null");
 		this.requestFactoryBuilder = requestFactoryFunction::apply;
 		return this;
 	}
@@ -111,7 +111,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactoryBuilder(
 			ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
-		Assert.notNull(requestFactoryBuilder, "ClientHttpRequestFactoryBuilder must not be null");
+		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
 		this.requestFactoryBuilder = requestFactoryBuilder;
 		return this;
 	}

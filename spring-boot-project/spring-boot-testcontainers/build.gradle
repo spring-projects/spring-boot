@@ -70,6 +70,7 @@ dependencies {
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:mssqlserver")

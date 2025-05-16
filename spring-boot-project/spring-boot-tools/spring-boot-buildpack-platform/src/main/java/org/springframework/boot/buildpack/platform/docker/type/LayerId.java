@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,9 +83,9 @@ public final class LayerId {
 	 * @return a new layer ID instance
 	 */
 	public static LayerId of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		int i = value.indexOf(':');
-		Assert.isTrue(i >= 0, () -> "Invalid layer ID '" + value + "'");
+		Assert.isTrue(i >= 0, () -> "'value' [%s] must contain a valid layer ID".formatted(value));
 		return new LayerId(value, value.substring(0, i), value.substring(i + 1));
 	}
 
@@ -95,8 +95,8 @@ public final class LayerId {
 	 * @return a new layer ID instance
 	 */
 	public static LayerId ofSha256Digest(byte[] digest) {
-		Assert.notNull(digest, "Digest must not be null");
-		Assert.isTrue(digest.length == 32, "Digest must be exactly 32 bytes");
+		Assert.notNull(digest, "'digest' must not be null");
+		Assert.isTrue(digest.length == 32, "'digest' must be exactly 32 bytes");
 		String algorithm = "sha256";
 		String hash = String.format("%064x", new BigInteger(1, digest));
 		return new LayerId(algorithm + ":" + hash, algorithm, hash);

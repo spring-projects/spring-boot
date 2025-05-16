@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.webservices")
+@ConfigurationProperties("spring.webservices")
 public class WebServicesProperties {
 
 	/**
@@ -44,9 +44,9 @@ public class WebServicesProperties {
 	}
 
 	public void setPath(String path) {
-		Assert.notNull(path, "Path must not be null");
-		Assert.isTrue(path.length() > 1, "Path must have length greater than 1");
-		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
+		Assert.notNull(path, "'path' must not be null");
+		Assert.isTrue(path.length() > 1, "'path' must have length greater than 1");
+		Assert.isTrue(path.startsWith("/"), "'path' must start with '/'");
 		this.path = path;
 	}
 

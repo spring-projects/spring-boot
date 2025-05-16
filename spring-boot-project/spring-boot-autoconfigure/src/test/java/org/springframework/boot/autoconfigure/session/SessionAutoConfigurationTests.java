@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,16 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieMaxAge", 10);
 				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Strict");
 				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("partitioned", true);
+			});
+	}
+
+	@Test
+	void sessionCookieSameSiteOmittedIsAppliedToAutoConfiguredCookieSerializer() {
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+			.withPropertyValues("server.servlet.session.cookie.sameSite=omitted")
+			.run((context) -> {
+				DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", null);
 			});
 	}
 

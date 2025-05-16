@@ -881,7 +881,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource
+	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().getCookie().setSameSite(sameSite);
@@ -896,7 +896,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource
+	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = "OMITTED")
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -946,6 +946,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
 		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
 				(header) -> assertThat(header).contains("SESSIONCOOKIE").contains("SameSite=Lax"),
+				(header) -> assertThat(header).contains("test=test").contains("SameSite=Strict"));
+	}
+
+	@Test
+	void cookieSameSiteSuppliersShouldNotAffectOmittedSameSite() throws IOException, URISyntaxException {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setSameSite(SameSite.OMITTED);
+		factory.getSession().getCookie().setName("SESSIONCOOKIE");
+		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofStrict());
+		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(false), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse clientResponse = getClientResponse(getLocalUrl("/"));
+		assertThat(clientResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
+		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
+				(header) -> assertThat(header).contains("SESSIONCOOKIE").doesNotContain("SameSite"),
 				(header) -> assertThat(header).contains("test=test").contains("SameSite=Strict"));
 	}
 

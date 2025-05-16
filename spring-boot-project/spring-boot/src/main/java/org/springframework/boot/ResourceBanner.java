@@ -58,8 +58,8 @@ public class ResourceBanner implements Banner {
 	private final Resource resource;
 
 	public ResourceBanner(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
-		Assert.isTrue(resource.exists(), "Resource must exist");
+		Assert.notNull(resource, "'resource' must not be null");
+		Assert.isTrue(resource.exists(), "'resource' must exist");
 		this.resource = resource;
 	}
 

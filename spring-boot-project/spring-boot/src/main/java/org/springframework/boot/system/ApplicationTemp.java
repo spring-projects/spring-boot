@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.util.HexFormat;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.springframework.core.NativeDetector;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -145,7 +146,9 @@ public class ApplicationTemp {
 			update(digest, home.getSource());
 			update(digest, home.getDir());
 			update(digest, System.getProperty("user.dir"));
-			update(digest, System.getProperty("java.home"));
+			if (!NativeDetector.inNativeImage()) {
+				update(digest, System.getProperty("java.home"));
+			}
 			update(digest, System.getProperty("java.class.path"));
 			update(digest, System.getProperty("sun.java.command"));
 			update(digest, System.getProperty("sun.boot.class.path"));

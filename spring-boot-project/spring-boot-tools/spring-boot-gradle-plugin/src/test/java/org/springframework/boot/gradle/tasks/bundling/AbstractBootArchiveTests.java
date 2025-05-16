@@ -627,14 +627,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenArchiveIsLayeredAndIncludeLayerToolsIsFalseThenLayerToolsAreNotAddedToTheJar() throws IOException {
-		List<String> entryNames = getEntryNames(
-				createLayeredJar((configuration) -> configuration.getIncludeLayerTools().set(false)));
-		assertThat(entryNames).isNotEmpty().doesNotContain(this.libPath + JarModeLibrary.TOOLS.getName());
-	}
-
-	@Test
 	void whenIncludeToolsIsFalseThenToolsAreNotAddedToTheJar() throws IOException {
 		this.task.getIncludeTools().set(false);
 		this.task.getMainClass().set("com.example.Main");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class ReactiveHealthContributorTests {
 	@Test
 	void adaptWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ReactiveHealthContributor.adapt(null))
-			.withMessage("HealthContributor must not be null");
+			.withMessage("'healthContributor' must not be null");
 	}
 
 	@Test

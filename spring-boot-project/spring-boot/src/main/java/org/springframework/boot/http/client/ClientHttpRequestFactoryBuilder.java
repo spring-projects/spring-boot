@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,16 +196,34 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @return the most suitable {@link ClientHttpRequestFactoryBuilder} for the classpath
 	 */
 	static ClientHttpRequestFactoryBuilder<? extends ClientHttpRequestFactory> detect() {
-		if (HttpComponentsClientHttpRequestFactoryBuilder.Classes.PRESENT) {
+		return detect(null);
+	}
+
+	/**
+	 * Detect the most suitable {@link ClientHttpRequestFactoryBuilder} based on the
+	 * classpath. The methods favors builders in the following order:
+	 * <ol>
+	 * <li>{@link #httpComponents()}</li>
+	 * <li>{@link #jetty()}</li>
+	 * <li>{@link #reactor()}</li>
+	 * <li>{@link #jdk()}</li>
+	 * <li>{@link #simple()}</li>
+	 * </ol>
+	 * @param classLoader the class loader to use for detection
+	 * @return the most suitable {@link ClientHttpRequestFactoryBuilder} for the classpath
+	 * @since 3.5.0
+	 */
+	static ClientHttpRequestFactoryBuilder<? extends ClientHttpRequestFactory> detect(ClassLoader classLoader) {
+		if (HttpComponentsClientHttpRequestFactoryBuilder.Classes.present(classLoader)) {
 			return httpComponents();
 		}
-		if (JettyClientHttpRequestFactoryBuilder.Classes.PRESENT) {
+		if (JettyClientHttpRequestFactoryBuilder.Classes.present(classLoader)) {
 			return jetty();
 		}
-		if (ReactorClientHttpRequestFactoryBuilder.Classes.PRESENT) {
+		if (ReactorClientHttpRequestFactoryBuilder.Classes.present(classLoader)) {
 			return reactor();
 		}
-		if (JdkClientHttpRequestFactoryBuilder.Classes.PRESENT) {
+		if (JdkClientHttpRequestFactoryBuilder.Classes.present(classLoader)) {
 			return jdk();
 		}
 		return simple();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ class FilteredConfigurationPropertiesSourceTests {
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
-			.withMessageContaining("Source must not be null");
+			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
 	void createWhenFilterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
-			.withMessageContaining("Filter must not be null");
+			.withMessageContaining("'filter' must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class PropertySourceOrigin implements Origin, OriginProvider {
 	 * @since 3.2.8
 	 */
 	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName, Origin origin) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
-		Assert.hasLength(propertyName, "PropertyName must not be empty");
+		Assert.notNull(propertySource, "'propertySource' must not be null");
+		Assert.hasLength(propertyName, "'propertyName' must not be empty");
 		this.propertySource = propertySource;
 		this.propertyName = propertyName;
 		this.origin = origin;

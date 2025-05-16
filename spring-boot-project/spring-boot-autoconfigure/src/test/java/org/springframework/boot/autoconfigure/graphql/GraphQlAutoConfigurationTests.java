@@ -137,10 +137,33 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffWithCustomGraphQlSource() {
+	@WithResource(name = "graphql/types/person.custom", content = """
+			type Person {
+			    id: ID
+			    name: String
+			}
+			""")
+	void shouldConfigureAdditionalSchemaFiles() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.schema.additional-files=classpath:graphql/types/person.custom")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlSource.class);
+				GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+				GraphQLSchema schema = graphQlSource.schema();
+				assertThat(schema.getObjectType("Book")).isNotNull();
+				assertThat(schema.getObjectType("Person")).isNotNull();
+			});
+	}
+
+	@Test
+	void shouldUseCustomGraphQlSource() {
 		this.contextRunner.withUserConfiguration(CustomGraphQlSourceConfiguration.class).run((context) -> {
 			assertThat(context).getBeanNames(GraphQlSource.class).containsOnly("customGraphQlSource");
-			assertThat(context).hasSingleBean(GraphQlProperties.class);
+			assertThat(context).hasSingleBean(GraphQlProperties.class)
+				.hasSingleBean(BatchLoaderRegistry.class)
+				.hasSingleBean(ExecutionGraphQlService.class)
+				.hasSingleBean(AnnotatedControllerConfigurer.class)
+				.hasSingleBean(EncodingCursorStrategy.class);
 		});
 	}
 

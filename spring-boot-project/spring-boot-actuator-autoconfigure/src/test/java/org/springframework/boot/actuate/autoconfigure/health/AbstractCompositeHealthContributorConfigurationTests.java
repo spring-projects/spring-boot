@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.lettuce.core.dynamic.support.ResolvableType;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.NamedContributor;
@@ -28,6 +27,7 @@ import org.springframework.boot.actuate.health.NamedContributors;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +54,7 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 	void createContributorWhenBeansIsEmptyThrowsException() {
 		Map<String, TestBean> beans = Collections.emptyMap();
 		assertThatIllegalArgumentException().isThrownBy(() -> newComposite().createContributor(beans))
-			.withMessage("Beans must not be empty");
+			.withMessage("'beans' must not be empty");
 	}
 
 	@Test

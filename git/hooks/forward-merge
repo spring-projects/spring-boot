@@ -18,7 +18,14 @@ class ForwardMerge
 end
 
 def find_forward_merges(message_file)
+
   $log.debug "Searching for forward merge"
+  branch=`git rev-parse -q --abbrev-ref HEAD`.strip
+  $log.debug "Found #{branch} from git rev-parse --abbrev-ref"
+  if( branch == "docs-build") then
+    $log.debug "Skipping docs build"
+    return nil
+  end
   rev=`git rev-parse -q --verify MERGE_HEAD`.strip
   $log.debug "Found #{rev} from git rev-parse"
   return nil unless rev

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ public class InvocationContext {
 	 */
 	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments,
 			OperationArgumentResolver... argumentResolvers) {
-		Assert.notNull(securityContext, "SecurityContext must not be null");
-		Assert.notNull(arguments, "Arguments must not be null");
+		Assert.notNull(securityContext, "'securityContext' must not be null");
+		Assert.notNull(arguments, "'arguments' must not be null");
 		this.arguments = arguments;
 		this.argumentResolvers = new ArrayList<>();
 		if (argumentResolvers != null) {

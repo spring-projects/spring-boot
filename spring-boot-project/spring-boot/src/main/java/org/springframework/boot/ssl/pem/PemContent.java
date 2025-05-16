@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * PEM encoded content that can provide {@link X509Certificate certificates} and
@@ -109,11 +110,11 @@ public final class PemContent {
 	 * reference to the resource to load).
 	 * @param content the content to load
 	 * @param resourceLoader the resource loader used to load content
-	 * @return a new {@link PemContent} instance
+	 * @return a new {@link PemContent} instance or {@code null}
 	 * @throws IOException on IO error
 	 */
 	static PemContent load(String content, ResourceLoader resourceLoader) throws IOException {
-		if (content == null) {
+		if (!StringUtils.hasLength(content)) {
 			return null;
 		}
 		if (isPresentInText(content)) {
@@ -134,7 +135,7 @@ public final class PemContent {
 	 * @throws IOException on IO error
 	 */
 	public static PemContent load(Path path) throws IOException {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
 			return load(in);
 		}

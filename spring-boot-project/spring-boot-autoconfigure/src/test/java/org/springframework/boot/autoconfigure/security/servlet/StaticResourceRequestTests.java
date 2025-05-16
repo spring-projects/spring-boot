@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,13 +88,13 @@ class StaticResourceRequestTests {
 	@Test
 	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
-			.withMessageContaining("Locations must not be null");
+			.withMessageContaining("'locations' must not be null");
 	}
 
 	@Test
 	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
-			.withMessageContaining("Locations must not be null");
+			.withMessageContaining("'locations' must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
@@ -156,15 +157,18 @@ class StaticResourceRequestTests {
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);
 			if (servletPath != null) {
 				request.setServletPath(servletPath);
+				request.setRequestURI(servletPath + path);
 			}
-			request.setPathInfo(path);
+			else {
+				request.setRequestURI(path);
+			}
 			return request;
 		}
 
 		private String getRequestPath(HttpServletRequest request) {
 			String url = request.getServletPath();
-			if (request.getPathInfo() != null) {
-				url += request.getPathInfo();
+			if (StringUtils.hasText(request.getRequestURI())) {
+				url += request.getRequestURI();
 			}
 			return url;
 		}

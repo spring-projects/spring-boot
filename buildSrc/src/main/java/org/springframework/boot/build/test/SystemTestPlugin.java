@@ -64,6 +64,8 @@ public class SystemTestPlugin implements Plugin<Project> {
 				.add(project.getConfigurations()
 					.getByName(systemTestSourceSet.getRuntimeClasspathConfigurationName())));
 		});
+		project.getDependencies()
+			.add(systemTestSourceSet.getRuntimeOnlyConfigurationName(), "org.junit.platform:junit-platform-launcher");
 	}
 
 	private SourceSet createSourceSet(Project project) {

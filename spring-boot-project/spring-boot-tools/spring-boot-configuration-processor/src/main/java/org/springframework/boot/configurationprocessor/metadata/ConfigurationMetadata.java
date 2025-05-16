@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
@@ -29,6 +30,7 @@ import org.springframework.boot.configurationprocessor.support.ConventionUtils;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 1.2.0
  * @see ItemMetadata
  */
@@ -38,14 +40,18 @@ public class ConfigurationMetadata {
 
 	private final Map<String, List<ItemHint>> hints;
 
+	private final Map<String, List<ItemIgnore>> ignored;
+
 	public ConfigurationMetadata() {
 		this.items = new LinkedHashMap<>();
 		this.hints = new LinkedHashMap<>();
+		this.ignored = new LinkedHashMap<>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
 		this.items = new LinkedHashMap<>(metadata.items);
 		this.hints = new LinkedHashMap<>(metadata.hints);
+		this.ignored = new LinkedHashMap<>(metadata.ignored);
 	}
 
 	/**
@@ -74,6 +80,32 @@ public class ConfigurationMetadata {
 	}
 
 	/**
+	 * Add item ignore.
+	 * @param itemIgnore the item ignore to add
+	 * @since 3.5.0
+	 */
+	public void add(ItemIgnore itemIgnore) {
+		add(this.ignored, itemIgnore.getName(), itemIgnore, false);
+	}
+
+	/**
+	 * Remove item meta-data for the given item type and name.
+	 * @param itemType the item type
+	 * @param name the name
+	 * @since 3.5.0
+	 */
+	public void removeMetadata(ItemType itemType, String name) {
+		List<ItemMetadata> metadata = this.items.get(name);
+		if (metadata == null) {
+			return;
+		}
+		metadata.removeIf((item) -> item.isOfItemType(itemType));
+		if (metadata.isEmpty()) {
+			this.items.remove(name);
+		}
+	}
+
+	/**
 	 * Merge the content from another {@link ConfigurationMetadata}.
 	 * @param metadata the {@link ConfigurationMetadata} instance to merge
 	 */
@@ -83,6 +115,9 @@ public class ConfigurationMetadata {
 		}
 		for (ItemHint itemHint : metadata.getHints()) {
 			add(itemHint);
+		}
+		for (ItemIgnore itemIgnore : metadata.getIgnored()) {
+			add(itemIgnore);
 		}
 	}
 
@@ -100,6 +135,14 @@ public class ConfigurationMetadata {
 	 */
 	public List<ItemHint> getHints() {
 		return flattenValues(this.hints);
+	}
+
+	/**
+	 * Return ignore meta-data.
+	 * @return the ignores
+	 */
+	public List<ItemIgnore> getIgnored() {
+		return flattenValues(this.ignored);
 	}
 
 	protected void mergeItemMetadata(ItemMetadata metadata) {

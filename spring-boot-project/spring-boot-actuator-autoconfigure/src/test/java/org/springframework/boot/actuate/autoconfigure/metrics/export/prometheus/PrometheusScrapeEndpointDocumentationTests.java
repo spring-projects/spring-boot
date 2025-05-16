@@ -21,7 +21,7 @@ import java.util.Properties;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
+import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +50,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 
 	@Test
 	void prometheusOpenmetrics() {
-		assertThat(this.mvc.get().uri("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
+		assertThat(this.mvc.get().uri("/actuator/prometheus").accept(OpenMetricsTextFormatWriter.CONTENT_TYPE))
 			.satisfies((result) -> {
 				assertThat(result).hasStatusOk()
 					.headers()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnIssuerLocationJwtDecoder;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -130,7 +130,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		@Bean
-		@Conditional(KeyValueCondition.class)
+		@ConditionalOnPublicKeyJwtDecoder
 		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
@@ -158,7 +158,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		@Bean
-		@Conditional(IssuerUriCondition.class)
+		@ConditionalOnIssuerLocationJwtDecoder
 		SupplierReactiveJwtDecoder jwtDecoderByIssuerUri(
 				ObjectProvider<JwkSetUriReactiveJwtDecoderBuilderCustomizer> customizers) {
 			return new SupplierReactiveJwtDecoder(() -> {
@@ -227,17 +227,17 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authority-prefix")
 		static class OnAuthorityPrefix {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.principal-claim-name")
 		static class OnPrincipalClaimName {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authorities-claim-name")
 		static class OnAuthoritiesClaimName {
 
 		}

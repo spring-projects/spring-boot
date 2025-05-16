@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ public class ApplicationAvailabilityBean
 
 	@Override
 	public <S extends AvailabilityState> S getState(Class<S> stateType, S defaultState) {
-		Assert.notNull(stateType, "StateType must not be null");
-		Assert.notNull(defaultState, "DefaultState must not be null");
+		Assert.notNull(stateType, "'stateType' must not be null");
+		Assert.notNull(defaultState, "'defaultState' must not be null");
 		S state = getState(stateType);
 		return (state != null) ? state : defaultState;
 	}

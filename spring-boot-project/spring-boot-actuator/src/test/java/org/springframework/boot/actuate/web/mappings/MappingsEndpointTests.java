@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.function.RequestPredicates;
+import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +73,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Xiong Tang
  */
 class MappingsEndpointTests {
 
@@ -88,7 +91,7 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
 				List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets.get("dispatcherServlet");
-				assertThat(handlerMappings).hasSize(1);
+				assertThat(handlerMappings).hasSize(4);
 				List<ServletRegistrationMappingDescription> servlets = mappings(contextMappings, "servlets");
 				assertThat(servlets).hasSize(1);
 				List<FilterRegistrationMappingDescription> filters = mappings(contextMappings, "servletFilters");
@@ -111,7 +114,7 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
 				List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets.get("dispatcherServlet");
-				assertThat(handlerMappings).hasSize(1);
+				assertThat(handlerMappings).hasSize(4);
 				List<ServletRegistrationMappingDescription> servlets = mappings(contextMappings, "servlets");
 				assertThat(servlets).hasSize(1);
 				List<FilterRegistrationMappingDescription> filters = mappings(contextMappings, "servletFilters");
@@ -131,9 +134,9 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet",
 						"customDispatcherServletRegistration", "anotherDispatcherServletRegistration");
-				assertThat(dispatcherServlets.get("dispatcherServlet")).hasSize(1);
-				assertThat(dispatcherServlets.get("customDispatcherServletRegistration")).hasSize(1);
-				assertThat(dispatcherServlets.get("anotherDispatcherServletRegistration")).hasSize(1);
+				assertThat(dispatcherServlets.get("dispatcherServlet")).hasSize(4);
+				assertThat(dispatcherServlets.get("customDispatcherServletRegistration")).hasSize(4);
+				assertThat(dispatcherServlets.get("anotherDispatcherServletRegistration")).hasSize(4);
 			});
 	}
 
@@ -248,9 +251,26 @@ class MappingsEndpointTests {
 			return dispatcherServlet;
 		}
 
+		@Bean
+		org.springframework.web.servlet.function.RouterFunction<org.springframework.web.servlet.function.ServerResponse> routerFunction() {
+			return RouterFunctions
+				.route(RequestPredicates.GET("/one"),
+						(request) -> org.springframework.web.servlet.function.ServerResponse.ok().build())
+				.andRoute(RequestPredicates.POST("/two"),
+						(request) -> org.springframework.web.servlet.function.ServerResponse.ok().build());
+		}
+
 		@RequestMapping("/three")
 		void three() {
 
+		}
+
+		@Bean
+		org.springframework.web.servlet.function.RouterFunction<org.springframework.web.servlet.function.ServerResponse> routerFunctionWithAttributes() {
+			return RouterFunctions
+				.route(RequestPredicates.GET("/four"),
+						(request) -> org.springframework.web.servlet.function.ServerResponse.ok().build())
+				.withAttribute("test", "test");
 		}
 
 	}

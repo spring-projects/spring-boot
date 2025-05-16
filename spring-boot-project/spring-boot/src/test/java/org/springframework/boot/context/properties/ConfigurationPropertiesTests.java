@@ -1439,7 +1439,7 @@ class ConfigurationPropertiesTests {
 	static class PrefixedPropertiesReplacedOnBeanMethodConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spam")
+		@ConfigurationProperties("spam")
 		PrefixProperties prefixProperties() {
 			return new PrefixProperties();
 		}
@@ -1558,7 +1558,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PropertiesWithResource {
 
 		private Resource resource;
@@ -1847,12 +1847,12 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "spring.foo")
+	@ConfigurationProperties("spring.foo")
 	static class PrefixProperties extends BasicProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "spring.bar")
+	@ConfigurationProperties("spring.bar")
 	static class AnotherPrefixProperties extends BasicProperties {
 
 	}
@@ -1984,7 +1984,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class WithPropertyPlaceholderValueProperties {
 
@@ -2002,7 +2002,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithEnumProperties {
 
 		private FooEnum theValue;
@@ -2050,7 +2050,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithRelaxedNamesProperties {
 
 		private String fooBar;
@@ -2077,7 +2077,7 @@ class ConfigurationPropertiesTests {
 
 	@Validated
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithMapProperties {
 
 		private Map<String, String> map;
@@ -2093,7 +2093,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithComplexMapProperties {
 
 		private Map<String, Map<String, String>> map;
@@ -2109,7 +2109,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithIntegerMapProperties {
 
 		private Map<String, Map<Integer, Foo>> map;
@@ -2151,7 +2151,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonProperties {
 
 		private Person person;
@@ -2167,7 +2167,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonAndAlienProperties {
 
 		private Person person;
@@ -2193,7 +2193,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonAndAliensProperties {
 
 		private Person person;
@@ -2219,7 +2219,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "sample")
+	@ConfigurationProperties("sample")
 	static class MapWithNumericKeyProperties {
 
 		private final Map<String, BasicProperties> properties = new LinkedHashMap<>();
@@ -2287,7 +2287,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithSetterThatThrowsValidationExceptionProperties {
 
 		private String foo;
@@ -2305,7 +2305,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "custom")
+	@ConfigurationProperties("custom")
 	static class WithCustomValidatorProperties {
 
 		private String foo;
@@ -2321,7 +2321,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ListOfGenericClassProperties {
 
 		private List<Class<? extends Throwable>> list;
@@ -2337,7 +2337,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class FileProperties {
 
 		private File file;
@@ -2353,7 +2353,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class DataSizeProperties {
 
 		private DataSize size;
@@ -2379,7 +2379,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class OtherInjectedProperties {
 
 		final DataSizeProperties dataSizeProperties;
@@ -2396,7 +2396,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class ConstructorParameterProperties {
 
@@ -2420,7 +2420,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterEmptyDefaultValueProperties {
 
 		private final Set<String> set;
@@ -2458,7 +2458,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterWithUnitProperties {
 
 		private final Duration duration;
@@ -2490,7 +2490,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterWithFormatProperties {
 
 		private final Duration duration;
@@ -2514,7 +2514,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 

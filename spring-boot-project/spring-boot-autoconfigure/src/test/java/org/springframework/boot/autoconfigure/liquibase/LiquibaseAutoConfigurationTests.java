@@ -650,6 +650,26 @@ class LiquibaseAutoConfigurationTests {
 			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getCustomizer()).isNotNull()));
 	}
 
+	@Test
+	@WithDbChangelogMasterYamlResource
+	void whenAnalyticsEnabledIsFalseThenSpringLiquibaseHasAnalyticsDisabled() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.analytics-enabled=false")
+			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
+				.extracting(SpringLiquibase::getAnalyticsEnabled)
+				.isEqualTo(Boolean.FALSE));
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
+	void whenLicenseKeyIsSetThenSpringLiquibaseHasLicenseKey() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.license-key=a1b2c3d4")
+			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
+				.extracting(SpringLiquibase::getLicenseKey)
+				.isEqualTo("a1b2c3d4"));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(SpringLiquibase.class);

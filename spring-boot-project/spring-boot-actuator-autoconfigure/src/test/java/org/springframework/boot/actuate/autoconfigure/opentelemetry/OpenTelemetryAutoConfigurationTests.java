@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,23 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldApplyServiceNamespaceIfApplicationGroupIsSet() {
+		this.runner.withPropertyValues("spring.application.group=my-group").run((context) -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap()).containsEntry(AttributeKey.stringKey("service.namespace"),
+					"my-group");
+		});
+	}
+
+	@Test
+	void shouldNotApplyServiceNamespaceIfApplicationGroupIsNotSet() {
+		this.runner.run(((context) -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap()).doesNotContainKey(AttributeKey.stringKey("service.namespace"));
+		}));
+	}
+
+	@Test
 	void shouldFallbackToDefaultApplicationNameIfSpringApplicationNameIsNotSet() {
 		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);
@@ -156,7 +173,7 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class UserConfiguration {
+	static class UserConfiguration {
 
 		@Bean
 		OpenTelemetry customOpenTelemetry() {

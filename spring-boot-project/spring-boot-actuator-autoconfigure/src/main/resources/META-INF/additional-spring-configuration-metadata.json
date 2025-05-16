@@ -64,7 +64,7 @@
     },
     {
       "name": "management.endpoints.access.max-permitted",
-      "description": "The maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
+      "description": "Maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
       "defaultValue": "unrestricted"
     },
     {
@@ -1926,7 +1926,7 @@
     },
     {
       "name": "management.metrics.graphql.autotime.enabled",
-      "description": "Whether to automatically time GraphQL requests.",
+      "description": "Whether to automatically time web client requests.",
       "defaultValue": true,
       "deprecation": {
         "level": "error",
@@ -2084,6 +2084,14 @@
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
     },
     {
+      "name": "management.promethus.metrics.export.pushgateway.base-url",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.prometheus.metrics.export.pushgateway.address"
+      }
+    },
+    {
       "name": "management.server.add-application-context-header",
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",
@@ -2099,7 +2107,7 @@
     },
     {
       "name": "management.server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "management.server.ssl.certificate",
@@ -2239,14 +2247,6 @@
       "name": "management.zipkin.tracing.export.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export Zipkin traces."
-    },
-    {
-      "name": "micrometer.observations.annotations.enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.observations.annotations.enabled"
-      }
     }
   ],
   "hints": [

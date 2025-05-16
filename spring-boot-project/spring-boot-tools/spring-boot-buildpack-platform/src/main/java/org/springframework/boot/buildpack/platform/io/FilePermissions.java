@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public final class FilePermissions {
 	 * @throws IOException if path permissions cannot be read
 	 */
 	public static int umaskForPath(Path path) throws IOException {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		PosixFileAttributeView attributeView = Files.getFileAttributeView(path, PosixFileAttributeView.class);
 		Assert.state(attributeView != null, "Unsupported file type for retrieving Posix attributes");
 		return posixPermissionsToUmask(attributeView.readAttributes().permissions());
@@ -59,7 +59,7 @@ public final class FilePermissions {
 	 * @return the integer representation
 	 */
 	public static int posixPermissionsToUmask(Collection<PosixFilePermission> permissions) {
-		Assert.notNull(permissions, "Permissions must not be null");
+		Assert.notNull(permissions, "'permissions' must not be null");
 		int owner = permissionToUmask(permissions, PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.OWNER_WRITE,
 				PosixFilePermission.OWNER_READ);
 		int group = permissionToUmask(permissions, PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.GROUP_WRITE,

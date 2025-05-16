@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,11 @@
 package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
-import java.net.http.HttpClient.Redirect;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.net.ssl.SSLParameters;
-
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -40,30 +34,30 @@ import org.springframework.util.ClassUtils;
  * @author Scott Frederick
  * @since 3.4.0
  */
-public class JdkClientHttpRequestFactoryBuilder
+public final class JdkClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<JdkClientHttpRequestFactory> {
 
-	private final Consumer<HttpClient.Builder> httpClientCustomizer;
+	private final JdkHttpClientBuilder httpClientBuilder;
 
 	JdkClientHttpRequestFactoryBuilder() {
-		this(null, emptyCustomizer());
+		this(null, new JdkHttpClientBuilder());
 	}
 
 	private JdkClientHttpRequestFactoryBuilder(List<Consumer<JdkClientHttpRequestFactory>> customizers,
-			Consumer<HttpClient.Builder> httpClientCustomizer) {
+			JdkHttpClientBuilder httpClientBuilder) {
 		super(customizers);
-		this.httpClientCustomizer = httpClientCustomizer;
+		this.httpClientBuilder = httpClientBuilder;
 	}
 
 	@Override
 	public JdkClientHttpRequestFactoryBuilder withCustomizer(Consumer<JdkClientHttpRequestFactory> customizer) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer);
+		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
 	}
 
 	@Override
 	public JdkClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<JdkClientHttpRequestFactory>> customizers) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer);
+		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
 	}
 
 	/**
@@ -76,49 +70,25 @@ public class JdkClientHttpRequestFactoryBuilder
 			Consumer<HttpClient.Builder> httpClientCustomizer) {
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
-				this.httpClientCustomizer.andThen(httpClientCustomizer));
+				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
 	}
 
 	@Override
 	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = createHttpClient(settings);
+		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withReadTimeout(null)));
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
 		return requestFactory;
 	}
 
-	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
-		HttpClient.Builder builder = HttpClient.newBuilder();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::connectTimeout).to(builder::connectTimeout);
-		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
-		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
-		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
-		this.httpClientCustomizer.accept(builder);
-		return builder.build();
-	}
-
-	private SSLParameters asSslParameters(SslBundle sslBundle) {
-		SslOptions options = sslBundle.getOptions();
-		SSLParameters parameters = new SSLParameters();
-		parameters.setCipherSuites(options.getCiphers());
-		parameters.setProtocols(options.getEnabledProtocols());
-		return parameters;
-	}
-
-	private Redirect asHttpClientRedirect(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
-			case DONT_FOLLOW -> Redirect.NEVER;
-		};
-	}
-
 	static class Classes {
 
 		static final String HTTP_CLIENT = "java.net.http.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static boolean present(ClassLoader classLoader) {
+			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
+		}
 
 	}
 

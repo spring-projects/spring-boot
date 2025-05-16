@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration
 class ThirdPartyConfiguration {
 
 	@Bean
-	@ConfigurationProperties(prefix = "another")
+	@ConfigurationProperties("another")
 	fun anotherComponent(): AnotherComponent = AnotherComponent()
 
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 bootBuildImage {
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
 	pullPolicy = "IF_NOT_PRESENT"
 	createdDate = "invalid date"
 }

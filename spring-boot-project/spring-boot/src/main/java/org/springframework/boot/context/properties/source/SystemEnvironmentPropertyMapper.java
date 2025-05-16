@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiPredicate;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.ToStringFormat;
 
 /**
  * {@link PropertyMapper} for system environment variables. Names are mapped by removing
@@ -42,42 +42,12 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	@Override
 	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
-		String name = convertName(configurationPropertyName);
-		String legacyName = convertLegacyName(configurationPropertyName);
+		String name = configurationPropertyName.toString(ToStringFormat.SYSTEM_ENVIRONMENT);
+		String legacyName = configurationPropertyName.toString(ToStringFormat.LEGACY_SYSTEM_ENVIRONMENT);
 		if (name.equals(legacyName)) {
 			return Collections.singletonList(name);
 		}
 		return Arrays.asList(name, legacyName);
-	}
-
-	private String convertName(ConfigurationPropertyName name) {
-		return convertName(name, name.getNumberOfElements());
-	}
-
-	private String convertName(ConfigurationPropertyName name, int numberOfElements) {
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < numberOfElements; i++) {
-			if (!result.isEmpty()) {
-				result.append('_');
-			}
-			result.append(name.getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
-		}
-		return result.toString();
-	}
-
-	private String convertLegacyName(ConfigurationPropertyName name) {
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			if (!result.isEmpty()) {
-				result.append('_');
-			}
-			result.append(convertLegacyNameElement(name.getElement(i, Form.ORIGINAL)));
-		}
-		return result.toString();
-	}
-
-	private Object convertLegacyNameElement(String element) {
-		return element.replace('-', '_').toUpperCase(Locale.ENGLISH);
 	}
 
 	@Override
@@ -113,31 +83,11 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private boolean isLegacyAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
-		if (!hasDashedEntries(name)) {
+		if (!name.hasDashedElement()) {
 			return false;
 		}
-		ConfigurationPropertyName legacyCompatibleName = buildLegacyCompatibleName(name);
+		ConfigurationPropertyName legacyCompatibleName = name.asSystemEnvironmentLegacyName();
 		return legacyCompatibleName != null && legacyCompatibleName.isAncestorOf(candidate);
-	}
-
-	private ConfigurationPropertyName buildLegacyCompatibleName(ConfigurationPropertyName name) {
-		StringBuilder legacyCompatibleName = new StringBuilder();
-		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			if (i != 0) {
-				legacyCompatibleName.append('.');
-			}
-			legacyCompatibleName.append(name.getElement(i, Form.DASHED).replace('-', '.'));
-		}
-		return ConfigurationPropertyName.ofIfValid(legacyCompatibleName);
-	}
-
-	boolean hasDashedEntries(ConfigurationPropertyName name) {
-		for (int i = 0; i < name.getNumberOfElements(); i++) {
-			if (name.getElement(i, Form.DASHED).indexOf('-') != -1) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 	private final MeterFilter mapFilter;
 
 	public PropertiesMeterFilter(MetricsProperties properties) {
-		Assert.notNull(properties, "Properties must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
 		this.properties = properties;
 		this.mapFilter = createMapFilter(properties.getTags());
 	}

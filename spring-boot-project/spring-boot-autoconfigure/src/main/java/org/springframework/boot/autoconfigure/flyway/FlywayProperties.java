@@ -40,7 +40,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Chris Bono
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.flyway")
+@ConfigurationProperties("spring.flyway")
 public class FlywayProperties {
 
 	/**
@@ -596,7 +596,7 @@ public class FlywayProperties {
 	}
 
 	@Deprecated(since = "3.4.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18")
+	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18 and removed in Flyway 11.0")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}

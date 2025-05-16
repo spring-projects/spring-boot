@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ final class DirectoryBuildpack implements Buildpack {
 
 	private BuildpackCoordinates findBuildpackCoordinates(Path path) {
 		Path buildpackToml = path.resolve("buildpack.toml");
-		Assert.isTrue(Files.exists(buildpackToml),
+		Assert.state(Files.exists(buildpackToml),
 				() -> "Buildpack descriptor 'buildpack.toml' is required in buildpack '" + path + "'");
 		try {
 			try (InputStream inputStream = Files.newInputStream(buildpackToml)) {

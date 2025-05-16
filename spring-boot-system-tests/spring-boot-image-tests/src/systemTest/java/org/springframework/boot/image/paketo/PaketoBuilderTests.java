@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -278,9 +278,9 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
-					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
+					.containsSubsequence("sh", "/layers/paketo-buildpacks_apache-tomcat/tomcat/bin/catalina.sh", "run");
 				metadata.processOfType("tomcat")
-					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
+					.containsSubsequence("sh", "/layers/paketo-buildpacks_apache-tomcat/tomcat/bin/catalina.sh", "run");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");

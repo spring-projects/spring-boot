@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,13 +67,13 @@ class RootUriRequestExpectationManagerTests {
 	@Test
 	void createWhenRootUriIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
-			.withMessageContaining("RootUri must not be null");
+			.withMessageContaining("'rootUri' must not be null");
 	}
 
 	@Test
 	void createWhenExpectationManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
-			.withMessageContaining("ExpectationManager must not be null");
+			.withMessageContaining("'expectationManager' must not be null");
 	}
 
 	@Test

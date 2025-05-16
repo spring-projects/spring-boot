@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 	}
 
 	private PropertySource<?> loadYaml(Resource path) {
-		Assert.isTrue(path.exists(), () -> "Resource " + path + " does not exist");
+		Assert.isTrue(path.exists(), () -> "'path' [%s] must exist".formatted(path));
 		try {
 			return this.loader.load("custom-resource", path).get(0);
 		}

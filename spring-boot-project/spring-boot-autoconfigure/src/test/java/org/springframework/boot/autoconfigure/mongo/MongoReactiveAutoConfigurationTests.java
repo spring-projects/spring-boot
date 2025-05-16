@@ -89,7 +89,7 @@ class MongoReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.ssl.enabled=true").run((context) -> {
 			SslSettings sslSettings = getSettings(context).getSslSettings();
 			assertThat(sslSettings.isEnabled()).isTrue();
-			assertThat(sslSettings.getContext()).isNull();
+			assertThat(sslSettings.getContext()).isNotNull();
 		});
 	}
 

@@ -85,7 +85,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
+		@ConfigurationProperties("spring.datasource.tomcat")
 		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties,
 				JdbcConnectionDetails connectionDetails) {
 			Class<? extends DataSource> dataSourceType = org.apache.tomcat.jdbc.pool.DataSource.class;
@@ -120,7 +120,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.hikari")
+		@ConfigurationProperties("spring.datasource.hikari")
 		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails,
 				Environment environment) {
 			String dataSourceClassName = environment.getProperty("spring.datasource.hikari.data-source-class-name");
@@ -151,7 +151,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
+		@ConfigurationProperties("spring.datasource.dbcp2")
 		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties,
 				JdbcConnectionDetails connectionDetails) {
 			Class<? extends DataSource> dataSourceType = org.apache.commons.dbcp2.BasicDataSource.class;
@@ -177,7 +177,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.oracleucp")
+		@ConfigurationProperties("spring.datasource.oracleucp")
 		PoolDataSourceImpl dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails)
 				throws SQLException {
 			PoolDataSourceImpl dataSource = createDataSource(connectionDetails, PoolDataSourceImpl.class,

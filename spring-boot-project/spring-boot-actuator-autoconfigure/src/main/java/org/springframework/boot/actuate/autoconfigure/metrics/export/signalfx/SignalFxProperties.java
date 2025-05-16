@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
@@ -29,8 +30,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
-@ConfigurationProperties(prefix = "management.signalfx.metrics.export")
+@ConfigurationProperties("management.signalfx.metrics.export")
+@Deprecated(since = "3.5.0", forRemoval = true)
 public class SignalFxProperties extends StepRegistryProperties {
 
 	/**
@@ -60,47 +63,115 @@ public class SignalFxProperties extends StepRegistryProperties {
 	private HistogramType publishedHistogramType = HistogramType.DEFAULT;
 
 	@Override
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public Duration getStep() {
 		return this.step;
 	}
 
 	@Override
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setStep(Duration step) {
 		this.step = step;
 	}
 
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public String getAccessToken() {
 		return this.accessToken;
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public String getUri() {
 		return this.uri;
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public String getSource() {
 		return this.source;
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setSource(String source) {
 		this.source = source;
 	}
 
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public HistogramType getPublishedHistogramType() {
 		return this.publishedHistogramType;
 	}
 
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public void setPublishedHistogramType(HistogramType publishedHistogramType) {
 		this.publishedHistogramType = publishedHistogramType;
 	}
 
+	@Override
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public boolean isEnabled() {
+		return super.isEnabled();
+	}
+
+	@Override
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+	}
+
+	@Override
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public Duration getConnectTimeout() {
+		return super.getConnectTimeout();
+	}
+
+	@Override
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public void setConnectTimeout(Duration connectTimeout) {
+		super.setConnectTimeout(connectTimeout);
+	}
+
+	@Override
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public Duration getReadTimeout() {
+		return super.getReadTimeout();
+	}
+
+	@Override
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public void setReadTimeout(Duration readTimeout) {
+		super.setReadTimeout(readTimeout);
+	}
+
+	@Override
+	@DeprecatedConfigurationProperty(since = "3.5.0", reason = "Deprecated in Micrometer 1.15.0")
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public Integer getBatchSize() {
+		return super.getBatchSize();
+	}
+
+	@Override
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	public void setBatchSize(Integer batchSize) {
+		super.setBatchSize(batchSize);
+	}
+
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public enum HistogramType {
 
 		/**

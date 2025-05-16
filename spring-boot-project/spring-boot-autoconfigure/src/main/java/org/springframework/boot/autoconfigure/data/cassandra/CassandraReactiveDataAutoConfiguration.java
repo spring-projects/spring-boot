@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.springframework.data.cassandra.ReactiveSessionFactory;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
+import org.springframework.data.cassandra.core.cql.ReactiveCqlOperations;
+import org.springframework.data.cassandra.core.cql.ReactiveCqlTemplate;
 import org.springframework.data.cassandra.core.cql.session.DefaultBridgedReactiveSession;
 import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessionFactory;
 
@@ -59,10 +61,16 @@ public class CassandraReactiveDataAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(ReactiveCqlOperations.class)
+	public ReactiveCqlTemplate reactiveCqlTemplate(ReactiveSessionFactory reactiveCassandraSessionFactory) {
+		return new ReactiveCqlTemplate(reactiveCassandraSessionFactory);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(ReactiveCassandraOperations.class)
-	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveSession reactiveCassandraSession,
+	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveCqlTemplate reactiveCqlTemplate,
 			CassandraConverter converter) {
-		return new ReactiveCassandraTemplate(reactiveCassandraSession, converter);
+		return new ReactiveCassandraTemplate(reactiveCqlTemplate, converter);
 	}
 
 }

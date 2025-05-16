@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import org.springframework.boot.actuate.endpoint.jmx.JmxOperationResponseMapper;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -63,7 +63,7 @@ import org.springframework.util.ObjectUtils;
  */
 @AutoConfiguration(after = { JmxAutoConfiguration.class, EndpointAutoConfiguration.class })
 @EnableConfigurationProperties({ JmxEndpointProperties.class, JmxProperties.class })
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
+@ConditionalOnBooleanProperty("spring.jmx.enabled")
 public class JmxEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;

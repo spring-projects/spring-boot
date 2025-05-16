@@ -24,6 +24,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.SslSettings;
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +82,7 @@ class MongoAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.ssl.enabled=true").run((context) -> {
 			SslSettings sslSettings = getSettings(context).getSslSettings();
 			assertThat(sslSettings.isEnabled()).isTrue();
-			assertThat(sslSettings.getContext()).isNull();
+			assertThat(sslSettings.getContext()).isNotNull();
 		});
 	}
 
@@ -98,6 +99,22 @@ class MongoAutoConfigurationTests {
 				assertThat(sslSettings.isEnabled()).isTrue();
 				assertThat(sslSettings.getContext()).isNotNull();
 			});
+	}
+
+	@Test
+	void configuresProtocol() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.protocol=mongodb+srv").run((context) -> {
+			MongoClientSettings settings = getSettings(context);
+			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.MULTIPLE);
+		});
+	}
+
+	@Test
+	void defaultProtocol() {
+		this.contextRunner.run((context) -> {
+			MongoClientSettings settings = getSettings(context);
+			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.SINGLE);
+		});
 	}
 
 	@Test

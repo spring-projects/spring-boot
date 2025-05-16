@@ -58,7 +58,7 @@ class ConditionEvaluationReportLoggerTests {
 	void supportsOnlyInfoAndDebugLogLevels() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
-			.withMessageContaining("LogLevel must be INFO or DEBUG");
+			.withMessageContaining("'logLevel' must be INFO or DEBUG");
 	}
 
 	@Test

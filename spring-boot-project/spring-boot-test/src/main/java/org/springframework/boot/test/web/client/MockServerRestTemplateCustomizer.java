@@ -82,7 +82,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 */
 	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		this(() -> BeanUtils.instantiateClass(expectationManager));
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+		Assert.notNull(expectationManager, "'expectationManager' must not be null");
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 * @since 3.0.0
 	 */
 	public MockServerRestTemplateCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
-		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
+		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
 		this.expectationManagerSupplier = expectationManagerSupplier;
 	}
 

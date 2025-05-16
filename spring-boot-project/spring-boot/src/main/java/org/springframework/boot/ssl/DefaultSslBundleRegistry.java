@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +46,8 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	private final Map<String, RegisteredSslBundle> registeredBundles = new ConcurrentHashMap<>();
 
+	private final List<BiConsumer<String, SslBundle>> registerHandlers = new CopyOnWriteArrayList<>();
+
 	public DefaultSslBundleRegistry() {
 	}
 
@@ -54,10 +57,11 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	@Override
 	public void registerBundle(String name, SslBundle bundle) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(bundle, "Bundle must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(bundle, "'bundle' must not be null");
 		RegisteredSslBundle previous = this.registeredBundles.putIfAbsent(name, new RegisteredSslBundle(name, bundle));
 		Assert.state(previous == null, () -> "Cannot replace existing SSL bundle '%s'".formatted(name));
+		this.registerHandlers.forEach((handler) -> handler.accept(name, bundle));
 	}
 
 	@Override
@@ -76,6 +80,11 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	@Override
+	public void addBundleRegisterHandler(BiConsumer<String, SslBundle> registerHandler) {
+		this.registerHandlers.add(registerHandler);
+	}
+
+	@Override
 	public List<String> getBundleNames() {
 		List<String> names = new ArrayList<>(this.registeredBundles.keySet());
 		Collections.sort(names);
@@ -83,7 +92,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		RegisteredSslBundle registered = this.registeredBundles.get(name);
 		if (registered == null) {
 			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
@@ -105,7 +114,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		}
 
 		void update(SslBundle updatedBundle) {
-			Assert.notNull(updatedBundle, "UpdatedBundle must not be null");
+			Assert.notNull(updatedBundle, "'updatedBundle' must not be null");
 			this.bundle = updatedBundle;
 			if (this.updateHandlers.isEmpty()) {
 				logger.warn(LogMessage.format(
@@ -120,7 +129,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		}
 
 		void addUpdateHandler(Consumer<SslBundle> updateHandler) {
-			Assert.notNull(updateHandler, "UpdateHandler must not be null");
+			Assert.notNull(updateHandler, "'updateHandler' must not be null");
 			this.updateHandlers.add(updateHandler);
 		}
 

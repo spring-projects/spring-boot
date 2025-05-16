@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public enum ConfigurationPropertyState {
 	 * {@link #ABSENT}.
 	 */
 	static <T> ConfigurationPropertyState search(Iterable<T> source, Predicate<T> predicate) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(predicate, "Predicate must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(predicate, "'predicate' must not be null");
 		for (T item : source) {
 			if (predicate.test(item)) {
 				return PRESENT;

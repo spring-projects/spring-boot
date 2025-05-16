@@ -115,7 +115,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
+	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "filter")
 	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new ServletContainer(this.config));
@@ -137,7 +137,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
 				new ServletContainer(this.config), applicationPath.getUrlMapping());
@@ -173,9 +173,12 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
-			// We need to switch *off* the Jersey WebApplicationInitializer because it
-			// will try and register a ContextLoaderListener which we don't need
-			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
+			if (ClassUtils.isPresent("org.glassfish.jersey.server.spring.SpringWebApplicationInitializer",
+					getClass().getClassLoader())) {
+				// We need to switch *off* the Jersey WebApplicationInitializer because it
+				// will try and register a ContextLoaderListener which we don't need
+				servletContext.setInitParameter("contextConfigLocation", "<NONE>");
+			}
 		}
 
 	}

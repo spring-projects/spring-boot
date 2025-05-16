@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties.Pool;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -108,6 +108,7 @@ abstract class ConnectionFactoryConfigurations {
 				map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
 				map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);
 				map.from(pool.getMaxAcquireTime()).to(builder::maxAcquireTime);
+				map.from(pool.getAcquireRetry()).to(builder::acquireRetry);
 				map.from(pool.getMaxCreateConnectionTime()).to(builder::maxCreateConnectionTime);
 				map.from(pool.getInitialSize()).to(builder::initialSize);
 				map.from(pool.getMaxSize()).to(builder::maxSize);
@@ -123,8 +124,7 @@ abstract class ConnectionFactoryConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.r2dbc.pool", value = "enabled", havingValue = "false",
-			matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.r2dbc.pool.enabled", havingValue = false, matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	static class GenericConfiguration {
 

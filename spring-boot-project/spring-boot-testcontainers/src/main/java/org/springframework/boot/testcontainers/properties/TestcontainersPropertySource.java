@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class TestcontainersPropertySource extends MapPropertySource {
 			DynamicPropertyRegistryInjection registryInjection) {
 		super(NAME, Collections.unmodifiableMap(valueSuppliers));
 		this.registry = (name, valueSupplier) -> {
-			Assert.hasText(name, "'name' must not be null or blank");
+			Assert.hasText(name, "'name' must not be empty");
 			DynamicPropertyRegistryInjectionException.throwIfNecessary(name, registryInjection);
 			Assert.notNull(valueSupplier, "'valueSupplier' must not be null");
 			valueSuppliers.put(name, valueSupplier);

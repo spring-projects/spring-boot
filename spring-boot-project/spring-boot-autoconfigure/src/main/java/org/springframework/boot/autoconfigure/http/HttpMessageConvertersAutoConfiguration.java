@@ -66,8 +66,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @ImportRuntimeHints(HttpMessageConvertersAutoConfigurationRuntimeHints.class)
 public class HttpMessageConvertersAutoConfiguration {
 
-	static final String PREFERRED_MAPPER_PROPERTY = "spring.mvc.converters.preferred-json-mapper";
-
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,28 +79,6 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 		}
 
 		/**
-		 * Return the current progress value.
-		 * @return the current progress
-		 * @deprecated since 3.3.7 for removal in 3.5.0 in favor of
-		 * {@link #asPercentage()}
-		 */
-		@Deprecated(since = "3.3.7", forRemoval = true)
-		public int getCurrent() {
-			return (int) Long.min(this.current, Integer.MAX_VALUE);
-		}
-
-		/**
-		 * Return the total progress possible value.
-		 * @return the total progress possible
-		 * @deprecated since 3.3.7 for removal in 3.5.0 in favor of
-		 * {@link #asPercentage()}
-		 */
-		@Deprecated(since = "3.3.7", forRemoval = true)
-		public int getTotal() {
-			return (int) Long.min(this.total, Integer.MAX_VALUE);
-		}
-
-		/**
 		 * Return the progress as a percentage.
 		 * @return the progress percentage
 		 * @since 3.3.7
@@ -110,14 +88,7 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 			return (percentage < 0) ? 0 : Math.min(percentage, 100);
 		}
 
-		/**
-		 * Return if the progress detail is considered empty.
-		 * @param progressDetail the progress detail to check
-		 * @return if the progress detail is empty
-		 * @deprecated since 3.3.7 for removal in 3.5.0
-		 */
-		@Deprecated(since = "3.3.7", forRemoval = true)
-		public static boolean isEmpty(ProgressDetail progressDetail) {
+		private static boolean isEmpty(ProgressDetail progressDetail) {
 			return progressDetail == null || progressDetail.current == null || progressDetail.total == null;
 		}
 

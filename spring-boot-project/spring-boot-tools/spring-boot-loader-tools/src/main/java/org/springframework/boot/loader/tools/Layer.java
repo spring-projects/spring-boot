@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class Layer {
 	 * @param name the name of the layer.
 	 */
 	public Layer(String name) {
-		Assert.hasText(name, "Name must not be empty");
+		Assert.hasText(name, "'name' must not be empty");
 		Assert.isTrue(PATTERN.matcher(name).matches(), () -> "Malformed layer name '" + name + "'");
 		Assert.isTrue(!name.equalsIgnoreCase("ext") && !name.toLowerCase(Locale.ROOT).startsWith("springboot"),
 				() -> "Layer name '" + name + "' is reserved");

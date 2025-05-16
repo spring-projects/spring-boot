@@ -30,7 +30,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SpringApplication} main method.
@@ -45,7 +45,7 @@ class SimpleMainTests {
 
 	@Test
 	void emptyApplicationContext() {
-		assertThatIllegalArgumentException().isThrownBy(() -> SpringApplication.main(getArgs()));
+		assertThatIllegalStateException().isThrownBy(() -> SpringApplication.main(getArgs()));
 	}
 
 	@Test

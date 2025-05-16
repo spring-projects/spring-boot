@@ -451,7 +451,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					"spring.cache.jcache.config=" + configLocation)
 			.run((context) -> assertThat(context).getFailure()
 				.isInstanceOf(BeanCreationException.class)
-				.hasMessageContaining("does not exist")
+				.hasMessageContaining("must exist")
 				.hasMessageContaining(configLocation));
 	}
 

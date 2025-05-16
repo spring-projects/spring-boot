@@ -22,8 +22,11 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import groovy.text.markup.BaseTemplate;
 import groovy.text.markup.MarkupTemplateEngine;
+import groovy.text.markup.TemplateConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -185,9 +188,71 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	void customConfiguration() {
 		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent()).isTrue();
+	}
+
+	@Test
+	void enableAutoEscape() {
+		registerAndRefreshContext("spring.groovy.template.auto-escape:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoEscape()).isTrue();
+	}
+
+	@Test
+	void enableAutoIndent() {
+		registerAndRefreshContext("spring.groovy.template.auto-indent:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent()).isTrue();
+	}
+
+	@Test
+	void customAutoIndentString() {
+		registerAndRefreshContext("spring.groovy.template.auto-indent-string:\\t");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getAutoIndentString()).isEqualTo("\\t");
+	}
+
+	@Test
+	void enableAutoNewLine() {
+		registerAndRefreshContext("spring.groovy.template.auto-new-line:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoNewLine()).isTrue();
+	}
+
+	@Test
+	void customBaseTemplateClass() {
+		registerAndRefreshContext("spring.groovy.template.base-template-class:" + CustomBaseTemplate.class.getName());
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getBaseTemplateClass())
+			.isEqualTo(CustomBaseTemplate.class);
+	}
+
+	@Test
+	void customDeclarationEncoding() {
+		registerAndRefreshContext("spring.groovy.template.declaration-encoding:UTF-8");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getDeclarationEncoding()).isEqualTo("UTF-8");
+	}
+
+	@Test
+	void enableExpandEmptyElements() {
+		registerAndRefreshContext("spring.groovy.template.expand-empty-elements:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isExpandEmptyElements()).isTrue();
+	}
+
+	@Test
+	void customLocale() {
+		registerAndRefreshContext("spring.groovy.template.locale:en_US");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getLocale()).isEqualTo(Locale.US);
+	}
+
+	@Test
+	void customNewLineString() {
+		registerAndRefreshContext("spring.groovy.template.new-line-string:\\r\\n");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getNewLineString()).isEqualTo("\\r\\n");
+	}
+
+	@Test
+	void enableUseDoubleQuotes() {
+		registerAndRefreshContext("spring.groovy.template.use-double-quotes:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isUseDoubleQuotes()).isTrue();
 	}
 
 	private void registerAndRefreshContext(String... env) {
@@ -210,6 +275,21 @@ class GroovyTemplateAutoConfigurationTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		view.render(null, request, response);
 		return response;
+	}
+
+	static class CustomBaseTemplate extends BaseTemplate {
+
+		@SuppressWarnings("rawtypes")
+		CustomBaseTemplate(MarkupTemplateEngine templateEngine, Map model, Map<String, String> modelTypes,
+				TemplateConfiguration configuration) {
+			super(templateEngine, model, modelTypes, configuration);
+		}
+
+		@Override
+		public Object run() {
+			return null;
+		}
+
 	}
 
 }

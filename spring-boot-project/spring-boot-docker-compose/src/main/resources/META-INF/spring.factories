@@ -14,6 +14,7 @@ org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouse
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.flyway.JdbcAdaptingFlywayConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.hazelcast.HazelcastDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.ldap.LLdapDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.ldap.OpenLdapDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.liquibase.JdbcAdaptingLiquibaseConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbJdbcDockerComposeConnectionDetailsFactory,\

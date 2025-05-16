@@ -101,7 +101,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	protected void loadConfiguration(String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+		Assert.notNull(location, "'location' must not be null");
 		try {
 			Resource resource = ApplicationResourceLoader.get().getResource(location);
 			String configuration = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));

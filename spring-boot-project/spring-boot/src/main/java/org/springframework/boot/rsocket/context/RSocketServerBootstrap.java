@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class RSocketServerBootstrap implements ApplicationEventPublisherAware, S
 	private ApplicationEventPublisher eventPublisher;
 
 	public RSocketServerBootstrap(RSocketServerFactory serverFactory, SocketAcceptor socketAcceptor) {
-		Assert.notNull(serverFactory, "ServerFactory must not be null");
+		Assert.notNull(serverFactory, "'serverFactory' must not be null");
 		this.server = serverFactory.create(socketAcceptor);
 	}
 

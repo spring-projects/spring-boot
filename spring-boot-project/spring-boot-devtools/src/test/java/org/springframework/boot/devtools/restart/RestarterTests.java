@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ class RestarterTests {
 	@Test
 	void addUrlsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addUrls(null))
-			.withMessageContaining("Urls must not be null");
+			.withMessageContaining("'urls' must not be null");
 	}
 
 	@Test
@@ -130,7 +130,7 @@ class RestarterTests {
 	@Test
 	void addClassLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
-			.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("'classLoaderFiles' must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -226,7 +226,7 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindProperties(map))
 				.havingRootCause()
-				.withMessageContaining("schemaType must not be null");
+				.withMessageContaining("'schemaType' must not be null");
 		}
 
 		@Test
@@ -236,7 +236,7 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "NONE");
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindProperties(map))
 				.havingRootCause()
-				.withMessageContaining("schemaType 'NONE' not supported");
+				.withMessageContaining("'schemaType' must not be NONE");
 		}
 
 		@Test
@@ -247,7 +247,7 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
 			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindProperties(map))
 				.havingRootCause()
-				.withMessageContaining("messageKeyType can only be set when schemaType is KEY_VALUE");
+				.withMessageContaining("'messageKeyType' can only be set when 'schemaType' is KEY_VALUE");
 		}
 
 		record TestMessage(String value) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import io.micrometer.registry.otlp.OtlpMetricsSender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.assertj.ScheduledExecutorServiceAssert;
 import org.springframework.context.annotation.Bean;
@@ -132,6 +134,27 @@ class OtlpMetricsExportAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void allowsCustomMetricsSenderToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
+			.run(this::assertHasCustomMetricsSender);
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void allowsCustomMetricsSenderToBeUsedWithVirtualThreads() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run(this::assertHasCustomMetricsSender);
+	}
+
+	private void assertHasCustomMetricsSender(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+		OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+		assertThat(registry).extracting("metricsSender")
+			.satisfies((sender) -> assertThat(sender).isSameAs(CustomMetricsSenderConfiguration.customMetricsSender));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
@@ -170,6 +193,19 @@ class OtlpMetricsExportAutoConfigurationTests {
 		@Bean
 		OtlpMetricsConnectionDetails otlpConnectionDetails() {
 			return () -> "http://localhost:12345/v1/metrics";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomMetricsSenderConfiguration {
+
+		static OtlpMetricsSender customMetricsSender = (request) -> {
+		};
+
+		@Bean
+		OtlpMetricsSender customMetricsSender() {
+			return customMetricsSender;
 		}
 
 	}

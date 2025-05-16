@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,6 +40,7 @@ import org.springframework.util.StreamUtils;
  * Base class for mapped JSON objects.
  *
  * @author Phillip Webb
+ * @author Dmytro Nosan
  * @since 2.3.0
  */
 public class MappedObject {
@@ -73,6 +76,23 @@ public class MappedObject {
 	 */
 	protected <T> T valueAt(String expression, Class<T> type) {
 		return valueAt(this, this.node, this.lookup, expression, type);
+	}
+
+	/**
+	 * Get a {@link Map} at the given JSON path expression with a value mapped from a
+	 * related {@link JsonNode}.
+	 * @param <V> the value type
+	 * @param expression the JSON path expression
+	 * @param valueMapper function to map the value from the {@link JsonNode}
+	 * @return the map
+	 * @since 3.5.0
+	 */
+	protected <V> Map<String, V> mapAt(String expression, Function<JsonNode, V> valueMapper) {
+		Map<String, V> map = new LinkedHashMap<>();
+		getNode().at(expression)
+			.properties()
+			.forEach((entry) -> map.put(entry.getKey(), valueMapper.apply(entry.getValue())));
+		return Collections.unmodifiableMap(map);
 	}
 
 	/**

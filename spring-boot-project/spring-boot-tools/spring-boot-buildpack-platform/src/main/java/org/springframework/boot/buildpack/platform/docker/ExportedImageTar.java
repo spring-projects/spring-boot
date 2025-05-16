@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,8 @@ class ExportedImageTar implements Closeable {
 					entry = tar.getNextEntry();
 				}
 				Assert.state(index != null || manifest != null,
-						"Exported image '%s' does not contain 'index.json' or 'manifest.json'".formatted(reference));
+						() -> "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
+							.formatted(reference));
 				return (index != null) ? new IndexLayerArchiveFactory(tarFile, index)
 						: new ManifestLayerArchiveFactory(tarFile, manifest);
 			}

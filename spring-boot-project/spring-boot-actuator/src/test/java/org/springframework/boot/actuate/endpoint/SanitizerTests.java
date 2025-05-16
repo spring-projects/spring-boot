@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,15 @@ class SanitizerTests {
 		}));
 		SanitizableData password = new SanitizableData(null, "password", "123456");
 		assertThat(sanitizer.sanitize(password, true)).isEqualTo("------");
+	}
+
+	@Test
+	void overridingDefaultSanitizingFunctionWithFiltered() {
+		Sanitizer sanitizer = new Sanitizer(List.of(SanitizingFunction.sanitizeValue().ifLikelySensitive()));
+		SanitizableData other = new SanitizableData(null, "other", "123456");
+		SanitizableData password = new SanitizableData(null, "password", "123456");
+		assertThat(sanitizer.sanitize(other, true)).isEqualTo("123456");
+		assertThat(sanitizer.sanitize(password, true)).isEqualTo(SanitizableData.SANITIZED_VALUE);
 	}
 
 	@Test

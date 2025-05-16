@@ -270,7 +270,7 @@ public class SpringApplication {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
-		Assert.notNull(primarySources, "PrimarySources must not be null");
+		Assert.notNull(primarySources, "'primarySources' must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.properties.setWebApplicationType(WebApplicationType.deduceFromClasspath());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
@@ -410,7 +410,7 @@ public class SpringApplication {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			// Load the sources
 			Set<Object> sources = getAllSources();
-			Assert.notEmpty(sources, "Sources must not be empty");
+			Assert.state(!ObjectUtils.isEmpty(sources), "No sources defined");
 			load(context, sources.toArray(new Object[0]));
 		}
 		listeners.contextLoaded(context);
@@ -608,7 +608,7 @@ public class SpringApplication {
 		for (ApplicationContextInitializer initializer : getInitializers()) {
 			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
 					ApplicationContextInitializer.class);
-			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
+			Assert.state(requiredType.isInstance(context), "Unable to call initializer");
 			initializer.initialize(context);
 		}
 	}
@@ -960,7 +960,7 @@ public class SpringApplication {
 	 * @since 2.0.0
 	 */
 	public void setWebApplicationType(WebApplicationType webApplicationType) {
-		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
+		Assert.notNull(webApplicationType, "'webApplicationType' must not be null");
 		this.properties.setWebApplicationType(webApplicationType);
 	}
 
@@ -1069,7 +1069,7 @@ public class SpringApplication {
 	 * @since 2.4.5
 	 */
 	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer bootstrapRegistryInitializer) {
-		Assert.notNull(bootstrapRegistryInitializer, "BootstrapRegistryInitializer must not be null");
+		Assert.notNull(bootstrapRegistryInitializer, "'bootstrapRegistryInitializer' must not be null");
 		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializer));
 	}
 
@@ -1170,7 +1170,7 @@ public class SpringApplication {
 	 * @see #getAllSources()
 	 */
 	public void setSources(Set<String> sources) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		this.properties.setSources(sources);
 	}
 
@@ -1197,7 +1197,7 @@ public class SpringApplication {
 	 * @param resourceLoader the resource loader
 	 */
 	public void setResourceLoader(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		this.resourceLoader = resourceLoader;
 	}
 
@@ -1391,7 +1391,7 @@ public class SpringApplication {
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context, ExitCodeGenerator... exitCodeGenerators) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		int exitCode = 0;
 		try {
 			try {
@@ -1427,7 +1427,7 @@ public class SpringApplication {
 	 * @see #withHook(SpringApplicationHook, Runnable)
 	 */
 	public static SpringApplication.Augmented from(ThrowingConsumer<String[]> main) {
-		Assert.notNull(main, "Main must not be null");
+		Assert.notNull(main, "'main' must not be null");
 		return new Augmented(main, Collections.emptySet(), Collections.emptySet());
 	}
 

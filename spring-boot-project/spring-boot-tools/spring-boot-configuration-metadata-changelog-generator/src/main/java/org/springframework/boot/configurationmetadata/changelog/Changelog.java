@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
+import org.springframework.boot.configurationmetadata.Deprecation.Level;
 
 /**
  * A changelog containing differences computed from two repositories of configuration
@@ -32,6 +33,7 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yoobin Yoon
  */
 record Changelog(String oldVersionNumber, String newVersionNumber, List<Difference> differences) {
 
@@ -54,8 +56,13 @@ record Changelog(String oldVersionNumber, String newVersionNumber, List<Differen
 			}
 		}
 		for (ConfigurationMetadataProperty newProperty : newMetadata.getAllProperties().values()) {
-			if ((!seenIds.contains(newProperty.getId())) && (!newProperty.isDeprecated())) {
-				differences.add(new Difference(DifferenceType.ADDED, null, newProperty));
+			if (!seenIds.contains(newProperty.getId())) {
+				if (newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
+					differences.add(new Difference(DifferenceType.DELETED, null, newProperty));
+				}
+				else if (!newProperty.isDeprecated()) {
+					differences.add(new Difference(DifferenceType.ADDED, null, newProperty));
+				}
 			}
 		}
 		return List.copyOf(differences);

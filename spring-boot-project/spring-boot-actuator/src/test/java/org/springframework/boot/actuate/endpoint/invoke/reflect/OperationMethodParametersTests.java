@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ class OperationMethodParametersTests {
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
-			.withMessageContaining("Method must not be null");
+			.withMessageContaining("'method' must not be null");
 	}
 
 	@Test
 	void createWhenParameterNameDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
-			.withMessageContaining("ParameterNameDiscoverer must not be null");
+			.withMessageContaining("'parameterNameDiscoverer' must not be null");
 	}
 
 	@Test

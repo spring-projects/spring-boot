@@ -23,9 +23,11 @@ import org.testcontainers.containers.GenericContainer
 
 @TestConfiguration(proxyBeanMethods = false)
 class MyRedisConfiguration {
+
 	@Bean
 	@ServiceConnection(name = "redis")
 	fun redisContainer(): GenericContainer<*> {
 		return GenericContainer("redis:7")
 	}
+
 }

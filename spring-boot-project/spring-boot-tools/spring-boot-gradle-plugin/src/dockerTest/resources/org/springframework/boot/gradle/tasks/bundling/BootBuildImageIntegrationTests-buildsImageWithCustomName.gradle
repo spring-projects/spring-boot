@@ -5,6 +5,6 @@ plugins {
 
 bootBuildImage {
 	imageName = "example/test-image-name"
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
 	pullPolicy = "IF_NOT_PRESENT"
 }

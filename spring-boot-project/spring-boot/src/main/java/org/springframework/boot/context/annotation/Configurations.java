@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public abstract class Configurations {
 	 * @param classes the configuration classes
 	 */
 	protected Configurations(Collection<Class<?>> classes) {
-		Assert.notNull(classes, "Classes must not be null");
+		Assert.notNull(classes, "'classes' must not be null");
 		Collection<Class<?>> sorted = sort(classes);
 		this.sorter = null;
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
@@ -89,7 +89,7 @@ public abstract class Configurations {
 	 */
 	protected Configurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
 			Function<Class<?>, String> beanNameGenerator) {
-		Assert.notNull(classes, "Classes must not be null");
+		Assert.notNull(classes, "'classes' must not be null");
 		this.sorter = (sorter != null) ? sorter : UnaryOperator.identity();
 		Collection<Class<?>> sorted = this.sorter.apply(classes);
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));

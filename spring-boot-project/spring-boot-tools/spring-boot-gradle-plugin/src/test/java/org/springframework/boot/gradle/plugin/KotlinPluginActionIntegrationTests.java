@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ class KotlinPluginActionIntegrationTests {
 
 	@Test
 	void kotlinVersionPropertyIsSet() {
+		expectConfigurationCacheRequestedDeprecationWarning();
 		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
 			.getOutput();
 		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
@@ -59,6 +60,7 @@ class KotlinPluginActionIntegrationTests {
 
 	@Test
 	void kotlinCompileTasksUseJavaParametersFlagByDefault() {
+		expectConfigurationCacheRequestedDeprecationWarning();
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
 			.contains("compileKotlin java parameters: true")
 			.contains("compileTestKotlin java parameters: true");
@@ -66,6 +68,7 @@ class KotlinPluginActionIntegrationTests {
 
 	@Test
 	void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
+		expectConfigurationCacheRequestedDeprecationWarning();
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
 			.contains("compileKotlin java parameters: false")
 			.contains("compileTestKotlin java parameters: false");
@@ -73,6 +76,7 @@ class KotlinPluginActionIntegrationTests {
 
 	@Test
 	void taskConfigurationIsAvoided() throws IOException {
+		expectConfigurationCacheRequestedDeprecationWarning();
 		BuildResult result = this.gradleBuild.build("help");
 		String output = result.getOutput();
 		BufferedReader reader = new BufferedReader(new StringReader(output));
@@ -84,6 +88,11 @@ class KotlinPluginActionIntegrationTests {
 			}
 		}
 		assertThat(configured).containsExactlyInAnyOrder("help", "compileJava", "clean");
+	}
+
+	private void expectConfigurationCacheRequestedDeprecationWarning() {
+		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.14")
+			.expectDeprecationMessages("The StartParameter.isConfigurationCacheRequested property has been deprecated");
 	}
 
 }

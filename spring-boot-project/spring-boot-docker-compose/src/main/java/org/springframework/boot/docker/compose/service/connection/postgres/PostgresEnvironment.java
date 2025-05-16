@@ -67,8 +67,9 @@ class PostgresEnvironment {
 			return null;
 		}
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
-		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
-		return password;
+		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
+		Assert.state(allowEmpty || StringUtils.hasLength(password), "No PostgreSQL password found");
+		return (password != null) ? password : "";
 	}
 
 	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {

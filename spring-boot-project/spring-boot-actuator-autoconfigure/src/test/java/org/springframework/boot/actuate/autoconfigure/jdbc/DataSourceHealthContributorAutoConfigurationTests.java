@@ -232,7 +232,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	static class DataSourceConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.test")
+		@ConfigurationProperties("spring.datasource.test")
 		DataSource standardDataSource() {
 			return DataSourceBuilder.create()
 				.type(org.apache.tomcat.jdbc.pool.DataSource.class)
@@ -249,7 +249,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	static class NonStandardDataSourceConfig {
 
 		@Bean(defaultCandidate = false)
-		@ConfigurationProperties(prefix = "spring.datasource.non-default")
+		@ConfigurationProperties("spring.datasource.non-default")
 		DataSource nonDefaultDataSource() {
 			return DataSourceBuilder.create()
 				.type(org.apache.tomcat.jdbc.pool.DataSource.class)
@@ -260,7 +260,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		}
 
 		@Bean(autowireCandidate = false)
-		@ConfigurationProperties(prefix = "spring.datasource.non-autowire")
+		@ConfigurationProperties("spring.datasource.non-autowire")
 		DataSource nonAutowireDataSource() {
 			return DataSourceBuilder.create()
 				.type(org.apache.tomcat.jdbc.pool.DataSource.class)

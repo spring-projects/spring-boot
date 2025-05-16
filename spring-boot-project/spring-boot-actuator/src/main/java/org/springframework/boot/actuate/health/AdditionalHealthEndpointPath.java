@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,10 +103,10 @@ public final class AdditionalHealthEndpointPath {
 	 * @return the new instance
 	 */
 	public static AdditionalHealthEndpointPath from(String value) {
-		Assert.hasText(value, "Value must not be null");
+		Assert.hasText(value, "'value' must not be null");
 		String[] values = value.split(":");
-		Assert.isTrue(values.length == 2, "Value must contain a valid namespace and value separated by ':'.");
-		Assert.isTrue(StringUtils.hasText(values[0]), "Value must contain a valid namespace.");
+		Assert.isTrue(values.length == 2, "'value' must contain a valid namespace and value separated by ':'.");
+		Assert.isTrue(StringUtils.hasText(values[0]), "'value' must contain a valid namespace.");
 		WebServerNamespace namespace = WebServerNamespace.from(values[0]);
 		validateValue(values[1]);
 		return new AdditionalHealthEndpointPath(namespace, values[1]);
@@ -120,15 +120,15 @@ public final class AdditionalHealthEndpointPath {
 	 * @return the new instance
 	 */
 	public static AdditionalHealthEndpointPath of(WebServerNamespace webServerNamespace, String value) {
-		Assert.notNull(webServerNamespace, "The server namespace must not be null.");
-		Assert.notNull(value, "The value must not be null.");
+		Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null.");
+		Assert.notNull(value, "'value' must not be null.");
 		validateValue(value);
 		return new AdditionalHealthEndpointPath(webServerNamespace, value);
 	}
 
 	private static void validateValue(String value) {
 		Assert.isTrue(StringUtils.countOccurrencesOf(value, "/") <= 1 && value.indexOf("/") <= 0,
-				"Value must contain only one segment.");
+				"'value' must contain only one segment.");
 	}
 
 }

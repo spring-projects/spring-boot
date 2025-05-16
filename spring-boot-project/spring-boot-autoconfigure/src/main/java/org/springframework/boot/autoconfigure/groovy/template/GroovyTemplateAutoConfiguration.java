@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,22 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
@@ -109,11 +112,23 @@ public class GroovyTemplateAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
-		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
-		public GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine) {
+		GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine,
+				Environment environment) {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
-			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
-			configurer.setCacheTemplates(this.properties.isCache());
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this.properties::isAutoEscape).to(configurer::setAutoEscape);
+			map.from(this.properties::isAutoIndent).to(configurer::setAutoIndent);
+			map.from(this.properties::getAutoIndentString).to(configurer::setAutoIndentString);
+			map.from(this.properties::isAutoNewLine).to(configurer::setAutoNewLine);
+			map.from(this.properties::getBaseTemplateClass).to(configurer::setBaseTemplateClass);
+			map.from(this.properties::isCache).to(configurer::setCacheTemplates);
+			map.from(this.properties::getDeclarationEncoding).to(configurer::setDeclarationEncoding);
+			map.from(this.properties::isExpandEmptyElements).to(configurer::setExpandEmptyElements);
+			map.from(this.properties::getLocale).to(configurer::setLocale);
+			map.from(this.properties::getNewLineString).to(configurer::setNewLineString);
+			map.from(this.properties::getResourceLoaderPath).to(configurer::setResourceLoaderPath);
+			map.from(this.properties::isUseDoubleQuotes).to(configurer::setUseDoubleQuotes);
+			Binder.get(environment).bind("spring.groovy.template.configuration", Bindable.ofInstance(configurer));
 			templateEngine.ifAvailable(configurer::setTemplateEngine);
 			return configurer;
 		}
@@ -123,7 +138,7 @@ public class GroovyTemplateAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -89,14 +90,14 @@ class BuilderMetadataTests extends AbstractJsonTests {
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(null))
-			.withMessage("Image must not be null");
+			.withMessage("'image' must not be null");
 	}
 
 	@Test
 	void fromImageWhenImageConfigIsNullThrowsException() {
 		Image image = mock(Image.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(image))
-			.withMessage("ImageConfig must not be null");
+			.withMessage("'imageConfig' must not be null");
 	}
 
 	@Test
@@ -105,7 +106,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		ImageConfig imageConfig = mock(ImageConfig.class);
 		given(image.getConfig()).willReturn(imageConfig);
 		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("alpha", "a"));
-		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(image))
+		assertThatIllegalStateException().isThrownBy(() -> BuilderMetadata.fromImage(image))
 			.withMessage("No 'io.buildpacks.builder.metadata' label found in image config labels 'alpha'");
 	}
 

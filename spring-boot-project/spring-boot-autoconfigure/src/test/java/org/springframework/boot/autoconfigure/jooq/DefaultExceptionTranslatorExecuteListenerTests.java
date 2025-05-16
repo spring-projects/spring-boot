@@ -54,7 +54,7 @@ class DefaultExceptionTranslatorExecuteListenerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DefaultExceptionTranslatorExecuteListener(
 					(Function<ExecuteContext, SQLExceptionTranslator>) null))
-			.withMessage("TranslatorFactory must not be null");
+			.withMessage("'translatorFactory' must not be null");
 	}
 
 	@ParameterizedTest(name = "{0}")

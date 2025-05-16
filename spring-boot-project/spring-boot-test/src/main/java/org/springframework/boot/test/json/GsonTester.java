@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @param gson the Gson instance
 	 */
 	protected GsonTester(Gson gson) {
-		Assert.notNull(gson, "Gson must not be null");
+		Assert.notNull(gson, "'gson' must not be null");
 		this.gson = gson;
 	}
 
@@ -75,7 +75,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	 */
 	public GsonTester(Class<?> resourceLoadClass, ResolvableType type, Gson gson) {
 		super(resourceLoadClass, type);
-		Assert.notNull(gson, "Gson must not be null");
+		Assert.notNull(gson, "'gson' must not be null");
 		this.gson = gson;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class ConnectionDetailsRegistrarTests {
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", "", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, null,
-				this.annotation, () -> this.container);
+				this.annotation, () -> this.container, null, null);
 		this.factories = mock(ConnectionDetailsFactories.class);
 	}
 

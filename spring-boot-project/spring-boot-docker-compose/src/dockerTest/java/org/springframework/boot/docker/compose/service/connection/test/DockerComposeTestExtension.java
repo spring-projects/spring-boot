@@ -65,6 +65,7 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		store.put(STORE_KEY_WORKSPACE, workspace);
 		try {
 			Path composeFile = prepareComposeFile(workspace, context);
+			copyAdditionalResources(workspace, context);
 			SpringApplication application = prepareApplication(composeFile);
 			store.put(STORE_KEY_APPLICATION_CONTEXT, application.run());
 		}
@@ -93,6 +94,24 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		catch (IOException ex) {
 			fail("Error transforming Docker compose file '" + composeFileResource + "': " + ex.getMessage(), ex);
 			return null;
+		}
+	}
+
+	private void copyAdditionalResources(Path workspace, ExtensionContext context) {
+		DockerComposeTest dockerComposeTest = context.getRequiredTestMethod().getAnnotation(DockerComposeTest.class);
+		for (String additionalResource : dockerComposeTest.additionalResources()) {
+			Resource resource = new ClassPathResource(additionalResource, context.getRequiredTestClass());
+			copyAdditionalResource(workspace, resource);
+		}
+	}
+
+	private void copyAdditionalResource(Path workspace, Resource resource) {
+		try {
+			Path source = resource.getFile().toPath();
+			Files.copy(source, workspace.resolve(source.getFileName()));
+		}
+		catch (IOException ex) {
+			fail("Error copying additional resource '" + resource + "': " + ex.getMessage(), ex);
 		}
 	}
 

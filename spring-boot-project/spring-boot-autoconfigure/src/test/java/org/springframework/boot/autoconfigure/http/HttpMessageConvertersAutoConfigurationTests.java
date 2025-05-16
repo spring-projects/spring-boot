@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,12 +130,37 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void gsonCanBePreferred() {
+		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:gson").run((context) -> {
+			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
+			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+		});
+	}
+
+	@Test
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	void gsonCanBePreferredWithDeprecatedProperty() {
 		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:gson").run((context) -> {
 			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
 		});
+	}
+
+	@Test
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	void gsonCanBePreferredWithNonDeprecatedPropertyTakingPrecedence() {
+		allOptionsRunner()
+			.withPropertyValues("spring.http.converters.preferred-json-mapper:gson",
+					"spring.mvc.converters.preferred-json-mapper:jackson")
+			.run((context) -> {
+				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
+				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+			});
 	}
 
 	@Test
@@ -161,12 +186,37 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void jsonbCanBePreferred() {
+		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb").run((context) -> {
+			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
+			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+		});
+	}
+
+	@Test
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	void jsonbCanBePreferredWithDeprecatedProperty() {
 		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:jsonb").run((context) -> {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
 		});
+	}
+
+	@Test
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	void jsonbCanBePreferredWithNonDeprecatedPropertyTakingPrecedence() {
+		allOptionsRunner()
+			.withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb",
+					"spring.mvc.converters.preferred-json-mapper:gson")
+			.run((context) -> {
+				assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
+				assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+			});
 	}
 
 	@Test
@@ -285,10 +335,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 		RuntimeHints hints = new RuntimeHints();
 		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce").invoke()).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
 	}
 

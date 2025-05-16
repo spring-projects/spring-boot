@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	 * @param migrationStrategy the migration strategy or {@code null}
 	 */
 	public FlywayMigrationInitializer(Flyway flyway, FlywayMigrationStrategy migrationStrategy) {
-		Assert.notNull(flyway, "Flyway must not be null");
+		Assert.notNull(flyway, "'flyway' must not be null");
 		this.flyway = flyway;
 		this.migrationStrategy = migrationStrategy;
 	}

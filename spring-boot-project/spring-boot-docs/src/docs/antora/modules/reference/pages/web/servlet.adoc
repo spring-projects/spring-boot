@@ -529,11 +529,14 @@ In the case of multiple servlet beans, the bean name is used as a path prefix.
 Filters map to `+/*+`.
 
 If convention-based mapping is not flexible enough, you can use the javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[], javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[], and javadoc:org.springframework.boot.web.servlet.ServletListenerRegistrationBean[] classes for complete control.
+If you prefer annotations over javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] and javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[], you can also use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] and
+javadoc:org.springframework.boot.web.servlet.FilterRegistration[format=annotation] as an alternative.
 
 It is usually safe to leave filter beans unordered.
 If a specific order is required, you should annotate the javadoc:jakarta.servlet.Filter[] with javadoc:org.springframework.core.annotation.Order[format=annotation] or make it implement javadoc:org.springframework.core.Ordered[].
 You cannot configure the order of a javadoc:jakarta.servlet.Filter[] by annotating its bean method with javadoc:org.springframework.core.annotation.Order[format=annotation].
 If you cannot change the javadoc:jakarta.servlet.Filter[] class to add javadoc:org.springframework.core.annotation.Order[format=annotation] or implement javadoc:org.springframework.core.Ordered[], you must define a javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[] for the javadoc:jakarta.servlet.Filter[] and set the registration bean's order using the `setOrder(int)` method.
+Or, if you prefer annotations, you can also use javadoc:org.springframework.boot.web.servlet.FilterRegistration[format=annotation] and set the `order` attribute.
 Avoid configuring a filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
 If a servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 

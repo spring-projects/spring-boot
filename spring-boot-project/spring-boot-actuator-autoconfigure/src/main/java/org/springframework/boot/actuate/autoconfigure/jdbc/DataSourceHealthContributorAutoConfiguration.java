@@ -101,7 +101,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(Map<String, DataSource> beans) {
-		Assert.notEmpty(beans, "Beans must not be empty");
+		Assert.notEmpty(beans, "'beans' must not be empty");
 		if (beans.size() == 1) {
 			return createContributor(beans.values().iterator().next());
 		}

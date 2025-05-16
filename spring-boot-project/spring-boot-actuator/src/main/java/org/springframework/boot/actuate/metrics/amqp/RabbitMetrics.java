@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class RabbitMetrics implements MeterBinder {
 	 * @param tags tags to apply to all recorded metrics
 	 */
 	public RabbitMetrics(ConnectionFactory connectionFactory, Iterable<Tag> tags) {
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		this.connectionFactory = connectionFactory;
 		this.tags = (tags != null) ? tags : Collections.emptyList();
 	}

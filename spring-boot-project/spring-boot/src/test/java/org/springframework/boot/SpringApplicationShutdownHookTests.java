@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ class SpringApplicationShutdownHookTests {
 	void addHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().add(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test
@@ -171,7 +171,7 @@ class SpringApplicationShutdownHookTests {
 	void removeHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().remove(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test

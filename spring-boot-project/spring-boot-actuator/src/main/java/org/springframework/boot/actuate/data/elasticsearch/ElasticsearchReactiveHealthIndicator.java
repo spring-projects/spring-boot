@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 			builder.withDetail("number_of_pending_tasks", response.numberOfPendingTasks());
 			builder.withDetail("number_of_in_flight_fetch", response.numberOfInFlightFetch());
 			builder.withDetail("task_max_waiting_in_queue_millis", response.taskMaxWaitingInQueueMillis());
-			builder.withDetail("active_shards_percent_as_number",
-					Double.parseDouble(response.activeShardsPercentAsNumber()));
+			builder.withDetail("active_shards_percent_as_number", response.activeShardsPercentAsNumber());
+			builder.withDetail("unassigned_primary_shards", response.unassignedPrimaryShards());
 			return builder.build();
 		}
 		return builder.down().build();

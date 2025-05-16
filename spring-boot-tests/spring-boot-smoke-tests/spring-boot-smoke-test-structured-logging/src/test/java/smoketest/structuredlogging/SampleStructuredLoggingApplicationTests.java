@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleStructuredLoggingApplicationTests {
 
 	@AfterEach
-	void reset() {
+	void reset(CapturedOutput output) {
 		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
 		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
 			System.getProperties().remove(property.getEnvironmentVariableName());
 		}
+		assertThat(output).doesNotContain("-INFO in ch.qos.logback.classic.LoggerContext");
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class SampleStructuredLoggingApplicationTests {
 	void json(CapturedOutput output) {
 		SampleStructuredLoggingApplication.main(new String[0]);
 		assertThat(output).doesNotContain("{\"@timestamp\"")
-			.contains("\"process.thread.name\":\"!!")
+			.contains("\"thread\":{\"name\":\"!!")
 			.contains("\"process.procid\"")
 			.contains("\"message\":\"Starting SampleStructuredLoggingApplication")
 			.contains("\"foo\":\"hello");
@@ -63,6 +64,19 @@ class SampleStructuredLoggingApplicationTests {
 	void custom(CapturedOutput output) {
 		SampleStructuredLoggingApplication.main(new String[] { "--spring.profiles.active=custom" });
 		assertThat(output).contains("epoch=").contains("msg=\"Starting SampleStructuredLoggingApplication");
+	}
+
+	@Test
+	void shouldCaptureCustomizerError(CapturedOutput output) {
+		SampleStructuredLoggingApplication.main(new String[] { "--spring.profiles.active=on-error" });
+		assertThat(output).contains("The name 'test' has already been written");
+	}
+
+	@Test
+	void shouldCaptureCustomizerErrorWhenUsingCustomLogbackFile(CapturedOutput output) {
+		SampleStructuredLoggingApplication
+			.main(new String[] { "--spring.profiles.active=on-error-custom-logback-file" });
+		assertThat(output).contains("The name 'test' has already been written");
 	}
 
 }

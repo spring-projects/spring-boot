@@ -8,6 +8,8 @@ Property values can be injected directly into your beans by using the javadoc:or
 
 Spring Boot uses a very particular javadoc:org.springframework.core.env.PropertySource[] order that is designed to allow sensible overriding of values.
 Later property sources can override the values defined in earlier ones.
+
+[[features.external-config.order]]
 Sources are considered in the following order:
 
 . Default properties (specified by setting javadoc:org.springframework.boot.SpringApplication#setDefaultProperties(java.util.Map)[]).
@@ -274,7 +276,7 @@ If you have already directly xref:features/external-config.adoc#features.externa
 [[features.external-config.files.importing]]
 === Importing Additional Data
 
-Application properties may import further config data from other locations using the `spring.config.import` property.
+Application properties may import further config data from other locations using the configprop:spring.config.import[] property.
 Imports are processed as they are discovered, and are treated as additional documents inserted immediately below the one that declares the import.
 
 For example, you might have the following in your classpath `application.properties` file:
@@ -293,6 +295,46 @@ Values from the imported `dev.properties` will take precedence over the file tha
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
 
 An import will only be imported once no matter how many times it is declared.
+
+
+
+[[features.external-config.files.importing.fixed-and-relative-paths]]
+==== Using "`Fixed`" and "`Import Relative`" Locations
+
+Imports may be specified as _fixed_ or _import relative_ locations.
+A fixed location always resolves to the same underlying resource, regardless of where the configprop:spring.config.import[] property is declared.
+An import relative location resolves relative to the file that declares the configprop:spring.config.import[] property.
+
+A location starting with a forward slash (`/`) or a URL style prefix (`file:`, `classpath:`, etc) is considered fixed.
+All other locations are considered import relative.
+
+NOTE: `optional:` prefixes are not considered when determining if a location is fixed or import relative.
+
+As an example, say we have a `/demo` directory containing our `application.jar` file.
+We might add a `/demo/application.properties` file with the following content:
+
+[,properties]
+----
+spring.config.import=optional:core/core.properties
+----
+
+This is an import relative location and so will attempt to load the file `/demo/core/core.properties` if it exists.
+
+If `/demo/core/core.properties` has the following content:
+
+[,properties]
+----
+spring.config.import=optional:extra/extra.properties
+----
+
+It will attempt to load `/demo/core/extra/extra.properties`.
+The `optional:extra/extra.properties` is relative to `/demo/core/core.properties` so the full directory is `/demo/core/` + `extra/extra.properties`.
+
+
+
+[[features.external-config.files.importing.import-property-order]]
+==== Property Ordering
+
 The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
@@ -354,11 +396,39 @@ spring:
 
 
 
+[[features.external-config.files.env-variables]]
+=== Using Environment Variables
+
+When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
+You can either use environment variables for such purpose, or you can use xref:reference:features/external-config.adoc#features.external-config.files.configtree[configuration trees].
+
+You can even store whole configurations in properties or yaml format in (multiline) environment variables and load them using the `env:` prefix.
+Assume there's an environment variable called `MY_CONFIGURATION` with this content:
+
+[source,properties]
+----
+my.name=Service1
+my.cluster=Cluster1
+----
+
+Using the `env:` prefix it is possible to import all properties from this variable:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "env:MY_CONFIGURATION"
+----
+
+TIP: This feature also supports xref:reference:features/external-config.adoc#features.external-config.files.importing-extensionless[specifying the extension].
+The default extension is `.properties`.
+
+
+
 [[features.external-config.files.configtree]]
 === Using Configuration Trees
 
-When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
-It is not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
+Storing config values in environment variables has drawbacks, especially if the value is supposed to be kept secret.
 
 As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
 For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
@@ -681,9 +751,12 @@ If `max` is provided, then `value` is the minimum value and `max` is the maximum
 
 Spring Boot supports setting a prefix for environment properties.
 This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.
-The prefix for system environment properties can be set directly on javadoc:org.springframework.boot.SpringApplication[].
+The prefix for system environment properties can be set directly on javadoc:org.springframework.boot.SpringApplication[] by calling the `setEnvironmentPrefix(...)` method before the application is run.
 
-For example, if you set the prefix to `input`, a property such as `remote.timeout` will also be resolved as `input.remote.timeout` in the system environment.
+For example, if you set the prefix to `input`, a property such as `remote.timeout` will be resolved as `INPUT_REMOTE_TIMEOUT` in the system environment.
+
+NOTE: The prefix _only_ applies to system environment properties.
+The example above would continue to use `remote.timeout` when reading properties from other sources.
 
 
 
@@ -748,7 +821,14 @@ include-code::MyProperties[]
 In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation] annotation can be used to specify which constructor to use for constructor binding.
-To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] or made `private`.
+
+To opt-out of constructor binding for a class, the parameterized constructor must be annotated with javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] or made `private`.
+Kotlin developers can use an empty primary constructor to opt-out of constructor binding.
+
+For example:
+
+include-code::primaryconstructor/MyProperties[]
+
 Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation].
 

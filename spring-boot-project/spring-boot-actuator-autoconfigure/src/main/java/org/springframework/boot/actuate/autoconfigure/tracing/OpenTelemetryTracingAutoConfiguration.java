@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,12 +115,20 @@ public class OpenTelemetryTracingAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
-		BatchSpanProcessorBuilder builder = BatchSpanProcessor
-			.builder(new CompositeSpanExporter(spanExporters.list(), spanExportingPredicates.orderedStream().toList(),
-					spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
+		TracingProperties.OpenTelemetry.Export properties = this.tracingProperties.getOpentelemetry().getExport();
+		CompositeSpanExporter spanExporter = new CompositeSpanExporter(spanExporters.list(),
+				spanExportingPredicates.orderedStream().toList(), spanReporters.orderedStream().toList(),
+				spanFilters.orderedStream().toList());
+		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(spanExporter)
+			.setExportUnsampledSpans(properties.isIncludeUnsampled())
+			.setExporterTimeout(properties.getTimeout())
+			.setMaxExportBatchSize(properties.getMaxBatchSize())
+			.setMaxQueueSize(properties.getMaxQueueSize())
+			.setScheduleDelay(properties.getScheduleDelay());
 		meterProvider.ifAvailable(builder::setMeterProvider);
 		return builder.build();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public final class ClientHttpRequestFactories {
 	 */
 	@SuppressWarnings("removal")
 	public static ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		return detectBuilder().build(settings.adapt());
 	}
 
@@ -87,7 +87,7 @@ public final class ClientHttpRequestFactories {
 	@SuppressWarnings("removal")
 	public static <T extends ClientHttpRequestFactory> T get(Class<T> requestFactoryType,
 			ClientHttpRequestFactorySettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		return getBuilder(requestFactoryType).build(settings.adapt());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,13 +93,13 @@ abstract class AbstractJsonMarshalTesterTests {
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
-			.withMessageContaining("ResourceLoadClass must not be null");
+			.withMessageContaining("'resourceLoadClass' must not be null");
 	}
 
 	@Test
 	void createWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> createTester(getClass(), null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test

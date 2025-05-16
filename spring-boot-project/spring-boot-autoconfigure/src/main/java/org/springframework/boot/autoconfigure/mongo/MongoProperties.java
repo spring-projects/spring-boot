@@ -38,7 +38,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Safeer Ansari
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.mongodb")
+@ConfigurationProperties("spring.data.mongodb")
 public class MongoProperties {
 
 	/**
@@ -50,6 +50,11 @@ public class MongoProperties {
 	 * Default URI used when the configured URI is {@code null}.
 	 */
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
+
+	/**
+	 * Protocol to be used for the MongoDB connection. Ignored if 'uri' is set.
+	 */
+	private String protocol = "mongodb";
 
 	/**
 	 * Mongo server host. Ignored if 'uri' is set.
@@ -116,6 +121,14 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getProtocol() {
+		return this.protocol;
+	}
 
 	public String getHost() {
 		return this.host;

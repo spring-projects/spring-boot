@@ -35,8 +35,6 @@ import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import reactor.netty.http.HttpDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
@@ -203,7 +201,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void testCustomizeUriEncoding() {
+	void testCustomizeTomcatUriEncoding() {
 		bind("server.tomcat.uri-encoding", "US-ASCII");
 		assertThat(this.properties.getTomcat().getUriEncoding()).isEqualTo(StandardCharsets.US_ASCII);
 	}
@@ -239,15 +237,21 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void customizeMaxKeepAliveRequests() {
+	void testCustomizeTomcatMaxKeepAliveRequests() {
 		bind("server.tomcat.max-keep-alive-requests", "200");
 		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(200);
 	}
 
 	@Test
-	void customizeMaxKeepAliveRequestsWithInfinite() {
+	void testCustomizeTomcatMaxKeepAliveRequestsWithInfinite() {
 		bind("server.tomcat.max-keep-alive-requests", "-1");
 		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(-1);
+	}
+
+	@Test
+	void testCustomizeTomcatMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count", "100");
+		assertThat(this.properties.getTomcat().getMaxParameterCount()).isEqualTo(100);
 	}
 
 	@Test
@@ -384,6 +388,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void tomcatMaxParameterCountMatchesConnectorDefault() {
+		assertThat(this.properties.getTomcat().getMaxParameterCount())
+			.isEqualTo(getDefaultConnector().getMaxParameterCount());
+	}
+
+	@Test
 	void tomcatBackgroundProcessorDelayMatchesEngineDefault() {
 		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay())
 			.hasSeconds((new StandardEngine().getBackgroundProcessorDelay()));
@@ -499,14 +509,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	@EnabledForJreRange(max = JRE.JAVA_23)
-	void shouldDefaultAprToWhenAvailableUntilJava23() {
-		assertThat(this.properties.getTomcat().getUseApr()).isEqualTo(UseApr.WHEN_AVAILABLE);
-	}
-
-	@Test
-	@EnabledForJreRange(min = JRE.JAVA_24)
-	void shouldDefaultAprToNeverOnJava24AndLater() {
+	void shouldDefaultAprToNever() {
 		assertThat(this.properties.getTomcat().getUseApr()).isEqualTo(UseApr.NEVER);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
-		this(sources, new ConnectionDetailsFactories());
+		this(sources, new ConnectionDetailsFactories(null));
 	}
 
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
@@ -91,10 +91,12 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 * Relevant details from {@link ContainerConnectionSource} used as a
 	 * MergedContextConfiguration cache key.
 	 */
-	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container) {
+	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container,
+			SslBundleSource sslBundleSource) {
 
 		CacheKey(ContainerConnectionSource<?> source) {
-			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get());
+			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get(),
+					source.getSslBundleSource());
 		}
 
 	}

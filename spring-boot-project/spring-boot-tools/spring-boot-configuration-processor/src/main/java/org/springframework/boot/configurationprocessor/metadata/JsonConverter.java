@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class JsonConverter {
 
@@ -57,6 +58,21 @@ class JsonConverter {
 			jsonArray.put(toJsonObject(hint));
 		}
 		return jsonArray;
+	}
+
+	JSONObject toJsonObject(Collection<ItemIgnore> ignored) throws Exception {
+		JSONObject result = new JSONObject();
+		result.put("properties", ignoreToJsonArray(
+				ignored.stream().filter((itemIgnore) -> itemIgnore.getType() == ItemType.PROPERTY).toList()));
+		return result;
+	}
+
+	private JSONArray ignoreToJsonArray(Collection<ItemIgnore> ignored) throws Exception {
+		JSONArray result = new JSONArray();
+		for (ItemIgnore itemIgnore : ignored) {
+			result.put(toJsonObject(itemIgnore));
+		}
+		return result;
 	}
 
 	JSONObject toJsonObject(ItemMetadata item) throws Exception {
@@ -100,6 +116,12 @@ class JsonConverter {
 		if (!hint.getProviders().isEmpty()) {
 			jsonObject.put("providers", getItemHintProviders(hint));
 		}
+		return jsonObject;
+	}
+
+	private JSONObject toJsonObject(ItemIgnore ignore) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("name", ignore.getName());
 		return jsonObject;
 	}
 

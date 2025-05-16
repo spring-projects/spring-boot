@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -86,7 +86,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	@Test
 	void resolveWhenFullyQualifiedBuildpackWithVersionNotInBuilderThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack1@1.2.3");
-		assertThatIllegalArgumentException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
 			.withMessageContaining("'urn:cnb:builder:example/buildpack1@1.2.3'")
 			.withMessageContaining("not found in builder");
 	}
@@ -94,7 +94,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	@Test
 	void resolveWhenFullyQualifiedBuildpackWithoutVersionNotInBuilderThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack1");
-		assertThatIllegalArgumentException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
 			.withMessageContaining("'urn:cnb:builder:example/buildpack1'")
 			.withMessageContaining("not found in builder");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.context.properties.source.ConfigurationPropertyCaching.CacheOverride;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,6 +99,68 @@ class SoftReferenceConfigurationPropertyCacheTests {
 		get(this.cache).assertCounts(0, 0);
 		this.cache.clear();
 		get(this.cache).assertCounts(0, 1);
+	}
+
+	@Test
+	void overrideWhenNeverExpiresReturnsNoOpOverride() {
+		TestSoftReferenceConfigurationPropertyCache cache = new TestSoftReferenceConfigurationPropertyCache(true);
+		assertThat(cache.override()).isSameAs(SoftReferenceConfigurationPropertyCache.NO_OP_OVERRIDE);
+	}
+
+	@Test
+	void overrideEnablesCaching() {
+		get(this.cache).assertCounts(0, 0);
+		get(this.cache).assertCounts(0, 1);
+		try (CacheOverride override = this.cache.override()) {
+			get(this.cache).assertCounts(0, 2);
+			get(this.cache).assertCounts(0, 2);
+			get(this.cache).assertCounts(0, 2);
+		}
+		get(this.cache).assertCounts(0, 3);
+	}
+
+	@Test
+	void overrideWhenHasExistingTimeToLiveEnablesCaching() {
+		this.cache.setTimeToLive(Duration.ofHours(1));
+		get(this.cache).assertCounts(0, 0);
+		get(this.cache).assertCounts(0, 0);
+		tick(Duration.ofHours(2));
+		get(this.cache).assertCounts(0, 1);
+		try (CacheOverride override = this.cache.override()) {
+			get(this.cache).assertCounts(0, 1);
+			tick(Duration.ofHours(2));
+			get(this.cache).assertCounts(0, 1);
+		}
+		get(this.cache).assertCounts(0, 2);
+		get(this.cache).assertCounts(0, 2);
+		tick(Duration.ofHours(2));
+		get(this.cache).assertCounts(0, 3);
+	}
+
+	@Test
+	void overrideWhenDisabledDoesNotReturnStaleData() {
+		get(this.cache).assertCounts(0, 0);
+		get(this.cache).assertCounts(0, 1);
+		this.cache.disable();
+		try (CacheOverride override = this.cache.override()) {
+			get(this.cache).assertCounts(0, 2);
+			get(this.cache).assertCounts(0, 2);
+		}
+		get(this.cache).assertCounts(0, 3);
+	}
+
+	@Test
+	void overrideCanBeClosedTwiceWithoutIssue() {
+		get(this.cache).assertCounts(0, 0);
+		get(this.cache).assertCounts(0, 1);
+		this.cache.disable();
+		try (CacheOverride override = this.cache.override()) {
+			get(this.cache).assertCounts(0, 2);
+			get(this.cache).assertCounts(0, 2);
+			override.close();
+			get(this.cache).assertCounts(0, 3);
+		}
+		get(this.cache).assertCounts(0, 4);
 
 	}
 

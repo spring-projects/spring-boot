@@ -72,7 +72,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
-				"ApplicationContext does not implement ConfigurableApplicationContext");
+				"'applicationContext' must be a ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
 

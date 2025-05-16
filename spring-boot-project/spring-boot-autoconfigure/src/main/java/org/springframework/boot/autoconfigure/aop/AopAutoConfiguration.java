@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.springframework.aop.config.AopConfigUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @see EnableAspectJAutoProxy
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.aop.auto", matchIfMissing = true)
 public class AopAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -53,15 +53,14 @@ public class AopAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = false)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false")
+		@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", havingValue = false)
 		static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = true)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
-				matchIfMissing = true)
+		@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", matchIfMissing = true)
 		static class CglibAutoProxyConfiguration {
 
 		}
@@ -70,8 +69,7 @@ public class AopAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("org.aspectj.weaver.Advice")
-	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", matchIfMissing = true)
 	static class ClassProxyingConfiguration {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,19 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
+import org.springframework.data.cassandra.core.cql.ReactiveCqlTemplate;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
-import org.springframework.data.domain.ManagedTypes;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,50 +41,48 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CassandraReactiveDataAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withPropertyValues("spring.cassandra.keyspaceName=boot_test")
+		.withUserConfiguration(CassandraMockConfiguration.class)
+		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+				CassandraReactiveDataAutoConfiguration.class));
 
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	void reactiveCqlTemplateExists() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveCqlTemplate.class));
 	}
 
 	@Test
 	void templateExists() {
-		load("spring.cassandra.keyspaceName:boot_test");
-		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ReactiveCassandraTemplate.class));
+	}
+
+	@Test
+	void templateUsesReactiveCqlTemplate() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveCassandraTemplate.class);
+			assertThat(context.getBean(ReactiveCassandraTemplate.class).getReactiveCqlOperations())
+				.isSameAs(context.getBean(ReactiveCqlTemplate.class));
+		});
 	}
 
 	@Test
 	void entityScanShouldSetManagedTypes() {
-		load(EntityScanConfig.class, "spring.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
-		assertThat(managedTypes.toList()).containsOnly(City.class);
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(CassandraMappingContext.class);
+			CassandraMappingContext mappingContext = context.getBean(CassandraMappingContext.class);
+			assertThat(mappingContext.getManagedTypes()).singleElement()
+				.satisfies((typeInformation) -> assertThat(typeInformation.getType()).isEqualTo(City.class));
+		});
 	}
 
 	@Test
 	void userTypeResolverShouldBeSet() {
-		load("spring.cassandra.keyspaceName:boot_test");
-		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
-		assertThat(cassandraConverter).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
-	}
-
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(ctx);
-		if (config != null) {
-			ctx.register(config);
-		}
-		ctx.register(CassandraMockConfiguration.class, CassandraAutoConfiguration.class,
-				CassandraDataAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(CassandraConverter.class);
+			assertThat(context.getBean(CassandraConverter.class)).extracting("userTypeResolver")
+				.isInstanceOf(SimpleUserTypeResolver.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

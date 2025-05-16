@@ -54,7 +54,7 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups, Ad
 	private static final String READINESS = "readiness";
 
 	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups, boolean addAdditionalPaths) {
-		Assert.notNull(groups, "Groups must not be null");
+		Assert.notNull(groups, "'groups' must not be null");
 		this.groups = groups;
 		this.probeGroups = createProbeGroups(addAdditionalPaths);
 		Set<String> names = new LinkedHashSet<>(groups.getNames());

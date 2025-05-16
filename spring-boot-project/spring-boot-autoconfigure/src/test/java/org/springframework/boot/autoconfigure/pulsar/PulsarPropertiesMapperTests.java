@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,7 +254,7 @@ class PulsarPropertiesMapperTests {
 		then(builder).should().topicsPattern(topisPattern);
 		then(builder).should().priorityLevel(123);
 		then(builder).should().readCompacted(true);
-		then(builder).should().deadLetterPolicy(new DeadLetterPolicy(1, null, "my-dlt", null));
+		then(builder).should().deadLetterPolicy(new DeadLetterPolicy(1, null, "my-dlt", null, null, null));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
@@ -130,7 +130,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		private final DevToolsProperties properties;
@@ -181,7 +181,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * Client configuration for remote update and restarts.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.devtools.remote.restart.enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 
 		private final DevToolsProperties properties;

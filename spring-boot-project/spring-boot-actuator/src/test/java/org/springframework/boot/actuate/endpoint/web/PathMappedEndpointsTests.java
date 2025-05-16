@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,14 @@ class PathMappedEndpointsTests {
 	void createWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
-			.withMessageContaining("Supplier must not be null");
+			.withMessageContaining("'supplier' must not be null");
 	}
 
 	@Test
 	void createWhenSuppliersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null))
-			.withMessageContaining("Suppliers must not be null");
+			.withMessageContaining("'suppliers' must not be null");
 	}
 
 	@Test

@@ -2,15 +2,15 @@ name: Release Milestone
 on:
   push:
     tags:
-      - v3.4.0-M[0-9]
-      - v3.4.0-RC[0-9]
+      - v3.5.0-M[0-9]
+      - v3.5.0-RC[0-9]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-and-stage-release:
     name: Build and Stage Release
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
-    runs-on: ${{ vars.UBUNTU_MEDIUIM || 'ubuntu-latest' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
@@ -56,7 +56,7 @@ jobs:
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@611876cbed7d009aab97257020a59ddde6e840c0 # v4.5.8
+        uses: jfrog/setup-jfrog-cli@ff5cb544114ffc152db9cea1cd3d5978d5074946 # v4.5.11
         env:
           JF_ENV_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
       - name: Promote build

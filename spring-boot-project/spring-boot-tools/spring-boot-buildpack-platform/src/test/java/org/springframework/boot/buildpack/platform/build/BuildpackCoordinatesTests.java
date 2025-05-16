@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void fromBuildpackMetadataWhenMetadataIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromBuildpackMetadata(null))
-			.withMessage("BuildpackMetadata must not be null");
+			.withMessage("'buildpackMetadata' must not be null");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void ofWhenIdIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.of(null, null))
-			.withMessage("ID must not be empty");
+			.withMessage("'id' must not be empty");
 	}
 
 	@Test

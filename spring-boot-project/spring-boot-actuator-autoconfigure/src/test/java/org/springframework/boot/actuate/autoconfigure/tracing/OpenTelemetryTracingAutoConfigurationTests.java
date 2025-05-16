@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.data.SpanData;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -69,6 +70,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -172,6 +174,8 @@ class OpenTelemetryTracingAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanProcessors.class);
 			assertThat(context).hasBean("customSpanExporters");
 			assertThat(context).hasSingleBean(SpanExporters.class);
+			assertThat(context).hasBean("customBatchSpanProcessor");
+			assertThat(context).hasSingleBean(BatchSpanProcessor.class);
 		});
 	}
 
@@ -321,6 +325,44 @@ class OpenTelemetryTracingAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void batchSpanProcessorShouldBeConfiguredWithCustomProperties() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.opentelemetry.export.timeout=45s",
+					"management.tracing.opentelemetry.export.include-unsampled=true",
+					"management.tracing.opentelemetry.export.max-batch-size=256",
+					"management.tracing.opentelemetry.export.max-queue-size=4096",
+					"management.tracing.opentelemetry.export.schedule-delay=15s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(BatchSpanProcessor.class);
+				BatchSpanProcessor batchSpanProcessor = context.getBean(BatchSpanProcessor.class);
+				assertThat(batchSpanProcessor).hasFieldOrPropertyWithValue("exportUnsampledSpans", true)
+					.extracting("worker")
+					.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Duration.ofSeconds(45).toNanos())
+					.hasFieldOrPropertyWithValue("maxExportBatchSize", 256)
+					.hasFieldOrPropertyWithValue("scheduleDelayNanos", Duration.ofSeconds(15).toNanos())
+					.extracting("queue")
+					.satisfies((queue) -> assertThat(ReflectionTestUtils.<Integer>invokeMethod(queue, "capacity"))
+						.isEqualTo(4096));
+			});
+	}
+
+	@Test
+	void batchSpanProcessorShouldBeConfiguredWithDefaultProperties() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(BatchSpanProcessor.class);
+			BatchSpanProcessor batchSpanProcessor = context.getBean(BatchSpanProcessor.class);
+			assertThat(batchSpanProcessor).hasFieldOrPropertyWithValue("exportUnsampledSpans", false)
+				.extracting("worker")
+				.hasFieldOrPropertyWithValue("exporterTimeoutNanos", Duration.ofSeconds(30).toNanos())
+				.hasFieldOrPropertyWithValue("maxExportBatchSize", 512)
+				.hasFieldOrPropertyWithValue("scheduleDelayNanos", Duration.ofSeconds(5).toNanos())
+				.extracting("queue")
+				.satisfies((queue) -> assertThat(ReflectionTestUtils.<Integer>invokeMethod(queue, "capacity"))
+					.isEqualTo(2048));
+		});
+	}
+
 	@Test // gh-41439
 	@ForkedClassPath
 	void shouldPublishEventsWhenContextStorageIsInitializedEarly() {
@@ -400,6 +442,11 @@ class OpenTelemetryTracingAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	private static final class CustomConfiguration {
+
+		@Bean
+		BatchSpanProcessor customBatchSpanProcessor() {
+			return mock(BatchSpanProcessor.class);
+		}
 
 		@Bean
 		SpanProcessors customSpanProcessors() {

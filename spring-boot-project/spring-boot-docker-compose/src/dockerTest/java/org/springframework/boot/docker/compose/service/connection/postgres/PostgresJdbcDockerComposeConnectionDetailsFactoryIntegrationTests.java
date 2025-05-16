@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author He Zean
  */
 class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
@@ -60,22 +61,38 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		checkDatabaseAccess(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "postgres-application-name-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetailsApplicationName(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException {
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://")
+			.endsWith("?ApplicationName=spring+boot");
+		assertThat(executeQuery(connectionDetails, "select current_setting('application_name')", String.class))
+			.isEqualTo("spring boot");
+	}
+
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
 	}
 
-	@SuppressWarnings("unchecked")
 	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
+		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
+			.isEqualTo(1);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> resultClass)
+			throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());
 		dataSource.setPassword(connectionDetails.getPassword());
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
-		JdbcTemplate template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject(DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class)).isEqualTo(1);
+		return new JdbcTemplate(dataSource).queryForObject(sql, resultClass);
 	}
 
 }

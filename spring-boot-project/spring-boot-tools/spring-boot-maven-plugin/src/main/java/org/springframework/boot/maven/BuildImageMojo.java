@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,10 @@ import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.loader.tools.EntryWriter;
@@ -107,7 +107,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 2.3.0
 	 */
-	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
+	@Parameter(property = "spring-boot.build-image.imageName")
 	String imageName;
 
 	/**
@@ -115,14 +115,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 2.3.0
 	 */
-	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
+	@Parameter(property = "spring-boot.build-image.builder")
 	String imageBuilder;
 
 	/**
 	 * Alias for {@link Image#trustBuilder} to support configuration through command-line
 	 * property.
 	 */
-	@Parameter(property = "spring-boot.build-image.trustBuilder", readonly = true)
+	@Parameter(property = "spring-boot.build-image.trustBuilder")
 	Boolean trustBuilder;
 
 	/**
@@ -130,7 +130,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 2.3.1
 	 */
-	@Parameter(property = "spring-boot.build-image.runImage", readonly = true)
+	@Parameter(property = "spring-boot.build-image.runImage")
 	String runImage;
 
 	/**
@@ -138,21 +138,21 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 2.4.0
 	 */
-	@Parameter(property = "spring-boot.build-image.cleanCache", readonly = true)
+	@Parameter(property = "spring-boot.build-image.cleanCache")
 	Boolean cleanCache;
 
 	/**
 	 * Alias for {@link Image#pullPolicy} to support configuration through command-line
 	 * property.
 	 */
-	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
+	@Parameter(property = "spring-boot.build-image.pullPolicy")
 	PullPolicy pullPolicy;
 
 	/**
 	 * Alias for {@link Image#publish} to support configuration through command-line
 	 * property.
 	 */
-	@Parameter(property = "spring-boot.build-image.publish", readonly = true)
+	@Parameter(property = "spring-boot.build-image.publish")
 	Boolean publish;
 
 	/**
@@ -160,7 +160,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 2.6.0
 	 */
-	@Parameter(property = "spring-boot.build-image.network", readonly = true)
+	@Parameter(property = "spring-boot.build-image.network")
 	String network;
 
 	/**
@@ -168,7 +168,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 3.1.0
 	 */
-	@Parameter(property = "spring-boot.build-image.createdDate", readonly = true)
+	@Parameter(property = "spring-boot.build-image.createdDate")
 	String createdDate;
 
 	/**
@@ -176,7 +176,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * command-line property.
 	 * @since 3.1.0
 	 */
-	@Parameter(property = "spring-boot.build-image.applicationDirectory", readonly = true)
+	@Parameter(property = "spring-boot.build-image.applicationDirectory")
 	String applicationDirectory;
 
 	/**
@@ -184,7 +184,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * property.
 	 * @since 3.4.0
 	 */
-	@Parameter(property = "spring-boot.build-image.imagePlatform", readonly = true)
+	@Parameter(property = "spring-boot.build-image.imagePlatform")
 	String imagePlatform;
 
 	/**
@@ -262,9 +262,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
 			BuildRequest request = getBuildRequest(libraries);
-			DockerConfiguration dockerConfiguration = (this.docker != null)
-					? this.docker.asDockerConfiguration(request.isPublish())
-					: new Docker().asDockerConfiguration(request.isPublish());
+			Docker docker = (this.docker != null) ? this.docker : new Docker();
+			BuilderDockerConfiguration dockerConfiguration = docker.asDockerConfiguration(getLog(),
+					request.isPublish());
 			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			builder.build(request);
 		}

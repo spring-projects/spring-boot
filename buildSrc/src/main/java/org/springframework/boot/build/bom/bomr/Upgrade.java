@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.build.bom.bomr;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
-import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
  * An upgrade to change a {@link Library} to use a new version.
@@ -31,19 +29,8 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  */
 record Upgrade(Library from, Library to, Library toRelease) {
 
-	Upgrade(Library from, DependencyVersion to) {
-		this(from, from.withVersion(new LibraryVersion(to)));
-	}
-
 	Upgrade(Library from, Library to) {
-		this(from, to, withReleaseVersion(to));
-	}
-
-	private static Library withReleaseVersion(Library to) {
-		String version = to.getVersion().toString();
-		version = version.replace(".BUILD-SNAPSHOT", "");
-		version = version.replace("-SNAPSHOT", "");
-		return to.withVersion(new LibraryVersion(DependencyVersion.parse(version)));
+		this(from, to, to);
 	}
 
 }

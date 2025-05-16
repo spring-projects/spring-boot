@@ -1134,8 +1134,6 @@
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.otlp[#actuator.metrics.export.otlp]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.prometheus[#actuator.metrics.export.prometheus]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.prometheus[#production-ready-metrics-export-prometheus]
-* xref:reference:actuator/metrics.adoc#actuator.metrics.export.signalfx[#actuator.metrics.export.signalfx]
-* xref:reference:actuator/metrics.adoc#actuator.metrics.export.signalfx[#production-ready-metrics-export-signalfx]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.simple[#actuator.metrics.export.simple]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.simple[#production-ready-metrics-export-simple]
 * xref:reference:actuator/metrics.adoc#actuator.metrics.export.stackdriver[#actuator.metrics.export.stackdriver]

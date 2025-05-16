@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "management.health.diskspace")
+@ConfigurationProperties("management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
 
 	/**
@@ -56,7 +56,7 @@ public class DiskSpaceHealthIndicatorProperties {
 	}
 
 	public void setThreshold(DataSize threshold) {
-		Assert.isTrue(!threshold.isNegative(), "threshold must be greater than or equal to 0");
+		Assert.isTrue(!threshold.isNegative(), "'threshold' must be greater than or equal to 0");
 		this.threshold = threshold;
 	}
 

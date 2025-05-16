@@ -19,7 +19,7 @@ package org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfi
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.NestedConfigurationProperty
 
-@ConfigurationProperties(prefix = "my.properties")
+@ConfigurationProperties("my.properties")
 data class MyPropertiesKotlin(
 	val name: String,
 	@NestedConfigurationProperty val nested: Nested

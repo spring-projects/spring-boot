@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,17 +52,6 @@ public class PrometheusScrapeEndpoint {
 	private final ExpositionFormats expositionFormats;
 
 	private volatile int nextMetricsScrapeSize = 16;
-
-	/**
-	 * Creates a new {@link PrometheusScrapeEndpoint}.
-	 * @param prometheusRegistry the Prometheus registry to use
-	 * @deprecated since 3.3.1 for removal in 3.5.0 in favor of
-	 * {@link #PrometheusScrapeEndpoint(PrometheusRegistry, Properties)}
-	 */
-	@Deprecated(since = "3.3.1", forRemoval = true)
-	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
-		this(prometheusRegistry, null);
-	}
 
 	/**
 	 * Creates a new {@link PrometheusScrapeEndpoint}.

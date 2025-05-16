@@ -80,10 +80,12 @@ public record ElasticCommonSchemaProperties(Service service) {
 		static final Service NONE = new Service(null, null, null, null);
 
 		void jsonMembers(Members<?> members) {
-			members.add("service.name", this::name).whenHasLength();
-			members.add("service.version", this::version).whenHasLength();
-			members.add("service.environment", this::environment).whenHasLength();
-			members.add("service.node.name", this::nodeName).whenHasLength();
+			members.add("service").usingMembers((service) -> {
+				service.add("name", this::name).whenHasLength();
+				service.add("version", this::version).whenHasLength();
+				service.add("environment", this::environment).whenHasLength();
+				service.add("node").usingMembers((node) -> node.add("name", this::nodeName).whenHasLength());
+			});
 		}
 
 		Service withDefaults(Environment environment) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,13 @@ class LayerTests {
 	@Test
 	void ofWhenLayoutIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.of((IOConsumer<Layout>) null))
-			.withMessage("Layout must not be null");
+			.withMessage("'layout' must not be null");
 	}
 
 	@Test
 	void fromTarArchiveWhenTarArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.fromTarArchive(null))
-			.withMessage("TarArchive must not be null");
+			.withMessage("'tarArchive' must not be null");
 	}
 
 	@Test

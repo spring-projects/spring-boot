@@ -48,6 +48,7 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
+	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.apache.logging.log4j:log4j-jul")
@@ -60,6 +61,7 @@ dependencies {
 	optional("org.crac:crac")
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
 	optional("org.eclipse.jetty:jetty-client")
+	optional("org.eclipse.jetty:jetty-reactive-httpclient")
 	optional("org.eclipse.jetty:jetty-util")
 	optional("org.eclipse.jetty.ee10:jetty-ee10-servlets")
 	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
@@ -68,9 +70,7 @@ dependencies {
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jooq:jooq") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
+	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
@@ -97,9 +97,13 @@ dependencies {
 		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
 		exclude group: "jakarta.mail", module: "jakarta.mail-api"
 	}
+	optional("org.vibur:vibur-dbcp")
 	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
+	optional("software.amazon.jdbc:aws-advanced-jdbc-wrapper") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 
 	testFixturesCompileOnly("jakarta.servlet:jakarta.servlet-api")
 	testFixturesCompileOnly("org.mockito:mockito-core")
@@ -142,7 +146,6 @@ dependencies {
 
 	testRuntimeOnly("org.testcontainers:jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 
 	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")

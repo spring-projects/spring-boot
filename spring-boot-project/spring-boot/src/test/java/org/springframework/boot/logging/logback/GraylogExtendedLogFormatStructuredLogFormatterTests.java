@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.logging.structured.TestContextPairs;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
@@ -38,9 +39,12 @@ import static org.mockito.BDDMockito.then;
  *
  * @author Samuel Lissner
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
 class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
+
+	private MockEnvironment environment;
 
 	private GraylogExtendedLogFormatStructuredLogFormatter formatter;
 
@@ -48,12 +52,12 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@BeforeEach
 	void setUp() {
 		super.setUp();
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.gelf.host", "name");
-		environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
-		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment, getThrowableProxyConverter(),
-				this.customizer);
+		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.gelf.host", "name");
+		this.environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
+		this.environment.setProperty("spring.application.pid", "1");
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null,
+				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
 	}
 
 	@Test
@@ -150,6 +154,24 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 					.formatted()
 					.replace("\n", "\\n")
 					.replace("\r", "\\r"));
+	}
+
+	@Test
+	void shouldFormatExceptionUsingStackTracePrinter() {
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment,
+				new SimpleStackTracePrinter(), TestContextPairs.include(), getThrowableProxyConverter(),
+				this.customizer);
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));
+		String json = this.formatter.format(event);
+		Map<String, Object> deserialized = deserialize(json);
+		String fullMessage = (String) deserialized.get("full_message");
+		String stackTrace = (String) deserialized.get("_error_stack_trace");
+		assertThat(fullMessage).isEqualTo("message\n\nstacktrace:RuntimeException");
+		assertThat(deserialized)
+			.containsAllEntriesOf(map("_error_type", "java.lang.RuntimeException", "_error_message", "Boom"));
+		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 
 class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
@@ -34,7 +35,11 @@ class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 	}
 
 	Configuration getConfiguration() {
-		return ((org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false)).getConfiguration();
+		return getLoggerContext().getConfiguration();
+	}
+
+	private LoggerContext getLoggerContext() {
+		return (LoggerContext) LogManager.getContext(false);
 	}
 
 	@Override

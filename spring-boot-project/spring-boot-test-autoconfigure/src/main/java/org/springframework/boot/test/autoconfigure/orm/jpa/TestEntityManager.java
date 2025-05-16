@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class TestEntityManager {
 	 * @param entityManagerFactory the source entity manager factory
 	 */
 	public TestEntityManager(EntityManagerFactory entityManagerFactory) {
-		Assert.notNull(entityManagerFactory, "EntityManagerFactory must not be null");
+		Assert.notNull(entityManagerFactory, "'entityManagerFactory' must not be null");
 		this.entityManagerFactory = entityManagerFactory;
 	}
 

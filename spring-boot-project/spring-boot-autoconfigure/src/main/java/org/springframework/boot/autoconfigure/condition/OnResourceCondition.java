@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class OnResourceCondition extends SpringBootCondition {
 		ResourceLoader loader = context.getResourceLoader();
 		List<String> locations = new ArrayList<>();
 		collectValues(locations, attributes.get("resources"));
-		Assert.isTrue(!locations.isEmpty(),
+		Assert.state(!locations.isEmpty(),
 				"@ConditionalOnResource annotations must specify at least one resource location");
 		List<String> missing = new ArrayList<>();
 		for (String location : locations) {

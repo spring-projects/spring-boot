@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,15 @@ import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
+import org.apache.hc.client5.http.impl.classic.RedirectExec;
+import org.apache.hc.client5.http.protocol.RedirectStrategy;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
-import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -137,6 +140,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void options() {
 		RequestConfig config = getRequestConfig(
 				new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS, HttpClientOption.ENABLE_COOKIES));
@@ -155,25 +159,38 @@ class TestRestTemplateTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
-		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isFalse();
-		assertThat(getRequestConfig(null, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
-		assertThat(getRequestConfig(builder).isRedirectsEnabled()).isFalse();
-		assertThat(getRequestConfig(builder, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
-		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW)).isRedirectsEnabled()).isFalse();
-		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS)
-			.isRedirectsEnabled()).isTrue();
+		assertThat(getRedirectStrategy((RestTemplateBuilder) null)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(null, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW))).matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
+			.matches(this::isFollowStrategy);
 	}
 
 	@Test
 	void withRequestFactorySettingsRedirectsForHttpComponents() {
 		TestRestTemplate template = new TestRestTemplate();
-		assertThat(getRequestConfig(template).isRedirectsEnabled()).isFalse();
-		assertThat(getRequestConfig(template
-			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW)))
-			.isRedirectsEnabled()).isTrue();
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template
+			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW))))
+			.matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW))))
+			.matches(this::isDontFollowStrategy);
+	}
+
+	@Test
+	void withRedirects() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.FOLLOW))).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.DONT_FOLLOW)))
+			.matches(this::isDontFollowStrategy);
 	}
 
 	@Test
@@ -196,17 +213,36 @@ class TestRestTemplateTests {
 			.followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 
-	private RequestConfig getRequestConfig(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
-		builder = (builder != null) ? builder : new RestTemplateBuilder();
-		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
-		return getRequestConfig(template);
+	private RequestConfig getRequestConfig(TestRestTemplate template) {
+		ClientHttpRequestFactory requestFactory = template.getRestTemplate().getRequestFactory();
+		return (RequestConfig) Extractors.byName("httpClient.defaultConfig").apply(requestFactory);
 	}
 
-	private RequestConfig getRequestConfig(TestRestTemplate template) {
-		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-			.getRestTemplate()
-			.getRequestFactory();
-		return factory.createRequestConfig();
+	private RedirectStrategy getRedirectStrategy(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
+		builder = (builder != null) ? builder : new RestTemplateBuilder();
+		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
+		return getRedirectStrategy(template);
+	}
+
+	private RedirectStrategy getRedirectStrategy(TestRestTemplate template) {
+		ClientHttpRequestFactory requestFactory = template.getRestTemplate().getRequestFactory();
+		Object chain = Extractors.byName("httpClient.execChain").apply(requestFactory);
+		while (chain != null) {
+			Object handler = Extractors.byName("handler").apply(chain);
+			if (handler instanceof RedirectExec) {
+				return (RedirectStrategy) Extractors.byName("redirectStrategy").apply(handler);
+			}
+			chain = Extractors.byName("next").apply(chain);
+		}
+		return null;
+	}
+
+	private boolean isFollowStrategy(RedirectStrategy redirectStrategy) {
+		return redirectStrategy instanceof DefaultRedirectStrategy;
+	}
+
+	private boolean isDontFollowStrategy(RedirectStrategy redirectStrategy) {
+		return redirectStrategy.getClass().getName().contains("NoFollow");
 	}
 
 	private HttpClient getJdkHttpClient(TestRestTemplate template) {

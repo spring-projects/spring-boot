@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
 import java.util.Locale;
 
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,7 +46,7 @@ class OtlpTracingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "endpoint")
+		@ConditionalOnProperty("management.otlp.tracing.endpoint")
 		OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpTracingProperties properties) {
 			return new PropertiesOtlpTracingConnectionDetails(properties);
 		}
@@ -79,29 +81,34 @@ class OtlpTracingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "transport", havingValue = "http",
-				matchIfMissing = true)
+		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "http", matchIfMissing = true)
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				ObjectProvider<OtlpHttpSpanExporterBuilderCustomizer> customizers) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "transport", havingValue = "grpc")
+		@ConditionalOnProperty(name = "management.otlp.tracing.transport", havingValue = "grpc")
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpTracingProperties properties,
-				OtlpTracingConnectionDetails connectionDetails) {
+				OtlpTracingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider,
+				ObjectProvider<OtlpGrpcSpanExporterBuilderCustomizer> customizers) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder.build();
 		}
 

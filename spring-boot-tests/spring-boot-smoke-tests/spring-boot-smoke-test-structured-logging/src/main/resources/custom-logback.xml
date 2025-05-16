@@ -1,0 +1,11 @@
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+			<format>ecs</format>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="STDOUT"/>
+	</root>
+</configuration>

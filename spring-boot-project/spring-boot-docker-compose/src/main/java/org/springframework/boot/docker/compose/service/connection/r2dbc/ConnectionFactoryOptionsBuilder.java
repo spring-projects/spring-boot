@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,14 +51,14 @@ public class ConnectionFactoryOptionsBuilder {
 	 * @param containerPort the source container port
 	 */
 	public ConnectionFactoryOptionsBuilder(String driver, int containerPort) {
-		Assert.notNull(driver, "Driver must not be null");
+		Assert.notNull(driver, "'driver' must not be null");
 		this.driver = driver;
 		this.sourcePort = containerPort;
 	}
 
 	public ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
-		Assert.notNull(service, "Service must not be null");
-		Assert.notNull(database, "Database must not be null");
+		Assert.notNull(service, "'service' must not be null");
+		Assert.notNull(database, "'database' must not be null");
 		ConnectionFactoryOptions.Builder builder = ConnectionFactoryOptions.builder()
 			.option(ConnectionFactoryOptions.DRIVER, this.driver)
 			.option(ConnectionFactoryOptions.HOST, service.host())
@@ -91,7 +91,7 @@ public class ConnectionFactoryOptionsBuilder {
 		Map<String, String> result = new LinkedHashMap<>();
 		for (String parameter : StringUtils.commaDelimitedListToStringArray(parameters)) {
 			String[] parts = parameter.split("=");
-			Assert.state(parts.length == 2, () -> "Unable to parse parameter '%s'".formatted(parameter));
+			Assert.state(parts.length == 2, () -> "'parameters' [%s] must cotain parsable value".formatted(parameter));
 			result.put(parts[0], parts[1]);
 		}
 		return Collections.unmodifiableMap(result);

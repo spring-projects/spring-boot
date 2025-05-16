@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -238,7 +238,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @see #additionalCustomizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
 	public ThreadPoolTaskExecutorBuilder customizers(ThreadPoolTaskExecutorCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return customizers(Arrays.asList(customizers));
 	}
 
@@ -252,7 +252,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @see #additionalCustomizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
 	public ThreadPoolTaskExecutorBuilder customizers(Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, append(null, customizers));
@@ -267,7 +267,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @see #customizers(ThreadPoolTaskExecutorCustomizer...)
 	 */
 	public ThreadPoolTaskExecutorBuilder additionalCustomizers(ThreadPoolTaskExecutorCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
@@ -281,7 +281,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 */
 	public ThreadPoolTaskExecutorBuilder additionalCustomizers(
 			Iterable<? extends ThreadPoolTaskExecutorCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator,

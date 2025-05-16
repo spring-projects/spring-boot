@@ -18,7 +18,7 @@ package org.springframework.boot.docs.configurationmetadata.annotationprocessor.
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "my.server")
+@ConfigurationProperties("my.server")
 class MyServerProperties(
 
 	/**

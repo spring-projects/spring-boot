@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,14 @@ class ChangedFileTests {
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
-			.withMessageContaining("SourceDirectory must not be null");
+			.withMessageContaining("'sourceDirectory' must not be null");
 	}
 
 	@Test
 	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
-			.withMessageContaining("File must not be null");
+			.withMessageContaining("'file' must not be null");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class ChangedFileTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
 					() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test

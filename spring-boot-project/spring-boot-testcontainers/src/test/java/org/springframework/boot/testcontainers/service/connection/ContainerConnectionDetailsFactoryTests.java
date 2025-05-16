@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ContainerConnectionDetailsFactoryTests {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 	}
 
 	@Test
@@ -109,7 +109,8 @@ class ContainerConnectionDetailsFactoryTests {
 	void getConnectionDetailsWhenContainerTypeDoesNotMatchReturnsNull() {
 		ElasticsearchContainer container = mock(ElasticsearchContainer.class);
 		ContainerConnectionSource<?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
-				ElasticsearchContainer.class, container.getDockerImageName(), this.annotation, () -> container);
+				ElasticsearchContainer.class, container.getDockerImageName(), this.annotation, () -> container, null,
+				null);
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		ConnectionDetails connectionDetails = getConnectionDetails(factory, source);
 		assertThat(connectionDetails).isNull();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public final class LambdaSafe {
 	 */
 	public static <C, A> Callback<C, A> callback(Class<C> callbackType, C callbackInstance, A argument,
 			Object... additionalArguments) {
-		Assert.notNull(callbackType, "CallbackType must not be null");
-		Assert.notNull(callbackInstance, "CallbackInstance must not be null");
+		Assert.notNull(callbackType, "'callbackType' must not be null");
+		Assert.notNull(callbackInstance, "'callbackInstance' must not be null");
 		return new Callback<>(callbackType, callbackInstance, argument, additionalArguments);
 	}
 
@@ -89,8 +89,8 @@ public final class LambdaSafe {
 	 */
 	public static <C, A> Callbacks<C, A> callbacks(Class<C> callbackType, Collection<? extends C> callbackInstances,
 			A argument, Object... additionalArguments) {
-		Assert.notNull(callbackType, "CallbackType must not be null");
-		Assert.notNull(callbackInstances, "CallbackInstances must not be null");
+		Assert.notNull(callbackType, "'callbackType' must not be null");
+		Assert.notNull(callbackInstances, "'callbackInstances' must not be null");
 		return new Callbacks<>(callbackType, callbackInstances, argument, additionalArguments);
 	}
 
@@ -135,7 +135,7 @@ public final class LambdaSafe {
 		 * @return this instance
 		 */
 		public SELF withLogger(Log logger) {
-			Assert.notNull(logger, "Logger must not be null");
+			Assert.notNull(logger, "'logger' must not be null");
 			this.logger = logger;
 			return self();
 		}
@@ -148,7 +148,7 @@ public final class LambdaSafe {
 		 * @return this instance
 		 */
 		SELF withFilter(Filter<C, A> filter) {
-			Assert.notNull(filter, "Filter must not be null");
+			Assert.notNull(filter, "'filter' must not be null");
 			this.filter = filter;
 			return self();
 		}

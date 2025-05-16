@@ -65,6 +65,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Madhura Bhave
+ * @author Sijun Yang
  */
 class SpringBootContextLoaderTests {
 
@@ -130,11 +131,6 @@ class SpringBootContextLoaderTests {
 	@Test
 	void multipleActiveProfiles() {
 		assertThat(getActiveProfiles(MultipleActiveProfiles.class)).containsExactly("profile1", "profile2");
-	}
-
-	@Test
-	void activeProfileWithComma() {
-		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
 	}
 
 	@Test // gh-28776
@@ -342,14 +338,8 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@SpringBootTest(classes = Config.class)
-	@ActiveProfiles({ "profile1,2" })
-	static class ActiveProfileWithComma {
-
-	}
-
 	@SpringBootTest(properties = { "key=myValue" }, classes = Config.class)
-	@ActiveProfiles({ "profile1,2" })
+	@ActiveProfiles({ "profile1" })
 	static class ActiveProfileWithInlinedProperties {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class JsonContentTests {
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON, Configuration.defaultConfiguration()))
-			.withMessageContaining("ResourceLoadClass must not be null");
+			.withMessageContaining("'resourceLoadClass' must not be null");
 	}
 
 	@Test
@@ -47,14 +47,14 @@ class JsonContentTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
 					() -> new JsonContent<ExampleObject>(getClass(), TYPE, null, Configuration.defaultConfiguration()))
-			.withMessageContaining("JSON must not be null");
+			.withMessageContaining("'json' must not be null");
 	}
 
 	@Test
 	void createWhenConfigurationIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))
-			.withMessageContaining("Configuration must not be null");
+			.withMessageContaining("'configuration' must not be null");
 	}
 
 	@Test

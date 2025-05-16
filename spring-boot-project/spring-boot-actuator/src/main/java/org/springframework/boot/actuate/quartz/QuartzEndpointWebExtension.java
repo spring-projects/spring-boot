@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroupsDescriptor;
@@ -79,6 +80,25 @@ public class QuartzEndpointWebExtension {
 				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
 	}
 
+	/**
+	 * Trigger a Quartz job.
+	 * @param jobs path segment "jobs"
+	 * @param group job's group
+	 * @param name job name
+	 * @param state desired state
+	 * @return web endpoint response
+	 * @throws SchedulerException if there is an error triggering the job
+	 * @since 3.5.0
+	 */
+	@WriteOperation
+	public WebEndpointResponse<Object> triggerQuartzJob(@Selector String jobs, @Selector String group,
+			@Selector String name, String state) throws SchedulerException {
+		if ("jobs".equals(jobs) && "running".equals(state)) {
+			return handleNull(this.delegate.triggerQuartzJob(group, name));
+		}
+		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
+	}
+
 	private <T> WebEndpointResponse<T> handle(String jobsOrTriggers, ResponseSupplier<T> jobAction,
 			ResponseSupplier<T> triggerAction) throws SchedulerException {
 		if ("jobs".equals(jobsOrTriggers)) {
@@ -91,10 +111,8 @@ public class QuartzEndpointWebExtension {
 	}
 
 	private <T> WebEndpointResponse<T> handleNull(T value) {
-		if (value != null) {
-			return new WebEndpointResponse<>(value);
-		}
-		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
+		return (value != null) ? new WebEndpointResponse<>(value)
+				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
 
 	@FunctionalInterface

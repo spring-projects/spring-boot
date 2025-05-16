@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.ssl;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.junit.jupiter.api.Test;
@@ -31,12 +32,13 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SslManagerBundle}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class SslManagerBundleTests {
 
-	private KeyManagerFactory keyManagerFactory = mock(KeyManagerFactory.class);
+	private final KeyManagerFactory keyManagerFactory = mock(KeyManagerFactory.class);
 
-	private TrustManagerFactory trustManagerFactory = mock(TrustManagerFactory.class);
+	private final TrustManagerFactory trustManagerFactory = mock(TrustManagerFactory.class);
 
 	@Test
 	void getKeyManagersDelegatesToFactory() {
@@ -63,13 +65,13 @@ class SslManagerBundleTests {
 	@Test
 	void ofWhenKeyManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(null, this.trustManagerFactory))
-			.withMessage("KeyManagerFactory must not be null");
+			.withMessage("'keyManagerFactory' must not be null");
 	}
 
 	@Test
 	void ofWhenTrustManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(this.keyManagerFactory, null))
-			.withMessage("TrustManagerFactory must not be null");
+			.withMessage("'trustManagerFactory' must not be null");
 	}
 
 	@Test
@@ -83,6 +85,22 @@ class SslManagerBundleTests {
 	void fromCreatesDefaultSslManagerBundle() {
 		SslManagerBundle bundle = SslManagerBundle.from(SslStoreBundle.NONE, SslBundleKey.NONE);
 		assertThat(bundle).isInstanceOf(DefaultSslManagerBundle.class);
+	}
+
+	@Test
+	void shouldReturnTrustManagerFactory() {
+		SslManagerBundle bundle = SslManagerBundle.from(this.trustManagerFactory);
+		assertThat(bundle.getKeyManagerFactory()).isNotNull();
+		assertThat(bundle.getTrustManagerFactory()).isSameAs(this.trustManagerFactory);
+	}
+
+	@Test
+	void shouldReturnTrustManagers() {
+		TrustManager trustManager1 = mock(TrustManager.class);
+		TrustManager trustManager2 = mock(TrustManager.class);
+		SslManagerBundle bundle = SslManagerBundle.from(trustManager1, trustManager2);
+		assertThat(bundle.getKeyManagerFactory()).isNotNull();
+		assertThat(bundle.getTrustManagerFactory().getTrustManagers()).containsExactly(trustManager1, trustManager2);
 	}
 
 }

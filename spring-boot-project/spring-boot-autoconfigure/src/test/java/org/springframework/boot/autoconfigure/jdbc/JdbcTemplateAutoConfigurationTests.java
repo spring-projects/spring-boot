@@ -39,6 +39,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -64,24 +66,35 @@ class JdbcTemplateAutoConfigurationTests {
 			assertThat(context).hasSingleBean(JdbcOperations.class);
 			JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
 			assertThat(jdbcTemplate.getDataSource()).isEqualTo(context.getBean(DataSource.class));
+			assertThat(jdbcTemplate.isIgnoreWarnings()).isEqualTo(true);
 			assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
 			assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
 			assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+			assertThat(jdbcTemplate.isSkipResultsProcessing()).isEqualTo(false);
+			assertThat(jdbcTemplate.isSkipUndeclaredResults()).isEqualTo(false);
+			assertThat(jdbcTemplate.isResultsMapCaseInsensitive()).isEqualTo(false);
 		});
 	}
 
 	@Test
 	void testJdbcTemplateWithCustomProperties() {
 		this.contextRunner
-			.withPropertyValues("spring.jdbc.template.fetch-size:100", "spring.jdbc.template.query-timeout:60",
-					"spring.jdbc.template.max-rows:1000")
+			.withPropertyValues("spring.jdbc.template.ignore-warnings:false", "spring.jdbc.template.fetch-size:100",
+					"spring.jdbc.template.query-timeout:60", "spring.jdbc.template.max-rows:1000",
+					"spring.jdbc.template.skip-results-processing:true",
+					"spring.jdbc.template.skip-undeclared-results:true",
+					"spring.jdbc.template.results-map-case-insensitive:true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JdbcOperations.class);
 				JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
 				assertThat(jdbcTemplate.getDataSource()).isNotNull();
+				assertThat(jdbcTemplate.isIgnoreWarnings()).isEqualTo(false);
 				assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
 				assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
 				assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
+				assertThat(jdbcTemplate.isSkipResultsProcessing()).isEqualTo(true);
+				assertThat(jdbcTemplate.isSkipUndeclaredResults()).isEqualTo(true);
+				assertThat(jdbcTemplate.isResultsMapCaseInsensitive()).isEqualTo(true);
 			});
 	}
 
@@ -235,6 +248,31 @@ class JdbcTemplateAutoConfigurationTests {
 				assertThat(context).hasNotFailed();
 				assertThat(context.getBean(JdbcTemplate.class)).isNotNull();
 				assertThat(context.getBean(NamedParameterDataSourceMigrationValidator.class).count).isZero();
+			});
+	}
+
+	@Test
+	void shouldConfigureJdbcTemplateWithSQLExceptionTranslatorIfPresent() {
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator = new SQLStateSQLExceptionTranslator();
+		this.contextRunner.withBean(SQLExceptionTranslator.class, () -> sqlExceptionTranslator).run((context) -> {
+			assertThat(context).hasSingleBean(JdbcTemplate.class);
+			JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+			assertThat(jdbcTemplate.getExceptionTranslator()).isSameAs(sqlExceptionTranslator);
+		});
+	}
+
+	@Test
+	void shouldNotConfigureJdbcTemplateWithSQLExceptionTranslatorIfNotUnique() {
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator1 = new SQLStateSQLExceptionTranslator();
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator2 = new SQLStateSQLExceptionTranslator();
+		this.contextRunner
+			.withBean("sqlExceptionTranslator1", SQLExceptionTranslator.class, () -> sqlExceptionTranslator1)
+			.withBean("sqlExceptionTranslator2", SQLExceptionTranslator.class, () -> sqlExceptionTranslator2)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcTemplate.class);
+				JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+				assertThat(jdbcTemplate.getExceptionTranslator()).isNotSameAs(sqlExceptionTranslator1)
+					.isNotSameAs(sqlExceptionTranslator2);
 			});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -27,10 +29,12 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,21 +45,19 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @see ConditionalOnProperty
+ * @see ConditionalOnBooleanProperty
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
 class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
-			.stream(ConditionalOnProperty.class.getName())
-			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-			.map(MergedAnnotation::asAnnotationAttributes)
-			.toList();
+		MergedAnnotations mergedAnnotations = metadata.getAnnotations();
+		List<MergedAnnotation<Annotation>> annotations = stream(mergedAnnotations).toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
-		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
-			ConditionOutcome outcome = determineOutcome(annotationAttributes, context.getEnvironment());
+		for (MergedAnnotation<Annotation> annotation : annotations) {
+			ConditionOutcome outcome = determineOutcome(annotation, context.getEnvironment());
 			(outcome.isMatch() ? match : noMatch).add(outcome.getConditionMessage());
 		}
 		if (!noMatch.isEmpty()) {
@@ -64,53 +66,90 @@ class OnPropertyCondition extends SpringBootCondition {
 		return ConditionOutcome.match(ConditionMessage.of(match));
 	}
 
-	private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes, PropertyResolver resolver) {
-		Spec spec = new Spec(annotationAttributes);
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations mergedAnnotations) {
+		return Stream.concat(stream(mergedAnnotations, ConditionalOnProperty.class, ConditionalOnProperties.class),
+				stream(mergedAnnotations, ConditionalOnBooleanProperty.class, ConditionalOnBooleanProperties.class));
+	}
+
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations mergedAnnotations,
+			Class<? extends Annotation> type, Class<? extends Annotation> containerType) {
+		return Stream.concat(stream(mergedAnnotations, type), streamRepeated(mergedAnnotations, type, containerType));
+	}
+
+	private Stream<MergedAnnotation<Annotation>> streamRepeated(MergedAnnotations mergedAnnotations,
+			Class<? extends Annotation> type, Class<? extends Annotation> containerType) {
+		return stream(mergedAnnotations, containerType).flatMap((container) -> streamRepeated(container, type));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Stream<MergedAnnotation<Annotation>> streamRepeated(MergedAnnotation<Annotation> container,
+			Class<? extends Annotation> type) {
+		MergedAnnotation<? extends Annotation>[] repeated = container.getAnnotationArray(MergedAnnotation.VALUE, type);
+		return Arrays.stream((MergedAnnotation<Annotation>[]) repeated);
+	}
+
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations annotations,
+			Class<? extends Annotation> type) {
+		return annotations.stream(type.getName())
+			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes));
+	}
+
+	private ConditionOutcome determineOutcome(MergedAnnotation<Annotation> annotation, PropertyResolver resolver) {
+		Class<Annotation> annotationType = annotation.getType();
+		Spec spec = new Spec(annotationType, annotation.asAnnotationAttributes());
 		List<String> missingProperties = new ArrayList<>();
 		List<String> nonMatchingProperties = new ArrayList<>();
 		spec.collectProperties(resolver, missingProperties, nonMatchingProperties);
 		if (!missingProperties.isEmpty()) {
-			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
+			return ConditionOutcome.noMatch(ConditionMessage.forCondition(annotationType, spec)
 				.didNotFind("property", "properties")
 				.items(Style.QUOTE, missingProperties));
 		}
 		if (!nonMatchingProperties.isEmpty()) {
-			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
+			return ConditionOutcome.noMatch(ConditionMessage.forCondition(annotationType, spec)
 				.found("different value in property", "different value in properties")
 				.items(Style.QUOTE, nonMatchingProperties));
 		}
-		return ConditionOutcome
-			.match(ConditionMessage.forCondition(ConditionalOnProperty.class, spec).because("matched"));
+		return ConditionOutcome.match(ConditionMessage.forCondition(annotationType, spec).because("matched"));
 	}
 
 	private static class Spec {
 
-		private final String prefix;
+		private final Class<? extends Annotation> annotationType;
 
-		private final String havingValue;
+		private final String prefix;
 
 		private final String[] names;
 
+		private final String havingValue;
+
 		private final boolean matchIfMissing;
 
-		Spec(AnnotationAttributes annotationAttributes) {
+		Spec(Class<? extends Annotation> annotationType, AnnotationAttributes annotationAttributes) {
+			this.annotationType = annotationType;
+			this.prefix = (!annotationAttributes.containsKey("prefix")) ? "" : getPrefix(annotationAttributes);
+			this.names = getNames(annotationAttributes);
+			this.havingValue = annotationAttributes.get("havingValue").toString();
+			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
+		}
+
+		private String getPrefix(AnnotationAttributes annotationAttributes) {
 			String prefix = annotationAttributes.getString("prefix").trim();
 			if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
 				prefix = prefix + ".";
 			}
-			this.prefix = prefix;
-			this.havingValue = annotationAttributes.getString("havingValue");
-			this.names = getNames(annotationAttributes);
-			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
+			return prefix;
 		}
 
-		private String[] getNames(Map<String, Object> annotationAttributes) {
+		private String[] getNames(AnnotationAttributes annotationAttributes) {
 			String[] value = (String[]) annotationAttributes.get("value");
 			String[] name = (String[]) annotationAttributes.get("name");
 			Assert.state(value.length > 0 || name.length > 0,
-					"The name or value attribute of @ConditionalOnProperty must be specified");
+					() -> "The name or value attribute of @%s must be specified"
+						.formatted(ClassUtils.getShortName(this.annotationType)));
 			Assert.state(value.length == 0 || name.length == 0,
-					"The name and value attributes of @ConditionalOnProperty are exclusive");
+					() -> "The name and value attributes of @%s are exclusive"
+						.formatted(ClassUtils.getShortName(this.annotationType)));
 			return (value.length > 0) ? value : name;
 		}
 

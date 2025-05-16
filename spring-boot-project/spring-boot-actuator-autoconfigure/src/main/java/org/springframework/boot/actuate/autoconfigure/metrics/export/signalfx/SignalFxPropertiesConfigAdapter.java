@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,16 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 import io.micrometer.signalfx.SignalFxConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxProperties.HistogramType;
 
 /**
  * Adapter to convert {@link SignalFxProperties} to a {@link SignalFxConfig}.
  *
  * @author Jon Schneider
  * @since 2.0.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
+@Deprecated(since = "3.5.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class SignalFxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<SignalFxProperties>
 		implements SignalFxConfig {
 
@@ -61,7 +63,7 @@ public class SignalFxPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	}
 
 	private boolean isPublishCumulativeHistogram(SignalFxProperties properties) {
-		return HistogramType.CUMULATIVE == properties.getPublishedHistogramType();
+		return SignalFxProperties.HistogramType.CUMULATIVE == properties.getPublishedHistogramType();
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class SignalFxPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 	}
 
 	private boolean isPublishDeltaHistogram(SignalFxProperties properties) {
-		return HistogramType.DELTA == properties.getPublishedHistogramType();
+		return SignalFxProperties.HistogramType.DELTA == properties.getPublishedHistogramType();
 	}
 
 }

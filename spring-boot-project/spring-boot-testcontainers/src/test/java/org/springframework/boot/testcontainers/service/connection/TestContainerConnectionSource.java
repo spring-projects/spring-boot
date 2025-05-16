@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public final class TestContainerConnectionSource {
 			Class<C> containerType, String containerImageName, MergedAnnotation<ServiceConnection> annotation,
 			Supplier<C> containerSupplier) {
 		return new ContainerConnectionSource<>(beanNameSuffix, origin, containerType, containerImageName, annotation,
-				containerSupplier);
+				containerSupplier, null, null);
 	}
 
 }

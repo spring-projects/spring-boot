@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ConfigTreePropertySourceTests {
 	void createWhenSourceDoesNotExistThrowsException() {
 		Path missing = this.directory.resolve("missing");
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", missing))
-			.withMessage("Directory '" + missing + "' does not exist");
+			.withMessage("'sourceDirectory' [" + missing + "] must exist");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConfigTreePropertySourceTests {
 		Path file = this.directory.resolve("file");
 		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", file))
-			.withMessage("File '" + file + "' is not a directory");
+			.withMessage("'sourceDirectory' [" + file + "] must be a directory");
 	}
 
 	@Test

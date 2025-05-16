@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -95,7 +97,7 @@ public class DataSourceAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		@ConditionalOnProperty("spring.datasource.type")
 		static class ExplicitType {
 
 		}
@@ -132,6 +134,8 @@ public class DataSourceAutoConfiguration {
 
 		private static final String DATASOURCE_URL_PROPERTY = "spring.datasource.url";
 
+		private static final String EMBEDDED_DATABASE_TYPE = "org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType";
+
 		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
 
 		@Override
@@ -142,6 +146,10 @@ public class DataSourceAutoConfiguration {
 			}
 			if (anyMatches(context, metadata, this.pooledCondition)) {
 				return ConditionOutcome.noMatch(message.foundExactly("supported pooled data source"));
+			}
+			if (!ClassUtils.isPresent(EMBEDDED_DATABASE_TYPE, context.getClassLoader())) {
+				return ConditionOutcome
+					.noMatch(message.didNotFind("required class").items(Style.QUOTE, EMBEDDED_DATABASE_TYPE));
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(context.getClassLoader()).getType();
 			if (type == null) {

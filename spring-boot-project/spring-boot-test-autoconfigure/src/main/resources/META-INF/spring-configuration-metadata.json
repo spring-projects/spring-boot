@@ -17,6 +17,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether observability should be auto-configured in tests.",
       "defaultValue": "false"
+    },
+    {
+      "name": "spring.test.print-condition-evaluation-report",
+      "type": "java.lang.Boolean",
+      "description": "Whether the condition evaluation report should be printed when the ApplicationContext fails to start.",
+      "defaultValue": "true"
     }
   ]
 }

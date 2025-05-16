@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,42 +155,54 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private final ResolvableType valueType;
 
+		private final Class<?> resolvedValueType;
+
+		private final boolean valueTreatedAsNestedMap;
+
+		private final Bindable<Object> bindableMapType;
+
+		private final Bindable<Object> bindableValueType;
+
 		EntryBinder(ConfigurationPropertyName root, Bindable<?> target, AggregateElementBinder elementBinder) {
 			this.root = root;
 			this.elementBinder = elementBinder;
 			this.mapType = target.getType().asMap();
 			this.keyType = this.mapType.getGeneric(0);
 			this.valueType = this.mapType.getGeneric(1);
+			this.resolvedValueType = this.valueType.resolve(Object.class);
+			this.valueTreatedAsNestedMap = Object.class.equals(this.resolvedValueType);
+			this.bindableMapType = Bindable.of(this.mapType);
+			this.bindableValueType = Bindable.of(this.valueType);
 		}
 
 		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
 			if (source instanceof IterableConfigurationPropertySource iterableSource) {
 				for (ConfigurationPropertyName name : iterableSource) {
-					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConverter().convert(getKeyName(entryName), this.keyType);
+					Bindable<?> valueBindable = getValueBindable(name);
 					map.computeIfAbsent(key, (k) -> this.elementBinder.bind(entryName, valueBindable));
 				}
 			}
 		}
 
 		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
-			if (!this.root.isParentOf(name) && isValueTreatedAsNestedMap()) {
-				return Bindable.of(this.mapType);
-			}
-			return Bindable.of(this.valueType);
+			return (!isParentOf(name) && this.valueTreatedAsNestedMap) ? this.bindableMapType : this.bindableValueType;
 		}
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			Class<?> resolved = this.valueType.resolve(Object.class);
-			if (Collection.class.isAssignableFrom(resolved) || this.valueType.isArray()) {
+			if (Collection.class.isAssignableFrom(this.resolvedValueType) || this.valueType.isArray()) {
 				return chopNameAtNumericIndex(name);
 			}
-			if (!this.root.isParentOf(name) && (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
+			if (!isParentOf(name) && (this.valueTreatedAsNestedMap || !isScalarValue(source, name))) {
 				return name.chop(this.root.getNumberOfElements() + 1);
 			}
 			return name;
+		}
+
+		private boolean isParentOf(ConfigurationPropertyName name) {
+			return this.root.isParentOf(name);
 		}
 
 		private ConfigurationPropertyName chopNameAtNumericIndex(ConfigurationPropertyName name) {
@@ -202,10 +214,6 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				}
 			}
 			return name;
-		}
-
-		private boolean isValueTreatedAsNestedMap() {
-			return Object.class.equals(this.valueType.resolve(Object.class));
 		}
 
 		private boolean isScalarValue(ConfigurationPropertySource source, ConfigurationPropertyName name) {

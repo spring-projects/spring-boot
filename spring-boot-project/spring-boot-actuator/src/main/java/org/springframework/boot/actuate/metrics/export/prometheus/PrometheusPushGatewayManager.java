@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.PushGateway;
+import io.prometheus.metrics.exporter.pushgateway.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,12 +44,6 @@ public class PrometheusPushGatewayManager {
 
 	private final PushGateway pushGateway;
 
-	private final CollectorRegistry registry;
-
-	private final String job;
-
-	private final Map<String, String> groupingKey;
-
 	private final ShutdownOperation shutdownOperation;
 
 	private final TaskScheduler scheduler;
@@ -59,43 +51,24 @@ public class PrometheusPushGatewayManager {
 	private final ScheduledFuture<?> scheduled;
 
 	/**
-	 * Create a new {@link PrometheusPushGatewayManager} instance using a single threaded
-	 * {@link TaskScheduler}.
-	 * @param pushGateway the source push gateway
-	 * @param registry the collector registry to push
-	 * @param pushRate the rate at which push operations occur
-	 * @param job the job ID for the operation
-	 * @param groupingKeys an optional set of grouping keys for the operation
-	 * @param shutdownOperation the shutdown operation that should be performed when
-	 * context is closed.
-	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, Duration pushRate,
-			String job, Map<String, String> groupingKeys, ShutdownOperation shutdownOperation) {
-		this(pushGateway, registry, new PushGatewayTaskScheduler(), pushRate, job, groupingKeys, shutdownOperation);
-	}
-
-	/**
 	 * Create a new {@link PrometheusPushGatewayManager} instance.
 	 * @param pushGateway the source push gateway
-	 * @param registry the collector registry to push
-	 * @param scheduler the scheduler used for operations
 	 * @param pushRate the rate at which push operations occur
-	 * @param job the job ID for the operation
-	 * @param groupingKey an optional set of grouping keys for the operation
 	 * @param shutdownOperation the shutdown operation that should be performed when
-	 * context is closed.
+	 * context is closed
+	 * @since 3.5.0
 	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, TaskScheduler scheduler,
-			Duration pushRate, String job, Map<String, String> groupingKey, ShutdownOperation shutdownOperation) {
-		Assert.notNull(pushGateway, "PushGateway must not be null");
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(scheduler, "Scheduler must not be null");
-		Assert.notNull(pushRate, "PushRate must not be null");
-		Assert.hasLength(job, "Job must not be empty");
+	public PrometheusPushGatewayManager(PushGateway pushGateway, Duration pushRate,
+			ShutdownOperation shutdownOperation) {
+		this(pushGateway, new PushGatewayTaskScheduler(), pushRate, shutdownOperation);
+	}
+
+	PrometheusPushGatewayManager(PushGateway pushGateway, TaskScheduler scheduler, Duration pushRate,
+			ShutdownOperation shutdownOperation) {
+		Assert.notNull(pushGateway, "'pushGateway' must not be null");
+		Assert.notNull(scheduler, "'scheduler' must not be null");
+		Assert.notNull(pushRate, "'pushRate' must not be null");
 		this.pushGateway = pushGateway;
-		this.registry = registry;
-		this.job = job;
-		this.groupingKey = groupingKey;
 		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation : ShutdownOperation.NONE;
 		this.scheduler = scheduler;
 		this.scheduled = this.scheduler.scheduleAtFixedRate(this::post, pushRate);
@@ -103,7 +76,7 @@ public class PrometheusPushGatewayManager {
 
 	private void post() {
 		try {
-			this.pushGateway.pushAdd(this.registry, this.job, this.groupingKey);
+			this.pushGateway.pushAdd();
 		}
 		catch (Throwable ex) {
 			logger.warn("Unexpected exception thrown by POST of metrics to Prometheus Pushgateway", ex);
@@ -112,7 +85,7 @@ public class PrometheusPushGatewayManager {
 
 	private void put() {
 		try {
-			this.pushGateway.push(this.registry, this.job, this.groupingKey);
+			this.pushGateway.push();
 		}
 		catch (Throwable ex) {
 			logger.warn("Unexpected exception thrown by PUT of metrics to Prometheus Pushgateway", ex);
@@ -121,7 +94,7 @@ public class PrometheusPushGatewayManager {
 
 	private void delete() {
 		try {
-			this.pushGateway.delete(this.job, this.groupingKey);
+			this.pushGateway.delete();
 		}
 		catch (Throwable ex) {
 			logger.warn("Unexpected exception thrown by DELETE of metrics from Prometheus Pushgateway", ex);

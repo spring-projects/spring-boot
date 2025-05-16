@@ -62,6 +62,18 @@ class KotlinDefaultBindConstructorProviderTests {
 	}
 
 	@Test
+	fun `type with no param primary constructor and secondary params constructor should not use constructor binding`() {
+		val bindConstructor = this.constructorProvider.getBindConstructor(NoParamPrimaryWithParamsSecondaryProperties::class.java, false)
+		assertThat(bindConstructor).isNull()
+	}
+
+	@Test
+	fun `type with params primary constructor and no param secondary constructor should use constructor binding`() {
+		val bindConstructor = this.constructorProvider.getBindConstructor(ParamsPrimaryWithNoParamSecondaryProperties::class.java, false)
+		assertThat(bindConstructor).isNotNull()
+	}
+
+	@Test
 	fun `type with autowired secondary constructor should not use constructor binding`() {
 		val bindConstructor = this.constructorProvider.getBindConstructor(AutowiredSecondaryProperties::class.java, false)
 		assertThat(bindConstructor).isNull()
@@ -125,6 +137,18 @@ class KotlinDefaultBindConstructorProviderTests {
 
 		@Autowired
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
+	}
+
+	class NoParamPrimaryWithParamsSecondaryProperties() {
+
+		constructor(@Suppress("UNUSED_PARAMETER") name: String) : this()
+
+		var name: String? = null
+	}
+
+	class ParamsPrimaryWithNoParamSecondaryProperties(var name: String?) {
+
+		constructor() : this(null)
 	}
 
 	class AutowiredSecondaryProperties {

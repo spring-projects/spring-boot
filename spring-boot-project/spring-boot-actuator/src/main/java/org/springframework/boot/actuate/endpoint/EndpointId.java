@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,10 @@ public final class EndpointId {
 	private final String lowerCaseAlphaNumeric;
 
 	private EndpointId(String value) {
-		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "Value must only contain valid chars");
-		Assert.isTrue(!Character.isDigit(value.charAt(0)), "Value must not start with a number");
-		Assert.isTrue(!Character.isUpperCase(value.charAt(0)), "Value must not start with an uppercase letter");
+		Assert.hasText(value, "'value' must not be empty");
+		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "'value' must only contain valid chars");
+		Assert.isTrue(!Character.isDigit(value.charAt(0)), "'value' must not start with a number");
+		Assert.isTrue(!Character.isUpperCase(value.charAt(0)), "'value' must not start with an uppercase letter");
 		if (WARNING_PATTERN.matcher(value).find()) {
 			logWarning(value);
 		}
@@ -125,7 +125,7 @@ public final class EndpointId {
 	 * @since 2.2.0
 	 */
 	public static EndpointId of(Environment environment, String value) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		return new EndpointId(migrateLegacyId(environment, value));
 	}
 

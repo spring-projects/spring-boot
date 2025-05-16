@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class ConfigurationsTests {
 	@Test
 	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations((Collection<Class<?>>) null))
-			.withMessageContaining("Classes must not be null");
+			.withMessageContaining("'classes' must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,19 +146,25 @@ public class Cookie {
 	public enum SameSite {
 
 		/**
-		 * Cookies are sent in both first-party and cross-origin requests.
+		 * SameSite attribute will be omitted when creating the cookie.
+		 */
+		OMITTED(null),
+
+		/**
+		 * SameSite attribute will be set to None. Cookies are sent in both first-party
+		 * and cross-origin requests.
 		 */
 		NONE("None"),
 
 		/**
-		 * Cookies are sent in a first-party context, also when following a link to the
-		 * origin site.
+		 * SameSite attribute will be set to Lax. Cookies are sent in a first-party
+		 * context, also when following a link to the origin site.
 		 */
 		LAX("Lax"),
 
 		/**
-		 * Cookies are only sent in a first-party context (i.e. not when following a link
-		 * to the origin site).
+		 * SameSite attribute will be set to Strict. Cookies are only sent in a
+		 * first-party context (i.e. not when following a link to the origin site).
 		 */
 		STRICT("Strict");
 

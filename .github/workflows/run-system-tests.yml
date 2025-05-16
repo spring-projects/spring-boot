@@ -2,7 +2,7 @@ name: Run System Tests
 on:
   push:
     branches:
-      - '3.4.x'
+      - main
 jobs:
   run-system-tests:
     name: 'Java ${{ matrix.java.version}}'

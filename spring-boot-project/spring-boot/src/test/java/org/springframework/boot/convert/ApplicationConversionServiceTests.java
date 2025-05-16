@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,34 +19,53 @@ package org.springframework.boot.convert;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.convert.ApplicationConversionService.ConverterBeanAdapter;
+import org.springframework.boot.convert.ApplicationConversionService.ParserBeanAdapter;
+import org.springframework.boot.convert.ApplicationConversionService.PrinterBeanAdapter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.ConditionalConverter;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
+import org.springframework.format.support.FormattingConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link ApplicationConversionService}.
  *
  * @author Phillip Webb
+ * @author Shixiong Guo
  */
 class ApplicationConversionServiceTests {
 
-	private final FormatterRegistry registry = mock(FormatterRegistry.class);
+	private final FormatterRegistry registry = mock(FormatterRegistry.class,
+			withSettings().extraInterfaces(ConversionService.class));
 
 	@Test
 	void addBeansWhenHasGenericConverterBeanAddConverter() {
@@ -95,6 +114,47 @@ class ApplicationConversionServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	void addBeansWhenHasConverterBeanMethodAddConverter() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				ConverterBeanMethodConfiguration.class)) {
+			Converter<String, Integer> converter = (Converter<String, Integer>) context.getBean("converter");
+			willThrow(IllegalArgumentException.class).given(this.registry).addConverter(converter);
+			ApplicationConversionService.addBeans(this.registry, context);
+			then(this.registry).should().addConverter(any(ConverterBeanAdapter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
+		}
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void addBeansWhenHasPrinterBeanMethodAddPrinter() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				PrinterBeanMethodConfiguration.class)) {
+			Printer<Integer> printer = (Printer<Integer>) context.getBean("printer");
+			willThrow(IllegalArgumentException.class).given(this.registry).addPrinter(printer);
+			ApplicationConversionService.addBeans(this.registry, context);
+			then(this.registry).should(never()).addPrinter(printer);
+			then(this.registry).should().addConverter(any(PrinterBeanAdapter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
+		}
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void addBeansWhenHasParserBeanMethodAddParser() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
+				ParserBeanMethodConfiguration.class)) {
+			Parser<Integer> parser = (Parser<Integer>) context.getBean("parser");
+			willThrow(IllegalArgumentException.class).given(this.registry).addParser(parser);
+			ApplicationConversionService.addBeans(this.registry, context);
+			then(this.registry).should(never()).addParser(parser);
+			then(this.registry).should().addConverter(any(ParserBeanAdapter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
+		}
+	}
+
+	@Test
 	void isConvertViaObjectSourceTypeWhenObjectSourceReturnsTrue() {
 		// Uses ObjectToCollectionConverter
 		ApplicationConversionService conversionService = new ApplicationConversionService();
@@ -129,6 +189,130 @@ class ApplicationConversionServiceTests {
 		assertUnmodifiableExceptionThrown(() -> instance.addConverter((GenericConverter) null));
 		assertUnmodifiableExceptionThrown(() -> instance.addConverterFactory(null));
 		assertUnmodifiableExceptionThrown(() -> instance.removeConvertible(null, null));
+	}
+
+	@Test
+	void addPrinterBeanWithTypeConvertsUsingTypeInformation() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Printer<?> printer = (object, locale) -> object.toString().toUpperCase(locale);
+		ApplicationConversionService.addBean(conversionService, printer,
+				ResolvableType.forClassWithGenerics(Printer.class, ExampleRecord.class));
+		assertThat(conversionService.convert(new ExampleRecord("test"), String.class)).isEqualTo("TEST");
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert(new OtherRecord("test"), String.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addPrinter(printer))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	void addParserBeanWithTypeConvertsUsingTypeInformation() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Parser<?> parser = (text, locale) -> new ExampleRecord(text.toString());
+		ApplicationConversionService.addBean(conversionService, parser,
+				ResolvableType.forClassWithGenerics(Parser.class, ExampleRecord.class));
+		assertThat(conversionService.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert("test", OtherRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addParser(parser))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void addFormatterBeanWithTypeConvertsUsingTypeInformation() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Formatter<?> formatter = new Formatter() {
+
+			@Override
+			public String print(Object object, Locale locale) {
+				return object.toString().toUpperCase(locale);
+			}
+
+			@Override
+			public Object parse(String text, Locale locale) throws ParseException {
+				return new ExampleRecord(text.toString());
+			}
+
+		};
+		ApplicationConversionService.addBean(conversionService, formatter,
+				ResolvableType.forClassWithGenerics(Formatter.class, ExampleRecord.class));
+		assertThat(conversionService.convert(new ExampleRecord("test"), String.class)).isEqualTo("TEST");
+		assertThat(conversionService.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert(new OtherRecord("test"), String.class));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert("test", OtherRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addFormatter(formatter))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	void addConverterBeanWithTypeConvertsUsingTypeInformation() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Converter<?, ?> converter = (source) -> new ExampleRecord(source.toString());
+		ApplicationConversionService.addBean(conversionService, converter,
+				ResolvableType.forClassWithGenerics(Converter.class, CharSequence.class, ExampleRecord.class));
+		assertThat(conversionService.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThat(conversionService.convert(new StringBuilder("test"), ExampleRecord.class))
+			.isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert("test", OtherRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addConverter(converter))
+			.withMessageContaining("Unable to determine");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void addConverterBeanWithTypeWhenConditionalChecksCondition() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		ConditionalConverterConverter<?, ?> converter = new ConditionalConverterConverter() {
+
+			@Override
+			public Object convert(Object source) {
+				return new ExampleRecord(source.toString());
+			}
+
+			@Override
+			public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+				return sourceType.getType() != StringBuilder.class;
+			}
+
+		};
+		ApplicationConversionService.addBean(conversionService, converter,
+				ResolvableType.forClassWithGenerics(Converter.class, CharSequence.class, ExampleRecord.class));
+		assertThat(conversionService.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert(new StringBuilder("test"), ExampleRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addConverter(converter))
+			.withMessageContaining("Unable to determine");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void addConverterBeanWithTypeWhenNullSourceCanConvertToOptionEmpty() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Converter<?, ?> converter = (source) -> new ExampleRecord(source.toString());
+		ApplicationConversionService.addBean(conversionService, converter,
+				ResolvableType.forClassWithGenerics(Converter.class, CharSequence.class, ExampleRecord.class));
+		assertThat(conversionService.convert(null, ExampleRecord.class)).isNull();
+		assertThat(conversionService.convert(null, Optional.class)).isEmpty();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void addConverterFactoryBeanWithTypeConvertsUsingTypeInformation() {
+		FormattingConversionService conversionService = new FormattingConversionService();
+		Converter<?, ?> converter = (source) -> new ExampleRecord(source.toString());
+		ConverterFactory converterFactory = (targetType) -> converter;
+		ApplicationConversionService.addBean(conversionService, converterFactory,
+				ResolvableType.forClassWithGenerics(ConverterFactory.class, CharSequence.class, ExampleRecord.class));
+		assertThat(conversionService.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThat(conversionService.convert(new StringBuilder("test"), ExampleRecord.class))
+			.isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> conversionService.convert("test", OtherRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> conversionService.addConverterFactory(converterFactory))
+			.withMessageContaining("Unable to determine");
 	}
 
 	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
@@ -188,6 +372,53 @@ class ApplicationConversionServiceTests {
 		public String print(Integer object, Locale locale) {
 			return null;
 		}
+
+	}
+
+	@Configuration
+	static class ConverterBeanMethodConfiguration {
+
+		@Bean
+		Converter<String, Integer> converter() {
+			return Integer::valueOf;
+		}
+
+	}
+
+	@Configuration
+	static class PrinterBeanMethodConfiguration {
+
+		@Bean
+		Printer<Integer> printer() {
+			return (object, locale) -> object.toString();
+		}
+
+	}
+
+	@Configuration
+	static class ParserBeanMethodConfiguration {
+
+		@Bean
+		Parser<Integer> parser() {
+			return (text, locale) -> Integer.valueOf(text);
+		}
+
+	}
+
+	record ExampleRecord(String value) {
+
+		@Override
+		public final String toString() {
+			return value();
+		}
+
+	}
+
+	record OtherRecord(String value) {
+
+	}
+
+	interface ConditionalConverterConverter<S, T> extends Converter<S, T>, ConditionalConverter {
 
 	}
 

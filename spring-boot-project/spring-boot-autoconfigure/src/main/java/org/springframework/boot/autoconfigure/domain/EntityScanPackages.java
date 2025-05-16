@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,8 @@ public class EntityScanPackages {
 	 * @param packageNames the package names to register
 	 */
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(packageNames, "PackageNames must not be null");
+		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(packageNames, "'packageNames' must not be null");
 		register(registry, Arrays.asList(packageNames));
 	}
 
@@ -107,8 +107,8 @@ public class EntityScanPackages {
 	 * @param packageNames the package names to register
 	 */
 	public static void register(BeanDefinitionRegistry registry, Collection<String> packageNames) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(packageNames, "PackageNames must not be null");
+		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(packageNames, "'packageNames' must not be null");
 		if (registry.containsBeanDefinition(BEAN)) {
 			EntityScanPackagesBeanDefinition beanDefinition = (EntityScanPackagesBeanDefinition) registry
 				.getBeanDefinition(BEAN);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
+ * @see org.springframework.boot.web.servlet.ServletRegistration
  */
 public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 
@@ -86,8 +87,8 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl, String... urlMappings) {
-		Assert.notNull(servlet, "Servlet must not be null");
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.servlet = servlet;
 		this.alwaysMapUrl = alwaysMapUrl;
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
@@ -98,7 +99,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @param servlet the servlet
 	 */
 	public void setServlet(T servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
 		this.servlet = servlet;
 	}
 
@@ -117,7 +118,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @see #addUrlMappings(String...)
 	 */
 	public void setUrlMappings(Collection<String> urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.urlMappings = new LinkedHashSet<>(urlMappings);
 	}
 
@@ -136,7 +137,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @see #setUrlMappings(Collection)
 	 */
 	public void addUrlMappings(String... urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 
@@ -168,7 +169,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 
 	@Override
 	protected String getDescription() {
-		Assert.notNull(this.servlet, "Servlet must not be null");
+		Assert.state(this.servlet != null, "Unable to return description for null servlet");
 		return "servlet " + getServletName();
 	}
 

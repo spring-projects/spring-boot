@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,17 +66,24 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	void taskDecoratorShouldApply() {
+		TaskDecorator taskDecorator = mock(TaskDecorator.class);
+		ThreadPoolTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
+		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
+	}
+
+	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -110,14 +118,14 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((ThreadPoolTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<ThreadPoolTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public interface SslOptions {
 	/**
 	 * {@link SslOptions} that returns {@code null} results.
 	 */
-	SslOptions NONE = of((Set<String>) null, (Set<String>) null);
+	SslOptions NONE = of(null, (Set<String>) null);
 
 	/**
 	 * Return if any SSL options have been specified.

@@ -63,7 +63,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 
 	private DefaultExceptionTranslatorExecuteListener(Log logger,
 			Function<ExecuteContext, SQLExceptionTranslator> translatorFactory) {
-		Assert.notNull(translatorFactory, "TranslatorFactory must not be null");
+		Assert.notNull(translatorFactory, "'translatorFactory' must not be null");
 		this.logger = logger;
 		this.translatorFactory = translatorFactory;
 	}

@@ -101,10 +101,19 @@ class GraphQlWebMvcAutoConfigurationTests {
 
 	@Test
 	void shouldConfigureSseTimeout() {
-		this.contextRunner.withPropertyValues("spring.graphql.sse.timeout=10s").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.timeout=10s").run((context) -> {
 			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
 			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
 			assertThat(handler).hasFieldOrPropertyWithValue("timeout", Duration.ofSeconds(10));
+		});
+	}
+
+	@Test
+	void shouldConfigureSseKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.keep-alive=5s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("keepAliveDuration", Duration.ofSeconds(5));
 		});
 	}
 

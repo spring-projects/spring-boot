@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,9 +102,9 @@ public class JobLauncherApplicationRunner
 	 * when running a job
 	 */
 	public JobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer, JobRepository jobRepository) {
-		Assert.notNull(jobLauncher, "JobLauncher must not be null");
-		Assert.notNull(jobExplorer, "JobExplorer must not be null");
-		Assert.notNull(jobRepository, "JobRepository must not be null");
+		Assert.notNull(jobLauncher, "'jobLauncher' must not be null");
+		Assert.notNull(jobExplorer, "'jobExplorer' must not be null");
+		Assert.notNull(jobRepository, "'jobRepository' must not be null");
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 		this.jobRepository = jobRepository;
@@ -112,10 +112,10 @@ public class JobLauncherApplicationRunner
 
 	@Override
 	public void afterPropertiesSet() {
-		Assert.isTrue(this.jobs.size() <= 1 || StringUtils.hasText(this.jobName),
+		Assert.state(this.jobs.size() <= 1 || StringUtils.hasText(this.jobName),
 				"Job name must be specified in case of multiple jobs");
 		if (StringUtils.hasText(this.jobName)) {
-			Assert.isTrue(isLocalJob(this.jobName) || isRegisteredJob(this.jobName),
+			Assert.state(isLocalJob(this.jobName) || isRegisteredJob(this.jobName),
 					() -> "No job found with name '" + this.jobName + "'");
 		}
 	}

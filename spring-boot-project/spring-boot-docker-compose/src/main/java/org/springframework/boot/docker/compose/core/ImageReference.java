@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public final class ImageReference {
 	private final String string;
 
 	private ImageReference(ImageName name, String tag, String digest) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 		this.tag = tag;
 		this.digest = digest;
@@ -136,7 +136,7 @@ public final class ImageReference {
 	 * @return an {@link ImageReference} instance
 	 */
 	public static ImageReference of(String value) {
-		Assert.hasText(value, "Value must not be null");
+		Assert.hasText(value, "'value' must not be null");
 		String domain = ImageName.parseDomain(value);
 		String path = (domain != null) ? value.substring(domain.length() + 1) : value;
 		String digest = null;
@@ -162,9 +162,9 @@ public final class ImageReference {
 			}
 		}
 		Assert.isTrue(Regex.PATH.matcher(path).matches(),
-				() -> "Unable to parse image reference \"" + value + "\". "
-						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
-						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+				() -> "'value' path must contain an image reference in the form "
+						+ "'[domainHost:port/][path/]name[:tag][@digest] "
+						+ "(with 'path' and 'name' containing only [a-z0-9][.][_][-]) [" + value + "]");
 		ImageName name = new ImageName(domain, path);
 		return new ImageReference(name, tag, digest);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,9 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	static {
 		Field closeConnectionExecutor = ReflectionUtils.findField(HikariPool.class, "closeConnectionExecutor");
-		Assert.notNull(closeConnectionExecutor, "Unable to locate closeConnectionExecutor for HikariPool");
-		Assert.isAssignable(ThreadPoolExecutor.class, closeConnectionExecutor.getType(),
-				"Expected ThreadPoolExecutor for closeConnectionExecutor but found %s"
+		Assert.state(closeConnectionExecutor != null, "Unable to locate closeConnectionExecutor for HikariPool");
+		Assert.state(ThreadPoolExecutor.class.isAssignableFrom(closeConnectionExecutor.getType()),
+				() -> "Expected ThreadPoolExecutor for closeConnectionExecutor but found %s"
 					.formatted(closeConnectionExecutor.getType()));
 		ReflectionUtils.makeAccessible(closeConnectionExecutor);
 		CLOSE_CONNECTION_EXECUTOR = closeConnectionExecutor;
@@ -104,7 +104,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 		this.hasOpenConnections = (pool) -> {
 			ThreadPoolExecutor closeConnectionExecutor = (ThreadPoolExecutor) ReflectionUtils
 				.getField(CLOSE_CONNECTION_EXECUTOR, pool);
-			Assert.notNull(closeConnectionExecutor, "CloseConnectionExecutor was null");
+			Assert.state(closeConnectionExecutor != null, "'closeConnectionExecutor' was null");
 			return closeConnectionExecutor.getActiveCount() > 0;
 		};
 	}

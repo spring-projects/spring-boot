@@ -85,7 +85,9 @@ You should have a `<parent>` section that looks like this:
 </parent>
 ----
 
-The `spring-boot-starter-parent` declares a `nativeTest` profile that configures the executions that are needed to run the native tests.
+The `spring-boot-starter-parent` defines a `nativeTest` profile that provides the necessary configuration for the Spring Boot and Native Build Tools plugins.
+First you need to add those two plugin in the module to opt-in for the feature.
+Your tests are executed in native mode only when the `nativeTest` is enabled.
 You can activate profiles using the `-P` flag on the command line.
 
 TIP: If you don't want to use `spring-boot-starter-parent` you'll need to configure executions for the `process-test-aot` goal from the Spring Boot plugin and the `test` goal from the Native Build Tools plugin.

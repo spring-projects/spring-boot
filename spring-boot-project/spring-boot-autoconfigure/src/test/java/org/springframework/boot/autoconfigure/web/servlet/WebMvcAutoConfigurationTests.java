@@ -81,6 +81,7 @@ import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -88,6 +89,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.FixedContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
@@ -571,12 +573,23 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void customMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.media-types.yaml:text/yaml")
-			.run((context) -> {
-				RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
-				ContentNegotiationManager contentNegotiationManager = (ContentNegotiationManager) ReflectionTestUtils
-					.getField(adapter, "contentNegotiationManager");
-				assertThat(contentNegotiationManager.getAllFileExtensions()).contains("yaml");
-			});
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("contentNegotiationManager",
+						InstanceOfAssertFactories.type(ContentNegotiationManager.class))
+				.satisfies((contentNegotiationManager) -> assertThat(contentNegotiationManager.getAllFileExtensions())
+					.contains("yaml")));
+	}
+
+	@Test
+	void customDefaultContentTypes() {
+		this.contextRunner
+			.withPropertyValues("spring.mvc.contentnegotiation.default-content-types:application/json,application/xml")
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("contentNegotiationManager",
+						InstanceOfAssertFactories.type(ContentNegotiationManager.class))
+				.satisfies((contentNegotiationManager) -> assertThat(
+						contentNegotiationManager.getStrategy(FixedContentNegotiationStrategy.class).getContentTypes())
+					.containsExactly(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)));
 	}
 
 	@Test

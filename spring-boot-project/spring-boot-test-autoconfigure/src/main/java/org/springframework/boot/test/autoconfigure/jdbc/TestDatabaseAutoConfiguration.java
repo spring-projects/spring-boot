@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class TestDatabaseAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "NON_TEST",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "NON_TEST", matchIfMissing = true)
 	static EmbeddedDataSourceBeanFactoryPostProcessor nonTestEmbeddedDataSourceBeanFactoryPostProcessor(
 			Environment environment) {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.NON_TEST);
@@ -88,14 +87,14 @@ public class TestDatabaseAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY")
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "ANY")
 	static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor(
 			Environment environment) {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.ANY);
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
@@ -127,8 +126,8 @@ public class TestDatabaseAutoConfiguration {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
 			}
-			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
-					"Test Database Auto-configuration can only be used with a ConfigurableListableBeanFactory");
+			Assert.isTrue(registry instanceof ConfigurableListableBeanFactory,
+					"'registry' must be a ConfigurableListableBeanFactory");
 			process(registry, (ConfigurableListableBeanFactory) registry);
 		}
 

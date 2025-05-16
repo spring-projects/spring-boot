@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,17 +63,30 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	void taskTerminationTimeoutShouldApply() {
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
+		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
+	}
+
+	@Test
+	void taskDecoratorShouldApply() {
+		TaskDecorator taskDecorator = mock(TaskDecorator.class);
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
+		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
+	}
+
+	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -107,14 +121,14 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -126,12 +140,6 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 			.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);
-	}
-
-	@Test
-	void taskTerminationTimeoutShouldApply() {
-		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
-		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
 	}
 
 }

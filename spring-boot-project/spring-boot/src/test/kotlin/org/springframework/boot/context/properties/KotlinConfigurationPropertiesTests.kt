@@ -87,7 +87,7 @@ class KotlinConfigurationPropertiesTests {
 		assertThat(this.context.getBean(MutableDataClassProperties::class.java).prop).isEqualTo("alpha")
 	}
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String)
 
 	@EnableConfigurationProperties
@@ -122,7 +122,7 @@ class KotlinConfigurationPropertiesTests {
 	@Import(MutableDataClassProperties::class)
 	class MutableDataClassPropertiesImporter
 
-	@ConfigurationProperties(prefix = "mutable")
+	@ConfigurationProperties("mutable")
 	data class MutableDataClassProperties(
 		var prop: String = ""
 	)
@@ -130,7 +130,7 @@ class KotlinConfigurationPropertiesTests {
 	@EnableConfigurationProperties(RenamedProperties::class)
 	class EnableRenamedProperties
 
-	@ConfigurationProperties(prefix = "renamed")
+	@ConfigurationProperties("renamed")
 	class RenamedProperties{
 		@Name("var")
 		var bar: String = ""

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,23 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
+import java.util.List;
+
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.client.HttpClientProperties.Factory;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -40,31 +41,47 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 3.4.0
  */
+@SuppressWarnings("removal")
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientProperties.class)
-public class HttpClientAutoConfiguration {
+public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
-	@Bean
-	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties) {
-		Factory factory = httpClientProperties.getFactory();
-		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect();
+	private final ClientHttpRequestFactories factories;
+
+	private ClassLoader beanClassLoader;
+
+	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientProperties properties) {
+		this.factories = new ClientHttpRequestFactories(sslBundles, properties);
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(HttpClientProperties httpClientProperties,
-			ObjectProvider<SslBundles> sslBundles) {
-		SslBundle sslBundle = getSslBundle(httpClientProperties.getSsl(), sslBundles);
-		return new ClientHttpRequestFactorySettings(httpClientProperties.getRedirects(),
-				httpClientProperties.getConnectTimeout(), httpClientProperties.getReadTimeout(), sslBundle);
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
+			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
+		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
+		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
 
-	private SslBundle getSslBundle(HttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {
-		String name = properties.getBundle();
-		return (StringUtils.hasLength(name)) ? sslBundles.getObject().getBundle(name) : null;
+	@SuppressWarnings("unchecked")
+	private ClientHttpRequestFactoryBuilder<?> customize(ClientHttpRequestFactoryBuilder<?> builder,
+			List<ClientHttpRequestFactoryBuilderCustomizer<?>> customizers) {
+		ClientHttpRequestFactoryBuilder<?>[] builderReference = { builder };
+		LambdaSafe.callbacks(ClientHttpRequestFactoryBuilderCustomizer.class, customizers, builderReference[0])
+			.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
+		return builderReference[0];
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings() {
+		return this.factories.settings();
 	}
 
 }

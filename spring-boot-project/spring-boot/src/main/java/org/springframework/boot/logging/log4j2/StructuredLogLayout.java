@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
@@ -52,7 +54,7 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 	private StructuredLogLayout(Charset charset, StructuredLogFormatter<LogEvent> formatter) {
 		super(charset);
-		Assert.notNull(formatter, "Formatter must not be null");
+		Assert.notNull(formatter, "'formatter' must not be null");
 		this.formatter = formatter;
 	}
 
@@ -111,22 +113,30 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new ElasticCommonSchemaStructuredLogFormatter(environment, jsonMembersCustomizer);
+			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
+					jsonMembersCustomizer);
 		}
 
 		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, jsonMembersCustomizer);
+			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
+					jsonMembersCustomizer);
 		}
 
 		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructuredLoggingJsonMembersCustomizer.class);
-			return new LogstashStructuredLogFormatter(jsonMembersCustomizer);
+			return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, jsonMembersCustomizer);
 		}
 
 	}

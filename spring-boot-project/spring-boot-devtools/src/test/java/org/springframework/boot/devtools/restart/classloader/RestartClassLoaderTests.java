@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,14 +104,14 @@ class RestartClassLoaderTests {
 	@Test
 	void parentMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
-			.withMessageContaining("Parent must not be null");
+			.withMessageContaining("'parent' must not be null");
 	}
 
 	@Test
 	void updatedFilesMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
-			.withMessageContaining("UpdatedFiles must not be null");
+			.withMessageContaining("'updatedFiles' must not be null");
 	}
 
 	@Test

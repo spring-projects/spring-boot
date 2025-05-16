@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
@@ -60,9 +59,10 @@ import org.springframework.util.unit.DataSize;
  * @author Tomaz Fernandes
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.kafka")
+@ConfigurationProperties("spring.kafka")
 public class KafkaProperties {
 
 	/**
@@ -339,6 +339,12 @@ public class KafkaProperties {
 		private Integer maxPollRecords;
 
 		/**
+		 * Maximum delay between invocations of poll() when using consumer group
+		 * management.
+		 */
+		private Duration maxPollInterval;
+
+		/**
 		 * Additional consumer-specific properties used to configure the client.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -455,6 +461,14 @@ public class KafkaProperties {
 			this.maxPollRecords = maxPollRecords;
 		}
 
+		public Duration getMaxPollInterval() {
+			return this.maxPollInterval;
+		}
+
+		public void setMaxPollInterval(Duration maxPollInterval) {
+			this.maxPollInterval = maxPollInterval;
+		}
+
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
@@ -484,6 +498,9 @@ public class KafkaProperties {
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
+			map.from(this::getMaxPollInterval)
+				.asInt(Duration::toMillis)
+				.to(properties.in(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties, sslBundles);
 		}
 
@@ -1081,6 +1098,11 @@ public class KafkaProperties {
 		 */
 		private boolean observationEnabled;
 
+		/**
+		 * Time between retries after authentication exceptions.
+		 */
+		private Duration authExceptionRetryInterval;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1231,6 +1253,14 @@ public class KafkaProperties {
 
 		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
+		}
+
+		public Duration getAuthExceptionRetryInterval() {
+			return this.authExceptionRetryInterval;
+		}
+
+		public void setAuthExceptionRetryInterval(Duration authExceptionRetryInterval) {
+			this.authExceptionRetryInterval = authExceptionRetryInterval;
 		}
 
 	}
@@ -1401,10 +1431,10 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
 			String bundleName = getBundle();
-			if (StringUtils.hasText(bundleName)) {
-				return buildPropertiesForSslBundle(sslBundles, bundleName);
-			}
 			Properties properties = new Properties();
+			if (StringUtils.hasText(bundleName)) {
+				return properties;
+			}
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreCertificateChain)
@@ -1422,13 +1452,6 @@ public class KafkaProperties {
 			map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
 			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
 			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
-			return properties;
-		}
-
-		private Map<String, Object> buildPropertiesForSslBundle(SslBundles sslBundles, String name) {
-			Properties properties = new Properties();
-			properties.in(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG).accept(SslBundleSslEngineFactory.class);
-			properties.in(SslBundle.class.getName()).accept(sslBundles.getBundle(name));
 			return properties;
 		}
 

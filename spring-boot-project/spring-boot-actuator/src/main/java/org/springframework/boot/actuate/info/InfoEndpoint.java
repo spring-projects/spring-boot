@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class InfoEndpoint {
 	 * @param infoContributors the info contributors to use
 	 */
 	public InfoEndpoint(List<InfoContributor> infoContributors) {
-		Assert.notNull(infoContributors, "Info contributors must not be null");
+		Assert.notNull(infoContributors, "'infoContributors' must not be null");
 		this.infoContributors = infoContributors;
 	}
 

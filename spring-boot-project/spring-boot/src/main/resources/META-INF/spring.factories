@@ -12,12 +12,14 @@ org.springframework.boot.env.YamlPropertySourceLoader
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver,\
-org.springframework.boot.context.config.StandardConfigDataLocationResolver
+org.springframework.boot.context.config.StandardConfigDataLocationResolver,\
+org.springframework.boot.context.config.SystemEnvironmentConfigDataLocationResolver
 
 # ConfigData Loaders
 org.springframework.boot.context.config.ConfigDataLoader=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
-org.springframework.boot.context.config.StandardConfigDataLoader
+org.springframework.boot.context.config.StandardConfigDataLoader,\
+org.springframework.boot.context.config.SystemEnvironmentConfigDataLoader
 
 # Application Context Factories
 org.springframework.boot.ApplicationContextFactory=\
@@ -109,5 +111,5 @@ org.springframework.boot.io.Base64ProtocolResolver
 # Resource File Path Resolvers
 org.springframework.boot.io.ApplicationResourceLoader$FilePathResolver=\
 org.springframework.boot.io.ClassPathResourceFilePathResolver,\
-org.springframework.boot.web.context.ServletContextResourceFilePathResolver,\
-org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver
+org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver,\
+org.springframework.boot.web.servlet.context.ServletContextResourceFilePathResolver

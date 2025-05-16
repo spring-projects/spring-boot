@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -26,11 +25,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link OtlpMetricsPropertiesConfigAdapter}.
@@ -57,6 +58,20 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesUrlIsNotSetAdapterUrlReturnsDefault() {
+		assertThat(this.properties.getUrl()).isNull();
+		assertThat(createAdapter().url()).isEqualTo("http://localhost:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesUrlIsNotSetThenUseOtlpConfigUrlAsFallback() {
+		assertThat(this.properties.getUrl()).isNull();
+		OtlpMetricsPropertiesConfigAdapter adapter = spy(createAdapter());
+		given(adapter.get("management.otlp.metrics.export.url")).willReturn("https://my-endpoint/v1/metrics");
+		assertThat(adapter.url()).isEqualTo("https://my-endpoint/v1/metrics");
+	}
+
+	@Test
 	void whenPropertiesUrlIsSetAdapterUrlReturnsIt() {
 		this.properties.setUrl("http://another-url:4318/v1/metrics");
 		assertThat(createAdapter().url()).isEqualTo("http://another-url:4318/v1/metrics");
@@ -74,9 +89,8 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
-		this.properties.setResourceAttributes(Map.of("service.name", "boot-service"));
+	void whenOpenTelemetryPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "boot-service"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "boot-service");
 	}
 
@@ -95,6 +109,20 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
 		this.properties.setHistogramFlavor(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
 		assertThat(createAdapter().histogramFlavor()).isSameAs(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsNotSetAdapterHistogramFlavorReturnsEmptyMap() {
+		assertThat(createAdapter().histogramFlavorPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorPerMeterIsSetAdapterHistogramFlavorPerMeterReturnsIt() {
+		Meter meterProperties = new Meter();
+		meterProperties.setHistogramFlavor(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+		this.properties.getMeter().put("my.histograms", meterProperties);
+		assertThat(createAdapter().histogramFlavorPerMeter()).containsEntry("my.histograms",
+				HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
 	}
 
 	@Test
@@ -120,6 +148,19 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesMaxBucketsPerMeterIsNotSetAdapterMaxBucketsPerMeterReturnsEmptyMap() {
+		assertThat(createAdapter().maxBucketsPerMeter()).isEmpty();
+	}
+
+	@Test
+	void whenPropertiesMaxBucketsPerMeterIsSetAdapterMaxBucketsPerMeterReturnsIt() {
+		Meter meterProperties = new Meter();
+		meterProperties.setMaxBucketCount(111);
+		this.properties.getMeter().put("my.histograms", meterProperties);
+		assertThat(createAdapter().maxBucketsPerMeter()).containsEntry("my.histograms", 111);
+	}
+
+	@Test
 	void whenPropertiesBaseTimeUnitIsNotSetAdapterBaseTimeUnitReturnsMillis() {
 		assertThat(createAdapter().baseTimeUnit()).isSameAs(TimeUnit.MILLISECONDS);
 	}
@@ -131,32 +172,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void openTelemetryPropertiesShouldOverrideOtlpPropertiesIfNotEmpty() {
-		this.properties.setResourceAttributes(Map.of("a", "alpha"));
-		this.openTelemetryProperties.setResourceAttributes(Map.of("b", "beta"));
-		assertThat(createAdapter().resourceAttributes()).contains(entry("b", "beta"));
-		assertThat(createAdapter().resourceAttributes()).doesNotContain(entry("a", "alpha"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void openTelemetryPropertiesShouldNotOverrideOtlpPropertiesIfEmpty() {
-		this.properties.setResourceAttributes(Map.of("a", "alpha"));
-		this.openTelemetryProperties.setResourceAttributes(Collections.emptyMap());
-		assertThat(createAdapter().resourceAttributes()).contains(entry("a", "alpha"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
 	void serviceNameOverridesApplicationName() {
-		this.environment.setProperty("spring.application.name", "alpha");
-		this.properties.setResourceAttributes(Map.of("service.name", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
-	}
-
-	@Test
-	void serviceNameOverridesApplicationNameWhenUsingOtelProperties() {
 		this.environment.setProperty("spring.application.name", "alpha");
 		this.openTelemetryProperties.setResourceAttributes(Map.of("service.name", "beta"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "beta");
@@ -174,15 +190,7 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void serviceGroupOverridesApplicationGroup() {
-		this.environment.setProperty("spring.application.group", "alpha");
-		this.properties.setResourceAttributes(Map.of("service.group", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");
-	}
-
-	@Test
-	void serviceGroupOverridesApplicationGroupWhenUsingOtelProperties() {
 		this.environment.setProperty("spring.application.group", "alpha");
 		this.openTelemetryProperties.setResourceAttributes(Map.of("service.group", "beta"));
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");

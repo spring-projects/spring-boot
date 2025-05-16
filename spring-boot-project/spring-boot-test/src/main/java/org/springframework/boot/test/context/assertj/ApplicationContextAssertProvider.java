@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,10 +127,10 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
 			Class<? extends C> contextType, Supplier<? extends C> contextSupplier,
 			Class<?>... additionalContextInterfaces) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.isTrue(type.isInterface(), "Type must be an interface");
-		Assert.notNull(contextType, "ContextType must not be null");
-		Assert.isTrue(contextType.isInterface(), "ContextType must be an interface");
+		Assert.notNull(type, "'type' must not be null");
+		Assert.isTrue(type.isInterface(), "'type' must be an interface");
+		Assert.notNull(contextType, "'contextType' must not be null");
+		Assert.isTrue(contextType.isInterface(), "'contextType' must be an interface");
 		Class<?>[] interfaces = merge(new Class<?>[] { type, contextType }, additionalContextInterfaces);
 		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
 				new AssertProviderApplicationContextInvocationHandler(contextType, contextSupplier));

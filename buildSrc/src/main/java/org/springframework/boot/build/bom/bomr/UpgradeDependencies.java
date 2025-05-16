@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -231,7 +233,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private LibraryUpdateResolver getLibraryUpdateResolver(Milestone milestone) {
 		VersionResolver versionResolver = new MavenMetadataVersionResolver(getRepositories());
 		LibraryUpdateResolver libraryResolver = new StandardLibraryUpdateResolver(versionResolver,
-				determineUpdatePredicates(milestone));
+				createVersionOptionResolver(milestone));
 		return new MultithreadedLibraryUpdateResolver(getThreads().get(), libraryResolver);
 	}
 
@@ -246,12 +248,19 @@ public abstract class UpgradeDependencies extends DefaultTask {
 			.toList();
 	}
 
-	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
+	protected BiFunction<Library, DependencyVersion, VersionOption> createVersionOptionResolver(Milestone milestone) {
 		List<BiPredicate<Library, DependencyVersion>> updatePredicates = new ArrayList<>();
 		updatePredicates.add(this::compliesWithUpgradePolicy);
 		updatePredicates.add(this::isAnUpgrade);
 		updatePredicates.add(this::isNotProhibited);
-		return updatePredicates;
+		return (library, dependencyVersion) -> {
+			if (this.compliesWithUpgradePolicy(library, dependencyVersion)
+					&& this.isAnUpgrade(library, dependencyVersion)
+					&& this.isNotProhibited(library, dependencyVersion)) {
+				return new VersionOption.ResolvedVersionOption(dependencyVersion, Collections.emptyList());
+			}
+			return null;
+		};
 	}
 
 	private boolean compliesWithUpgradePolicy(Library library, DependencyVersion candidate) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisIn
 class RedisSessionConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "default",
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "default",
 			matchIfMissing = true)
 	@Import(RedisHttpSessionConfiguration.class)
 	static class DefaultRedisSessionConfiguration {
@@ -87,7 +87,7 @@ class RedisSessionConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "indexed")
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "indexed")
 	@Import(RedisIndexedHttpSessionConfiguration.class)
 	static class IndexedRedisSessionConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Yoobin Yoon
  */
 class ChangelogTests {
 
@@ -38,7 +39,7 @@ class ChangelogTests {
 		assertThat(differences).isNotNull();
 		assertThat(differences.oldVersionNumber()).isEqualTo("1.0");
 		assertThat(differences.newVersionNumber()).isEqualTo("2.0");
-		assertThat(differences.differences()).hasSize(4);
+		assertThat(differences.differences()).hasSize(5);
 		List<Difference> added = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.ADDED)
@@ -49,10 +50,12 @@ class ChangelogTests {
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.DELETED)
 			.toList();
-		assertThat(deleted).hasSize(2)
+		assertThat(deleted).hasSize(3)
 			.anySatisfy((entry) -> assertProperty(entry.oldProperty(), "test.delete", String.class, "delete"))
 			.anySatisfy(
-					(entry) -> assertProperty(entry.newProperty(), "test.delete.deprecated", String.class, "delete"));
+					(entry) -> assertProperty(entry.newProperty(), "test.delete.deprecated", String.class, "delete"))
+			.anySatisfy((entry) -> assertProperty(entry.newProperty(), "test.removed.directly", String.class,
+					"directlyRemoved"));
 		List<Difference> deprecated = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.DEPRECATED)

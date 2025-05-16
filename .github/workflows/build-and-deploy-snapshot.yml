@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '3.4.x'
+      - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -28,7 +28,7 @@ jobs:
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', github.ref_name) || format('spring-boot-{0}', github.ref_name) }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '3.5.x') || format('spring-boot-{0}', '3.5.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}

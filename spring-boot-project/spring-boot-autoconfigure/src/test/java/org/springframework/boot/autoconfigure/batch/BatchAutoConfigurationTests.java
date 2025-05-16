@@ -39,6 +39,9 @@ import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.converter.DefaultJobParametersConverter;
+import org.springframework.batch.core.converter.JobParametersConverter;
+import org.springframework.batch.core.converter.JsonJobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -90,10 +93,11 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -393,7 +397,7 @@ class BatchAutoConfigurationTests {
 	@Test
 	void jobRepositoryBeansDependOnFlyway() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class)
-			.withPropertyValues("spring.batch.initialize-schema=never")
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never")
 			.run((context) -> {
 				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 				String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
@@ -410,7 +414,7 @@ class BatchAutoConfigurationTests {
 	void jobRepositoryBeansDependOnLiquibase() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class)
-			.withPropertyValues("spring.batch.initialize-schema=never")
+			.withPropertyValues("spring.batch.jdbc.initialize-schema=never")
 			.run((context) -> {
 				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 				String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
@@ -479,7 +483,7 @@ class BatchAutoConfigurationTests {
 		JobLauncherApplicationRunner runner = createInstance();
 		runner.setJobs(Arrays.asList(mockJob("one"), mockJob("two")));
 		runner.setJobName("three");
-		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+		assertThatIllegalStateException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
 	}
 
@@ -487,7 +491,7 @@ class BatchAutoConfigurationTests {
 	void whenTheUserDefinesAJobNameThatDoesNotExistWithRegisteredJobFailsFast() {
 		JobLauncherApplicationRunner runner = createInstance("one", "two");
 		runner.setJobName("three");
-		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+		assertThatIllegalStateException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
 	}
 
@@ -508,6 +512,40 @@ class BatchAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(ExecutionContextSerializer.class);
 			assertThat(context.getBean(SpringBootBatchConfiguration.class).getExecutionContextSerializer())
 				.isInstanceOf(DefaultExecutionContextSerializer.class);
+		});
+	}
+
+	@Test
+	void customJdbcPropertiesIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.batch.jdbc.validate-transaction-state:false",
+					"spring.batch.jdbc.isolation-level-for-create:READ_COMMITTED")
+			.run((context) -> {
+				SpringBootBatchConfiguration configuration = context.getBean(SpringBootBatchConfiguration.class);
+				assertThat(configuration.getValidateTransactionState()).isEqualTo(false);
+				assertThat(configuration.getIsolationLevelForCreate()).isEqualTo(Isolation.READ_COMMITTED);
+			});
+
+	}
+
+	@Test
+	void customJobParametersConverterIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withBean(JobParametersConverter.class, JsonJobParametersConverter::new)
+			.withPropertyValues("spring.datasource.generate-unique-name=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JsonJobParametersConverter.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getJobParametersConverter())
+					.isInstanceOf(JsonJobParametersConverter.class);
+			});
+	}
+
+	@Test
+	void defaultJobParametersConverterIsUsed() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(JobParametersConverter.class);
+			assertThat(context.getBean(SpringBootBatchConfiguration.class).getJobParametersConverter())
+				.isInstanceOf(DefaultJobParametersConverter.class);
 		});
 	}
 

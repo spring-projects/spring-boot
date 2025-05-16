@@ -57,7 +57,7 @@ class WebServicesAutoConfigurationTests {
 			.run((context) -> assertThat(context).getFailure()
 				.isInstanceOf(BeanCreationException.class)
 				.rootCause()
-				.hasMessageContaining("Path must start with '/'"));
+				.hasMessageContaining("'path' must start with '/'"));
 	}
 
 	@Test

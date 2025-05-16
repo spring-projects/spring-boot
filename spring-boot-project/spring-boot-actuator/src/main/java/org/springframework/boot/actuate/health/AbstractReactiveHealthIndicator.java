@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	 * @since 2.1.7
 	 */
 	protected AbstractReactiveHealthIndicator(Function<Throwable, String> healthCheckFailedMessage) {
-		Assert.notNull(healthCheckFailedMessage, "HealthCheckFailedMessage must not be null");
+		Assert.notNull(healthCheckFailedMessage, "'healthCheckFailedMessage' must not be null");
 		this.healthCheckFailedMessage = healthCheckFailedMessage;
 	}
 

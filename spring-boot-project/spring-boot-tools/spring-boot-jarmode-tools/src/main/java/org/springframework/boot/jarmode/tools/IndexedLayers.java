@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ class IndexedLayers implements Layers {
 
 	private final Map<String, List<String>> layers = new LinkedHashMap<>();
 
-	private final String classesLocation;
+	private final String indexFileLocation;
 
-	IndexedLayers(String indexFile, String classesLocation) {
-		this.classesLocation = classesLocation;
+	IndexedLayers(String indexFile, String indexFileLocation) {
+		this.indexFileLocation = indexFileLocation;
 		String[] lines = Arrays.stream(indexFile.split("\n"))
 			.map((line) -> line.replace("\r", ""))
 			.filter(StringUtils::hasText)
@@ -60,7 +60,7 @@ class IndexedLayers implements Layers {
 				this.layers.put(line.substring(3, line.length() - 2), contents);
 			}
 			else if (line.startsWith("  - ")) {
-				Assert.notNull(contents, "Contents must not be null. Check if the index file is malformed!");
+				Assert.state(contents != null, "Contents must not be null. Check if the index file is malformed!");
 				contents.add(line.substring(5, line.length() - 1));
 			}
 			else {
@@ -72,7 +72,7 @@ class IndexedLayers implements Layers {
 
 	@Override
 	public String getApplicationLayerName() {
-		return getLayer(this.classesLocation);
+		return getLayer(this.indexFileLocation);
 	}
 
 	@Override
@@ -99,18 +99,21 @@ class IndexedLayers implements Layers {
 	 * jar.
 	 */
 	static IndexedLayers get(Context context) {
-		try {
-			try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
-				Manifest manifest = jarFile.getManifest();
-				String location = manifest.getMainAttributes().getValue("Spring-Boot-Layers-Index");
-				ZipEntry entry = (location != null) ? jarFile.getEntry(location) : null;
-				if (entry != null) {
-					String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
-					String classesLocation = manifest.getMainAttributes().getValue("Spring-Boot-Classes");
-					return new IndexedLayers(indexFile, classesLocation);
-				}
+		try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
+			Manifest manifest = jarFile.getManifest();
+			if (manifest == null) {
+				return null;
 			}
-			return null;
+			String indexFileLocation = manifest.getMainAttributes().getValue("Spring-Boot-Layers-Index");
+			if (indexFileLocation == null) {
+				return null;
+			}
+			ZipEntry entry = jarFile.getEntry(indexFileLocation);
+			if (entry == null) {
+				return null;
+			}
+			String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
+			return new IndexedLayers(indexFile, indexFileLocation);
 		}
 		catch (FileNotFoundException | NoSuchFileException ex) {
 			return null;

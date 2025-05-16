@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -292,7 +292,7 @@ public class JacksonAutoConfiguration {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
 				Field field = findPropertyNamingStrategyField(fieldName);
-				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");
+				Assert.state(field != null, () -> "Constant named '" + fieldName + "' not found");
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}
@@ -307,7 +307,7 @@ public class JacksonAutoConfiguration {
 			}
 
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
-				builder.modulesToInstall(this.modules.toArray(new Module[0]));
+				builder.modulesToInstall((modules) -> modules.addAll(this.modules));
 			}
 
 			private void configureLocale(Jackson2ObjectMapperBuilder builder) {

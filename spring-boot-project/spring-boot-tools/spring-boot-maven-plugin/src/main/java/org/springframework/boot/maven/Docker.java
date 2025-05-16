@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.maven;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.apache.maven.plugin.logging.Log;
+
+import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 
 /**
  * Docker configuration options.
@@ -137,22 +140,23 @@ public class Docker {
 	}
 
 	/**
-	 * Returns this configuration as a {@link DockerConfiguration} instance. This method
-	 * should only be called when the configuration is complete and will no longer be
-	 * changed.
+	 * Returns this configuration as a {@link BuilderDockerConfiguration} instance. This
+	 * method should only be called when the configuration is complete and will no longer
+	 * be changed.
+	 * @param log the output log
 	 * @param publish whether the image should be published
 	 * @return the Docker configuration
 	 */
-	DockerConfiguration asDockerConfiguration(boolean publish) {
-		DockerConfiguration dockerConfiguration = new DockerConfiguration();
+	BuilderDockerConfiguration asDockerConfiguration(Log log, boolean publish) {
+		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
 		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(this.bindHostToBuilder);
-		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
-		dockerConfiguration = customizePublishAuthentication(dockerConfiguration, publish);
+		dockerConfiguration = customizeBuilderAuthentication(log, dockerConfiguration);
+		dockerConfiguration = customizePublishAuthentication(log, dockerConfiguration, publish);
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+	private BuilderDockerConfiguration customizeHost(BuilderDockerConfiguration dockerConfiguration) {
 		if (this.context != null && this.host != null) {
 			throw new IllegalArgumentException(
 					"Invalid Docker configuration, either context or host can be provided but not both");
@@ -166,38 +170,39 @@ public class Docker {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
-		if (this.builderRegistry == null || this.builderRegistry.isEmpty()) {
-			return dockerConfiguration;
-		}
-		if (this.builderRegistry.hasTokenAuth() && !this.builderRegistry.hasUserAuth()) {
-			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken());
-		}
-		if (this.builderRegistry.hasUserAuth() && !this.builderRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername(),
-					this.builderRegistry.getPassword(), this.builderRegistry.getUrl(), this.builderRegistry.getEmail());
-		}
-		throw new IllegalArgumentException(
-				"Invalid Docker builder registry configuration, either token or username/password must be provided");
+	private BuilderDockerConfiguration customizeBuilderAuthentication(Log log,
+			BuilderDockerConfiguration dockerConfiguration) {
+		DockerRegistryAuthentication authentication = DockerRegistryAuthentication.configuration(null,
+				(message, ex) -> log.warn(message));
+		return dockerConfiguration.withBuilderRegistryAuthentication(
+				getRegistryAuthentication("builder", this.builderRegistry, authentication));
 	}
 
-	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration,
-			boolean publish) {
+	private BuilderDockerConfiguration customizePublishAuthentication(Log log,
+			BuilderDockerConfiguration dockerConfiguration, boolean publish) {
 		if (!publish) {
 			return dockerConfiguration;
 		}
-		if (this.publishRegistry == null || this.publishRegistry.isEmpty()) {
-			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
+		DockerRegistryAuthentication authentication = DockerRegistryAuthentication
+			.configuration(DockerRegistryAuthentication.EMPTY_USER, (message, ex) -> log.warn(message));
+		return dockerConfiguration.withPublishRegistryAuthentication(
+				getRegistryAuthentication("publish", this.publishRegistry, authentication));
+	}
+
+	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistry registry,
+			DockerRegistryAuthentication fallback) {
+		if (registry == null || registry.isEmpty()) {
+			return fallback;
 		}
-		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
-			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());
+		if (registry.hasTokenAuth() && !registry.hasUserAuth()) {
+			return DockerRegistryAuthentication.token(registry.getToken());
 		}
-		if (this.publishRegistry.hasUserAuth() && !this.publishRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername(),
-					this.publishRegistry.getPassword(), this.publishRegistry.getUrl(), this.publishRegistry.getEmail());
+		if (registry.hasUserAuth() && !registry.hasTokenAuth()) {
+			return DockerRegistryAuthentication.user(registry.getUsername(), registry.getPassword(), registry.getUrl(),
+					registry.getEmail());
 		}
-		throw new IllegalArgumentException(
-				"Invalid Docker publish registry configuration, either token or username/password must be provided");
+		throw new IllegalArgumentException("Invalid Docker " + type
+				+ " registry configuration, either token or username/password must be provided");
 	}
 
 	/**

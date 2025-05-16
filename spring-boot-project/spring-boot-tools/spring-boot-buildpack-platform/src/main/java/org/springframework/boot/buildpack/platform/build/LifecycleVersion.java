@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,19 +120,17 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 	 * @throws IllegalArgumentException if the value could not be parsed
 	 */
 	static LifecycleVersion parse(String value) {
-		Assert.hasText(value, "Value must not be empty");
-		if (value.startsWith("v") || value.startsWith("V")) {
-			value = value.substring(1);
-		}
-		String[] components = value.split("\\.");
-		Assert.isTrue(components.length <= 3, "Malformed version number '" + value + "'");
+		Assert.hasText(value, "'value' must not be empty");
+		String withoutPrefix = (value.startsWith("v") || value.startsWith("V")) ? value.substring(1) : value;
+		String[] components = withoutPrefix.split("\\.");
+		Assert.isTrue(components.length <= 3, () -> "'value' [%s] must be a valid version number".formatted(value));
 		int[] versions = new int[3];
 		for (int i = 0; i < components.length; i++) {
 			try {
 				versions[i] = Integer.parseInt(components[i]);
 			}
 			catch (NumberFormatException ex) {
-				throw new IllegalArgumentException("Malformed version number '" + value + "'", ex);
+				throw new IllegalArgumentException("'value' [" + value + "] must be a valid version number", ex);
 			}
 		}
 		return new LifecycleVersion(versions[0], versions[1], versions[2]);

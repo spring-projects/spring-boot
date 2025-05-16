@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.security")
+@ConfigurationProperties("spring.security")
 public class SecurityProperties {
 
 	/**
@@ -50,7 +50,10 @@ public class SecurityProperties {
 	/**
 	 * Order applied to the {@code WebSecurityCustomizer} that ignores standard static
 	 * resource paths.
+	 * @deprecated since 3.5.0 for removal in 4.0.0 since Spring Security no longer
+	 * recommends using the {@code .ignoring()} method
 	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**

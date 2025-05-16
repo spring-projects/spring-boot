@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ final class BuildpackCoordinates {
 	private final String version;
 
 	private BuildpackCoordinates(String id, String version) {
-		Assert.hasText(id, "ID must not be empty");
+		Assert.hasText(id, "'id' must not be empty");
 		this.id = id;
 		this.version = version;
 	}
@@ -123,7 +123,7 @@ final class BuildpackCoordinates {
 	 * @return a new {@link BuildpackCoordinates} instance
 	 */
 	static BuildpackCoordinates fromBuildpackMetadata(BuildpackMetadata buildpackMetadata) {
-		Assert.notNull(buildpackMetadata, "BuildpackMetadata must not be null");
+		Assert.notNull(buildpackMetadata, "'buildpackMetadata' must not be null");
 		return new BuildpackCoordinates(buildpackMetadata.getId(), buildpackMetadata.getVersion());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -88,11 +89,13 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.1.0
+ * @see ConditionalOnBooleanProperty
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnPropertyCondition.class)
+@Repeatable(ConditionalOnProperties.class)
 public @interface ConditionalOnProperty {
 
 	/**

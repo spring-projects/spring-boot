@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -33,9 +34,11 @@ import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
+import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.core.domain.properties.HasName;
 import com.tngtech.archunit.core.domain.properties.HasOwner;
 import com.tngtech.archunit.core.domain.properties.HasOwner.Predicates.With;
@@ -49,6 +52,8 @@ import com.tngtech.archunit.lang.syntax.elements.ClassesShould;
 import com.tngtech.archunit.lang.syntax.elements.GivenMethodsConjunction;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -88,6 +93,9 @@ final class ArchitectureRules {
 		rules.add(noClassesShouldCallStringToLowerCaseWithoutLocale());
 		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
 		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
+		rules.add(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
+		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
+		rules.add(conditionsShouldNotBePublic());
 		return List.copyOf(rules);
 	}
 
@@ -115,7 +123,8 @@ final class ArchitectureRules {
 			.not(CanBeAnnotated.Predicates.annotatedWith("org.springframework.context.annotation.Lazy"));
 		DescribedPredicate<JavaClass> notOfASafeType = notAssignableTo(
 				"org.springframework.beans.factory.ObjectProvider", "org.springframework.context.ApplicationContext",
-				"org.springframework.core.env.Environment");
+				"org.springframework.core.env.Environment")
+			.and(notAnnotatedWithRoleInfrastructure());
 		item.getParameters()
 			.stream()
 			.filter(notAnnotatedWithLazy)
@@ -123,6 +132,16 @@ final class ArchitectureRules {
 			.forEach((parameter) -> addViolation(events, parameter,
 					parameter.getDescription() + " will cause eager initialization as it is "
 							+ notAnnotatedWithLazy.getDescription() + " and is " + notOfASafeType.getDescription()));
+	}
+
+	private static DescribedPredicate<JavaClass> notAnnotatedWithRoleInfrastructure() {
+		return is("not annotated with @Role(BeanDefinition.ROLE_INFRASTRUCTURE", (candidate) -> {
+			if (!candidate.isAnnotatedWith(Role.class)) {
+				return true;
+			}
+			Role role = candidate.getAnnotationOfType(Role.class);
+			return role.value() != BeanDefinition.ROLE_INFRASTRUCTURE;
+		});
 	}
 
 	private static ArchRule allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveOnlyInjectEnvironment() {
@@ -244,6 +263,52 @@ final class ArchitectureRules {
 		}
 	}
 
+	private static ArchRule classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.allowEmptyShould(true);
+	}
+
+	private static ArchRule methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.allowEmptyShould(true);
+	}
+
+	private static ArchCondition<? super HasAnnotations<?>> notSpecifyOnlyPrefixAttributeOfConfigurationProperties() {
+		return check("not specify only prefix attribute of @ConfigurationProperties",
+				ArchitectureRules::notSpecifyOnlyPrefixAttributeOfConfigurationProperties);
+	}
+
+	private static void notSpecifyOnlyPrefixAttributeOfConfigurationProperties(HasAnnotations<?> item,
+			ConditionEvents events) {
+		JavaAnnotation<?> configurationPropertiesAnnotation = item
+			.getAnnotationOfType("org.springframework.boot.context.properties.ConfigurationProperties");
+		Map<String, Object> properties = configurationPropertiesAnnotation.getProperties();
+		if (properties.size() == 1 && properties.containsKey("prefix")) {
+			addViolation(events, item, configurationPropertiesAnnotation.getDescription()
+					+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute");
+		}
+	}
+
+	private static ArchRule conditionsShouldNotBePublic() {
+		String springBootCondition = "org.springframework.boot.autoconfigure.condition.SpringBootCondition";
+		return ArchRuleDefinition.noClasses()
+			.that()
+			.areAssignableTo(springBootCondition)
+			.and()
+			.doNotHaveModifier(JavaModifier.ABSTRACT)
+			.and()
+			.areNotAnnotatedWith(Deprecated.class)
+			.should()
+			.bePublic()
+			.allowEmptyShould(true);
+	}
+
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {
 		return types.length == 1 && type.equals(types[0]);
 	}
@@ -284,6 +349,17 @@ final class ArchitectureRules {
 			result = (result != null) ? result.or(assignableTo) : assignableTo;
 		}
 		return result;
+	}
+
+	private static DescribedPredicate<JavaClass> is(String description, Predicate<JavaClass> predicate) {
+		return new DescribedPredicate<>(description) {
+
+			@Override
+			public boolean test(JavaClass t) {
+				return predicate.test(t);
+			}
+
+		};
 	}
 
 	private static <T> ArchCondition<T> check(String description, BiConsumer<T, ConditionEvents> check) {

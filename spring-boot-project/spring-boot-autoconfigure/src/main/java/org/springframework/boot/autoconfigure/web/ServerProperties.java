@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Http2;
@@ -515,18 +514,15 @@ public class ServerProperties {
 		private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
 
 		/**
-		 * Whether to use APR. If running on Java below 24, the default value is
-		 * 'WHEN_AVAILABLE'. On Java 24 or later, the default value is 'NEVER'.
+		 * Maximum number of parameters (GET plus POST) that will be automatically parsed
+		 * by the container. A value of less than 0 means no limit.
 		 */
-		private UseApr useApr;
+		private int maxParameterCount = 10000;
 
-		public DataSize getMaxHttpFormPostSize() {
-			return this.maxHttpFormPostSize;
-		}
-
-		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
-			this.maxHttpFormPostSize = maxHttpFormPostSize;
-		}
+		/**
+		 * Whether to use APR.
+		 */
+		private UseApr useApr = UseApr.NEVER;
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
@@ -676,11 +672,23 @@ public class ServerProperties {
 			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
 		}
 
+		public DataSize getMaxHttpFormPostSize() {
+			return this.maxHttpFormPostSize;
+		}
+
+		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
+			this.maxHttpFormPostSize = maxHttpFormPostSize;
+		}
+
+		public int getMaxParameterCount() {
+			return this.maxParameterCount;
+		}
+
+		public void setMaxParameterCount(int maxParameterCount) {
+			this.maxParameterCount = maxParameterCount;
+		}
+
 		public UseApr getUseApr() {
-			if (this.useApr == null) {
-				return JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.TWENTY_FOUR) ? UseApr.NEVER
-						: UseApr.WHEN_AVAILABLE;
-			}
 			return this.useApr;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -38,7 +37,7 @@ import org.springframework.util.StreamUtils;
  * @author Yan Kardziyaka
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
+@ConfigurationProperties("spring.security.oauth2.resourceserver")
 public class OAuth2ResourceServerProperties {
 
 	private final Jwt jwt = new Jwt();
@@ -47,10 +46,10 @@ public class OAuth2ResourceServerProperties {
 		return this.jwt;
 	}
 
-	private final Opaquetoken opaqueToken = new Opaquetoken();
+	private final Opaquetoken opaquetoken = new Opaquetoken();
 
 	public Opaquetoken getOpaquetoken() {
-		return this.opaqueToken;
+		return this.opaquetoken;
 	}
 
 	public static class Jwt {
@@ -175,7 +174,10 @@ public class OAuth2ResourceServerProperties {
 
 		public String readPublicKey() throws IOException {
 			String key = "spring.security.oauth2.resourceserver.public-key-location";
-			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
+			if (this.publicKeyLocation == null) {
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"No public key location specified");
+			}
 			if (!this.publicKeyLocation.exists()) {
 				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
 						"Public key location does not exist");

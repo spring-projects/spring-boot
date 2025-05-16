@@ -50,7 +50,7 @@ import org.springframework.util.unit.DataSize;
  * @author Yanming Zhou
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.rabbitmq")
+@ConfigurationProperties("spring.rabbitmq")
 public class RabbitProperties {
 
 	private static final int DEFAULT_PORT = 5672;
@@ -574,7 +574,7 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
-		public boolean getVerifyHostname() {
+		public boolean isVerifyHostname() {
 			return this.verifyHostname;
 		}
 

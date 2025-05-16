@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,26 +41,55 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 
 	private final UuidRepresentation uuidRepresentation;
 
+	private final MongoConnectionDetails connectionDetails;
+
 	private final MongoProperties.Ssl ssl;
 
 	private final SslBundles sslBundles;
 
 	private int order = 0;
 
+	/**
+	 * Create a new instance.
+	 * @param connectionString the connection string
+	 * @param uuidRepresentation the uuid representation
+	 * @param ssl the ssl properties
+	 * @param sslBundles the ssl bundles
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails, UuidRepresentation)}
+	 */
+	@Deprecated(forRemoval = true, since = "3.5.0")
 	public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
 			UuidRepresentation uuidRepresentation, MongoProperties.Ssl ssl, SslBundles sslBundles) {
+		this.connectionDetails = null;
 		this.connectionString = connectionString;
 		this.uuidRepresentation = uuidRepresentation;
 		this.ssl = ssl;
 		this.sslBundles = sslBundles;
 	}
 
+	public StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails connectionDetails,
+			UuidRepresentation uuidRepresentation) {
+		this.connectionString = null;
+		this.ssl = null;
+		this.sslBundles = null;
+		this.connectionDetails = connectionDetails;
+		this.uuidRepresentation = uuidRepresentation;
+	}
+
 	@Override
 	public void customize(MongoClientSettings.Builder settingsBuilder) {
 		settingsBuilder.uuidRepresentation(this.uuidRepresentation);
-		settingsBuilder.applyConnectionString(this.connectionString);
-		if (this.ssl.isEnabled()) {
-			settingsBuilder.applyToSslSettings(this::configureSsl);
+		if (this.connectionDetails != null) {
+			settingsBuilder.applyConnectionString(this.connectionDetails.getConnectionString());
+			settingsBuilder.applyToSslSettings(this::configureSslIfNeeded);
+		}
+		else {
+			settingsBuilder.uuidRepresentation(this.uuidRepresentation);
+			settingsBuilder.applyConnectionString(this.connectionString);
+			if (this.ssl.isEnabled()) {
+				settingsBuilder.applyToSslSettings(this::configureSsl);
+			}
 		}
 	}
 
@@ -68,6 +97,15 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 		settings.enabled(true);
 		if (this.ssl.getBundle() != null) {
 			SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
+			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with MongoDB");
+			settings.context(sslBundle.createSslContext());
+		}
+	}
+
+	private void configureSslIfNeeded(SslSettings.Builder settings) {
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			settings.enabled(true);
 			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with MongoDB");
 			settings.context(sslBundle.createSslContext());
 		}

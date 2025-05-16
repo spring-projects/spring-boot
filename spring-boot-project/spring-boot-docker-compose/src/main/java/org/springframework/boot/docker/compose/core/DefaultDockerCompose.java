@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class DefaultDockerCompose implements DockerCompose {
 		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
 		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
 			DockerCliInspectResponse inspectResponse = inspectContainer(psResponse.id(), inspected);
-			Assert.notNull(inspectResponse, () -> "Failed to inspect container '%s'".formatted(psResponse.id()));
+			Assert.state(inspectResponse != null, () -> "Failed to inspect container '%s'".formatted(psResponse.id()));
 			result.add(new DefaultRunningService(this.hostname, dockerComposeFile, psResponse, inspectResponse));
 		}
 		return Collections.unmodifiableList(result);

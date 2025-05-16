@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
+import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
@@ -114,19 +116,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources) {
-		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(clientConfigurationBuilderCustomizers,
-				clientOptionsBuilderCustomizers, clientResources, getProperties().getLettuce().getPool());
-		return createLettuceConnectionFactory(clientConfig);
-	}
-
-	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
-		if (getSentinelConfig() != null) {
-			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
-		}
-		if (getClusterConfiguration() != null) {
-			return new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
-		}
-		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+		LettuceClientConfiguration clientConfiguration = getLettuceClientConfiguration(
+				clientConfigurationBuilderCustomizers, clientOptionsBuilderCustomizers, clientResources,
+				getProperties().getLettuce().getPool());
+		return switch (this.mode) {
+			case STANDALONE -> new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+			case CLUSTER -> new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
+			case SENTINEL -> new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
+		};
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
@@ -134,11 +131,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources, Pool pool) {
 		LettuceClientConfigurationBuilder builder = createBuilder(pool);
-		applyProperties(builder);
+		SslBundle sslBundle = getSslBundle();
+		applyProperties(builder, sslBundle);
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers));
+		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers, sslBundle));
 		builder.clientResources(clientResources);
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -151,8 +149,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return LettuceClientConfiguration.builder();
 	}
 
-	private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (isSslEnabled()) {
+	private void applyProperties(LettuceClientConfigurationBuilder builder, SslBundle sslBundle) {
+		if (sslBundle != null) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
@@ -163,21 +161,44 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
+			String readFrom = lettuce.getReadFrom();
+			if (readFrom != null) {
+				builder.readFrom(getReadFrom(readFrom));
+			}
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
 	}
 
+	private ReadFrom getReadFrom(String readFrom) {
+		int index = readFrom.indexOf(':');
+		if (index == -1) {
+			return ReadFrom.valueOf(getCanonicalReadFromName(readFrom));
+		}
+		String name = getCanonicalReadFromName(readFrom.substring(0, index));
+		String value = readFrom.substring(index + 1);
+		return ReadFrom.valueOf(name + ":" + value);
+	}
+
+	private String getCanonicalReadFromName(String name) {
+		StringBuilder canonicalName = new StringBuilder(name.length());
+		name.chars()
+			.filter(Character::isLetterOrDigit)
+			.map(Character::toLowerCase)
+			.forEach((c) -> canonicalName.append((char) c));
+		return canonicalName.toString();
+	}
+
 	private ClientOptions createClientOptions(
-			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers) {
+			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers,
+			SslBundle sslBundle) {
 		ClientOptions.Builder builder = initializeClientOptionsBuilder();
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
 			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
 		}
-		if (isSslEnabled() && getProperties().getSsl().getBundle() != null) {
-			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
+		if (sslBundle != null) {
 			io.lettuce.core.SslOptions.Builder sslOptionsBuilder = io.lettuce.core.SslOptions.builder();
 			sslOptionsBuilder.keyManager(sslBundle.getManagers().getKeyManagerFactory());
 			sslOptionsBuilder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
@@ -227,8 +248,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
 		}
 
-		private GenericObjectPoolConfig<?> getPoolConfig(Pool properties) {
-			GenericObjectPoolConfig<?> config = new GenericObjectPoolConfig<>();
+		private GenericObjectPoolConfig<StatefulConnection<?, ?>> getPoolConfig(Pool properties) {
+			GenericObjectPoolConfig<StatefulConnection<?, ?>> config = new GenericObjectPoolConfig<>();
 			config.setMaxTotal(properties.getMaxActive());
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.logging.otlp;
 
 import java.util.Locale;
 
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.logging.ConditionalOnEnabledLoggingExport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,7 +48,7 @@ final class OtlpLoggingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "endpoint")
+		@ConditionalOnProperty("management.otlp.logging.endpoint")
 		OtlpLoggingConnectionDetails otlpLoggingConnectionDetails(OtlpLoggingProperties properties) {
 			return new PropertiesOtlpLoggingConnectionDetails(properties);
 		}
@@ -81,29 +83,30 @@ final class OtlpLoggingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "http",
-				matchIfMissing = true)
+		@ConditionalOnProperty(name = "management.otlp.logging.transport", havingValue = "http", matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
-				OtlpLoggingConnectionDetails connectionDetails) {
+				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
 			return builder.build();
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "grpc")
+		@ConditionalOnProperty(name = "management.otlp.logging.transport", havingValue = "grpc")
 		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
-				OtlpLoggingConnectionDetails connectionDetails) {
+				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
 			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
 			properties.getHeaders().forEach(builder::addHeader);
+			meterProvider.ifAvailable(builder::setMeterProvider);
 			return builder.build();
 		}
 

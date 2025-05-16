@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,17 +59,22 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private final PropertySource<?> propertySource;
 
+	private final boolean systemEnvironmentSource;
+
 	private final PropertyMapper[] mappers;
 
 	/**
 	 * Create a new {@link SpringConfigurationPropertySource} implementation.
 	 * @param propertySource the source property source
+	 * @param systemEnvironmentSource if the source is from the system environment
 	 * @param mappers the property mappers
 	 */
-	SpringConfigurationPropertySource(PropertySource<?> propertySource, PropertyMapper... mappers) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
-		Assert.isTrue(mappers.length > 0, "Mappers must contain at least one item");
+	SpringConfigurationPropertySource(PropertySource<?> propertySource, boolean systemEnvironmentSource,
+			PropertyMapper... mappers) {
+		Assert.notNull(propertySource, "'propertySource' must not be null");
+		Assert.isTrue(mappers.length > 0, "'mappers' must contain at least one item");
 		this.propertySource = propertySource;
+		this.systemEnvironmentSource = systemEnvironmentSource;
 		this.mappers = mappers;
 	}
 
@@ -81,7 +86,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		for (PropertyMapper mapper : this.mappers) {
 			try {
 				for (String candidate : mapper.map(name)) {
-					Object value = getPropertySource().getProperty(candidate);
+					Object value = getPropertySourceProperty(candidate);
 					if (value != null) {
 						Origin origin = PropertySourceOrigin.get(this.propertySource, candidate);
 						return ConfigurationProperty.of(this, name, value, origin);
@@ -93,6 +98,18 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 			}
 		}
 		return null;
+	}
+
+	protected final Object getPropertySourceProperty(String name) {
+		// Save calls to SystemEnvironmentPropertySource.resolvePropertyName(...)
+		// since we've already done the mapping
+		PropertySource<?> propertySource = getPropertySource();
+		return (!this.systemEnvironmentSource) ? propertySource.getProperty(name)
+				: getSystemEnvironmentProperty(((SystemEnvironmentPropertySource) propertySource).getSource(), name);
+	}
+
+	Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
+		return systemEnvironment.get(name);
 	}
 
 	@Override
@@ -127,6 +144,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return this.propertySource;
 	}
 
+	protected final boolean isSystemEnvironmentSource() {
+		return this.systemEnvironmentSource;
+	}
+
 	protected final PropertyMapper[] getMappers() {
 		return this.mappers;
 	}
@@ -144,25 +165,20 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * {@link SpringIterableConfigurationPropertySource} instance
 	 */
 	static SpringConfigurationPropertySource from(PropertySource<?> source) {
-		Assert.notNull(source, "Source must not be null");
-		PropertyMapper[] mappers = getPropertyMappers(source);
-		if (isFullEnumerable(source)) {
-			return new SpringIterableConfigurationPropertySource((EnumerablePropertySource<?>) source, mappers);
-		}
-		return new SpringConfigurationPropertySource(source, mappers);
+		Assert.notNull(source, "'source' must not be null");
+		boolean systemEnvironmentSource = isSystemEnvironmentPropertySource(source);
+		PropertyMapper[] mappers = (!systemEnvironmentSource) ? DEFAULT_MAPPERS : SYSTEM_ENVIRONMENT_MAPPERS;
+		return (!isFullEnumerable(source))
+				? new SpringConfigurationPropertySource(source, systemEnvironmentSource, mappers)
+				: new SpringIterableConfigurationPropertySource((EnumerablePropertySource<?>) source,
+						systemEnvironmentSource, mappers);
 	}
 
-	private static PropertyMapper[] getPropertyMappers(PropertySource<?> source) {
-		if (source instanceof SystemEnvironmentPropertySource && hasSystemEnvironmentName(source)) {
-			return SYSTEM_ENVIRONMENT_MAPPERS;
-		}
-		return DEFAULT_MAPPERS;
-	}
-
-	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
+	private static boolean isSystemEnvironmentPropertySource(PropertySource<?> source) {
 		String name = source.getName();
-		return StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(name)
-				|| name.endsWith("-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		return (source instanceof SystemEnvironmentPropertySource)
+				&& (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(name)
+						|| name.endsWith("-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME));
 	}
 
 	private static boolean isFullEnumerable(PropertySource<?> source) {

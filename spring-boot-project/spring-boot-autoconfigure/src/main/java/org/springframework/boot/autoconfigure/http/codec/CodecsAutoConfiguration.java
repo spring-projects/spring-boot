@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.codec.CodecProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -29,7 +28,9 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
@@ -47,7 +48,6 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
-@EnableConfigurationProperties(CodecProperties.class)
 public class CodecsAutoConfiguration {
 
 	private static final MimeType[] EMPTY_MIME_TYPES = {};
@@ -69,21 +69,48 @@ public class CodecsAutoConfiguration {
 
 	}
 
+	@SuppressWarnings("removal")
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.codec.CodecProperties.class,
+			HttpCodecsProperties.class })
 	static class DefaultCodecsConfiguration {
 
 		@Bean
-		@Order(0)
-		CodecCustomizer defaultCodecCustomizer(CodecProperties codecProperties) {
-			return (configurer) -> {
+		DefaultCodecCustomizer defaultCodecCustomizer(
+				org.springframework.boot.autoconfigure.codec.CodecProperties codecProperties,
+				HttpCodecsProperties httpCodecProperties, Environment environment) {
+			return new DefaultCodecCustomizer(
+					httpCodecProperties.isLogRequestDetails(codecProperties::isLogRequestDetails),
+					httpCodecProperties.getMaxInMemorySize(codecProperties::getMaxInMemorySize));
+		}
+
+		static final class DefaultCodecCustomizer implements CodecCustomizer, Ordered {
+
+			private final boolean logRequestDetails;
+
+			private final DataSize maxInMemorySize;
+
+			DefaultCodecCustomizer(boolean logRequestDetails, DataSize maxInMemorySize) {
+				this.logRequestDetails = logRequestDetails;
+				this.maxInMemorySize = maxInMemorySize;
+			}
+
+			@Override
+			public void customize(CodecConfigurer configurer) {
 				PropertyMapper map = PropertyMapper.get();
 				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();
-				defaultCodecs.enableLoggingRequestDetails(codecProperties.isLogRequestDetails());
-				map.from(codecProperties.getMaxInMemorySize())
+				defaultCodecs.enableLoggingRequestDetails(this.logRequestDetails);
+				map.from(this.maxInMemorySize)
 					.whenNonNull()
 					.asInt(DataSize::toBytes)
 					.to(defaultCodecs::maxInMemorySize);
-			};
+			}
+
+			@Override
+			public int getOrder() {
+				return 0;
+			}
+
 		}
 
 	}

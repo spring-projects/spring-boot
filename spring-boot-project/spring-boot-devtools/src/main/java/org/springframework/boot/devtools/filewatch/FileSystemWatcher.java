@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,12 @@ public class FileSystemWatcher {
 	 */
 	public FileSystemWatcher(boolean daemon, Duration pollInterval, Duration quietPeriod,
 			SnapshotStateRepository snapshotStateRepository) {
-		Assert.notNull(pollInterval, "PollInterval must not be null");
-		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
-		Assert.isTrue(pollInterval.toMillis() > 0, "PollInterval must be positive");
-		Assert.isTrue(quietPeriod.toMillis() > 0, "QuietPeriod must be positive");
+		Assert.notNull(pollInterval, "'pollInterval' must not be null");
+		Assert.notNull(quietPeriod, "'quietPeriod' must not be null");
+		Assert.isTrue(pollInterval.toMillis() > 0, "'pollInterval' must be positive");
+		Assert.isTrue(quietPeriod.toMillis() > 0, "'quietPeriod' must be positive");
 		Assert.isTrue(pollInterval.toMillis() > quietPeriod.toMillis(),
-				"PollInterval must be greater than QuietPeriod");
+				"'pollInterval' must be greater than QuietPeriod");
 		this.daemon = daemon;
 		this.pollInterval = pollInterval.toMillis();
 		this.quietPeriod = quietPeriod.toMillis();
@@ -114,7 +114,7 @@ public class FileSystemWatcher {
 	 * @param fileChangeListener the listener to add
 	 */
 	public void addListener(FileChangeListener fileChangeListener) {
-		Assert.notNull(fileChangeListener, "FileChangeListener must not be null");
+		Assert.notNull(fileChangeListener, "'fileChangeListener' must not be null");
 		synchronized (this.monitor) {
 			checkNotStarted();
 			this.listeners.add(fileChangeListener);
@@ -127,7 +127,7 @@ public class FileSystemWatcher {
 	 * @param directories the directories to monitor
 	 */
 	public void addSourceDirectories(Iterable<File> directories) {
-		Assert.notNull(directories, "Directories must not be null");
+		Assert.notNull(directories, "'directories' must not be null");
 		synchronized (this.monitor) {
 			directories.forEach(this::addSourceDirectory);
 		}
@@ -139,8 +139,8 @@ public class FileSystemWatcher {
 	 * @param directory the directory to monitor
 	 */
 	public void addSourceDirectory(File directory) {
-		Assert.notNull(directory, "Directory must not be null");
-		Assert.isTrue(!directory.isFile(), () -> "Directory '" + directory + "' must not be a file");
+		Assert.notNull(directory, "'directory' must not be null");
+		Assert.isTrue(!directory.isFile(), () -> "'directory' [%s] must not be a file".formatted(directory));
 		synchronized (this.monitor) {
 			checkNotStarted();
 			this.directories.put(directory, null);

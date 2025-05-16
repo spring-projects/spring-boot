@@ -17,7 +17,6 @@ Spring Boot Actuator provides dependency management and auto-configuration for {
 - xref:actuator/metrics.adoc#actuator.metrics.export.newrelic[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.otlp[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.prometheus[]
-- xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.simple[] (in-memory)
 - xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.statsd[]
@@ -523,6 +522,8 @@ management:
 
 Custom headers, for example for authentication, can also be provided using configprop:management.otlp.metrics.export.headers.*[] properties.
 
+If an `OtlpMetricsSender` bean is available, it will be configured on the `OtlpMeterRegistry` that Spring Boot auto-configures.
+
 
 
 [[actuator.metrics.export.prometheus]]
@@ -552,16 +553,13 @@ Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exe
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
 
-NOTE: The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus 1.x client adds support for it.
-To switch to the simpleclient, remove `io.micrometer:micrometer-registry-prometheus` from your project and add `io.micrometer:micrometer-registry-prometheus-simpleclient` instead.
-
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
 [source,xml]
 ----
 <dependency>
 	<groupId>io.prometheus</groupId>
-	<artifactId>simpleclient_pushgateway</artifactId>
+	<artifactId>io.prometheus:prometheus-metrics-exporter-pushgateway</artifactId>
 </dependency>
 ----
 
@@ -570,34 +568,6 @@ This manages the pushing of metrics to a Prometheus Pushgateway.
 
 You can tune the javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] by using properties under `management.prometheus.metrics.export.pushgateway`.
 For advanced configuration, you can also provide your own javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean.
-
-
-
-[[actuator.metrics.export.signalfx]]
-=== SignalFx
-
-SignalFx registry periodically pushes metrics to {url-micrometer-docs-implementations}/signalFx[SignalFx].
-To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
-
-[configprops,yaml]
-----
-management:
-  signalfx:
-    metrics:
-      export:
-        access-token: "YOUR_ACCESS_TOKEN"
-----
-
-You can also change the interval at which metrics are sent to SignalFx:
-
-[configprops,yaml]
-----
-management:
-  signalfx:
-    metrics:
-      export:
-        step: "30s"
-----
 
 
 
@@ -736,6 +706,7 @@ The following JVM metrics are provided:
 * Various memory and buffer pool details
 * Statistics related to garbage collection
 * Thread utilization
+* https://docs.micrometer.io/micrometer/reference/reference/jvm.html#_java_21_metrics[Virtual threads statistics] (for this, `io.micrometer:micrometer-java21` has to be on the classpath)
 * The number of classes loaded and unloaded
 * JVM version information
 * JIT compilation time
@@ -806,7 +777,6 @@ See the {url-spring-framework-docs}/integration/observability.html#observability
 To add to the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that extends javadoc:org.springframework.http.server.observation.DefaultServerRequestObservationConvention[] from the `org.springframework.http.server.observation` package.
 To replace the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.http.server.observation.ServerRequestObservationConvention[].
 
-
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
 Applications can opt in and record exceptions by xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling[setting handled exceptions as request attributes].
 
@@ -862,6 +832,33 @@ By default, Jersey server metrics are tagged with the following information:
 |===
 
 To customize the tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:io.micrometer.core.instrument.binder.jersey.server.JerseyObservationConvention[].
+
+
+
+[[actuator.metrics.supported.ssl]]
+=== SSL bundle metrics
+
+Spring Boot Actuator publishes two metrics about SSL bundles:
+
+The metric `ssl.chains` gauges how many certificate chains have been registered.
+The `status` tag can be used to differentiate between valid, not-yet-valid, expired and soon-to-be-expired certificates.
+
+The metric `ssl.chain.expiry` gauges the expiry date of each certificate chain in seconds.
+This number will be negative if the chain has already expired.
+This metric is tagged with the following information:
+
+|===
+| Tag | Description
+
+| `bundle`
+| The name of the bundle which contains the certificate chain
+
+| `certificate`
+| The serial number (in hex format) of the certificate which is the soonest to expire in the chain
+
+| `chain`
+| The name of the certificate chain.
+|===
 
 
 
