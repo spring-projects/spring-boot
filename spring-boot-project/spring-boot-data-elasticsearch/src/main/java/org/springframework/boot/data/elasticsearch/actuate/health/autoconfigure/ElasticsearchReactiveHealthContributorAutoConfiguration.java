@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.actuate.health.autoconfigure;
 
 import reactor.core.publisher.Flux;
 
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.data.elasticsearch.actuate.health.ElasticsearchReactiveHealthIndicator;
+import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 
@@ -37,11 +38,11 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
  * {@link ReactiveElasticsearchClient}.
  *
  * @author Aleksander Lech
- * @since 2.3.2
+ * @since 4.0.0
  */
-@AutoConfiguration(
-		afterName = "org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration")
-@ConditionalOnClass({ ReactiveElasticsearchClient.class, Flux.class, ElasticsearchReactiveHealthIndicator.class })
+@AutoConfiguration(after = ReactiveElasticsearchClientAutoConfiguration.class)
+@ConditionalOnClass({ ReactiveElasticsearchClient.class, Flux.class, ElasticsearchReactiveHealthIndicator.class,
+		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(ReactiveElasticsearchClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 public class ElasticsearchReactiveHealthContributorAutoConfiguration extends

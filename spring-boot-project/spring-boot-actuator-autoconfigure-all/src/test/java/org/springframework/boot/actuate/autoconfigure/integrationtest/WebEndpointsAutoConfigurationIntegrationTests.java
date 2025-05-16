@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration;
-import org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.data.neo4j.autoconfigure.Neo4jDataAutoConfiguration;
@@ -82,8 +81,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jReactiveDataAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			ElasticsearchDataAutoConfiguration.class, RedisAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, BraveAutoConfiguration.class,
 			OpenTelemetryTracingAutoConfiguration.class })
 	@SpringBootConfiguration

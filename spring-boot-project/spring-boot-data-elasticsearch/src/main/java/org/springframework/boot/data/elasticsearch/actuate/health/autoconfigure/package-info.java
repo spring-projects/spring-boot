@@ -15,6 +15,7 @@
  */
 
 /**
- * Auto-configuration for actuator Elasticsearch concerns dependent on Spring Data.
+ * Auto-configuration for Elasticsearch health integration using Spring Data
+ * Elasticsearch.
  */
-package org.springframework.boot.actuate.autoconfigure.data.elasticsearch;
+package org.springframework.boot.data.elasticsearch.actuate.health.autoconfigure;
