@@ -1,1 +1,3 @@
+org.springframework.boot.cassandra.actuate.health.autoconfigure.CassandraHealthContributorAutoConfiguration
+org.springframework.boot.cassandra.actuate.health.autoconfigure.CassandraReactiveHealthContributorAutoConfiguration
 org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration

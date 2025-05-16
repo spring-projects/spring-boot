@@ -2,6 +2,12 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.health.cassandra.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Cassandra health check.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.cassandra.compression",
       "defaultValue": "none"
     },

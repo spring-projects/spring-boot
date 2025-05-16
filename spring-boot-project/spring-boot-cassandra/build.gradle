@@ -30,7 +30,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.apache.cassandra:java-driver-core")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("io.projectreactor:reactor-core")
 

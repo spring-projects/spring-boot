@@ -42,12 +42,6 @@
       }
     },
     {
-      "name": "management.health.cassandra.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Cassandra health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.couchbase.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Couchbase health check.",

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.actuate.health.autoconfigure;
 
 import java.util.Map;
 

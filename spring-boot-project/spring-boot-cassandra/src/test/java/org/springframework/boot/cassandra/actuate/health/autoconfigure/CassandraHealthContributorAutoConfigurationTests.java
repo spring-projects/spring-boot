@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.cassandra;
+package org.springframework.boot.cassandra.actuate.health.autoconfigure;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;
