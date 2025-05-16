@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.actuate.health.autoconfigure;
 
 import org.elasticsearch.client.RestClient;
 
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.elasticsearch.actuate.health.ElasticsearchRestClientHealthIndicator;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -37,9 +38,8 @@ import org.springframework.context.annotation.Bean;
  * @author Artsiom Yudovin
  * @since 2.1.1
  */
-@AutoConfiguration(
-		afterName = "org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration")
-@ConditionalOnClass({ RestClient.class, ElasticsearchRestClientHealthIndicator.class })
+@AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
+@ConditionalOnClass({ RestClient.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(RestClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 public class ElasticsearchRestHealthContributorAutoConfiguration

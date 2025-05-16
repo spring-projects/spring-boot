@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Elasticsearch concerns.
+ * Auto-configuration for Elasticsearch health integration.
  */
-package org.springframework.boot.actuate.autoconfigure.elasticsearch;
+package org.springframework.boot.elasticsearch.actuate.health.autoconfigure;

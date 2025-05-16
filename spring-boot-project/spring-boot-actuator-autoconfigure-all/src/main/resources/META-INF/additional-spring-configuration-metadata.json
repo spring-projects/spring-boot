@@ -60,28 +60,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.elasticsearch.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Elasticsearch health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.elasticsearch.indices",
-      "type": "java.util.List<java.lang.String>",
-      "description": "Comma-separated index names.",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.health.elasticsearch.response-timeout",
-      "type": "java.time.Duration",
-      "description": "Time to wait for a response from the cluster.",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
       "name": "management.health.influxdb.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable InfluxDB health check.",
