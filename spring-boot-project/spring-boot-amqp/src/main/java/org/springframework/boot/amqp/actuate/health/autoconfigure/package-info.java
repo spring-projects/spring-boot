@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator AMQP concerns.
+ * Auto-configuration of health integration for AMQP and RabbitMQ.
  */
-package org.springframework.boot.actuate.autoconfigure.amqp;
+package org.springframework.boot.amqp.actuate.health.autoconfigure;

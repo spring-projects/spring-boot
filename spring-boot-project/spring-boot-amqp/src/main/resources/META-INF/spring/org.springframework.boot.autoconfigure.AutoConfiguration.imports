@@ -1,1 +1,2 @@
+org.springframework.boot.amqp.actuate.health.autoconfigure.RabbitHealthContributorAutoConfiguration
 org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
