@@ -9,3 +9,4 @@ open class TestKotlinApplication
 fun main(args: Array<String>) {
 	runApplication<TestKotlinApplication>(*args)
 }
+
