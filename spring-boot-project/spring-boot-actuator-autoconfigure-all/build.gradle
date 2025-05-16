@@ -49,7 +49,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-cache"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
-	optional(project(":spring-boot-project:spring-boot-data-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
 	optional(project(":spring-boot-project:spring-boot-data-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-data-neo4j"))
@@ -147,7 +146,6 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client")
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.glassfish.jersey.ext:jersey-micrometer")
@@ -174,7 +172,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")
-	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
