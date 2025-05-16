@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.springframework.boot.actuate.autoconfigure.ssl.SslHealthIndicatorProperties;
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -50,7 +49,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @since 2.0.0
  */
 @AutoConfiguration(after = ProjectInfoAutoConfiguration.class)
-@EnableConfigurationProperties({ InfoContributorProperties.class, SslHealthIndicatorProperties.class })
+@EnableConfigurationProperties(InfoContributorProperties.class)
 public class InfoContributorAutoConfiguration {
 
 	/**

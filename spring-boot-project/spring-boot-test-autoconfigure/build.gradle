@@ -125,7 +125,7 @@ dependencies {
 	optional("io.micrometer:micrometer-tracing")
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
 	testImplementation(project(":spring-boot-project:spring-boot-gson"))
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
