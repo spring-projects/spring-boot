@@ -1,2 +1,3 @@
+org.springframework.boot.hazelcast.actuate.health.autoconfigure.HazelcastHealthContributorAutoConfiguration
 org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration
 org.springframework.boot.hazelcast.autoconfigure.HazelcastJpaDependencyAutoConfiguration

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Hazelcast concerns.
+ * Auto-configuration for Hazelcast health integration.
  */
-package org.springframework.boot.actuate.autoconfigure.hazelcast;
+package org.springframework.boot.hazelcast.actuate.health.autoconfigure;
