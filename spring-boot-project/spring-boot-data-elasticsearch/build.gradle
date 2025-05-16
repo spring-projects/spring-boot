@@ -30,7 +30,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-elasticsearch"))
 	api("org.springframework.data:spring-data-elasticsearch")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 

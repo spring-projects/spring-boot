@@ -1,3 +1,4 @@
+org.springframework.boot.data.elasticsearch.actuate.health.autoconfigure.ElasticsearchReactiveHealthContributorAutoConfiguration
 org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchDataAutoConfiguration
 org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchRepositoriesAutoConfiguration
 org.springframework.boot.data.elasticsearch.autoconfigure.ReactiveElasticsearchRepositoriesAutoConfiguration
