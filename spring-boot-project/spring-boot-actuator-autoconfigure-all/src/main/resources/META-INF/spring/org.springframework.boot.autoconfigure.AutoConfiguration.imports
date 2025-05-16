@@ -15,7 +15,6 @@ org.springframework.boot.actuate.autoconfigure.data.redis.RedisReactiveHealthCon
 org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration

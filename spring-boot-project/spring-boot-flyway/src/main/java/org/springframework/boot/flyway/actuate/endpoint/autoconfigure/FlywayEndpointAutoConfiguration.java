@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.flyway;
+package org.springframework.boot.flyway.actuate.endpoint.autoconfigure;
 
 import org.flywaydb.core.Flyway;
 
@@ -33,10 +33,10 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link FlywayEndpoint}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = FlywayAutoConfiguration.class)
-@ConditionalOnClass({ Flyway.class, FlywayEndpoint.class })
+@ConditionalOnClass({ Flyway.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(FlywayEndpoint.class)
 public class FlywayEndpointAutoConfiguration {
 

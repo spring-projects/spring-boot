@@ -26,7 +26,7 @@ description = "Spring Boot Actuator AutoConfigure"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator"))
-	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	optional(project(":spring-boot-project:spring-boot-jersey"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
