@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for actuator Couchbase concerns.
  */
-package org.springframework.boot.actuate.autoconfigure.couchbase;
+package org.springframework.boot.couchbase.actuate.health.autoconfigure;

@@ -2,6 +2,21 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.health.couchbase.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Couchbase health check.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.health.couchbase.timeout",
+      "type": "java.time.Duration",
+      "description": "Timeout for getting the Bucket information from the server.",
+      "defaultValue": "1000ms",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.couchbase.bootstrap-hosts",
       "type": "java.util.List<java.lang.String>",
       "description": "Couchbase nodes (host or IP address) to bootstrap from.",
