@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Flyway concerns.
+ * Auto-configuration for Flyway actuator endpoint.
  */
-package org.springframework.boot.actuate.autoconfigure.flyway;
+package org.springframework.boot.flyway.actuate.endpoint.autoconfigure;

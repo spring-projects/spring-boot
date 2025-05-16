@@ -34,7 +34,6 @@ import org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoCo
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
@@ -77,8 +76,8 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
-	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = { LiquibaseAutoConfiguration.class, CassandraAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jReactiveDataAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class, RedisAutoConfiguration.class,

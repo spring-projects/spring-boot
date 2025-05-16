@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.flyway;
+package org.springframework.boot.flyway.actuate.endpoint.autoconfigure;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
