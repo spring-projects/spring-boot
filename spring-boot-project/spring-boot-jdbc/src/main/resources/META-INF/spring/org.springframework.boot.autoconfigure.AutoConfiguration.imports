@@ -1,3 +1,4 @@
+org.springframework.boot.jdbc.actuate.health.autoconfigure.DataSourceHealthContributorAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration
 org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
