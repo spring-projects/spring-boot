@@ -16,7 +16,6 @@ org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointA
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.jms.JmsHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration
