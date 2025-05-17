@@ -45,7 +45,7 @@ class FieldOriginTests {
 		Origin o2 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "one"));
 		Origin o3 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "two"));
 		assertThat(o1).isEqualTo(o1).isEqualTo(o2).isNotEqualTo(o3);
-		assertThat(o1.hashCode()).isEqualTo(o2.hashCode());
+		assertThat(o1).hasSameHashCodeAs(o2);
 	}
 
 	@Test

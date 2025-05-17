@@ -157,7 +157,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 
 	/**
 	 * Detect the most suitable {@link ClientHttpConnectorBuilder} based on the classpath.
-	 * The methods favors builders in the following order:
+	 * The method favors builders in the following order:
 	 * <ol>
 	 * <li>{@link #reactor()}</li>
 	 * <li>{@link #jetty()}</li>
@@ -172,7 +172,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 
 	/**
 	 * Detect the most suitable {@link ClientHttpConnectorBuilder} based on the classpath.
-	 * The methods favors builders in the following order:
+	 * The method favors builders in the following order:
 	 * <ol>
 	 * <li>{@link #reactor()}</li>
 	 * <li>{@link #jetty()}</li>
