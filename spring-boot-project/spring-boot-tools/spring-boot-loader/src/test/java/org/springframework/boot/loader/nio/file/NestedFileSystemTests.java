@@ -184,8 +184,8 @@ class NestedFileSystemTests {
 		NestedFileSystem f2 = new NestedFileSystem(this.provider, jp1);
 		NestedFileSystem f3 = new NestedFileSystem(this.provider, jp2);
 		NestedFileSystem f4 = new NestedFileSystem(this.provider, jp3);
-		assertThat(f1.hashCode()).isEqualTo(f2.hashCode());
 		assertThat(f1).isEqualTo(f1).isEqualTo(f2).isEqualTo(f3).isNotEqualTo(f4);
+		assertThat(f1).hasSameHashCodeAs(f2);
 	}
 
 }

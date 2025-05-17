@@ -51,7 +51,7 @@ class DockerComposeFileTests {
 		DockerComposeFile c2 = DockerComposeFile.of(f1);
 		DockerComposeFile c3 = DockerComposeFile.find(f1.getParentFile());
 		DockerComposeFile c4 = DockerComposeFile.of(f2);
-		assertThat(c1.hashCode()).isEqualTo(c2.hashCode()).isEqualTo(c3.hashCode());
+		assertThat(c1).hasSameHashCodeAs(c2).hasSameHashCodeAs(c3);
 		assertThat(c1).isEqualTo(c1).isEqualTo(c2).isEqualTo(c3).isNotEqualTo(c4);
 	}
 

@@ -62,7 +62,7 @@ class KotlinDefaultBindConstructorProviderTests {
 	}
 
 	@Test
-	fun `type with no param primary constructor and secondary params constructor should not use constructor binding`() {
+	fun `type with no param primary constructor and params secondary constructor should not use constructor binding`() {
 		val bindConstructor = this.constructorProvider.getBindConstructor(NoParamPrimaryWithParamsSecondaryProperties::class.java, false)
 		assertThat(bindConstructor).isNull()
 	}

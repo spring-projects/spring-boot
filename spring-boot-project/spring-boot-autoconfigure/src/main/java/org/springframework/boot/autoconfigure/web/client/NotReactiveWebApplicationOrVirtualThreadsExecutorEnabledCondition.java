@@ -43,7 +43,7 @@ class NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition extends 
 
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	@ConditionalOnBean(name = TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
-	private static final class VirtualThreadsEnabled {
+	private static final class VirtualThreadsExecutorEnabled {
 
 	}
 

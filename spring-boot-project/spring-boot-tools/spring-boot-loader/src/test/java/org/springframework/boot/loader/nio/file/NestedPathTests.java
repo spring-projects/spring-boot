@@ -208,7 +208,7 @@ class NestedPathTests {
 		NestedPath p2 = new NestedPath(this.fileSystem, "a.jar");
 		NestedPath p3 = new NestedPath(this.fileSystem, "c.jar");
 		NestedPath p4 = new NestedPath(fs2, "c.jar");
-		assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
+		assertThat(p1).hasSameHashCodeAs(p2);
 		assertThat(p1).isEqualTo(p1).isEqualTo(p2).isNotEqualTo(p3).isNotEqualTo(p4);
 	}
 

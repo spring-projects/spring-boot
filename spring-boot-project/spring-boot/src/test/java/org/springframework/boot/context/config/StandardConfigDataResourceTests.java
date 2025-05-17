@@ -87,8 +87,8 @@ class StandardConfigDataResourceTests {
 			FileUrlResource fileResource = new FileUrlResource(classResource.getURL());
 			ConfigDataResource classDataResource = new StandardConfigDataResource(this.reference, classResource);
 			ConfigDataResource fileDataResource = new StandardConfigDataResource(this.reference, fileResource);
-			assertThat(classDataResource.hashCode()).isEqualTo(fileDataResource.hashCode());
 			assertThat(classDataResource).isEqualTo(fileDataResource);
+			assertThat(classDataResource).hasSameHashCodeAs(fileDataResource);
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(contextClassLoader);

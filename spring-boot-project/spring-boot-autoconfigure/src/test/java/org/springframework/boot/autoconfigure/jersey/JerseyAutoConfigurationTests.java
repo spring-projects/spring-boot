@@ -113,11 +113,10 @@ class JerseyAutoConfigurationTests {
 					.stream()
 					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).isEmpty();
 			});
-
 	}
 
 	@Test
-	void webApplicationIntializerDisablesJerseysWebApplicationInitializer() throws ServletException {
+	void webApplicationInitializerDisablesJerseyWebApplicationInitializer() throws ServletException {
 		ServletContext context = new MockServletContext();
 		new JerseyWebApplicationInitializer().onStartup(context);
 		assertThat(context.getInitParameter("contextConfigLocation")).isEqualTo("<NONE>");
