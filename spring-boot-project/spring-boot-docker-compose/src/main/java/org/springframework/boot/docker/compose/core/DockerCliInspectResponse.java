@@ -53,7 +53,7 @@ record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config confi
 	}
 
 	/**
-	 * A container's resources (cgroups config, ulimits, etc).
+	 * A container's resources (cgroups config, ulimits, etc.).
 	 *
 	 * @param networkMode the network mode to use for this container
 	 */
