@@ -86,8 +86,8 @@ class PemContentTests {
 		PemContent c1 = PemContent.of("aaa");
 		PemContent c2 = PemContent.of("aaa");
 		PemContent c3 = PemContent.of("bbb");
-		assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
 		assertThat(c1).isEqualTo(c1).isEqualTo(c2).isNotEqualTo(c3);
+		assertThat(c1).hasSameHashCodeAs(c2);
 	}
 
 	@Test
