@@ -13,7 +13,7 @@ The auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[] is
 - Support for blocking execution in Spring WebFlux.
 - Utilized for inbound and outbound message channels in Spring WebSocket.
 - Bootstrap executor for JPA, based on the bootstrap mode of JPA repositories.
-- Bootstrap Executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`.
+- Bootstrap executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`.
 
 While this approach works in most scenarios, Spring Boot allows you to override the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[].
 By default, when a custom javadoc:java.util.concurrent.Executor[] bean is registered, the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[] backs off, and the custom javadoc:java.util.concurrent.Executor[] is used for regular task execution (via javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation]).
@@ -83,7 +83,7 @@ These integrations include:
 - Spring WebFlux's blocking execution support.
 - Utilized for inbound and outbound message channels in Spring WebSocket.
 - Bootstrap executor for JPA, based on the bootstrap mode of JPA repositories.
-- Bootstrap Executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`, unless a bean named `bootstrapExecutor` is defined.
+- Bootstrap executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`, unless a bean named `bootstrapExecutor` is defined.
 
 [TIP]
 ====

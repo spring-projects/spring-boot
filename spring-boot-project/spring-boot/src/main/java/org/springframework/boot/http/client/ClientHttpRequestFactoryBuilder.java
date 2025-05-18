@@ -185,7 +185,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 
 	/**
 	 * Detect the most suitable {@link ClientHttpRequestFactoryBuilder} based on the
-	 * classpath. The methods favors builders in the following order:
+	 * classpath. The method favors builders in the following order:
 	 * <ol>
 	 * <li>{@link #httpComponents()}</li>
 	 * <li>{@link #jetty()}</li>
@@ -201,7 +201,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 
 	/**
 	 * Detect the most suitable {@link ClientHttpRequestFactoryBuilder} based on the
-	 * classpath. The methods favors builders in the following order:
+	 * classpath. The method favors builders in the following order:
 	 * <ol>
 	 * <li>{@link #httpComponents()}</li>
 	 * <li>{@link #jetty()}</li>
