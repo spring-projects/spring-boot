@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.oracle.OracleContainer;
-import org.testcontainers.oracle.OracleR2DBCDatabaseContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,35 +27,38 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link OracleContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link PostgreSQLContainer}.
  *
- * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class OracleFreeR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
+class PostgresR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<PostgreSQLContainer<?>, R2dbcConnectionDetails> {
 
-	OracleFreeR2dbcContainerConnectionDetailsFactory() {
+	PostgresR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<PostgreSQLContainer<?>> source) {
+		return new PostgresR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
+	private static final class PostgresR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<PostgreSQLContainer<?>> implements R2dbcConnectionDetails {
 
-		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
+		PostgresR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
+			return PostgreSQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

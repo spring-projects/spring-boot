@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.clickhouse.ClickHouseContainer;
-import org.testcontainers.clickhouse.ClickHouseR2DBCDatabaseContainer;
+import org.testcontainers.oracle.OracleContainer;
+import org.testcontainers.oracle.OracleR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,36 +27,35 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link ClickHouseContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link OracleContainer}.
  *
  * @author Eddú Meléndez
  */
-class ClickHouseR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ClickHouseContainer, R2dbcConnectionDetails> {
+class OracleFreeR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
 
-	ClickHouseR2dbcContainerConnectionDetailsFactory() {
+	OracleFreeR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<ClickHouseContainer> source) {
-		return new ClickHouseR2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
+		return new R2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class ClickHouseR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<ClickHouseContainer> implements R2dbcConnectionDetails {
+	private static final class R2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
 
-		private ClickHouseR2dbcDatabaseContainerConnectionDetails(
-				ContainerConnectionSource<ClickHouseContainer> source) {
+		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return ClickHouseR2DBCDatabaseContainer.getOptions(getContainer());
+			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}
