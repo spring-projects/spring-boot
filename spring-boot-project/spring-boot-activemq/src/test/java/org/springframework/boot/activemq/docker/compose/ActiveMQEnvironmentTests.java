@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.activemq;
+package org.springframework.boot.activemq.docker.compose;
 
 import java.util.Collections;
 import java.util.Map;
@@ -24,36 +24,33 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ActiveMQClassicEnvironment}.
+ * Tests for {@link ActiveMQEnvironment}.
  *
  * @author Stephane Nicoll
- * @author Eddú Meléndez
  */
-class ActiveMQClassicEnvironmentTests {
+class ActiveMQEnvironmentTests {
 
 	@Test
 	void getUserWhenHasNoActiveMqUser() {
-		ActiveMQClassicEnvironment environment = new ActiveMQClassicEnvironment(Collections.emptyMap());
+		ActiveMQEnvironment environment = new ActiveMQEnvironment(Collections.emptyMap());
 		assertThat(environment.getUser()).isNull();
 	}
 
 	@Test
 	void getUserWhenHasActiveMqUser() {
-		ActiveMQClassicEnvironment environment = new ActiveMQClassicEnvironment(
-				Map.of("ACTIVEMQ_CONNECTION_USER", "me"));
+		ActiveMQEnvironment environment = new ActiveMQEnvironment(Map.of("ACTIVEMQ_USERNAME", "me"));
 		assertThat(environment.getUser()).isEqualTo("me");
 	}
 
 	@Test
 	void getPasswordWhenHasNoActiveMqPassword() {
-		ActiveMQClassicEnvironment environment = new ActiveMQClassicEnvironment(Collections.emptyMap());
+		ActiveMQEnvironment environment = new ActiveMQEnvironment(Collections.emptyMap());
 		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test
 	void getPasswordWhenHasActiveMqPassword() {
-		ActiveMQClassicEnvironment environment = new ActiveMQClassicEnvironment(
-				Map.of("ACTIVEMQ_CONNECTION_PASSWORD", "secret"));
+		ActiveMQEnvironment environment = new ActiveMQEnvironment(Map.of("ACTIVEMQ_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
