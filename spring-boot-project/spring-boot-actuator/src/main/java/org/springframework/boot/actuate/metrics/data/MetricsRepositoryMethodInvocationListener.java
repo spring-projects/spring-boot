@@ -24,8 +24,6 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 
-import org.springframework.boot.actuate.metrics.AutoTimer;
-import org.springframework.boot.actuate.metrics.annotation.TimedAnnotations;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
 import org.springframework.util.function.SingletonSupplier;
 

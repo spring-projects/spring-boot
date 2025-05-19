@@ -31,6 +31,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
+	testImplementation(project(":spring-boot-project:spring-boot-metrics"))
 	testImplementation(project(":spring-boot-project:spring-boot-quartz"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-session"))
