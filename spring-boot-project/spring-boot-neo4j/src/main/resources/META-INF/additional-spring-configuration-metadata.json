@@ -2,6 +2,12 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.health.neo4j.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Neo4j health check.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.neo4j.uri",
       "defaultValue": "bolt://localhost:7687"
     }

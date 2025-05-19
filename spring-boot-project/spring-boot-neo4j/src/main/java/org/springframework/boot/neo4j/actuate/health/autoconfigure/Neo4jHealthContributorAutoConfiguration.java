@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.neo4j;
+package org.springframework.boot.neo4j.actuate.health.autoconfigure;
 
 import org.neo4j.driver.Driver;
 
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorConfigurations.Neo4jConfiguration;
-import org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorConfigurations.Neo4jReactiveConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.neo4j.actuate.health.Neo4jHealthIndicator;
 import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
+import org.springframework.boot.neo4j.actuate.health.autoconfigure.Neo4jHealthContributorConfigurations.Neo4jConfiguration;
+import org.springframework.boot.neo4j.actuate.health.autoconfigure.Neo4jHealthContributorConfigurations.Neo4jReactiveConfiguration;
+import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -38,8 +39,8 @@ import org.springframework.context.annotation.Import;
  * @author Michael J. Simons
  * @since 2.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration")
-@ConditionalOnClass(Driver.class)
+@AutoConfiguration(after = Neo4jAutoConfiguration.class)
+@ConditionalOnClass({ Driver.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(Driver.class)
 @ConditionalOnEnabledHealthIndicator("neo4j")
 @Import({ Neo4jReactiveConfiguration.class, Neo4jConfiguration.class })

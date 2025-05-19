@@ -72,12 +72,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.neo4j.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Neo4j health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.ping.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable ping health check.",
