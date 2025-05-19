@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers R2DBC service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;

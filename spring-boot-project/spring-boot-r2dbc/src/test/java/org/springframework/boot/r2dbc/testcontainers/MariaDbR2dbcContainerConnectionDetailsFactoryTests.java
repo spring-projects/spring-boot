@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
@@ -26,11 +26,11 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PostgresR2dbcContainerConnectionDetailsFactory}.
+ * Tests for {@link MariaDbR2dbcContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  */
-class PostgresR2dbcContainerConnectionDetailsFactoryTests {
+class MariaDbR2dbcContainerConnectionDetailsFactoryTests {
 
 	@Test
 	void shouldRegisterHints() {

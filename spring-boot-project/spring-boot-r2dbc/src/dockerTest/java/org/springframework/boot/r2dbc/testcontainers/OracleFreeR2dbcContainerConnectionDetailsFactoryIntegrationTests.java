@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import java.time.Duration;
 
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
-import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.oracle.OracleContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -31,7 +30,6 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -39,15 +37,13 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OracleXeR2dbcContainerConnectionDetailsFactory}.
+ * Tests for {@link OracleFreeR2dbcContainerConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The Oracle image has no ARM support")
-class OracleXeR2dbcContainerConnectionDetailsFactoryIntegrationTests {
+class OracleFreeR2dbcContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

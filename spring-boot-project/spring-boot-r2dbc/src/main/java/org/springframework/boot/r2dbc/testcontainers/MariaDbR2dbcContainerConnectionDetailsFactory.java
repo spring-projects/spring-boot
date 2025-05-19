@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.OracleContainer;
-import org.testcontainers.containers.OracleR2DBCDatabaseContainer;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.MariaDBR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,35 +27,37 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link OracleContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MariaDBContainer}.
  *
- * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class OracleXeR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
+class MariaDbR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
 
-	OracleXeR2dbcContainerConnectionDetailsFactory() {
+	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+		return new MariaDbR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
+	private static final class MariaDbR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MariaDBContainer<?>> implements R2dbcConnectionDetails {
 
-		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
+		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
+			return MariaDBR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}
