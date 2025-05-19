@@ -23,8 +23,6 @@ import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListene
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,6 +32,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
+import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 

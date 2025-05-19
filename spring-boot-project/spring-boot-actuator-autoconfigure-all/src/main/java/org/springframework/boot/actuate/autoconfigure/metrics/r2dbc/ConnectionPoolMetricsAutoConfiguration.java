@@ -25,12 +25,12 @@ import io.r2dbc.spi.Wrapped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.r2dbc.actuate.metrics.ConnectionPoolMetrics;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 

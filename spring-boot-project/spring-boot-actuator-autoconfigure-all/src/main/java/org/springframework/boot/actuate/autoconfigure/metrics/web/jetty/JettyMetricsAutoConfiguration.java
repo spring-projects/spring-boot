@@ -22,7 +22,6 @@ import io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics;
 import io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics;
 import org.eclipse.jetty.server.Server;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.jetty.JettyConnectionMetricsBinder;
 import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolMetricsBinder;
 import org.springframework.boot.actuate.metrics.web.jetty.JettySslHandshakeMetricsBinder;
@@ -33,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**

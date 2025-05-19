@@ -21,9 +21,9 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

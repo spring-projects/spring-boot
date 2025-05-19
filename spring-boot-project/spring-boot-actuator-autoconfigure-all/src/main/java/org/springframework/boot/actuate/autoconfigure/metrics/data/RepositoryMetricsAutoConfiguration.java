@@ -19,11 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.data;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data.Repository;
-import org.springframework.boot.actuate.autoconfigure.metrics.PropertiesAutoTimer;
+import org.springframework.boot.actuate.autoconfigure.metrics.data.DataMetricsProperties.Repository;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
@@ -34,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -47,12 +45,12 @@ import org.springframework.util.function.SingletonSupplier;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass(org.springframework.data.repository.Repository.class)
 @ConditionalOnBean(MeterRegistry.class)
-@EnableConfigurationProperties(MetricsProperties.class)
+@EnableConfigurationProperties(DataMetricsProperties.class)
 public class RepositoryMetricsAutoConfiguration {
 
-	private final MetricsProperties properties;
+	private final DataMetricsProperties properties;
 
-	public RepositoryMetricsAutoConfiguration(MetricsProperties properties) {
+	public RepositoryMetricsAutoConfiguration(DataMetricsProperties properties) {
 		this.properties = properties;
 	}
 
@@ -66,7 +64,7 @@ public class RepositoryMetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener(
 			ObjectProvider<MeterRegistry> registry, RepositoryTagsProvider tagsProvider) {
-		Repository properties = this.properties.getData().getRepository();
+		Repository properties = this.properties.getRepository();
 		return new MetricsRepositoryMethodInvocationListener(registry::getObject, tagsProvider,
 				properties.getMetricName(), new PropertiesAutoTimer(properties.getAutotime()));
 	}
