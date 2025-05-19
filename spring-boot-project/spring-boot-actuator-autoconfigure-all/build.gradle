@@ -67,7 +67,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
 	optional(project(":spring-boot-project:spring-boot-security-saml2"))
-	optional(project(":spring-boot-project:spring-boot-session"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
@@ -160,7 +159,6 @@ dependencies {
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework.session:spring-session-core")
 	optional("redis.clients:jedis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-data-rest"))

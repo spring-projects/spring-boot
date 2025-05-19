@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.session;
+package org.springframework.boot.session.actuate.endpoint.autoconfigure;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
