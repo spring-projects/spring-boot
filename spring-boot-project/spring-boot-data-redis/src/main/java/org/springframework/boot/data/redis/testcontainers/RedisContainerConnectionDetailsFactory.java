@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.redis;
+package org.springframework.boot.data.redis.testcontainers;
 
 import java.util.List;
 
@@ -54,8 +54,10 @@ class RedisContainerConnectionDetailsFactory
 	protected boolean sourceAccepts(ContainerConnectionSource<Container<?>> source, Class<?> requiredContainerType,
 			Class<?> requiredConnectionDetailsType) {
 		return super.sourceAccepts(source, requiredContainerType, requiredConnectionDetailsType)
-				|| source.accepts(ANY_CONNECTION_NAME, RedisContainer.class, requiredConnectionDetailsType)
-				|| source.accepts(ANY_CONNECTION_NAME, RedisStackContainer.class, requiredConnectionDetailsType);
+				|| source.accepts(ContainerConnectionDetailsFactory.ANY_CONNECTION_NAME, RedisContainer.class,
+						requiredConnectionDetailsType)
+				|| source.accepts(ContainerConnectionDetailsFactory.ANY_CONNECTION_NAME, RedisStackContainer.class,
+						requiredConnectionDetailsType);
 	}
 
 	@Override

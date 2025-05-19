@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Redis service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.redis;
+package org.springframework.boot.data.redis.testcontainers;

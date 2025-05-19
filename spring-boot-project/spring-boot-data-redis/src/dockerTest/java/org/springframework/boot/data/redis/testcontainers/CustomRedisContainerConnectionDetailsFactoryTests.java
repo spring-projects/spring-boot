@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.redis;
+package org.springframework.boot.data.redis.testcontainers;
 
 import java.util.Map;
 
