@@ -29,8 +29,6 @@ import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
-import org.springframework.boot.data.neo4j.autoconfigure.Neo4jDataAutoConfiguration;
-import org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
@@ -75,8 +73,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			Neo4jDataAutoConfiguration.class, Neo4jReactiveDataAutoConfiguration.class, MongoAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+			MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
 			MongoReactiveDataAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
 			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class, BraveAutoConfiguration.class,
 			OpenTelemetryTracingAutoConfiguration.class })

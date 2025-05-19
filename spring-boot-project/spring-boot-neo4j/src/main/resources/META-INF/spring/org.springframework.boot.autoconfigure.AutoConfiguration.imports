@@ -1,1 +1,2 @@
+org.springframework.boot.neo4j.actuate.health.autoconfigure.Neo4jHealthContributorAutoConfiguration
 org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration

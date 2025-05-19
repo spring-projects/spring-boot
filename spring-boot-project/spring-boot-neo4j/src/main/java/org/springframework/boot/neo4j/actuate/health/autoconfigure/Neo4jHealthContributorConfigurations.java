@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.neo4j;
+package org.springframework.boot.neo4j.actuate.health.autoconfigure;
 
 import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;

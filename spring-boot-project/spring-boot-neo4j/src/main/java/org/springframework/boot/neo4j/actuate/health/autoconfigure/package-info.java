@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Neo4J concerns.
+ * Auto-configuration for Neo4j health integration.
  */
-package org.springframework.boot.actuate.autoconfigure.neo4j;
+package org.springframework.boot.neo4j.actuate.health.autoconfigure;
