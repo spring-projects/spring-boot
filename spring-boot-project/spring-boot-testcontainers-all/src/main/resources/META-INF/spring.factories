@@ -1,8 +1,5 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.testcontainers.service.connection.kafka.ApacheKafkaContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.kafka.ConfluentKafkaContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.kafka.DeprecatedConfluentKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.ldap.LLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.ldap.OpenLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
@@ -22,5 +19,4 @@ org.springframework.boot.testcontainers.service.connection.r2dbc.OracleXeR2dbcCo
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.redpanda.RedpandaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.zipkin.ZipkinContainerConnectionDetailsFactory

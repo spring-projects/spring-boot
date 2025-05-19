@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.containers.KafkaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -28,19 +28,20 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated
- * {@link ConfluentKafkaContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
+ * {@link ConfluentKafkaContainerConnectionDetailsFactory}.
  */
-class ConfluentKafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ConfluentKafkaContainer, KafkaConnectionDetails> {
+@Deprecated(since = "3.4.0", forRemoval = true)
+class DeprecatedConfluentKafkaContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	@Override
-	protected KafkaConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ConfluentKafkaContainer> source) {
+	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 		return new ConfluentKafkaContainerConnectionDetails(source);
 	}
 
@@ -48,9 +49,9 @@ class ConfluentKafkaContainerConnectionDetailsFactory
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class ConfluentKafkaContainerConnectionDetails
-			extends ContainerConnectionDetails<ConfluentKafkaContainer> implements KafkaConnectionDetails {
+			extends ContainerConnectionDetails<KafkaContainer> implements KafkaConnectionDetails {
 
-		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<ConfluentKafkaContainer> source) {
+		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 		}
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.redpanda.RedpandaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -28,30 +28,26 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link RedpandaContainer}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
- * {@link ConfluentKafkaContainerConnectionDetailsFactory}.
+ * @author Eddú Meléndez
  */
-@Deprecated(since = "3.4.0", forRemoval = true)
-class DeprecatedConfluentKafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
+class RedpandaContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
 	@Override
-	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
-		return new ConfluentKafkaContainerConnectionDetails(source);
+	protected KafkaConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<RedpandaContainer> source) {
+		return new RedpandaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class ConfluentKafkaContainerConnectionDetails
-			extends ContainerConnectionDetails<KafkaContainer> implements KafkaConnectionDetails {
+	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails<RedpandaContainer>
+			implements KafkaConnectionDetails {
 
-		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 		}
 

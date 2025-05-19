@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.redpanda.RedpandaContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -41,34 +41,30 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeprecatedConfluentKafkaContainerConnectionDetailsFactory}.
+ * Tests for {@link RedpandaContainerConnectionDetailsFactory}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 4.0.0
+ * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=test-group",
 		"spring.kafka.consumer.auto-offset-reset=earliest" })
-@Deprecated(since = "3.4.0", forRemoval = true)
-class DeprecatedConfluentKafkaContainerConnectionDetailsFactoryIntegrationTests {
+class RedpandaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final KafkaContainer kafka = TestImage.container(KafkaContainer.class);
+	static final RedpandaContainer redpanda = TestImage.container(RedpandaContainer.class);
 
 	@Autowired
-	private KafkaTemplate<String, String> kafkaTemplate;
+	KafkaTemplate<String, String> kafkaTemplate;
 
 	@Autowired
-	private TestListener listener;
+	TestListener listener;
 
 	@Test
-	void connectionCanBeMadeToKafkaContainer() {
+	void connectionCanBeMadeToRedpandaContainer() {
 		this.kafkaTemplate.send("test-topic", "test-data");
-		Awaitility.waitAtMost(Duration.ofMinutes(4))
+		Awaitility.waitAtMost(Duration.ofSeconds(30))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("test-data"));
 	}
 

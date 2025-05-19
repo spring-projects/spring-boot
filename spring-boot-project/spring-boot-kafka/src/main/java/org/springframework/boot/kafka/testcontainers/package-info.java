@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for testcontainers Redpanda service connections.
+ * Support for testcontainers Kafka service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.redpanda;
+package org.springframework.boot.kafka.testcontainers;
