@@ -2042,6 +2042,7 @@ bom {
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
 				"spring-boot-mail",
+				"spring-boot-metrics",
 				"spring-boot-mongodb",
 				"spring-boot-mustache",
 				"spring-boot-neo4j",

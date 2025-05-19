@@ -21,8 +21,9 @@ plugins {
 description = "Starter for using Spring Boot's Actuator which provides production ready features to help you monitor and manage your application"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
+	api(project(":spring-boot-project:spring-boot-metrics"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("io.micrometer:micrometer-observation")
 	api("io.micrometer:micrometer-jakarta9")
 }

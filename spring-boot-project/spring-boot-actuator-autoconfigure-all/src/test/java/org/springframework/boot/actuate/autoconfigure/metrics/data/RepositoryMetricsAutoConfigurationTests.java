@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.actuate.metrics.data.AutoTimer;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
 import org.springframework.boot.actuate.metrics.data.RepositoryTagsProvider;

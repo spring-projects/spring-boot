@@ -25,7 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -51,6 +53,7 @@ class CacheMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguredCache2kIsInstrumented() {
 		this.contextRunner.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cache-names=cache1,cache2")
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();
