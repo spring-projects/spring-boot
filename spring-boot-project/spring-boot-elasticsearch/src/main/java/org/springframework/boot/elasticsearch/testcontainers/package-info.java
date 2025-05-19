@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Elasticsearch service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.elasticsearch;
+package org.springframework.boot.elasticsearch.testcontainers;
