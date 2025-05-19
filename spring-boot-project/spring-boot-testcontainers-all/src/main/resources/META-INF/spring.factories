@@ -6,7 +6,6 @@ org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelem
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryLoggingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTracingContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.pulsar.PulsarContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.ClickHouseR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\

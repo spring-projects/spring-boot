@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Pulsar service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.pulsar;
+package org.springframework.boot.pulsar.testcontainers;

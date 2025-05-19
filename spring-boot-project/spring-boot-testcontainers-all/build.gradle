@@ -29,7 +29,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-testcontainers"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-pulsar"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-r2dbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
@@ -46,7 +45,6 @@ dependencies {
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
 	dockerTestImplementation("org.springframework.data:spring-data-redis")
-	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
@@ -57,7 +55,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-pulsar"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.springframework:spring-test")
@@ -70,7 +67,6 @@ dependencies {
 	optional("org.testcontainers:oracle-xe")
 	optional("org.testcontainers:oracle-free")
 	optional("org.testcontainers:postgresql")
-	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:r2dbc")
 	optional("com.redis:testcontainers-redis")
 
