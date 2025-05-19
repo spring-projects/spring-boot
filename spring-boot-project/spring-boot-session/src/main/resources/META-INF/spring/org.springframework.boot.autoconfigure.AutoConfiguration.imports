@@ -1,1 +1,2 @@
+org.springframework.boot.session.actuate.endpoint.autoconfigure.SessionsEndpointAutoConfiguration
 org.springframework.boot.session.autoconfigure.SessionAutoConfiguration
