@@ -18,20 +18,19 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Set;
 
-import com.redis.testcontainers.RedisContainer;
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,6 +42,8 @@ import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -57,8 +58,7 @@ import static org.mockito.Mockito.mock;
 @DisabledIfDockerUnavailable
 class ServiceConnectionAutoConfigurationTests {
 
-	private static final String REDIS_CONTAINER_CONNECTION_DETAILS = "org.springframework.boot.testcontainers.service.connection.redis."
-			+ "RedisContainerConnectionDetailsFactory$RedisContainerConnectionDetails";
+	private static final String DATABASE_CONTAINER_CONNECTION_DETAILS = TestDatabaseConnectionDetails.class.getName();
 
 	@Test
 	void whenNoExistingBeansRegistersServiceConnection() {
@@ -66,31 +66,30 @@ class ServiceConnectionAutoConfigurationTests {
 			applicationContext.register(WithNoExtraAutoConfiguration.class, ContainerConfiguration.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
-			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
-			assertThat(connectionDetails.getClass().getName()).isEqualTo(REDIS_CONTAINER_CONNECTION_DETAILS);
+			DatabaseConnectionDetails connectionDetails = applicationContext.getBean(DatabaseConnectionDetails.class);
+			assertThat(connectionDetails.getClass().getName()).isEqualTo(DATABASE_CONTAINER_CONNECTION_DETAILS);
 		}
 	}
 
 	@Test
 	void whenHasExistingAutoConfigurationRegistersReplacement() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.register(WithRedisAutoConfiguration.class, ContainerConfiguration.class);
+			applicationContext.register(WithDatasourceConfiguration.class, ContainerConfiguration.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
-			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
-			assertThat(connectionDetails.getClass().getName()).isEqualTo(REDIS_CONTAINER_CONNECTION_DETAILS);
+			DatabaseConnectionDetails connectionDetails = applicationContext.getBean(DatabaseConnectionDetails.class);
+			assertThat(connectionDetails.getClass().getName()).isEqualTo(DATABASE_CONTAINER_CONNECTION_DETAILS);
 		}
 	}
 
 	@Test
-	@ClassPathExclusions("lettuce-core-*.jar")
 	void whenHasUserConfigurationDoesNotRegisterReplacement() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.register(UserConfiguration.class, WithRedisAutoConfiguration.class,
+			applicationContext.register(UserConfiguration.class, WithDatasourceConfiguration.class,
 					ContainerConfiguration.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
-			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
+			DatabaseConnectionDetails connectionDetails = applicationContext.getBean(DatabaseConnectionDetails.class);
 			assertThat(Mockito.mockingDetails(connectionDetails).isMock()).isTrue();
 		}
 	}
@@ -102,8 +101,8 @@ class ServiceConnectionAutoConfigurationTests {
 					TestcontainerBeanDefinitionConfiguration.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
-			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
-			assertThat(connectionDetails.getClass().getName()).isEqualTo(REDIS_CONTAINER_CONNECTION_DETAILS);
+			DatabaseConnectionDetails connectionDetails = applicationContext.getBean(DatabaseConnectionDetails.class);
+			assertThat(connectionDetails.getClass().getName()).isEqualTo(DATABASE_CONTAINER_CONNECTION_DETAILS);
 		}
 	}
 
@@ -125,8 +124,16 @@ class ServiceConnectionAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ ServiceConnectionAutoConfiguration.class, RedisAutoConfiguration.class })
-	static class WithRedisAutoConfiguration {
+	@ImportAutoConfiguration(ServiceConnectionAutoConfiguration.class)
+	static class WithDatasourceConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			EmbeddedDatabaseFactory embeddedDatabaseFactory = new EmbeddedDatabaseFactory();
+			embeddedDatabaseFactory.setGenerateUniqueDatabaseName(true);
+			embeddedDatabaseFactory.setDatabaseType(EmbeddedDatabaseType.H2);
+			return embeddedDatabaseFactory.getDatabase();
+		}
 
 	}
 
@@ -135,8 +142,8 @@ class ServiceConnectionAutoConfigurationTests {
 
 		@Bean
 		@ServiceConnection
-		RedisContainer redisContainer() {
-			return TestImage.container(RedisContainer.class);
+		PostgreSQLContainer<?> postgresContainer() {
+			return TestImage.container(PostgreSQLContainer.class);
 		}
 
 	}
@@ -145,8 +152,8 @@ class ServiceConnectionAutoConfigurationTests {
 	static class UserConfiguration {
 
 		@Bean
-		RedisConnectionDetails redisConnectionDetails() {
-			return mock(RedisConnectionDetails.class);
+		DatabaseConnectionDetails databaseConnectionDetails() {
+			return mock(DatabaseConnectionDetails.class);
 		}
 
 	}
@@ -162,17 +169,17 @@ class ServiceConnectionAutoConfigurationTests {
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
 				BeanNameGenerator importBeanNameGenerator) {
-			registry.registerBeanDefinition("redisContainer", new TestcontainersRootBeanDefinition());
+			registry.registerBeanDefinition("postgresContainer", new TestcontainersRootBeanDefinition());
 		}
 
 	}
 
 	static class TestcontainersRootBeanDefinition extends RootBeanDefinition implements TestcontainerBeanDefinition {
 
-		private final RedisContainer container = TestImage.container(RedisContainer.class);
+		private final PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 		TestcontainersRootBeanDefinition() {
-			setBeanClass(RedisContainer.class);
+			setBeanClass(PostgreSQLContainer.class);
 			setInstanceSupplier(() -> this.container);
 		}
 

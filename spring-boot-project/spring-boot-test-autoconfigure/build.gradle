@@ -22,7 +22,7 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-data-mongodb"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers-all"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
 	dockerTestImplementation("com.zaxxer:HikariCP")
@@ -131,7 +131,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-gson"))
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor"))
-	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	testImplementation(project(":spring-boot-project:spring-boot-testcontainers-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-thymeleaf"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")

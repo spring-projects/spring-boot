@@ -20,12 +20,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.FutureContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
-import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.annotation.MergedAnnotation;
 
@@ -66,8 +65,8 @@ class ContainerConnectionSourceTests {
 	@Test
 	void acceptsWhenContainerIsNotInstanceOfRequiredContainerTypeReturnsFalse() {
 		String requiredConnectionName = null;
-		Class<?> requiredContainerType = ElasticsearchContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredContainerType = FutureContainer.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isFalse();
 	}
@@ -76,7 +75,7 @@ class ContainerConnectionSourceTests {
 	void acceptsWhenContainerIsInstanceOfRequiredContainerTypeReturnsTrue() {
 		String requiredConnectionName = null;
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
@@ -86,7 +85,7 @@ class ContainerConnectionSourceTests {
 		setupSourceAnnotatedWithName("myname");
 		String requiredConnectionName = "othername";
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isFalse();
 	}
@@ -95,7 +94,7 @@ class ContainerConnectionSourceTests {
 	void acceptsWhenRequiredConnectionNameDoesNotMatchNameTakenFromContainerReturnsFalse() {
 		String requiredConnectionName = "othername";
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isFalse();
 	}
@@ -104,7 +103,7 @@ class ContainerConnectionSourceTests {
 	void acceptsWhenRequiredConnectionNameIsUnrestrictedReturnsTrue() {
 		String requiredConnectionName = null;
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
@@ -114,7 +113,7 @@ class ContainerConnectionSourceTests {
 		setupSourceAnnotatedWithName("myname");
 		String requiredConnectionName = "myname";
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
@@ -123,27 +122,27 @@ class ContainerConnectionSourceTests {
 	void acceptsWhenRequiredConnectionNameMatchesNameTakenFromContainerReturnsTrue() {
 		String requiredConnectionName = "postgres";
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
 
 	@Test
 	void acceptsWhenRequiredConnectionDetailsTypeNotInAnnotationRestrictionReturnsFalse() {
-		setupSourceAnnotatedWithType(ElasticsearchConnectionDetails.class);
+		setupSourceAnnotatedWithType(ExampleConnectionDetails.class);
 		String requiredConnectionName = null;
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isFalse();
 	}
 
 	@Test
 	void acceptsWhenRequiredConnectionDetailsTypeInAnnotationRestrictionReturnsTrue() {
-		setupSourceAnnotatedWithType(JdbcConnectionDetails.class);
+		setupSourceAnnotatedWithType(DatabaseConnectionDetails.class);
 		String requiredConnectionName = null;
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
@@ -152,7 +151,7 @@ class ContainerConnectionSourceTests {
 	void acceptsWhenRequiredConnectionDetailsTypeIsNotRestrictedReturnsTrue() {
 		String requiredConnectionName = null;
 		Class<?> requiredContainerType = JdbcDatabaseContainer.class;
-		Class<?> requiredConnectionDetailsType = JdbcConnectionDetails.class;
+		Class<?> requiredConnectionDetailsType = DatabaseConnectionDetails.class;
 		assertThat(this.source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType))
 			.isTrue();
 	}
@@ -188,6 +187,10 @@ class ContainerConnectionSourceTests {
 				Map.of("name", "", "type", new Class<?>[] { type }));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
 				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
+	}
+
+	interface ExampleConnectionDetails extends ConnectionDetails {
+
 	}
 
 }
