@@ -2,7 +2,6 @@
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.testcontainers.service.connection.flyway.FlywayContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.hazelcast.HazelcastContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.ApacheKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.ConfluentKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.kafka.DeprecatedConfluentKafkaContainerConnectionDetailsFactory,\

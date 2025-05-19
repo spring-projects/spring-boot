@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers JDBC service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.jdbc;
+package org.springframework.boot.jdbc.testcontainers;
