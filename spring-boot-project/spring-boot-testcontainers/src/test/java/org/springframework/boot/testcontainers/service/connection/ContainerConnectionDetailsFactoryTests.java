@@ -22,15 +22,13 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
-import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
-import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryTests.TestContainerConnectionDetailsFactory.TestContainerConnectionDetails;
 import org.springframework.core.annotation.MergedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,11 +104,11 @@ class ContainerConnectionDetailsFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	void getConnectionDetailsWhenContainerTypeDoesNotMatchReturnsNull() {
-		ElasticsearchContainer container = mock(ElasticsearchContainer.class);
+		GenericContainer<?> container = mock(GenericContainer.class);
 		ContainerConnectionSource<?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
-				ElasticsearchContainer.class, container.getDockerImageName(), this.annotation, () -> container, null,
-				null);
+				GenericContainer.class, container.getDockerImageName(), this.annotation, () -> container, null, null);
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		ConnectionDetails connectionDetails = getConnectionDetails(factory, source);
 		assertThat(connectionDetails).isNull();
@@ -126,7 +124,7 @@ class ContainerConnectionDetailsFactoryTests {
 	@Test
 	void getContainerWhenNotInitializedThrowsException() {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
-		TestContainerConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
+		TestDatabaseConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
 		assertThatIllegalStateException().isThrownBy(connectionDetails::callGetContainer)
 			.withMessage("Container cannot be obtained before the connection details bean has been initialized");
 	}
@@ -134,7 +132,7 @@ class ContainerConnectionDetailsFactoryTests {
 	@Test
 	void getContainerWhenInitializedReturnsSuppliedContainer() throws Exception {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
-		TestContainerConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
+		TestDatabaseConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
 		connectionDetails.afterPropertiesSet();
 		assertThat(connectionDetails.callGetContainer()).isSameAs(this.container);
 	}
@@ -152,16 +150,16 @@ class ContainerConnectionDetailsFactoryTests {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private TestContainerConnectionDetails getConnectionDetails(ConnectionDetailsFactory<?, ?> factory,
+	private TestDatabaseConnectionDetails getConnectionDetails(ConnectionDetailsFactory<?, ?> factory,
 			ContainerConnectionSource<?> source) {
-		return (TestContainerConnectionDetails) ((ConnectionDetailsFactory) factory).getConnectionDetails(source);
+		return (TestDatabaseConnectionDetails) ((ConnectionDetailsFactory) factory).getConnectionDetails(source);
 	}
 
 	/**
 	 * Test {@link ContainerConnectionDetailsFactory}.
 	 */
 	static class TestContainerConnectionDetailsFactory
-			extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, JdbcConnectionDetails> {
+			extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, DatabaseConnectionDetails> {
 
 		TestContainerConnectionDetailsFactory() {
 			this(ANY_CONNECTION_NAME);
@@ -176,37 +174,9 @@ class ContainerConnectionDetailsFactoryTests {
 		}
 
 		@Override
-		protected JdbcConnectionDetails getContainerConnectionDetails(
+		protected DatabaseConnectionDetails getContainerConnectionDetails(
 				ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
-			return new TestContainerConnectionDetails(source);
-		}
-
-		static final class TestContainerConnectionDetails extends ContainerConnectionDetails<JdbcDatabaseContainer<?>>
-				implements JdbcConnectionDetails {
-
-			private TestContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
-				super(source);
-			}
-
-			@Override
-			public String getUsername() {
-				return "user";
-			}
-
-			@Override
-			public String getPassword() {
-				return "secret";
-			}
-
-			@Override
-			public String getJdbcUrl() {
-				return "jdbc:example";
-			}
-
-			JdbcDatabaseContainer<?> callGetContainer() {
-				return super.getContainer();
-			}
-
+			return new TestDatabaseConnectionDetails(source);
 		}
 
 	}

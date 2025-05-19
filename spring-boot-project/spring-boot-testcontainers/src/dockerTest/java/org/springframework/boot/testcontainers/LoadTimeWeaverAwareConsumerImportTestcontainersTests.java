@@ -16,19 +16,21 @@
 
 package org.springframework.boot.testcontainers;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
+import org.springframework.boot.testcontainers.service.connection.DatabaseConnectionDetails;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,11 +48,18 @@ class LoadTimeWeaverAwareConsumerImportTestcontainersTests implements LoadTimeWe
 	}
 
 	@Configuration
-	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		LoadTimeWeaverAwareConsumer loadTimeWeaverAwareConsumer(JdbcConnectionDetails connectionDetails) {
+		DataSource dataSource() {
+			EmbeddedDatabaseFactory embeddedDatabaseFactory = new EmbeddedDatabaseFactory();
+			embeddedDatabaseFactory.setGenerateUniqueDatabaseName(true);
+			embeddedDatabaseFactory.setDatabaseType(EmbeddedDatabaseType.H2);
+			return embeddedDatabaseFactory.getDatabase();
+		}
+
+		@Bean
+		LoadTimeWeaverAwareConsumer loadTimeWeaverAwareConsumer(DatabaseConnectionDetails connectionDetails) {
 			return new LoadTimeWeaverAwareConsumer(connectionDetails);
 		}
 
@@ -60,7 +69,7 @@ class LoadTimeWeaverAwareConsumerImportTestcontainersTests implements LoadTimeWe
 
 		private final String jdbcUrl;
 
-		LoadTimeWeaverAwareConsumer(JdbcConnectionDetails connectionDetails) {
+		LoadTimeWeaverAwareConsumer(DatabaseConnectionDetails connectionDetails) {
 			this.jdbcUrl = connectionDetails.getJdbcUrl();
 		}
 

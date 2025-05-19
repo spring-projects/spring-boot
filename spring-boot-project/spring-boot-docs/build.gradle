@@ -268,7 +268,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-security"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
-	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers"))
+	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tomcat"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))

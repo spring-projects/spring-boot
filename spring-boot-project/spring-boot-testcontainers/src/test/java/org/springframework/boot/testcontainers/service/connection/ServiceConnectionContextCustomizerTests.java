@@ -27,7 +27,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -78,15 +77,15 @@ class ServiceConnectionContextCustomizerTests {
 		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
 		given(context.getBeanFactory()).willReturn(beanFactory);
 		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
-		JdbcConnectionDetails connectionDetails = new TestJdbcConnectionDetails();
+		DatabaseConnectionDetails connectionDetails = new TestConnectionDetails();
 		given(this.factories.getConnectionDetails(this.source, true))
-			.willReturn(Map.of(JdbcConnectionDetails.class, connectionDetails));
+			.willReturn(Map.of(DatabaseConnectionDetails.class, connectionDetails));
 		customizer.customizeContext(context, mergedConfig);
 		then(beanFactory).should()
-			.registerBeanDefinition(eq("testJdbcConnectionDetailsForTest"),
+			.registerBeanDefinition(eq("testConnectionDetailsForTest"),
 					ArgumentMatchers.<RootBeanDefinition>assertArg((beanDefinition) -> {
 						assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
-						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
+						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestConnectionDetails.class);
 					}));
 	}
 
@@ -99,7 +98,7 @@ class ServiceConnectionContextCustomizerTests {
 		MergedAnnotation<ServiceConnection> annotation2 = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[0]));
 		MergedAnnotation<ServiceConnection> annotation3 = MergedAnnotation.of(ServiceConnection.class,
-				Map.of("name", "", "type", new Class<?>[] { JdbcConnectionDetails.class }));
+				Map.of("name", "", "type", new Class<?>[] { DatabaseConnectionDetails.class }));
 		// Connection Names
 		ServiceConnectionContextCustomizer n1 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
@@ -138,20 +137,7 @@ class ServiceConnectionContextCustomizerTests {
 		assertThat(c1).isEqualTo(c2).isNotEqualTo(c3);
 	}
 
-	/**
-	 * Test {@link JdbcConnectionDetails}.
-	 */
-	static class TestJdbcConnectionDetails implements JdbcConnectionDetails {
-
-		@Override
-		public String getUsername() {
-			return null;
-		}
-
-		@Override
-		public String getPassword() {
-			return null;
-		}
+	static class TestConnectionDetails implements DatabaseConnectionDetails {
 
 		@Override
 		public String getJdbcUrl() {
