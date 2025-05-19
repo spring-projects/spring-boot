@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.activemq;
+package org.springframework.boot.activemq.docker.compose;
 
 import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;

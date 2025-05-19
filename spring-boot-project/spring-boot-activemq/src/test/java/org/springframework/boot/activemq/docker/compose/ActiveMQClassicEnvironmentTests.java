@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.activemq;
+package org.springframework.boot.activemq.docker.compose;
 
 import java.util.Collections;
 import java.util.Map;

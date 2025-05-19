@@ -1,0 +1,8 @@
+services:
+  artemis:
+    image: '{imageName}'
+    ports:
+      - '61616'
+    environment:
+      ARTEMIS_USER: 'root'
+      ARTEMIS_PASSWORD: 'secret'
