@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.pulsar;
+package org.springframework.boot.pulsar.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
