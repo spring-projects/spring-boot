@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.ldap;
+package org.springframework.boot.ldap.actuate.health.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ldap.actuate.health.LdapHealthIndicator;
+import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ldap.core.LdapOperations;
 
@@ -36,8 +37,8 @@ import org.springframework.ldap.core.LdapOperations;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration")
-@ConditionalOnClass({ LdapOperations.class, LdapHealthIndicator.class })
+@AutoConfiguration(after = LdapAutoConfiguration.class)
+@ConditionalOnClass({ LdapOperations.class, LdapHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(LdapOperations.class)
 @ConditionalOnEnabledHealthIndicator("ldap")
 public class LdapHealthContributorAutoConfiguration

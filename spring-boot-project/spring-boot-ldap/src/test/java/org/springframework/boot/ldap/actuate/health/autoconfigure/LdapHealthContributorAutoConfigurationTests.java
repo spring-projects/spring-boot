@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.ldap;
+package org.springframework.boot.ldap.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

@@ -31,7 +31,7 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("com.unboundid:unboundid-ldapsdk")
 
