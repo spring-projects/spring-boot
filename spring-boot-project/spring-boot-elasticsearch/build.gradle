@@ -34,6 +34,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -45,13 +46,13 @@ dependencies {
 	optional("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "org.elasticsearch.client", module: "transport"
 	}
+	optional("org.testcontainers:elasticsearch")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	dockerTestImplementation("org.testcontainers:elasticsearch")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

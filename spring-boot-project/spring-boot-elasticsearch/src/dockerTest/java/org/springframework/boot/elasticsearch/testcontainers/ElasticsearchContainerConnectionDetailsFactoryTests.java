@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.elasticsearch;
+package org.springframework.boot.elasticsearch.testcontainers;
 
 import java.io.IOException;
 import java.time.Duration;
