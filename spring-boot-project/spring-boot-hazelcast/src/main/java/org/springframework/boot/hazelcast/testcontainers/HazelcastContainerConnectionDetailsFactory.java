@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.hazelcast;
+package org.springframework.boot.hazelcast.testcontainers;
 
 import java.util.Map;
 

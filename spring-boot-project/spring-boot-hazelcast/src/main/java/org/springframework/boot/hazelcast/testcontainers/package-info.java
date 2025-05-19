@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Hazelcast service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.hazelcast;
+package org.springframework.boot.hazelcast.testcontainers;
