@@ -1,2 +1,3 @@
+org.springframework.boot.ldap.actuate.health.autoconfigure.LdapHealthContributorAutoConfiguration
 org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration
 org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration
