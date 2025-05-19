@@ -18,16 +18,19 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,8 +55,15 @@ class ServiceConnectionStartsConnectionOnceIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 	static class TestConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			EmbeddedDatabaseFactory embeddedDatabaseFactory = new EmbeddedDatabaseFactory();
+			embeddedDatabaseFactory.setGenerateUniqueDatabaseName(true);
+			embeddedDatabaseFactory.setDatabaseType(EmbeddedDatabaseType.H2);
+			return embeddedDatabaseFactory.getDatabase();
+		}
 
 	}
 

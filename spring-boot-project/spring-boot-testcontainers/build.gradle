@@ -16,6 +16,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -26,106 +27,36 @@ plugins {
 description = "Spring Boot Testcontainers Support"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api("org.testcontainers:testcontainers")
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-cassandra"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-couchbase"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-kafka"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-liquibase"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-pulsar"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-r2dbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("co.elastic.clients:elasticsearch-java")
-	dockerTestImplementation("com.couchbase.client:java-client")
-	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
-	dockerTestImplementation("io.rest-assured:rest-assured")
-	dockerTestImplementation("org.apache.cassandra:java-driver-core") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.elasticsearch.client:elasticsearch-rest-client")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
-	dockerTestImplementation("org.liquibase:liquibase-core") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
-	dockerTestImplementation("org.springframework:spring-jms")
-	dockerTestImplementation("org.springframework.amqp:spring-rabbit")
-	dockerTestImplementation("org.springframework.data:spring-data-redis")
-	dockerTestImplementation("org.springframework.kafka:spring-kafka")
-	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")
-	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:postgresql")
 
-	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("com.zaxxer:HikariCP")
-	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
-	dockerTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+	dockerTestRuntimeOnly("com.h2database:h2")
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
-	optional(project(":spring-boot-project:spring-boot-activemq"))
-	optional(project(":spring-boot-project:spring-boot-amqp"))
-	optional(project(":spring-boot-project:spring-boot-artemis"))
-	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
-	optional(project(":spring-boot-project:spring-boot-cassandra"))
-	optional(project(":spring-boot-project:spring-boot-couchbase"))
-	optional(project(":spring-boot-project:spring-boot-data-redis"))
-	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
-	optional(project(":spring-boot-project:spring-boot-flyway"))
-	optional(project(":spring-boot-project:spring-boot-hazelcast"))
-	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-kafka"))
-	optional(project(":spring-boot-project:spring-boot-ldap"))
-	optional(project(":spring-boot-project:spring-boot-liquibase"))
-	optional(project(":spring-boot-project:spring-boot-mongodb"))
-	optional(project(":spring-boot-project:spring-boot-neo4j"))
-	optional(project(":spring-boot-project:spring-boot-pulsar"))
-	optional(project(":spring-boot-project:spring-boot-r2dbc"))
-	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
-	optional("org.testcontainers:activemq")
-	optional("org.testcontainers:cassandra")
-	optional("org.testcontainers:clickhouse")
-	optional("org.testcontainers:couchbase")
-	optional("org.testcontainers:elasticsearch")
-	optional("org.testcontainers:grafana")
-	optional("org.testcontainers:jdbc")
-	optional("org.testcontainers:kafka")
-	optional("org.testcontainers:ldap")
-	optional("org.testcontainers:mariadb")
-	optional("org.testcontainers:mongodb")
-	optional("org.testcontainers:mssqlserver")
-	optional("org.testcontainers:mysql")
-	optional("org.testcontainers:neo4j")
-	optional("org.testcontainers:oracle-xe")
-	optional("org.testcontainers:oracle-free")
-	optional("org.testcontainers:postgresql")
-	optional("org.testcontainers:pulsar")
-	optional("org.testcontainers:rabbitmq")
-	optional("org.testcontainers:redpanda")
-	optional("org.testcontainers:r2dbc")
-	optional("com.redis:testcontainers-redis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.springframework:spring-jdbc")
-	testImplementation("org.springframework:spring-jms")
-	testImplementation("org.springframework.amqp:spring-rabbit")
-	testImplementation("org.springframework.data:spring-data-redis")
-	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:postgresql")
 }
 
 dockerTest {
