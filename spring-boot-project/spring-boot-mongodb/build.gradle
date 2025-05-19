@@ -30,12 +30,15 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.netty:netty-transport")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.testcontainers:mongodb")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.netty:netty-handler")

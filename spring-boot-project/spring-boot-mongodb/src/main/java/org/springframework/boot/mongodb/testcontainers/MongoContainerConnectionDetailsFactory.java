@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.mongo;
+package org.springframework.boot.mongodb.testcontainers;
 
 import com.mongodb.ConnectionString;
 import org.testcontainers.containers.MongoDBContainer;

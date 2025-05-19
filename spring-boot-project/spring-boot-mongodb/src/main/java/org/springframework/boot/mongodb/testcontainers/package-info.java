@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers MongoDB service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.mongo;
+package org.springframework.boot.mongodb.testcontainers;
