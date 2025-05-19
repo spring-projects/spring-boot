@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.activemq;
+package org.springframework.boot.activemq.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -31,6 +30,7 @@ import org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.SymptomaActiveMQContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,17 +41,17 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ActiveMQClassicContainerConnectionDetailsFactory}.
+ * Tests for {@link ActiveMQContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class ActiveMQClassicContainerConnectionDetailsFactoryIntegrationTests {
+class ActiveMQContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ActiveMQContainer activemq = TestImage.container(ActiveMQContainer.class);
+	static final SymptomaActiveMQContainer activemq = TestImage.container(SymptomaActiveMQContainer.class);
 
 	@Autowired
 	private JmsMessagingTemplate jmsTemplate;
