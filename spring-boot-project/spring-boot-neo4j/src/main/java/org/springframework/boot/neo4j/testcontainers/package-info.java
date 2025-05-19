@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Neo4J service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.neo4j;
+package org.springframework.boot.neo4j.testcontainers;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.neo4j;
+package org.springframework.boot.neo4j.testcontainers;
 
 import java.net.URI;
 
