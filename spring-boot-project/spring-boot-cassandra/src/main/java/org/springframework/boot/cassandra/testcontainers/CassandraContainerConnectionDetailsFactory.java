@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.cassandra;
+package org.springframework.boot.cassandra.testcontainers;
 
 import java.net.InetSocketAddress;
 import java.util.List;

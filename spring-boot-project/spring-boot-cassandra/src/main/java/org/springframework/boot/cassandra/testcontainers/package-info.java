@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Cassandra service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.cassandra;
+package org.springframework.boot.cassandra.testcontainers;

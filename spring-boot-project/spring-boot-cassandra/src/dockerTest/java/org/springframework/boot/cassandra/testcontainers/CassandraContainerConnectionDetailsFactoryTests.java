@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.cassandra;
+package org.springframework.boot.cassandra.testcontainers;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;

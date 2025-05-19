@@ -28,7 +28,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-testcontainers"))
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-cassandra"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-couchbase"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
@@ -45,9 +44,6 @@ dependencies {
 	dockerTestImplementation("com.couchbase.client:java-client")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
 	dockerTestImplementation("io.rest-assured:rest-assured")
-	dockerTestImplementation("org.apache.cassandra:java-driver-core") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
@@ -71,7 +67,6 @@ dependencies {
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
-	optional(project(":spring-boot-project:spring-boot-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
@@ -89,7 +84,6 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
-	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
