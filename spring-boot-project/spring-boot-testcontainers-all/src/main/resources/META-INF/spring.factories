@@ -6,7 +6,6 @@ org.springframework.boot.testcontainers.service.connection.kafka.ConfluentKafkaC
 org.springframework.boot.testcontainers.service.connection.kafka.DeprecatedConfluentKafkaContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.ldap.LLdapContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.ldap.OpenLdapContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactory,\
