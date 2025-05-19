@@ -61,7 +61,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-kafka"))
-	optional(project(":spring-boot-project:spring-boot-mail"))
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-quartz"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
@@ -137,7 +136,6 @@ dependencies {
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-micrometer")
 	optional("org.cache2k:cache2k-spring")
-	optional("org.eclipse.angus:angus-mail")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}

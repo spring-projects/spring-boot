@@ -20,7 +20,6 @@ org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoCon
 org.springframework.boot.actuate.autoconfigure.logging.LoggersEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration
