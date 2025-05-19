@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint.autoconfigure;
 
 import liquibase.integration.spring.SpringLiquibase;
 
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration(after = LiquibaseAutoConfiguration.class)
-@ConditionalOnClass({ SpringLiquibase.class, LiquibaseEndpoint.class })
+@ConditionalOnClass({ SpringLiquibase.class, LiquibaseEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(LiquibaseEndpoint.class)
 public class LiquibaseEndpointAutoConfiguration {
 

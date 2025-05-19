@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Liquibase concerns.
+ * Auto-configuration for Liquibase actuator endpoint.
  */
-package org.springframework.boot.actuate.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint.autoconfigure;

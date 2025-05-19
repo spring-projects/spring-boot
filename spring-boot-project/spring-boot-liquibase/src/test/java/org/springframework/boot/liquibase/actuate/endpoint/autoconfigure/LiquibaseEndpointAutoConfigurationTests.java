@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.liquibase;
+package org.springframework.boot.liquibase.actuate.endpoint.autoconfigure;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
