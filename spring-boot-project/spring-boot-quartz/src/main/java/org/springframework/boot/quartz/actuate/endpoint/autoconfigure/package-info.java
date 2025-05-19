@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Quartz Scheduler concerns.
+ * Auto-configuration for Quartz Scheduler actuator endpoint.
  */
-package org.springframework.boot.actuate.autoconfigure.quartz;
+package org.springframework.boot.quartz.actuate.endpoint.autoconfigure;
