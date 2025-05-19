@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.quartz;
+package org.springframework.boot.quartz.actuate.endpoint.autoconfigure;
 
 import org.quartz.Scheduler;
 
@@ -38,10 +38,10 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 2.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = QuartzAutoConfiguration.class)
-@ConditionalOnClass({ Scheduler.class, QuartzEndpoint.class })
+@ConditionalOnClass({ Scheduler.class, QuartzEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(QuartzEndpoint.class)
 @EnableConfigurationProperties(QuartzEndpointProperties.class)
 public class QuartzEndpointAutoConfiguration {

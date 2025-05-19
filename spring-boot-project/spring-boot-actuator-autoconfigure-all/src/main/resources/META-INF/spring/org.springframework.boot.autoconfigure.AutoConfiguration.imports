@@ -70,7 +70,6 @@ org.springframework.boot.actuate.autoconfigure.observation.web.client.HttpClient
 org.springframework.boot.actuate.autoconfigure.observation.web.reactive.WebFluxObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.web.servlet.WebMvcObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.quartz.QuartzEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.r2dbc.ConnectionFactoryHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.r2dbc.R2dbcObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.sbom.SbomEndpointAutoConfiguration

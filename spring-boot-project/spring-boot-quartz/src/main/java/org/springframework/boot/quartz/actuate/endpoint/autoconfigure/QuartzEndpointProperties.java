@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.quartz;
+package org.springframework.boot.quartz.actuate.endpoint.autoconfigure;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +27,7 @@ import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint;
  * Configuration properties for {@link QuartzEndpoint}.
  *
  * @author Madhura Bhave
- * @since 3.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("management.endpoint.quartz")
 public class QuartzEndpointProperties {
