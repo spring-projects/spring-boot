@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Ldap service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.ldap;
+package org.springframework.boot.ldap.testcontainers;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.ldap;
+package org.springframework.boot.ldap.testcontainers;
 
 import java.util.Arrays;
 import java.util.Map;
