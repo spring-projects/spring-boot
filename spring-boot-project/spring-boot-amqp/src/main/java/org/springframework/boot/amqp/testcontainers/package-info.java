@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers RabbitMQ service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.amqp;
+package org.springframework.boot.amqp.testcontainers;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.amqp;
+package org.springframework.boot.amqp.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
