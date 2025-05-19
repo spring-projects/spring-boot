@@ -32,12 +32,13 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
+	optional("org.testcontainers:couchbase")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:couchbase")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

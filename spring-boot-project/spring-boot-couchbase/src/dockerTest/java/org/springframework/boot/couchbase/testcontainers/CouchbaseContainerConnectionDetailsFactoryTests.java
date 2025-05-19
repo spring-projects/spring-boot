@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.couchbase;
+package org.springframework.boot.couchbase.testcontainers;
 
 import com.couchbase.client.java.Cluster;
 import org.junit.jupiter.api.Test;
