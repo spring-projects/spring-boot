@@ -32,7 +32,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Spring Sessions concerns.
+ * Auto-configuration for Spring Session actuator endpoint.
  */
-package org.springframework.boot.actuate.autoconfigure.session;
+package org.springframework.boot.session.actuate.endpoint.autoconfigure;

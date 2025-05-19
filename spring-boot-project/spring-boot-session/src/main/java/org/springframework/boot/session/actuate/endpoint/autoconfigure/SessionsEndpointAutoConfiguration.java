@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.session;
+package org.springframework.boot.session.actuate.endpoint.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.session.actuate.endpoint.ReactiveSessionsEndpoint;
 import org.springframework.boot.session.actuate.endpoint.SessionsEndpoint;
+import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -39,10 +40,10 @@ import org.springframework.session.SessionRepository;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SessionsEndpoint}.
  *
  * @author Vedran Pavic
- * @since 2.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.session.autoconfigure.SessionAutoConfiguration")
-@ConditionalOnClass({ Session.class, SessionsEndpoint.class })
+@AutoConfiguration(after = SessionAutoConfiguration.class)
+@ConditionalOnClass({ Session.class, SessionsEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(SessionsEndpoint.class)
 public class SessionsEndpointAutoConfiguration {
 
