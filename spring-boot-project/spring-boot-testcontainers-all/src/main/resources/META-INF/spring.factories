@@ -6,12 +6,5 @@ org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelem
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryLoggingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTracingContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.ClickHouseR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.OracleFreeR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.OracleXeR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.zipkin.ZipkinContainerConnectionDetailsFactory

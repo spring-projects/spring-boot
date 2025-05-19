@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.MySQLR2DBCDatabaseContainer;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.MariaDBR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,37 +27,37 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link MySQLContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MariaDBContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MySqlR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MySQLContainer<?>, R2dbcConnectionDetails> {
+class MariaDbR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
 
-	MySqlR2dbcContainerConnectionDetailsFactory() {
+	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
-		return new MySqlR2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
+		return new MariaDbR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class MySqlR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<MySQLContainer<?>> implements R2dbcConnectionDetails {
+	private static final class MariaDbR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MariaDBContainer<?>> implements R2dbcConnectionDetails {
 
-		private MySqlR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
+		private MariaDbR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return MySQLR2DBCDatabaseContainer.getOptions(getContainer());
+			return MariaDBR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

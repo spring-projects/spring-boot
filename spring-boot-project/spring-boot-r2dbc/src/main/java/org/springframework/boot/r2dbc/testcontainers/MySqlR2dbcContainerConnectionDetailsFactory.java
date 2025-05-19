@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.MySQLR2DBCDatabaseContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,38 +27,37 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link PostgreSQLContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MySQLContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class PostgresR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<PostgreSQLContainer<?>, R2dbcConnectionDetails> {
+class MySqlR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<MySQLContainer<?>, R2dbcConnectionDetails> {
 
-	PostgresR2dbcContainerConnectionDetailsFactory() {
+	MySqlR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<PostgreSQLContainer<?>> source) {
-		return new PostgresR2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
+		return new MySqlR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class PostgresR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<PostgreSQLContainer<?>> implements R2dbcConnectionDetails {
+	private static final class MySqlR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MySQLContainer<?>> implements R2dbcConnectionDetails {
 
-		PostgresR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer<?>> source) {
+		private MySqlR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return PostgreSQLR2DBCDatabaseContainer.getOptions(getContainer());
+			return MySQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

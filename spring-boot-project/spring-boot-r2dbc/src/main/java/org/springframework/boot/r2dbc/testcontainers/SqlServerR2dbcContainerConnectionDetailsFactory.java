@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.r2dbc;
+package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.oracle.OracleContainer;
-import org.testcontainers.oracle.OracleR2DBCDatabaseContainer;
+import org.testcontainers.containers.MSSQLR2DBCDatabaseContainer;
+import org.testcontainers.containers.MSSQLServerContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -27,35 +27,39 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link OracleContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MSSQLServerContainer}.
  *
- * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class OracleFreeR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
+class SqlServerR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<MSSQLServerContainer<?>, R2dbcConnectionDetails> {
 
-	OracleFreeR2dbcContainerConnectionDetailsFactory() {
+	SqlServerR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source);
+	public R2dbcConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<MSSQLServerContainer<?>> source) {
+		return new MsSqlServerR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
+	private static final class MsSqlServerR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MSSQLServerContainer<?>> implements R2dbcConnectionDetails {
 
-		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
+		private MsSqlServerR2dbcDatabaseContainerConnectionDetails(
+				ContainerConnectionSource<MSSQLServerContainer<?>> source) {
 			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
+			return MSSQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}
