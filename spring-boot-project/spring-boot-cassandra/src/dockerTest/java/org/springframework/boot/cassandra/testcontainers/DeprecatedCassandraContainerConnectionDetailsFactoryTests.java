@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.cassandra;
+package org.springframework.boot.cassandra.testcontainers;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.cassandra.CassandraContainer;
+import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -34,17 +34,19 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CassandraContainerConnectionDetailsFactory}.
+ * Tests for {@link DeprecatedCassandraContainerConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class CassandraContainerConnectionDetailsFactoryTests {
+@Deprecated(since = "3.4.0", forRemoval = true)
+class DeprecatedCassandraContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
 
 	@Autowired(required = false)
 	private CassandraConnectionDetails connectionDetails;
