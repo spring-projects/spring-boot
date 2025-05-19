@@ -46,7 +46,6 @@ dependencies {
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
 	dockerTestImplementation("org.springframework.data:spring-data-redis")
-	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")
 	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
@@ -58,7 +57,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-ldap"))
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-pulsar"))
@@ -70,7 +68,6 @@ dependencies {
 	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
-	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:mssqlserver")
