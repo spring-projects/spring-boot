@@ -74,7 +74,7 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	@Override
 	public void configureGroups(Groups<RestClient.Builder> groups) {
-		groups.configureClient(this::configureClient);
+		groups.forEachClient(this::configureClient);
 	}
 
 	private void configureClient(HttpServiceGroup group, RestClient.Builder builder) {

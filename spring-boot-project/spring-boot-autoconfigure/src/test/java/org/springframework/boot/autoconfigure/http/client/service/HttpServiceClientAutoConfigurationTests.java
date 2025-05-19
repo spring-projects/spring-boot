@@ -22,7 +22,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
@@ -176,7 +175,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 		@Bean
 		RestClientHttpServiceGroupConfigurer mockServerConfigurer() {
-			return (groups) -> groups.configureClient((BiConsumer<HttpServiceGroup, Builder>) this::addMock);
+			return (groups) -> groups.forEachClient(this::addMock);
 		}
 
 		private MockRestServiceServer addMock(HttpServiceGroup group, Builder client) {
@@ -233,7 +232,7 @@ class HttpServiceClientAutoConfigurationTests {
 		@Bean
 		RestClientHttpServiceGroupConfigurer restClientHttpServiceGroupConfigurer() {
 			return (groups) -> groups.filterByName("one")
-				.configureClient((builder) -> builder.defaultHeader("customizedgroup", "true"));
+				.forEachClient((group, builder) -> builder.defaultHeader("customizedgroup", "true"));
 		}
 
 	}

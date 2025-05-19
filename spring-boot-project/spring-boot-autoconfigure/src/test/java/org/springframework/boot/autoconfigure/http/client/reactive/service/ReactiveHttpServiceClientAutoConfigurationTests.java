@@ -203,7 +203,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 		@Bean
 		WebClientHttpServiceGroupConfigurer restClientHttpServiceGroupConfigurer() {
 			return (groups) -> groups.filterByName("one")
-				.configureClient((builder) -> builder.defaultHeader("customizedgroup", "true"));
+				.forEachClient((group, builder) -> builder.defaultHeader("customizedgroup", "true"));
 		}
 
 	}

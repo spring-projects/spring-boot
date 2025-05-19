@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
  * A {@link RestClientHttpServiceGroupConfigurer} to apply auto-configured
@@ -48,10 +49,10 @@ class RestClientCustomizerHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	@Override
 	public void configureGroups(Groups<RestClient.Builder> groups) {
-		groups.configureClient(this::configureClient);
+		groups.forEachClient(this::configureClient);
 	}
 
-	private void configureClient(RestClient.Builder builder) {
+	private void configureClient(HttpServiceGroup group, RestClient.Builder builder) {
 		this.customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 	}
 

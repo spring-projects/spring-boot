@@ -77,7 +77,7 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	@Override
 	public void configureGroups(Groups<WebClient.Builder> groups) {
-		groups.configureClient(this::configureClient);
+		groups.forEachClient(this::configureClient);
 	}
 
 	private void configureClient(HttpServiceGroup group, WebClient.Builder builder) {

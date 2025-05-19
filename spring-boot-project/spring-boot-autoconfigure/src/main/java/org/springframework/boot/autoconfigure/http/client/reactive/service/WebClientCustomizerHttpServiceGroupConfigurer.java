@@ -23,6 +23,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
  * A {@link RestClientHttpServiceGroupConfigurer} to apply auto-configured
@@ -51,10 +52,10 @@ class WebClientCustomizerHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	@Override
 	public void configureGroups(Groups<WebClient.Builder> groups) {
-		groups.configureClient(this::configureClient);
+		groups.forEachClient(this::configureClient);
 	}
 
-	private void configureClient(WebClient.Builder builder) {
+	private void configureClient(HttpServiceGroup group, WebClient.Builder builder) {
 		this.customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 	}
 
