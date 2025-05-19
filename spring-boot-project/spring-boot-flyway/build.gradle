@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -32,9 +33,17 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-database-postgresql")
 	optional("org.flywaydb:flyway-sqlserver")
+	optional("org.testcontainers:jdbc")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
 	testImplementation(project(":spring-boot-project:spring-boot-jooq"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

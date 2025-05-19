@@ -28,7 +28,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-testcontainers"))
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-kafka"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-liquibase"))
@@ -60,12 +59,10 @@ dependencies {
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("com.zaxxer:HikariCP")
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
-	dockerTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
 	dockerTestRuntimeOnly("org.postgresql:postgresql")
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
-	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-kafka"))

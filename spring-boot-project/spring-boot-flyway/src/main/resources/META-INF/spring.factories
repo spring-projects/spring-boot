@@ -1,3 +1,7 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.flyway.testcontainers.FlywayContainerConnectionDetailsFactory
+
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
