@@ -63,7 +63,6 @@ org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfigur
 org.springframework.boot.actuate.autoconfigure.metrics.task.TaskExecutorMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.web.jetty.JettyMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.batch.BatchObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.graphql.GraphQlObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration
