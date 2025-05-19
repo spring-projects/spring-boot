@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.hazelcast;
+package org.springframework.boot.hazelcast.testcontainers;
 
 import java.util.UUID;
-import java.util.function.Consumer;
 
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Test;
@@ -40,19 +37,17 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HazelcastContainerConnectionDetailsFactory} with a custom hazelcast
- * cluster name.
+ * Tests for {@link HazelcastContainerConnectionDetailsFactory}.
  *
  * @author Dmytro Nosan
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class CustomClusterNameHazelcastContainerConnectionDetailsFactoryIntegrationTests {
+class HazelcastContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final HazelcastContainer hazelcast = TestImage.container(HazelcastContainer.class)
-		.withClusterName("spring-boot");
+	static final HazelcastContainer hazelcast = TestImage.container(HazelcastContainer.class);
 
 	@Autowired(required = false)
 	private HazelcastConnectionDetails connectionDetails;
@@ -63,18 +58,9 @@ class CustomClusterNameHazelcastContainerConnectionDetailsFactoryIntegrationTest
 	@Test
 	void connectionCanBeMadeToHazelcastContainer() {
 		assertThat(this.connectionDetails).isNotNull();
-		assertThat(this.hazelcastInstance).satisfies(clusterName("spring-boot"));
 		IMap<String, String> map = this.hazelcastInstance.getMap(UUID.randomUUID().toString());
 		map.put("test", "containers");
 		assertThat(map.get("test")).isEqualTo("containers");
-	}
-
-	private static Consumer<HazelcastInstance> clusterName(String name) {
-		return (hazelcastInstance) -> {
-			assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);
-			HazelcastClientProxy proxy = (HazelcastClientProxy) hazelcastInstance;
-			assertThat(proxy.getClientConfig()).extracting(ClientConfig::getClusterName).isEqualTo(name);
-		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
