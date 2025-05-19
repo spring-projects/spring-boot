@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -28,28 +28,29 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link ConfluentKafkaContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Eddú Meléndez
  */
-class ApacheKafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
+class ConfluentKafkaContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<ConfluentKafkaContainer, KafkaConnectionDetails> {
 
 	@Override
-	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
-		return new ApacheKafkaContainerConnectionDetails(source);
+	protected KafkaConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<ConfluentKafkaContainer> source) {
+		return new ConfluentKafkaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class ApacheKafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
-			implements KafkaConnectionDetails {
+	private static final class ConfluentKafkaContainerConnectionDetails
+			extends ContainerConnectionDetails<ConfluentKafkaContainer> implements KafkaConnectionDetails {
 
-		private ApacheKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<ConfluentKafkaContainer> source) {
 			super(source);
 		}
 

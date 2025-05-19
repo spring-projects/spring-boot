@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -41,22 +41,21 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ApacheKafkaContainerConnectionDetailsFactory}.
+ * Tests for {@link ConfluentKafkaContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=test-group",
 		"spring.kafka.consumer.auto-offset-reset=earliest" })
-class ApacheKafkaContainerConnectionDetailsFactoryIntegrationTests {
+class ConfluentKafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final KafkaContainer kafka = TestImage.container(KafkaContainer.class);
+	static final ConfluentKafkaContainer kafka = TestImage.container(ConfluentKafkaContainer.class);
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;

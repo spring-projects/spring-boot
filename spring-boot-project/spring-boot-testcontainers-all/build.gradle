@@ -29,7 +29,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-testcontainers"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-kafka"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-pulsar"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-r2dbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
@@ -47,7 +46,6 @@ dependencies {
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
 	dockerTestImplementation("org.springframework.data:spring-data-redis")
-	dockerTestImplementation("org.springframework.kafka:spring-kafka")
 	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")
 	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
@@ -60,7 +58,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
-	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-ldap"))
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-neo4j"))
@@ -73,7 +70,6 @@ dependencies {
 	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
-	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
@@ -84,7 +80,6 @@ dependencies {
 	optional("org.testcontainers:oracle-free")
 	optional("org.testcontainers:postgresql")
 	optional("org.testcontainers:pulsar")
-	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 	optional("com.redis:testcontainers-redis")
 
@@ -93,7 +88,6 @@ dependencies {
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 	testImplementation("org.springframework:spring-jdbc")
 	testImplementation("org.springframework.data:spring-data-redis")
-	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.testcontainers:junit-jupiter")
 }
 

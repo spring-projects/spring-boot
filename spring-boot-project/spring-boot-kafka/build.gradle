@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -31,7 +32,14 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("org.apache.kafka:kafka-streams")
+	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:redpanda")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
