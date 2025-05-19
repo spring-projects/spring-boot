@@ -17,6 +17,7 @@
 
 plugins {
 	id "java-library"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -30,11 +31,17 @@ dependencies {
 	api("org.apache.activemq:artemis-jakarta-client")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.apache.activemq:artemis-jakarta-server")
 	optional("org.messaginghub:pooled-jms") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
 	}
+	optional("org.testcontainers:activemq")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("ch.qos.logback:logback-classic")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

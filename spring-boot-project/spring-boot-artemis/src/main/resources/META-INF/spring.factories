@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.artemis.testcontainers.ArtemisContainerConnectionDetailsFactory

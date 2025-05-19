@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for testcontainers ActiveMQ service connections.
+ * Support for testcontainers Artemis service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.activemq;
+package org.springframework.boot.artemis.testcontainers;
