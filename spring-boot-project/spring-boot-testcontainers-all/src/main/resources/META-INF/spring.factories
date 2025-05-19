@@ -1,7 +1,5 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQClassicContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.activemq.ArtemisContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.amqp.RabbitContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.cassandra.CassandraContainerConnectionDetailsFactory,\

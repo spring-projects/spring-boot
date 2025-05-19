@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.activemq;
+package org.springframework.boot.activemq.testcontainers;
 
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.activemq.ActiveMQContainer;
 
 import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -25,44 +24,41 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} to create {@link ActiveMQConnectionDetails}
- * from a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer}
- * using the {@code "symptoma/activemq"} image.
+ * {@link ContainerConnectionDetailsFactory} to create {@link ActiveMQConnectionDetails} *
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link ActiveMQContainer}.
  *
  * @author Eddú Meléndez
  */
-class ActiveMQContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Container<?>, ActiveMQConnectionDetails> {
-
-	ActiveMQContainerConnectionDetailsFactory() {
-		super("symptoma/activemq");
-	}
+class ActiveMQClassicContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<ActiveMQContainer, ActiveMQConnectionDetails> {
 
 	@Override
-	protected ActiveMQConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+	protected ActiveMQConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<ActiveMQContainer> source) {
 		return new ActiveMQContainerConnectionDetails(source);
 	}
 
-	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
+	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<ActiveMQContainer>
 			implements ActiveMQConnectionDetails {
 
-		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<ActiveMQContainer> source) {
 			super(source);
 		}
 
 		@Override
 		public String getBrokerUrl() {
-			return "tcp://" + getContainer().getHost() + ":" + getContainer().getFirstMappedPort();
+			return getContainer().getBrokerUrl();
 		}
 
 		@Override
 		public String getUser() {
-			return getContainer().getEnvMap().get("ACTIVEMQ_USERNAME");
+			return getContainer().getUser();
 		}
 
 		@Override
 		public String getPassword() {
-			return getContainer().getEnvMap().get("ACTIVEMQ_PASSWORD");
+			return getContainer().getPassword();
 		}
 
 	}
