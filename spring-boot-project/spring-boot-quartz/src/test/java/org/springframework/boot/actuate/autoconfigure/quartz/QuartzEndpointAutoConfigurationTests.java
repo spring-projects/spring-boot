@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint;
 import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpointWebExtension;
+import org.springframework.boot.quartz.actuate.endpoint.autoconfigure.QuartzEndpointAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
