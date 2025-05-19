@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.flyway;
+package org.springframework.boot.flyway.testcontainers;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 

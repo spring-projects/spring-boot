@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Flyway service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.flyway;
+package org.springframework.boot.flyway.testcontainers;
