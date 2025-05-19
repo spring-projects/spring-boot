@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.activemq;
+package org.springframework.boot.activemq.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;
