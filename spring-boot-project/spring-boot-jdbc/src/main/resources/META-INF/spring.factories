@@ -3,6 +3,10 @@ org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.jdbc.autoconfigure.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.jdbc.autoconfigure.HikariDriverConfigurationFailureAnalyzer
 
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.jdbc.testcontainers.JdbcContainerConnectionDetailsFactory
+
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
 org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.jdbc;
+package org.springframework.boot.jdbc.testcontainers;
 
 import javax.sql.DataSource;
 
