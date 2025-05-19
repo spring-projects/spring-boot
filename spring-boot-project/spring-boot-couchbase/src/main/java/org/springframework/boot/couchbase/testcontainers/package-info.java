@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Couchbase service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.couchbase;
+package org.springframework.boot.couchbase.testcontainers;
