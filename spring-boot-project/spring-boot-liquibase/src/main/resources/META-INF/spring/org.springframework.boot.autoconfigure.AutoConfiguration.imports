@@ -1,1 +1,2 @@
+org.springframework.boot.liquibase.actuate.endpoint.autoconfigure.LiquibaseEndpointAutoConfiguration
 org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration
