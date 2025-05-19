@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.liquibase;
+package org.springframework.boot.liquibase.testcontainers;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;

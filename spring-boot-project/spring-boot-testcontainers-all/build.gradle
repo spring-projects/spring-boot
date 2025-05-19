@@ -30,7 +30,6 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-kafka"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-pulsar"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-r2dbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
@@ -44,9 +43,6 @@ dependencies {
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
-	dockerTestImplementation("org.liquibase:liquibase-core") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
@@ -67,7 +63,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-ldap"))
-	optional(project(":spring-boot-project:spring-boot-liquibase"))
 	optional(project(":spring-boot-project:spring-boot-mongodb"))
 	optional(project(":spring-boot-project:spring-boot-neo4j"))
 	optional(project(":spring-boot-project:spring-boot-pulsar"))
