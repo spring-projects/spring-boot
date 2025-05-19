@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.mail;
+package org.springframework.boot.mail.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

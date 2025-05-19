@@ -66,12 +66,6 @@
       "defaultValue": false
     },
     {
-      "name": "management.health.mail.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Mail health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.mongo.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable MongoDB health check.",

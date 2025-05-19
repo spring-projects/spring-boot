@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.mail;
+package org.springframework.boot.mail.actuate.health.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
@@ -34,10 +34,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MailHealthIndicator}.
  *
  * @author Johannes Edmeier
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = MailSenderAutoConfiguration.class)
-@ConditionalOnClass({ JavaMailSenderImpl.class, MailHealthIndicator.class })
+@ConditionalOnClass({ JavaMailSenderImpl.class, MailHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(JavaMailSenderImpl.class)
 @ConditionalOnEnabledHealthIndicator("mail")
 public class MailHealthContributorAutoConfiguration
