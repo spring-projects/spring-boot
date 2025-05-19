@@ -39,7 +39,6 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))
 	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("co.elastic.clients:elasticsearch-java")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
 	dockerTestImplementation("io.rest-assured:rest-assured")
 	dockerTestImplementation("org.assertj:assertj-core")
@@ -66,7 +65,6 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
-	optional(project(":spring-boot-project:spring-boot-elasticsearch"))
 	optional(project(":spring-boot-project:spring-boot-flyway"))
 	optional(project(":spring-boot-project:spring-boot-hazelcast"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
@@ -82,7 +80,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.testcontainers:clickhouse")
-	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")

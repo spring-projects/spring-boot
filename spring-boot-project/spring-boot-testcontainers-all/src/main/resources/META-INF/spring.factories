@@ -1,6 +1,5 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.flyway.FlywayContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.hazelcast.HazelcastContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerConnectionDetailsFactory,\
