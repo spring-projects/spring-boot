@@ -38,14 +38,15 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
+	optional("com.redis:testcontainers-redis")
 	optional("redis.clients:jedis")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")

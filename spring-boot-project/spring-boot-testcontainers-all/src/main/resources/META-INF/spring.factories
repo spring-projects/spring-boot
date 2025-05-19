@@ -6,5 +6,4 @@ org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelem
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryLoggingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTracingContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.zipkin.ZipkinContainerConnectionDetailsFactory
