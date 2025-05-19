@@ -31,8 +31,8 @@ dependencies {
 	api("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
-
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
