@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.liquibase;
+package org.springframework.boot.liquibase.testcontainers;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 

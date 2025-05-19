@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Liquibase service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.liquibase;
+package org.springframework.boot.liquibase.testcontainers;
