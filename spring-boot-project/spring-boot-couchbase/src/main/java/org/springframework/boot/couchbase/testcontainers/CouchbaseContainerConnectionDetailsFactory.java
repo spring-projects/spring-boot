@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.couchbase;
+package org.springframework.boot.couchbase.testcontainers;
 
 import org.testcontainers.couchbase.CouchbaseContainer;
 
