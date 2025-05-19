@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.redis;
+package org.springframework.boot.data.redis.testcontainers;
 
-import com.redis.testcontainers.RedisContainer;
+import com.redis.testcontainers.RedisStackContainer;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -38,14 +38,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link RedisContainerConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class RedisContainerConnectionDetailsFactoryTests {
+class RedisStackContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final RedisContainer redis = TestImage.container(RedisContainer.class);
+	static final RedisStackContainer redis = TestImage.container(RedisStackContainer.class);
 
 	@Autowired(required = false)
 	private RedisConnectionDetails connectionDetails;

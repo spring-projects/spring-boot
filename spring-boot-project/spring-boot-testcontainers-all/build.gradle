@@ -41,23 +41,17 @@ dependencies {
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-core-test")
-	dockerTestImplementation("org.springframework.data:spring-data-redis")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
-	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
-
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
-	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.springframework:spring-test")
 	optional("org.testcontainers:grafana")
-	optional("com.redis:testcontainers-redis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 	testImplementation("org.springframework:spring-jdbc")
-	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.testcontainers:junit-jupiter")
 }
 
