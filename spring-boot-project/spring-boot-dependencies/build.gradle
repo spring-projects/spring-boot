@@ -2012,6 +2012,7 @@ bom {
 				"spring-boot-data-web",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
+				"spring-boot-docker-compose-all",
 				"spring-boot-elasticsearch",
 				"spring-boot-flyway",
 				"spring-boot-freemarker",
