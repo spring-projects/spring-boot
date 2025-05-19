@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.time.Duration;
 import java.util.ArrayList;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -33,25 +33,23 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
- * {@link ConfluentKafkaContainerConnectionDetailsFactory}.
+ * @author Eddú Meléndez
  */
-@Deprecated(since = "3.4.0", forRemoval = true)
-class DeprecatedConfluentKafkaContainerConnectionDetailsFactory
+class ApacheKafkaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
-		return new ConfluentKafkaContainerConnectionDetails(source);
+		return new ApacheKafkaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class ConfluentKafkaContainerConnectionDetails
-			extends ContainerConnectionDetails<KafkaContainer> implements KafkaConnectionDetails {
+	private static final class ApacheKafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
+			implements KafkaConnectionDetails {
 
-		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private ApacheKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 		}
 

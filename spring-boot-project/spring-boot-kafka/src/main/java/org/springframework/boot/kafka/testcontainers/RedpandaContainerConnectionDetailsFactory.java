@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.kafka;
+package org.springframework.boot.kafka.testcontainers;
 
 import java.util.List;
 
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.redpanda.RedpandaContainer;
 
 import org.springframework.boot.kafka.autoconfigure.KafkaConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
@@ -28,29 +28,26 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated
- * {@link ConfluentKafkaContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link RedpandaContainer}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * @author Eddú Meléndez
  */
-class ConfluentKafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ConfluentKafkaContainer, KafkaConnectionDetails> {
+class RedpandaContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ConfluentKafkaContainer> source) {
-		return new ConfluentKafkaContainerConnectionDetails(source);
+			ContainerConnectionSource<RedpandaContainer> source) {
+		return new RedpandaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class ConfluentKafkaContainerConnectionDetails
-			extends ContainerConnectionDetails<ConfluentKafkaContainer> implements KafkaConnectionDetails {
+	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails<RedpandaContainer>
+			implements KafkaConnectionDetails {
 
-		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<ConfluentKafkaContainer> source) {
+		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 		}
 
