@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.mongo;
+package org.springframework.boot.mongodb.docker.compose;
 
 import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.condition.OS;

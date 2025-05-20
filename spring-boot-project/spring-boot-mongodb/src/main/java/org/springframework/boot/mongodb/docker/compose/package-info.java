@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose MongoDB service connections.
+ * Support for Docker Compose MongoDB service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.mongo;
+package org.springframework.boot.mongodb.docker.compose;
