@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.restdocs.cli.CliDocumentation;
 import org.springframework.restdocs.cli.CurlRequestSnippet;
 import org.springframework.restdocs.operation.Operation;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
  *
  * @author Andy Wilkinson
  */
+@TestPropertySource(properties = "management.endpoint.heapdump.access=unrestricted")
 class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
