@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.cache.actuate.metrics.autoconfigure;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.spring.cache.HazelcastCache;

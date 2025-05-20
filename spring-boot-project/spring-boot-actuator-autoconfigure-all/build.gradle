@@ -46,7 +46,6 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
-	optional(project(":spring-boot-project:spring-boot-cache"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
 	optional(project(":spring-boot-project:spring-boot-data-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-jpa"))
@@ -120,7 +119,6 @@ dependencies {
 	optional("io.undertow:undertow-servlet")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
-	optional("javax.cache:cache-api")
 	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.activemq:activemq-client")
 	optional("org.apache.commons:commons-dbcp2")
@@ -131,8 +129,6 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.cache2k:cache2k-micrometer")
-	optional("org.cache2k:cache2k-spring")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}
@@ -180,7 +176,6 @@ dependencies {
 	testImplementation("org.apache.activemq:artemis-jakarta-server")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
-	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring6")
@@ -194,7 +189,6 @@ dependencies {
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("jakarta.transaction:jakarta.transaction-api")
-	testRuntimeOnly("org.cache2k:cache2k-core")
 	testRuntimeOnly("org.opensaml:opensaml-core:4.0.1")
 	testRuntimeOnly("org.opensaml:opensaml-saml-api:4.0.1")
 	testRuntimeOnly("org.opensaml:opensaml-saml-impl:4.0.1")
