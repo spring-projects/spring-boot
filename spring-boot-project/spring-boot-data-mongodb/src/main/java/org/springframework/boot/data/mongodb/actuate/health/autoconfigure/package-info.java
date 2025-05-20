@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator MongoDB concerns dependent on Spring Data.
+ * Auto-configuration for MongoDB health integration using Spring Data MongoDB.
  */
-package org.springframework.boot.actuate.autoconfigure.data.mongo;
+package org.springframework.boot.data.mongodb.actuate.health.autoconfigure;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.mongo;
+package org.springframework.boot.data.mongodb.actuate.health.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
@@ -26,6 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -33,12 +35,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoHealthIndicator}.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = MongoReactiveHealthContributorAutoConfiguration.class,
-		afterName = { "org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration",
-				"org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration" })
-@ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class })
+@AutoConfiguration(after = { MongoReactiveHealthContributorAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoAutoConfiguration.class })
+@ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
 public class MongoHealthContributorAutoConfiguration

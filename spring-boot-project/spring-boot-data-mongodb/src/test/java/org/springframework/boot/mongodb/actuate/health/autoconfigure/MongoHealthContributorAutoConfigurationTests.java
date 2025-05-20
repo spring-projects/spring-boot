@@ -14,53 +14,40 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.mongo;
+package org.springframework.boot.mongodb.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
-import org.springframework.boot.data.mongodb.actuate.health.MongoReactiveHealthIndicator;
+import org.springframework.boot.data.mongodb.actuate.health.autoconfigure.MongoHealthContributorAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
-import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
-import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MongoReactiveHealthContributorAutoConfiguration}.
+ * Tests for {@link MongoHealthContributorAutoConfiguration}
  *
- * @author Yulin Qin
+ * @author Phillip Webb
  */
-class MongoReactiveHealthContributorAutoConfigurationTests {
+class MongoHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
-				MongoReactiveHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+				MongoHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
-			.hasBean("mongoHealthContributor"));
-	}
-
-	@Test
-	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoHealthContributorAutoConfiguration.class))
-			.run((context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
-				.hasBean("mongoHealthContributor")
-				.doesNotHaveBean(MongoHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MongoHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
-			.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveHealthIndicator.class)
-				.doesNotHaveBean("mongoHealthContributor"));
+			.run((context) -> assertThat(context).doesNotHaveBean(MongoHealthIndicator.class));
 	}
 
 }
