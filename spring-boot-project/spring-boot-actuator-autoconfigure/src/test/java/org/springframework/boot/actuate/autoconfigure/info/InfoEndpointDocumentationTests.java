@@ -51,16 +51,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-<<<<<<< HEAD
 	void info() {
 		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
-			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo()));
-=======
-	void info() throws Exception {
-		this.mockMvc.perform(get("/actuator/info"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
->>>>>>> 3.3.x
+			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
@@ -85,13 +78,13 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	}
 
 	private ResponseFieldsSnippet osInfo() {
-		return responseFields(beneathPath("os"), osInfoField("name", "Name"), osInfoField("version", "Version"),
-				osInfoField("arch", "Architecture"));
+		return responseFields(beneathPath("os"), osInfoField("name", "Name of the operating system"),
+				osInfoField("version", "Version of the operating system"),
+				osInfoField("arch", "Architecture of the operating system"));
 	}
 
 	private FieldDescriptor osInfoField(String field, String desc) {
-		return fieldWithPath(field)
-			.description("Operating System " + desc + " (as obtained from the 'os." + field + "' system property).")
+		return fieldWithPath(field).description(desc + " (as obtained from the 'os." + field + "' system property).")
 			.type(JsonFieldType.STRING)
 			.optional();
 	}
@@ -102,7 +95,20 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("parentPid").description("Parent Process ID (or -1).").type(JsonFieldType.NUMBER),
 				fieldWithPath("owner").description("Process owner.").type(JsonFieldType.STRING),
 				fieldWithPath("cpus").description("Number of CPUs available to the process.")
-					.type(JsonFieldType.NUMBER));
+					.type(JsonFieldType.NUMBER),
+				fieldWithPath("memory").description("Memory information."),
+				fieldWithPath("memory.heap").description("Heap memory."),
+				fieldWithPath("memory.heap.init").description("The number of bytes initially requested by the JVM."),
+				fieldWithPath("memory.heap.used").description("The number of bytes currently being used."),
+				fieldWithPath("memory.heap.committed").description("The number of bytes committed for JVM use."),
+				fieldWithPath("memory.heap.max")
+					.description("The maximum number of bytes that can be used by the JVM (or -1)."),
+				fieldWithPath("memory.nonHeap").description("Non-heap memory."),
+				fieldWithPath("memory.nonHeap.init").description("The number of bytes initially requested by the JVM."),
+				fieldWithPath("memory.nonHeap.used").description("The number of bytes currently being used."),
+				fieldWithPath("memory.nonHeap.committed").description("The number of bytes committed for JVM use."),
+				fieldWithPath("memory.nonHeap.max")
+					.description("The maximum number of bytes that can be used by the JVM (or -1)."));
 	}
 
 	@Configuration(proxyBeanMethods = false)
