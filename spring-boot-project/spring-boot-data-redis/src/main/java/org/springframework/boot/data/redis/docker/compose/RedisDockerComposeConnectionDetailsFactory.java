@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.redis;
+package org.springframework.boot.data.redis.docker.compose;
 
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
