@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
@@ -51,7 +50,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @AutoConfiguration
 @ConditionalOnClass(ExecutableValidator.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/jakarta.validation.spi.ValidationProvider")
-@EnableConfigurationProperties(ValidationProperties.class)
 @Import(PrimaryDefaultValidatorPostProcessor.class)
 public class ValidationAutoConfiguration {
 
@@ -71,13 +69,14 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
-			ValidationProperties validationProperties, ObjectProvider<Validator> validator,
-			ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
+			ObjectProvider<Validator> validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
 		FilteredMethodValidationPostProcessor processor = new FilteredMethodValidationPostProcessor(
 				excludeFilters.orderedStream());
 		boolean proxyTargetClass = environment.getProperty("spring.aop.proxy-target-class", Boolean.class, true);
 		processor.setProxyTargetClass(proxyTargetClass);
-		processor.setAdaptConstraintViolations(validationProperties.getMethod().isAdaptConstraintViolations());
+		boolean adaptConstraintViolations = environment
+			.getProperty("spring.validation.method.adapt-constraint-violations", Boolean.class, false);
+		processor.setAdaptConstraintViolations(adaptConstraintViolations);
 		processor.setValidatorProvider(validator);
 		return processor;
 	}
