@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.ldap;
+package org.springframework.boot.ldap.docker.compose;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -29,24 +27,23 @@ import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
  * {@link DockerComposeConnectionDetailsFactory} to create {@link LdapConnectionDetails}
  * for an {@code ldap} service.
  *
- * @author Philipp Kessler
+ * @author Eddú Meléndez
  */
-class OpenLdapDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
+class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<LdapConnectionDetails> {
 
-	protected OpenLdapDockerComposeConnectionDetailsFactory() {
-		super("osixia/openldap");
+	LLdapDockerComposeConnectionDetailsFactory() {
+		super("lldap/lldap");
 	}
 
 	@Override
 	protected LdapConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new OpenLdapDockerComposeConnectionDetails(source.getRunningService());
+		return new LLdapDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
-	 * {@link LdapConnectionDetails} backed by an {@code openldap} {@link RunningService}.
+	 * {@link LdapConnectionDetails} backed by an {@code lldap} {@link RunningService}.
 	 */
-	static class OpenLdapDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class LLdapDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements LdapConnectionDetails {
 
 		private final String[] urls;
@@ -57,23 +54,17 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 
 		private final String password;
 
-		OpenLdapDockerComposeConnectionDetails(RunningService service) {
+		LLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			Map<String, String> env = service.env();
-			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
-			String ldapPort = usesTls ? env.getOrDefault("LDAPS_PORT", "636") : env.getOrDefault("LDAP_PORT", "389");
+			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LLDAP_LDAPS_OPTIONS__ENABLED", "false"));
+			String ldapPort = usesTls ? env.getOrDefault("LLDAP_LDAPS_OPTIONS__PORT", "6360")
+					: env.getOrDefault("LLDAP_LDAP_PORT", "3890");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
 					service.ports().get(Integer.parseInt(ldapPort))) };
-			if (env.containsKey("LDAP_BASE_DN")) {
-				this.base = env.get("LDAP_BASE_DN");
-			}
-			else {
-				this.base = Arrays.stream(env.getOrDefault("LDAP_DOMAIN", "example.org").split("\\."))
-					.map("dc=%s"::formatted)
-					.collect(Collectors.joining(","));
-			}
-			this.password = env.getOrDefault("LDAP_ADMIN_PASSWORD", "admin");
-			this.username = "cn=admin,%s".formatted(this.base);
+			this.base = env.getOrDefault("LLDAP_LDAP_BASE_DN", "dc=example,dc=com");
+			this.password = env.getOrDefault("LLDAP_LDAP_USER_PASS", "password");
+			this.username = "cn=admin,ou=people,%s".formatted(this.base);
 		}
 
 		@Override
