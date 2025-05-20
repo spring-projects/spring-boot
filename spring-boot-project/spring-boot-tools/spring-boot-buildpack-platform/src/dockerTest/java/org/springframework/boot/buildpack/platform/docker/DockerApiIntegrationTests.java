@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class DockerApiIntegrationTests {
 	@Test
 	void pullImage() throws IOException {
 		this.docker.image()
-			.pull(ImageReference.of("gcr.io/paketo-buildpacks/builder:base"), null,
+			.pull(ImageReference.of("docker.io/paketobuildpacks/builder:base"), null,
 					new TotalProgressPullListener(new TotalProgressBar("Pulling: ")));
 	}
 
