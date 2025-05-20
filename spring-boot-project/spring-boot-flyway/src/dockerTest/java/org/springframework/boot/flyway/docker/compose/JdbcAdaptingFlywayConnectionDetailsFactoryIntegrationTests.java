@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.flyway;
+package org.springframework.boot.flyway.docker.compose;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.flyway.autoconfigure.FlywayConnectionDetails;
