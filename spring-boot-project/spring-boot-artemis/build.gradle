@@ -31,6 +31,7 @@ dependencies {
 	api("org.apache.activemq:artemis-jakarta-client")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("org.apache.activemq:artemis-jakarta-server")
@@ -40,6 +41,7 @@ dependencies {
 	optional("org.testcontainers:activemq")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-docker-compose")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 

@@ -14,49 +14,55 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.activemq.docker.compose;
+package org.springframework.boot.artemis.docker.compose;
 
-import org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails;
+import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
+import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
- * {@link ActiveMQConnectionDetails} for an {@code activemq} service.
+ * {@link ArtemisConnectionDetails} for an {@code artemis} service.
  *
- * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
-class ActiveMQClassicDockerComposeConnectionDetailsFactory
-		extends DockerComposeConnectionDetailsFactory<ActiveMQConnectionDetails> {
+class ArtemisDockerComposeConnectionDetailsFactory
+		extends DockerComposeConnectionDetailsFactory<ArtemisConnectionDetails> {
 
 	private static final int ACTIVEMQ_PORT = 61616;
 
-	protected ActiveMQClassicDockerComposeConnectionDetailsFactory() {
-		super("apache/activemq-classic");
+	protected ArtemisDockerComposeConnectionDetailsFactory() {
+		super("apache/activemq-artemis");
 	}
 
 	@Override
-	protected ActiveMQConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new ActiveMQDockerComposeConnectionDetails(source.getRunningService());
+	protected ArtemisConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new ArtemisDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
-	 * {@link ActiveMQConnectionDetails} backed by an {@code activemq}
+	 * {@link ArtemisConnectionDetails} backed by a {@code artemis}
 	 * {@link RunningService}.
 	 */
-	static class ActiveMQDockerComposeConnectionDetails extends DockerComposeConnectionDetails
-			implements ActiveMQConnectionDetails {
+	static class ArtemisDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+			implements ArtemisConnectionDetails {
 
-		private final ActiveMQClassicEnvironment environment;
+		private final ArtemisEnvironment environment;
 
 		private final String brokerUrl;
 
-		protected ActiveMQDockerComposeConnectionDetails(RunningService service) {
+		protected ArtemisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.environment = new ActiveMQClassicEnvironment(service.env());
+			this.environment = new ArtemisEnvironment(service.env());
 			this.brokerUrl = "tcp://" + service.host() + ":" + service.ports().get(ACTIVEMQ_PORT);
+		}
+
+		@Override
+		public ArtemisMode getMode() {
+			return ArtemisMode.NATIVE;
 		}
 
 		@Override
