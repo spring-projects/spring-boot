@@ -34,6 +34,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("com.hazelcast:hazelcast-spring")
@@ -41,6 +42,7 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-docker-compose")))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
