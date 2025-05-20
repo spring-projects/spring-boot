@@ -53,7 +53,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
-	optional(project(":spring-boot-project:spring-boot-integration"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jersey"))
 	optional(project(":spring-boot-project:spring-boot-jetty"))
@@ -183,7 +182,6 @@ dependencies {
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.springframework:spring-orm")
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
-	testImplementation("org.springframework.integration:spring-integration-jmx")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 

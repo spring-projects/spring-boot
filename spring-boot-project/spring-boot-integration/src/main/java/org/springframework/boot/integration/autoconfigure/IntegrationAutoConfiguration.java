@@ -85,7 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Yong-Hyun Kim
  * @author Yanming Zhou
- * @since 1.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(beforeName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration",
 		after = { JmxAutoConfiguration.class, TaskSchedulingAutoConfiguration.class },

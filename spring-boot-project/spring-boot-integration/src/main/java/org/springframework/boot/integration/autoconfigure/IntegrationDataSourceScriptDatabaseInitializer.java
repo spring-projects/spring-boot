@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Vedran Pavic
  * @author Andy Wilkinson
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 

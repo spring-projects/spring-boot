@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.integration;
+package org.springframework.boot.integration.actuate.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.integration.actuate.endpoint.autoconfigure.IntegrationGraphEndpointAutoConfiguration;
 import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,9 +38,11 @@ class IntegrationMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
-				IntegrationGraphEndpointAutoConfiguration.class, IntegrationMetricsAutoConfiguration.class))
-		.with(MetricsRun.simple())
-		.withPropertyValues("management.metrics.tags.someTag=someValue");
+				IntegrationGraphEndpointAutoConfiguration.class, IntegrationMetricsAutoConfiguration.class,
+				MetricsAutoConfiguration.class))
+		.withBean(SimpleMeterRegistry.class)
+		.withPropertyValues("management.metrics.tags.someTag=someValue",
+				"management.metrics.use-global-registry=false");
 
 	@Test
 	void integrationMetersAreInstrumented() {
