@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.rabbit;
+package org.springframework.boot.amqp.docker.compose;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
