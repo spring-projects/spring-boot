@@ -14,25 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.cassandra;
-
-import java.util.Map;
-
 /**
- * Cassandra environment details.
- *
- * @author Scott Frederick
+ * Support for Docker Compose Cassandra service connections.
  */
-class CassandraEnvironment {
-
-	private final String datacenter;
-
-	CassandraEnvironment(Map<String, String> env) {
-		this.datacenter = env.getOrDefault("CASSANDRA_DC", env.getOrDefault("CASSANDRA_DATACENTER", "datacenter1"));
-	}
-
-	String getDatacenter() {
-		return this.datacenter;
-	}
-
-}
+package org.springframework.boot.cassandra.docker.compose;
