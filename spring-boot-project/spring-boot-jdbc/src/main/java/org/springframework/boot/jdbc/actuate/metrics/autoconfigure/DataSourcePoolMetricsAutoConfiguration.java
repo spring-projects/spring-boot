@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
+package org.springframework.boot.jdbc.actuate.metrics.autoconfigure;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -43,7 +42,6 @@ import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.actuate.metrics.DataSourcePoolMetrics;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.log.LogMessage;
@@ -55,10 +53,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Yanming Zhou
- * @since 2.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfiguration(after = DataSourceAutoConfiguration.class,
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ DataSource.class, MeterRegistry.class })
 @ConditionalOnBean({ DataSource.class, MeterRegistry.class })
 public class DataSourcePoolMetricsAutoConfiguration {
