@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.liquibase;
+package org.springframework.boot.liquibase.docker.compose;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
