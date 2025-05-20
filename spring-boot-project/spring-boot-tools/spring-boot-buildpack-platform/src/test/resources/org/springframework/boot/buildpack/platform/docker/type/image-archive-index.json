@@ -7,7 +7,7 @@
 			"size": 529,
 			"annotations": {
 				"containerd.io/distribution.source.gcr.io": "paketo-buildpacks/adoptium",
-				"io.containerd.image.name": "gcr.io/paketo-buildpacks/adoptium:latest",
+				"io.containerd.image.name": "docker.io/paketobuildpacks/adoptium:latest",
 				"org.opencontainers.image.ref.name": "latest"
 			}
 		}
