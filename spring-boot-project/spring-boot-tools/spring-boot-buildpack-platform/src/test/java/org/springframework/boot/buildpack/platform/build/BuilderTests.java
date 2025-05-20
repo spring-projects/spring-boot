@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,14 +155,14 @@ class BuilderTests {
 		Image builderImage = loadImage("image-with-no-run-image-tag.json");
 		Image runImage = loadImage("run-image.json");
 		given(docker.image()
-			.pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), isNull(), any(), isNull()))
+			.pull(eq(ImageReference.of("docker.io/paketobuildpacks/builder:latest")), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:latest")), eq(ImagePlatform.from(builderImage)),
 					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
-		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("gcr.io/paketo-buildpacks/builder"));
+		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("docker.io/paketobuildpacks/builder"));
 		builder.build(request);
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
@@ -202,14 +202,14 @@ class BuilderTests {
 		Image builderImage = loadImage("image-with-empty-stack.json");
 		Image runImage = loadImage("run-image.json");
 		given(docker.image()
-			.pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), isNull(), any(), isNull()))
+			.pull(eq(ImageReference.of("docker.io/paketobuildpacks/builder:latest")), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
 					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
-		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("gcr.io/paketo-buildpacks/builder"));
+		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("docker.io/paketobuildpacks/builder"));
 		builder.build(request);
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");

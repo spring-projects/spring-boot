@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,9 +206,9 @@ class DockerApiTests {
 
 		@Test
 		void pullPullsImageAndProducesEvents() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener);
@@ -221,9 +221,9 @@ class DockerApiTests {
 
 		@Test
 		void pullWithRegistryAuthPullsImageAndProducesEvents() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), eq("auth token"))).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener, "auth token");
@@ -385,8 +385,8 @@ class DockerApiTests {
 
 		@Test
 		void inspectInspectImage() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.inspect(reference);
 			assertThat(image.getLayers()).hasSize(46);
@@ -402,15 +402,15 @@ class DockerApiTests {
 		@Test
 		@SuppressWarnings("removal")
 		void exportLayersWhenExportsIsNullThrowsException() {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(reference, null))
 				.withMessage("Exports must not be null");
 		}
 
 		@Test
 		void exportLayersExportsLayerTars() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
 			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
 			this.api.exportLayers(reference, (name, archive) -> {
@@ -437,8 +437,8 @@ class DockerApiTests {
 
 		@Test
 		void exportLayersWithSymlinksExportsLayerTars() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-symlinks.tar"));
 			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
 			this.api.exportLayers(reference, (name, archive) -> {
@@ -466,8 +466,8 @@ class DockerApiTests {
 		@Test
 		@SuppressWarnings("removal")
 		void exportLayerFilesDeletesTempFiles() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
 			List<Path> layerFilePaths = new ArrayList<>();
 			this.api.exportLayerFiles(reference, (name, path) -> layerFilePaths.add(path));
@@ -477,8 +477,8 @@ class DockerApiTests {
 		@Test
 		@SuppressWarnings("removal")
 		void exportLayersWithNoManifestThrowsException() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-no-manifest.tar"));
 			String expectedMessage = "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
 				.formatted(reference);
