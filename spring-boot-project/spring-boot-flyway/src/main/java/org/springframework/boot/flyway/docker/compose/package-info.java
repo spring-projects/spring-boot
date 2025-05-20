@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose Flyway service connections.
+ * Support for Docker Compose Flyway service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.flyway;
+package org.springframework.boot.flyway.docker.compose;
