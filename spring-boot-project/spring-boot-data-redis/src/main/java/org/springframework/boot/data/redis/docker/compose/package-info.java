@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose Redis service connections.
+ * Support for Docker Compose Redis service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.redis;
+package org.springframework.boot.data.redis.docker.compose;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.redis;
+package org.springframework.boot.data.redis.docker.compose;
 
 import javax.net.ssl.SSLContext;
 
