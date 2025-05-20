@@ -1,7 +1,6 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.flyway.JdbcAdaptingFlywayConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.hazelcast.HazelcastDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.ldap.LLdapDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.ldap.OpenLdapDockerComposeConnectionDetailsFactory,\
