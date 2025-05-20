@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.cache.actuate.metrics.autoconfigure;
 
 import java.util.Collection;
 import java.util.Map;

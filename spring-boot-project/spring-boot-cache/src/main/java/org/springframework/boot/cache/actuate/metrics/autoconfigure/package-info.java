@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for cache metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.cache.actuate.metrics.autoconfigure;
