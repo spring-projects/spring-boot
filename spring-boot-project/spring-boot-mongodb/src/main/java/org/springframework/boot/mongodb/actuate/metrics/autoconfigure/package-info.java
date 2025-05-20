@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Mongo metrics.
+ * Auto-configuration for MongoDB metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
+package org.springframework.boot.mongodb.actuate.metrics.autoconfigure;

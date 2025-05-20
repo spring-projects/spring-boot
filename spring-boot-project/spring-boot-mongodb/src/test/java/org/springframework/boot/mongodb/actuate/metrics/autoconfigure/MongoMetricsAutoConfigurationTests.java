@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
+package org.springframework.boot.mongodb.actuate.metrics.autoconfigure;
 
 import java.util.List;
 
@@ -29,10 +29,10 @@ import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -57,7 +57,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsCommandListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MongoMetricsCommandListener.class);
@@ -72,7 +72,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MongoMetricsConnectionPoolListener.class);
@@ -98,7 +98,7 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsACustomMetricsCommandTagsProviderItIsUsed() {
 		final MongoCommandTagsProvider customTagsProvider = mock(MongoCommandTagsProvider.class);
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withBean("customMongoCommandTagsProvider", MongoCommandTagsProvider.class, () -> customTagsProvider)
 			.run((context) -> assertThat(getMongoCommandTagsProviderUsedToConstructListener(context))
@@ -108,7 +108,7 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsACustomMetricsConnectionPoolTagsProviderItIsUsed() {
 		final MongoConnectionPoolTagsProvider customTagsProvider = mock(MongoConnectionPoolTagsProvider.class);
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withBean("customMongoConnectionPoolTagsProvider", MongoConnectionPoolTagsProvider.class,
 					() -> customTagsProvider)
@@ -118,7 +118,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
 			.run(assertThatMetricsCommandListenerNotAdded());
@@ -126,7 +126,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
 			.run(assertThatMetricsConnectionPoolListenerNotAdded());
@@ -134,7 +134,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoMongoMetricsCommandListenerOnClasspathThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoMetricsCommandListener.class))
 			.run(assertThatMetricsCommandListenerNotAdded());
@@ -142,7 +142,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoMongoMetricsConnectionPoolListenerOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withClassLoader(new FilteredClassLoader(MongoMetricsConnectionPoolListener.class))
 			.run(assertThatMetricsConnectionPoolListenerNotAdded());
@@ -150,7 +150,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenMetricsCommandListenerEnabledPropertyFalseThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withPropertyValues("management.metrics.mongo.command.enabled:false")
 			.run(assertThatMetricsCommandListenerNotAdded());
@@ -158,7 +158,7 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenMetricsConnectionPoolListenerEnabledPropertyFalseThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 			.withPropertyValues("management.metrics.mongo.connectionpool.enabled:false")
 			.run(assertThatMetricsConnectionPoolListenerNotAdded());
