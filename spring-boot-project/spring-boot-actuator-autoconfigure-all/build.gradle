@@ -45,7 +45,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	optional(project(":spring-boot-project:spring-boot-activemq"))
-	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
 	optional(project(":spring-boot-project:spring-boot-cache"))
 	optional(project(":spring-boot-project:spring-boot-couchbase"))
@@ -150,7 +149,6 @@ dependencies {
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
-	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.batch:spring-batch-core")
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-jpa")
