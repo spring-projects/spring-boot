@@ -5,6 +5,13 @@ org.springframework.boot.jdbc.autoconfigure.HikariDriverConfigurationFailureAnal
 
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.jdbc.docker.compose.ClickHouseJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.MariaDbJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.MySqlJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.OracleFreeJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.OracleXeJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.PostgresJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.jdbc.docker.compose.SqlServerJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.jdbc.testcontainers.JdbcContainerConnectionDetailsFactory
 
 # Database Initializer Detectors
