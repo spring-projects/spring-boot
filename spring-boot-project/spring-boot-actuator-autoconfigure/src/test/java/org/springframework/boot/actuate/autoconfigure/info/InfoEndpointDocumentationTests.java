@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.actuate.info.OsInfoContributor;
+import org.springframework.boot.actuate.info.ProcessInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +55,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	void info() throws Exception {
 		this.mockMvc.perform(get("/actuator/info"))
 			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo()));
+			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
@@ -90,6 +91,15 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 			.optional();
 	}
 
+	private ResponseFieldsSnippet processInfo() {
+		return responseFields(beneathPath("process"),
+				fieldWithPath("pid").description("Process ID.").type(JsonFieldType.NUMBER),
+				fieldWithPath("parentPid").description("Parent Process ID (or -1).").type(JsonFieldType.NUMBER),
+				fieldWithPath("owner").description("Process owner.").type(JsonFieldType.STRING),
+				fieldWithPath("cpus").description("Number of CPUs available to the process.")
+					.type(JsonFieldType.NUMBER));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -122,6 +132,11 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		OsInfoContributor osInfoContributor() {
 			return new OsInfoContributor();
+		}
+
+		@Bean
+		ProcessInfoContributor processInfoContributor() {
+			return new ProcessInfoContributor();
 		}
 
 	}

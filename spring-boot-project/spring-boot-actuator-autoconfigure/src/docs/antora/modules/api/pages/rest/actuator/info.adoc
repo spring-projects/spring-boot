@@ -56,3 +56,13 @@ The following table describes the structure of the `os` section of the response:
 
 [cols="2,1,3"]
 include::partial$rest/actuator/info/response-fields-beneath-os.adoc[]
+
+
+
+[[info.retrieving.response-structure.process]]
+==== Process Response Structure
+
+The following table describes the structure of the `process` section of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/info/response-fields-beneath-process.adoc[]
