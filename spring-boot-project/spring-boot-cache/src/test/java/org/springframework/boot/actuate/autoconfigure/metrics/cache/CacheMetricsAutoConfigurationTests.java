@@ -21,13 +21,12 @@ import java.util.List;
 
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.cache.actuate.metrics.autoconfigure.CacheMetricsAutoConfiguration;
 import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -46,14 +45,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CacheMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withBean(SimpleMeterRegistry.class)
 		.withUserConfiguration(CachingConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, CacheMetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredCache2kIsInstrumented() {
 		this.contextRunner.withPropertyValues("spring.cache.type=cache2k", "spring.cache.cache-names=cache1,cache2")
-			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.cache;
+package org.springframework.boot.cache.actuate.metrics.autoconfigure;
+
+import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.cache.actuate.metrics.CacheMetricsRegistrar;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
@@ -32,12 +32,12 @@ import org.springframework.context.annotation.Import;
  * {@link Cache caches}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class },
-		afterName = "org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration")
+@AutoConfiguration(after = { CacheAutoConfiguration.class },
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnBean(CacheManager.class)
-@ConditionalOnClass(CacheMetricsRegistrar.class)
+@ConditionalOnClass(MeterRegistry.class)
 @Import({ CacheMeterBinderProvidersConfiguration.class, CacheMetricsRegistrarConfiguration.class })
 public class CacheMetricsAutoConfiguration {
 
