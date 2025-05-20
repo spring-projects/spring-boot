@@ -185,7 +185,8 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void allowsObservedAspectToBeEnabledWithDeprecatedProperty() {
+	@Deprecated(since = "3.3.12", forRemoval = true)
+	void allowsObservedAspectToBeEnabledWithLegacyProperty() {
 		this.contextRunner
 			.withPropertyValues("management.observations.annotations.enabled=false",
 					"micrometer.observations.annotations.enabled=true")
