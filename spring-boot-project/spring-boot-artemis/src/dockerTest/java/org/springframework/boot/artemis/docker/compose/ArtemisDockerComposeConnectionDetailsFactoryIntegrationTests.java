@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.activemq;
+package org.springframework.boot.artemis.docker.compose;
 
 import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
 import org.springframework.boot.artemis.autoconfigure.ArtemisMode;

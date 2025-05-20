@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose ActiveMQ service connections.
+ * Support for Docker Compose Artemis service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.activemq;
+package org.springframework.boot.artemis.docker.compose;

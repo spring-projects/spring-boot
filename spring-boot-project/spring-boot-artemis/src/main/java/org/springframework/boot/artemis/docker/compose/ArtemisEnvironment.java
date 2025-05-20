@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.activemq.docker.compose;
+package org.springframework.boot.artemis.docker.compose;
 
 import java.util.Map;
 
 /**
- * ActiveMQ environment details.
+ * Artemis environment details.
  *
- * @author Stephane Nicoll
+ * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
-class ActiveMQEnvironment {
+class ArtemisEnvironment {
 
 	private final String user;
 
 	private final String password;
 
-	ActiveMQEnvironment(Map<String, String> env) {
-		this.user = env.get("ACTIVEMQ_USERNAME");
-		this.password = env.get("ACTIVEMQ_PASSWORD");
+	ArtemisEnvironment(Map<String, String> env) {
+		this.user = env.get("ARTEMIS_USER");
+		this.password = env.get("ARTEMIS_PASSWORD");
 	}
 
 	String getUser() {
