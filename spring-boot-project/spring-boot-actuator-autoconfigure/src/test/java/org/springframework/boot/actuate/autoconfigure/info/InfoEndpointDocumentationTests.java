@@ -100,17 +100,17 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 					.type(JsonFieldType.NUMBER),
 				fieldWithPath("memory").description("Memory information."),
 				fieldWithPath("memory.heap").description("Heap memory."),
-				fieldWithPath("memory.heap.init").description("The number of bytes initially requested by the JVM."),
-				fieldWithPath("memory.heap.used").description("The number of bytes currently being used."),
-				fieldWithPath("memory.heap.committed").description("The number of bytes committed for JVM use."),
+				fieldWithPath("memory.heap.init").description("Number of bytes initially requested by the JVM."),
+				fieldWithPath("memory.heap.used").description("Number of bytes currently being used."),
+				fieldWithPath("memory.heap.committed").description("Number of bytes committed for JVM use."),
 				fieldWithPath("memory.heap.max")
-					.description("The maximum number of bytes that can be used by the JVM (or -1)."),
+					.description("Maximum number of bytes that can be used by the JVM (or -1)."),
 				fieldWithPath("memory.nonHeap").description("Non-heap memory."),
-				fieldWithPath("memory.nonHeap.init").description("The number of bytes initially requested by the JVM."),
-				fieldWithPath("memory.nonHeap.used").description("The number of bytes currently being used."),
-				fieldWithPath("memory.nonHeap.committed").description("The number of bytes committed for JVM use."),
+				fieldWithPath("memory.nonHeap.init").description("Number of bytes initially requested by the JVM."),
+				fieldWithPath("memory.nonHeap.used").description("Number of bytes currently being used."),
+				fieldWithPath("memory.nonHeap.committed").description("Number of bytes committed for JVM use."),
 				fieldWithPath("memory.nonHeap.max")
-					.description("The maximum number of bytes that can be used by the JVM (or -1)."));
+					.description("Maximum number of bytes that can be used by the JVM (or -1)."));
 	}
 
 	private ResponseFieldsSnippet javaInfo() {
