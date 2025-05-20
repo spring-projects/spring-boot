@@ -22,7 +22,6 @@ org.springframework.boot.actuate.autoconfigure.logging.OpenTelemetryLoggingAutoC
 org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.data.RepositoryMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics.AppOpticsMetricsExportAutoConfiguration
