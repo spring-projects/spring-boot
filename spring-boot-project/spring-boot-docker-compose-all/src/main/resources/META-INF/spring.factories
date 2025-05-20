@@ -1,6 +1,5 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.docker.compose.service.connection.cassandra.CassandraDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\

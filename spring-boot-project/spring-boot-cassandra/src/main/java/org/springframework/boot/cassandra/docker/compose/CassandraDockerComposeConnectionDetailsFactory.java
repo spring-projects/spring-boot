@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.cassandra;
+package org.springframework.boot.cassandra.docker.compose;
 
 import java.util.List;
 

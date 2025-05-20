@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose Cassandra service connections.
+ * Support for Docker Compose Cassandra service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.cassandra;
+package org.springframework.boot.cassandra.docker.compose;
