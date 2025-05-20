@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.pulsar;
+package org.springframework.boot.pulsar.docker.compose;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails;
