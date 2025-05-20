@@ -27,12 +27,15 @@ import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
@@ -49,23 +52,40 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	@Test
 	void info() {
 		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
-			.apply(MockMvcRestDocumentation.document("info",
-					responseFields(beneathPath("git"),
-							fieldWithPath("branch").description("Name of the Git branch, if any."),
-							fieldWithPath("commit").description("Details of the Git commit, if any."),
-							fieldWithPath("commit.time").description("Timestamp of the commit, if any.")
-								.type(JsonFieldType.VARIES),
-							fieldWithPath("commit.id").description("ID of the commit, if any.")),
-					responseFields(beneathPath("build"),
-							fieldWithPath("artifact").description("Artifact ID of the application, if any.").optional(),
-							fieldWithPath("group").description("Group ID of the application, if any.").optional(),
-							fieldWithPath("name").description("Name of the application, if any.")
-								.type(JsonFieldType.STRING)
-								.optional(),
-							fieldWithPath("version").description("Version of the application, if any.").optional(),
-							fieldWithPath("time").description("Timestamp of when the application was built, if any.")
-								.type(JsonFieldType.VARIES)
-								.optional())));
+			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo()));
+	}
+
+	private ResponseFieldsSnippet gitInfo() {
+		return responseFields(beneathPath("git"),
+				fieldWithPath("branch").description("Name of the Git branch, if any."),
+				fieldWithPath("commit").description("Details of the Git commit, if any."),
+				fieldWithPath("commit.time").description("Timestamp of the commit, if any.").type(JsonFieldType.VARIES),
+				fieldWithPath("commit.id").description("ID of the commit, if any."));
+	}
+
+	private ResponseFieldsSnippet buildInfo() {
+		return responseFields(beneathPath("build"),
+				fieldWithPath("artifact").description("Artifact ID of the application, if any.").optional(),
+				fieldWithPath("group").description("Group ID of the application, if any.").optional(),
+				fieldWithPath("name").description("Name of the application, if any.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("version").description("Version of the application, if any.").optional(),
+				fieldWithPath("time").description("Timestamp of when the application was built, if any.")
+					.type(JsonFieldType.VARIES)
+					.optional());
+	}
+
+	private ResponseFieldsSnippet osInfo() {
+		return responseFields(beneathPath("os"), osInfoField("name", "Name"), osInfoField("version", "Version"),
+				osInfoField("arch", "Architecture"));
+	}
+
+	private FieldDescriptor osInfoField(String field, String desc) {
+		return fieldWithPath(field)
+			.description("Operating System " + desc + " (as obtained from the 'os." + field + "' system property).")
+			.type(JsonFieldType.STRING)
+			.optional();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -95,6 +115,11 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 			properties.put("version", "1.0.3");
 			BuildProperties buildProperties = new BuildProperties(properties);
 			return new BuildInfoContributor(buildProperties);
+		}
+
+		@Bean
+		OsInfoContributor osInfoContributor() {
+			return new OsInfoContributor();
 		}
 
 	}
