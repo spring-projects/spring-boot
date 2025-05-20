@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.hazelcast.docker.compose;
+
+import java.util.Map;
+
 /**
- * Auto-configuration for Docker Compose Hazelcast service connections.
+ * Hazelcast environment details.
+ *
+ * @author Dmytro Nosan
  */
-package org.springframework.boot.docker.compose.service.connection.hazelcast;
+class HazelcastEnvironment {
+
+	private final String clusterName;
+
+	HazelcastEnvironment(Map<String, String> env) {
+		this.clusterName = env.get("HZ_CLUSTERNAME");
+	}
+
+	String getClusterName() {
+		return this.clusterName;
+	}
+
+}
