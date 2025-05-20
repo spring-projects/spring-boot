@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.redis;
+package org.springframework.boot.data.redis.actuate.metrics.autoconfigure;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder;
@@ -26,8 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -35,12 +34,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Antonin Arquey
  * @author Yanming Zhou
- * @since 2.6.0
+ * @since 4.0.0
  */
-@AutoConfiguration(beforeName = "org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
-		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@ConditionalOnClass({ ClientResourcesBuilderCustomizer.class, RedisClient.class,
-		MicrometerCommandLatencyRecorder.class })
+@AutoConfiguration(before = RedisAutoConfiguration.class,
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+@ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class LettuceMetricsAutoConfiguration {
 

@@ -8,8 +8,6 @@ org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundry
 org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.data.redis.RedisHealthContributorAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.data.redis.RedisReactiveHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration
@@ -41,7 +39,6 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetri
 org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.r2dbc.ConnectionPoolMetricsAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.metrics.redis.LettuceMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.task.TaskExecutorMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.web.jetty.JettyMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration

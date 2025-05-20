@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.redis;
+package org.springframework.boot.data.redis.actuate.metrics.autoconfigure;
 
 import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder;
 import io.lettuce.core.metrics.MicrometerOptions;
 import io.lettuce.core.resource.ClientResources;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -43,7 +43,7 @@ class LettuceMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsAMeterRegistryThenCommandLatencyRecorderIsAdded() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 			.run((context) -> {
 				ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
@@ -54,7 +54,7 @@ class LettuceMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguredMicrometerOptionsUsesLettucesDefaults() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 			.run((context) -> {
 				MicrometerOptions micrometerOptions = context.getBean(MicrometerOptions.class);
@@ -68,7 +68,7 @@ class LettuceMetricsAutoConfigurationTests {
 
 	@Test
 	void whenUserDefinesAMicrometerOptionsBeanThenCommandLatencyRecorderUsesIt() {
-		this.contextRunner.with(MetricsRun.simple())
+		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 			.withUserConfiguration(CustomMicrometerOptionsConfiguration.class)
 			.run((context) -> {
