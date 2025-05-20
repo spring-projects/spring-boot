@@ -68,7 +68,7 @@ import static org.mockito.Mockito.times;
 class BuilderTests {
 
 	private static final ImageReference PAKETO_BUILDPACKS_BUILDER = ImageReference
-		.of("gcr.io/paketo-buildpacks/builder");
+		.of("docker.io/paketobuildpacks/builder");
 
 	private static final ImageReference LATEST_PAKETO_BUILDPACKS_BUILDER = PAKETO_BUILDPACKS_BUILDER.inTaggedForm();
 
