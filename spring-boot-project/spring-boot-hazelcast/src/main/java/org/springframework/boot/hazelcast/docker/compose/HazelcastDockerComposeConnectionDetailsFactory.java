@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.hazelcast;
+package org.springframework.boot.hazelcast.docker.compose;
 
 import com.hazelcast.client.config.ClientConfig;
 
