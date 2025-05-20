@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
+package org.springframework.boot.jdbc.actuate.metrics.autoconfigure;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -31,12 +31,12 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,10 +58,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataSourcePoolMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withPropertyValues("spring.datasource.generate-unique-name=true")
-		.with(MetricsRun.simple())
-		.withConfiguration(AutoConfigurations.of(DataSourcePoolMetricsAutoConfiguration.class))
-		.withUserConfiguration(BaseConfiguration.class);
+		.withPropertyValues("spring.datasource.generate-unique-name=true",
+				"management.metrics.use-global-registry=false")
+		.withBean(SimpleMeterRegistry.class)
+		.withConfiguration(
+				AutoConfigurations.of(MetricsAutoConfiguration.class, DataSourcePoolMetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredDataSourceIsInstrumented() {
@@ -242,16 +243,6 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
 		hikariDataSource.setPoolName(poolName);
 		return hikariDataSource;
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class BaseConfiguration {
-
-		@Bean
-		SimpleMeterRegistry simpleMeterRegistry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
