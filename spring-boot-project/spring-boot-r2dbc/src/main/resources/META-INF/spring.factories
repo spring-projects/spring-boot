@@ -1,5 +1,12 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.r2dbc.docker.compose.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.MySqlR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.OracleFreeR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.OracleXeR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.PostgresR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.docker.compose.SqlServerR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.ClickHouseR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.MySqlR2dbcContainerConnectionDetailsFactory,\
@@ -7,6 +14,10 @@ org.springframework.boot.r2dbc.testcontainers.OracleFreeR2dbcContainerConnection
 org.springframework.boot.r2dbc.testcontainers.OracleXeR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.PostgresR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.SqlServerR2dbcContainerConnectionDetailsFactory
+
+
+
+
 
 # Database Initializer Detectors
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\

@@ -38,6 +38,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.micrometer:micrometer-core")
@@ -57,8 +58,12 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-docker-compose")))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestRuntimeOnly("com.clickhouse:clickhouse-r2dbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
+	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
+	dockerTestRuntimeOnly("org.postgresql:r2dbc-postgresql")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
