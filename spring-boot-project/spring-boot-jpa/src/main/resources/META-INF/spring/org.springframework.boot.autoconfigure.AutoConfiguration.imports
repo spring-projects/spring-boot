@@ -1,1 +1,2 @@
 org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration
+org.springframework.boot.jpa.hibernate.actuate.metrics.autoconfigure.HibernateMetricsAutoConfiguration

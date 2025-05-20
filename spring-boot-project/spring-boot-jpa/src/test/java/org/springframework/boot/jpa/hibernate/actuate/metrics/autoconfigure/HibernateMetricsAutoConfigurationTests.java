@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
+package org.springframework.boot.jpa.hibernate.actuate.metrics.autoconfigure;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -32,13 +32,13 @@ import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -63,10 +63,11 @@ import static org.mockito.Mockito.mock;
  */
 class HibernateMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withBean(SimpleMeterRegistry.class)
 		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-				HibernateMetricsAutoConfiguration.class))
-		.withUserConfiguration(BaseConfiguration.class);
+				HibernateMetricsAutoConfiguration.class, MetricsAutoConfiguration.class))
+		.withPropertyValues("management.metrics.use-global-registry=false");
 
 	@Test
 	void autoConfiguredEntityManagerFactoryWithStatsIsInstrumented() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
+package org.springframework.boot.jpa.hibernate.actuate.metrics.autoconfigure;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,12 +28,11 @@ import org.hibernate.stat.HibernateMetrics;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,8 +43,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
-		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class,
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, HibernateMetrics.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration implements SmartInitializingSingleton {

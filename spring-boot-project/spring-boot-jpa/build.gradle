@@ -33,8 +33,9 @@ dependencies {
 	api("org.springframework:spring-orm")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.springframework:spring-webmvc")
 
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
