@@ -301,7 +301,7 @@
     {
       "name": "spring.application.group",
       "type": "java.lang.String",
-      "description": "Application group."
+      "description": "Application group. Typically used with logging to help identify the application."
     },
     {
       "name": "spring.application.index",
@@ -316,7 +316,7 @@
       "name": "spring.application.name",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-      "description": "Application name."
+      "description": "Application name. Typically used with logging to help identify the application."
     },
     {
       "name": "spring.application.version",
