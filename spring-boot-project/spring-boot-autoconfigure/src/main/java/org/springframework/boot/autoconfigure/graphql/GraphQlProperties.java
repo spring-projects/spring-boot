@@ -343,11 +343,11 @@ public class GraphQlProperties {
 
 	}
 
-	public static class DeprecatedSse {
+	public static final class DeprecatedSse {
 
 		private final Sse sse;
 
-		public DeprecatedSse(Sse sse) {
+		private DeprecatedSse(Sse sse) {
 			this.sse = sse;
 		}
 
