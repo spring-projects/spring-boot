@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Redis metrics.
+ * Auto-configuration for Redis health integration using Spring Data Redis.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.redis;
+package org.springframework.boot.data.redis.actuate.health.autoconfigure;
