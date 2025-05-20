@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring Integration metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.integration;
+package org.springframework.boot.integration.actuate.metrics.autoconfigure;

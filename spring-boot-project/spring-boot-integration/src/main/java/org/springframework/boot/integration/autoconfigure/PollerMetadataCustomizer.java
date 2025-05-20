@@ -23,7 +23,7 @@ import org.springframework.integration.scheduling.PollerMetadata;
  * {@link PollerMetadata} whilst retaining default auto-configuration.
  *
  * @author Yanming Zhou
- * @since 3.5.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface PollerMetadataCustomizer {

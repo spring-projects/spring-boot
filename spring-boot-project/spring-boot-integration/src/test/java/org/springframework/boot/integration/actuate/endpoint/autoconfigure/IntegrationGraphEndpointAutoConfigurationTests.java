@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integration;
+package org.springframework.boot.integration.actuate.endpoint.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

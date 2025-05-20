@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.integration;
+package org.springframework.boot.integration.actuate.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Integration's metrics.
@@ -31,8 +30,8 @@ import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
  *
  * @author Andy Wilkinson
  */
-@AutoConfiguration(beforeName = "org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration",
-		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@AutoConfiguration(before = IntegrationAutoConfiguration.class,
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 class IntegrationMetricsAutoConfiguration {
 
 }
