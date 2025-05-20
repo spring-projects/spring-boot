@@ -222,6 +222,14 @@ class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	void validationUseDefaultAdaptToConstraintViolationsValue() {
+		this.contextRunner.withUserConfiguration(AnotherSampleServiceConfiguration.class).run((context) -> {
+			MethodValidationPostProcessor postProcessor = context.getBean(MethodValidationPostProcessor.class);
+			assertThat(postProcessor).hasFieldOrPropertyWithValue("adaptConstraintViolations", false);
+		});
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(SampleConfiguration.class).run((context) -> {
