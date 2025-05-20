@@ -239,7 +239,7 @@
       "name": "spring.application.name",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-      "description": "Application name."
+      "description": "Application name. Typically used with logging to help identify the application."
     },
     {
       "name": "spring.banner.charset",
