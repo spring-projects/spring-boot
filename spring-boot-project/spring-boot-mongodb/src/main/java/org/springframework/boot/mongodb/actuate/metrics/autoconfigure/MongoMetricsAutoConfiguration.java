@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
+package org.springframework.boot.mongodb.actuate.metrics.autoconfigure;
 
 import com.mongodb.MongoClientSettings;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -31,8 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -42,11 +40,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Chris Bono
  * @author Jonatan Ivanov
- * @since 2.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = MongoAutoConfiguration.class,
-		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@ConditionalOnClass(MongoClientSettings.class)
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+@ConditionalOnClass({ MongoClientSettings.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class MongoMetricsAutoConfiguration {
 
