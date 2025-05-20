@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.actuate.info.JavaInfoContributor;
 import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.actuate.info.ProcessInfoContributor;
 import org.springframework.boot.info.BuildProperties;
@@ -55,7 +56,8 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	void info() throws Exception {
 		this.mockMvc.perform(get("/actuator/info"))
 			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
+			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo(),
+					javaInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
@@ -100,6 +102,35 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 					.type(JsonFieldType.NUMBER));
 	}
 
+	private ResponseFieldsSnippet javaInfo() {
+		return responseFields(beneathPath("java"),
+				fieldWithPath("version").description("Java version, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("vendor").description("Vendor details."),
+				fieldWithPath("vendor.name").description("Vendor name, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("vendor.version").description("Vendor version, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("runtime").description("Runtime details."),
+				fieldWithPath("runtime.name").description("Runtime name, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("runtime.version").description("Runtime version, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("jvm").description("JVM details."),
+				fieldWithPath("jvm.name").description("JVM name, if available.").type(JsonFieldType.STRING).optional(),
+				fieldWithPath("jvm.vendor").description("JVM vendor, if available.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("jvm.version").description("JVM version, if available.")
+					.type(JsonFieldType.STRING)
+					.optional());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -137,6 +168,11 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		ProcessInfoContributor processInfoContributor() {
 			return new ProcessInfoContributor();
+		}
+
+		@Bean
+		JavaInfoContributor javaInfoContributor() {
+			return new JavaInfoContributor();
 		}
 
 	}
