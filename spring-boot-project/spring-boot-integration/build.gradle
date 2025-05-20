@@ -31,9 +31,10 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-sql"))
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
+	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional("org.springframework.integration:spring-integration-jdbc")
 	optional("org.springframework.integration:spring-integration-jmx")

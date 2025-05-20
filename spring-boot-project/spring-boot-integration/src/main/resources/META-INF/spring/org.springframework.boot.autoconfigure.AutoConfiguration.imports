@@ -1,1 +1,3 @@
+org.springframework.boot.integration.actuate.endpoint.autoconfigure.IntegrationGraphEndpointAutoConfiguration
+org.springframework.boot.integration.actuate.metrics.autoconfigure.IntegrationMetricsAutoConfiguration
 org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Spring Integration concerns.
+ * Auto-configuration for Spring Integration metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.integration;
+package org.springframework.boot.integration.actuate.metrics.autoconfigure;

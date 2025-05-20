@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Spring Integration metrics.
+ * Auto-configuration for Spring Integration actuator endpoint.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.integration;
+package org.springframework.boot.integration.actuate.endpoint.autoconfigure;
