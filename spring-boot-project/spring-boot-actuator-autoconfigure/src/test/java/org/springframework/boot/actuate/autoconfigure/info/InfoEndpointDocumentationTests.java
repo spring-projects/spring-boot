@@ -51,16 +51,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-<<<<<<< HEAD
 	void info() {
 		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
-			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo()));
-=======
-	void info() throws Exception {
-		this.mockMvc.perform(get("/actuator/info"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
->>>>>>> 3.3.x
+			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
