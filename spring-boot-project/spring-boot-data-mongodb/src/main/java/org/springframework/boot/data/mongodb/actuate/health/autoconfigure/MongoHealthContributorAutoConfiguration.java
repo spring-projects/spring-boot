@@ -14,45 +14,45 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.mongo;
-
-import reactor.core.publisher.Flux;
+package org.springframework.boot.data.mongodb.actuate.health.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
+import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.data.mongodb.actuate.health.MongoReactiveHealthIndicator;
+import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link MongoReactiveHealthIndicator}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoHealthIndicator}.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration")
-@ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class, MongoReactiveHealthIndicator.class })
-@ConditionalOnBean(ReactiveMongoTemplate.class)
+@AutoConfiguration(after = { MongoReactiveHealthContributorAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoAutoConfiguration.class })
+@ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
+@ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
-public class MongoReactiveHealthContributorAutoConfiguration
-		extends CompositeReactiveHealthContributorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
+public class MongoHealthContributorAutoConfiguration
+		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
-	public MongoReactiveHealthContributorAutoConfiguration() {
-		super(MongoReactiveHealthIndicator::new);
+	public MongoHealthContributorAutoConfiguration() {
+		super(MongoHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
-	public ReactiveHealthContributor mongoHealthContributor(ConfigurableListableBeanFactory beanFactory) {
-		return createContributor(beanFactory, ReactiveMongoTemplate.class);
+	public HealthContributor mongoHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, MongoTemplate.class);
 	}
 
 }
