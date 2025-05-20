@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.mongo;
+package org.springframework.boot.data.mongodb.actuate.health.autoconfigure;
 
 import reactor.core.publisher.Flux;
 
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.data.mongodb.actuate.health.MongoReactiveHealthIndicator;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
@@ -36,10 +37,11 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
  * {@link MongoReactiveHealthIndicator}.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration")
-@ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class, MongoReactiveHealthIndicator.class })
+@AutoConfiguration(after = MongoReactiveDataAutoConfiguration.class)
+@ConditionalOnClass({ ReactiveMongoTemplate.class, Flux.class, MongoReactiveHealthIndicator.class,
+		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(ReactiveMongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
 public class MongoReactiveHealthContributorAutoConfiguration
