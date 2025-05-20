@@ -1,8 +1,6 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.ldap.LLdapDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.ldap.OpenLdapDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mongo.MongoDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mysql.MySqlR2dbcDockerComposeConnectionDetailsFactory,\

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.ldap;
+package org.springframework.boot.ldap.docker.compose;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
