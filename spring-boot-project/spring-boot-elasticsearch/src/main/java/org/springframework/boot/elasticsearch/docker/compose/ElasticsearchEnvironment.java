@@ -14,7 +14,30 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.elasticsearch.docker.compose;
+
+import java.util.Map;
+
+import org.springframework.util.Assert;
+
 /**
- * Auto-configuration for Docker Compose Elasticsearch service connections.
+ * Elasticsearch environment details.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-package org.springframework.boot.docker.compose.service.connection.elasticsearch;
+class ElasticsearchEnvironment {
+
+	private final String password;
+
+	ElasticsearchEnvironment(Map<String, String> env) {
+		Assert.state(!env.containsKey("ELASTIC_PASSWORD_FILE"), "ELASTIC_PASSWORD_FILE is not supported");
+		this.password = env.get("ELASTIC_PASSWORD");
+	}
+
+	String getPassword() {
+		return this.password;
+	}
+
+}

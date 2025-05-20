@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.elasticsearch;
+package org.springframework.boot.elasticsearch.docker.compose;
 
 import java.util.List;
 
