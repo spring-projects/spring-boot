@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for JPA metrics.
+ * Auto-configuration for Hibernate metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
+package org.springframework.boot.jpa.hibernate.actuate.metrics.autoconfigure;
