@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.redis;
+package org.springframework.boot.data.redis.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,39 +24,33 @@ import org.springframework.boot.data.redis.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.data.redis.actuate.health.RedisReactiveHealthIndicator;
 import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RedisReactiveHealthContributorAutoConfiguration}.
+ * Tests for {@link RedisHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-class RedisReactiveHealthContributorAutoConfigurationTests {
+@ClassPathExclusions({ "reactor-core*.jar", "lettuce-core*.jar" })
+class RedisHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
-				RedisReactiveHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+				RedisHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RedisReactiveHealthIndicator.class)
-			.hasBean("redisHealthContributor"));
-	}
-
-	@Test
-	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisHealthContributorAutoConfiguration.class))
-			.run((context) -> assertThat(context).hasSingleBean(RedisReactiveHealthIndicator.class)
-				.hasBean("redisHealthContributor")
-				.doesNotHaveBean(RedisHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RedisHealthIndicator.class)
+			.doesNotHaveBean(RedisReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
-			.run((context) -> assertThat(context).doesNotHaveBean(RedisReactiveHealthIndicator.class)
-				.doesNotHaveBean("redisHealthContributor"));
+			.run((context) -> assertThat(context).doesNotHaveBean(RedisHealthIndicator.class)
+				.doesNotHaveBean(RedisReactiveHealthIndicator.class));
 	}
 
 }

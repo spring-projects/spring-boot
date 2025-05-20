@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.data.redis;
+package org.springframework.boot.data.redis.actuate.health.autoconfigure;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.data.redis.actuate.health.RedisHealthIndicator;
+import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -36,11 +38,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @author Richard Santana
  * @author Stephane Nicoll
  * @author Mark Paluch
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = RedisReactiveHealthContributorAutoConfiguration.class,
-		afterName = "org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration")
-@ConditionalOnClass({ RedisConnectionFactory.class, RedisHealthIndicator.class })
+@AutoConfiguration(after = { RedisAutoConfiguration.class, RedisReactiveHealthContributorAutoConfiguration.class })
+@ConditionalOnClass({ RedisConnectionFactory.class, HealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(RedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")
 public class RedisHealthContributorAutoConfiguration

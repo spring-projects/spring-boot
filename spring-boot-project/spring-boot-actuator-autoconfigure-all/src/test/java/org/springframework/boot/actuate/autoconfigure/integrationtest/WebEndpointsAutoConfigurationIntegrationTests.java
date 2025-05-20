@@ -27,8 +27,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -69,8 +67,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, BraveAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class, BraveAutoConfiguration.class,
 			OpenTelemetryTracingAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {

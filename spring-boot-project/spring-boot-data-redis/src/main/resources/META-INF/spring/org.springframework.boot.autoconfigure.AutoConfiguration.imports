@@ -1,3 +1,6 @@
+org.springframework.boot.data.redis.actuate.health.autoconfigure.RedisHealthContributorAutoConfiguration
+org.springframework.boot.data.redis.actuate.health.autoconfigure.RedisReactiveHealthContributorAutoConfiguration
+org.springframework.boot.data.redis.actuate.metrics.autoconfigure.LettuceMetricsAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration

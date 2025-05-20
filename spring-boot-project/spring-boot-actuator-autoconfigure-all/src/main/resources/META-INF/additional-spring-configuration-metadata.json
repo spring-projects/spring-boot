@@ -99,12 +99,6 @@
       "defaultValue": false
     },
     {
-      "name": "management.health.redis.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable Redis health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.ssl.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable SSL certificate health check.",

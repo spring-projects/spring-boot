@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator Redis concerns dependent on Spring Data.
+ * Auto-configuration for Redis metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.data.redis;
+package org.springframework.boot.data.redis.actuate.metrics.autoconfigure;
