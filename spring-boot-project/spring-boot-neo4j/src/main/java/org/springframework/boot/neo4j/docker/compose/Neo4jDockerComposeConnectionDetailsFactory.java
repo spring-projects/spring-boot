@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.neo4j;
+package org.springframework.boot.neo4j.docker.compose;
 
 import java.net.URI;
 

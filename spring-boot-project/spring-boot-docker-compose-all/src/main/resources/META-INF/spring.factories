@@ -3,7 +3,6 @@ org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFacto
 org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mysql.MySqlR2dbcDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.neo4j.Neo4jDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.oracle.OracleFreeR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.oracle.OracleXeR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryLoggingDockerComposeConnectionDetailsFactory,\
