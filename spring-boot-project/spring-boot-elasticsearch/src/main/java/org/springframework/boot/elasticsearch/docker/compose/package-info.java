@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose Elasticsearch service connections.
+ * Support for Docker Compose Elasticsearch service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.elasticsearch;
+package org.springframework.boot.elasticsearch.docker.compose;
