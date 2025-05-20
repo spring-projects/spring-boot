@@ -3,5 +3,4 @@ org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFacto
 org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryLoggingDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryMetricsDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryTracingDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.redis.RedisDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.zipkin.ZipkinDockerComposeConnectionDetailsFactory
