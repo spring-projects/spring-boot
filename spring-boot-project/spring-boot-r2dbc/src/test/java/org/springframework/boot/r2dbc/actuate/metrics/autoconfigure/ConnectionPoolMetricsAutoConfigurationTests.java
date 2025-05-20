@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics.autoconfigure;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -34,8 +34,8 @@ import io.r2dbc.spi.Wrapped;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -52,10 +52,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConnectionPoolMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withPropertyValues("spring.r2dbc.generate-unique-name=true")
-		.with(MetricsRun.simple())
-		.withConfiguration(AutoConfigurations.of(ConnectionPoolMetricsAutoConfiguration.class))
-		.withUserConfiguration(BaseConfiguration.class);
+		.withPropertyValues("spring.r2dbc.generate-unique-name=true", "management.metrics.use-global-registry=false")
+		.withBean(SimpleMeterRegistry.class)
+		.withConfiguration(
+				AutoConfigurations.of(ConnectionPoolMetricsAutoConfiguration.class, MetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredDataSourceIsInstrumented() {

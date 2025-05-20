@@ -1,3 +1,4 @@
+org.springframework.boot.r2dbc.actuate.metrics.autoconfigure.ConnectionPoolMetricsAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcProxyAutoConfiguration

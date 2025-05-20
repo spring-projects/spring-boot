@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for R2DBC metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics.autoconfigure;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.r2dbc;
+package org.springframework.boot.r2dbc.actuate.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -25,12 +25,10 @@ import io.r2dbc.spi.Wrapped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.r2dbc.actuate.metrics.ConnectionPoolMetrics;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
 
@@ -40,10 +38,10 @@ import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
  *
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
- * @since 2.3.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
-		R2dbcAutoConfiguration.class })
+@AutoConfiguration(after = R2dbcAutoConfiguration.class,
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ ConnectionPool.class, MeterRegistry.class })
 @ConditionalOnBean({ ConnectionFactory.class, MeterRegistry.class })
 public class ConnectionPoolMetricsAutoConfiguration {
