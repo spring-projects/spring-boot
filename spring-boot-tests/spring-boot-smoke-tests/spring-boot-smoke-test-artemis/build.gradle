@@ -3,7 +3,7 @@ plugins {
 	id "org.springframework.boot.docker-test"
 }
 
-description = "Spring Boot ActiveMQ smoke test"
+description = "Spring Boot Artemis smoke test"
 
 dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
@@ -13,5 +13,5 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:activemq")
 
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-activemq"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-artemis"))
 }
