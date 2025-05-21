@@ -25,7 +25,6 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.boot.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,17 +42,8 @@ import static org.mockito.Mockito.mock;
 class BaseConfiguration {
 
 	@Bean
-	AbstractWebEndpointIntegrationTests.EndpointDelegate endpointDelegate() {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		if (classLoader instanceof TomcatEmbeddedWebappClassLoader) {
-			Thread.currentThread().setContextClassLoader(classLoader.getParent());
-		}
-		try {
-			return mock(AbstractWebEndpointIntegrationTests.EndpointDelegate.class);
-		}
-		finally {
-			Thread.currentThread().setContextClassLoader(classLoader);
-		}
+	EndpointDelegate endpointDelegate() {
+		return mock(EndpointDelegate.class);
 	}
 
 	@Bean
@@ -75,6 +65,16 @@ class BaseConfiguration {
 	@Bean
 	static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
+	}
+
+	interface EndpointDelegate {
+
+		void write();
+
+		void write(String foo, String bar);
+
+		void delete();
+
 	}
 
 }

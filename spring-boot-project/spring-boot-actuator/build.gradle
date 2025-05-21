@@ -16,7 +16,6 @@
 
 plugins {
 	id "java-library"
-	id "java-test-fixtures"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.deployed"
@@ -29,12 +28,8 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
-	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
-	optional(project(":spring-boot-project:spring-boot-tomcat"))
-	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
-	optional(project(":spring-boot-project:spring-boot-webflux"))
-	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional(project(":spring-boot-project:spring-boot-web-server"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
@@ -68,22 +63,9 @@ dependencies {
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
 
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-http-converter"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-jersey"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-tomcat"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-webmvc"))
-
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
-	testImplementation(project(":spring-boot-project:spring-boot-jersey"))
 	testImplementation(project(":spring-boot-project:spring-boot-jsonb"))
-	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
