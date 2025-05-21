@@ -23,14 +23,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MultiGauge;
 import io.micrometer.core.instrument.MultiGauge.Row;
@@ -42,20 +40,15 @@ import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
-import org.springframework.boot.info.SslInfo.CertificateValidityInfo;
-import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.SslBundles;
 
 /**
- * {@link MeterBinder} which registers the SSL chain validity (soonest to expire
- * certificate in the chain) as a {@link TimeGauge}. Also contributes two {@link Gauge
- * gauges} to count the valid and invalid chains.
+ * {@link MeterBinder} which registers the SSL chain expiry (soonest to expire certificate
+ * in the chain) as a {@link TimeGauge}.
  *
  * @author Moritz Halbritter
  */
 class SslMeterBinder implements MeterBinder {
-
-	private static final String CHAINS_METRIC_NAME = "ssl.chains";
 
 	private static final String CHAIN_EXPIRY_METRIC_NAME = "ssl.chain.expiry";
 
@@ -91,18 +84,6 @@ class SslMeterBinder implements MeterBinder {
 		for (BundleInfo bundle : this.sslInfo.getBundles()) {
 			createOrUpdateBundleMetrics(meterRegistry, bundle);
 		}
-		Gauge.builder(CHAINS_METRIC_NAME, () -> countChainsByStatus(Status.VALID))
-			.tag("status", "valid")
-			.register(meterRegistry);
-		Gauge.builder(CHAINS_METRIC_NAME, () -> countChainsByStatus(Status.EXPIRED))
-			.tag("status", "expired")
-			.register(meterRegistry);
-		Gauge.builder(CHAINS_METRIC_NAME, () -> countChainsByStatus(Status.NOT_YET_VALID))
-			.tag("status", "not-yet-valid")
-			.register(meterRegistry);
-		Gauge.builder(CHAINS_METRIC_NAME, () -> countChainsByStatus(Status.WILL_EXPIRE_SOON))
-			.tag("status", "will-expire-soon")
-			.register(meterRegistry);
 	}
 
 	private void createOrUpdateBundleMetrics(MeterRegistry meterRegistry, BundleInfo bundle) {
@@ -130,36 +111,6 @@ class SslMeterBinder implements MeterBinder {
 		return Row.of(tags, leastValidCertificate, this::getChainExpiry);
 	}
 
-	private long countChainsByStatus(Status status) {
-		long count = 0;
-		for (BundleInfo bundle : this.bundleMetrics.getBundles()) {
-			for (CertificateChainInfo chain : bundle.getCertificateChains()) {
-				if (getChainStatus(chain) == status) {
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-
-	private Status getChainStatus(CertificateChainInfo chain) {
-		EnumSet<Status> statuses = EnumSet.noneOf(Status.class);
-		for (CertificateInfo certificate : chain.getCertificates()) {
-			CertificateValidityInfo validity = certificate.getValidity();
-			statuses.add(validity.getStatus());
-		}
-		if (statuses.contains(Status.EXPIRED)) {
-			return Status.EXPIRED;
-		}
-		if (statuses.contains(Status.NOT_YET_VALID)) {
-			return Status.NOT_YET_VALID;
-		}
-		if (statuses.contains(Status.WILL_EXPIRE_SOON)) {
-			return Status.WILL_EXPIRE_SOON;
-		}
-		return statuses.isEmpty() ? null : Status.VALID;
-	}
-
 	private long getChainExpiry(CertificateInfo certificate) {
 		Duration valid = Duration.between(Instant.now(this.clock), certificate.getValidityEnds());
 		return valid.get(ChronoUnit.SECONDS);
@@ -182,18 +133,6 @@ class SslMeterBinder implements MeterBinder {
 			Gauges gauges = this.gauges.computeIfAbsent(bundleInfo.getName(),
 					(ignored) -> Gauges.emptyGauges(bundleInfo));
 			return gauges.getGauge(meterRegistry);
-		}
-
-		/**
-		 * Returns all bundles.
-		 * @return all bundles
-		 */
-		Collection<BundleInfo> getBundles() {
-			List<BundleInfo> result = new ArrayList<>();
-			for (Gauges metrics : this.gauges.values()) {
-				result.add(metrics.bundle());
-			}
-			return result;
 		}
 
 		/**

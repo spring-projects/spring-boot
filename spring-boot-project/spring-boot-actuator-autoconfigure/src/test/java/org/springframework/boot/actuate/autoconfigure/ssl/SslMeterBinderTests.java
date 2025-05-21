@@ -45,15 +45,6 @@ class SslMeterBinderTests {
 	private static final Clock CLOCK = Clock.fixed(Instant.parse("2024-10-21T13:51:40Z"), ZoneId.of("UTC"));
 
 	@Test
-	void shouldRegisterChainMetrics() {
-		MeterRegistry meterRegistry = bindToRegistry();
-		assertThat(meterRegistry.get("ssl.chains").tag("status", "valid").gauge().value()).isEqualTo(3.0);
-		assertThat(meterRegistry.get("ssl.chains").tag("status", "expired").gauge().value()).isEqualTo(1.0);
-		assertThat(meterRegistry.get("ssl.chains").tag("status", "not-yet-valid").gauge().value()).isEqualTo(1.0);
-		assertThat(meterRegistry.get("ssl.chains").tag("status", "will-expire-soon").gauge().value()).isEqualTo(0.0);
-	}
-
-	@Test
 	void shouldRegisterChainExpiryMetrics() {
 		MeterRegistry meterRegistry = bindToRegistry();
 		assertThat(Duration.ofSeconds(findExpiryGauge(meterRegistry, "ca", "419224ce190242b2c44069dd3c560192b3b669f3")))
