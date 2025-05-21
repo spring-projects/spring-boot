@@ -59,7 +59,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -348,8 +347,9 @@ class HealthEndpointAutoConfigurationTests {
 	@WithTestEndpointOutcomeExposureContributor
 	void additionalHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
 		this.contextRunner
-			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
-					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withBean(DispatcherServlet.class)
 			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
 					"management.endpoints.test.exposure.include=*")
 			.run((context) -> {
