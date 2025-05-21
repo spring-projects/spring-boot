@@ -31,7 +31,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jersey"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
 	optional(project(":spring-boot-project:spring-boot-web-server"))
-	optional(project(":spring-boot-project:spring-boot-webmvc"))
 
 	optional("io.micrometer:micrometer-core")
 	optional("io.projectreactor:reactor-core")
