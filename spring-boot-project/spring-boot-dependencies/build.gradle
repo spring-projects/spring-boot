@@ -2435,7 +2435,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
 		}
 	}
-	library("Spring WS", "4.1.0-SNAPSHOT") {
+	library("Spring WS", "4.1.0") {
 		considerSnapshots()
 		group("org.springframework.ws") {
 			bom("spring-ws-bom")
