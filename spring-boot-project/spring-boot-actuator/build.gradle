@@ -28,7 +28,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
-	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-tomcat"))
@@ -54,9 +53,6 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.eclipse.angus:angus-mail")
-	optional("org.eclipse.jetty:jetty-server") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate.validator:hibernate-validator")

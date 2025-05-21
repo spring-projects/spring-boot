@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
+package org.springframework.boot.jetty.actuate.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jetty.JettyConnectionMetrics;
@@ -22,9 +22,6 @@ import io.micrometer.core.instrument.binder.jetty.JettyServerThreadPoolMetrics;
 import io.micrometer.core.instrument.binder.jetty.JettySslHandshakeMetrics;
 import org.eclipse.jetty.server.Server;
 
-import org.springframework.boot.actuate.metrics.web.jetty.JettyConnectionMetricsBinder;
-import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolMetricsBinder;
-import org.springframework.boot.actuate.metrics.web.jetty.JettySslHandshakeMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,7 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.jetty.actuate.metrics.JettyConnectionMetricsBinder;
+import org.springframework.boot.jetty.actuate.metrics.JettyServerThreadPoolMetricsBinder;
+import org.springframework.boot.jetty.actuate.metrics.JettySslHandshakeMetricsBinder;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,11 +39,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Andy Wilkinson
  * @author Chris Bono
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnWebApplication
-@ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
+@ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class JettyMetricsAutoConfiguration {
 
