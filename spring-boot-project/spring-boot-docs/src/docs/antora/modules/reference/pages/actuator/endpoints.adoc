@@ -120,7 +120,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 [[actuator.endpoints.controlling-access]]
 == Controlling Access to Endpoints
 
-By default, access to all endpoints except for `shutdown` is unrestricted.
+By default, access to all endpoints except for `shutdown` and `heapdump` is unrestricted.
 To configure the permitted access to an endpoint, use its `management.endpoint.<id>.access` property.
 The following example allows unrestricted access to the `shutdown` endpoint:
 

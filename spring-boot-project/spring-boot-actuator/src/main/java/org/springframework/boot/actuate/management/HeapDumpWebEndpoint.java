@@ -36,6 +36,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -56,7 +57,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@WebEndpoint(id = "heapdump")
+@WebEndpoint(id = "heapdump", defaultAccess = Access.NONE)
 public class HeapDumpWebEndpoint {
 
 	private final long timeout;
