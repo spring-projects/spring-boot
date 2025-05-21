@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Jetty actuator metrics.
+ * Actuator support for Jetty metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
+package org.springframework.boot.jetty.actuate.metrics;

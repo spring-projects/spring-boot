@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.jetty;
+package org.springframework.boot.jetty.actuate.metrics;
 
 import org.eclipse.jetty.server.Server;
 
@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationListener;
  * Base class for binding Jetty metrics in response to an {@link ApplicationStartedEvent}.
  *
  * @author Andy Wilkinson
- * @since 2.6.0
+ * @since 4.0.0
  */
 public abstract class AbstractJettyMetricsBinder implements ApplicationListener<ApplicationStartedEvent> {
 

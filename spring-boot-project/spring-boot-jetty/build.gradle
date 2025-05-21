@@ -31,6 +31,7 @@ dependencies {
 	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
 	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
