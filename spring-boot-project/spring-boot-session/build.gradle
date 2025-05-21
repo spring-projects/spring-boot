@@ -49,7 +49,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-integration-tests")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
 	testImplementation("net.minidev:json-smart")
 	testImplementation("io.projectreactor:reactor-test")

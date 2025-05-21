@@ -41,7 +41,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-integration-tests")))
 	testImplementation("net.minidev:json-smart")
 	testImplementation("org.springframework:spring-web")
 

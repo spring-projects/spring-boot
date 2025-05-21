@@ -38,6 +38,7 @@ dependencies {
 	}
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("io.micrometer:micrometer-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"

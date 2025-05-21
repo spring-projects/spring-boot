@@ -34,7 +34,10 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 
+	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-tomcat"))
+	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-web-server"))
 
