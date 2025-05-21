@@ -37,10 +37,6 @@ import org.springframework.stereotype.Indexed;
  * <p>
  * Note that contrary to {@code @Value}, SpEL expressions are not evaluated since property
  * values are externalized.
- * <p>
- * Static methods should be used when declaring {@code @ConfigurationProperties} beans to
- * ensure that "bean is not eligible for getting processed by all BeanPostProcessors"
- * warnings are not produced.
  *
  * @author Dave Syer
  * @since 1.0.0
