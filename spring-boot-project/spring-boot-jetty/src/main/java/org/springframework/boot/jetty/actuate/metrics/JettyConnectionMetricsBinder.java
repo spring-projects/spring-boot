@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.jetty;
+package org.springframework.boot.jetty.actuate.metrics;
 
 import java.util.Collections;
 
@@ -27,7 +27,7 @@ import org.eclipse.jetty.server.Server;
  * {@link AbstractJettyMetricsBinder} for {@link JettyConnectionMetrics}.
  *
  * @author Chris Bono
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class JettyConnectionMetricsBinder extends AbstractJettyMetricsBinder {
 
