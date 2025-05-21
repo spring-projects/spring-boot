@@ -114,7 +114,27 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("memory.garbageCollectors").description("Details for garbage collectors."),
 				fieldWithPath("memory.garbageCollectors[].name").description("Name of of the garbage collector."),
 				fieldWithPath("memory.garbageCollectors[].collectionCount")
-					.description("Total number of collections that have occurred."));
+					.description("Total number of collections that have occurred."),
+				fieldWithPath("virtualThreads")
+					.description("Virtual thread information (if VirtualThreadSchedulerMXBean is available)")
+					.type(JsonFieldType.OBJECT)
+					.optional(),
+				fieldWithPath("virtualThreads.mounted")
+					.description("Estimate of the number of virtual threads currently mounted by the scheduler.")
+					.type(JsonFieldType.NUMBER)
+					.optional(),
+				fieldWithPath("virtualThreads.queued").description(
+						"Estimate of the number of virtual threads queued to the scheduler to start or continue execution.")
+					.type(JsonFieldType.NUMBER)
+					.optional(),
+				fieldWithPath("virtualThreads.parallelism").description("Scheduler's target parallelism.")
+					.type(JsonFieldType.NUMBER)
+					.optional(),
+				fieldWithPath("virtualThreads.poolSize")
+					.description(
+							"Current number of platform threads that the scheduler has started but have not terminated")
+					.type(JsonFieldType.NUMBER)
+					.optional());
 	}
 
 	private ResponseFieldsSnippet javaInfo() {
