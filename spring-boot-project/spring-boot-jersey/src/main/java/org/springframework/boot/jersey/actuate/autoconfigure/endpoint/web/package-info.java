@@ -15,6 +15,6 @@
  */
 
 /**
- * Configuration for a Jersey-based management context.
+ * Auto-configuration for exposing actuator web endpoints using Jersey.
  */
-package org.springframework.boot.actuate.autoconfigure.web.jersey;
+package org.springframework.boot.jersey.actuate.autoconfigure.endpoint.web;

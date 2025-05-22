@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.jersey;
+package org.springframework.boot.jersey.actuate.endpoint.web;
 
-import org.glassfish.jersey.server.ResourceConfig;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize Jersey's
- * {@link ResourceConfig} in the management context before it is used.
+ * Strategy interface used to provide the remaining path segments for a Jersey actuator
+ * endpoint.
  *
- * @author Andy Wilkinson
- * @since 2.3.10
+ * @author Madhura Bhave
  */
-public interface ManagementContextResourceConfigCustomizer {
+interface JerseyRemainingPathSegmentProvider {
 
-	/**
-	 * Customize the resource config.
-	 * @param config the {@link ResourceConfig} to customize
-	 */
-	void customize(ResourceConfig config);
+	String get(ContainerRequestContext requestContext, String matchAllRemainingPathSegmentsVariable);
 
 }
