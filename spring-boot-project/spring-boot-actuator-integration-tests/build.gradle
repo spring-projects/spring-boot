@@ -17,26 +17,14 @@
 
 plugins {
 	id "java-library"
-	id "java-test-fixtures"
 }
 
 description = "Spring Boot Actuator Integration Tests"
 
 
 dependencies {
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-actuator"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-http-converter"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-jersey"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-test"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-tomcat"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-webflux"))
-	testFixturesImplementation(project(":spring-boot-project:spring-boot-webmvc"))
-	testFixturesImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-http-converter"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
