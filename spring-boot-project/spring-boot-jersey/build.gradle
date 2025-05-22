@@ -17,6 +17,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -40,6 +41,9 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional("io.projectreactor:reactor-core")
+
+	testFixturesApi(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-restclient"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

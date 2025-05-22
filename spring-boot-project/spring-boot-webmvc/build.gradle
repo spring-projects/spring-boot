@@ -17,6 +17,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -40,6 +41,10 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-undertow"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 	optional(project(":spring-boot-project:spring-boot-web-server"))
+
+	testFixturesApi(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-http-converter"))
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-freemarker"))
 	testImplementation(project(":spring-boot-project:spring-boot-restclient"))

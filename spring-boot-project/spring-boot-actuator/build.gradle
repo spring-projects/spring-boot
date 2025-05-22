@@ -16,6 +16,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.deployed"
@@ -60,6 +61,10 @@ dependencies {
 	optional("org.springframework.data:spring-data-rest-webmvc")
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
+
+	testFixturesApi("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
+	testFixturesImplementation("org.springframework:spring-test")
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))

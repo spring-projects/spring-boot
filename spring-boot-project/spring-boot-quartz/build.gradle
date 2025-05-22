@@ -37,11 +37,13 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-jersey")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-webflux")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-webmvc")))
 	testImplementation("net.minidev:json-smart")
 	testImplementation("org.springframework:spring-web")
 

@@ -61,10 +61,12 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-jersey")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-webmvc")))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-webflux")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
