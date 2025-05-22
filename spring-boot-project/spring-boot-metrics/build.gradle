@@ -37,9 +37,9 @@ dependencies {
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.aspectj:aspectjweaver")
 
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-integration-tests")))
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("io.micrometer:micrometer-registry-atlas")
 	testImplementation("io.micrometer:micrometer-registry-new-relic")

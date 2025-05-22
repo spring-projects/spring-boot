@@ -40,11 +40,11 @@ dependencies {
 	optional("org.springframework.integration:spring-integration-jmx")
 	optional("org.springframework.integration:spring-integration-rsocket")
 
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	testImplementation(project(":spring-boot-project:spring-boot-rsocket"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-integration-tests")))
 	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-reactor-netty"))

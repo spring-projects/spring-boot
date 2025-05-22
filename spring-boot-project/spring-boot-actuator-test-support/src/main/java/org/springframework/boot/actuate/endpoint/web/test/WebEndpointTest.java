@@ -31,9 +31,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Signals that a test should be run against one or more of the web endpoint
- * infrastructure implementations (Jersey, Web MVC, and WebFlux)
+ * infrastructure implementations (Jersey, Web MVC, and WebFlux).
  *
  * @author Andy Wilkinson
+ * @since 4.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
