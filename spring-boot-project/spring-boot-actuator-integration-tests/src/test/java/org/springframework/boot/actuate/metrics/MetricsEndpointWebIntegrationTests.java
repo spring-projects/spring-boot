@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.metrics.actuate.endpoint;
+package org.springframework.boot.actuate.metrics;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +28,7 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
+import org.springframework.boot.metrics.actuate.endpoint.MetricsEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
