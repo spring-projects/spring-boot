@@ -102,13 +102,13 @@ class ConversionServiceDeducerTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		TestConverter testConverter() {
+		static TestConverter testConverter() {
 			return new TestConverter();
 		}
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		StringConverter stringConverter() {
+		static StringConverter stringConverter() {
 			return new StringConverter();
 		}
 
