@@ -16,18 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import org.glassfish.jersey.server.ResourceConfig;
-
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for servlet
@@ -50,24 +43,6 @@ public class ServletEndpointManagementContextConfiguration {
 		return new IncludeExcludeEndpointFilter<>(
 				org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint.class, exposure.getInclude(),
 				exposure.getExclude());
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ResourceConfig.class)
-	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	public static class JerseyServletEndpointManagementContextConfiguration {
-
-		@Bean
-		@SuppressWarnings({ "deprecation", "removal" })
-		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
-				WebEndpointProperties properties,
-				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
-				JerseyApplicationPath jerseyApplicationPath, EndpointAccessResolver endpointAccessResolver) {
-			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
-					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
-					servletEndpointsSupplier.getEndpoints(), endpointAccessResolver);
-		}
-
 	}
 
 }

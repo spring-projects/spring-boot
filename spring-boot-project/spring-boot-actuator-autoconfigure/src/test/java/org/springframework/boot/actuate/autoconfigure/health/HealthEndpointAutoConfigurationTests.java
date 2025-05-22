@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.WithTes
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointReactiveWebExtensionConfiguration.WebFluxAdditionalHealthEndpointPathsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration.JerseyAdditionalHealthEndpointPathsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration.MvcAdditionalHealthEndpointPathsConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -358,25 +357,6 @@ class HealthEndpointAutoConfigurationTests {
 				assertThat(context).hasSingleBean(HealthEndpointWebExtension.class);
 				assertThat(context.getBean(WebEndpointsSupplier.class).getEndpoints()).isEmpty();
 				assertThat(context).hasSingleBean(MvcAdditionalHealthEndpointPathsConfiguration.class);
-			});
-	}
-
-	@Test
-	@WithTestEndpointOutcomeExposureContributor
-	void additionalJerseyHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
-		this.contextRunner
-			.withConfiguration(
-					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-			.withClassLoader(
-					new FilteredClassLoader(Thread.currentThread().getContextClassLoader(), DispatcherServlet.class))
-			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
-					"management.endpoints.test.exposure.include=*")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(HealthEndpoint.class);
-				assertThat(context).hasSingleBean(HealthEndpointWebExtension.class);
-				assertThat(context.getBean(WebEndpointsSupplier.class).getEndpoints()).isEmpty();
-				assertThat(context).hasSingleBean(JerseyAdditionalHealthEndpointPathsConfiguration.class);
 			});
 	}
 

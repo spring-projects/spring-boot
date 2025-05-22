@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.jersey.actuate.autoconfigure.web;
+
+import org.glassfish.jersey.server.ResourceConfig;
+
 /**
- * Jersey support for actuator endpoints.
+ * Callback interface that can be implemented by beans wishing to customize Jersey's
+ * {@link ResourceConfig} in the management context before it is used.
+ *
+ * @author Andy Wilkinson
+ * @since 4.0.0
  */
-package org.springframework.boot.actuate.endpoint.web.jersey;
+public interface ManagementContextResourceConfigCustomizer {
+
+	/**
+	 * Customize the resource config.
+	 * @param config the {@link ResourceConfig} to customize
+	 */
+	void customize(ResourceConfig config);
+
+}

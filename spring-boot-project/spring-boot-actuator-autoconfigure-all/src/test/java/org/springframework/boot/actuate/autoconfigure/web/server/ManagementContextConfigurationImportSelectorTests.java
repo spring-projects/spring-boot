@@ -74,7 +74,7 @@ class ManagementContextConfigurationImportSelectorTests {
 		// Remove JerseySameManagementContextConfiguration, as it specifies
 		// ManagementContextType.SAME and we asked for ManagementContextType.CHILD
 		expected.remove(
-				"org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration");
+				"org.springframework.boot.jersey.actuate.autoconfigure.web.JerseySameManagementContextConfiguration");
 		assertThat(imports).containsExactlyInAnyOrderElementsOf(expected);
 	}
 
