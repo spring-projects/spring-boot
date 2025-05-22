@@ -53,29 +53,27 @@ public @interface WebEndpointTest {
 		/**
 		 * Actuator running on the Jersey-based infrastructure.
 		 */
-		JERSEY("Jersey", WebEndpointTestInvocationContextProvider::createJerseyContext),
+		JERSEY("Jersey"),
 
 		/**
 		 * Actuator running on the WebMVC-based infrastructure.
 		 */
-		MVC("WebMvc", WebEndpointTestInvocationContextProvider::createWebMvcContext),
+		MVC("WebMvc"),
 
 		/**
 		 * Actuator running on the WebFlux-based infrastructure.
 		 */
-		WEBFLUX("WebFlux", WebEndpointTestInvocationContextProvider::createWebFluxContext);
+		WEBFLUX("WebFlux");
 
 		private final String name;
 
-		private final Function<List<Class<?>>, ConfigurableApplicationContext> contextFactory;
-
-		Infrastructure(String name, Function<List<Class<?>>, ConfigurableApplicationContext> contextFactory) {
+		Infrastructure(String name) {
 			this.name = name;
-			this.contextFactory = contextFactory;
 		}
 
-		WebEndpointsInvocationContext createInvocationContext() {
-			return new WebEndpointsInvocationContext(this.name, this.contextFactory);
+		WebEndpointsInvocationContext createInvocationContext(
+				Function<List<Class<?>>, ConfigurableApplicationContext> contextFactory) {
+			return new WebEndpointsInvocationContext(this.name, contextFactory);
 		}
 
 	}

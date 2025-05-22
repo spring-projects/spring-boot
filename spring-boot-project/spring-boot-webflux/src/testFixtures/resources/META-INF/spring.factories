@@ -1,0 +1,2 @@
+org.springframework.boot.actuate.endpoint.web.test.WebEndpointInfrastructureProvider=\
+org.springframework.boot.webflux.actuate.endpoint.web.test.WebFluxWebEndpointInfrastructureProvider
