@@ -14,47 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web;
+package org.springframework.boot.jersey.actuate.autoconfigure.endpoint.web;
 
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ServletEndpointManagementContextConfiguration}.
+ * Tests for {@link JerseyEndpointManagementContextConfiguration}.
  *
- * @author Phillip Webb
- * @author Madhura Bhave
+ * @author Stephane Nicoll
  */
 @SuppressWarnings("removal")
-class ServletEndpointManagementContextConfigurationTests {
+class JerseyEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(TestConfig.class);
 
 	@Test
-	void contextWhenJerseyShouldContainServletEndpointRegistrar() {
-		FilteredClassLoader classLoader = new FilteredClassLoader(DispatcherServlet.class);
-		this.contextRunner.withClassLoader(classLoader).run((context) -> {
+	void contextShouldContainServletEndpointRegistrar() {
+		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context.getBean(ServletEndpointRegistrar.class);
-			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/jersey/actuator");
+			assertThat(bean).hasFieldOrPropertyWithValue("basePath", "/test/actuator");
 		});
 	}
 
@@ -65,7 +62,7 @@ class ServletEndpointManagementContextConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(ServletEndpointManagementContextConfiguration.class)
+	@Import(JerseyEndpointManagementContextConfiguration.class)
 	@EnableConfigurationProperties(WebEndpointProperties.class)
 	static class TestConfig {
 
@@ -76,7 +73,7 @@ class ServletEndpointManagementContextConfigurationTests {
 
 		@Bean
 		JerseyApplicationPath jerseyApplicationPath() {
-			return () -> "/jersey";
+			return () -> "/test";
 		}
 
 		@Bean

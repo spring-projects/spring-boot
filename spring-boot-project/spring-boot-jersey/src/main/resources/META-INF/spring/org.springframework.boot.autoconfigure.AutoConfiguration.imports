@@ -1,1 +1,2 @@
+org.springframework.boot.jersey.actuate.autoconfigure.health.HealthEndpointJerseyExtensionAutoConfiguration
 org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration

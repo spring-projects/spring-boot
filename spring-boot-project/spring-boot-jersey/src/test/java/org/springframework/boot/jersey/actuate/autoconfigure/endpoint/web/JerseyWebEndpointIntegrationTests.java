@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey;
+package org.springframework.boot.jersey.actuate.autoconfigure.endpoint.web;
 
 import java.util.Set;
 
@@ -24,16 +24,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jersey.actuate.autoconfigure.web.JerseySameManagementContextConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +50,6 @@ class JerseyWebEndpointIntegrationTests {
 							TomcatServletWebServerAutoConfiguration.class, EndpointAutoConfiguration.class,
 							WebEndpointAutoConfiguration.class, JerseyWebEndpointManagementContextConfiguration.class))
 			.withUserConfiguration(ResourceConfigConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
 			.withPropertyValues("spring.jersey.type=filter", "server.port=0")
 			.run((context) -> {
 				assertThat(context).hasNotFailed();

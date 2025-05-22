@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.jersey;
+package org.springframework.boot.jersey.actuate.endpoint.web;
 
 import java.io.IOException;
 import java.io.InputStream;

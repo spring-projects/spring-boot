@@ -17,4 +17,4 @@
 /**
  * Configuration for a Jersey-based management context.
  */
-package org.springframework.boot.actuate.autoconfigure.web.jersey;
+package org.springframework.boot.jersey.actuate.autoconfigure.web;
