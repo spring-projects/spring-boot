@@ -274,10 +274,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 						if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
 							add(mappings, configurationPropertyName, propertyName);
 							reverseMappings.put(propertyName, configurationPropertyName);
-							addParents(descendants, configurationPropertyName);
 						}
 					}
 				}
+			}
+			for (String propertyName : propertyNames) {
+				addParents(descendants, reverseMappings.get(propertyName));
 			}
 			ConfigurationPropertyName[] configurationPropertyNames = this.immutable
 					? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
@@ -296,7 +298,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		private void addParents(Set<ConfigurationPropertyName> descendants, ConfigurationPropertyName name) {
-			if (descendants == null || name.isEmpty()) {
+			if (descendants == null || name == null || name.isEmpty()) {
 				return;
 			}
 			ConfigurationPropertyName parent = name.getParent();

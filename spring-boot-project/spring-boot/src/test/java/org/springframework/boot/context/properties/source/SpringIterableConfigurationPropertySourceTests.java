@@ -239,6 +239,21 @@ class SpringIterableConfigurationPropertySourceTests {
 				"test.map.bravo", "test.map.charlie", "test.map.delta");
 	}
 
+	@Test
+	void cacheRefreshRecalculatesDescendants() {
+		// gh-45639
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("one.two.three", "test");
+		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test", map, false);
+		SpringIterableConfigurationPropertySource propertySource = new SpringIterableConfigurationPropertySource(source,
+				false, DefaultPropertyMapper.INSTANCE);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("one.two")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		map.put("new", "value");
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("one.two")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 *
