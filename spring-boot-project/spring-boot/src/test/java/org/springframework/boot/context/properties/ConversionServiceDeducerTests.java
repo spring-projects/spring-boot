@@ -129,13 +129,13 @@ class ConversionServiceDeducerTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		TestConverter testConverter() {
+		static TestConverter testConverter() {
 			return new TestConverter();
 		}
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		StringConverter stringConverter() {
+		static StringConverter stringConverter() {
 			return new StringConverter();
 		}
 
@@ -146,13 +146,13 @@ class ConversionServiceDeducerTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<InputStream, OutputStream> testConverter() {
+		static Converter<InputStream, OutputStream> testConverter() {
 			return (source) -> new TestConverter().convert(source);
 		}
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, InputStream> stringConverter() {
+		static Converter<String, InputStream> stringConverter() {
 			return (source) -> new StringConverter().convert(source);
 		}
 
@@ -163,7 +163,7 @@ class ConversionServiceDeducerTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Printer<InputStream> inputStreamPrinter() {
+		static Printer<InputStream> inputStreamPrinter() {
 			return (source, locale) -> ThrowingSupplier
 				.of(() -> StreamUtils.copyToString(source, StandardCharsets.UTF_8))
 				.get();

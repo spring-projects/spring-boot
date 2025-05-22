@@ -113,7 +113,7 @@ public class FlywayAutoConfiguration {
 
 	@Bean
 	@ConfigurationPropertiesBinding
-	public StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
+	public static StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
 		return new StringOrNumberToMigrationVersionConverter();
 	}
 
