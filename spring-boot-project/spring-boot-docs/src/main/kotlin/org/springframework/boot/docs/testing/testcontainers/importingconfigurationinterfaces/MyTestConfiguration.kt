@@ -24,3 +24,4 @@ import org.springframework.boot.testcontainers.context.ImportTestcontainers
 class MyTestConfiguration {
 
 }
+

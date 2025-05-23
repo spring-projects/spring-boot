@@ -42,3 +42,4 @@ class KotlinBindableRuntimeHintsRegistrarTests {
 
 	data class PropertyWithDefaultValue(var a: String = "alpha")
 }
+

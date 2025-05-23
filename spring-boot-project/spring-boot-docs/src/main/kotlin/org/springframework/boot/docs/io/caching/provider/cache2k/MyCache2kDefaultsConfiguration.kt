@@ -16,3 +16,4 @@ class MyCache2kDefaultsConfiguration {
 		}
 	}
 }
+

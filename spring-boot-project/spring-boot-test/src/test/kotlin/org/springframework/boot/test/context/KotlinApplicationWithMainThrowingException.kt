@@ -10,3 +10,4 @@ fun main(args: Array<String>) {
 	runApplication<KotlinApplicationWithMainThrowingException>(*args)
 	throw IllegalStateException("ThrownFromMain")
 }
+
