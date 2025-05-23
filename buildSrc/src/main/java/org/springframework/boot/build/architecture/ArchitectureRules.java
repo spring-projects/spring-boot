@@ -59,6 +59,7 @@ import org.springframework.util.ResourceUtils;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Phillip Webb
+ * @author Ngoc Nhan
  */
 final class ArchitectureRules {
 
@@ -88,6 +89,7 @@ final class ArchitectureRules {
 		rules.add(noClassesShouldCallStringToLowerCaseWithoutLocale());
 		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
 		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
+		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
 		return List.copyOf(rules);
 	}
 
@@ -228,6 +230,14 @@ final class ArchitectureRules {
 				}
 			});
 		}
+	}
+
+	private static ArchRule allConfigurationPropertiesBindingBeanMethodsShouldBeStatic() {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").and()
+			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationPropertiesBinding")
+			.should()
+			.beStatic()
+			.allowEmptyShould(true);
 	}
 
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {
