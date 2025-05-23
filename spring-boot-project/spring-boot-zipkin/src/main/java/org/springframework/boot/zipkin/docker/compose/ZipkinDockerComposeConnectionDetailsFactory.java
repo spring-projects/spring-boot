@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.zipkin;
+package org.springframework.boot.zipkin.docker.compose;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -35,8 +35,7 @@ class ZipkinDockerComposeConnectionDetailsFactory
 	private static final int ZIPKIN_PORT = 9411;
 
 	ZipkinDockerComposeConnectionDetailsFactory() {
-		super("openzipkin/zipkin",
-				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
+		super("openzipkin/zipkin", "org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration");
 	}
 
 	@Override

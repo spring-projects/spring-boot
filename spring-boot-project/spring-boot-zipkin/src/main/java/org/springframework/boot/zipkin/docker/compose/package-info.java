@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Docker Compose Zipkin service connections.
+ * Support for Docker Compose Zipkin service connections.
  */
-package org.springframework.boot.docker.compose.service.connection.zipkin;
+package org.springframework.boot.zipkin.docker.compose;
