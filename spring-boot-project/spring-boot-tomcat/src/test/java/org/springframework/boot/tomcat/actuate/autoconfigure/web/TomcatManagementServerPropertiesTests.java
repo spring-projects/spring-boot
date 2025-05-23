@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.tomcat;
+package org.springframework.boot.tomcat.actuate.autoconfigure.web;
 
 import org.junit.jupiter.api.Test;
 
