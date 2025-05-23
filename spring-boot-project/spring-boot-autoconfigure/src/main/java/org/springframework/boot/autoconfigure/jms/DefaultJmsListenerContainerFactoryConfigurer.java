@@ -31,7 +31,12 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.Assert;
 
 /**
- * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults.
+ * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults tuned using
+ * configuration properties.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code DefaultJmsListenerContainerFactory} whose configuration is based upon that
+ * produced by auto-configuration.
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
