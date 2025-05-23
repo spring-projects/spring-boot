@@ -93,9 +93,8 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaConnectionDetails.class)
-	PropertiesKafkaConnectionDetails kafkaConnectionDetails(KafkaProperties properties,
-			ObjectProvider<SslBundles> sslBundles) {
-		return new PropertiesKafkaConnectionDetails(properties, sslBundles.getIfAvailable());
+	PropertiesKafkaConnectionDetails kafkaConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesKafkaConnectionDetails(this.properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
