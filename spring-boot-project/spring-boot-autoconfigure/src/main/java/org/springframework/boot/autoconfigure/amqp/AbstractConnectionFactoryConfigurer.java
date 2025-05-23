@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
 
 /**
- * Configures {@link AbstractConnectionFactory Rabbit ConnectionFactory} with sensible
- * defaults.
+ * Base class for configurers of sub-classes of {@link AbstractConnectionFactory}.
  *
  * @param <T> the connection factory type.
  * @author Chris Bono
