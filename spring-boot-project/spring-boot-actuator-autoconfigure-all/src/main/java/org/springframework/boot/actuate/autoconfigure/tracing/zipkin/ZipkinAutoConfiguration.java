@@ -16,31 +16,31 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import zipkin2.reporter.Encoding;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Builder;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.OpenTelemetryConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
+import zipkin2.reporter.HttpEndpointSupplier;
+import zipkin2.reporter.HttpEndpointSuppliers;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Zipkin.
- * <p>
- * It uses imports on {@link ZipkinConfigurations} to guarantee the correct configuration
- * ordering.
  *
  * @author Moritz Halbritter
+ * @author Moritz Halbritter
+ * @author Stefan Bratanov
+ * @author Wick Dynex
  * @since 3.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration")
 @ConditionalOnClass(Encoding.class)
-@Import({ SenderConfiguration.class, BraveConfiguration.class, OpenTelemetryConfiguration.class })
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
 
@@ -57,6 +57,23 @@ public class ZipkinAutoConfiguration {
 			case JSON -> Encoding.JSON;
 			case PROTO3 -> Encoding.PROTO3;
 		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(BytesMessageSender.class)
+	@ConditionalOnClass(HttpClient.class)
+	ZipkinHttpClientSender httpClientSender(ZipkinProperties properties, Encoding encoding,
+			ObjectProvider<ZipkinHttpClientBuilderCustomizer> customizers,
+			ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
+			ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
+		ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+		HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
+			.getIfAvailable(HttpEndpointSuppliers::constantFactory);
+		Builder httpClientBuilder = HttpClient.newBuilder().connectTimeout(properties.getConnectTimeout());
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
+		return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
+				httpClientBuilder.build(), properties.getReadTimeout());
 	}
 
 }
