@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,10 +64,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails,
-			ObjectProvider<SslBundles> sslBundles) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
-				clusterConfiguration, sslBundles);
+				clusterConfiguration);
 	}
 
 	@Bean
