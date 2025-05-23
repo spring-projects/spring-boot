@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.ssl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SslHealthIndicator}.
  *
  * @author Jonatan Ivanov
+ * @author Joshua Chen
  */
 class SslHealthIndicatorTests {
 
@@ -55,7 +57,7 @@ class SslHealthIndicatorTests {
 		this.validity = mock(CertificateValidityInfo.class);
 		given(sslInfo.getBundles()).willReturn(List.of(bundle));
 		given(bundle.getCertificateChains()).willReturn(List.of(certificateChain));
-		given(certificateChain.getCertificates()).willReturn(List.of(certificateInfo));
+		given(certificateChain.getCertificates()).willReturn(Set.of(certificateInfo));
 		given(certificateInfo.getValidity()).willReturn(this.validity);
 	}
 
