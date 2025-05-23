@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
+package org.springframework.boot.zipkin.autoconfigure;
+
+import java.net.http.HttpClient.Builder;
 
 /**
- * Adapts {@link ZipkinProperties} to {@link ZipkinConnectionDetails}.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link Builder HttpClient.Builder} used to send spans to Zipkin.
  *
  * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * @since 3.3.0
  */
-class PropertiesZipkinConnectionDetails implements ZipkinConnectionDetails {
+@FunctionalInterface
+public interface ZipkinHttpClientBuilderCustomizer {
 
-	private final ZipkinProperties properties;
-
-	PropertiesZipkinConnectionDetails(ZipkinProperties properties) {
-		this.properties = properties;
-	}
-
-	@Override
-	public String getSpanEndpoint() {
-		return this.properties.getEndpoint();
-	}
+	/**
+	 * Customize the http client builder.
+	 * @param httpClient the http client builder to customize
+	 */
+	void customize(Builder httpClient);
 
 }

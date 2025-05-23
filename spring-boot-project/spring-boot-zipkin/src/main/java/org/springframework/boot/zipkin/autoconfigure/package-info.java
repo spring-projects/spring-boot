@@ -14,34 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import zipkin2.reporter.HttpEndpointSupplier;
-
 /**
- * Test {@link HttpEndpointSupplier}.
- *
- * @author Moritz Halbritter
+ * Auto-configuration for Zipkin.
  */
-class TestHttpEndpointSupplier implements HttpEndpointSupplier {
-
-	private final String url;
-
-	private final AtomicInteger suffix = new AtomicInteger();
-
-	TestHttpEndpointSupplier(String url) {
-		this.url = url;
-	}
-
-	@Override
-	public String get() {
-		return this.url + "/" + this.suffix.incrementAndGet();
-	}
-
-	@Override
-	public void close() {
-	}
-
-}
+package org.springframework.boot.zipkin.autoconfigure;

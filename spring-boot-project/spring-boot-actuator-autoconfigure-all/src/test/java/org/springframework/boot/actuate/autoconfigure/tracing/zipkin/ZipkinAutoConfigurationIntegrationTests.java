@@ -31,6 +31,7 @@ import org.springframework.boot.test.context.runner.AbstractApplicationContextRu
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,0 +1,21 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Zipkin"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("io.zipkin.reporter2:zipkin-reporter-brave")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("io.zipkin.reporter2:zipkin-reporter-brave")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+}

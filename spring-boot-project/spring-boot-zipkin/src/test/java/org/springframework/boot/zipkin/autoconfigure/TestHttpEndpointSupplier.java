@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
+package org.springframework.boot.zipkin.autoconfigure;
 
-import java.net.http.HttpClient.Builder;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import zipkin2.reporter.HttpEndpointSupplier;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the
- * {@link Builder HttpClient.Builder} used to send spans to Zipkin.
+ * Test {@link HttpEndpointSupplier}.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
  */
-@FunctionalInterface
-public interface ZipkinHttpClientBuilderCustomizer {
+class TestHttpEndpointSupplier implements HttpEndpointSupplier {
 
-	/**
-	 * Customize the http client builder.
-	 * @param httpClient the http client builder to customize
-	 */
-	void customize(Builder httpClient);
+	private final String url;
+
+	private final AtomicInteger suffix = new AtomicInteger();
+
+	TestHttpEndpointSupplier(String url) {
+		this.url = url;
+	}
+
+	@Override
+	public String get() {
+		return this.url + "/" + this.suffix.incrementAndGet();
+	}
+
+	@Override
+	public void close() {
+	}
 
 }

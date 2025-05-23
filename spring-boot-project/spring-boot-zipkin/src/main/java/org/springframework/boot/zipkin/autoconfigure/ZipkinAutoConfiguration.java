@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
+package org.springframework.boot.zipkin.autoconfigure;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
@@ -25,6 +25,7 @@ import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,8 +39,9 @@ import org.springframework.context.annotation.Bean;
  * @author Moritz Halbritter
  * @author Stefan Bratanov
  * @author Wick Dynex
- * @since 3.0.0
+ * @since 4.0.0
  */
+@AutoConfiguration
 @ConditionalOnClass(Encoding.class)
 @EnableConfigurationProperties(ZipkinProperties.class)
 public class ZipkinAutoConfiguration {
