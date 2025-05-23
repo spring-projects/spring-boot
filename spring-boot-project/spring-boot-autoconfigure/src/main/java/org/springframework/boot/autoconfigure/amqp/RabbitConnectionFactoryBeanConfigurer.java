@@ -31,7 +31,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 
 /**
- * Configures {@link RabbitConnectionFactoryBean} with sensible defaults.
+ * Configures {@link RabbitConnectionFactoryBean} with sensible defaults tuned using
+ * configuration properties.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code RabbitConnectionFactoryBean} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Chris Bono
  * @author Moritz Halbritter

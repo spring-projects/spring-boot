@@ -27,6 +27,10 @@ import org.springframework.web.client.RestClient.Builder;
 
 /**
  * Configure {@link Builder RestClient.Builder} with sensible defaults.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code RestClient.Builder} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Moritz Halbritter
  * @since 3.2.0

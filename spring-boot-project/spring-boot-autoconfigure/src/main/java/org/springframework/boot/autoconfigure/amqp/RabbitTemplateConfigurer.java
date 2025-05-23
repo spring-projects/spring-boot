@@ -29,7 +29,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Configure {@link RabbitTemplate} with sensible defaults.
+ * Configure {@link RabbitTemplate} with sensible defaults tuned using configuration
+ * properties.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code RabbitTemplateConfigurer} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Stephane Nicoll
  * @author Yanming Zhou
