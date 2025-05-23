@@ -16,7 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection.mongo;
 
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBAtlasLocalContainer;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -24,17 +24,15 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link MongoConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link MongoDBContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MongoDBAtlasLocalContainer}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * @author Wouter Blancquaert
  */
-class MongoContainerConnectionDetailsFactory
-		extends AbstractMongoContainerConnectionDetailsFactory<MongoDBContainer> {
+class MongoAtlasContainerConnectionDetailsFactory
+		extends AbstractMongoContainerConnectionDetailsFactory<MongoDBAtlasLocalContainer> {
 
-	MongoContainerConnectionDetailsFactory() {
-		super(MongoDBContainer::getReplicaSetUrl);
+	MongoAtlasContainerConnectionDetailsFactory() {
+		super(MongoDBAtlasLocalContainer::getDatabaseConnectionString);
 	}
 
 }
