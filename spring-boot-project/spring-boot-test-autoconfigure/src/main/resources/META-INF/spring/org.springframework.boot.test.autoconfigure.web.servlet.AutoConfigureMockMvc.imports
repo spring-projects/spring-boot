@@ -4,6 +4,7 @@ org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebClientAutoConf
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
