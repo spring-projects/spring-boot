@@ -2139,7 +2139,8 @@ bom {
 				"spring-boot-webservices",
 				"spring-boot-websocket",
 				"spring-boot-web-server",
-				"spring-boot-web-server-test"
+				"spring-boot-web-server-test",
+				"spring-boot-zipkin"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

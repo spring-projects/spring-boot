@@ -22,12 +22,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.container.ZipkinContainer;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 

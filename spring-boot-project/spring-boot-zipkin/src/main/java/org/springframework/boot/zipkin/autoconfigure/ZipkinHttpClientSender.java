@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
+package org.springframework.boot.zipkin.autoconfigure;
 
 import java.io.IOException;
 import java.net.URI;

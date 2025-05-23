@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

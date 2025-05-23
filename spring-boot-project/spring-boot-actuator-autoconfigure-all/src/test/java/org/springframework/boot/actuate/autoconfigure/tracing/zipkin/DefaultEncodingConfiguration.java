@@ -20,6 +20,7 @@ import zipkin2.reporter.Encoding;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**

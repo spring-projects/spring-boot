@@ -1,0 +1,12 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.zipkin.tracing.encoding",
+      "defaultValue": [
+        "JSON"
+      ]
+    }
+  ],
+  "hints": []
+}
