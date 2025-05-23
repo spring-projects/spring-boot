@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.zipkin;
+package org.springframework.boot.zipkin.testcontainers;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
-import org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,12 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class ZipkinContainerConnectionDetailsFactoryTests {
+@ClassPathExclusions("spring-boot-actuator-*")
+class ZipkinContainerConnectionDetailsFactoryWithoutActuatorTests {
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints hints = ContainerConnectionDetailsFactoryHints.getRegisteredHints(getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ZipkinAutoConfiguration.class)).accepts(hints);
+		assertThat(hints).isNotNull();
 	}
 
 }

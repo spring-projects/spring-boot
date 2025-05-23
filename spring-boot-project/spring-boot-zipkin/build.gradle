@@ -18,6 +18,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
@@ -30,9 +31,15 @@ dependencies {
 	api("io.zipkin.reporter2:zipkin-reporter-brave")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 }

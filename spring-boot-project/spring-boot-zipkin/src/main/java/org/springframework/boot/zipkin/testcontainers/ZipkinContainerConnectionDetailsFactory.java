@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.zipkin;
+package org.springframework.boot.zipkin.testcontainers;
 
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
