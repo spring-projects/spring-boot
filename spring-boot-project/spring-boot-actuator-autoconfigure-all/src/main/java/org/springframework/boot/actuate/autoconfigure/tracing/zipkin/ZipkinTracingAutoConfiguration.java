@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Builder;
-
 import brave.Tag;
 import brave.Tags;
 import brave.handler.MutableSpan;
@@ -27,59 +24,36 @@ import zipkin2.Span;
 import zipkin2.reporter.BytesEncoder;
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
-import zipkin2.reporter.HttpEndpointSupplier;
-import zipkin2.reporter.HttpEndpointSuppliers;
 import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.brave.MutableSpanBytesEncoder;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoConfiguration.BraveConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoConfiguration.OpenTelemetryConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * Configurations for Zipkin. Those are imported by {@link ZipkinAutoConfiguration}.
+ * {@link EnableAutoConfiguration Auto-configuration} for Zipkin tracing.
  *
  * @author Moritz Halbritter
  * @author Stefan Bratanov
  * @author Wick Dynex
+ * @author Phillip Webb
+ * @since 4.0.0
  */
-class ZipkinConfigurations {
-
-	@Configuration(proxyBeanMethods = false)
-	@Import({ HttpClientSenderConfiguration.class })
-	static class SenderConfiguration {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(HttpClient.class)
-	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class HttpClientSenderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(BytesMessageSender.class)
-		ZipkinHttpClientSender httpClientSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinHttpClientBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
-				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
-			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			Builder httpClientBuilder = HttpClient.newBuilder().connectTimeout(properties.getConnectTimeout());
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
-			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
-					httpClientBuilder.build(), properties.getReadTimeout());
-		}
-
-	}
+@ConditionalOnClass(Encoding.class)
+@AutoConfiguration(afterName = "org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration")
+@Import({ BraveConfiguration.class, OpenTelemetryConfiguration.class })
+public class ZipkinTracingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(AsyncZipkinSpanHandler.class)
