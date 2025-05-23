@@ -30,3 +30,4 @@ class MyProperties() {
 	// @fold:off
 
 }
+

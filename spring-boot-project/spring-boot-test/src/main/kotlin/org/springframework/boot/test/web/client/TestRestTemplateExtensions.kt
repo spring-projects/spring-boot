@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,8 @@ inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, vararg u
  * @since 2.0.0
  */
 @Throws(RestClientException::class)
-inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, uriVariables: Map<String, *>): ResponseEntity<T> =
+inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String,
+														   uriVariables: Map<String, *>): ResponseEntity<T> =
 		getForEntity(url, T::class.java, uriVariables)
 
 /**
@@ -275,3 +276,4 @@ inline fun <reified T : Any> TestRestTemplate.exchange(url: URI, method: HttpMet
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.exchange(requestEntity: RequestEntity<*>): ResponseEntity<T> =
 		exchange(requestEntity, object : ParameterizedTypeReference<T>() {})
+

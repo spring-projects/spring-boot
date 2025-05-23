@@ -4,3 +4,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("some.properties")
 class SomeProperties
+

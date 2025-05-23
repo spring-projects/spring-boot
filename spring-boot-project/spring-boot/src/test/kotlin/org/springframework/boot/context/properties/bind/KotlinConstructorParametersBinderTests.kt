@@ -256,3 +256,4 @@ class KotlinConstructorParametersBinderTests {
 	}
 
 }
+
