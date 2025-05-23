@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers Zipkin service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.zipkin;
+package org.springframework.boot.zipkin.testcontainers;
