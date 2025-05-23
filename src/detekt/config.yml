@@ -1,0 +1,25 @@
+config:
+  validation: true
+  warningsAsErrors: true
+console-reports:
+  active: true
+  exclude:
+    - 'ProjectStatisticsReport'
+    - 'ComplexityReport'
+    - 'NotificationReport'
+    - 'FindingsReport'
+    - 'FileBasedFindingsReport'
+processors:
+  active: false
+naming:
+  MatchingDeclarationName:
+    active: true
+style:
+  MaxLineLength:
+    active: true
+  NewLineAtEndOfFile:
+    active: true
+  UnusedImports:
+    active: true
+  WildcardImport:
+    active: true

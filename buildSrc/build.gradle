@@ -35,6 +35,7 @@ dependencies {
 	implementation("commons-codec:commons-codec:${commonsCodecVersion}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
 	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
+	implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
 	implementation("io.spring.gradle.antora:spring-antora-plugin:0.0.1")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("io.spring.nohttp:nohttp-gradle:0.0.11")

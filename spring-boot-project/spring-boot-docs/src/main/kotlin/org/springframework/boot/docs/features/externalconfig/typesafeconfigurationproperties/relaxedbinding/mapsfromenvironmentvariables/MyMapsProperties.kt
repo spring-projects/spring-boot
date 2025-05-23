@@ -8,3 +8,4 @@ class MyMapsProperties {
 	val values: Map<String, String> = HashMap()
 
 }
+

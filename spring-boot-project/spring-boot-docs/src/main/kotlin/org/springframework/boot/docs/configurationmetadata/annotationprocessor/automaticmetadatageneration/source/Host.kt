@@ -15,5 +15,4 @@ class Host {
 	 */
 	var port = 9797
 
-
 }

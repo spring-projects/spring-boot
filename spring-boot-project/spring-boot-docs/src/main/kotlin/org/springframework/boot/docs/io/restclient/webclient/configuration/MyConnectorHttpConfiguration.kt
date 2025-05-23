@@ -4,7 +4,6 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.net.ProxySelector
-import java.net.http.HttpClient
 
 @Configuration(proxyBeanMethods = false)
 class MyConnectorHttpConfiguration {
