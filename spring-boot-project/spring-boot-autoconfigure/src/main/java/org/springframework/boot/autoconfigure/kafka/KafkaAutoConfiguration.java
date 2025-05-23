@@ -88,8 +88,8 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaConnectionDetails.class)
-	PropertiesKafkaConnectionDetails kafkaConnectionDetails(KafkaProperties properties) {
-		return new PropertiesKafkaConnectionDetails(properties);
+	PropertiesKafkaConnectionDetails kafkaConnectionDetails() {
+		return new PropertiesKafkaConnectionDetails(this.properties);
 	}
 
 	@Bean
