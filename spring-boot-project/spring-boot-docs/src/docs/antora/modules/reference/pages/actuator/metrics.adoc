@@ -552,7 +552,7 @@ Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exe
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
 
-NOTE: The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus 1.x client adds support for it.
+NOTE: Auto-configuration for the Prometheus Pushgateway only works with the deprecated Prometheus simpleclient.
 To switch to the simpleclient, remove `io.micrometer:micrometer-registry-prometheus` from your project and add `io.micrometer:micrometer-registry-prometheus-simpleclient` instead.
 
 To enable Prometheus Pushgateway support, add the following dependency to your project:
@@ -565,7 +565,7 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 </dependency>
 ----
 
-When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.prometheus.metrics.export.pushgateway.enabled[] property is set to `true`, a javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean is auto-configured.
+When this Prometheus Pushgateway dependency is present on the classpath and the configprop:management.prometheus.metrics.export.pushgateway.enabled[] property is set to `true`, a javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean is auto-configured.
 This manages the pushing of metrics to a Prometheus Pushgateway.
 
 You can tune the javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] by using properties under `management.prometheus.metrics.export.pushgateway`.
