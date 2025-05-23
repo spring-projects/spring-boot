@@ -43,15 +43,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TaskSchedulingAutoConfiguration}.
@@ -143,25 +144,61 @@ class TaskSchedulingAutoConfigurationTests {
 
 	@Test
 	void simpleAsyncTaskSchedulerBuilderShouldApplyTaskDecorator() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskDecoratorConfig.class)
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
+			.withBean(TaskDecorator.class, this::createTaskDecorator)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
 				assertThat(context).hasSingleBean(TaskDecorator.class);
 				TaskDecorator taskDecorator = context.getBean(TaskDecorator.class);
-				SimpleAsyncTaskSchedulerBuilder builder = context.getBean(SimpleAsyncTaskSchedulerBuilder.class);
-				assertThat(builder).extracting("taskDecorator").isSameAs(taskDecorator);
+				SimpleAsyncTaskScheduler scheduler = context.getBean(SimpleAsyncTaskSchedulerBuilder.class).build();
+				assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
+			});
+	}
+
+	@Test
+	void simpleAsyncTaskSchedulerBuilderShouldApplyCompositeTaskDecorator() {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
+			.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
+			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
+				SimpleAsyncTaskScheduler scheduler = context.getBean(SimpleAsyncTaskSchedulerBuilder.class).build();
+				assertThat(scheduler).extracting("taskDecorator")
+					.isInstanceOf(CompositeTaskDecorator.class)
+					.extracting("taskDecorators")
+					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
+					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
 
 	@Test
 	void threadPoolTaskSchedulerBuilderShouldApplyTaskDecorator() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskDecoratorConfig.class)
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
+			.withBean(TaskDecorator.class, this::createTaskDecorator)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
 				assertThat(context).hasSingleBean(TaskDecorator.class);
 				TaskDecorator taskDecorator = context.getBean(TaskDecorator.class);
-				ThreadPoolTaskSchedulerBuilder builder = context.getBean(ThreadPoolTaskSchedulerBuilder.class);
-				assertThat(builder).extracting("taskDecorator").isSameAs(taskDecorator);
+				ThreadPoolTaskScheduler scheduler = context.getBean(ThreadPoolTaskSchedulerBuilder.class).build();
+				assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
+			});
+	}
+
+	@Test
+	void threadPoolTaskSchedulerBuilderShouldApplyCompositeTaskDecorator() {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
+			.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
+			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
+				ThreadPoolTaskScheduler scheduler = context.getBean(ThreadPoolTaskSchedulerBuilder.class).build();
+				assertThat(scheduler).extracting("taskDecorator")
+					.isInstanceOf(CompositeTaskDecorator.class)
+					.extracting("taskDecorators")
+					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
+					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
 
@@ -232,6 +269,10 @@ class TaskSchedulingAutoConfigurationTests {
 				Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> !threadNames.isEmpty());
 				assertThat(threadNames).allMatch((name) -> name.contains("scheduling-test-"));
 			});
+	}
+
+	private TaskDecorator createTaskDecorator() {
+		return (runnable) -> runnable;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -327,16 +368,6 @@ class TaskSchedulingAutoConfigurationTests {
 			setPoolSize(1);
 			setThreadNamePrefix("test-");
 			afterPropertiesSet();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TaskDecoratorConfig {
-
-		@Bean
-		TaskDecorator mockTaskDecorator() {
-			return mock(TaskDecorator.class);
 		}
 
 	}
