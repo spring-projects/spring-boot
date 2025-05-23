@@ -32,7 +32,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -42,6 +41,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;

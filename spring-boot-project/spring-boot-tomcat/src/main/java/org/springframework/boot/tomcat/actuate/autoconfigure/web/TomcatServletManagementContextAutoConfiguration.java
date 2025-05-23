@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.tomcat;
-
-import org.apache.catalina.startup.Tomcat;
+package org.springframework.boot.tomcat.actuate.autoconfigure.web;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
@@ -27,26 +25,26 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
-import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
-import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Tomcat-based reactive management context.
+ * Auto-configuration for a Tomcat-based servlet management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(Tomcat.class)
-@ConditionalOnWebApplication(type = Type.REACTIVE)
+@ConditionalOnClass(ManagementContextFactory.class)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class TomcatReactiveManagementContextAutoConfiguration {
+public class TomcatServletManagementContextAutoConfiguration {
 
 	@Bean
-	static ManagementContextFactory reactiveWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
-				TomcatReactiveWebServerAutoConfiguration.class, TomcatWebServerConfiguration.class);
+	static ManagementContextFactory servletWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
+				TomcatWebServerConfiguration.class, TomcatServletWebServerAutoConfiguration.class);
 	}
 
 }

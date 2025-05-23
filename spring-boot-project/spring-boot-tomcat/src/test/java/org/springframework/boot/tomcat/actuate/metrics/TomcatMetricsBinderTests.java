@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.tomcat.actuate.metrics;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.jupiter.api.Test;
+
+import static org.mockito.Mockito.mock;
+
 /**
- * Actuator Tomcat web server support.
+ * Tests for {@link TomcatMetricsBinder}.
+ *
+ * @author Andy Wilkinson
  */
-package org.springframework.boot.actuate.autoconfigure.web.server.tomcat;
+class TomcatMetricsBinderTests {
+
+	private final MeterRegistry meterRegistry = mock(MeterRegistry.class);
+
+	@Test
+	void destroySucceedsWhenCalledBeforeApplicationHasStarted() {
+		new TomcatMetricsBinder(this.meterRegistry).destroy();
+	}
+
+}
