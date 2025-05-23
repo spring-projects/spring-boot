@@ -40,9 +40,6 @@ import org.springframework.util.Assert;
  */
 final class OtlpLoggingConfigurations {
 
-	private OtlpLoggingConfigurations() {
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetails {
 
