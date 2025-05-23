@@ -24,8 +24,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
 
 /**
- * Configures {@link AbstractConnectionFactory Rabbit ConnectionFactory} with sensible
- * defaults.
+ * Base class for configurers of sub-classes of {@link AbstractConnectionFactory}.
  *
  * @param <T> the connection factory type.
  * @author Chris Bono

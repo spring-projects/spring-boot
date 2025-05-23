@@ -22,7 +22,6 @@ import java.util.concurrent.Executor;
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -31,7 +30,8 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.Assert;
 
 /**
- * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
+ * Base class for configurers of sub-classes of
+ * {@link AbstractRabbitListenerContainerFactory}.
  *
  * @param <T> the container factory type.
  * @author Gary Russell

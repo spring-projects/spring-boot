@@ -22,7 +22,12 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.boot.context.properties.PropertyMapper;
 
 /**
- * Configures Rabbit {@link CachingConnectionFactory} with sensible defaults.
+ * Configures Rabbit {@link CachingConnectionFactory} with sensible defaults tuned using
+ * configuration properties.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code CachingConnectionFactory} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Chris Bono
  * @author Moritz Halbritter
