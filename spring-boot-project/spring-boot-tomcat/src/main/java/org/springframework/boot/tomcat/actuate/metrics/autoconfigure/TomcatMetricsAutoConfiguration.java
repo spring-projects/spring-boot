@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
+package org.springframework.boot.tomcat.actuate.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
@@ -26,8 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.actuate.metrics.TomcatMetricsBinder;
 import org.springframework.context.annotation.Bean;
 
@@ -35,11 +33,11 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TomcatMetrics}.
  *
  * @author Andy Wilkinson
- * @since 2.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnWebApplication
-@ConditionalOnClass({ TomcatMetrics.class, Manager.class, TomcatWebServer.class })
+@ConditionalOnClass({ TomcatMetrics.class, Manager.class, MeterRegistry.class })
 public class TomcatMetricsAutoConfiguration {
 
 	@Bean
