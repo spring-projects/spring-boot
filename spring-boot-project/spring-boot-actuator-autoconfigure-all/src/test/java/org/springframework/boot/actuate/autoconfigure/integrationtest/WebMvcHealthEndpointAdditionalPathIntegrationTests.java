@@ -21,13 +21,13 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;

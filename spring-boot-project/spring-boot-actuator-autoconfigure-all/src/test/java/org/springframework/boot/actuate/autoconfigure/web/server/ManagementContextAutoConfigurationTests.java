@@ -23,12 +23,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;

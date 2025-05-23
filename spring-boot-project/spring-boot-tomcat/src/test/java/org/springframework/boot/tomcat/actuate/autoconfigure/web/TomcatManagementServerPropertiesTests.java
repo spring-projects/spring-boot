@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.tomcat.actuate.autoconfigure.web;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Actuator Tomcat web server support.
+ * Tests for {@link TomcatManagementServerProperties}.
+ *
+ * @author Andy Wilkinson
  */
-package org.springframework.boot.actuate.autoconfigure.web.server.tomcat;
+class TomcatManagementServerPropertiesTests {
+
+	@Test
+	void accessLogsArePrefixedByDefault() {
+		TomcatManagementServerProperties properties = new TomcatManagementServerProperties();
+		assertThat(properties.getAccesslog().getPrefix()).isEqualTo("management_");
+	}
+
+}
