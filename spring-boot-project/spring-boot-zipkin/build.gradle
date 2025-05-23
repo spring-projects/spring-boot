@@ -31,11 +31,13 @@ dependencies {
 	api("io.zipkin.reporter2:zipkin-reporter-brave")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-docker-compose")))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
