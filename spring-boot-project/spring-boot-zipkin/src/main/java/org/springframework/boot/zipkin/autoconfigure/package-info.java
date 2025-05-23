@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
-
 /**
- * Adapts {@link ZipkinProperties} to {@link ZipkinConnectionDetails}.
- *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * Auto-configuration for Zipkin.
  */
-class PropertiesZipkinConnectionDetails implements ZipkinConnectionDetails {
-
-	private final ZipkinProperties properties;
-
-	PropertiesZipkinConnectionDetails(ZipkinProperties properties) {
-		this.properties = properties;
-	}
-
-	@Override
-	public String getSpanEndpoint() {
-		return this.properties.getEndpoint();
-	}
-
-}
+package org.springframework.boot.zipkin.autoconfigure;

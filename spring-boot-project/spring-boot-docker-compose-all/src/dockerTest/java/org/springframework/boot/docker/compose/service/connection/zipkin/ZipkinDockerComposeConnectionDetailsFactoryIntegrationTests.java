@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docker.compose.service.connection.zipkin;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

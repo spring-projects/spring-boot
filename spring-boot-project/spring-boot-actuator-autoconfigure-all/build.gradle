@@ -36,7 +36,7 @@ configurations.all {
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
-	
+
 	implementation(project(":spring-boot-project:spring-boot-metrics"))
 	implementation(project(":spring-boot-project:spring-boot-security")) {
 		exclude(group: "org.springframework.security")
@@ -69,6 +69,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-webclient"))
 	optional(project(":spring-boot-project:spring-boot-webflux"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional(project(":spring-boot-project:spring-boot-zipkin"))
 	optional("ch.qos.logback:logback-classic")
 	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"

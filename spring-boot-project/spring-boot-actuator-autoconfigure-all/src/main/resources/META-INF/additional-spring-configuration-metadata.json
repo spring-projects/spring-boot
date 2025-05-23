@@ -1843,12 +1843,6 @@
       ]
     },
     {
-      "name": "management.zipkin.tracing.encoding",
-      "defaultValue": [
-        "JSON"
-      ]
-    },
-    {
       "name": "management.zipkin.tracing.export.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export Zipkin traces."

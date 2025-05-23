@@ -19,10 +19,10 @@ package org.springframework.boot.testcontainers.service.connection.zipkin;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails;
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link ZipkinConnectionDetails}
@@ -38,8 +38,7 @@ class ZipkinContainerConnectionDetailsFactory
 	private static final int ZIPKIN_PORT = 9411;
 
 	ZipkinContainerConnectionDetailsFactory() {
-		super("openzipkin/zipkin",
-				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
+		super("openzipkin/zipkin", "org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration");
 	}
 
 	@Override

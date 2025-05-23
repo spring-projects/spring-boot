@@ -16,10 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.zipkin;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link ZipkinConnectionDetails}
