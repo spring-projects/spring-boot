@@ -28,7 +28,7 @@ import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.BraveConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoConfiguration.BraveConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

@@ -16,8 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.net.http.HttpClient;
+
 import org.junit.jupiter.api.Test;
+import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
+import zipkin2.reporter.HttpEndpointSupplier;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -26,11 +30,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ZipkinAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Wick Dynex
  */
 class ZipkinAutoConfigurationTests {
 
@@ -39,8 +45,12 @@ class ZipkinAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Encoding.class)
-			.hasSingleBean(PropertiesZipkinConnectionDetails.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Encoding.class);
+			assertThat(context).hasSingleBean(PropertiesZipkinConnectionDetails.class);
+			assertThat(context).hasSingleBean(BytesMessageSender.class);
+			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
+		});
 	}
 
 	@Test
@@ -50,11 +60,35 @@ class ZipkinAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffOnCustomBeans() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
+	void shouldNotProvideHttpClientSenderIfHttpClientIsNotAvailable() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class));
+	}
+
+	@Test
+	void shouldBackOffOnCustomEncodingBeans() {
+		this.contextRunner.withUserConfiguration(CustomEncodingConfiguration.class).run((context) -> {
 			assertThat(context).hasBean("customEncoding");
 			assertThat(context).hasSingleBean(Encoding.class);
 		});
+	}
+
+	@Test
+	void shouldBackOffOnCustomSenderBeans() {
+		this.contextRunner.withUserConfiguration(CustomSenderConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("customSender");
+			assertThat(context).hasSingleBean(BytesMessageSender.class);
+		});
+	}
+
+	@Test
+	void shouldUseCustomHttpEndpointSupplierFactory() {
+		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+			.run((context) -> {
+				ZipkinHttpClientSender httpClientSender = context.getBean(ZipkinHttpClientSender.class);
+				assertThat(httpClientSender).extracting("endpointSupplier")
+					.isInstanceOf(CustomHttpEndpointSupplier.class);
+			});
 	}
 
 	@Test
@@ -94,11 +128,59 @@ class ZipkinAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static final class CustomConfiguration {
+	private static final class CustomEncodingConfiguration {
 
 		@Bean
 		Encoding customEncoding() {
 			return Encoding.PROTO3;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomSenderConfiguration {
+
+		@Bean
+		BytesMessageSender customSender() {
+			return mock(BytesMessageSender.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomHttpEndpointSupplierFactoryConfiguration {
+
+		@Bean
+		HttpEndpointSupplier.Factory httpEndpointSupplier() {
+			return new CustomHttpEndpointSupplierFactory();
+		}
+
+	}
+
+	static class CustomHttpEndpointSupplierFactory implements HttpEndpointSupplier.Factory {
+
+		@Override
+		public HttpEndpointSupplier create(String endpoint) {
+			return new CustomHttpEndpointSupplier(endpoint);
+		}
+
+	}
+
+	static class CustomHttpEndpointSupplier implements HttpEndpointSupplier {
+
+		private final String endpoint;
+
+		CustomHttpEndpointSupplier(String endpoint) {
+			this.endpoint = endpoint;
+		}
+
+		@Override
+		public String get() {
+			return this.endpoint;
+		}
+
+		@Override
+		public void close() {
 		}
 
 	}

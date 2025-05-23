@@ -63,6 +63,7 @@ org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoC
 org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
