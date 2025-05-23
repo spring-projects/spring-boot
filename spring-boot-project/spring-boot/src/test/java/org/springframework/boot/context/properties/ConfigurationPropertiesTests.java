@@ -1560,7 +1560,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, Person> personConverter() {
+		static Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
@@ -1571,7 +1571,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, Alien> alienConverter() {
+		static Converter<String, Alien> alienConverter() {
 			return new AlienConverter();
 		}
 
@@ -1592,7 +1592,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		GenericConverter genericPersonConverter() {
+		static GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
@@ -1603,7 +1603,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Formatter<Person> personFormatter() {
+		static Formatter<Person> personFormatter() {
 			return new PersonFormatter();
 		}
 
@@ -3031,7 +3031,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		WithObjectToObjectMethodConverter withObjectToObjectMethodConverter() {
+		static WithObjectToObjectMethodConverter withObjectToObjectMethodConverter() {
 			return new WithObjectToObjectMethodConverter();
 		}
 

@@ -264,7 +264,7 @@ class SecurityAutoConfigurationTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, TargetType> targetTypeConverter() {
+		static Converter<String, TargetType> targetTypeConverter() {
 			return new Converter<>() {
 
 				@Override
