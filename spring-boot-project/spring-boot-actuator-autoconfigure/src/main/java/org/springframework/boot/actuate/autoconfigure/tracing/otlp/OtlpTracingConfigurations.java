@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Eddú Meléndez
  */
-class OtlpTracingConfigurations {
+final class OtlpTracingConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetails {
