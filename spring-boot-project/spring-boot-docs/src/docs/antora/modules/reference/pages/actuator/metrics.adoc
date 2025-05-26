@@ -559,7 +559,7 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 ----
 <dependency>
 	<groupId>io.prometheus</groupId>
-	<artifactId>io.prometheus:prometheus-metrics-exporter-pushgateway</artifactId>
+	<artifactId>prometheus-metrics-exporter-pushgateway</artifactId>
 </dependency>
 ----
 
