@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.List;
 
 import graphql.schema.DataFetcher;
 import reactor.core.publisher.Flux;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Test utility class holding {@link DataFetcher} implementations.
@@ -48,7 +46,6 @@ public final class GraphQlTestDataFetchers {
 		return (environment) -> getBooksOnSale(environment.getArgument("minPages"));
 	}
 
-	@Nullable
 	public static Book getBookById(String id) {
 		return books.stream().filter((book) -> book.getId().equals(id)).findFirst().orElse(null);
 	}

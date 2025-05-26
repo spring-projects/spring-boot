@@ -38,7 +38,6 @@ import org.springframework.graphql.execution.ErrorType;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolver;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -157,7 +156,6 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	static class BookService {
 
 		@PreAuthorize("hasRole('USER')")
-		@Nullable
 		Book getBookdById(String id) {
 			return GraphQlTestDataFetchers.getBookById(id);
 		}
