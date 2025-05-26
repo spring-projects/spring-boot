@@ -973,7 +973,7 @@ bom {
 			releaseNotes("https://github.com/hunterhacker/jdom/releases/tag/JDOM-{version}")
 		}
 	}
-	library("Jedis", "5.2.0") {
+	library("Jedis", "6.0.0") {
 		prohibit {
 			contains "-beta"
 			because "we don't want beta dependencies"
