@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,29 +53,22 @@ class SslAutoConfigurationTests {
 	@Test
 	void sslBundlesCreatedWithCertificates() {
 		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/autoconfigure/ssl/";
 		propertyValues.add("spring.ssl.bundle.pem.first.key.alias=alias1");
 		propertyValues.add("spring.ssl.bundle.pem.first.key.password=secret1");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.first.keystore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/rsa-cert.pem");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.first.keystore.private-key=classpath:org/springframework/boot/autoconfigure/ssl/rsa-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.keystore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.keystore.private-key=" + location + "rsa-key.pem");
 		propertyValues.add("spring.ssl.bundle.pem.first.keystore.type=PKCS12");
 		propertyValues.add("spring.ssl.bundle.pem.first.truststore.type=PKCS12");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.first.truststore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/rsa-cert.pem");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.first.truststore.private-key=classpath:org/springframework/boot/autoconfigure/ssl/rsa-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.truststore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.truststore.private-key=" + location + "rsa-key.pem");
 		propertyValues.add("spring.ssl.bundle.pem.second.key.alias=alias2");
 		propertyValues.add("spring.ssl.bundle.pem.second.key.password=secret2");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.second.keystore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/ed25519-cert.pem");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.second.keystore.private-key=classpath:org/springframework/boot/autoconfigure/ssl/ed25519-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.keystore.certificate=" + location + "ed25519-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.keystore.private-key=" + location + "ed25519-key.pem");
 		propertyValues.add("spring.ssl.bundle.pem.second.keystore.type=PKCS12");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.second.truststore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/ed25519-cert.pem");
-		propertyValues.add(
-				"spring.ssl.bundle.pem.second.truststore.private-key=classpath:org/springframework/boot/autoconfigure/ssl/ed25519-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.truststore.certificate=" + location + "ed25519-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.truststore.private-key=" + location + "ed25519-key.pem");
 		propertyValues.add("spring.ssl.bundle.pem.second.truststore.type=PKCS12");
 		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
 			assertThat(context).hasSingleBean(SslBundles.class);
@@ -102,14 +95,12 @@ class SslAutoConfigurationTests {
 	@Test
 	void sslBundlesCreatedWithCustomSslBundle() {
 		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/autoconfigure/ssl/";
 		propertyValues.add("custom.ssl.key.alias=alias1");
 		propertyValues.add("custom.ssl.key.password=secret1");
-		propertyValues
-			.add("custom.ssl.keystore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/rsa-cert.pem");
-		propertyValues.add(
-				"custom.ssl.keystore.keystore.private-key=classpath:org/springframework/boot/autoconfigure/ssl/rsa-key.pem");
-		propertyValues
-			.add("custom.ssl.truststore.certificate=classpath:org/springframework/boot/autoconfigure/ssl/rsa-cert.pem");
+		propertyValues.add("custom.ssl.keystore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("custom.ssl.keystore.keystore.private-key=" + location + "rsa-key.pem");
+		propertyValues.add("custom.ssl.truststore.certificate=" + location + "rsa-cert.pem");
 		propertyValues.add("custom.ssl.keystore.type=PKCS12");
 		propertyValues.add("custom.ssl.truststore.type=PKCS12");
 		this.contextRunner.withUserConfiguration(CustomSslBundleConfiguration.class)
@@ -117,15 +108,33 @@ class SslAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SslBundles.class);
 				SslBundles bundles = context.getBean(SslBundles.class);
-				SslBundle first = bundles.getBundle("custom");
-				assertThat(first).isNotNull();
-				assertThat(first.getStores()).isNotNull();
-				assertThat(first.getManagers()).isNotNull();
-				assertThat(first.getKey().getAlias()).isEqualTo("alias1");
-				assertThat(first.getKey().getPassword()).isEqualTo("secret1");
-				assertThat(first.getStores().getKeyStore().getType()).isEqualTo("PKCS12");
-				assertThat(first.getStores().getTrustStore().getType()).isEqualTo("PKCS12");
+				SslBundle bundle = bundles.getBundle("custom");
+				assertThat(bundle).isNotNull();
+				assertThat(bundle.getStores()).isNotNull();
+				assertThat(bundle.getManagers()).isNotNull();
+				assertThat(bundle.getKey().getAlias()).isEqualTo("alias1");
+				assertThat(bundle.getKey().getPassword()).isEqualTo("secret1");
+				assertThat(bundle.getStores().getKeyStore().getType()).isEqualTo("PKCS12");
+				assertThat(bundle.getStores().getTrustStore().getType()).isEqualTo("PKCS12");
 			});
+	}
+
+	@Test
+	void sslBundleWithoutClassPathPrefix() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "src/test/resources/org/springframework/boot/autoconfigure/ssl/";
+		propertyValues.add("spring.ssl.bundle.pem.test.key.alias=alias1");
+		propertyValues.add("spring.ssl.bundle.pem.test.key.password=secret1");
+		propertyValues.add("spring.ssl.bundle.pem.test.keystore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.test.keystore.keystore.private-key=" + location + "rsa-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.test.truststore.certificate=" + location + "rsa-cert.pem");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			assertThat(context).hasSingleBean(SslBundles.class);
+			SslBundles bundles = context.getBean(SslBundles.class);
+			SslBundle bundle = bundles.getBundle("test");
+			assertThat(bundle.getStores().getKeyStore().getCertificate("alias1")).isNotNull();
+			assertThat(bundle.getStores().getTrustStore().getCertificate("ssl")).isNotNull();
+		});
 	}
 
 	@Configuration

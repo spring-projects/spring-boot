@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
-	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
+	@ConditionalOnProperty(name = "spring.rabbitmq.listener.type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
@@ -68,9 +68,9 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
-	Environment rabbitStreamEnvironment(RabbitProperties properties,
+	Environment rabbitStreamEnvironment(RabbitProperties properties, RabbitConnectionDetails connectionDetails,
 			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
-		EnvironmentBuilder builder = configure(Environment.builder(), properties);
+		EnvironmentBuilder builder = configure(Environment.builder(), properties, connectionDetails);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -90,7 +90,7 @@ class RabbitStreamConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RabbitStreamOperations.class)
-	@ConditionalOnProperty(prefix = "spring.rabbitmq.stream", name = "name")
+	@ConditionalOnProperty(name = "spring.rabbitmq.stream.name")
 	RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment, RabbitProperties properties,
 			RabbitStreamTemplateConfigurer configurer) {
 		RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment,
@@ -99,18 +99,29 @@ class RabbitStreamConfiguration {
 		return template;
 	}
 
-	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
+	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties,
+			RabbitConnectionDetails connectionDetails) {
+		return configure(builder, properties.getStream(), connectionDetails);
+	}
+
+	private static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties.Stream stream,
+			RabbitConnectionDetails connectionDetails) {
 		builder.lazyInitialization(true);
-		RabbitProperties.Stream stream = properties.getStream();
 		PropertyMapper map = PropertyMapper.get();
 		map.from(stream.getHost()).to(builder::host);
 		map.from(stream.getPort()).to(builder::port);
 		map.from(stream.getVirtualHost())
-			.as(withFallback(properties::getVirtualHost))
+			.as(withFallback(connectionDetails::getVirtualHost))
 			.whenNonNull()
 			.to(builder::virtualHost);
-		map.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
-		map.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		map.from(stream.getUsername())
+			.as(withFallback(connectionDetails::getUsername))
+			.whenNonNull()
+			.to(builder::username);
+		map.from(stream.getPassword())
+			.as(withFallback(connectionDetails::getPassword))
+			.whenNonNull()
+			.to(builder::password);
 		return builder;
 	}
 

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.env.MapPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -149,7 +150,7 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		GenericContainer<?> container = mock(GenericContainer.class);
 		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
 		then(container).shouldHaveNoInteractions();
-		withSystemProperty("spring.aot.processing", "true",
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true",
 				() -> applicationContext.refreshForAotProcessing(new RuntimeHints()));
 		then(container).shouldHaveNoInteractions();
 		applicationContext.close();

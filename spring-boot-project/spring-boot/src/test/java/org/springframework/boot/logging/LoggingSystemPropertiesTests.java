@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.logging;
 
+import java.io.Console;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +34,9 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link LoggingSystemProperties}.
@@ -72,9 +78,22 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void consoleCharsetWhenNoPropertyUsesUtf8() {
-		new LoggingSystemProperties(new MockEnvironment()).apply(null);
-		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET)).isEqualTo("UTF-8");
+	void consoleCharsetWhenNoPropertyUsesCharsetDefault() {
+		LoggingSystemProperties loggingSystemProperties = spy(new LoggingSystemProperties(new MockEnvironment()));
+		given(loggingSystemProperties.getConsole()).willReturn(null);
+		loggingSystemProperties.apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET)).isEqualTo(Charset.defaultCharset().name());
+	}
+
+	@Test
+	void consoleCharsetWhenNoPropertyUsesSystemConsoleCharsetWhenAvailable() {
+		LoggingSystemProperties loggingSystemProperties = spy(new LoggingSystemProperties(new MockEnvironment()));
+		Console console = mock(Console.class);
+		given(console.charset()).willReturn(StandardCharsets.UTF_16BE);
+		given(loggingSystemProperties.getConsole()).willReturn(console);
+		loggingSystemProperties.apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET))
+			.isEqualTo(StandardCharsets.UTF_16BE.name());
 	}
 
 	@Test
@@ -164,19 +183,19 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void loggedApplicationGroupWhenHasApplicationGroup() {
+	void applicationGroupWhenHasApplicationGroup() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isEqualTo("test");
 	}
 
 	@Test
-	void loggedApplicationGroupWhenHasNoApplicationGroup() {
+	void applicationGroupWhenHasNoApplicationGroup() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();
 	}
 
 	@Test
-	void loggedApplicationGroupWhenApplicationGroupLoggingDisabled() {
+	void applicationGroupWhenApplicationGroupLoggingDisabled() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")
 			.withProperty("logging.include-application-group", "false")).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();

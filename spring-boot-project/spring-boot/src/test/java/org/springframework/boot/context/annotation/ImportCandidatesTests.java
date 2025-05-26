@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -32,9 +34,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ImportCandidatesTests {
 
+	private static final String IMPORTS_FILE = "META-INF/spring/org.springframework.boot.context.annotation.ImportCandidatesTests$TestAnnotation.imports";
+
 	@Test
+	@WithResource(name = IMPORTS_FILE, content = """
+			# A comment spanning a complete line
+			class1
+
+			class2 # with comment at the end
+			   # Comment with some whitespace in front
+			class3
+
+			""")
 	void loadReadsFromClasspathFile() {
-		ImportCandidates candidates = ImportCandidates.load(TestAnnotation.class, null);
+		ImportCandidates candidates = ImportCandidates.load(TestAnnotation.class,
+				Thread.currentThread().getContextClassLoader());
 		assertThat(candidates).containsExactly("class1", "class2", "class3");
 	}
 

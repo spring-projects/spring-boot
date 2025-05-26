@@ -19,12 +19,12 @@ package org.springframework.boot.build.bom;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -49,7 +49,7 @@ class LibraryTests {
 		VersionAlignment versionAlignment = null;
 		String alignsWithBom = null;
 		String linkRootName = null;
-		Map<String, Function<LibraryVersion, String>> links = Collections.emptyMap();
+		Map<String, List<Link>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
@@ -66,10 +66,22 @@ class LibraryTests {
 		VersionAlignment versionAlignment = null;
 		String alignsWithBom = null;
 		String linkRootName = "spring-data";
-		Map<String, Function<LibraryVersion, String>> links = Collections.emptyMap();
+		Map<String, List<Link>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
+	}
+
+	@Test
+	void toMajorMinorGenerationWithRelease() {
+		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
+		assertThat(version.forMajorMinorGeneration()).isEqualTo("1.2.x");
+	}
+
+	@Test
+	void toMajorMinorGenerationWithSnapshot() {
+		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("2.0.0-SNAPSHOT"));
+		assertThat(version.forMajorMinorGeneration()).isEqualTo("2.0.x-SNAPSHOT");
 	}
 
 }

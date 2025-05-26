@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundleRegistry;
+import org.springframework.core.io.DefaultResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -31,6 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 /**
@@ -44,6 +48,8 @@ class SslPropertiesBundleRegistrarTests {
 
 	private FileWatcher fileWatcher;
 
+	private DefaultResourceLoader resourceLoader;
+
 	private SslProperties properties;
 
 	private SslBundleRegistry registry;
@@ -52,7 +58,8 @@ class SslPropertiesBundleRegistrarTests {
 	void setUp() {
 		this.properties = new SslProperties();
 		this.fileWatcher = Mockito.mock(FileWatcher.class);
-		this.registrar = new SslPropertiesBundleRegistrar(this.properties, this.fileWatcher);
+		this.resourceLoader = spy(new DefaultResourceLoader());
+		this.registrar = new SslPropertiesBundleRegistrar(this.properties, this.fileWatcher, this.resourceLoader);
 		this.registry = Mockito.mock(SslBundleRegistry.class);
 	}
 
@@ -60,9 +67,9 @@ class SslPropertiesBundleRegistrarTests {
 	void shouldWatchJksBundles() {
 		JksSslBundleProperties jks = new JksSslBundleProperties();
 		jks.setReloadOnUpdate(true);
-		jks.getKeystore().setLocation("classpath:test.jks");
+		jks.getKeystore().setLocation("classpath:org/springframework/boot/autoconfigure/ssl/test.jks");
 		jks.getKeystore().setPassword("secret");
-		jks.getTruststore().setLocation("classpath:test.jks");
+		jks.getTruststore().setLocation("classpath:org/springframework/boot/autoconfigure/ssl/test.jks");
 		jks.getTruststore().setPassword("secret");
 		this.properties.getBundle().getJks().put("bundle1", jks);
 		this.registrar.registerBundles(this.registry);
@@ -83,6 +90,21 @@ class SslPropertiesBundleRegistrarTests {
 		then(this.registry).should(times(1)).registerBundle(eq("bundle1"), any());
 		then(this.fileWatcher).should()
 			.watch(assertArg((set) -> pathEndingWith(set, "rsa-cert.pem", "rsa-key.pem")), any());
+	}
+
+	@Test
+	void shouldUseResourceLoader() {
+		PemSslBundleProperties pem = new PemSslBundleProperties();
+		pem.getTruststore().setCertificate("classpath:org/springframework/boot/autoconfigure/ssl/ed25519-cert.pem");
+		pem.getTruststore().setPrivateKey("classpath:org/springframework/boot/autoconfigure/ssl/ed25519-key.pem");
+		this.properties.getBundle().getPem().put("bundle1", pem);
+		DefaultSslBundleRegistry registry = new DefaultSslBundleRegistry();
+		this.registrar.registerBundles(registry);
+		registry.getBundle("bundle1").createSslContext();
+		then(this.resourceLoader).should(atLeastOnce())
+			.getResource("classpath:org/springframework/boot/autoconfigure/ssl/ed25519-cert.pem");
+		then(this.resourceLoader).should(atLeastOnce())
+			.getResource("classpath:org/springframework/boot/autoconfigure/ssl/ed25519-key.pem");
 	}
 
 	@Test

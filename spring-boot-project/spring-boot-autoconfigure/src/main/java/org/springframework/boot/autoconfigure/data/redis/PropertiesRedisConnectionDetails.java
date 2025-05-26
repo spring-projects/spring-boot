@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfiguration.ConnectionInfo;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapts {@link RedisProperties} to {@link RedisConnectionDetails}.
@@ -27,89 +30,71 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfigur
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
+ * @author Phillip Webb
  */
 class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 	private final RedisProperties properties;
 
-	PropertiesRedisConnectionDetails(RedisProperties properties) {
+	private final SslBundles sslBundles;
+
+	PropertiesRedisConnectionDetails(RedisProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
 	public String getUsername() {
-		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
-			return connectionInfo.getUsername();
-		}
-		return this.properties.getUsername();
+		RedisUrl redisUrl = getRedisUrl();
+		return (redisUrl != null) ? redisUrl.credentials().username() : this.properties.getUsername();
 	}
 
 	@Override
 	public String getPassword() {
-		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
-			return connectionInfo.getPassword();
-		}
-		return this.properties.getPassword();
+		RedisUrl redisUrl = getRedisUrl();
+		return (redisUrl != null) ? redisUrl.credentials().password() : this.properties.getPassword();
 	}
 
 	@Override
 	public Standalone getStandalone() {
-		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
-			return Standalone.of(connectionInfo.getUri().getHost(), connectionInfo.getUri().getPort(),
-					this.properties.getDatabase());
-		}
-		return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+		RedisUrl redisUrl = getRedisUrl();
+		return (redisUrl != null)
+				? Standalone.of(redisUrl.uri().getHost(), redisUrl.uri().getPort(), redisUrl.database(), getSslBundle())
+				: Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase(),
+						getSslBundle());
 	}
 
-	private ConnectionInfo connectionInfo(String url) {
-		return (url != null) ? RedisConnectionConfiguration.parseUrl(url) : null;
+	private SslBundle getSslBundle() {
+		if (!this.properties.getSsl().isEnabled()) {
+			return null;
+		}
+		String bundleName = this.properties.getSsl().getBundle();
+		if (StringUtils.hasLength(bundleName)) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(bundleName);
+		}
+		return SslBundle.systemDefault();
 	}
 
 	@Override
 	public Sentinel getSentinel() {
-		org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel sentinel = this.properties
-			.getSentinel();
-		if (sentinel == null) {
-			return null;
-		}
-		return new Sentinel() {
-
-			@Override
-			public int getDatabase() {
-				return PropertiesRedisConnectionDetails.this.properties.getDatabase();
-			}
-
-			@Override
-			public String getMaster() {
-				return sentinel.getMaster();
-			}
-
-			@Override
-			public List<Node> getNodes() {
-				return sentinel.getNodes().stream().map(PropertiesRedisConnectionDetails.this::asNode).toList();
-			}
-
-			@Override
-			public String getUsername() {
-				return sentinel.getUsername();
-			}
-
-			@Override
-			public String getPassword() {
-				return sentinel.getPassword();
-			}
-
-		};
+		RedisProperties.Sentinel sentinel = this.properties.getSentinel();
+		return (sentinel != null) ? new PropertiesSentinel(getStandalone().getDatabase(), sentinel) : null;
 	}
 
 	@Override
 	public Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
-		List<Node> nodes = (cluster != null) ? cluster.getNodes().stream().map(this::asNode).toList() : null;
-		return (nodes != null) ? () -> nodes : null;
+		return (cluster != null) ? new PropertiesCluster(cluster) : null;
+	}
+
+	private RedisUrl getRedisUrl() {
+		return RedisUrl.of(this.properties.getUrl());
+	}
+
+	private List<Node> asNodes(List<String> nodes) {
+		return nodes.stream().map(this::asNode).toList();
 	}
 
 	private Node asNode(String node) {
@@ -117,6 +102,75 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		String host = node.substring(0, portSeparatorIndex);
 		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
 		return new Node(host, port);
+	}
+
+	/**
+	 * {@link Cluster} implementation backed by properties.
+	 */
+	private class PropertiesCluster implements Cluster {
+
+		private final List<Node> nodes;
+
+		PropertiesCluster(RedisProperties.Cluster properties) {
+			this.nodes = asNodes(properties.getNodes());
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return this.nodes;
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return PropertiesRedisConnectionDetails.this.getSslBundle();
+		}
+
+	}
+
+	/**
+	 * {@link Sentinel} implementation backed by properties.
+	 */
+	private class PropertiesSentinel implements Sentinel {
+
+		private final int database;
+
+		private final RedisProperties.Sentinel properties;
+
+		PropertiesSentinel(int database, RedisProperties.Sentinel properties) {
+			this.database = database;
+			this.properties = properties;
+		}
+
+		@Override
+		public int getDatabase() {
+			return this.database;
+		}
+
+		@Override
+		public String getMaster() {
+			return this.properties.getMaster();
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return asNodes(this.properties.getNodes());
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return PropertiesRedisConnectionDetails.this.getSslBundle();
+		}
+
 	}
 
 }

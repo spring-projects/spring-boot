@@ -18,10 +18,12 @@ package org.springframework.boot.build.test;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
+import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.testing.Test;
@@ -43,17 +45,19 @@ public class DockerTestPlugin implements Plugin<Project> {
 	/**
 	 * Name of the {@code dockerTest} task.
 	 */
-	public static String DOCKER_TEST_TASK_NAME = "dockerTest";
+	public static final String DOCKER_TEST_TASK_NAME = "dockerTest";
 
 	/**
 	 * Name of the {@code dockerTest} source set.
 	 */
-	public static String DOCKER_TEST_SOURCE_SET_NAME = "dockerTest";
+	public static final String DOCKER_TEST_SOURCE_SET_NAME = "dockerTest";
 
 	/**
 	 * Name of the {@code dockerTest} shared service.
 	 */
-	public static String DOCKER_TEST_SERVICE_NAME = "dockerTest";
+	public static final String DOCKER_TEST_SERVICE_NAME = "dockerTest";
+
+	private static final String RECLAIM_DOCKER_SPACE_TASK_NAME = "reclaimDockerSpace";
 
 	@Override
 	public void apply(Project project) {
@@ -73,6 +77,8 @@ public class DockerTestPlugin implements Plugin<Project> {
 		});
 		project.getDependencies()
 			.add(dockerTestSourceSet.getRuntimeOnlyConfigurationName(), "org.junit.platform:junit-platform-launcher");
+		Provider<Exec> reclaimDockerSpace = createReclaimDockerSpaceTask(project, buildService);
+		project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME).dependsOn(reclaimDockerSpace);
 	}
 
 	private SourceSet createSourceSet(Project project) {
@@ -100,7 +106,7 @@ public class DockerTestPlugin implements Plugin<Project> {
 
 	private Provider<Test> createTestTask(Project project, SourceSet dockerTestSourceSet,
 			Provider<DockerTestBuildService> buildService) {
-		Provider<Test> dockerTest = project.getTasks().register(DOCKER_TEST_TASK_NAME, Test.class, (task) -> {
+		return project.getTasks().register(DOCKER_TEST_TASK_NAME, Test.class, (task) -> {
 			task.usesService(buildService);
 			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Runs Docker-based tests.");
@@ -108,7 +114,30 @@ public class DockerTestPlugin implements Plugin<Project> {
 			task.setClasspath(dockerTestSourceSet.getRuntimeClasspath());
 			task.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
 		});
-		return dockerTest;
+	}
+
+	private Provider<Exec> createReclaimDockerSpaceTask(Project project,
+			Provider<DockerTestBuildService> buildService) {
+		return project.getTasks().register(RECLAIM_DOCKER_SPACE_TASK_NAME, Exec.class, (task) -> {
+			task.usesService(buildService);
+			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+			task.setDescription("Reclaims Docker space on CI.");
+			task.shouldRunAfter(DOCKER_TEST_TASK_NAME);
+			task.onlyIf(this::shouldReclaimDockerSpace);
+			task.executable("bash");
+			task.args("-c",
+					project.getRootDir()
+						.toPath()
+						.resolve(".github/scripts/reclaim-docker-diskspace.sh")
+						.toAbsolutePath());
+		});
+	}
+
+	private boolean shouldReclaimDockerSpace(Task task) {
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			return false;
+		}
+		return System.getenv("GITHUB_ACTIONS") != null || System.getenv("RECLAIM_DOCKER_SPACE") != null;
 	}
 
 }

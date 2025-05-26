@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,9 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	private final ObjectName objectName;
 
-	private boolean ready = false;
+	private boolean ready;
 
-	private boolean embeddedWebApplication = false;
+	private boolean embeddedWebApplication;
 
 	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
@@ -72,7 +72,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
-				"ApplicationContext does not implement ConfigurableApplicationContext");
+				"'applicationContext' must be a ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
 

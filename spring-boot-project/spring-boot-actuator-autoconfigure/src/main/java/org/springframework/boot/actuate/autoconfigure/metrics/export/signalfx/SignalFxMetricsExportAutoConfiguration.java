@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
@@ -46,6 +47,8 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(SignalFxMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("signalfx")
 @EnableConfigurationProperties(SignalFxProperties.class)
+@Deprecated(since = "3.5.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class SignalFxMetricsExportAutoConfiguration {
 
 	@Bean

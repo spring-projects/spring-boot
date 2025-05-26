@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.task;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -25,6 +24,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -35,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -54,15 +56,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class TaskExecutorMetricsAutoConfiguration {
 
 	@Autowired
-	public void bindTaskExecutorsToRegistry(Map<String, Executor> executors, MeterRegistry registry) {
-		executors.forEach((beanName, executor) -> {
-			if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
-				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskExecutor), beanName);
-			}
-			else if (executor instanceof ThreadPoolTaskScheduler threadPoolTaskScheduler) {
-				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskScheduler), beanName);
-			}
-		});
+	public void bindTaskExecutorsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
+		SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, TaskExecutor.class)
+			.forEach((beanName, executor) -> {
+				if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+					monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskExecutor), beanName);
+				}
+				else if (executor instanceof ThreadPoolTaskScheduler threadPoolTaskScheduler) {
+					monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskScheduler), beanName);
+				}
+			});
 	}
 
 	@Bean

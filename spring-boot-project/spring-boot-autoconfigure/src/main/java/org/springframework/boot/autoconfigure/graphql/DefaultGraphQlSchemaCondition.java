@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.graphql.execution.GraphQlSource;
 
 /**
  * {@link Condition} that checks whether a GraphQL schema has been defined in the
  * application. This is looking for:
  * <ul>
  * <li>schema files in the {@link GraphQlProperties configured locations}</li>
- * <li>or infrastructure beans such as {@link GraphQlSourceBuilderCustomizer}</li>
+ * <li>or {@link GraphQlSourceBuilderCustomizer} beans</li>
+ * <li>or a {@link GraphQlSource} bean</li>
  * </ul>
  *
  * @author Brian Clozel
@@ -81,6 +83,14 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 		}
 		else {
 			messages.add((message.didNotFind("GraphQlSourceBuilderCustomizer").atAll()));
+		}
+		String[] graphQlSourceBeanNames = beanFactory.getBeanNamesForType(GraphQlSource.class, false, false);
+		if (graphQlSourceBeanNames.length != 0) {
+			match = true;
+			messages.add(message.found("GraphQlSource").items(Arrays.asList(graphQlSourceBeanNames)));
+		}
+		else {
+			messages.add((message.didNotFind("GraphQlSource").atAll()));
 		}
 		return new ConditionOutcome(match, ConditionMessage.of(messages));
 	}

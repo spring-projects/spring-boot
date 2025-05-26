@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource
 	private final Set<String> required;
 
 	ConnectionNamePredicate(String... required) {
-		Assert.notEmpty(required, "Required must not be empty");
+		Assert.notEmpty(required, "'required' must not be empty");
 		this.required = Arrays.stream(required).map(this::asCanonicalName).collect(Collectors.toSet());
 	}
 

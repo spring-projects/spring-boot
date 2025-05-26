@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.gson;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Gson.
@@ -92,9 +95,21 @@ public class GsonAutoConfiguration {
 			map.from(properties::getLongSerializationPolicy).to(builder::setLongSerializationPolicy);
 			map.from(properties::getFieldNamingPolicy).to(builder::setFieldNamingPolicy);
 			map.from(properties::getPrettyPrinting).whenTrue().toCall(builder::setPrettyPrinting);
-			map.from(properties::getStrictness).to(builder::setStrictness);
+			map.from(properties::getStrictness).to(strictnessOrLeniency(builder));
 			map.from(properties::getDisableHtmlEscaping).whenTrue().toCall(builder::disableHtmlEscaping);
 			map.from(properties::getDateFormat).to(builder::setDateFormat);
+		}
+
+		@SuppressWarnings("deprecation")
+		private Consumer<GsonProperties.Strictness> strictnessOrLeniency(GsonBuilder builder) {
+			if (ClassUtils.isPresent("com.google.gson.Strictness", getClass().getClassLoader())) {
+				return (strictness) -> builder.setStrictness(Strictness.valueOf(strictness.name()));
+			}
+			return (strictness) -> {
+				if (strictness == GsonProperties.Strictness.LENIENT) {
+					builder.setLenient();
+				}
+			};
 		}
 
 	}

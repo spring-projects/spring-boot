@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.docker-test"
 }
 
@@ -19,6 +18,7 @@ configurations.all {
 dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:kafka")

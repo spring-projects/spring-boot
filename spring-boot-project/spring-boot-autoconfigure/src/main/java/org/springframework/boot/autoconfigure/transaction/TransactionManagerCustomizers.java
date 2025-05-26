@@ -59,8 +59,8 @@ public final class TransactionManagerCustomizers {
 	 * @since 3.2.0
 	 */
 	public static TransactionManagerCustomizers of(Collection<? extends TransactionManagerCustomizer<?>> customizers) {
-		return new TransactionManagerCustomizers((customizers != null) ? new ArrayList<>(customizers)
-				: Collections.<TransactionManagerCustomizer<?>>emptyList());
+		return new TransactionManagerCustomizers(
+				(customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList());
 	}
 
 }

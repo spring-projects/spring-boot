@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
@@ -120,15 +120,15 @@ public abstract class JpaBaseConfiguration {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
 			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
-		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter, buildJpaProperties(),
-				persistenceUnitManager.getIfAvailable());
+		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
+				this::buildJpaProperties, persistenceUnitManager.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
-	private Map<String, ?> buildJpaProperties() {
+	private Map<String, ?> buildJpaProperties(DataSource dataSource) {
 		Map<String, Object> properties = new HashMap<>(this.properties.getProperties());
-		Map<String, Object> vendorProperties = getVendorProperties();
+		Map<String, Object> vendorProperties = getVendorProperties(dataSource);
 		customizeVendorProperties(vendorProperties);
 		properties.putAll(vendorProperties);
 		return properties;
@@ -148,7 +148,24 @@ public abstract class JpaBaseConfiguration {
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
 
-	protected abstract Map<String, Object> getVendorProperties();
+	/**
+	 * Return the vendor-specific properties for the given {@link DataSource}.
+	 * @param dataSource the data source
+	 * @return the vendor properties
+	 * @since 3.4.4
+	 */
+	protected abstract Map<String, Object> getVendorProperties(DataSource dataSource);
+
+	/**
+	 * Return the vendor-specific properties.
+	 * @return the vendor properties
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
+	 * {@link #getVendorProperties(DataSource)}
+	 */
+	@Deprecated(since = "3.4.4", forRemoval = true)
+	protected Map<String, Object> getVendorProperties() {
+		return getVendorProperties(getDataSource());
+	}
 
 	/**
 	 * Customize vendor properties before they are used. Allows for post-processing (for
@@ -224,7 +241,7 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
 	@ConditionalOnMissingFilterBean(OpenEntityManagerInViewFilter.class)
-	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.jpa.open-in-view", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
 		private static final Log logger = LogFactory.getLog(JpaWebConfiguration.class);

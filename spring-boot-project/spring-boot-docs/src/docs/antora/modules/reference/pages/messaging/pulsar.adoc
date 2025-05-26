@@ -13,7 +13,7 @@ There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive`
 [[messaging.pulsar.connecting]]
 == Connecting to Pulsar
 
-When you use the Pulsar starter, Spring Boot will auto-configure and register a `PulsarClient` bean.
+When you use the Pulsar starter, Spring Boot will auto-configure and register a javadoc:org.apache.pulsar.client.api.PulsarClient[] bean.
 
 By default, the application tries to connect to a local Pulsar instance at `pulsar://localhost:6650`.
 This can be adjusted by setting the configprop:spring.pulsar.client.service-url[] property to a different value.
@@ -22,7 +22,7 @@ NOTE: The value must be a valid https://pulsar.apache.org/docs/client-libraries-
 
 You can configure the client by specifying any of the `spring.pulsar.client.*` prefixed application properties.
 
-If you need more control over the configuration, consider registering one or more `PulsarClientBuilderCustomizer` beans.
+If you need more control over the configuration, consider registering one or more javadoc:org.springframework.pulsar.core.PulsarClientBuilderCustomizer[] beans.
 
 
 
@@ -71,22 +71,22 @@ For complete details on the client and authentication see the Spring for Apache 
 [[messaging.pulsar.connecting-reactive]]
 == Connecting to Pulsar Reactively
 
-When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a `ReactivePulsarClient` bean.
+When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] bean.
 
-The `ReactivePulsarClient` adapts an instance of the previously described `PulsarClient`.
-Therefore, follow the previous section to configure the `PulsarClient` used by the `ReactivePulsarClient`.
+The javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] adapts an instance of the previously described javadoc:org.apache.pulsar.client.api.PulsarClient[].
+Therefore, follow the previous section to configure the javadoc:org.apache.pulsar.client.api.PulsarClient[] used by the javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[].
 
 
 
 [[messaging.pulsar.admin]]
 == Connecting to Pulsar Administration
 
-Spring for Apache Pulsar's `PulsarAdministration` client is also auto-configured.
+Spring for Apache Pulsar's javadoc:org.springframework.pulsar.core.PulsarAdministration[] client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
 This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[] property to a different value in the form `(http|https)://<host>:<port>`.
 
-If you need more control over the configuration, consider registering one or more `PulsarAdminBuilderCustomizer` beans.
+If you need more control over the configuration, consider registering one or more javadoc:org.springframework.pulsar.core.PulsarAdminBuilderCustomizer[] beans.
 
 
 
@@ -96,7 +96,7 @@ If you need more control over the configuration, consider registering one or mor
 When accessing a Pulsar cluster that requires authentication, the admin client requires the same security configuration as the regular Pulsar client.
 You can use the aforementioned xref:messaging/pulsar.adoc#messaging.pulsar.connecting.auth[authentication configuration] by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
 
-TIP: To create a topic on startup, add a bean of type `PulsarTopic`.
+TIP: To create a topic on startup, add a bean of type javadoc:org.springframework.pulsar.core.PulsarTopic[].
 If the topic already exists, the bean is ignored.
 
 
@@ -104,74 +104,74 @@ If the topic already exists, the bean is ignored.
 [[messaging.pulsar.sending]]
 == Sending a Message
 
-Spring's `PulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
+Spring's javadoc:org.springframework.pulsar.core.PulsarTemplate[] is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include-code::MyBean[]
 
-The `PulsarTemplate` relies on a `PulsarProducerFactory` to create the underlying Pulsar producer.
+The javadoc:org.springframework.pulsar.core.PulsarTemplate[] relies on a javadoc:org.springframework.pulsar.core.PulsarProducerFactory[] to create the underlying Pulsar producer.
 Spring Boot auto-configuration also provides this producer factory, which by default, caches the producers that it creates.
 You can configure the producer factory and cache settings by specifying any of the `spring.pulsar.producer.\*` and `spring.pulsar.producer.cache.*` prefixed application properties.
 
-If you need more control over the producer factory configuration, consider registering one or more `ProducerBuilderCustomizer` beans.
+If you need more control over the producer factory configuration, consider registering one or more javadoc:org.springframework.pulsar.core.ProducerBuilderCustomizer[] beans.
 These customizers are applied to all created producers.
-You can also pass in a `ProducerBuilderCustomizer` when sending a message to only affect the current producer.
+You can also pass in a javadoc:org.springframework.pulsar.core.ProducerBuilderCustomizer[] when sending a message to only affect the current producer.
 
-If you need more control over the message being sent, you can pass in a `TypedMessageBuilderCustomizer` when sending a message.
+If you need more control over the message being sent, you can pass in a javadoc:org.springframework.pulsar.core.TypedMessageBuilderCustomizer[] when sending a message.
 
 
 
 [[messaging.pulsar.sending-reactive]]
 == Sending a Message Reactively
 
-When the Reactive auto-configuration is activated, Spring's `ReactivePulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
+When the Reactive auto-configuration is activated, Spring's javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarTemplate[] is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include-code::MyBean[]
 
-The `ReactivePulsarTemplate` relies on a `ReactivePulsarSenderFactory` to actually create the underlying sender.
+The javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarTemplate[] relies on a javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory[] to actually create the underlying sender.
 Spring Boot auto-configuration also provides this sender factory, which by default, caches the producers that it creates.
 You can configure the sender factory and cache settings by specifying any of the `spring.pulsar.producer.\*` and `spring.pulsar.producer.cache.*` prefixed application properties.
 
-If you need more control over the sender factory configuration, consider registering one or more `ReactiveMessageSenderBuilderCustomizer` beans.
+If you need more control over the sender factory configuration, consider registering one or more javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer[] beans.
 These customizers are applied to all created senders.
-You can also pass in a `ReactiveMessageSenderBuilderCustomizer` when sending a message to only affect the current sender.
+You can also pass in a javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer[] when sending a message to only affect the current sender.
 
-If you need more control over the message being sent, you can pass in a `MessageSpecBuilderCustomizer` when sending a message.
+If you need more control over the message being sent, you can pass in a javadoc:org.springframework.pulsar.reactive.core.MessageSpecBuilderCustomizer[] when sending a message.
 
 
 
 [[messaging.pulsar.receiving]]
 == Receiving a Message
 
-When the Apache Pulsar infrastructure is present, any bean can be annotated with `@PulsarListener` to create a listener endpoint.
+When the Apache Pulsar infrastructure is present, any bean can be annotated with javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] to create a listener endpoint.
 The following component creates a listener endpoint on the `someTopic` topic:
 
 include-code::MyBean[]
 
-Spring Boot auto-configuration provides all the components necessary for `PulsarListener`, such as the `PulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying Pulsar consumers.
+Spring Boot auto-configuration provides all the components necessary for javadoc:org.springframework.pulsar.annotation.PulsarListener[], such as the javadoc:org.springframework.pulsar.config.PulsarListenerContainerFactory[] and the consumer factory it uses to construct the underlying Pulsar consumers.
 You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
-If you need more control over the consumer factory configuration, consider registering one or more `ConsumerBuilderCustomizer` beans.
-These customizers are applied to all consumers created by the factory, and therefore all `@PulsarListener` instances.
-You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@PulsarListener` annotation.
+If you need more control over the configuration of the consumer factory, consider registering one or more javadoc:org.springframework.pulsar.core.ConsumerBuilderCustomizer[] beans.
+These customizers are applied to all consumers created by the factory, and therefore all javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] instances.
+You can also customize a single listener by setting the `consumerCustomizer` attribute of the javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] annotation.
 
-
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>>` beans.
 
 [[messaging.pulsar.receiving-reactive]]
 == Receiving a Message Reactively
 
-When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with `@ReactivePulsarListener` to create a reactive listener endpoint.
+When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] to create a reactive listener endpoint.
 The following component creates a reactive listener endpoint on the `someTopic` topic:
 
 include-code::MyBean[]
 
-Spring Boot auto-configuration provides all the components necessary for `ReactivePulsarListener`, such as the `ReactivePulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying reactive Pulsar consumers.
-You can configure these components by specifying any of the `spring.pulsar.listener.*` and `spring.pulsar.consumer.*` prefixed application properties.
+Spring Boot auto-configuration provides all the components necessary for javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[], such as the javadoc:org.springframework.pulsar.reactive.config.ReactivePulsarListenerContainerFactory[] and the consumer factory it uses to construct the underlying reactive Pulsar consumers.
+You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
-If you need more control over the consumer factory configuration, consider registering one or more `ReactiveMessageConsumerBuilderCustomizer` beans.
-These customizers are applied to all consumers created by the factory, and therefore all `@ReactivePulsarListener` instances.
-You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@ReactivePulsarListener` annotation.
+If you need more control over the configuration of the consumer factory, consider registering one or more javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageConsumerBuilderCustomizer[] beans.
+These customizers are applied to all consumers created by the factory, and therefore all javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] instances.
+You can also customize a single listener by setting the `consumerCustomizer` attribute of the javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] annotation.
 
-
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>>` beans.
 
 [[messaging.pulsar.reading]]
 == Reading a Message
@@ -179,35 +179,36 @@ You can also customize a single listener by setting the `consumerCustomizer` att
 The Pulsar reader interface enables applications to manually manage cursors.
 When you use a reader to connect to a topic you need to specify which message the reader begins reading from when it connects to a topic.
 
-When the Apache Pulsar infrastructure is present, any bean can be annotated with `@PulsarReader` to consume messages using a reader.
+When the Apache Pulsar infrastructure is present, any bean can be annotated with javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] to consume messages using a reader.
 The following component creates a reader endpoint that starts reading messages from the beginning of the `someTopic` topic:
 
 include-code::MyBean[]
 
-The `@PulsarReader` relies on a `PulsarReaderFactory` to create the underlying Pulsar reader.
+The javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] relies on a javadoc:org.springframework.pulsar.core.PulsarReaderFactory[] to create the underlying Pulsar reader.
 Spring Boot auto-configuration provides this reader factory which can be customized by setting any of the `spring.pulsar.reader.*` prefixed application properties.
 
-If you need more control over the reader factory configuration, consider registering one or more `ReaderBuilderCustomizer` beans.
-These customizers are applied to all readers created by the factory, and therefore all `@PulsarReader` instances.
-You can also customize a single listener by setting the `readerCustomizer` attribute of the `@PulsarReader` annotation.
+If you need more control over the configuration of the reader factory, consider registering one or more javadoc:org.springframework.pulsar.core.ReaderBuilderCustomizer[] beans.
+These customizers are applied to all readers created by the factory, and therefore all javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] instances.
+You can also customize a single listener by setting the `readerCustomizer` attribute of the javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] annotation.
 
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>>` beans.
 
 
 [[messaging.pulsar.reading-reactive]]
 == Reading a Message Reactively
 
-When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's `ReactivePulsarReaderFactory` is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
+When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory[] is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
 The following component creates a reader using the provided factory and reads a single message from 5 minutes ago from the `someTopic` topic:
 
 include-code::MyBean[]
 
 Spring Boot auto-configuration provides this reader factory which can be customized by setting any of the `spring.pulsar.reader.*` prefixed application properties.
 
-If you need more control over the reader factory configuration, consider passing in one or more `ReactiveMessageReaderBuilderCustomizer` instances when using the factory to create a reader.
+If you need more control over the reader factory configuration, consider passing in one or more javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[] instances when using the factory to create a reader.
 
-If you need more control over the reader factory configuration, consider registering one or more `ReactiveMessageReaderBuilderCustomizer` beans.
+If you need more control over the reader factory configuration, consider registering one or more javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[] beans.
 These customizers are applied to all created readers.
-You can also pass one or more `ReactiveMessageReaderBuilderCustomizer` when creating a reader to only apply the customizations to the created reader.
+You can also pass one or more javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[] when creating a reader to only apply the customizations to the created reader.
 
 TIP: For more details on any of the above components and to discover other available features, see the Spring for Apache Pulsar {url-spring-pulsar-docs}[reference documentation].
 
@@ -216,20 +217,20 @@ TIP: For more details on any of the above components and to discover other avail
 [[messaging.pulsar.transactions]]
 == Transaction Support
 
-Spring for Apache Pulsar supports transactions when using `PulsarTemplate` and `@PulsarListener`.
+Spring for Apache Pulsar supports transactions when using javadoc:org.springframework.pulsar.core.PulsarTemplate[] and javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation].
 
 NOTE: Transactions are not currently supported when using the reactive variants.
 
 Setting the configprop:spring.pulsar.transaction.enabled[] property to `true` will:
 
-* Configure a `PulsarTransactionManager` bean
-* Enable transaction support for `PulsarTemplate`
-* Enable transaction support for `@PulsarListener` methods
+* Configure a javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] bean
+* Enable transaction support for javadoc:org.springframework.pulsar.core.PulsarTemplate[]
+* Enable transaction support for javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] methods
 
-The `transactional` attribute of `@PulsarListener` can be used to fine-tune when transactions should be used with listeners.
+The `transactional` attribute of javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] can be used to fine-tune when transactions should be used with listeners.
 
-For more control of the Spring for Apache Pulsar transaction features you should define your own `PulsarTemplate` and/or `ConcurrentPulsarListenerContainerFactory` beans.
-You can also define a `PulsarAwareTransactionManager` bean if the default auto-configured `PulsarTransactionManager` is not suitable.
+For more control of the Spring for Apache Pulsar transaction features you should define your own javadoc:org.springframework.pulsar.core.PulsarTemplate[] and/or javadoc:org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory[] beans.
+You can also define a javadoc:org.springframework.pulsar.transaction.PulsarAwareTransactionManager[] bean if the default auto-configured javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] is not suitable.
 
 
 
@@ -240,5 +241,5 @@ The properties supported by auto-configuration are shown in the xref:appendix:ap
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 
-Only a subset of the properties supported by Pulsar are available directly through the `PulsarProperties` class.
+Only a subset of the properties supported by Pulsar are available directly through the javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarProperties[] class.
 If you wish to tune the auto-configured components with additional properties that are not directly supported, you can use the customizer supported by each aforementioned component.

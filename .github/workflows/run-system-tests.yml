@@ -3,13 +3,11 @@ on:
   push:
     branches:
       - main
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   run-system-tests:
     name: 'Java ${{ matrix.java.version}}'
-    runs-on: ubuntu-latest
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     strategy:
       matrix:
         java:
@@ -23,18 +21,18 @@ jobs:
       - name: Prepare Gradle Build
         uses: ./.github/actions/prepare-gradle-build
         with:
-          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
-          java-version: ${{ matrix.java.version }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           java-toolchain: ${{ matrix.java.toolchain }}
+          java-version: ${{ matrix.java.version }}
       - name: Run System Tests
         id: run-system-tests
         shell: bash
         run: ./gradlew systemTest
       - name: Send Notification
-        uses: ./.github/actions/send-notification
         if: always()
+        uses: ./.github/actions/send-notification
         with:
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          status: ${{ job.status }}
           build-scan-url: ${{ steps.run-system-tests.outputs.build-scan-url }}
           run-name: ${{ format('{0} | System Tests | Java {1}', github.ref_name, matrix.java.version) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

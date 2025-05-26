@@ -55,7 +55,7 @@ dependencies {
 }
 ----
 
-NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
+NOTE: `spring-boot-starter-reactor-netty` is required to use the javadoc:org.springframework.web.reactive.function.client.WebClient[] class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
 
 
 
@@ -63,7 +63,7 @@ NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` cla
 == Disabling the Web Server
 
 If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
-To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
+To disable this behavior configure the javadoc:org.springframework.boot.WebApplicationType[] in your `application.properties`, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -78,9 +78,9 @@ spring:
 == Change the HTTP Port
 
 In a standalone application, the main HTTP port defaults to `8080` but can be set with configprop:server.port[] (for example, in `application.properties` or as a System property).
-Thanks to relaxed binding of `Environment` values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).
+Thanks to relaxed binding of javadoc:org.springframework.core.env.Environment[] values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).
 
-To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
+To switch off the HTTP endpoints completely but still create a javadoc:org.springframework.web.context.WebApplicationContext[], use `server.port=-1` (doing so is sometimes useful for testing).
 
 For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class.
 
@@ -96,16 +96,16 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto.webserver.discover-port]]
 == Discover the HTTP Port at Runtime
 
-You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `WebServer`.
-The best way to get that and be sure it has been initialized is to add a `@Bean` of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
+You can access the port the server is running on from log output or from the javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] through its javadoc:org.springframework.boot.web.server.WebServer[].
+The best way to get that and be sure it has been initialized is to add a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
 
-Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
+Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation, as shown in the following example:
 
 include-code::MyWebIntegrationTests[]
 
 [NOTE]
 ====
-`@LocalServerPort` is a meta-annotation for `@Value("${local.server.port}")`.
+javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] is a meta-annotation for `@Value("${local.server.port}")`.
 Do not try to inject the port in a regular application.
 As we just saw, the value is set only after the container has been initialized.
 Contrary to a test, application code callbacks are processed early (before the value is actually available).
@@ -208,7 +208,15 @@ server:
     bundle: "example"
 ----
 
-NOTE: The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
+[NOTE]
+====
+The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
+
+The configprop:server.ssl.ciphers[], configprop:server.ssl.enabled-protocols[], configprop:server.ssl.protocol[] properties are also ignored when using a bundle.
+These properties should instead be defined using `spring.ssl.bundle.<type>.<name>.options` properties.
+====
+
+
 
 [[howto.webserver.configure-ssl.sni]]
 === Configure Server Name Indication
@@ -308,9 +316,9 @@ The example below is for Tomcat with the `spring-boot-starter-web` (servlet stac
 include-code::MyTomcatWebServerCustomizer[]
 
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
-Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
+Auto-configured javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
 
-Once you have got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+Once you have got access to a javadoc:org.springframework.boot.web.server.WebServerFactory[] using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
 
 In addition Spring Boot provides:
 
@@ -320,23 +328,23 @@ In addition Spring Boot provides:
 | Server | Servlet stack | Reactive stack
 
 | Tomcat
-| `TomcatServletWebServerFactory`
-| `TomcatReactiveWebServerFactory`
+| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[]
+| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[]
 
 | Jetty
-| `JettyServletWebServerFactory`
-| `JettyReactiveWebServerFactory`
+| javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[]
+| javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[]
 
 | Undertow
-| `UndertowServletWebServerFactory`
-| `UndertowReactiveWebServerFactory`
+| javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[]
+| javadoc:org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory[]
 
 | Reactor
 | N/A
-| `NettyReactiveWebServerFactory`
+| javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[]
 |===
 
-As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+As a last resort, you can also declare your own javadoc:org.springframework.boot.web.server.WebServerFactory[] bean, which will override the one provided by Spring Boot.
 When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
 
@@ -344,7 +352,7 @@ When you do so, auto-configured customizers are still applied on your custom fac
 [[howto.webserver.add-servlet-filter-listener]]
 == Add a Servlet, Filter, or Listener to an Application
 
-In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
+In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add javadoc:jakarta.servlet.Servlet[], javadoc:jakarta.servlet.Filter[], javadoc:jakarta.servlet.ServletContextListener[], and the other listeners supported by the Servlet API to your application:
 
 * xref:webserver.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[]
 * xref:webserver.adoc#howto.webserver.add-servlet-filter-listener.using-scanning[]
@@ -354,13 +362,14 @@ In a servlet stack application, that is with the `spring-boot-starter-web`, ther
 [[howto.webserver.add-servlet-filter-listener.spring-bean]]
 === Add a Servlet, Filter, or Listener by Using a Spring Bean
 
-To add a `Servlet`, `Filter`, or servlet `*Listener` by using a Spring bean, you must provide a `@Bean` definition for it.
+To add a javadoc:jakarta.servlet.Servlet[], javadoc:jakarta.servlet.Filter[], or servlet `*Listener` by using a Spring bean, you must provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] definition for it.
 Doing so can be very useful when you want to inject configuration or dependencies.
 However, you must be very careful that they do not cause eager initialization of too many other beans, because they have to be installed in the container very early in the application lifecycle.
-(For example, it is not a good idea to have them depend on your `DataSource` or JPA configuration.)
+(For example, it is not a good idea to have them depend on your javadoc:javax.sql.DataSource[] or JPA configuration.)
 You can work around such restrictions by initializing the beans lazily when first used instead of on initialization.
 
-In the case of filters and servlets, you can also add mappings and init parameters by adding a `FilterRegistrationBean` or a `ServletRegistrationBean` instead of or in addition to the underlying component.
+In the case of filters and servlets, you can also add mappings and init parameters by adding a javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[] or a javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] instead of or in addition to the underlying component.
+You can also use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] and javadoc:org.springframework.boot.web.servlet.FilterRegistration[format=annotation] as an annotation-based alternative to javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] and javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[].
 
 [NOTE]
 ====
@@ -375,8 +384,8 @@ Like any other Spring bean, you can define the order of servlet filter beans; pl
 [[howto.webserver.add-servlet-filter-listener.spring-bean.disable]]
 ==== Disable Registration of a Servlet or Filter
 
-As xref:webserver.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
-To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
+As xref:webserver.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any javadoc:jakarta.servlet.Servlet[] or javadoc:jakarta.servlet.Filter[] beans are registered with the servlet container automatically.
+To disable registration of a particular javadoc:jakarta.servlet.Filter[] or javadoc:jakarta.servlet.Servlet[] bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
 include-code::MyFilterConfiguration[]
 
@@ -385,8 +394,8 @@ include-code::MyFilterConfiguration[]
 [[howto.webserver.add-servlet-filter-listener.using-scanning]]
 === Add Servlets, Filters, and Listeners by Using Classpath Scanning
 
-`@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
-By default, `@ServletComponentScan` scans from the package of the annotated class.
+javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] annotated classes can be automatically registered with an embedded servlet container by annotating a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class with javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] and specifying the package(s) containing the components that you want to register.
+By default, javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] scans from the package of the annotated class.
 
 
 
@@ -441,7 +450,7 @@ server:
       filename: "/var/log/jetty-access.log"
 ----
 
-By default, logs are redirected to `System.err`.
+By default, logs are redirected to javadoc:java.lang.System#err[].
 For more details, see the Jetty documentation.
 
 
@@ -498,14 +507,14 @@ server:
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
-You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a `WebServerFactoryCustomizer` bean.
+You can take complete control of the configuration of Tomcat's javadoc:org.apache.catalina.valves.RemoteIpValve[] by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] bean.
 
 
 
 [[howto.webserver.enable-multiple-connectors-in-tomcat]]
 == Enable Multiple Connectors with Tomcat
 
-You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
+You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
 include-code::MyTomcatConfiguration[]
 
@@ -531,7 +540,7 @@ server:
 [[howto.webserver.enable-multiple-listeners-in-undertow]]
 == Enable Multiple Listeners with Undertow
 
-Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `Builder`, as shown in the following example:
+Add an javadoc:org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer[] to the javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[] and add a listener to the `io.undertow.Undertow.Builder`, as shown in the following example:
 
 include-code::MyUndertowConfiguration[]
 
@@ -540,9 +549,9 @@ include-code::MyUndertowConfiguration[]
 [[howto.webserver.create-websocket-endpoints-using-serverendpoint]]
 == Create WebSocket Endpoints Using @ServerEndpoint
 
-If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
+If you want to use javadoc:jakarta.websocket.server.ServerEndpoint[format=annotation] in a Spring Boot application that used an embedded container, you must declare a single javadoc:org.springframework.web.socket.server.standard.ServerEndpointExporter[] javadoc:org.springframework.context.annotation.Bean[format=annotation], as shown in the following example:
 
 include-code::MyWebSocketConfiguration[]
 
-The bean shown in the preceding example registers any `@ServerEndpoint` annotated beans with the underlying WebSocket container.
-When deployed to a standalone servlet container, this role is performed by a servlet container initializer, and the `ServerEndpointExporter` bean is not required.
+The bean shown in the preceding example registers any javadoc:jakarta.websocket.server.ServerEndpoint[format=annotation] annotated beans with the underlying WebSocket container.
+When deployed to a standalone servlet container, this role is performed by a servlet container initializer, and the javadoc:org.springframework.web.socket.server.standard.ServerEndpointExporter[] bean is not required.

@@ -50,7 +50,7 @@ import org.springframework.context.annotation.Import;
 public class ArtemisAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(ArtemisConnectionDetails.class)
+	@ConditionalOnMissingBean
 	ArtemisConnectionDetails artemisConnectionDetails(ArtemisProperties properties) {
 		return new PropertiesArtemisConnectionDetails(properties);
 	}

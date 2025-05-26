@@ -16,10 +16,9 @@
 
 package smoketest.data.redis;
 
+import com.redis.testcontainers.RedisContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
-
-import org.springframework.boot.testsupport.container.RedisContainer;
 
 /**
  * A {@link RedisContainer} for Redis with SSL configuration.

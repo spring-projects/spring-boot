@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import com.sun.jna.Platform;
 import org.apache.hc.client5.http.DnsResolver;
@@ -30,12 +29,14 @@ import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator;
+import org.apache.hc.client5.http.io.DetachedSocketFactory;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.routing.HttpRoutePlanner;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.config.Lookup;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 
@@ -48,6 +49,7 @@ import org.springframework.boot.buildpack.platform.socket.UnixDomainSocket;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 final class LocalHttpClientTransport extends HttpClientTransport {
 
@@ -61,10 +63,15 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		super(client, host);
 	}
 
+	@Override
+	protected void beforeExecute(HttpRequest request) {
+		request.setHeader("Host", LOCAL_DOCKER_HOST.toHostString());
+	}
+
 	static LocalHttpClientTransport create(ResolvedDockerHost dockerHost) {
-		HttpClientBuilder builder = HttpClients.custom();
-		builder.setConnectionManager(new LocalConnectionManager(dockerHost.getAddress()));
-		builder.setRoutePlanner(new LocalRoutePlanner());
+		HttpClientBuilder builder = HttpClients.custom()
+			.setConnectionManager(new LocalConnectionManager(dockerHost))
+			.setRoutePlanner(new LocalRoutePlanner());
 		HttpHost host = new HttpHost(DOCKER_SCHEME, dockerHost.getAddress());
 		return new LocalHttpClientTransport(builder.build(), host);
 	}
@@ -78,15 +85,42 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 			.setValidateAfterInactivity(TimeValue.NEG_ONE_MILLISECOND)
 			.build();
 
-		LocalConnectionManager(String host) {
-			super(getRegistry(host), null, null, new LocalDnsResolver());
+		private static final Lookup<TlsSocketStrategy> NO_TLS_SOCKET = (name) -> null;
+
+		LocalConnectionManager(ResolvedDockerHost dockerHost) {
+			super(createhttpClientConnectionOperator(dockerHost), null);
 			setConnectionConfig(CONNECTION_CONFIG);
 		}
 
-		private static Registry<ConnectionSocketFactory> getRegistry(String host) {
-			RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.create();
-			builder.register(DOCKER_SCHEME, new LocalConnectionSocketFactory(host));
-			return builder.build();
+		private static DefaultHttpClientConnectionOperator createhttpClientConnectionOperator(
+				ResolvedDockerHost dockerHost) {
+			LocalDetachedSocketFactory detachedSocketFactory = new LocalDetachedSocketFactory(dockerHost);
+			LocalDnsResolver dnsResolver = new LocalDnsResolver();
+			return new DefaultHttpClientConnectionOperator(detachedSocketFactory, null, dnsResolver, NO_TLS_SOCKET);
+		}
+
+	}
+
+	/**
+	 * {@link DetachedSocketFactory} for local Docker.
+	 */
+	static class LocalDetachedSocketFactory implements DetachedSocketFactory {
+
+		private static final String NPIPE_PREFIX = "npipe://";
+
+		private final ResolvedDockerHost dockerHost;
+
+		LocalDetachedSocketFactory(ResolvedDockerHost dockerHost) {
+			this.dockerHost = dockerHost;
+		}
+
+		@Override
+		public Socket create(Proxy proxy) throws IOException {
+			String address = this.dockerHost.getAddress();
+			if (address.startsWith(NPIPE_PREFIX)) {
+				return NamedPipeSocket.get(address.substring(NPIPE_PREFIX.length()));
+			}
+			return (!Platform.isWindows()) ? UnixDomainSocket.get(address) : NamedPipeSocket.get(address);
 		}
 
 	}
@@ -99,44 +133,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private static final InetAddress LOOPBACK = InetAddress.getLoopbackAddress();
 
 		@Override
-		public InetAddress[] resolve(String host) throws UnknownHostException {
+		public InetAddress[] resolve(String host) {
 			return new InetAddress[] { LOOPBACK };
 		}
 
 		@Override
-		public String resolveCanonicalHostname(String host) throws UnknownHostException {
+		public String resolveCanonicalHostname(String host) {
 			return LOOPBACK.getCanonicalHostName();
-		}
-
-	}
-
-	/**
-	 * {@link ConnectionSocketFactory} that connects to the local Docker domain socket or
-	 * named pipe.
-	 */
-	private static class LocalConnectionSocketFactory implements ConnectionSocketFactory {
-
-		private static final String NPIPE_PREFIX = "npipe://";
-
-		private final String host;
-
-		LocalConnectionSocketFactory(String host) {
-			this.host = host;
-		}
-
-		@Override
-		public Socket createSocket(HttpContext context) throws IOException {
-			if (this.host.startsWith(NPIPE_PREFIX)) {
-				return NamedPipeSocket.get(this.host.substring(NPIPE_PREFIX.length()));
-			}
-			return (!Platform.isWindows()) ? UnixDomainSocket.get(this.host) : NamedPipeSocket.get(this.host);
-		}
-
-		@Override
-		public Socket connectSocket(TimeValue connectTimeout, Socket socket, HttpHost host,
-				InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context)
-				throws IOException {
-			return socket;
 		}
 
 	}

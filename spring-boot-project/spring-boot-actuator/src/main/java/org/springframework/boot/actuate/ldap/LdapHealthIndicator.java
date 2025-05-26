@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 
 	public LdapHealthIndicator(LdapOperations ldapOperations) {
 		super("LDAP health check failed");
-		Assert.notNull(ldapOperations, "LdapOperations must not be null");
+		Assert.notNull(ldapOperations, "'ldapOperations' must not be null");
 		this.ldapOperations = ldapOperations;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class GradleBuildInjectionExtension implements BeforeEachCallback {
 		this.gradleBuild = new GradleBuild();
 		this.gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
 		String bootVersion = System.getProperty("springBootVersion");
-		Assert.notNull(bootVersion, "Property 'springBootVersion' must be set in build environment");
+		Assert.state(bootVersion != null, "Property 'springBootVersion' must be set in build environment");
 		this.gradleBuild.bootVersion(bootVersion);
 	}
 

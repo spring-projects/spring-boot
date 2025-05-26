@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @param <E> The event type
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Wolfgang Kronberg
  */
 abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 
@@ -38,10 +39,15 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	}
 
 	@Test
-	void getProgressDetailsReturnsProgressDetails() {
+	void getProgressDetailReturnsProgressDetails() {
 		ProgressUpdateEvent event = createEvent();
-		assertThat(event.getProgressDetail().getCurrent()).isOne();
-		assertThat(event.getProgressDetail().getTotal()).isEqualTo(2);
+		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
+	}
+
+	@Test
+	void getProgressDetailReturnsProgressDetailsForLongNumbers() {
+		ProgressUpdateEvent event = createEvent("status", new ProgressDetail(4000000000L, 8000000000L), "progress");
+		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
 	}
 
 	@Test
@@ -50,26 +56,8 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 		assertThat(event.getProgress()).isEqualTo("progress");
 	}
 
-	@Test
-	void progressDetailIsEmptyWhenCurrentIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(null, 2);
-		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
-	}
-
-	@Test
-	void progressDetailIsEmptyWhenTotalIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(1, null);
-		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
-	}
-
-	@Test
-	void progressDetailIsEmptyWhenTotalAndCurrentAreNotNullReturnsFalse() {
-		ProgressDetail detail = new ProgressDetail(1, 2);
-		assertThat(ProgressDetail.isEmpty(detail)).isFalse();
-	}
-
 	protected E createEvent() {
-		return createEvent("status", new ProgressDetail(1, 2), "progress");
+		return createEvent("status", new ProgressDetail(1L, 2L), "progress");
 	}
 
 	protected abstract E createEvent(String status, ProgressDetail progressDetail, String progress);

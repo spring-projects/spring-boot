@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,23 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,6 +50,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for web {@link Endpoint @Endpoint}
@@ -50,6 +59,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Yongjun Hong
  * @since 2.0.0
  */
 @AutoConfiguration(after = EndpointAutoConfiguration.class)
@@ -81,11 +91,14 @@ public class WebEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
 	public WebEndpointDiscoverer webEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, ObjectProvider<PathMapper> endpointPathMappers,
+			ObjectProvider<AdditionalPathsMapper> additionalPathsMappers,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
-			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> filters) {
+			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> endpointFilters,
+			ObjectProvider<OperationFilter<WebOperation>> operationFilters) {
 		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper, endpointMediaTypes,
-				endpointPathMappers.orderedStream().toList(), invokerAdvisors.orderedStream().toList(),
-				filters.orderedStream().toList());
+				endpointPathMappers.orderedStream().toList(), additionalPathsMappers.orderedStream().toList(),
+				invokerAdvisors.orderedStream().toList(), endpointFilters.orderedStream().toList(),
+				operationFilters.orderedStream().toList());
 	}
 
 	@Bean
@@ -102,7 +115,32 @@ public class WebEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers) {
-		return new PathMappedEndpoints(this.properties.getBasePath(), endpointSuppliers);
+		String basePath = this.properties.getBasePath();
+		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints(basePath, endpointSuppliers);
+		if ((!StringUtils.hasText(basePath) || "/".equals(basePath))
+				&& ManagementPortType.get(this.applicationContext.getEnvironment()) == ManagementPortType.SAME) {
+			assertHasNoRootPaths(pathMappedEndpoints);
+		}
+		return pathMappedEndpoints;
+	}
+
+	private void assertHasNoRootPaths(PathMappedEndpoints endpoints) {
+		for (PathMappedEndpoint endpoint : endpoints) {
+			if (endpoint instanceof ExposableWebEndpoint webEndpoint) {
+				Assert.state(!isMappedToRootPath(webEndpoint),
+						() -> "Management base path and the '" + webEndpoint.getEndpointId()
+								+ "' actuator endpoint are both mapped to '/' "
+								+ "on the server port which will block access to other endpoints. "
+								+ "Please use a different path for management endpoints or map them to a "
+								+ "dedicated management port.");
+			}
+
+		}
+	}
+
+	private boolean isMappedToRootPath(PathMappedEndpoint endpoint) {
+		return endpoint.getRootPath().equals("/")
+				|| endpoint.getAdditionalPaths(WebServerNamespace.SERVER).contains("/");
 	}
 
 	@Bean
@@ -119,6 +157,11 @@ public class WebEndpointAutoConfiguration {
 		return new IncludeExcludeEndpointFilter<>(
 				org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint.class,
 				exposure.getInclude(), exposure.getExclude());
+	}
+
+	@Bean
+	OperationFilter<WebOperation> webAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
+		return OperationFilter.byAccess(endpointAccessResolver);
 	}
 
 	@Configuration(proxyBeanMethods = false)

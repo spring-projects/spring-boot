@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 	@Override
 	public VehicleDetails getVehicleDetails(VehicleIdentificationNumber vin)
 			throws VehicleIdentificationNumberNotFoundException {
-		Assert.notNull(vin, "VIN must not be null");
+		Assert.notNull(vin, "'vin' must not be null");
 		logger.debug("Retrieving vehicle data for: " + vin);
 		try {
 			return this.restTemplate.getForObject("/vehicle/{vin}/details", VehicleDetails.class, vin);

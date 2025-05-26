@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/27693">gh-27693</a>
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

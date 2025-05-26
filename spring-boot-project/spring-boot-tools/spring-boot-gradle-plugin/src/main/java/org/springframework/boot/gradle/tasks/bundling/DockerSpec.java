@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 
 /**
  * Encapsulates Docker configuration options.
@@ -113,13 +114,13 @@ public abstract class DockerSpec {
 	}
 
 	/**
-	 * Returns this configuration as a {@link DockerConfiguration} instance. This method
-	 * should only be called when the configuration is complete and will no longer be
-	 * changed.
+	 * Returns this configuration as a {@link BuilderDockerConfiguration} instance. This
+	 * method should only be called when the configuration is complete and will no longer
+	 * be changed.
 	 * @return the Docker configuration
 	 */
-	DockerConfiguration asDockerConfiguration() {
-		DockerConfiguration dockerConfiguration = new DockerConfiguration();
+	BuilderDockerConfiguration asDockerConfiguration() {
+		BuilderDockerConfiguration dockerConfiguration = new BuilderDockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
 		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(getBindHostToBuilder().get());
 		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
@@ -127,7 +128,7 @@ public abstract class DockerSpec {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+	private BuilderDockerConfiguration customizeHost(BuilderDockerConfiguration dockerConfiguration) {
 		String context = getContext().getOrNull();
 		String host = getHost().getOrNull();
 		if (context != null && host != null) {
@@ -143,36 +144,31 @@ public abstract class DockerSpec {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
-		if (this.builderRegistry == null || this.builderRegistry.hasEmptyAuth()) {
-			return dockerConfiguration;
-		}
-		if (this.builderRegistry.hasTokenAuth() && !this.builderRegistry.hasUserAuth()) {
-			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken().get());
-		}
-		if (this.builderRegistry.hasUserAuth() && !this.builderRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername().get(),
-					this.builderRegistry.getPassword().get(), this.builderRegistry.getUrl().getOrNull(),
-					this.builderRegistry.getEmail().getOrNull());
-		}
-		throw new GradleException(
-				"Invalid Docker builder registry configuration, either token or username/password must be provided");
+	private BuilderDockerConfiguration customizeBuilderAuthentication(BuilderDockerConfiguration dockerConfiguration) {
+		return dockerConfiguration.withBuilderRegistryAuthentication(getRegistryAuthentication("builder",
+				this.builderRegistry, DockerRegistryAuthentication.configuration(null)));
 	}
 
-	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
-		if (this.publishRegistry == null || this.publishRegistry.hasEmptyAuth()) {
-			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
+	private BuilderDockerConfiguration customizePublishAuthentication(BuilderDockerConfiguration dockerConfiguration) {
+		return dockerConfiguration
+			.withPublishRegistryAuthentication(getRegistryAuthentication("publish", this.publishRegistry,
+					DockerRegistryAuthentication.configuration(DockerRegistryAuthentication.EMPTY_USER)));
+	}
+
+	private DockerRegistryAuthentication getRegistryAuthentication(String type, DockerRegistrySpec registry,
+			DockerRegistryAuthentication fallback) {
+		if (registry == null || registry.hasEmptyAuth()) {
+			return fallback;
 		}
-		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
-			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken().get());
+		if (registry.hasTokenAuth() && !registry.hasUserAuth()) {
+			return DockerRegistryAuthentication.token(registry.getToken().get());
 		}
-		if (this.publishRegistry.hasUserAuth() && !this.publishRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername().get(),
-					this.publishRegistry.getPassword().get(), this.publishRegistry.getUrl().getOrNull(),
-					this.publishRegistry.getEmail().getOrNull());
+		if (registry.hasUserAuth() && !registry.hasTokenAuth()) {
+			return DockerRegistryAuthentication.user(registry.getUsername().get(), registry.getPassword().get(),
+					registry.getUrl().getOrNull(), registry.getEmail().getOrNull());
 		}
-		throw new GradleException(
-				"Invalid Docker publish registry configuration, either token or username/password must be provided");
+		throw new GradleException("Invalid Docker " + type
+				+ " registry configuration, either token or username/password must be provided");
 	}
 
 	/**

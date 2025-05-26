@@ -16,14 +16,7 @@
 
 package org.springframework.boot.json;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,10 +27,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.springframework.boot.json.JsonValueWriter.Series;
 import org.springframework.boot.json.JsonWriter.Member.Extractor;
-import org.springframework.core.io.WritableResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -155,150 +148,9 @@ public interface JsonWriter<T> {
 	 * @see Members
 	 */
 	static <T> JsonWriter<T> of(Consumer<Members<T>> members) {
-		Members<T> initializedMembers = new Members<>(members, false); // Don't inline
+		// Don't inline 'new Members' (must be outside of lambda)
+		Members<T> initializedMembers = new Members<>(members, false);
 		return (instance, out) -> initializedMembers.write(instance, new JsonValueWriter(out));
-	}
-
-	/**
-	 * JSON content that can be written out.
-	 */
-	@FunctionalInterface
-	interface WritableJson {
-
-		/**
-		 * Write the JSON to the provided {@link Appendable}.
-		 * @param out the {@link Appendable} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		void to(Appendable out) throws IOException;
-
-		/**
-		 * Write the JSON to a {@link String}.
-		 * @return the JSON string
-		 */
-		default String toJsonString() {
-			try {
-				StringBuilder stringBuilder = new StringBuilder();
-				to(stringBuilder);
-				return stringBuilder.toString();
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
-		}
-
-		/**
-		 * Write the JSON to a UTF-8 encoded byte array.
-		 * @return the JSON bytes
-		 */
-		default byte[] toByteArray() {
-			return toByteArray(StandardCharsets.UTF_8);
-		}
-
-		/**
-		 * Write the JSON to a byte array.
-		 * @param charset the charset
-		 * @return the JSON bytes
-		 */
-		default byte[] toByteArray(Charset charset) {
-			Assert.notNull(charset, "'charset' must not be null");
-			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-				toWriter(new OutputStreamWriter(out, charset));
-				return out.toByteArray();
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link WritableResource} using
-		 * {@link StandardCharsets#UTF_8 UTF8} encoding.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		default void toResource(WritableResource out) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			try (OutputStream outputStream = out.getOutputStream()) {
-				toOutputStream(outputStream);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link WritableResource} using the given
-		 * {@link Charset}.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @param charset the charset to use
-		 * @throws IOException on IO error
-		 */
-		default void toResource(WritableResource out, Charset charset) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			Assert.notNull(charset, "'charset' must not be null");
-			try (OutputStream outputStream = out.getOutputStream()) {
-				toOutputStream(outputStream, charset);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream} using
-		 * {@link StandardCharsets#UTF_8 UTF8} encoding. The output stream will not be
-		 * closed.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 * @see #toOutputStream(OutputStream, Charset)
-		 */
-		default void toOutputStream(OutputStream out) throws IOException {
-			toOutputStream(out, StandardCharsets.UTF_8);
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream} using the given
-		 * {@link Charset}. The output stream will not be closed.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @param charset the charset to use
-		 * @throws IOException on IO error
-		 */
-		default void toOutputStream(OutputStream out, Charset charset) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			Assert.notNull(charset, "'charset' must not be null");
-			toWriter(new OutputStreamWriter(out, charset));
-		}
-
-		/**
-		 * Write the JSON to the provided {@link Writer}. The writer will be flushed but
-		 * not closed.
-		 * @param out the {@link Writer} to receive the JSON
-		 * @throws IOException on IO error
-		 * @see #toOutputStream(OutputStream, Charset)
-		 */
-		default void toWriter(Writer out) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			to(out);
-			out.flush();
-		}
-
-		/**
-		 * Factory method used to create a {@link WritableJson} with a sensible
-		 * {@link Object#toString()} that delegate to {@link WritableJson#toJsonString()}.
-		 * @param writableJson the source {@link WritableJson}
-		 * @return a new {@link WritableJson} with a sensible {@link Object#toString()}.
-		 */
-		static WritableJson of(WritableJson writableJson) {
-			return new WritableJson() {
-
-				@Override
-				public void to(Appendable out) throws IOException {
-					writableJson.to(out);
-				}
-
-				@Override
-				public String toString() {
-					return toJsonString();
-				}
-
-			};
-		}
-
 	}
 
 	/**
@@ -324,6 +176,8 @@ public interface JsonWriter<T> {
 		private final boolean contributesPair;
 
 		private final Series series;
+
+		private final JsonWriterFiltersAndProcessors jsonProcessors = new JsonWriterFiltersAndProcessors();
 
 		Members(Consumer<Members<T>> members, boolean contributesToExistingSeries) {
 			Assert.notNull(members, "'members' must not be null");
@@ -440,6 +294,33 @@ public interface JsonWriter<T> {
 			return addMember(null, extractor);
 		}
 
+		/**
+		 * Add a filter that will be used to restrict the members written to the JSON.
+		 * @param predicate the predicate used to filter members
+		 */
+		public void applyingPathFilter(Predicate<MemberPath> predicate) {
+			Assert.notNull(predicate, "'predicate' must not be null");
+			this.jsonProcessors.pathFilters().add(predicate);
+		}
+
+		/**
+		 * Add the a {@link NameProcessor} to be applied when the JSON is written.
+		 * @param nameProcessor the name processor to add
+		 */
+		public void applyingNameProcessor(NameProcessor nameProcessor) {
+			Assert.notNull(nameProcessor, "'nameProcessor' must not be null");
+			this.jsonProcessors.nameProcessors().add(nameProcessor);
+		}
+
+		/**
+		 * Add the a {@link ValueProcessor} to be applied when the JSON is written.
+		 * @param valueProcessor the value processor to add
+		 */
+		public void applyingValueProcessor(ValueProcessor<?> valueProcessor) {
+			Assert.notNull(valueProcessor, "'valueProcessor' must not be null");
+			this.jsonProcessors.valueProcessors().add(valueProcessor);
+		}
+
 		private <V> Member<V> addMember(String name, Function<T, V> extractor) {
 			Member<V> member = new Member<>(this.members.size(), name, Extractor.of(extractor));
 			this.members.add(member);
@@ -452,11 +333,13 @@ public interface JsonWriter<T> {
 		 * @param valueWriter the JSON value writer to use
 		 */
 		void write(T instance, JsonValueWriter valueWriter) {
+			valueWriter.pushProcessors(this.jsonProcessors);
 			valueWriter.start(this.series);
 			for (Member<?> member : this.members) {
 				member.write(instance, valueWriter);
 			}
 			valueWriter.end(this.series);
+			valueWriter.popProcessors();
 		}
 
 		/**
@@ -869,6 +752,117 @@ public interface JsonWriter<T> {
 	}
 
 	/**
+	 * A path used to identify a specific JSON member. Paths can be represented as strings
+	 * in form {@code "my.json[1].item"} where elements are separated by {@code '.' } or
+	 * {@code [<index>]}. Reserved characters are escaped using {@code '\'}.
+	 *
+	 * @param parent the parent of this path
+	 * @param name the name of the member or {@code null} if the member is indexed. Path
+	 * names are provided as they were defined when the member was added and do not
+	 * include any {@link NameProcessor name processing}.
+	 * @param index the index of the member or {@link MemberPath#UNINDEXED}
+	 */
+	record MemberPath(MemberPath parent, String name, int index) {
+
+		private static final String[] ESCAPED = { "\\", ".", "[", "]" };
+
+		public MemberPath {
+			Assert.isTrue((name != null && index < 0) || (name == null && index >= 0),
+					"'name' and 'index' cannot be mixed");
+		}
+
+		/**
+		 * Indicates that the member has no index.
+		 */
+		public static final int UNINDEXED = -1;
+
+		/**
+		 * The root of all member paths.
+		 */
+		static final MemberPath ROOT = new MemberPath(null, "", UNINDEXED);
+
+		/**
+		 * Create a new child from this path with the specified index.
+		 * @param index the index of the child
+		 * @return a new {@link MemberPath} instance
+		 */
+		public MemberPath child(int index) {
+			return new MemberPath(this, null, index);
+		}
+
+		/**
+		 * Create a new child from this path with the specified name.
+		 * @param name the name of the child
+		 * @return a new {@link MemberPath} instance
+		 */
+		public MemberPath child(String name) {
+			return (!StringUtils.hasLength(name)) ? this : new MemberPath(this, name, UNINDEXED);
+		}
+
+		@Override
+		public final String toString() {
+			return toString(true);
+		}
+
+		/**
+		 * Return a string representation of the path without any escaping.
+		 * @return the unescaped string representation
+		 */
+		public final String toUnescapedString() {
+			return toString(false);
+		}
+
+		private String toString(boolean escape) {
+			StringBuilder string = new StringBuilder((this.parent != null) ? this.parent.toString(escape) : "");
+			if (this.index >= 0) {
+				string.append("[").append(this.index).append("]");
+			}
+			else {
+				string.append((!string.isEmpty()) ? "." : "").append((!escape) ? this.name : escape(this.name));
+			}
+			return string.toString();
+		}
+
+		private String escape(String name) {
+			for (String escape : ESCAPED) {
+				name = name.replace(escape, "\\" + escape);
+			}
+			return name;
+		}
+
+		/**
+		 * Create a new {@link MemberPath} instance from the given string.
+		 * @param value the path value
+		 * @return a new {@link MemberPath} instance
+		 */
+		public static MemberPath of(String value) {
+			MemberPath path = MemberPath.ROOT;
+			StringBuilder buffer = new StringBuilder();
+			boolean escape = false;
+			for (char ch : value.toCharArray()) {
+				if (!escape && ch == '\\') {
+					escape = true;
+				}
+				else if (!escape && (ch == '.' || ch == '[')) {
+					path = path.child(buffer.toString());
+					buffer.setLength(0);
+				}
+				else if (!escape && ch == ']') {
+					path = path.child(Integer.parseUnsignedInt(buffer.toString()));
+					buffer.setLength(0);
+				}
+				else {
+					buffer.append(ch);
+					escape = false;
+				}
+			}
+			path = path.child(buffer.toString());
+			return path;
+		}
+
+	}
+
+	/**
 	 * Interface that can be used to extract name/value pairs from an element.
 	 *
 	 * @param <E> the element type
@@ -917,6 +911,132 @@ public interface JsonWriter<T> {
 				}
 
 			};
+		}
+
+	}
+
+	/**
+	 * Callback interface that can be {@link Members#applyingNameProcessor(NameProcessor)
+	 * applied} to {@link Members} to change names or filter members.
+	 */
+	@FunctionalInterface
+	interface NameProcessor {
+
+		/**
+		 * Return a new name for the JSON member or {@code null} if the member should be
+		 * filtered entirely.
+		 * @param path the path of the member
+		 * @param existingName the existing and possibly already processed name.
+		 * @return the new name
+		 */
+		String processName(MemberPath path, String existingName);
+
+		/**
+		 * Factory method to create a new {@link NameProcessor} for the given operation.
+		 * @param operation the operation to apply
+		 * @return a new {@link NameProcessor} instance
+		 */
+		static NameProcessor of(UnaryOperator<String> operation) {
+			Assert.notNull(operation, "'operation' must not be null");
+			return (path, existingName) -> operation.apply(existingName);
+		}
+
+	}
+
+	/**
+	 * Callback interface that can be
+	 * {@link Members#applyingValueProcessor(ValueProcessor) applied} to {@link Members}
+	 * to process values before they are written. Typically used to filter values, for
+	 * example to reduce superfluous information or sanitize sensitive data.
+	 *
+	 * @param <T> the value type
+	 */
+	@FunctionalInterface
+	interface ValueProcessor<T> {
+
+		/**
+		 * Process the value at the given path.
+		 * @param path the path of the member containing the value
+		 * @param value the value being written (may be {@code null})
+		 * @return the processed value
+		 */
+		T processValue(MemberPath path, T value);
+
+		/**
+		 * Return a new processor from this one that only applied to members with the
+		 * given path (ignoring escape characters).
+		 * @param path the patch to match
+		 * @return a new {@link ValueProcessor} that only applies when the path matches
+		 */
+		default ValueProcessor<T> whenHasUnescapedPath(String path) {
+			return whenHasPath((candidate) -> candidate.toString(false).equals(path));
+		}
+
+		/**
+		 * Return a new processor from this one that only applied to members with the
+		 * given path.
+		 * @param path the patch to match
+		 * @return a new {@link ValueProcessor} that only applies when the path matches
+		 */
+		default ValueProcessor<T> whenHasPath(String path) {
+			return whenHasPath(MemberPath.of(path)::equals);
+		}
+
+		/**
+		 * Return a new processor from this one that only applied to members that match
+		 * the given path predicate.
+		 * @param predicate the predicate that must match
+		 * @return a new {@link ValueProcessor} that only applies when the predicate
+		 * matches
+		 */
+		default ValueProcessor<T> whenHasPath(Predicate<MemberPath> predicate) {
+			return (path, value) -> (predicate.test(path)) ? processValue(path, value) : value;
+		}
+
+		/**
+		 * Return a new processor from this one that only applies to member with values of
+		 * the given type.
+		 * @param type the type that must match
+		 * @return a new {@link ValueProcessor} that only applies when value is the given
+		 * type.
+		 */
+		default ValueProcessor<T> whenInstanceOf(Class<?> type) {
+			return when(type::isInstance);
+		}
+
+		/**
+		 * Return a new processor from this one that only applies to member with values
+		 * that match the given predicate.
+		 * @param predicate the predicate that must match
+		 * @return a new {@link ValueProcessor} that only applies when the predicate
+		 * matches
+		 */
+		default ValueProcessor<T> when(Predicate<T> predicate) {
+			return (name, value) -> (predicate.test(value)) ? processValue(name, value) : value;
+		}
+
+		/**
+		 * Factory method to crate a new {@link ValueProcessor} that applies the given
+		 * action.
+		 * @param <T> the value type
+		 * @param type the value type
+		 * @param action the action to apply
+		 * @return a new {@link ValueProcessor} instance
+		 */
+		static <T> ValueProcessor<T> of(Class<? extends T> type, UnaryOperator<T> action) {
+			return of(action).whenInstanceOf(type);
+		}
+
+		/**
+		 * Factory method to crate a new {@link ValueProcessor} that applies the given
+		 * action.
+		 * @param <T> the value type
+		 * @param action the action to apply
+		 * @return a new {@link ValueProcessor} instance
+		 */
+		static <T> ValueProcessor<T> of(UnaryOperator<T> action) {
+			Assert.notNull(action, "'action' must not be null");
+			return (name, value) -> action.apply(value);
 		}
 
 	}

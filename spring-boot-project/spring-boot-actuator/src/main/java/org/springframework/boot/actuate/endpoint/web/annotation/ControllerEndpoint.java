@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
@@ -70,5 +71,13 @@ public @interface ControllerEndpoint {
 	 */
 	@AliasFor(annotation = Endpoint.class)
 	boolean enableByDefault() default true;
+
+	/**
+	 * Level of access to the endpoint that is permitted by default.
+	 * @return the default level of access
+	 * @since 3.4.0
+	 */
+	@AliasFor(annotation = Endpoint.class)
+	Access defaultAccess() default Access.UNRESTRICTED;
 
 }

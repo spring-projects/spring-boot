@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot Flyway smoke test"

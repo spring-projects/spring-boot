@@ -49,7 +49,7 @@ More details on getting started with Spring Boot and Maven can be found in the x
 [[getting-started.installing.java.gradle]]
 === Gradle Installation
 
-Spring Boot is compatible with Gradle 7.x (7.6.4 or later) or 8.x (8.3 or later).
+Spring Boot is compatible with Gradle 7.x (7.6.4 or later) or 8.x (8.4 or later).
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -177,15 +177,15 @@ $ sudo port install spring-boot-cli
 === Command-line Completion
 
 The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
-You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
-On a Debian system, the system-wide scripts are in `<installation location>/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
+You can `source` the script named `spring` (`_spring` for zsh) or put it in your personal or system-wide bash completion initialization.
+On a Debian system, the system-wide scripts are in `<installation location>/shell-completion/<bash|zsh>` and all scripts in that directory are executed when a new shell starts.
 For example, to run the script manually if you have installed by using SDKMAN!, use the following commands:
 
 [source,shell]
 ----
 $ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
 $ spring <HIT TAB HERE>
-  grab  help  jar  run  test  version
+  encodepassword  help  init  shell  version
 ----
 
 NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the command-line completion scripts are automatically registered with your shell.

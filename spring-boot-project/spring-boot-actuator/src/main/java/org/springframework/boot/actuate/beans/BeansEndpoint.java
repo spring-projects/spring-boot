@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ public class BeansEndpoint {
 
 		private BeanDescriptor(String[] aliases, String scope, Class<?> type, String resource, String[] dependencies) {
 			this.aliases = aliases;
-			this.scope = (StringUtils.hasText(scope) ? scope : BeanDefinition.SCOPE_SINGLETON);
+			this.scope = (StringUtils.hasText(scope) ? scope : ConfigurableBeanFactory.SCOPE_SINGLETON);
 			this.type = type;
 			this.resource = resource;
 			this.dependencies = dependencies;

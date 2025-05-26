@@ -1,5 +1,6 @@
 name: Build and Deploy Snapshot
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -8,8 +9,8 @@ concurrency:
 jobs:
   build-and-deploy-snapshot:
     name: Build and Deploy Snapshot
-    runs-on: ubuntu-latest
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
@@ -17,35 +18,41 @@ jobs:
         id: build-and-publish
         uses: ./.github/actions/build
         with:
-          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+          commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          gradle-cache-read-only: false
           publish: true
       - name: Deploy
-        uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
+        uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
-          uri: 'https://repo.spring.io'
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          build-name: 'spring-boot-3.4.x'
-          repository: 'libs-snapshot-local'
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '3.5.x') || format('spring-boot-{0}', '3.5.x') }}
           folder: 'deployment-repository'
+          password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
+          project: ${{ vars.COMMERCIAL && 'spring' }}
+          repository: ${{ vars.COMMERCIAL && 'spring-enterprise-maven-dev-local' || 'libs-snapshot-local' }}
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
+          username: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_USERNAME || secrets.ARTIFACTORY_USERNAME }}
       - name: Send Notification
-        uses: ./.github/actions/send-notification
         if: always()
+        uses: ./.github/actions/send-notification
         with:
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          status: ${{ job.status }}
           build-scan-url: ${{ steps.build-and-publish.outputs.build-scan-url }}
           run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
   trigger-docs-build:
     name: Trigger Docs Build
-    runs-on: ubuntu-latest
     needs: build-and-deploy-snapshot
     permissions:
       actions: write
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Run Deploy Docs Workflow
         env:
@@ -56,9 +63,11 @@ jobs:
     needs: build-and-deploy-snapshot
     uses: ./.github/workflows/verify.yml
     secrets:
+      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
       google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-      repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      opensource-repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      opensource-repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
       token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
     with:
       version: ${{ needs.build-and-deploy-snapshot.outputs.version }}

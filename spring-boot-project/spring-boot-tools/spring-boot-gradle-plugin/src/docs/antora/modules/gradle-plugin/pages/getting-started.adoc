@@ -3,7 +3,34 @@
 
 To get started with the plugin it needs to be applied to your project.
 
-ifeval::["{artifact-release-type}" == "release"]
+ifeval::["{build-type}" == "commercial"]
+The plugin is published to the Spring Commercial repository.
+You will have to configure your build to access this repository.
+This is usual done through a local artifact repository that mirrors the content of the Spring Commercial repository.
+Alternatively, while it is not recommended, the Spring Commercial repository can also be accessed directly.
+In either case, see https://docs.vmware.com/en/Tanzu-Spring-Runtime/Commercial/Tanzu-Spring-Runtime/spring-enterprise-subscription.html[the Tanzu Spring Runtime documentation] for further details.
+
+With access to the Spring Commercial repository configured in `settings.gradle` or `settings.gradle.kts`, the plugin can be applied using the `plugins` block:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-commercial.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-commercial.gradle.kts[]
+----
+======
+endif::[]
+
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-release"]
 The plugin is https://plugins.gradle.org/plugin/org.springframework.boot[published to Gradle's plugin portal] and can be applied using the `plugins` block:
 
 [tabs]
@@ -23,7 +50,7 @@ include::example$getting-started/apply-plugin-release.gradle.kts[]
 ======
 endif::[]
 
-ifeval::["{artifact-release-type}" == "milestone"]
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
 The plugin is published to the Spring milestones repository.
 Gradle can be configured to use the milestones repository and the plugin can then be applied using the `plugins` block.
 To configure Gradle to use the milestones repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
@@ -63,7 +90,7 @@ include::example$getting-started/apply-plugin-release.gradle.kts[]
 ======
 endif::[]
 
-ifeval::["{artifact-release-type}" == "snapshot"]
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 The plugin is published to the Spring snapshots repository.
 Gradle can be configured to use the snapshots repository and the plugin can then be applied using the `plugins` block.
 To configure Gradle to use the snapshots repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):

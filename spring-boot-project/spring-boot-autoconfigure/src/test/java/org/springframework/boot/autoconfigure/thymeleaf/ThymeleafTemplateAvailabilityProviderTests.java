@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
@@ -39,6 +40,7 @@ class ThymeleafTemplateAvailabilityProviderTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
+	@WithResource(name = "templates/home.html")
 	void availabilityOfTemplateInDefaultLocation() {
 		assertThat(this.provider.isTemplateAvailable("home", this.environment, getClass().getClassLoader(),
 				this.resourceLoader))
@@ -53,6 +55,7 @@ class ThymeleafTemplateAvailabilityProviderTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-templates/custom.html")
 	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.thymeleaf.prefix", "classpath:/custom-templates/");
 		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
@@ -61,6 +64,7 @@ class ThymeleafTemplateAvailabilityProviderTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/suffixed.thymeleaf")
 	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.thymeleaf.suffix", ".thymeleaf");
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),

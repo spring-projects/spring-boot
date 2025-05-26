@@ -348,8 +348,11 @@ class BootZipCopyAction implements CopyAction {
 
 		private void writeJarModeLibrary(String location, JarModeLibrary library) throws IOException {
 			String name = location + library.getName();
-			writeEntry(name, ZipEntryContentWriter.fromInputStream(library.openStream()), false,
-					(entry) -> prepareStoredEntry(library.openStream(), entry));
+			writeEntry(name, ZipEntryContentWriter.fromInputStream(library.openStream()), false, (entry) -> {
+				try (InputStream in = library.openStream()) {
+					prepareStoredEntry(library.openStream(), entry);
+				}
+			});
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
 				this.layerIndex.add(layer, name);

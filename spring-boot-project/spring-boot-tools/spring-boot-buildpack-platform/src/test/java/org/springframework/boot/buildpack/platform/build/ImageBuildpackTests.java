@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
@@ -156,7 +157,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		given(resolverContext.fetchImage(any(), any())).willReturn(image);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:latest");
-		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
 			.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
 	}
 
@@ -165,7 +166,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("docker://buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-			.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
+			.withMessageContaining("'value' [buildpack@0.0.1] must be an image reference");
 	}
 
 	@Test

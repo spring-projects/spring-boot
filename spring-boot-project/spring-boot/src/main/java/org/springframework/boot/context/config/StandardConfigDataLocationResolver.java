@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -54,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sijun Yang
  * @since 2.4.0
  */
 public class StandardConfigDataLocationResolver
@@ -66,8 +66,6 @@ public class StandardConfigDataLocationResolver
 	static final String[] DEFAULT_CONFIG_NAMES = { "application" };
 
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
-
-	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)](?!\\[)$");
 
 	private static final String NO_PROFILE = null;
 
@@ -89,7 +87,7 @@ public class StandardConfigDataLocationResolver
 			ResourceLoader resourceLoader) {
 		this.logger = logFactory.getLog(StandardConfigDataLocationResolver.class);
 		this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				getClass().getClassLoader());
+				resourceLoader.getClassLoader());
 		this.configNames = getConfigNames(binder);
 		this.resourceLoader = new LocationResourceLoader(resourceLoader);
 	}
@@ -148,6 +146,7 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location, Profiles profiles) {
+		validateProfiles(profiles);
 		return resolve(getProfileSpecificReferences(context, location.split(), profiles));
 	}
 
@@ -163,11 +162,32 @@ public class StandardConfigDataLocationResolver
 		return references;
 	}
 
+	private void validateProfiles(Profiles profiles) {
+		for (String profile : profiles) {
+			validateProfile(profile);
+		}
+	}
+
+	private void validateProfile(String profile) {
+		Assert.hasText(profile, "'profile' must contain text");
+		Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
+				() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
+		Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
+				() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
+		profile.codePoints().forEach((codePoint) -> {
+			if (codePoint == '-' || codePoint == '_' || Character.isLetterOrDigit(codePoint)) {
+				return;
+			}
+			throw new IllegalStateException(
+					String.format("Invalid profile '%s': must contain only letters, digits, '-', or '_'", profile));
+		});
+	}
+
 	private String getResourceLocation(ConfigDataLocationResolverContext context,
 			ConfigDataLocation configDataLocation) {
 		String resourceLocation = configDataLocation.getNonPrefixedValue(PREFIX);
-		boolean isAbsolute = resourceLocation.startsWith("/") || URL_PREFIX.matcher(resourceLocation).matches();
-		if (isAbsolute) {
+		boolean isFixedPath = resourceLocation.startsWith("/") || URL_PREFIX.matcher(resourceLocation).matches();
+		if (isFixedPath) {
 			return resourceLocation;
 		}
 		ConfigDataResource parent = context.getParent();
@@ -215,17 +235,16 @@ public class StandardConfigDataLocationResolver
 
 	private Set<StandardConfigDataReference> getReferencesForFile(ConfigDataLocation configDataLocation, String file,
 			String profile) {
-		Matcher extensionHintMatcher = EXTENSION_HINT_PATTERN.matcher(file);
-		boolean extensionHintLocation = extensionHintMatcher.matches();
-		if (extensionHintLocation) {
-			file = extensionHintMatcher.group(1) + extensionHintMatcher.group(2);
+		FileExtensionHint fileExtensionHint = FileExtensionHint.from(file);
+		if (fileExtensionHint.isPresent()) {
+			file = FileExtensionHint.removeFrom(file) + fileExtensionHint;
 		}
 		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
-			String extension = getLoadableFileExtension(propertySourceLoader, file);
-			if (extension != null) {
-				String root = file.substring(0, file.length() - extension.length() - 1);
+			String fileExtension = getLoadableFileExtension(propertySourceLoader, file);
+			if (fileExtension != null) {
+				String root = file.substring(0, file.length() - fileExtension.length() - 1);
 				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, null, root,
-						profile, (!extensionHintLocation) ? extension : null, propertySourceLoader);
+						profile, (!fileExtensionHint.isPresent()) ? fileExtension : null, propertySourceLoader);
 				return Collections.singleton(reference);
 			}
 		}

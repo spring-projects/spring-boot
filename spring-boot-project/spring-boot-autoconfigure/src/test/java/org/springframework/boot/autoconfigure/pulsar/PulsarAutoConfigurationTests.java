@@ -72,6 +72,7 @@ import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties.TransactionSettings;
+import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -585,6 +586,45 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(ListenerContainerFactoryCustomizersConfig.class)
+				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.subscriptionName", ":bar:foo"));
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ListenerContainerFactoryCustomizersConfig {
+
+			@Bean
+			@Order(50)
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
+				return (containerFactory) -> {
+					throw new IllegalStateException("should-not-have-matched");
+				};
+			}
+
+			@Bean
+			@Order(200)
+			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerFoo() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
+			}
+
+			@Bean
+			@Order(100)
+			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerBar() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":bar");
+			}
+
+			private void appendToSubscriptionName(ConcurrentPulsarListenerContainerFactory<?> containerFactory,
+					String valueToAppend) {
+				String subscriptionName = containerFactory.getContainerProperties().getSubscriptionName();
+				String updatedValue = (subscriptionName != null) ? subscriptionName + valueToAppend : valueToAppend;
+				containerFactory.getContainerProperties().setSubscriptionName(updatedValue);
+			}
+
+		}
+
 	}
 
 	@Nested
@@ -617,7 +657,7 @@ class PulsarAutoConfigurationTests {
 		}
 
 		@Test
-		<T> void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+		<T> void whenHasUserDefinedReaderBuilderCustomizersAppliesInCorrectOrder() {
 			this.contextRunner.withPropertyValues("spring.pulsar.reader.name=fromPropsCustomizer")
 				.withUserConfiguration(ReaderBuilderCustomizersConfig.class)
 				.run((context) -> {
@@ -654,6 +694,13 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenHasUserDefinedFactoryCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(ReaderContainerFactoryCustomizersConfig.class)
+				.run((context) -> assertThat(context).getBean(DefaultPulsarReaderContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.readerListener", ":bar:foo"));
+		}
+
 		@TestConfiguration(proxyBeanMethods = false)
 		static class ReaderBuilderCustomizersConfig {
 
@@ -667,6 +714,38 @@ class PulsarAutoConfigurationTests {
 			@Order(100)
 			ReaderBuilderCustomizer<?> customizerBar() {
 				return (builder) -> builder.readerName("fromCustomizer1");
+			}
+
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReaderContainerFactoryCustomizersConfig {
+
+			@Bean
+			@Order(50)
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
+				return (containerFactory) -> {
+					throw new IllegalStateException("should-not-have-matched");
+				};
+			}
+
+			@Bean
+			@Order(200)
+			PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>> customizerFoo() {
+				return (containerFactory) -> appendToReaderListener(containerFactory, ":foo");
+			}
+
+			@Bean
+			@Order(100)
+			PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>> customizerBar() {
+				return (containerFactory) -> appendToReaderListener(containerFactory, ":bar");
+			}
+
+			private void appendToReaderListener(DefaultPulsarReaderContainerFactory<?> containerFactory,
+					String valueToAppend) {
+				Object readerListener = containerFactory.getContainerProperties().getReaderListener();
+				String updatedValue = (readerListener != null) ? readerListener + valueToAppend : valueToAppend;
+				containerFactory.getContainerProperties().setReaderListener(updatedValue);
 			}
 
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class JdbcUrlBuilder {
 	 * @param containerPort the source container port
 	 */
 	public JdbcUrlBuilder(String driverProtocol, int containerPort) {
-		Assert.notNull(driverProtocol, "DriverProtocol must not be null");
+		Assert.notNull(driverProtocol, "'driverProtocol' must not be null");
 		this.driverProtocol = driverProtocol;
 		this.containerPort = containerPort;
 	}
@@ -67,7 +67,7 @@ public class JdbcUrlBuilder {
 	}
 
 	private String urlFor(RunningService service, String database) {
-		Assert.notNull(service, "Service must not be null");
+		Assert.notNull(service, "'service' must not be null");
 		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
 				service.ports().get(this.containerPort)));
 		if (StringUtils.hasLength(database)) {

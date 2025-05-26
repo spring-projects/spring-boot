@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystem.NoOpLoggingSystem;
+import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.boot.logging.log4j2.Log4J2LoggingSystem;
 import org.springframework.boot.logging.logback.LogbackLoggingSystem;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -40,6 +43,18 @@ class LoggingSystemTests {
 	@Test
 	void logbackIsTheDefaultLoggingSystem() {
 		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(LogbackLoggingSystem.class);
+	}
+
+	@Test
+	@ClassPathExclusions("logback-*.jar")
+	void log4j2IsUsedInTheAbsenceOfLogback() {
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(Log4J2LoggingSystem.class);
+	}
+
+	@Test
+	@ClassPathExclusions({ "logback-*.jar", "log4j-*.jar" })
+	void julIsUsedInTheAbsenceOfLogbackAndLog4j2() {
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(JavaLoggingSystem.class);
 	}
 
 	@Test

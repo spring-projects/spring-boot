@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ public class DockerEngineException extends RuntimeException {
 
 	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
 			Message responseMessage) {
-		Assert.notNull(host, "Host must not be null");
-		Assert.notNull(uri, "URI must not be null");
+		Assert.notNull(host, "'host' must not be null");
+		Assert.notNull(uri, "'uri' must not be null");
 		StringBuilder message = new StringBuilder(
 				"Docker API call to '" + host + uri + "' failed with status code " + statusCode);
 		if (StringUtils.hasLength(reasonPhrase)) {

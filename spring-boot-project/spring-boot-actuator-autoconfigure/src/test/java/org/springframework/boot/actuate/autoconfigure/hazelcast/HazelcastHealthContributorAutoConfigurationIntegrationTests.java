@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,6 +35,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dmytro Nosan
  */
+@WithResource(name = "hazelcast.xml", content = """
+		<hazelcast
+				xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-5.0.xsd"
+				xmlns="http://www.hazelcast.com/schema/config"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<map name="defaultCache" />
+			<network>
+				<join>
+					<auto-detection enabled="false"/>
+					<multicast enabled="false"/>
+				</join>
+			</network>
+		</hazelcast>
+		""")
 class HazelcastHealthContributorAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

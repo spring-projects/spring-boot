@@ -8,7 +8,7 @@ To run your application without first building an archive use the `bootRun` task
 $ ./gradlew bootRun
 ----
 
-The `bootRun` task is an instance of xref:api/java/org/springframework/boot/gradle/tasks/run/BootRun.html[`BootRun`] which is a `JavaExec` subclass.
+The `bootRun` task is an instance of {apiref-gradle-plugin-boot-run}[`BootRun`] which is a `JavaExec` subclass.
 As such, all of the {url-gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing a Java process in Gradle are available to you.
 The task is automatically configured to use the runtime classpath of the main source set.
 
@@ -100,7 +100,7 @@ For example, to run your application with a profile named `dev` active the follo
 $ ./gradlew bootRun --args='--spring.profiles.active=dev'
 ----
 
-See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
+See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString(java.lang.String)[the javadoc for `JavaExec.setArgsString`] for further details.
 
 
 

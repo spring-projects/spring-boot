@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,29 @@ package org.springframework.boot.testcontainers.service.connection.kafka;
 
 import java.util.List;
 
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link ConfluentKafkaContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class ConfluentKafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<ConfluentKafkaContainer, KafkaConnectionDetails> {
 
 	@Override
-	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+	protected KafkaConnectionDetails getContainerConnectionDetails(
+			ContainerConnectionSource<ConfluentKafkaContainer> source) {
 		return new ConfluentKafkaContainerConnectionDetails(source);
 	}
 
@@ -45,15 +48,25 @@ class ConfluentKafkaContainerConnectionDetailsFactory
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class ConfluentKafkaContainerConnectionDetails
-			extends ContainerConnectionDetails<KafkaContainer> implements KafkaConnectionDetails {
+			extends ContainerConnectionDetails<ConfluentKafkaContainer> implements KafkaConnectionDetails {
 
-		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<ConfluentKafkaContainer> source) {
 			super(source);
 		}
 
 		@Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return super.getSslBundle();
+		}
+
+		@Override
+		public String getSecurityProtocol() {
+			return (getSslBundle() != null) ? "SSL" : "PLAINTEXT";
 		}
 
 	}

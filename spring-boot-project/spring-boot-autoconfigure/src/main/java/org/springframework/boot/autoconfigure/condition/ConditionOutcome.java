@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class ConditionOutcome {
 	 * @param message the condition message
 	 */
 	public ConditionOutcome(boolean match, ConditionMessage message) {
-		Assert.notNull(message, "ConditionMessage must not be null");
+		Assert.notNull(message, "'message' must not be null");
 		this.match = match;
 		this.message = message;
 	}
@@ -153,7 +153,10 @@ public class ConditionOutcome {
 	 * @param outcome the outcome to inverse
 	 * @return the inverse of the condition outcome
 	 * @since 1.3.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #ConditionOutcome(boolean, ConditionMessage)}
 	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public static ConditionOutcome inverse(ConditionOutcome outcome) {
 		return new ConditionOutcome(!outcome.isMatch(), outcome.getConditionMessage());
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 import org.testcontainers.containers.RabbitMQContainer;
 
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -66,8 +67,13 @@ class RabbitContainerConnectionDetailsFactory
 
 		@Override
 		public List<Address> getAddresses() {
-			URI uri = URI.create(getContainer().getAmqpUrl());
+			URI uri = URI.create((getSslBundle() != null) ? getContainer().getAmqpsUrl() : getContainer().getAmqpUrl());
 			return List.of(new Address(uri.getHost(), uri.getPort()));
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

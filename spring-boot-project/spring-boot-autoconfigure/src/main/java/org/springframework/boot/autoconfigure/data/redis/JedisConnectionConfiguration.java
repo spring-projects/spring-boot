@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,21 +92,17 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	private JedisConnectionFactory createJedisConnectionFactory(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
-		if (getSentinelConfig() != null) {
-			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
-		}
-		if (getClusterConfiguration() != null) {
-			return new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
-		}
-		return new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
+		return switch (this.mode) {
+			case STANDALONE -> new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
+			case CLUSTER -> new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
+			case SENTINEL -> new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
+		};
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
-		if (isSslEnabled()) {
-			applySsl(builder);
-		}
+		applySslIfNeeded(builder);
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (isPoolEnabled(pool)) {
 			applyPooling(pool, builder);
@@ -126,18 +122,19 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return builder;
 	}
 
-	private void applySsl(JedisClientConfigurationBuilder builder) {
-		JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
-		if (getProperties().getSsl().getBundle() != null) {
-			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
-			sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
-			SslOptions sslOptions = sslBundle.getOptions();
-			SSLParameters sslParameters = new SSLParameters();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
-			map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
-			sslBuilder.sslParameters(sslParameters);
+	private void applySslIfNeeded(JedisClientConfigurationBuilder builder) {
+		SslBundle sslBundle = getSslBundle();
+		if (sslBundle == null) {
+			return;
 		}
+		JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
+		sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
+		SslOptions sslOptions = sslBundle.getOptions();
+		SSLParameters sslParameters = new SSLParameters();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
+		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
+		sslBuilder.sslParameters(sslParameters);
 	}
 
 	private void applyPooling(RedisProperties.Pool pool,

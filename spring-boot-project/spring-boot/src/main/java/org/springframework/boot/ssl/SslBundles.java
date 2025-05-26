@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.ssl;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +46,14 @@ public interface SslBundles {
 	 * @since 3.2.0
 	 */
 	void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException;
+
+	/**
+	 * Add a handler that will be called each time a bundle is registered. The handler
+	 * will be called with the bundle name and the bundle.
+	 * @param registerHandler the handler that should be called
+	 * @since 3.5.0
+	 */
+	void addBundleRegisterHandler(BiConsumer<String, SslBundle> registerHandler);
 
 	/**
 	 * Return the names of all bundles managed by this instance.

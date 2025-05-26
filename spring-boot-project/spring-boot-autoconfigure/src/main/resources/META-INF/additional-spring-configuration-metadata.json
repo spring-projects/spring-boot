@@ -144,6 +144,10 @@
       "description": "Name for the cookie."
     },
     {
+      "name": "server.reactive.session.cookie.partitioned",
+      "description": "Whether the generated cookie carries the Partitioned attribute."
+    },
+    {
       "name": "server.reactive.session.cookie.path",
       "description": "Path of the cookie."
     },
@@ -230,6 +234,10 @@
       "description": "Name of the cookie."
     },
     {
+      "name": "server.servlet.session.cookie.partitioned",
+      "description": "Whether the generated cookie carries the Partitioned attribute."
+    },
+    {
       "name": "server.servlet.session.cookie.path",
       "description": "Path of the cookie."
     },
@@ -261,7 +269,7 @@
     },
     {
       "name": "server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "server.ssl.certificate",
@@ -350,6 +358,12 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "replacement": "server.tomcat.max-http-form-post-size",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.tomcat.reject-illegal-header",
+      "deprecation": {
         "level": "error"
       }
     },
@@ -1498,6 +1512,99 @@
       "defaultValue": "classpath:graphql/**/"
     },
     {
+      "name": "spring.groovy.template.configuration.auto-escape",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-escape",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-indent",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-indent",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-indent-string",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-indent-string",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.auto-new-line",
+      "deprecation": {
+        "replacement": "spring.groovy.template.auto-new-line",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.base-template-class",
+      "deprecation": {
+        "replacement": "spring.groovy.template.base-template-class",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.cache-templates",
+      "deprecation": {
+        "replacement": "spring.groovy.template.cache",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.declaration-encoding",
+      "deprecation": {
+        "replacement": "spring.groovy.template.declaration-encoding",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.expand-empty-elements",
+      "deprecation": {
+        "replacement": "spring.groovy.template.expand-empty-elements",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.locale",
+      "deprecation": {
+        "replacement": "spring.groovy.template.locale",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.new-line-string",
+      "deprecation": {
+        "replacement": "spring.groovy.template.new-line-string",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.resource-loader-path",
+      "deprecation": {
+        "replacement": "spring.groovy.template.resource-loader-path",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
+      "name": "spring.groovy.template.configuration.use-double-quotes",
+      "deprecation": {
+        "replacement": "spring.groovy.template.use-double-quotes",
+        "level": "warning",
+        "since": "3.5.0"
+      }
+    },
+    {
       "name": "spring.groovy.template.prefix",
       "defaultValue": ""
     },
@@ -1508,11 +1615,8 @@
     {
       "name": "spring.http.converters.preferred-json-mapper",
       "type": "java.lang.String",
-      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.",
-      "deprecation": {
-        "replacement": "spring.mvc.converters.preferred-json-mapper",
-        "level": "error"
-      }
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper."
     },
     {
       "name": "spring.http.encoding.charset",
@@ -1979,6 +2083,12 @@
       "defaultValue": false
     },
     {
+      "name": "spring.messages.basename",
+      "defaultValue": [
+        "messages"
+      ]
+    },
+    {
       "name": "spring.mustache.prefix",
       "defaultValue": "classpath:/templates/"
     },
@@ -1994,7 +2104,11 @@
       "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "defaultValue": "jackson",
-      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper."
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper.",
+      "deprecation": {
+        "replacement": "spring.http.converters.preferred-json-mapper",
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.date-format",
@@ -2586,7 +2700,7 @@
     },
     {
       "name": "spring.rsocket.server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "spring.rsocket.server.ssl.certificate",
@@ -2748,6 +2862,12 @@
       "defaultValue": ".html"
     },
     {
+      "name": "spring.validation.method.adapt-constraint-violations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to adapt ConstraintViolations to MethodValidationResult.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
@@ -2905,6 +3025,68 @@
       ]
     },
     {
+      "name": "spring.data.mongodb.protocol",
+      "values": [
+        {
+          "value": "mongodb"
+        },
+        {
+          "value": "mongodb+srv"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.data.redis.lettuce.read-from",
+      "values": [
+        {
+          "value": "any",
+          "description": "Read from any node."
+        },
+        {
+          "value": "any-replica",
+          "description": "Read from any replica node."
+        },
+        {
+          "value": "lowest-latency",
+          "description": "Read from the node with the lowest latency during topology discovery."
+        },
+        {
+          "value": "regex:",
+          "description": "Read from any node that has RedisURI matching with the given pattern."
+        },
+        {
+          "value": "replica",
+          "description": "Read from the replica only."
+        },
+        {
+          "value": "replica-preferred",
+          "description": "Read preferred from replica and fall back to upstream if no replica is available."
+        },
+        {
+          "value": "subnet:",
+          "description": "Read from any node in the subnets."
+        },
+        {
+          "value": "upstream",
+          "description": "Read from the upstream only."
+        },
+        {
+          "value": "upstream-preferred",
+          "description": "Read preferred from the upstream and fall back to a replica if the upstream is not available."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.datasource.data",
       "providers": [
         {
@@ -2999,6 +3181,25 @@
       ]
     },
     {
+      "name": "spring.http.converters.preferred-json-mapper",
+      "values": [
+        {
+          "value": "gson"
+        },
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.jms.listener.session.acknowledge-mode",
       "values": [
         {
@@ -3047,24 +3248,36 @@
       "name": "spring.jpa.hibernate.ddl-auto",
       "values": [
         {
-          "value": "none",
-          "description": "Disable DDL handling."
-        },
-        {
-          "value": "validate",
-          "description": "Validate the schema, make no changes to the database."
-        },
-        {
-          "value": "update",
-          "description": "Update the schema if necessary."
-        },
-        {
           "value": "create",
           "description": "Create the schema and destroy previous data."
         },
         {
           "value": "create-drop",
           "description": "Create and then destroy the schema at the end of the session."
+        },
+        {
+          "value": "create-only",
+          "description": "Create the schema."
+        },
+        {
+          "value": "drop",
+          "description": "Drop the schema."
+        },
+        {
+          "value": "none",
+          "description": "Disable DDL handling."
+        },
+        {
+          "value": "truncate",
+          "description": "Truncate the tables in the schema."
+        },
+        {
+          "value": "update",
+          "description": "Update the schema if necessary."
+        },
+        {
+          "value": "validate",
+          "description": "Validate the schema, make no changes to the database."
         }
       ]
     },
@@ -3336,5 +3549,30 @@
         }
       ]
     }
-  ]
+  ],
+  "ignored": {
+    "properties": [
+      {
+        "name": "spring.datasource.dbcp2.driver"
+      },
+      {
+        "name": "spring.datasource.hikari.credentials"
+      },
+      {
+        "name": "spring.datasource.hikari.exception-override"
+      },
+      {
+        "name": "spring.datasource.hikari.metrics-tracker-factory"
+      },
+      {
+        "name": "spring.datasource.hikari.scheduled-executor"
+      },
+      {
+        "name": "spring.datasource.oracleucp.connection-wait-duration-in-millis"
+      },
+      {
+        "name": "spring.datasource.oracleucp.hostname-resolver"
+      }
+    ]
+  }
 }

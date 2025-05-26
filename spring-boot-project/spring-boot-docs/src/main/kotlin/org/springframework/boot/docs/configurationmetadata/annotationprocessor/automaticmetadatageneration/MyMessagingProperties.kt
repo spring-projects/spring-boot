@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.docs.configurationmetadata.annotationprocessor.
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.Arrays
 
-@ConfigurationProperties(prefix = "my.messaging")
+@ConfigurationProperties("my.messaging")
 class MyMessagingProperties(
 
 	val addresses: List<String> = ArrayList(Arrays.asList("a", "b")),
@@ -30,3 +30,4 @@ class MyMessagingProperties(
 		SIMPLE, DIRECT
 	}
 }
+

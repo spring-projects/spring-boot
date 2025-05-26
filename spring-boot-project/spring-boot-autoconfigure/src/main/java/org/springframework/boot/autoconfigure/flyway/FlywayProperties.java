@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Chris Bono
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.flyway")
+@ConfigurationProperties("spring.flyway")
 public class FlywayProperties {
 
 	/**
@@ -275,7 +275,7 @@ public class FlywayProperties {
 	private String[] loggers = { "slf4j" };
 
 	/**
-	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
+	 * Whether to batch SQL statements when executing them.
 	 */
 	private Boolean batch;
 
@@ -292,12 +292,12 @@ public class FlywayProperties {
 	private String[] errorOverrides;
 
 	/**
-	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
+	 * Whether to stream SQL migrations when executing them.
 	 */
 	private Boolean stream;
 
 	/**
-	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
+	 * Properties to pass to the JDBC driver.
 	 */
 	private Map<String, String> jdbcProperties = new HashMap<>();
 
@@ -308,25 +308,23 @@ public class FlywayProperties {
 
 	/**
 	 * Whether Flyway should output a table with the results of queries when executing
-	 * migrations. Requires Flyway Teams.
+	 * migrations.
 	 */
 	private Boolean outputQueryResults;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
-	 * the schema history table. Requires Flyway teams.
+	 * the schema history table.
 	 */
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * Ignore migrations that match this comma-separated list of patterns when validating
-	 * migrations. Requires Flyway Teams.
+	 * List of patterns that identify migrations to ignore when performing validation.
 	 */
 	private List<String> ignoreMigrationPatterns;
 
 	/**
-	 * Whether to attempt to automatically detect SQL migration file encoding. Requires
-	 * Flyway Teams.
+	 * Whether to attempt to automatically detect SQL migration file encoding.
 	 */
 	private Boolean detectEncoding;
 
@@ -597,10 +595,13 @@ public class FlywayProperties {
 		this.cleanDisabled = cleanDisabled;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18 and removed in Flyway 11.0")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public void setCleanOnValidationError(boolean cleanOnValidationError) {
 		this.cleanOnValidationError = cleanOnValidationError;
 	}

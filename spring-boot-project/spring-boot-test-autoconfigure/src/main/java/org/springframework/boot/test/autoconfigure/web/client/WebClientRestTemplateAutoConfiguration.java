@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
  * @see AutoConfigureMockRestServiceServer
  */
 @AutoConfiguration(after = RestTemplateAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webclient", name = "register-rest-template")
+@ConditionalOnBooleanProperty("spring.test.webclient.register-rest-template")
 public class WebClientRestTemplateAutoConfiguration {
 
 	@Bean

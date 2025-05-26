@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link StructuredLogEncoder}.
@@ -55,6 +56,8 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	void setUp() {
 		super.setUp();
 		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.json.stacktrace.printer",
+				SimpleStackTracePrinter.class.getName());
 		this.loggerContext = new ContextBase();
 		this.loggerContext.putObject(Environment.class.getName(), this.environment);
 		this.encoder = new StructuredLogEncoder();
@@ -69,25 +72,41 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void shouldSupportEcsCommonFormat() {
 		this.encoder.setFormat("ecs");
 		this.encoder.start();
-		LoggingEvent event = createEvent();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String json = encode(event);
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsKey("ecs.version");
+		assertThat(deserialized).containsEntry("ecs", Map.of("version", "8.11"));
+		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		assertThat(error.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test
 	void shouldSupportLogstashCommonFormat() {
 		this.encoder.setFormat("logstash");
 		this.encoder.start();
-		LoggingEvent event = createEvent();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String json = encode(event);
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("@version");
+		assertThat(deserialized.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
+	}
+
+	@Test
+	void shouldSupportGelfCommonFormat() {
+		this.encoder.setFormat("gelf");
+		this.encoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = encode(event);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("version");
+		assertThat(deserialized.get("_error_stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test
@@ -113,7 +132,7 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldCheckTypeArgument() {
-		assertThatIllegalArgumentException().isThrownBy(() -> {
+		assertThatIllegalStateException().isThrownBy(() -> {
 			this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterWrongType.class.getName());
 			this.encoder.start();
 		}).withMessageContaining("must be ch.qos.logback.classic.spi.ILoggingEvent but was java.lang.String");
@@ -121,7 +140,7 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldCheckTypeArgumentWithRawType() {
-		assertThatIllegalArgumentException().isThrownBy(() -> {
+		assertThatIllegalStateException().isThrownBy(() -> {
 			this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterRawType.class.getName());
 			this.encoder.start();
 		}).withMessageContaining("must be ch.qos.logback.classic.spi.ILoggingEvent but was null");
@@ -133,8 +152,8 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 			this.encoder.setFormat("does-not-exist");
 			this.encoder.start();
 		})
-			.withMessageContaining(
-					"Unknown format 'does-not-exist'. Values can be a valid fully-qualified class name or one of the common formats: [ecs, logstash]");
+			.withMessageContaining("Unknown format 'does-not-exist'. Values can be a valid fully-qualified "
+					+ "class name or one of the common formats: [ecs, gelf, logstash]");
 	}
 
 	private String encode(LoggingEvent event) {

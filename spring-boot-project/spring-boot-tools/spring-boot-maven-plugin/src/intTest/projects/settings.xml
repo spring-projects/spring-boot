@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
 	<localRepository>@localRepositoryPath@</localRepository>
+	<servers>
+		<server>
+			<id>spring-commercial-release</id>
+			<username>${env.COMMERCIAL_REPO_USERNAME}</username>
+			<password>${env.COMMERCIAL_REPO_PASSWORD}</password>
+		</server>
+		<server>
+			<id>spring-commercial-snapshot</id>
+			<username>${env.COMMERCIAL_REPO_USERNAME}</username>
+			<password>${env.COMMERCIAL_REPO_PASSWORD}</password>
+		</server>
+	</servers>
 	<profiles>
 		<profile>
 			<id>it-repo</id>
@@ -18,19 +30,7 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>https://repo.spring.io/milestone</url>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>https://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
+				<!-- {spring.mavenRepositories} -->
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -43,11 +43,7 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</pluginRepository>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>https://repo.spring.io/milestone</url>
-				</pluginRepository>
+				<!-- {spring.mavenPluginRepositories} -->
 			</pluginRepositories>
 		</profile>
 	</profiles>

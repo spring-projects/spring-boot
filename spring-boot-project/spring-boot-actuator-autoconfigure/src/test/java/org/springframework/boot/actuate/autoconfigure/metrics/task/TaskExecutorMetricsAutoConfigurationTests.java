@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.task;
 
 import java.util.Collection;
-import java.util.concurrent.Executor;
 
 import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -30,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -82,14 +82,12 @@ class TaskExecutorMetricsAutoConfigurationTests {
 
 	@Test
 	void taskExecutorsWithCustomNamesAreInstrumented() {
-		this.contextRunner.withBean("firstTaskExecutor", Executor.class, ThreadPoolTaskExecutor::new)
-			.withBean("customName", ThreadPoolTaskExecutor.class, ThreadPoolTaskExecutor::new)
-			.run((context) -> {
-				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-				assertThat(meters).map((meter) -> meter.getId().getTag("name"))
-					.containsExactlyInAnyOrder("firstTaskExecutor", "customName");
-			});
+		this.contextRunner.withUserConfiguration(MultipleTaskExecutorsConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+			assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+				.containsExactlyInAnyOrder("standardTaskExecutor", "nonDefault");
+		});
 	}
 
 	@Test
@@ -134,14 +132,12 @@ class TaskExecutorMetricsAutoConfigurationTests {
 
 	@Test
 	void taskSchedulersWithCustomNamesAreInstrumented() {
-		this.contextRunner.withBean("firstTaskScheduler", Executor.class, ThreadPoolTaskScheduler::new)
-			.withBean("customName", ThreadPoolTaskScheduler.class, ThreadPoolTaskScheduler::new)
-			.run((context) -> {
-				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-				assertThat(meters).map((meter) -> meter.getId().getTag("name"))
-					.containsExactlyInAnyOrder("firstTaskScheduler", "customName");
-			});
+		this.contextRunner.withUserConfiguration(MultipleTaskSchedulersConfiguration.class).run((context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+			assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+				.containsExactlyInAnyOrder("standardTaskScheduler", "nonDefault");
+		});
 	}
 
 	@Test
@@ -173,6 +169,46 @@ class TaskExecutorMetricsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableScheduling
 	static class SchedulingTestConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTaskSchedulersConfiguration {
+
+		@Bean
+		ThreadPoolTaskScheduler standardTaskScheduler() {
+			return new ThreadPoolTaskScheduler();
+		}
+
+		@Bean(defaultCandidate = false)
+		ThreadPoolTaskScheduler nonDefault() {
+			return new ThreadPoolTaskScheduler();
+		}
+
+		@Bean(autowireCandidate = false)
+		ThreadPoolTaskScheduler nonAutowire() {
+			return new ThreadPoolTaskScheduler();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTaskExecutorsConfiguration {
+
+		@Bean
+		ThreadPoolTaskExecutor standardTaskExecutor() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+		@Bean(defaultCandidate = false)
+		ThreadPoolTaskExecutor nonDefault() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+		@Bean(autowireCandidate = false)
+		ThreadPoolTaskExecutor nonAutowire() {
+			return new ThreadPoolTaskExecutor();
+		}
 
 	}
 

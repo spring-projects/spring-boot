@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -57,7 +57,7 @@ public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public abstract RegularFileProperty getOutputDir();
+	public abstract DirectoryProperty getOutputDir();
 
 	@TaskAction
 	void documentAutoConfigurationClasses() throws IOException {

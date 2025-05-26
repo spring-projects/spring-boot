@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import org.testcontainers.redpanda.RedpandaContainer;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -53,6 +54,16 @@ class RedpandaContainerConnectionDetailsFactory
 		@Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return super.getSslBundle();
+		}
+
+		@Override
+		public String getSecurityProtocol() {
+			return (getSslBundle() != null) ? "SSL" : "PLAINTEXT";
 		}
 
 	}

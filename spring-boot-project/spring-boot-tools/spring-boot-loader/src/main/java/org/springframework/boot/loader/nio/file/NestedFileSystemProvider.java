@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
  */
 public class NestedFileSystemProvider extends FileSystemProvider {
 
-	private Map<Path, NestedFileSystem> fileSystems = new HashMap<>();
+	private final Map<Path, NestedFileSystem> fileSystems = new HashMap<>();
 
 	@Override
 	public String getScheme() {
@@ -84,6 +84,7 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
+	@SuppressWarnings("resource")
 	public Path getPath(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {

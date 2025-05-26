@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -29,12 +29,20 @@ import org.springframework.web.client.RestClient;
  * An auto-configured {@link RestClientSsl} implementation.
  *
  * @author Phillip Webb
+ * @author Dmytro Nosan
  */
 class AutoConfiguredRestClientSsl implements RestClientSsl {
 
+	private final ClientHttpRequestFactoryBuilder<?> builder;
+
+	private final ClientHttpRequestFactorySettings settings;
+
 	private final SslBundles sslBundles;
 
-	AutoConfiguredRestClientSsl(SslBundles sslBundles) {
+	AutoConfiguredRestClientSsl(ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder,
+			ClientHttpRequestFactorySettings clientHttpRequestFactorySettings, SslBundles sslBundles) {
+		this.builder = clientHttpRequestFactoryBuilder;
+		this.settings = clientHttpRequestFactorySettings;
 		this.sslBundles = sslBundles;
 	}
 
@@ -45,11 +53,11 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 
 	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
-		return (builder) -> {
-			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(bundle);
-			ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(settings);
-			builder.requestFactory(requestFactory);
-		};
+		return (builder) -> builder.requestFactory(requestFactory(bundle));
+	}
+
+	private ClientHttpRequestFactory requestFactory(SslBundle bundle) {
+		return this.builder.build(this.settings.withSslBundle(bundle));
 	}
 
 }

@@ -1,42 +1,24 @@
 name: Build Pull Request
 on: pull_request
-
 permissions:
   contents: read
-
 jobs:
   build:
     name: Build Pull Request
-    runs-on: ubuntu-latest
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
-      - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          large-packages: false
-          docker-images: false
-      - name: Set Up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'liberica'
-      - name: Check Out
+      - name: Check Out Code
         uses: actions/checkout@v4
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-      - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
       - name: Build
-        env:
-          CI: 'true'
-          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-        run: ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --no-parallel --continue build
+        id: build
+        uses: ./.github/actions/build
       - name: Print JVM Thread Dumps When Cancelled
-        uses: ./.github/actions/print-jvm-thread-dumps
         if: cancelled()
+        uses: ./.github/actions/print-jvm-thread-dumps
       - name: Upload Build Reports
-        uses: actions/upload-artifact@v4
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: '**/build/reports/'

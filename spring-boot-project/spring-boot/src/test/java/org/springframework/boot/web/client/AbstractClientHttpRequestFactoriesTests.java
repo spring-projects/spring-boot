@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
@@ -57,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  */
 @DirtiesUrlFactories
+@SuppressWarnings("removal")
 abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpRequestFactory> {
 
 	private final Class<T> requestFactoryType;
@@ -66,6 +68,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS);
@@ -73,6 +76,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getOfGeneralTypeReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);
@@ -80,6 +84,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getOfSpecificTypeReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(this.requestFactoryType,
 				ClientHttpRequestFactorySettings.DEFAULTS);
@@ -87,7 +92,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	void getReturnsRequestFactoryWithConfiguredConnectTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
@@ -95,7 +100,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	void getReturnsRequestFactoryWithConfiguredReadTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
@@ -103,6 +108,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void shouldSetConnectTimeoutsWhenUsingReflective() {
 		Assumptions.assumeTrue(supportsSettingConnectTimeout());
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
@@ -113,6 +119,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void shouldSetReadTimeoutsWhenUsingReflective() {
 		Assumptions.assumeTrue(supportsSettingReadTimeout());
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
@@ -123,7 +130,9 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@ParameterizedTest
+	@SuppressWarnings("deprecation")
 	@ValueSource(strings = { "GET", "POST" })
+	@WithPackageResources("test.jks")
 	void connectWithSslBundle(String httpMethod) throws Exception {
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		Ssl ssl = new Ssl();

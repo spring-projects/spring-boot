@@ -2,16 +2,16 @@
 = Using the @SpringBootApplication Annotation
 
 Many Spring Boot developers like their apps to use auto-configuration, component scan and be able to define extra configuration on their "application class".
-A single `@SpringBootApplication` annotation can be used to enable those three features, that is:
+A single javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotation can be used to enable those three features, that is:
 
-* `@EnableAutoConfiguration`: enable xref:using/auto-configuration.adoc[Spring Boot's auto-configuration mechanism]
-* `@ComponentScan`: enable `@Component` scan on the package where the application is located (see xref:using/structuring-your-code.adoc[the best practices])
-* `@SpringBootConfiguration`: enable registration of extra beans in the context or the import of additional configuration classes.
-An alternative to Spring's standard `@Configuration` that aids xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.detecting-configuration[configuration detection] in your integration tests.
+* javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]: enable xref:using/auto-configuration.adoc[Spring Boot's auto-configuration mechanism]
+* javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]: enable javadoc:org.springframework.stereotype.Component[format=annotation] scan on the package where the application is located (see xref:using/structuring-your-code.adoc[the best practices])
+* javadoc:org.springframework.boot.SpringBootConfiguration[format=annotation]: enable registration of extra beans in the context or the import of additional configuration classes.
+An alternative to Spring's standard javadoc:org.springframework.context.annotation.Configuration[format=annotation] that aids xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.detecting-configuration[configuration detection] in your integration tests.
 
 include-code::springapplication/MyApplication[]
 
-NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of `@EnableAutoConfiguration` and `@ComponentScan`.
+NOTE: javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] also provides aliases to customize the attributes of javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] and javadoc:org.springframework.context.annotation.ComponentScan[format=annotation].
 
 [NOTE]
 ====
@@ -20,5 +20,5 @@ For instance, you may not want to use component scan or configuration properties
 
 include-code::individualannotations/MyApplication[]
 
-In this example, `MyApplication` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).
+In this example, `MyApplication` is just like any other Spring Boot application except that javadoc:org.springframework.stereotype.Component[format=annotation]-annotated classes and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see javadoc:org.springframework.context.annotation.Import[format=annotation]).
 ====

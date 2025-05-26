@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
@@ -31,9 +32,9 @@ import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -44,6 +45,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
@@ -65,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Mahmoud Ben Hassine
  * @author Lars Uffmann
  * @author Lasse Wulff
+ * @author Yanming Zhou
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -77,7 +80,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.batch.job.enabled", matchIfMissing = true)
 	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
 			JobRepository jobRepository, BatchProperties properties) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
@@ -101,23 +104,30 @@ public class BatchAutoConfiguration {
 
 		private final PlatformTransactionManager transactionManager;
 
+		private final TaskExecutor taskExector;
+
 		private final BatchProperties properties;
 
 		private final List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers;
 
 		private final ExecutionContextSerializer executionContextSerializer;
 
+		private final JobParametersConverter jobParametersConverter;
+
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
-				BatchProperties properties,
+				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor, BatchProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
-				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
+				ObjectProvider<ExecutionContextSerializer> executionContextSerializer,
+				ObjectProvider<JobParametersConverter> jobParametersConverter) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
+			this.taskExector = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
+			this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 		}
 
 		@Override
@@ -134,6 +144,11 @@ public class BatchAutoConfiguration {
 		protected String getTablePrefix() {
 			String tablePrefix = this.properties.getJdbc().getTablePrefix();
 			return (tablePrefix != null) ? tablePrefix : super.getTablePrefix();
+		}
+
+		@Override
+		protected boolean getValidateTransactionState() {
+			return this.properties.getJdbc().isValidateTransactionState();
 		}
 
 		@Override
@@ -157,6 +172,17 @@ public class BatchAutoConfiguration {
 					: super.getExecutionContextSerializer();
 		}
 
+		@Override
+		protected JobParametersConverter getJobParametersConverter() {
+			return (this.jobParametersConverter != null) ? this.jobParametersConverter
+					: super.getJobParametersConverter();
+		}
+
+		@Override
+		protected TaskExecutor getTaskExecutor() {
+			return (this.taskExector != null) ? this.taskExector : super.getTaskExecutor();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -164,7 +190,7 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),
@@ -176,7 +202,7 @@ public class BatchAutoConfiguration {
 	static class OnBatchDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
 
 		OnBatchDatasourceInitializationCondition() {
-			super("Batch", "spring.batch.jdbc.initialize-schema", "spring.batch.initialize-schema");
+			super("Batch", "spring.batch.jdbc.initialize-schema");
 		}
 
 	}

@@ -76,6 +76,8 @@ class ConfigurationPropertiesBinder {
 
 	private final boolean jsr303Present;
 
+	private volatile List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors;
+
 	private volatile Binder binder;
 
 	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
@@ -126,6 +128,18 @@ class ConfigurationPropertiesBinder {
 		return handler;
 	}
 
+	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
+		List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors = this.bindHandlerAdvisors;
+		if (bindHandlerAdvisors == null) {
+			bindHandlerAdvisors = this.applicationContext
+				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+				.orderedStream()
+				.toList();
+			this.bindHandlerAdvisors = bindHandlerAdvisors;
+		}
+		return bindHandlerAdvisors;
+	}
+
 	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
 		return (bound != null)
@@ -154,7 +168,7 @@ class ConfigurationPropertiesBinder {
 			return (value instanceof Validator validator) ? validator : null;
 		}
 		Class<?> type = target.getType().resolve();
-		if (Validator.class.isAssignableFrom(type)) {
+		if (type != null && Validator.class.isAssignableFrom(type)) {
 			return new SelfValidatingConstructorBoundBindableValidator(type);
 		}
 		return null;
@@ -162,12 +176,6 @@ class ConfigurationPropertiesBinder {
 
 	private Validator getJsr303Validator(Class<?> type) {
 		return new ConfigurationPropertiesJsr303Validator(this.applicationContext, type);
-	}
-
-	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
-			.orderedStream()
-			.toList();
 	}
 
 	private Binder getBinder() {
@@ -203,7 +211,7 @@ class ConfigurationPropertiesBinder {
 				.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
 				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 	}
 

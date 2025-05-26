@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
@@ -60,6 +61,7 @@ public class WebSocketMessagingAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
+	@Order(0)
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		private final ObjectMapper objectMapper;

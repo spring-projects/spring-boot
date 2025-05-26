@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -414,7 +415,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	static ConfigDataEnvironmentContributor ofExisting(PropertySource<?> propertySource,
 			ConversionService conversionService) {
 		return new ConfigDataEnvironmentContributor(Kind.EXISTING, null, null, false, propertySource,
-				ConfigurationPropertySource.from(propertySource), null, null, null, conversionService);
+				asConfigurationPropertySource(propertySource), null, null, null, conversionService);
 	}
 
 	/**
@@ -434,9 +435,16 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			ConversionService conversionService) {
 		PropertySource<?> propertySource = configData.getPropertySources().get(propertySourceIndex);
 		ConfigData.Options options = configData.getOptions(propertySource);
-		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
 		return new ConfigDataEnvironmentContributor(Kind.UNBOUND_IMPORT, location, resource, profileSpecific,
-				propertySource, configurationPropertySource, null, options, null, conversionService);
+				propertySource, asConfigurationPropertySource(propertySource), null, options, null, conversionService);
+	}
+
+	private static ConfigurationPropertySource asConfigurationPropertySource(PropertySource<?> propertySource) {
+		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
+		if (configurationPropertySource != null && propertySource instanceof OriginLookup<?> originLookup) {
+			configurationPropertySource = configurationPropertySource.withPrefix(originLookup.getPrefix());
+		}
+		return configurationPropertySource;
 	}
 
 	/**

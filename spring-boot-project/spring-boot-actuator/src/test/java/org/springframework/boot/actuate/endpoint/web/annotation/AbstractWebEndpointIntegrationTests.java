@@ -315,6 +315,24 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void writeOperationWithListOfValuesIsRejected() {
+		load(TestEndpointConfiguration.class, (client) -> {
+			Map<String, Object> body = new HashMap<>();
+			body.put("generic", List.of("one", "two"));
+			client.post().uri("/test/one").bodyValue(body).exchange().expectStatus().isBadRequest();
+		});
+	}
+
+	@Test
+	void writeOperationWithNestedValueIsRejected() {
+		load(TestEndpointConfiguration.class, (client) -> {
+			Map<String, Object> body = new HashMap<>();
+			body.put("generic", Map.of("nested", "one"));
+			client.post().uri("/test/one").bodyValue(body).exchange().expectStatus().isBadRequest();
+		});
+	}
+
+	@Test
 	void writeOperationWithVoidResponse() {
 		load(VoidWriteResponseEndpointConfiguration.class, (context, client) -> {
 			client.post().uri("/voidwrite").exchange().expectStatus().isNoContent().expectBody().isEmpty();
@@ -966,6 +984,11 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@WriteOperation
 		void write(@Nullable String foo, @Nullable String bar) {
 			this.endpointDelegate.write(foo, bar);
+		}
+
+		@WriteOperation
+		void writeGeneric(@Selector String part, Object generic) {
+			this.endpointDelegate.write(generic.toString(), generic.toString());
 		}
 
 		@DeleteOperation

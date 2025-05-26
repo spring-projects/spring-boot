@@ -98,11 +98,9 @@ class NestedFileSystem extends FileSystem {
 
 	private boolean isCreatingNewFileSystem() {
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-		if (stack != null) {
-			for (StackTraceElement element : stack) {
-				if (FILE_SYSTEMS_CLASS_NAME.equals(element.getClassName())) {
-					return "newFileSystem".equals(element.getMethodName());
-				}
+		for (StackTraceElement element : stack) {
+			if (FILE_SYSTEMS_CLASS_NAME.equals(element.getClassName())) {
+				return "newFileSystem".equals(element.getMethodName());
 			}
 		}
 		return false;

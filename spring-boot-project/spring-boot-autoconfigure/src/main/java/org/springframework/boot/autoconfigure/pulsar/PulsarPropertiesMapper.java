@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Chris Bono
  * @author Phillip Webb
  * @author Swamy Mavuri
+ * @author Vedran Pavic
  */
 final class PulsarPropertiesMapper {
 
@@ -68,6 +69,8 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
+		map.from(properties.getThreads()::getIo).to(clientBuilder::ioThreads);
+		map.from(properties.getThreads()::getListener).to(clientBuilder::listenerThreads);
 		map.from(this.properties.getTransaction()::isEnabled).whenTrue().to(clientBuilder::enableTransaction);
 		customizeAuthentication(properties.getAuthentication(), clientBuilder::authentication);
 		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrl, clientBuilder::serviceUrlProvider, properties,
@@ -186,12 +189,14 @@ final class PulsarPropertiesMapper {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
+		map.from(properties::getName).to(containerProperties::setSubscriptionName);
 	}
 
 	private void customizePulsarContainerListenerProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
+		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
 	}
 

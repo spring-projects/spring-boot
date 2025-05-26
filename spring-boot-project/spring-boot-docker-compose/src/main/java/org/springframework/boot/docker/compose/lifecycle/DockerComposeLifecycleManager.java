@@ -36,6 +36,7 @@ import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Stop;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -95,7 +96,7 @@ class DockerComposeLifecycleManager {
 	}
 
 	void start() {
-		if (Boolean.getBoolean("spring.aot.processing") || AotDetector.useGeneratedArtifacts()) {
+		if (Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING) || AotDetector.useGeneratedArtifacts()) {
 			logger.trace("Docker Compose support disabled with AOT and native images");
 			return;
 		}
@@ -109,7 +110,8 @@ class DockerComposeLifecycleManager {
 		}
 		DockerComposeFile composeFile = getComposeFile();
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
-		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles);
+		List<String> arguments = this.properties.getArguments();
+		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles, arguments);
 		if (!dockerCompose.hasDefinedServices()) {
 			logger.warn(LogMessage.format("No services defined in Docker Compose file %s with active profiles %s",
 					composeFile, activeProfiles));
@@ -159,8 +161,9 @@ class DockerComposeLifecycleManager {
 		return composeFile;
 	}
 
-	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
-		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
+	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles,
+			List<String> arguments) {
+		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles, arguments);
 	}
 
 	private boolean isIgnored(RunningService service) {

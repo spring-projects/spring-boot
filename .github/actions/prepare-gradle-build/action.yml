@@ -1,21 +1,29 @@
-name: 'Prepare Gradle Build'
+name: Prepare Gradle Build
 description: 'Prepares a Gradle build. Sets up Java and Gradle and configures Gradle properties'
 inputs:
+  cache-read-only:
+    description: 'Whether Gradle''s cache should be read only'
+    required: false
+    default: 'true'
+  develocity-access-key:
+    description: 'Access key for authentication with ge.spring.io'
+    required: false
+  java-distribution:
+    description: 'Java distribution to use'
+    required: false
+    default: 'liberica'
+  java-early-access:
+    description: 'Whether the Java version is in early access. When true, forces java-distribution to temurin'
+    required: false
+    default: 'false'
+  java-toolchain:
+    description: 'Whether a Java toolchain should be used'
+    required: false
+    default: 'false'
   java-version:
+    description: 'Java version to use for the build'
     required: false
     default: '17'
-    description: 'The Java version to use for the build'
-  java-early-access:
-    required: false
-    default: 'false'
-    description: 'Whether the Java version is in early access'
-  java-toolchain:
-    required: false
-    default: 'false'
-    description: 'Whether a Java toolchain should be used'
-  develocity-access-key:
-    required: false
-    description: 'The access key for authentication with ge.spring.io'
 runs:
   using: composite
   steps:
@@ -23,19 +31,26 @@ runs:
       if: ${{ runner.os == 'Linux' }}
       uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       with:
+        tool-cache: true
         docker-images: false
     - name: Set Up Java
       uses: actions/setup-java@v4
       with:
-        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || 'liberica' }}
+        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || (inputs.java-distribution || 'liberica') }}
         java-version: |
           ${{ inputs.java-early-access == 'true' && format('{0}-ea', inputs.java-version) || inputs.java-version }}
           ${{ inputs.java-toolchain == 'true' && '17' || '' }}
-    - name: Set Up Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+    - name: Set Up Gradle With Read/Write Cache
+      if: ${{ inputs.cache-read-only == 'false' }}
+      uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
       with:
         cache-read-only: false
         develocity-access-key: ${{ inputs.develocity-access-key }}
+    - name: Set Up Gradle
+      uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+      with:
+        develocity-access-key: ${{ inputs.develocity-access-key }}
+        develocity-token-expiry: 4
     - name: Configure Gradle Properties
       shell: bash
       run: |

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.cache;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
+import com.redis.testcontainers.RedisContainer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -32,7 +33,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;

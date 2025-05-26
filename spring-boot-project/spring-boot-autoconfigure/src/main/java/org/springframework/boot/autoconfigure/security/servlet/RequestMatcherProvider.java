@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @since 2.0.5
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@code org.springframework.boot.actuate.autoconfigure.security.servlet.RequestMatcherProvider}
  */
+@Deprecated(since = "3.5.0", forRemoval = true)
 @FunctionalInterface
 public interface RequestMatcherProvider {
 

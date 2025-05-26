@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -17,12 +16,12 @@ dependencies {
 
 	optional("org.testcontainers:activemq")
 	optional("org.testcontainers:cassandra")
-	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:junit-jupiter")
 	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:oracle-xe")
@@ -31,4 +30,5 @@ dependencies {
 	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
+	optional("com.redis:testcontainers-redis")
 }

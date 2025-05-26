@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,20 +39,20 @@ class PropertySourceOriginTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(null, "name"))
-			.withMessageContaining("PropertySource must not be null");
+			.withMessageContaining("'propertySource' must not be null");
 	}
 
 	@Test
 	void createWhenPropertyNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
-			.withMessageContaining("PropertyName must not be empty");
+			.withMessageContaining("'propertyName' must not be empty");
 	}
 
 	@Test
 	void createWhenPropertyNameIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
-			.withMessageContaining("PropertyName must not be empty");
+			.withMessageContaining("'propertyName' must not be empty");
 	}
 
 	@Test

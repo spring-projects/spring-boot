@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.SslSettings;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -80,11 +82,12 @@ class MongoAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.ssl.enabled=true").run((context) -> {
 			SslSettings sslSettings = getSettings(context).getSslSettings();
 			assertThat(sslSettings.isEnabled()).isTrue();
-			assertThat(sslSettings.getContext()).isNull();
+			assertThat(sslSettings.getContext()).isNotNull();
 		});
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void configuresSslWithBundle() {
 		this.contextRunner
 			.withPropertyValues("spring.data.mongodb.ssl.bundle=test-bundle",
@@ -96,6 +99,22 @@ class MongoAutoConfigurationTests {
 				assertThat(sslSettings.isEnabled()).isTrue();
 				assertThat(sslSettings.getContext()).isNotNull();
 			});
+	}
+
+	@Test
+	void configuresProtocol() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.protocol=mongodb+srv").run((context) -> {
+			MongoClientSettings settings = getSettings(context);
+			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.MULTIPLE);
+		});
+	}
+
+	@Test
+	void defaultProtocol() {
+		this.contextRunner.run((context) -> {
+			MongoClientSettings settings = getSettings(context);
+			assertThat(settings.getClusterSettings().getMode()).isEqualTo(ClusterConnectionMode.SINGLE);
+		});
 	}
 
 	@Test

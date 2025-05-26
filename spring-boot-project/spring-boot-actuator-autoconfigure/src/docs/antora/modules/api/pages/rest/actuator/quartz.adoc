@@ -157,6 +157,42 @@ include::partial$rest/actuator/quartz/job-details/response-fields.adoc[]
 
 
 
+[[quartz.trigger-job]]
+== Trigger Quartz Job On Demand
+
+To trigger a particular Quartz job, make a `POST` request to `/actuator/quartz/jobs/\{groupName}/\{jobName}`, as shown in the following curl-based example:
+
+include::partial$rest/actuator/quartz/trigger-job/curl-request.adoc[]
+
+The preceding example demonstrates how to trigger a job that belongs to the `samples` group and is named `jobOne`.
+
+The response will look similar to the following:
+
+include::partial$rest/actuator/quartz/trigger-job/http-response.adoc[]
+
+
+
+[[quartz.trigger-job.request-structure]]
+=== Request Structure
+
+The request specifies a desired `state` associated with a particular job.
+Sending an HTTP request with a `"state": "running"` body indicates that the job should be run now.
+The following table describes the structure of the request:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/quartz/trigger-job/request-fields.adoc[]
+
+[[quartz.trigger-job.response-structure]]
+=== Response Structure
+
+The response contains the details of a triggered job.
+The following table describes the structure of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/quartz/trigger-job/response-fields.adoc[]
+
+
+
 [[quartz.trigger]]
 == Retrieving Details of a Trigger
 

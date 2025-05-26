@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class LibraryContentFilter implements ContentFilter<Library> {
 	private final Pattern pattern;
 
 	public LibraryContentFilter(String coordinatesPattern) {
-		Assert.hasText(coordinatesPattern, "CoordinatesPattern must not be empty");
+		Assert.hasText(coordinatesPattern, "'coordinatesPattern' must not be empty");
 		StringBuilder regex = new StringBuilder();
 		for (int i = 0; i < coordinatesPattern.length(); i++) {
 			char c = coordinatesPattern.charAt(i);

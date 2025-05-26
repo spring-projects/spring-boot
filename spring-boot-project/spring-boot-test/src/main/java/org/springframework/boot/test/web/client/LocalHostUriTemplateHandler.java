@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
 		super(handler);
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(scheme, "Scheme must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
+		Assert.notNull(scheme, "'scheme' must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
 	}

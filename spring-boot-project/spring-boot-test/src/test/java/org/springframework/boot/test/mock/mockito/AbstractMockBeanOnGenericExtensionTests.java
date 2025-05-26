@@ -20,7 +20,7 @@ package org.springframework.boot.test.mock.mockito;
  * Concrete implementation of {@link AbstractMockBeanOnGenericTests}.
  *
  * @author Madhura Bhave
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

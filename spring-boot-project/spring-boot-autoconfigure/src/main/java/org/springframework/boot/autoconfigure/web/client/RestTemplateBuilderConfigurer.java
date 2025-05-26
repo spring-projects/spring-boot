@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
@@ -28,17 +30,33 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * Configure {@link RestTemplateBuilder} with sensible defaults.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code RestTemplateBuilder} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 2.4.0
  */
 public final class RestTemplateBuilderConfigurer {
 
+	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
+
+	private ClientHttpRequestFactorySettings requestFactorySettings;
+
 	private HttpMessageConverters httpMessageConverters;
 
 	private List<RestTemplateCustomizer> restTemplateCustomizers;
 
 	private List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers;
+
+	void setRequestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
+		this.requestFactoryBuilder = requestFactoryBuilder;
+	}
+
+	void setRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		this.requestFactorySettings = requestFactorySettings;
+	}
 
 	void setHttpMessageConverters(HttpMessageConverters httpMessageConverters) {
 		this.httpMessageConverters = httpMessageConverters;
@@ -59,6 +77,12 @@ public final class RestTemplateBuilderConfigurer {
 	 * @return the configured builder
 	 */
 	public RestTemplateBuilder configure(RestTemplateBuilder builder) {
+		if (this.requestFactoryBuilder != null) {
+			builder = builder.requestFactoryBuilder(this.requestFactoryBuilder);
+		}
+		if (this.requestFactorySettings != null) {
+			builder = builder.requestFactorySettings(this.requestFactorySettings);
+		}
 		if (this.httpMessageConverters != null) {
 			builder = builder.messageConverters(this.httpMessageConverters.getConverters());
 		}

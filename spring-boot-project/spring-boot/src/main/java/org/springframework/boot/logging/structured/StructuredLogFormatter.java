@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.core.env.Environment;
 
 /**
@@ -28,6 +29,9 @@ import org.springframework.core.env.Environment;
  * Implementing classes can declare the following parameter types in the constructor:
  * <ul>
  * <li>{@link Environment}</li>
+ * <li>{@link StructuredLoggingJsonMembersCustomizer}</li>
+ * <li>{@link StackTracePrinter} (may be {@code null})</li>
+ * <li>{@link ContextPairs}</li>
  * </ul>
  * When using Logback, implementing classes can also use the following parameter types in
  * the constructor:

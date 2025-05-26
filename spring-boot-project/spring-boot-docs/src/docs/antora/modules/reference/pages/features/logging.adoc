@@ -47,6 +47,8 @@ TIP: If you have a configprop:spring.application.name[] property but don't want 
 
 TIP: If you have a configprop:spring.application.group[] property but don't want it logged you can set configprop:logging.include-application-group[] to `false`.
 
+TIP: For more details about correlation IDs, please xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.logging[see this documentation].
+
 
 
 [[features.logging.console-output]]
@@ -202,7 +204,7 @@ The following rotation policy properties are supported:
 [[features.logging.log-levels]]
 == Log Levels
 
-All the supported logging systems can have the logger levels set in the Spring `Environment` (for example, in `application.properties`) by using `+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF.
+All the supported logging systems can have the logger levels set in the Spring javadoc:org.springframework.core.env.Environment[] (for example, in `application.properties`) by using `+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF.
 The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
@@ -220,7 +222,7 @@ It is also possible to set logging levels using environment variables.
 For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
 
 NOTE: The above approach will only work for package level logging.
-Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
+Since relaxed binding xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converts environment variables to lowercase], it is not possible to configure logging for an individual class in this way.
 If you need to configure logging for a class, you can use xref:features/external-config.adoc#features.external-config.application-json[the `SPRING_APPLICATION_JSON`] variable.
 
 
@@ -231,7 +233,7 @@ If you need to configure logging for a class, you can use xref:features/external
 It is often useful to be able to group related loggers together so that they can all be configured at the same time.
 For example, you might commonly change the logging levels for _all_ Tomcat related loggers, but you can not easily remember top level packages.
 
-To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
+To help with this, Spring Boot allows you to define logging groups in your Spring javadoc:org.springframework.core.env.Environment[].
 For example, here is how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
 [configprops,yaml]
@@ -260,7 +262,7 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 | `org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`, `org.springframework.boot.actuate.endpoint.web`, `org.springframework.boot.web.servlet.ServletContextInitializerBeans`
 
 | sql
-| `org.springframework.jdbc.core`, `org.hibernate.SQL`, `org.jooq.tools.LoggerListener`
+| `org.springframework.jdbc.core`, `org.hibernate.SQL`, javadoc:org.jooq.tools.LoggerListener[]
 |===
 
 
@@ -288,13 +290,13 @@ logging:
 [[features.logging.custom-log-configuration]]
 == Custom Log Configuration
 
-The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: configprop:logging.config[].
+The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring javadoc:org.springframework.core.env.Environment[] property: configprop:logging.config[].
 
 You can force Spring Boot to use a particular logging system by using the `org.springframework.boot.logging.LoggingSystem` system property.
-The value should be the fully qualified class name of a `LoggingSystem` implementation.
+The value should be the fully qualified class name of a javadoc:org.springframework.boot.logging.LoggingSystem[] implementation.
 You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
 
-NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
+NOTE: Since logging is initialized *before* the javadoc:org.springframework.context.ApplicationContext[] is created, it is not possible to control logging from javadoc:org.springframework.context.annotation.PropertySources[format=annotation] in Spring javadoc:org.springframework.context.annotation.Configuration[format=annotation] files.
 The only way to change the logging system or disable it entirely is through System properties.
 
 Depending on your logging system, the following files are loaded:
@@ -318,7 +320,7 @@ If you use standard configuration locations, Spring cannot completely control lo
 WARNING: There are known classloading issues with Java Util Logging that cause problems when running from an 'executable jar'.
 We recommend that you avoid it when running from an 'executable jar' if at all possible.
 
-To help with the customization, some other properties are transferred from the Spring `Environment` to System properties.
+To help with the customization, some other properties are transferred from the Spring javadoc:org.springframework.core.env.Environment[] to System properties.
 This allows the properties to be consumed by logging system configuration. For example, setting `logging.file.name` in `application.properties` or `LOGGING_FILE_NAME` as an environment variable will result in the `LOG_FILE` System property being set.
 The properties that are transferred are described in the following table:
 
@@ -443,14 +445,48 @@ Structured logging is a technique where the log output is written in a well-defi
 Spring Boot supports structured logging and has support for the following JSON formats out of the box:
 
 * xref:#features.logging.structured.ecs[Elastic Common Schema (ECS)]
+* xref:#features.logging.structured.gelf[Graylog Extended Log Format (GELF)]
 * xref:#features.logging.structured.logstash[Logstash]
 
 To enable structured logging, set the property configprop:logging.structured.format.console[] (for console output) or configprop:logging.structured.format.file[] (for file output) to the id of the format you want to use.
 
+If you are using xref:#features.logging.custom-log-configuration[Custom Log Configuration], update your configuration to respect `CONSOLE_LOG_STRUCTURED_FORMAT` and `FILE_LOG_STRUCTURED_FORMAT` system properties.
+Take `CONSOLE_LOG_STRUCTURED_FORMAT` for example:
+[tabs]
+======
+Logback::
++
+[source,xml]
+----
+<!-- replace your encoder with StructuredLogEncoder -->
+<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+	<format>${CONSOLE_LOG_STRUCTURED_FORMAT}</format>
+	<charset>${CONSOLE_LOG_CHARSET}</charset>
+</encoder>
+----
++
+You can also refer to the default configurations included in Spring Boot:
++
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-console-appender.xml[Logback Structured Console Appender]
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-file-appender.xml[Logback Structured File Appender]
+Log4j2::
++
+[source,xml]
+----
+<!-- replace your PatternLayout with StructuredLogLayout -->
+<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+----
++
+You can also refer to the default configurations included in Spring Boot:
++
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j2 Console Appender]
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2-file.xml[Log4j2 Console and File Appender]
+======
 
 
 [[features.logging.structured.ecs]]
 === Elastic Common Schema
+
 https://www.elastic.co/guide/en/ecs/8.11/ecs-reference.html[Elastic Common Schema] is a JSON based logging format.
 
 To enable the Elastic Common Schema log format, set the appropriate `format` property to `ecs`:
@@ -468,7 +504,7 @@ A log line looks like this:
 
 [source,json]
 ----
-{"@timestamp":"2024-01-01T10:15:00.067462556Z","log.level":"INFO","process.pid":39599,"process.thread.name":"main","service.name":"simple","log.logger":"org.example.Application","message":"No active profile set, falling back to 1 default profile: \"default\"","ecs.version":"8.11"}
+{"@timestamp":"2024-01-01T10:15:00.067462556Z","log":{"level":"INFO","logger":"org.example.Application"},"process":{"pid":39599,"thread":{"name":"main"}},"service":{"name":"simple"},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
 ----
 
 This format also adds every key value pair contained in the MDC to the JSON object.
@@ -489,6 +525,52 @@ logging:
 ----
 
 NOTE: configprop:logging.structured.ecs.service.name[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.ecs.service.version[] will default to configprop:spring.application.version[] if not specified.
+
+
+
+[[features.logging.structured.gelf]]
+=== Graylog Extended Log Format (GELF)
+
+https://go2docs.graylog.org/current/getting_in_log_data/gelf.html[Graylog Extended Log Format] is a JSON based logging format for the Graylog log analytics platform.
+
+To enable the Graylog Extended Log Format, set the appropriate `format` property to `gelf`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: gelf
+      file: gelf
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"version":"1.1","short_message":"No active profile set, falling back to 1 default profile: \"default\"","timestamp":1725958035.857,"level":6,"_level_name":"INFO","_process_pid":47649,"_process_thread_name":"main","_log_logger":"org.example.Application"}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+Several fields can be customized using `logging.structured.gelf` properties:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    gelf:
+      host: MyService
+      service:
+        version: 1.0
+----
+
+NOTE: configprop:logging.structured.gelf.host[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.gelf.service.version[] will default to configprop:spring.application.version[] if not specified.
 
 
 
@@ -522,12 +604,106 @@ If you add https://www.slf4j.org/api/org/slf4j/Marker.html[markers], these will 
 
 
 
-[[features.logging.structured.custom-format]]
-=== Custom Structured Logging formats
+[[features.logging.structured.customizing-json]]
+=== Customizing Structured Logging JSON
+
+Spring Boot attempts to pick sensible defaults for the JSON names and values output for structured logging.
+Sometimes, however, you may want to make small adjustments to the JSON for your own needs.
+For example, it's possible that you might want to change some of the names to match the expectations of your log ingestion system.
+You might also want to filter out certain members since you don't find them useful.
+
+The following properties allow you to change the way that structured logging JSON is written:
+
+|===
+| Property | Description
+
+| configprop:logging.structured.json.include[] & configprop:logging.structured.json.exclude[]
+| Filters specific paths from the JSON
+
+| configprop:logging.structured.json.rename[]
+| Renames a specific member in the JSON
+
+| configprop:logging.structured.json.add[]
+| Adds additional members to the JSON
+|===
+
+For example, the following will exclude `log.level`, rename `process.id` to `procid` and add a fixed `corpname` field:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      exclude: log.level
+      rename:
+        process.id: procid
+      add:
+        corpname: mycorp
+----
+
+TIP: For more advanced customizations, you can use the javadoc:org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer[] interface.
+You can reference one or more implementations using the configprop:logging.structured.json.customizer[] property.
+You can also declare implementations by listing them in a `META-INF/spring.factories` file.
+
+
+
+[[features.logging.structured.customizing-stack-traces]]
+=== Customizing Structured Logging Stack Traces
+
+Complete stack traces are included in the JSON output whenever a message is logged with an exception.
+This amount of information may be costly to process by your log ingestion system, so you may want to tune the way that stack traces are printed.
+
+To do this, you can use one or more of the following properties:
+
+|===
+| Property | Description
+
+| configprop:logging.structured.json.stacktrace.root[]
+| Use `last` to print the root item last (same as Java) or `first` to print the root item first.
+
+| configprop:logging.structured.json.stacktrace.max-length[]
+| The maximum length that should be printed
+
+| configprop:logging.structured.json.stacktrace.max-throwable-depth[]
+| The maximum number of frames to print per stack trace (including common and suppressed frames)
+
+| configprop:logging.structured.json.stacktrace.include-common-frames[]
+| If common frames should be included or removed
+
+| configprop:logging.structured.json.stacktrace.include-hashes[]
+| If a hash of the stack trace should be included
+|===
+
+For example, the following will use root first stack traces, limit their length, and include hashes.
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      stacktrace:
+        root: first
+        max-length: 1024
+        include-common-frames: true
+        include-hashes: true
+----
+
+[TIP]
+====
+If you need complete control over stack trace printing you can set configprop:logging.structured.json.stacktrace.printer[] to the name of a javadoc:org.springframework.boot.logging.StackTracePrinter[] implementation.
+You can also set it to `logging-system` to force regular logging system stack trace output to be used.
+
+Your `StackTracePrinter` implementation can also include a constructor argument that accepts a javadoc:org.springframework.boot.logging.StandardStackTracePrinter[] if it wishes to apply further customization to the stack trace printer created from the properties.
+====
+
+
+
+[[features.logging.structured.other-formats]]
+=== Supporting Other Structured Logging Formats
 
 The structured logging support in Spring Boot is extensible, allowing you to define your own custom format.
-To do this, implement the `StructuredLoggingFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).
-Your implementation is then called with the log event and returns the `String` to be logged, as seen in this example:
+To do this, implement the javadoc:org.springframework.boot.logging.structured.StructuredLogFormatter[] interface. The generic type argument has to be javadoc:ch.qos.logback.classic.spi.ILoggingEvent[] when using Logback and javadoc:org.apache.logging.log4j.core.LogEvent[] when using Log4j2 (that means your implementation is tied to a specific logging system).
+Your implementation is then called with the log event and returns the javadoc:java.lang.String[] to be logged, as seen in this example:
 
 include-code::MyCustomFormat[]
 
@@ -591,12 +767,12 @@ The following listing shows three sample profiles:
 [[features.logging.logback-extensions.environment-properties]]
 === Environment Properties
 
-The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
+The `<springProperty>` tag lets you expose properties from the Spring javadoc:org.springframework.core.env.Environment[] for use within Logback.
 Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.
 The tag works in a similar way to Logback's standard `<property>` tag.
-However, rather than specifying a direct `value`, you specify the `source` of the property (from the `Environment`).
+However, rather than specifying a direct `value`, you specify the `source` of the property (from the javadoc:org.springframework.core.env.Environment[]).
 If you need to store the property somewhere other than in `local` scope, you can use the `scope` attribute.
-If you need a fallback value (in case the property is not set in the `Environment`), you can use the `defaultValue` attribute.
+If you need a fallback value (in case the property is not set in the javadoc:org.springframework.core.env.Environment[]), you can use the `defaultValue` attribute.
 The following example shows how to expose properties for use within Logback:
 
 [source,xml]
@@ -610,7 +786,7 @@ The following example shows how to expose properties for use within Logback:
 ----
 
 NOTE: The `source` must be specified in kebab case (such as `my.property-name`).
-However, properties can be added to the `Environment` by using the relaxed rules.
+However, properties can be added to the javadoc:org.springframework.core.env.Environment[] by using the relaxed rules.
 
 
 
@@ -659,16 +835,16 @@ The following listing shows three sample profiles:
 [[features.logging.log4j2-extensions.environment-properties-lookup]]
 === Environment Properties Lookup
 
-If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
+If you want to refer to properties from your Spring javadoc:org.springframework.core.env.Environment[] within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
 
-The following example shows how to set a Log4j2 property named `applicationName` and `applicationGroup` that reads `spring.application.name` and `spring.application.group` from the Spring `Environment`:
+The following example shows how to set Log4j2 properties named `applicationName` and `applicationGroup` that read `spring.application.name` and `spring.application.group` from the Spring javadoc:org.springframework.core.env.Environment[]:
 
 [source,xml]
 ----
 <Properties>
 	<Property name="applicationName">${spring:spring.application.name}</Property>
-	<Property name="applicationProperty">${spring:spring.application.property}</Property>
+	<Property name="applicationGroup">${spring:spring.application.group}</Property>
 </Properties>
 ----
 
@@ -679,13 +855,13 @@ NOTE: The lookup key should be specified in kebab case (such as `my.property-nam
 [[features.logging.log4j2-extensions.environment-property-source]]
 === Log4j2 System Properties
 
-Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used to configure various items.
-For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
+Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/systemproperties.html[System Properties] that can be used to configure various items.
+For example, the `log4j2.skipJansi` system property can be used to configure if the javadoc:org.apache.logging.log4j.core.appender.ConsoleAppender[] will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
 
-All system properties that are loaded after the Log4j2 initialization can be obtained from the Spring `Environment`.
-For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the `ConsoleAppender` use Jansi on Windows.
+All system properties that are loaded after the Log4j2 initialization can be obtained from the Spring javadoc:org.springframework.core.env.Environment[].
+For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the javadoc:org.apache.logging.log4j.core.appender.ConsoleAppender[] use Jansi on Windows.
 
-NOTE: The Spring `Environment` is only considered when system properties and OS environment variables do not contain the value being loaded.
+NOTE: The Spring javadoc:org.springframework.core.env.Environment[] is only considered when system properties and OS environment variables do not contain the value being loaded.
 
-WARNING: System properties that are loaded during early Log4j2 initialization cannot reference the Spring `Environment`.
+WARNING: System properties that are loaded during early Log4j2 initialization cannot reference the Spring javadoc:org.springframework.core.env.Environment[].
 For example, the property Log4j2 uses to allow the default Log4j2 implementation to be chosen is used before the Spring Environment is available.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers
 
-import javax.sql.DataSource
-
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -27,6 +25,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import javax.sql.DataSource
 
 @Suppress("UNUSED_PARAMETER")
 @Configuration(proxyBeanMethods = false)
@@ -51,7 +50,9 @@ class MyAdditionalEntityManagerFactoryConfiguration {
 
 	private fun createEntityManagerFactoryBuilder(jpaProperties: JpaProperties): EntityManagerFactoryBuilder {
 		val jpaVendorAdapter = createJpaVendorAdapter(jpaProperties)
-		return EntityManagerFactoryBuilder(jpaVendorAdapter, jpaProperties.properties, null)
+		val jpaPropertiesFactory = { dataSource: DataSource ->
+				createJpaProperties(dataSource, jpaProperties.properties) }
+		return EntityManagerFactoryBuilder(jpaVendorAdapter, jpaPropertiesFactory, null)
 	}
 
 	private fun createJpaVendorAdapter(jpaProperties: JpaProperties): JpaVendorAdapter {
@@ -59,4 +60,11 @@ class MyAdditionalEntityManagerFactoryConfiguration {
 		return HibernateJpaVendorAdapter()
 	}
 
+	private fun createJpaProperties(dataSource: DataSource, existingProperties: Map<String, *>): Map<String, *> {
+		val jpaProperties: Map<String, *> = LinkedHashMap(existingProperties)
+		// ... map JPA properties that require the DataSource (e.g. DDL flags)
+		return jpaProperties
+	}
+
 }
+

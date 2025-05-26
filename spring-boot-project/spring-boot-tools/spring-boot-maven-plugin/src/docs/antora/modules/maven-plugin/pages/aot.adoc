@@ -41,6 +41,12 @@ The `native` profile configures the following:
 ** Validate that a suitable GraalVM version is available.
 ** Download third-party reachability metadata.
 
+[WARNING]
+====
+The use of the raw classpath means that native image does not know about the generated `MANIFEST.MF`.
+If you need to read the content of the manifest in a native image, for instance to get the implementation version of your application, configure the `classesDirectory` option to use the regular jar.
+====
+
 To benefit from the `native` profile, a module that represents an application should define two plugins, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -84,17 +90,33 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 == Processing Tests
 
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
-Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitializer` code.
+Those tests are processed by the AOT engine and are then executed in a native image.
 
-To configure your application to use this feature, add an execution for the `process-test-aot` goal, as shown in the following example:
+Just like <<aot.processing-applications.using-the-native-profile,for production code>>, the `spring-boot-starter-parent` defines a `nativeTest` profile that can be used to streamline the steps required to execute your tests in a native image.
+
+The `nativeTest` profile configures the following:
+
+* Execution of `process-test-aot` when the Spring Boot Maven Plugin is applied on a project.
+* Execution of `test` when the {url-native-build-tools-docs-maven-plugin}[Native Build Tools Maven Plugin] is applied on a project.
+The execution defines sensible defaults, in particular:
+** Making sure the plugin uses the raw classpath, and not the main jar file as it does not understand our repackaged jar format.
+** Validate that a suitable GraalVM version is available.
+** Download third-party reachability metadata.
+
+To benefit from the `nativeTest` profile, a module that represents an application should define two plugins, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
-include::example$aot-test/pom.xml[tags=aot]
+include::example$aot-native/pom.xml[tags=aot-native]
 ----
 
-TIP: If you are using `spring-boot-starter-parent`, this execution is automatically configured if you enable the `nativeTest` profile.
+Once the above is in place for each module that needs this feature, you can build your multi-modules project and execute your tests in a native image in the relevant sub-modules, as shown in the following example:
 
-As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
+[source,shell]
+----
+$ mvn test -PnativeTest
+----
+
+NOTE: As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
 
 include::partial$goals/process-test-aot.adoc[leveloffset=+1]

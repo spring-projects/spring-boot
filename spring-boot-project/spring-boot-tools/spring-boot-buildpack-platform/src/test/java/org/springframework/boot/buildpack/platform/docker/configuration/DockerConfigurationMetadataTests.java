@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfigurationMetadata.DockerConfig;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfigurationMetadata.DockerContext;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link DockerConfigurationMetadata}.
  *
  * @author Scott Frederick
+ * @author Dmytro Nosan
  */
 class DockerConfigurationMetadataTests extends AbstractJsonTests {
 
@@ -46,6 +48,9 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		this.environment.put("DOCKER_CONFIG", pathToResource("with-context/config.json"));
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(this.environment::get);
 		assertThat(config.getConfiguration().getCurrentContext()).isEqualTo("test-context");
+		assertThat(config.getConfiguration().getAuths()).isEmpty();
+		assertThat(config.getConfiguration().getCredHelpers()).isEmpty();
+		assertThat(config.getConfiguration().getCredsStore()).isNull();
 		assertThat(config.getContext().getDockerHost()).isEqualTo("unix:///home/user/.docker/docker.sock");
 		assertThat(config.getContext().isTlsVerify()).isFalse();
 		assertThat(config.getContext().getTlsPath()).isNull();
@@ -56,6 +61,9 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		this.environment.put("DOCKER_CONFIG", pathToResource("without-context/config.json"));
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(this.environment::get);
 		assertThat(config.getConfiguration().getCurrentContext()).isNull();
+		assertThat(config.getConfiguration().getAuths()).isEmpty();
+		assertThat(config.getConfiguration().getCredHelpers()).isEmpty();
+		assertThat(config.getConfiguration().getCredsStore()).isNull();
 		assertThat(config.getContext().getDockerHost()).isNull();
 		assertThat(config.getContext().isTlsVerify()).isFalse();
 		assertThat(config.getContext().getTlsPath()).isNull();
@@ -66,6 +74,9 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		this.environment.put("DOCKER_CONFIG", pathToResource("with-default-context/config.json"));
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(this.environment::get);
 		assertThat(config.getConfiguration().getCurrentContext()).isEqualTo("default");
+		assertThat(config.getConfiguration().getAuths()).isEmpty();
+		assertThat(config.getConfiguration().getCredHelpers()).isEmpty();
+		assertThat(config.getConfiguration().getCredsStore()).isNull();
 		assertThat(config.getContext().getDockerHost()).isNull();
 		assertThat(config.getContext().isTlsVerify()).isFalse();
 		assertThat(config.getContext().getTlsPath()).isNull();
@@ -95,8 +106,36 @@ class DockerConfigurationMetadataTests extends AbstractJsonTests {
 		this.environment.put("DOCKER_CONFIG", "docker-config-dummy-path");
 		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(this.environment::get);
 		assertThat(config.getConfiguration().getCurrentContext()).isNull();
+		assertThat(config.getConfiguration().getAuths()).isEmpty();
+		assertThat(config.getConfiguration().getCredHelpers()).isEmpty();
+		assertThat(config.getConfiguration().getCredsStore()).isNull();
 		assertThat(config.getContext().getDockerHost()).isNull();
 		assertThat(config.getContext().isTlsVerify()).isFalse();
+	}
+
+	@Test
+	void configWithAuthIsRead() throws Exception {
+		this.environment.put("DOCKER_CONFIG", pathToResource("with-auth/config.json"));
+		DockerConfigurationMetadata metadata = DockerConfigurationMetadata.from(this.environment::get);
+		DockerConfig configuration = metadata.getConfiguration();
+		assertThat(configuration.getCredsStore()).isEqualTo("desktop");
+		assertThat(configuration.getCredHelpers()).hasSize(3)
+			.containsEntry("azurecr.io", "acr-env")
+			.containsEntry("ecr.us-east-1.amazonaws.com", "ecr-login")
+			.containsEntry("gcr.io", "gcr");
+		assertThat(configuration.getAuths()).hasSize(3).hasEntrySatisfying("https://index.docker.io/v1/", (auth) -> {
+			assertThat(auth.getUsername()).isEqualTo("username");
+			assertThat(auth.getPassword()).isEqualTo("pass\u0000word");
+			assertThat(auth.getEmail()).isEqualTo("test@example.com");
+		}).hasEntrySatisfying("custom-registry.example.com", (auth) -> {
+			assertThat(auth.getUsername()).isEqualTo("customUser");
+			assertThat(auth.getPassword()).isEqualTo("customPass");
+			assertThat(auth.getEmail()).isNull();
+		}).hasEntrySatisfying("my-registry.example.com", (auth) -> {
+			assertThat(auth.getUsername()).isEqualTo("user");
+			assertThat(auth.getPassword()).isEqualTo("password");
+			assertThat(auth.getEmail()).isNull();
+		});
 	}
 
 	private String pathToResource(String resource) throws URISyntaxException {

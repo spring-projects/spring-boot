@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.security.interfaces.RSAPublicKey;
 import java.util.EnumSet;
 
@@ -28,7 +32,7 @@ import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.autoconfigure.security.jpa.City;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -36,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -193,6 +198,7 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void whenAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
 		this.contextRunner.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
 			.withPropertyValues("jwt.public-key=classpath:public-key-location")
@@ -200,6 +206,7 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPublicKeyResource
 	void whenTheBeanFactoryHasAConversionServiceAndAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
 		this.contextRunner
 			.withInitializer(
@@ -257,7 +264,7 @@ class SecurityAutoConfigurationTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, TargetType> targetTypeConverter() {
+		static Converter<String, TargetType> targetTypeConverter() {
 			return new Converter<>() {
 
 				@Override
@@ -292,6 +299,20 @@ class SecurityAutoConfigurationTests {
 	}
 
 	static class TargetType {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "public-key-location", content = """
+			-----BEGIN PUBLIC KEY-----
+			MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDdlatRjRjogo3WojgGHFHYLugd
+			UWAY9iR3fy4arWNA1KoS8kVw33cJibXr8bvwUAUparCwlvdbH6dvEOfou0/gCFQs
+			HUfQrSDv+MuSUMAe8jzKE4qW+jK+xQU9a03GUnKHkkle+Q0pX/g6jXZ7r1/xAK5D
+			o2kQ+X5xK9cipRgEKwIDAQAB
+			-----END PUBLIC KEY-----
+			""")
+	@interface WithPublicKeyResource {
 
 	}
 

@@ -8,19 +8,19 @@ description = "Spring Boot Build"
 defaultTasks 'build'
 
 allprojects {
-	group "org.springframework.boot"
+	group = "org.springframework.boot"
+}
+
+subprojects {
+	apply plugin: "org.springframework.boot.conventions"
 
 	repositories {
 		mavenCentral()
-		if (version.contains('-')) {
-			maven { url "https://repo.spring.io/milestone" }
-		}
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
+		spring.mavenRepositories()
 	}
 
 	configurations.all {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
+

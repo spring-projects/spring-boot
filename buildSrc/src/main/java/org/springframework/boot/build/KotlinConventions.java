@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ import java.util.List;
 
 import dev.adamko.dokkatoo.DokkatooExtension;
 import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
+import io.gitlab.arturbosch.detekt.Detekt;
+import io.gitlab.arturbosch.detekt.DetektPlugin;
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -40,6 +43,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  * <li>Treat all warnings as errors
  * <li>Suppress version warnings
  * </ul>
+ * <li>Detekt plugin is applied to perform static analysis of Kotlin code
  * </ul>
  *
  * <p/>
@@ -48,44 +52,59 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  */
 class KotlinConventions {
 
+	private static final String JVM_TARGET = "17";
+
+	private static final String KOTLIN_VERSION = "1.7";
+
 	void apply(Project project) {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
 			project.getTasks().withType(KotlinCompile.class, this::configure);
 			project.getPlugins().withType(DokkatooHtmlPlugin.class, (dokkatooPlugin) -> configureDokkatoo(project));
+			configureDetekt(project);
 		});
 	}
 
 	private void configure(KotlinCompile compile) {
 		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-		kotlinOptions.setApiVersion("1.7");
-		kotlinOptions.setLanguageVersion("1.7");
-		kotlinOptions.setJvmTarget("17");
+		kotlinOptions.setApiVersion(KOTLIN_VERSION);
+		kotlinOptions.setLanguageVersion(KOTLIN_VERSION);
+		kotlinOptions.setJvmTarget(JVM_TARGET);
 		kotlinOptions.setAllWarningsAsErrors(true);
-		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
+		List<String> freeCompilerArgs = new ArrayList<>(kotlinOptions.getFreeCompilerArgs());
 		freeCompilerArgs.add("-Xsuppress-version-warnings");
-		compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
+		kotlinOptions.setFreeCompilerArgs(freeCompilerArgs);
 	}
 
 	private void configureDokkatoo(Project project) {
 		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
-		dokkatoo.getDokkatooSourceSets().named(SourceSet.MAIN_SOURCE_SET_NAME).configure((sourceSet) -> {
-			sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
-			sourceSet.getClasspath()
-				.from(project.getExtensions()
-					.getByType(SourceSetContainer.class)
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-					.getOutput());
-			sourceSet.getExternalDocumentationLinks().create("spring-boot-javadoc", (link) -> {
-				link.getUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/"));
-				link.getPackageListUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/element-list"));
-			});
-			sourceSet.getExternalDocumentationLinks().create("spring-framework-javadoc", (link) -> {
-				String url = "https://docs.spring.io/spring-framework/docs/%s/javadoc-api/"
-					.formatted(project.property("springFrameworkVersion"));
-				link.getUrl().set(URI.create(url));
-				link.getPackageListUrl().set(URI.create(url + "/element-list"));
-			});
+		dokkatoo.getDokkatooSourceSets().configureEach((sourceSet) -> {
+			if (SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName())) {
+				sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
+				sourceSet.getClasspath()
+					.from(project.getExtensions()
+						.getByType(SourceSetContainer.class)
+						.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+						.getOutput());
+				sourceSet.getExternalDocumentationLinks().create("spring-boot-javadoc", (link) -> {
+					link.getUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/"));
+					link.getPackageListUrl()
+						.set(URI.create("https://docs.spring.io/spring-boot/api/java/element-list"));
+				});
+				sourceSet.getExternalDocumentationLinks().create("spring-framework-javadoc", (link) -> {
+					String url = "https://docs.spring.io/spring-framework/docs/%s/javadoc-api/"
+						.formatted(project.property("springFrameworkVersion"));
+					link.getUrl().set(URI.create(url));
+					link.getPackageListUrl().set(URI.create(url + "/element-list"));
+				});
+			}
 		});
+	}
+
+	private void configureDetekt(Project project) {
+		project.getPlugins().apply(DetektPlugin.class);
+		DetektExtension detekt = project.getExtensions().getByType(DetektExtension.class);
+		detekt.getConfig().setFrom(project.getRootProject().file("src/detekt/config.yml"));
+		project.getTasks().withType(Detekt.class).configureEach((task) -> task.setJvmTarget(JVM_TARGET));
 	}
 
 }

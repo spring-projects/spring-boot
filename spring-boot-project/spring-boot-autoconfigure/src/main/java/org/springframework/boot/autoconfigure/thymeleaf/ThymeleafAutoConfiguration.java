@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
@@ -56,6 +56,7 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -128,12 +129,12 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebMvcConfiguration {
 
 		@Bean
 		@ConditionalOnEnabledResourceChain
-		@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
+		@ConditionalOnMissingFilterBean
 		FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 					new ResourceUrlEncodingFilter());
@@ -142,6 +143,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(AbstractCachingViewResolver.class)
 		static class ThymeleafViewResolverConfiguration {
 
 			@Bean
@@ -180,7 +182,7 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
 
 		@Bean

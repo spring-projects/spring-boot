@@ -12,13 +12,13 @@ We first cover what you need to know to build your own auto-configuration and th
 [[features.developing-auto-configuration.understanding-auto-configured-beans]]
 == Understanding Auto-configured Beans
 
-Classes that implement auto-configuration are annotated with `@AutoConfiguration`.
-This annotation itself is meta-annotated with `@Configuration`, making auto-configurations standard `@Configuration` classes.
-Additional `@Conditional` annotations are used to constrain when the auto-configuration should apply.
-Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
-This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
+Classes that implement auto-configuration are annotated with javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation].
+This annotation itself is meta-annotated with javadoc:org.springframework.context.annotation.Configuration[format=annotation], making auto-configurations standard javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes.
+Additional javadoc:org.springframework.context.annotation.Conditional[format=annotation] annotations are used to constrain when the auto-configuration should apply.
+Usually, auto-configuration classes use javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnClass[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations.
+This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own javadoc:org.springframework.context.annotation.Configuration[format=annotation].
 
-You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the `@AutoConfiguration` classes that Spring provides (see the {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] classes that Spring provides (see the {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
 
 
 
@@ -36,29 +36,51 @@ com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 
 TIP: You can add comments to the imports file using the `#` character.
 
+TIP:  In the unusual case that an auto-configuration class is not a top-level class, its class name should use `$` to separate it from its containing class, for example `com.example.Outer$NestedAutoConfiguration`.
+
 NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.
 Furthermore, auto-configuration classes should not enable component scanning to find additional components.
-Specific `@Import` annotations should be used instead.
+Specific javadoc:org.springframework.context.annotation.Import[format=annotation] annotations should be used instead.
 
 If your configuration needs to be applied in a specific order, you can use the `before`, `beforeName`, `after` and `afterName` attributes on the javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] annotation or the dedicated javadoc:org.springframework.boot.autoconfigure.AutoConfigureBefore[format=annotation] and javadoc:org.springframework.boot.autoconfigure.AutoConfigureAfter[format=annotation] annotations.
-For example, if you provide web-specific configuration, your class may need to be applied after `WebMvcAutoConfiguration`.
+For example, if you provide web-specific configuration, your class may need to be applied after javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration[].
 
-If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
-That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
+If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use javadoc:org.springframework.boot.autoconfigure.AutoConfigureOrder[format=annotation].
+That annotation has the same semantic as the regular javadoc:org.springframework.core.annotation.Order[format=annotation] annotation but provides a dedicated order for auto-configuration classes.
 
-As with standard `@Configuration` classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
-The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any `@DependsOn` relationships.
+As with standard javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
+The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any javadoc:org.springframework.context.annotation.DependsOn[format=annotation] relationships.
+
+
+
+[[features.developing-auto-configuration.locating-auto-configuration-candidates.deprecating]]
+=== Deprecating and Replacing Auto-configuration Classes
+
+You may need to occasionally deprecate auto-configuration classes and offer an alternative.
+For example, you may want to change the package name where your auto-configuration class resides.
+
+Since auto-configuration classes may be referenced in `before`/`after` ordering and `excludes`, you'll need to add an additional file that tells Spring Boot how to deal with replacements.
+To define replacements, create a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.replacements` file indicating the link between the old class and the new one.
+
+For example:
+
+[source]
+----
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration=com.mycorp.libx.autoconfigure.core.LibXAutoConfiguration
+----
+
+NOTE: The `AutoConfiguration.imports` file should also be updated to _only_ reference the replacement class.
 
 
 
 [[features.developing-auto-configuration.condition-annotations]]
 == Condition Annotations
 
-You almost always want to include one or more `@Conditional` annotations on your auto-configuration class.
-The `@ConditionalOnMissingBean` annotation is one common example that is used to allow developers to override auto-configuration if they are not happy with your defaults.
+You almost always want to include one or more javadoc:org.springframework.context.annotation.Conditional[format=annotation] annotations on your auto-configuration class.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotation is one common example that is used to allow developers to override auto-configuration if they are not happy with your defaults.
 
-Spring Boot includes a number of `@Conditional` annotations that you can reuse in your own code by annotating `@Configuration` classes or individual `@Bean` methods.
+Spring Boot includes a number of javadoc:org.springframework.context.annotation.Conditional[format=annotation] annotations that you can reuse in your own code by annotating javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or individual javadoc:org.springframework.context.annotation.Bean[format=annotation] methods.
 These annotations include:
 
 * xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.class-conditions[]
@@ -73,52 +95,53 @@ These annotations include:
 [[features.developing-auto-configuration.condition-annotations.class-conditions]]
 === Class Conditions
 
-The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let `@Configuration` classes be included based on the presence or absence of specific classes.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnClass[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass[format=annotation] annotations let javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes be included based on the presence or absence of specific classes.
 Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to refer to the real class, even though that class might not actually appear on the running application classpath.
-You can also use the `name` attribute if you prefer to specify the class name by using a `String` value.
+You can also use the `name` attribute if you prefer to specify the class name by using a javadoc:java.lang.String[] value.
 
-This mechanism does not apply the same way to `@Bean` methods where typically the return type is the target of the condition: before the condition on the method applies, the JVM will have loaded the class and potentially processed method references which will fail if the class is not present.
+This mechanism does not apply the same way to javadoc:org.springframework.context.annotation.Bean[format=annotation] methods where typically the return type is the target of the condition: before the condition on the method applies, the JVM will have loaded the class and potentially processed method references which will fail if the class is not present.
 
-To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
+To handle this scenario, a separate javadoc:org.springframework.context.annotation.Configuration[format=annotation] class can be used to isolate the condition, as shown in the following example:
 
 include-code::MyAutoConfiguration[]
 
-TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
+TIP: If you use javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnClass[format=annotation] or javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass[format=annotation] as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
 
 
 
 [[features.developing-auto-configuration.condition-annotations.bean-conditions]]
 === Bean Conditions
 
-The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations let a bean be included based on the presence or absence of specific beans.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBean[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations let a bean be included based on the presence or absence of specific beans.
 You can use the `value` attribute to specify beans by type or `name` to specify beans by name.
-The `search` attribute lets you limit the `ApplicationContext` hierarchy that should be considered when searching for beans.
+The `search` attribute lets you limit the javadoc:org.springframework.context.ApplicationContext[] hierarchy that should be considered when searching for beans.
 
-When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
+When placed on a javadoc:org.springframework.context.annotation.Bean[format=annotation] method, the target type defaults to the return type of the method, as shown in the following example:
 
 include-code::MyAutoConfiguration[]
 
-In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the `ApplicationContext`.
+In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the javadoc:org.springframework.context.ApplicationContext[].
 
 TIP: You need to be very careful about the order in which bean definitions are added, as these conditions are evaluated based on what has been processed so far.
-For this reason, we recommend using only `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations on auto-configuration classes (since these are guaranteed to load after any user-defined bean definitions have been added).
+For this reason, we recommend using only javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBean[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations on auto-configuration classes (since these are guaranteed to load after any user-defined bean definitions have been added).
 
-NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration` classes from being created.
-The only difference between using these conditions at the class level and marking each contained `@Bean` method with the annotation is that the former prevents registration of the `@Configuration` class as a bean if the condition does not match.
+NOTE: javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBean[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] do not prevent javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes from being created.
+The only difference between using these conditions at the class level and marking each contained javadoc:org.springframework.context.annotation.Bean[format=annotation] method with the annotation is that the former prevents registration of the javadoc:org.springframework.context.annotation.Configuration[format=annotation] class as a bean if the condition does not match.
 
-TIP: When declaring a `@Bean` method, provide as much type information as possible in the method's return type.
+TIP: When declaring a javadoc:org.springframework.context.annotation.Bean[format=annotation] method, provide as much type information as possible in the method's return type.
 For example, if your bean's concrete class implements an interface the bean method's return type should be the concrete class and not the interface.
-Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that is available in the method signature.
+Providing as much type information as possible in javadoc:org.springframework.context.annotation.Bean[format=annotation] methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that is available in the method signature.
 
 
 
 [[features.developing-auto-configuration.condition-annotations.property-conditions]]
 === Property Conditions
 
-The `@ConditionalOnProperty` annotation lets configuration be included based on a Spring Environment property.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation] annotation lets configuration be included based on a Spring Environment property.
 Use the `prefix` and `name` attributes to specify the property that should be checked.
 By default, any property that exists and is not equal to `false` is matched.
-You can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
+There is also a dedicated javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty[format=annotation] annotation specifically made for boolean properties.
+With both annotations you can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
 
 If multiple names are given in the `name` attribute, all of the properties have to pass the test for the condition to match.
 
@@ -127,7 +150,7 @@ If multiple names are given in the `name` attribute, all of the properties have 
 [[features.developing-auto-configuration.condition-annotations.resource-conditions]]
 === Resource Conditions
 
-The `@ConditionalOnResource` annotation lets configuration be included only when a specific resource is present.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnResource[format=annotation] annotation lets configuration be included only when a specific resource is present.
 Resources can be specified by using the usual Spring conventions, as shown in the following example: `file:/home/user/test.dat`.
 
 
@@ -135,11 +158,11 @@ Resources can be specified by using the usual Spring conventions, as shown in th
 [[features.developing-auto-configuration.condition-annotations.web-application-conditions]]
 === Web Application Conditions
 
-The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a web application.
-A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
-A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication[format=annotation] annotations let configuration be included depending on whether the application is a web application.
+A servlet-based web application is any application that uses a Spring javadoc:org.springframework.web.context.WebApplicationContext[], defines a `session` scope, or has a javadoc:org.springframework.web.context.ConfigurableWebEnvironment[].
+A reactive web application is any application that uses a javadoc:org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext[], or has a javadoc:org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment[].
 
-The `@ConditionalOnWarDeployment` and `@ConditionalOnNotWarDeployment` annotations let configuration be included depending on whether the application is a traditional WAR application that is deployed to a servlet container.
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment[format=annotation] annotations let configuration be included depending on whether the application is a traditional WAR application that is deployed to a servlet container.
 This condition will not match for applications that are run with an embedded web server.
 
 
@@ -147,7 +170,7 @@ This condition will not match for applications that are run with an embedded web
 [[features.developing-auto-configuration.condition-annotations.spel-conditions]]
 === SpEL Expression Conditions
 
-The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {url-spring-framework-docs}/core/expressions.html[SpEL expression].
+The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnExpression[format=annotation] annotation lets configuration be included based on the result of a {url-spring-framework-docs}/core/expressions.html[SpEL expression].
 
 NOTE: Referencing a bean in the expression will cause that bean to be initialized very early in context refresh processing.
 As a result, the bean won't be eligible for post-processing (such as configuration properties binding) and its state may be incomplete.
@@ -157,13 +180,13 @@ As a result, the bean won't be eligible for post-processing (such as configurati
 [[features.developing-auto-configuration.testing]]
 == Testing your Auto-configuration
 
-An auto-configuration can be affected by many factors: user configuration (`@Bean` definition and `Environment` customization), condition evaluation (presence of a particular library), and others.
-Concretely, each test should create a well defined `ApplicationContext` that represents a combination of those customizations.
-`ApplicationContextRunner` provides a great way to achieve that.
+An auto-configuration can be affected by many factors: user configuration (`@Bean` definition and javadoc:org.springframework.core.env.Environment[] customization), condition evaluation (presence of a particular library), and others.
+Concretely, each test should create a well defined javadoc:org.springframework.context.ApplicationContext[] that represents a combination of those customizations.
+javadoc:org.springframework.boot.test.context.runner.ApplicationContextRunner[] provides a great way to achieve that.
 
-WARNING: `ApplicationContextRunner` doesn't work when running the tests in a native image.
+WARNING: javadoc:org.springframework.boot.test.context.runner.ApplicationContextRunner[] doesn't work when running the tests in a native image.
 
-`ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
+javadoc:org.springframework.boot.test.context.runner.ApplicationContextRunner[] is usually defined as a field of the test class to gather the base, common configuration.
 The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
 include-code::MyServiceAutoConfigurationTests[tag=runner]
@@ -172,17 +195,17 @@ TIP: If multiple auto-configurations have to be defined, there is no need to ord
 
 Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
-Invoking `run` provides a callback context that can be used with `AssertJ`.
+Invoking `run` provides a callback context that can be used with AssertJ.
 
 include-code::MyServiceAutoConfigurationTests[tag=test-user-config]
 
-It is also possible to easily customize the `Environment`, as shown in the following example:
+It is also possible to easily customize the javadoc:org.springframework.core.env.Environment[], as shown in the following example:
 
 include-code::MyServiceAutoConfigurationTests[tag=test-env]
 
-The runner can also be used to display the `ConditionEvaluationReport`.
+The runner can also be used to display the javadoc:org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport[].
 The report can be printed at `INFO` or `DEBUG` level.
-The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
+The following example shows how to use the javadoc:org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener[] to print the report in auto-configuration tests.
 
 include-code::MyConditionEvaluationReportingTests[]
 
@@ -191,7 +214,7 @@ include-code::MyConditionEvaluationReportingTests[]
 [[features.developing-auto-configuration.testing.simulating-a-web-context]]
 === Simulating a Web Context
 
-If you need to test an auto-configuration that only operates in a servlet or reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
+If you need to test an auto-configuration that only operates in a servlet or reactive web application context, use the javadoc:org.springframework.boot.test.context.runner.WebApplicationContextRunner[] or javadoc:org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner[] respectively.
 
 
 
@@ -199,7 +222,7 @@ If you need to test an auto-configuration that only operates in a servlet or rea
 === Overriding the Classpath
 
 It is also possible to test what happens when a particular class and/or package is not present at runtime.
-Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
+Spring Boot ships with a javadoc:org.springframework.boot.test.context.FilteredClassLoader[] that can easily be used by the runner.
 In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
 
 include-code::../MyServiceAutoConfigurationTests[tag=test-classloader]
@@ -253,16 +276,16 @@ Make sure that configuration keys are documented by adding field Javadoc for eac
 
 include-code::AcmeProperties[]
 
-NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+NOTE: You should only use plain text with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] field Javadoc, since they are not processed before being added to the JSON.
 
-If you use `@ConfigurationProperties` with record class then record components' descriptions should be provided via class-level Javadoc tag `@param` (there are no explicit instance fields in record classes to put regular field-level Javadocs on).
+If you use javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] with record class then record components' descriptions should be provided via class-level Javadoc tag `@param` (there are no explicit instance fields in record classes to put regular field-level Javadocs on).
 
 Here are some rules we follow internally to make sure descriptions are consistent:
 
 * Do not start the description by "The" or "A".
 * For `boolean` types, start the description with "Whether" or "Enable".
 * For collection-based types, start the description with "Comma-separated list"
-* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
+* Use javadoc:java.time.Duration[] rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
 Make sure to xref:specification:configuration-metadata/annotation-processor.adoc[trigger meta-data generation] so that IDE assistance is available for your keys as well.
@@ -275,7 +298,7 @@ Using your own starter in a compatible IDE is also a good idea to validate that 
 === The "`autoconfigure`" Module
 
 The `autoconfigure` module contains everything that is necessary to get started with the library.
-It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
+It may also contain configuration key definitions (such as javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]) and any callback interface that can be used to further customize how the components are initialized.
 
 TIP: You should mark the dependencies to the library as optional so that you can include the `autoconfigure` module in your projects more easily.
 If you do it that way, the library is not provided and, by default, Spring Boot backs off.
@@ -283,18 +306,7 @@ If you do it that way, the library is not provided and, by default, Spring Boot 
 Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
 If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
 
-When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
-
-[source,xml]
-----
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-autoconfigure-processor</artifactId>
-	<optional>true</optional>
-</dependency>
-----
-
-If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the uber jar:
+When building with Maven, configure the compiler plugin (3.12.0 or later) to add `spring-boot-autoconfigure-processor` to the annotation processor paths:
 
 [source,xml]
 ----
@@ -302,15 +314,15 @@ If you have defined auto-configurations directly in your application, make sure 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
+					<annotationProcessorPaths>
+						<path>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-autoconfigure-processor</artifactId>
-						</exclude>
-					</excludes>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>

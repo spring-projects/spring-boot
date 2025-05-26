@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.util.unit.DataSize;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.thymeleaf")
+@ConfigurationProperties("spring.thymeleaf")
 public class ThymeleafProperties {
 
 	private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
@@ -86,13 +86,12 @@ public class ThymeleafProperties {
 	private Integer templateResolverOrder;
 
 	/**
-	 * Comma-separated list of view names (patterns allowed) that can be resolved.
+	 * List of view names (patterns allowed) that can be resolved.
 	 */
 	private String[] viewNames;
 
 	/**
-	 * Comma-separated list of view names (patterns allowed) that should be excluded from
-	 * resolution.
+	 * List of view names (patterns allowed) that should be excluded from resolution.
 	 */
 	private String[] excludedViewNames;
 

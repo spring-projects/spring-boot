@@ -22,7 +22,10 @@ import java.util.jar.Manifest;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ListLayersCommand}.
@@ -39,9 +42,9 @@ class ListLayersCommandTests extends AbstractJarModeTests {
 	}
 
 	@Test
-	void shouldPrintErrorWhenLayersAreNotEnabled() throws IOException {
-		TestPrintStream out = run(createArchive());
-		assertThat(out).hasSameContentAsResource("list-layers-output-layers-disabled.txt");
+	void shouldFailWhenLayersAreNotEnabled() {
+		assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(createArchive()))
+			.withMessage("Layers are not enabled");
 	}
 
 	private TestPrintStream run(File archive) {

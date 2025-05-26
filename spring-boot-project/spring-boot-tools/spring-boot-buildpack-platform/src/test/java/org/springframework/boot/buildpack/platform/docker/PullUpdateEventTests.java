@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PullUpdateEventTests extends AbstractJsonTests {
 
 	@Test
+	@SuppressWarnings("removal")
 	void readValueWhenFullDeserializesJson() throws Exception {
 		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-update-full.json"),
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isEqualTo("4f4fb700ef54");
 		assertThat(event.getStatus()).isEqualTo("Extracting");
-		assertThat(event.getProgressDetail().getCurrent()).isEqualTo(16);
-		assertThat(event.getProgressDetail().getTotal()).isEqualTo(32);
+		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
 		assertThat(event.getProgress()).isEqualTo("[==================================================>]      32B/32B");
 	}
 

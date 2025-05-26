@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -324,10 +325,23 @@ class JettyWebServerFactoryCustomizerTests {
 		assertThat(timeouts).containsOnly(60000L);
 	}
 
+	@Test
+	void customMaxFormKeys() {
+		bind("server.jetty.max-form-keys=2048");
+		JettyWebServer server = customizeAndGetServer();
+		startAndStopToMakeInternalsAvailable(server);
+		List<Integer> maxFormKeys = server.getServer()
+			.getHandlers()
+			.stream()
+			.filter(ServletContextHandler.class::isInstance)
+			.map(ServletContextHandler.class::cast)
+			.map(ServletContextHandler::getMaxFormKeys)
+			.toList();
+		assertThat(maxFormKeys).containsOnly(2048);
+	}
+
 	private List<Long> connectorsIdleTimeouts(JettyWebServer server) {
-		// Start (and directly stop) server to have connectors available
-		server.start();
-		server.stop();
+		startAndStopToMakeInternalsAvailable(server);
 		return Arrays.stream(server.getServer().getConnectors())
 			.filter((connector) -> connector instanceof AbstractConnector)
 			.map(Connector::getIdleTimeout)
@@ -344,9 +358,7 @@ class JettyWebServerFactoryCustomizerTests {
 
 	private List<Integer> getHeaderSizes(JettyWebServer server, Function<HttpConfiguration, Integer> provider) {
 		List<Integer> requestHeaderSizes = new ArrayList<>();
-		// Start (and directly stop) server to have connectors available
-		server.start();
-		server.stop();
+		startAndStopToMakeInternalsAvailable(server);
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
 			connector.getConnectionFactories()
@@ -359,6 +371,11 @@ class JettyWebServerFactoryCustomizerTests {
 				});
 		}
 		return requestHeaderSizes;
+	}
+
+	private void startAndStopToMakeInternalsAvailable(JettyWebServer server) {
+		server.start();
+		server.stop();
 	}
 
 	private BlockingQueue<?> getQueue(ThreadPool threadPool) {

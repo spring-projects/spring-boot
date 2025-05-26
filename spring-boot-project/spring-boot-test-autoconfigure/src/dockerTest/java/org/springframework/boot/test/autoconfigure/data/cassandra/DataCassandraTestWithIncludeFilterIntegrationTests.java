@@ -21,7 +21,7 @@ import java.util.UUID;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -53,7 +53,7 @@ class DataCassandraTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
 
 	@Autowired
 	private ExampleRepository exampleRepository;

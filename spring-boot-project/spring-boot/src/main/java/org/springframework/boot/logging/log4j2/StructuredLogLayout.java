@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,14 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
+import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -50,7 +54,7 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 	private StructuredLogLayout(Charset charset, StructuredLogFormatter<LogEvent> formatter) {
 		super(charset);
-		Assert.notNull(formatter, "Formatter must not be null");
+		Assert.notNull(formatter, "'formatter' must not be null");
 		this.formatter = formatter;
 	}
 
@@ -102,11 +106,37 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		}
 
 		private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
-			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
-					(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-							instantiator.getArg(Environment.class)));
-			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH,
-					(instantiator) -> new LogstashStructuredLogFormatter());
+			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA, this::createEcsFormatter);
+			commonFormatters.add(CommonStructuredLogFormat.GRAYLOG_EXTENDED_LOG_FORMAT, this::createGraylogFormatter);
+			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, this::createLogstashFormatter);
+		}
+
+		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
+			Environment environment = instantiator.getArg(Environment.class);
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
+			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructuredLoggingJsonMembersCustomizer.class);
+			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
+					jsonMembersCustomizer);
+		}
+
+		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
+			Environment environment = instantiator.getArg(Environment.class);
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
+			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructuredLoggingJsonMembersCustomizer.class);
+			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
+					jsonMembersCustomizer);
+		}
+
+		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
+			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
+			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
+			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructuredLoggingJsonMembersCustomizer.class);
+			return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, jsonMembersCustomizer);
 		}
 
 	}

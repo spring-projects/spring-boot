@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.r2dbc;
 
-import java.util.Map;
-
 import io.r2dbc.spi.ConnectionFactory;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
@@ -46,17 +45,14 @@ import org.springframework.context.annotation.Bean;
 public class ConnectionFactoryHealthContributorAutoConfiguration
 		extends CompositeReactiveHealthContributorConfiguration<ConnectionFactoryHealthIndicator, ConnectionFactory> {
 
-	private final Map<String, ConnectionFactory> connectionFactory;
-
-	ConnectionFactoryHealthContributorAutoConfiguration(Map<String, ConnectionFactory> connectionFactory) {
+	ConnectionFactoryHealthContributorAutoConfiguration() {
 		super(ConnectionFactoryHealthIndicator::new);
-		this.connectionFactory = connectionFactory;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "r2dbcHealthIndicator", "r2dbcHealthContributor" })
-	public ReactiveHealthContributor r2dbcHealthContributor() {
-		return createContributor(this.connectionFactory);
+	public ReactiveHealthContributor r2dbcHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, ConnectionFactory.class);
 	}
 
 }

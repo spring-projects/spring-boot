@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class MainMethodTests {
 	@Test
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
-			.withMessageContaining("Thread must not be null");
+			.withMessageContaining("'thread' must not be null");
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class MainMethodTests {
 	}
 
 	@Test // gh-39733
-	void vaiJarLauncher() throws Exception {
+	void viaJarLauncher() throws Exception {
 		FakeJarLauncher.action = (args) -> Valid.main(args);
 		MainMethod method = new TestThread(FakeJarLauncher::main).test();
 		Method expectedMain = Valid.class.getMethod("main", String[].class);

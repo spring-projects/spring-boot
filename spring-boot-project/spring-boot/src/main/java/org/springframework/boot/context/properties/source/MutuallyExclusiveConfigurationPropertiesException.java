@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
@@ -82,9 +84,9 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 
 	private static String buildMessage(Set<String> mutuallyExclusiveNames, Set<String> configuredNames) {
 		Assert.isTrue(configuredNames != null && configuredNames.size() > 1,
-				"ConfiguredNames must contain 2 or more names");
+				"'configuredNames' must contain 2 or more names");
 		Assert.isTrue(mutuallyExclusiveNames != null && mutuallyExclusiveNames.size() > 1,
-				"MutuallyExclusiveNames must contain 2 or more names");
+				"'mutuallyExclusiveNames' must contain 2 or more names");
 		return "The configuration properties '" + String.join(", ", mutuallyExclusiveNames)
 				+ "' are mutually exclusive and '" + String.join(", ", configuredNames)
 				+ "' have been configured together";
@@ -96,11 +98,23 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 	 * @param entries a consumer used to populate the entries to check
 	 */
 	public static void throwIfMultipleNonNullValuesIn(Consumer<Map<String, Object>> entries) {
-		Map<String, Object> map = new LinkedHashMap<>();
+		throwIfMultipleMatchingValuesIn(entries, Objects::nonNull);
+	}
+
+	/**
+	 * Throw a new {@link MutuallyExclusiveConfigurationPropertiesException} if multiple
+	 * values are defined in a set of entries that match the given predicate.
+	 * @param <V> the value type
+	 * @param entries a consumer used to populate the entries to check
+	 * @param predicate the predicate used to check for matching values
+	 * @since 3.3.7
+	 */
+	public static <V> void throwIfMultipleMatchingValuesIn(Consumer<Map<String, V>> entries, Predicate<V> predicate) {
+		Map<String, V> map = new LinkedHashMap<>();
 		entries.accept(map);
 		Set<String> configuredNames = map.entrySet()
 			.stream()
-			.filter((entry) -> entry.getValue() != null)
+			.filter((entry) -> predicate.test(entry.getValue()))
 			.map(Map.Entry::getKey)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		if (configuredNames.size() > 1) {

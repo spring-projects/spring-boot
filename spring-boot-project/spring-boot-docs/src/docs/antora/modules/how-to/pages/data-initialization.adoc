@@ -13,7 +13,7 @@ It is recommended to use a single mechanism for schema generation.
 You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether you are using an embedded database.
-An embedded database is identified by looking at the `Connection` type and JDBC url.
+An embedded database is identified by looking at the javadoc:java.sql.Connection[] type and JDBC url.
 `hsqldb`, `h2`, or `derby` are embedded databases and others are not.
 If an embedded database is identified and no schema manager (Flyway or Liquibase) has been detected, `ddl-auto` defaults to `create-drop`.
 In all other cases, it defaults to `none`.
@@ -33,7 +33,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 [[howto.data-initialization.using-basic-sql-scripts]]
 == Initialize a Database Using Basic SQL Scripts
 
-Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize its data (DML scripts).
+Spring Boot can automatically create the schema (DDL scripts) of your JDBC javadoc:javax.sql.DataSource[] or R2DBC javadoc:io.r2dbc.spi.ConnectionFactory[] and initialize its data (DML scripts).
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
 The locations of these schema and data scripts can be customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
@@ -51,10 +51,10 @@ By default, Spring Boot enables the fail-fast feature of its script-based databa
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
 
-Script-based `DataSource` initialization is performed, by default, before any JPA `EntityManagerFactory` beans are created.
+Script-based javadoc:javax.sql.DataSource[] initialization is performed, by default, before any JPA javadoc:jakarta.persistence.EntityManagerFactory[] beans are created.
 `schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
-While we do not recommend using multiple data source initialization technologies, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
-This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
+While we do not recommend using multiple data source initialization technologies, if you want script-based javadoc:javax.sql.DataSource[] initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
+This will defer data source initialization until after any javadoc:jakarta.persistence.EntityManagerFactory[] beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
 NOTE: The initialization scripts support `--` for single line comments and `/++*++ ++*++/` for block comments.
@@ -129,26 +129,25 @@ Rather than using `db/migration`, the preceding configuration sets the directory
 The list of supported databases is available in javadoc:org.springframework.boot.jdbc.DatabaseDriver[].
 
 Migrations can also be written in Java.
-Flyway will be auto-configured with any beans that implement `JavaMigration`.
+Flyway will be auto-configured with any beans that implement javadoc:org.flywaydb.core.api.migration.JavaMigration[].
 
 javadoc:org.springframework.boot.autoconfigure.flyway.FlywayProperties[] provides most of Flyway's settings and a small set of additional properties that can be used to disable the migrations or switch off the location checking.
-If you need more control over the configuration, consider registering a `FlywayConfigurationCustomizer` bean.
+If you need more control over the configuration, consider registering a javadoc:org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer[] bean.
 
 Spring Boot calls `Flyway.migrate()` to perform the database migration.
-If you would like more control, provide a `@Bean` that implements javadoc:org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy[].
+If you would like more control, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy[].
 
 Flyway supports SQL and Java https://documentation.red-gate.com/fd/callback-concept-184127466.html[callbacks].
 To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
-To use Java-based callbacks, create one or more beans that implement `Callback`.
-Any such beans are automatically registered with `Flyway`.
-They can be ordered by using `@Order` or by implementing `Ordered`.
-Beans that implement the deprecated `FlywayCallback` interface can also be detected, however they cannot be used alongside `Callback` beans.
+To use Java-based callbacks, create one or more beans that implement javadoc:org.flywaydb.core.api.callback.Callback[].
+Any such beans are automatically registered with javadoc:org.flywaydb.core.Flyway[].
+They can be ordered by using javadoc:org.springframework.core.annotation.Order[format=annotation] or by implementing javadoc:org.springframework.core.Ordered[].
 
-By default, Flyway autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
-If you like to use a different `DataSource`, you can create one and mark its `@Bean` as `@FlywayDataSource`.
-If you do so and want two data sources, remember to create another one and mark it as `@Primary`.
-Alternatively, you can use Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]` in external properties.
-Setting either `spring.flyway.url` or `spring.flyway.user` is sufficient to cause Flyway to use its own `DataSource`.
+By default, Flyway autowires the (`@Primary`) javadoc:javax.sql.DataSource[] in your context and uses that for migrations.
+If you like to use a different javadoc:javax.sql.DataSource[], you can create one and mark its javadoc:org.springframework.context.annotation.Bean[format=annotation] as javadoc:org.springframework.boot.autoconfigure.flyway.FlywayDataSource[format=annotation].
+If you do so and want two data sources (for example by retaining the main auto-configured javadoc:javax.sql.DataSource[]), remember to set the `defaultCandidate` attribute of the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation to `false`.
+Alternatively, you can use Flyway's native javadoc:javax.sql.DataSource[] by setting `spring.flyway.[url,user,password]` in external properties.
+Setting either `spring.flyway.url` or `spring.flyway.user` is sufficient to cause Flyway to use its own javadoc:javax.sql.DataSource[].
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 You can also use Flyway to provide data for specific scenarios.
@@ -182,16 +181,16 @@ It is not possible to use two different ways to initialize the database (for exa
 By default, the master change log is read from `db/changelog/db.changelog-master.yaml`, but you can change the location by setting `spring.liquibase.change-log`.
 In addition to YAML, Liquibase also supports JSON, XML, and SQL change log formats.
 
-By default, Liquibase autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
-If you need to use a different `DataSource`, you can create one and mark its `@Bean` as `@LiquibaseDataSource`.
-If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
-Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
-Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
+By default, Liquibase autowires the (`@Primary`) javadoc:javax.sql.DataSource[] in your context and uses that for migrations.
+If you need to use a different javadoc:javax.sql.DataSource[], you can create one and mark its javadoc:org.springframework.context.annotation.Bean[format=annotation] as javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseDataSource[format=annotation].
+If you do so and want two data sources (for example by retaining the main auto-configured javadoc:javax.sql.DataSource[]), remember to set the `defaultCandidate` attribute of the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation to `false`.
+Alternatively, you can use Liquibase's native javadoc:javax.sql.DataSource[] by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
+Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own javadoc:javax.sql.DataSource[].
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties[] for details about available settings such as contexts, the default schema, and others.
 
-You can also use a `Customizer<Liquibase>` bean if you want to customize the `Liquibase` instance before it is being used.
+You can also use a `Customizer<Liquibase>` bean if you want to customize the javadoc:{url-liquibase-javadoc}/liquibase.Liquibase[] instance before it is being used.
 
 
 
@@ -242,7 +241,7 @@ It includes the production changelog and then declares a new changeset, whose `r
 You can now use for example the https://docs.liquibase.com/change-types/insert.html[insert changeset] to insert data or the https://docs.liquibase.com/change-types/sql.html[sql changeset] to execute SQL directly.
 
 The last thing to do is to configure Spring Boot to activate the `test` profile when running tests.
-To do this, you can add the `@ActiveProfiles("test")` annotation to your `@SpringBootTest` annotated test classes.
+To do this, you can add the `@ActiveProfiles("test")` annotation to your javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotated test classes.
 
 
 
@@ -261,15 +260,15 @@ If, during startup, your application tries to access the database and it has not
 
 Spring Boot will automatically detect beans of the following types that initialize an SQL database:
 
-- `DataSourceScriptDatabaseInitializer`
-- `EntityManagerFactory`
-- `Flyway`
-- `FlywayMigrationInitializer`
-- `R2dbcScriptDatabaseInitializer`
-- `SpringLiquibase`
+- javadoc:org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer[]
+- javadoc:jakarta.persistence.EntityManagerFactory[]
+- javadoc:org.flywaydb.core.Flyway[]
+- javadoc:org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer[]
+- javadoc:org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer[]
+- javadoc:liquibase.integration.spring.SpringLiquibase[]
 
 If you are using a third-party starter for a database initialization library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DatabaseInitializerDetector` in `META-INF/spring.factories`.
+To have other beans be detected, register an implementation of javadoc:org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector[] in `META-INF/spring.factories`.
 
 
 
@@ -278,13 +277,13 @@ To have other beans be detected, register an implementation of `DatabaseInitiali
 
 Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 
-- `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
-- `DSLContext` (jOOQ)
-- `EntityManagerFactory` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
-- `JdbcClient`
-- `JdbcOperations`
-- `NamedParameterJdbcOperations`
+- javadoc:org.springframework.orm.jpa.AbstractEntityManagerFactoryBean[] (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- javadoc:org.jooq.DSLContext[] (jOOQ)
+- javadoc:jakarta.persistence.EntityManagerFactory[] (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- javadoc:org.springframework.jdbc.core.simple.JdbcClient[]
+- javadoc:org.springframework.jdbc.core.JdbcOperations[]
+- javadoc:org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations[]
 
 If you are using a third-party starter data access library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DependsOnDatabaseInitializationDetector` in `META-INF/spring.factories`.
-Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDatabaseInitialization`.
+To have other beans be detected, register an implementation of javadoc:org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector[] in `META-INF/spring.factories`.
+Alternatively, annotate the bean's class or its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization[format=annotation].

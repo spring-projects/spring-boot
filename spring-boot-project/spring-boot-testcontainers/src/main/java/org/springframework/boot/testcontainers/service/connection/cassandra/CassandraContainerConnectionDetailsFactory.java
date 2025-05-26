@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package org.springframework.boot.testcontainers.service.connection.cassandra;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -36,11 +37,11 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class CassandraContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<CassandraContainer<?>, CassandraConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<CassandraContainer, CassandraConnectionDetails> {
 
 	@Override
 	protected CassandraConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<CassandraContainer<?>> source) {
+			ContainerConnectionSource<CassandraContainer> source) {
 		return new CassandraContainerConnectionDetails(source);
 	}
 
@@ -48,9 +49,9 @@ class CassandraContainerConnectionDetailsFactory
 	 * {@link CassandraConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class CassandraContainerConnectionDetails
-			extends ContainerConnectionDetails<CassandraContainer<?>> implements CassandraConnectionDetails {
+			extends ContainerConnectionDetails<CassandraContainer> implements CassandraConnectionDetails {
 
-		private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer<?>> source) {
+		private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer> source) {
 			super(source);
 		}
 
@@ -73,6 +74,11 @@ class CassandraContainerConnectionDetailsFactory
 		@Override
 		public String getLocalDatacenter() {
 			return getContainer().getLocalDatacenter();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return super.getSslBundle();
 		}
 
 	}

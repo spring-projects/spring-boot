@@ -9,7 +9,9 @@ dependencies {
 }
 
 repositories {
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 configurations.all {

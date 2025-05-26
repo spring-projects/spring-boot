@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,12 @@ import java.util.List;
 
 import com.mongodb.ConnectionString;
 
+import org.springframework.boot.autoconfigure.mongo.MongoProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 /**
  * Adapts {@link MongoProperties} to {@link MongoConnectionDetails}.
  *
@@ -36,17 +42,20 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private final MongoProperties properties;
 
-	public PropertiesMongoConnectionDetails(MongoProperties properties) {
+	private final SslBundles sslBundles;
+
+	public PropertiesMongoConnectionDetails(MongoProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
 	public ConnectionString getConnectionString() {
-		// mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
+		// protocol://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
 		if (this.properties.getUri() != null) {
 			return new ConnectionString(this.properties.getUri());
 		}
-		StringBuilder builder = new StringBuilder("mongodb://");
+		StringBuilder builder = new StringBuilder(getProtocol()).append("://");
 		if (this.properties.getUsername() != null) {
 			builder.append(encode(this.properties.getUsername()));
 			builder.append(":");
@@ -74,6 +83,14 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		return new ConnectionString(builder.toString());
 	}
 
+	private String getProtocol() {
+		String protocol = this.properties.getProtocol();
+		if (StringUtils.hasText(protocol)) {
+			return protocol;
+		}
+		return "mongodb";
+	}
+
 	private String encode(String input) {
 		return URLEncoder.encode(input, StandardCharsets.UTF_8);
 	}
@@ -88,9 +105,22 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 				PropertiesMongoConnectionDetails.this.properties.getGridfs().getBucket());
 	}
 
+	@Override
+	public SslBundle getSslBundle() {
+		Ssl ssl = this.properties.getSsl();
+		if (!ssl.isEnabled()) {
+			return null;
+		}
+		if (StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(ssl.getBundle());
+		}
+		return SslBundle.systemDefault();
+	}
+
 	private List<String> getOptions() {
 		List<String> options = new ArrayList<>();
-		if (this.properties.getReplicaSetName() != null) {
+		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
 			options.add("replicaSet=" + this.properties.getReplicaSetName());
 		}
 		if (this.properties.getUsername() != null && this.properties.getAuthenticationDatabase() != null) {

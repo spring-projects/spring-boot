@@ -27,7 +27,7 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import org.junit.jupiter.api.Test;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 import org.testcontainers.images.builder.Transferable;
@@ -53,8 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	@Container
-	static final PasswordAuthenticatorCassandraContainer cassandra = TestImage
-		.container(PasswordAuthenticatorCassandraContainer.class)
+	static final CassandraContainer cassandra = TestImage.container(PasswordAuthenticatorCassandraContainer.class)
 		.withStartupAttempts(5)
 		.waitingFor(new CassandraWaitStrategy());
 
@@ -85,8 +84,7 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 				.withMessageContaining("Authentication error"));
 	}
 
-	static final class PasswordAuthenticatorCassandraContainer
-			extends CassandraContainer<PasswordAuthenticatorCassandraContainer> {
+	static final class PasswordAuthenticatorCassandraContainer extends CassandraContainer {
 
 		PasswordAuthenticatorCassandraContainer(DockerImageName dockerImageName) {
 			super(dockerImageName);

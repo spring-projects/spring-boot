@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,53 +16,64 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import java.util.List;
+
+import reactor.netty.http.client.HttpClient;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorBuilderCustomizer;
+import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations.ReactorResourceFactoryConfiguration;
+import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link ClientHttpConnector}.
- * <p>
- * It can produce a {@link org.springframework.http.client.reactive.ClientHttpConnector}
- * bean and possibly a companion {@code ResourceFactory} bean, depending on the chosen
- * HTTP client library.
+ * Deprecated {@link EnableAutoConfiguration Auto-configuration} for
+ * {@link ReactorNettyHttpClientMapper}.
  *
  * @author Brian Clozel
  * @author Phillip Webb
  * @since 2.1.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@link org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration}
+ * and to align with the deprecation of {@link ReactorNettyHttpClientMapper}
  */
 @AutoConfiguration
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter(SslAutoConfiguration.class)
-@Import({ ClientHttpConnectorFactoryConfiguration.ReactorNetty.class,
-		ClientHttpConnectorFactoryConfiguration.HttpClient5.class,
-		ClientHttpConnectorFactoryConfiguration.JdkClient.class })
+@Deprecated(since = "3.5.0", forRemoval = true)
 public class ClientHttpConnectorAutoConfiguration {
 
-	@Bean
-	@Lazy
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
-	ClientHttpConnector webClientHttpConnector(ClientHttpConnectorFactory<?> clientHttpConnectorFactory) {
-		return clientHttpConnectorFactory.createClientHttpConnector();
-	}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HttpClient.class)
+	@Import(ReactorResourceFactoryConfiguration.class)
+	@SuppressWarnings("removal")
+	static class ReactorNetty {
 
-	@Bean
-	@Lazy
-	@Order(0)
-	@ConditionalOnBean(ClientHttpConnector.class)
-	public WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
-		return (builder) -> builder.clientConnector(clientHttpConnector);
+		@Bean
+		@Order(0)
+		ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> reactorNettyHttpClientMapperClientHttpConnectorBuilderCustomizer(
+				ReactorResourceFactory reactorResourceFactory,
+				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
+			return applyMappers(mapperProvider.orderedStream().toList());
+		}
+
+		private ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> applyMappers(
+				List<ReactorNettyHttpClientMapper> mappers) {
+			return (builder) -> {
+				for (ReactorNettyHttpClientMapper mapper : mappers) {
+					builder = builder.withHttpClientCustomizer(mapper::configure);
+				}
+				return builder;
+			};
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ public class Instantiator<T> {
 	 * @since 2.4.8
 	 */
 	public List<T> instantiate(ClassLoader classLoader, Collection<String> names) {
-		Assert.notNull(names, "Names must not be null");
+		Assert.notNull(names, "'names' must not be null");
 		return instantiate(names.stream().map((name) -> TypeSupplier.forName(classLoader, name)));
 	}
 
@@ -149,13 +149,24 @@ public class Instantiator<T> {
 	}
 
 	/**
+	 * Instantiate the given class, injecting constructor arguments as necessary.
+	 * @param type the type to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiateType(Class<?> type) {
+		Assert.notNull(type, "'type' must not be null");
+		return instantiate(TypeSupplier.forType(type));
+	}
+
+	/**
 	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
 	 * @param types the types to instantiate
 	 * @return a list of instantiated instances
 	 * @since 2.4.8
 	 */
 	public List<T> instantiateTypes(Collection<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return instantiate(types.stream().map(TypeSupplier::forType));
 	}
 
@@ -171,7 +182,7 @@ public class Instantiator<T> {
 	public <A> A getArg(Class<A> type) {
 		Assert.notNull(type, "'type' must not be null");
 		Function<Class<?>, Object> parameter = getAvailableParameter(type);
-		Assert.isTrue(parameter != null, "Unknown argument type " + type.getName());
+		Assert.state(parameter != null, "Unknown argument type " + type.getName());
 		return (A) parameter.apply(this.type);
 	}
 
@@ -182,7 +193,7 @@ public class Instantiator<T> {
 	private T instantiate(TypeSupplier typeSupplier) {
 		try {
 			Class<?> type = typeSupplier.get();
-			Assert.isAssignable(this.type, type);
+			Assert.state(this.type.isAssignableFrom(type), () -> type + " is not assignable to " + this.type);
 			return instantiate(type);
 		}
 		catch (Throwable ex) {

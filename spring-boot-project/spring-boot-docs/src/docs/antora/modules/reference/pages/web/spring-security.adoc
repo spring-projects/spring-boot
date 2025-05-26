@@ -3,10 +3,10 @@
 
 If {url-spring-security-site}[Spring Security] is on the classpath, then web applications are secured by default.
 Spring Boot relies on Spring Security’s content-negotiation strategy to determine whether to use `httpBasic` or `formLogin`.
-To add method-level security to a web application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
+To add method-level security to a web application, you can also add javadoc:org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity[format=annotation] with your desired settings.
 Additional information can be found in the {url-spring-security-docs}/servlet/authorization/method-security.html[Spring Security Reference Guide].
 
-The default `UserDetailsService` has a single user.
+The default javadoc:org.springframework.security.core.userdetails.UserDetailsService[] has a single user.
 The user name is `user`, and the password is random and is printed at WARN level when the application starts, as shown in the following example:
 
 [source]
@@ -23,35 +23,35 @@ You can change the username and password by providing a `spring.security.user.na
 
 The basic features you get by default in a web application are:
 
-* A `UserDetailsService` (or `ReactiveUserDetailsService` in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties$User[] for the properties of the user).
+* A javadoc:org.springframework.security.core.userdetails.UserDetailsService[] (or javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties$User[] for the properties of the user).
 * Form-based login or HTTP Basic security (depending on the `Accept` header in the request) for the entire application (including actuator endpoints if actuator is on the classpath).
-* A `DefaultAuthenticationEventPublisher` for publishing authentication events.
+* A javadoc:org.springframework.security.authentication.DefaultAuthenticationEventPublisher[] for publishing authentication events.
 
-You can provide a different `AuthenticationEventPublisher` by adding a bean for it.
+You can provide a different javadoc:org.springframework.security.authentication.AuthenticationEventPublisher[] by adding a bean for it.
 
 
 
 [[web.security.spring-mvc]]
 == MVC Security
 
-The default security configuration is implemented in `SecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
-`SecurityAutoConfiguration` imports `SpringBootWebSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
+The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] for authentication.
 
-To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type `SecurityFilterChain` (doing so does not disable the `UserDetailsService` configuration).
-To also switch off the `UserDetailsService` configuration, add a bean of type `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
+To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type javadoc:org.springframework.security.web.SecurityFilterChain[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
+To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.UserDetailsService[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.authentication.AuthenticationManager[].
 
-The auto-configuration of a `UserDetailsService` will also back off any of the following Spring Security modules is on the classpath:
+The auto-configuration of a javadoc:org.springframework.security.core.userdetails.UserDetailsService[] will also back off when any of the following Spring Security modules is on the classpath:
 
 - `spring-security-oauth2-client`
 - `spring-security-oauth2-resource-server`
 - `spring-security-saml2-service-provider`
 
-To use `UserDetailsService` in addition to one or more of these dependencies, define your own `InMemoryUserDetailsManager` bean.
+To use javadoc:org.springframework.security.core.userdetails.UserDetailsService[] in addition to one or more of these dependencies, define your own javadoc:org.springframework.security.provisioning.InMemoryUserDetailsManager[] bean.
 
-Access rules can be overridden by adding a custom `SecurityFilterChain` bean.
+Access rules can be overridden by adding a custom javadoc:org.springframework.security.web.SecurityFilterChain[] bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
-`EndpointRequest` can be used to create a `RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
-`PathRequest` can be used to create a `RequestMatcher` for resources in commonly used locations.
+javadoc:org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] that is based on the configprop:management.endpoints.web.base-path[] property.
+javadoc:org.springframework.boot.autoconfigure.security.servlet.PathRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] for resources in commonly used locations.
 
 
 
@@ -59,24 +59,25 @@ Spring Boot provides convenience methods that can be used to override access rul
 == WebFlux Security
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
-The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
-`ReactiveSecurityAutoConfiguration` imports `WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
+The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.reactive.UserDetailsServiceAutoConfiguration[] for authentication.
+In addition to reactive web applications, the latter is also auto-configured when RSocket is in use.
 
-To completely switch off the default web application security configuration, including Actuator security, add a bean of type `WebFilterChainProxy` (doing so does not disable the `UserDetailsService` configuration).
-To also switch off the `UserDetailsService` configuration, add a bean of type `ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
+To completely switch off the default web application security configuration, including Actuator security, add a bean of type javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration).
+To also switch off the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] or javadoc:org.springframework.security.authentication.ReactiveAuthenticationManager[].
 
 The auto-configuration will also back off when any of the following Spring Security modules is on the classpath:
 
 - `spring-security-oauth2-client`
 - `spring-security-oauth2-resource-server`
 
-To use `ReactiveUserDetailsService` in addition to one or more of these dependencies, define your own `MapReactiveUserDetailsService` bean.
+To use javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] in addition to one or more of these dependencies, define your own javadoc:org.springframework.security.core.userdetails.MapReactiveUserDetailsService[] bean.
 
-Access rules and the use of multiple Spring Security components such as OAuth 2 Client and Resource Server can be configured by adding a custom `SecurityWebFilterChain` bean.
+Access rules and the use of multiple Spring Security components such as OAuth 2 Client and Resource Server can be configured by adding a custom javadoc:org.springframework.security.web.server.SecurityWebFilterChain[] bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
-`EndpointRequest` can be used to create a `ServerWebExchangeMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
+javadoc:org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest[] can be used to create a javadoc:org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher[] that is based on the configprop:management.endpoints.web.base-path[] property.
 
-`PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in commonly used locations.
+javadoc:org.springframework.boot.autoconfigure.security.reactive.PathRequest[] can be used to create a javadoc:org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher[] for resources in commonly used locations.
 
 For example, you can customize your security configuration by adding something like:
 
@@ -95,7 +96,7 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 === Client
 
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up OAuth2/Open ID Connect clients.
-This configuration makes use of the properties under `OAuth2ClientProperties`.
+This configuration makes use of the properties under javadoc:org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties[].
 The same properties are applicable to both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
@@ -164,15 +165,15 @@ spring:
             issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
 ----
 
-By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs matching `/login/oauth2/code/*`.
+By default, Spring Security's javadoc:org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter[] only processes URLs matching `/login/oauth2/code/*`.
 If you want to customize the `redirect-uri` to use a different pattern, you need to provide configuration to process that custom pattern.
-For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
+For example, for servlet applications, you can add your own javadoc:org.springframework.security.web.SecurityFilterChain[] that resembles the following:
 
 include-code::MyOAuthClientConfiguration[]
 
-TIP: Spring Boot auto-configures an `InMemoryOAuth2AuthorizedClientService` which is used by Spring Security for the management of client registrations.
-The `InMemoryOAuth2AuthorizedClientService` has limited capabilities and we recommend using it only for development environments.
-For production environments, consider using a `JdbcOAuth2AuthorizedClientService` or creating your own implementation of `OAuth2AuthorizedClientService`.
+TIP: Spring Boot auto-configures an javadoc:org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService[] which is used by Spring Security for the management of client registrations.
+The javadoc:org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService[] has limited capabilities and we recommend using it only for development environments.
+For production environments, consider using a javadoc:org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService[] or creating your own implementation of javadoc:org.springframework.security.oauth2.client.OAuth2AuthorizedClientService[].
 
 
 
@@ -248,7 +249,7 @@ spring:
 ----
 
 The same properties are applicable for both servlet and reactive applications.
-Alternatively, you can define your own `JwtDecoder` bean for servlet applications or a `ReactiveJwtDecoder` for reactive applications.
+Alternatively, you can define your own javadoc:org.springframework.security.oauth2.jwt.JwtDecoder[] bean for servlet applications or a javadoc:org.springframework.security.oauth2.jwt.ReactiveJwtDecoder[] for reactive applications.
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
 
@@ -265,7 +266,7 @@ spring:
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
-Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
+Alternatively, you can define your own javadoc:org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector[] bean for servlet applications or a javadoc:org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector[] for reactive applications.
 
 
 
@@ -302,6 +303,12 @@ spring:
                 - "phone"
                 - "address"
             require-authorization-consent: true
+            token:
+              authorization-code-time-to-live: 5m
+              access-token-time-to-live: 10m
+              access-token-format: "reference"
+              reuse-refresh-tokens: false
+              refresh-token-time-to-live: 30m
           my-client-2:
             registration:
               client-id: "efgh"
@@ -317,23 +324,23 @@ spring:
 	        token-endpoint-authentication-signing-algorithm: "RS256"
 ----
 
-NOTE: The `client-secret` property must be in a format that can be matched by the configured `PasswordEncoder`.
-The default instance of `PasswordEncoder` is created via `PasswordEncoderFactories.createDelegatingPasswordEncoder()`.
+NOTE: The `client-secret` property must be in a format that can be matched by the configured javadoc:org.springframework.security.crypto.password.PasswordEncoder[].
+The default instance of javadoc:org.springframework.security.crypto.password.PasswordEncoder[] is created via `PasswordEncoderFactories.createDelegatingPasswordEncoder()`.
 
 The auto-configuration Spring Boot provides for Spring Authorization Server is designed for getting started quickly.
 Most applications will require customization and will want to define several beans to override auto-configuration.
 
 The following components can be defined as beans to override auto-configuration specific to Spring Authorization Server:
 
-* `RegisteredClientRepository`
-* `AuthorizationServerSettings`
-* `SecurityFilterChain`
+* javadoc:org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository[]
+* javadoc:org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings[]
+* javadoc:org.springframework.security.web.SecurityFilterChain[]
 * `com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>`
-* `JwtDecoder`
+* javadoc:org.springframework.security.oauth2.jwt.JwtDecoder[]
 
-TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which is used by Spring Authorization Server for the management of registered clients.
-The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.
-For production environments, consider using a `JdbcRegisteredClientRepository` or creating your own implementation of `RegisteredClientRepository`.
+TIP: Spring Boot auto-configures an javadoc:org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository[] which is used by Spring Authorization Server for the management of registered clients.
+The javadoc:org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository[] has limited capabilities and we recommend using it only for development environments.
+For production environments, consider using a javadoc:org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository[] or creating your own implementation of javadoc:org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository[].
 
 Additional information can be found in the {url-spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {url-spring-authorization-server-docs}[Spring Authorization Server Reference Guide].
 
@@ -348,7 +355,7 @@ Additional information can be found in the {url-spring-authorization-server-docs
 === Relying Party
 
 If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
-This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
+This configuration makes use of the properties under javadoc:org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties[].
 
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
 You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
@@ -401,8 +408,8 @@ spring:
                 binding: "POST"
 ----
 
-For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `Saml2LogoutResponseFilter` only process URLs matching `/logout/saml2/slo`.
+For SAML2 logout, by default, Spring Security's javadoc:org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestFilter[] and javadoc:org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutResponseFilter[] only process URLs matching `/logout/saml2/slo`.
 If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
-For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
+For example, for servlet applications, you can add your own javadoc:org.springframework.security.web.SecurityFilterChain[] that resembles the following:
 
 include-code::MySamlRelyingPartyConfiguration[]

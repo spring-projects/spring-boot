@@ -5,8 +5,6 @@ plugins {
 	id "org.springframework.boot"
 }
 
-apply plugin: "io.spring.dependency-management"
-
 java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
@@ -15,11 +13,11 @@ java {
 repositories {
 	maven { url "file:${rootDir}/../docker-test-maven-repository"}
 	mavenCentral()
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://repo.spring.io/milestone" }
+	spring.mavenRepositories()
 }
 
 dependencies {
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
 }

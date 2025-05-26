@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,11 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.SSLContext;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
@@ -39,6 +36,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Connection;
@@ -98,8 +96,8 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(CassandraConnectionDetails.class)
-	PropertiesCassandraConnectionDetails cassandraConnectionDetails() {
-		return new PropertiesCassandraConnectionDetails(this.properties);
+	PropertiesCassandraConnectionDetails cassandraConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesCassandraConnectionDetails(this.properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -111,13 +109,13 @@ public class CassandraAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Scope("prototype")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
 			CassandraConnectionDetails connectionDetails,
-			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
+			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureAuthentication(builder, connectionDetails);
-		configureSsl(builder, sslBundles.getIfAvailable());
+		configureSsl(builder, connectionDetails);
 		builder.withKeyspace(this.properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
@@ -130,30 +128,11 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private void configureSsl(CqlSessionBuilder builder, SslBundles sslBundles) {
-		Ssl properties = this.properties.getSsl();
-		if (properties == null || !properties.isEnabled()) {
+	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		if (sslBundle == null) {
 			return;
 		}
-		String bundleName = properties.getBundle();
-		if (!StringUtils.hasLength(bundleName)) {
-			configureDefaultSslContext(builder);
-		}
-		else {
-			configureSsl(builder, sslBundles.getBundle(bundleName));
-		}
-	}
-
-	private void configureDefaultSslContext(CqlSessionBuilder builder) {
-		try {
-			builder.withSslContext(SSLContext.getDefault());
-		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException("Could not setup SSL default context for Cassandra", ex);
-		}
-	}
-
-	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
 		Assert.state(options.getEnabledProtocols() == null, "SSL protocol options cannot be specified with Cassandra");
 		builder
@@ -319,8 +298,11 @@ public class CassandraAutoConfiguration {
 
 		private final CassandraProperties properties;
 
-		private PropertiesCassandraConnectionDetails(CassandraProperties properties) {
+		private final SslBundles sslBundles;
+
+		private PropertiesCassandraConnectionDetails(CassandraProperties properties, SslBundles sslBundles) {
 			this.properties = properties;
+			this.sslBundles = sslBundles;
 		}
 
 		@Override
@@ -343,6 +325,19 @@ public class CassandraAutoConfiguration {
 		@Override
 		public String getLocalDatacenter() {
 			return this.properties.getLocalDatacenter();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			Ssl ssl = this.properties.getSsl();
+			if (ssl == null || !ssl.isEnabled()) {
+				return null;
+			}
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(ssl.getBundle());
+			}
+			return SslBundle.systemDefault();
 		}
 
 		private Node asNode(String contactPoint) {

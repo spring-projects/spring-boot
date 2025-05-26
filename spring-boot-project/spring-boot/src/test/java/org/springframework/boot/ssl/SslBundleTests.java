@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.ssl;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +30,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SslBundle}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class SslBundleTests {
 
@@ -50,6 +55,19 @@ class SslBundleTests {
 		assertThat(bundle.getOptions()).isSameAs(options);
 		assertThat(bundle.getProtocol()).isSameAs(protocol);
 		assertThat(bundle.getManagers()).isSameAs(managers);
+	}
+
+	@Test
+	void shouldCreateSystemDefaultBundle() {
+		SslBundle sslBundle = SslBundle.systemDefault();
+		SSLContext sslContext = sslBundle.createSslContext();
+		assertThat(sslContext).isNotNull();
+		TrustManager[] trustManagers = sslBundle.getManagers().getTrustManagers();
+		assertThat(trustManagers).isNotEmpty();
+		TrustManager trustManager = trustManagers[0];
+		assertThat(trustManager).isInstanceOf(X509TrustManager.class);
+		X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+		assertThat(x509TrustManager.getAcceptedIssuers()).isNotEmpty();
 	}
 
 }

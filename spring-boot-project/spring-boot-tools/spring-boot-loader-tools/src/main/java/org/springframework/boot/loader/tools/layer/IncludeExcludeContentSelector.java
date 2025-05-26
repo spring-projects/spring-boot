@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ public class IncludeExcludeContentSelector<T> implements ContentSelector<T> {
 
 	public <S> IncludeExcludeContentSelector(Layer layer, List<S> includes, List<S> excludes,
 			Function<S, ContentFilter<T>> filterFactory) {
-		Assert.notNull(layer, "Layer must not be null");
-		Assert.notNull(filterFactory, "FilterFactory must not be null");
+		Assert.notNull(layer, "'layer' must not be null");
+		Assert.notNull(filterFactory, "'filterFactory' must not be null");
 		this.layer = layer;
 		this.includes = (includes != null) ? adapt(includes, filterFactory) : Collections.emptyList();
 		this.excludes = (excludes != null) ? adapt(excludes, filterFactory) : Collections.emptyList();

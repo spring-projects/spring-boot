@@ -44,6 +44,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 
@@ -74,6 +75,8 @@ class DockerComposeLifecycleManagerTests {
 	private DockerCompose dockerCompose;
 
 	private Set<String> activeProfiles;
+
+	private List<String> arguments;
 
 	private GenericApplicationContext applicationContext;
 
@@ -124,7 +127,7 @@ class DockerComposeLifecycleManagerTests {
 
 	@Test
 	void startWhenAotProcessingDoesNotStart() {
-		withSystemProperty("spring.aot.processing", "true", () -> {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> {
 			EventCapturingListener listener = new EventCapturingListener();
 			this.eventListeners.add(listener);
 			setUpRunningServices();
@@ -359,6 +362,14 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
+	void startGetsDockerComposeWithArguments() {
+		this.properties.getArguments().add("--project-name=test");
+		setUpRunningServices();
+		this.lifecycleManager.start();
+		assertThat(this.arguments).containsExactly("--project-name=test");
+	}
+
+	@Test
 	void startPublishesEvent() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
@@ -519,8 +530,10 @@ class DockerComposeLifecycleManagerTests {
 		}
 
 		@Override
-		protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
+		protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles,
+				List<String> arguments) {
 			DockerComposeLifecycleManagerTests.this.activeProfiles = activeProfiles;
+			DockerComposeLifecycleManagerTests.this.arguments = arguments;
 			return DockerComposeLifecycleManagerTests.this.dockerCompose;
 		}
 

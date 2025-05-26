@@ -1,8 +1,8 @@
 name: Await HTTP Resource
-description: Waits for an HTTP resource to be available (a HEAD request succeeds)
+description: 'Waits for an HTTP resource to be available (a HEAD request succeeds)'
 inputs:
   url:
-    description: 'The URL of the resource to await'
+    description: 'URL of the resource to await'
     required: true
 runs:
   using: composite

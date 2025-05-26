@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public final class EndpointServlet {
 	}
 
 	private static Servlet instantiateClass(Class<? extends Servlet> servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
 		return BeanUtils.instantiateClass(servlet);
 	}
 
@@ -58,21 +58,21 @@ public final class EndpointServlet {
 	}
 
 	private EndpointServlet(Servlet servlet, Map<String, String> initParameters, int loadOnStartup) {
-		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
 		this.servlet = servlet;
 		this.initParameters = Collections.unmodifiableMap(initParameters);
 		this.loadOnStartup = loadOnStartup;
 	}
 
 	public EndpointServlet withInitParameter(String name, String value) {
-		Assert.hasText(name, "Name must not be empty");
+		Assert.hasText(name, "'name' must not be empty");
 		return withInitParameters(Collections.singletonMap(name, value));
 	}
 
 	public EndpointServlet withInitParameters(Map<String, String> initParameters) {
-		Assert.notNull(initParameters, "InitParameters must not be null");
+		Assert.notNull(initParameters, "'initParameters' must not be null");
 		boolean hasEmptyName = initParameters.keySet().stream().anyMatch((name) -> !StringUtils.hasText(name));
-		Assert.isTrue(!hasEmptyName, "InitParameters must not contain empty names");
+		Assert.isTrue(!hasEmptyName, "'initParameters' must not contain empty names");
 		Map<String, String> mergedInitParameters = new LinkedHashMap<>(this.initParameters);
 		mergedInitParameters.putAll(initParameters);
 		return new EndpointServlet(this.servlet, mergedInitParameters, this.loadOnStartup);

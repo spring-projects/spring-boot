@@ -168,7 +168,7 @@ The following configuration installs/deploys a single `task` classified artifact
 include::example$packaging/classified-artifact-pom.xml[tags=classified-artifact]
 ----
 
-As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` runs at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
+As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` run at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
 Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:
 
 [source,xml,indent=0,subs="verbatim,attributes"]

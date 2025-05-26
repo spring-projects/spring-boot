@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import jakarta.servlet.Filter;
-import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
@@ -34,10 +31,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.test.context.FilteredClassLoader;
-import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -49,19 +43,16 @@ import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCust
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.ForwardedHeaderFilter;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.FrameworkServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,69 +68,31 @@ import static org.mockito.Mockito.mock;
  * @author Raheela Aslam
  * @author Madhura Bhave
  */
-@DirtiesUrlFactories
 class ServletWebServerFactoryAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
 		.withUserConfiguration(WebServerConfiguration.class);
 
 	@Test
 	void createFromConfigClass() {
-		this.contextRunner.run(verifyContext());
-	}
-
-	@Test
-	void contextAlreadyHasDispatcherServletWithDefaultName() {
-		this.contextRunner.withUserConfiguration(DispatcherServletConfiguration.class).run(verifyContext());
-	}
-
-	@Test
-	void contextAlreadyHasDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(SpringServletConfiguration.class).run((context) -> {
-			verifyContext(context);
-			assertThat(context.getBeanNamesForType(DispatcherServlet.class)).hasSize(2);
-		});
-	}
-
-	@Test
-	void contextAlreadyHasNonDispatcherServlet() {
-		this.contextRunner.withUserConfiguration(NonSpringServletConfiguration.class).run((context) -> {
-			verifyContext(context); // the non default servlet is still registered
-			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-		});
-	}
-
-	@Test
-	void contextAlreadyHasNonServlet() {
-		this.contextRunner.withUserConfiguration(NonServletConfiguration.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-			assertThat(context).doesNotHaveBean(Servlet.class);
-		});
-	}
-
-	@Test
-	void contextAlreadyHasDispatcherServletAndRegistration() {
-		this.contextRunner.withUserConfiguration(DispatcherServletWithRegistrationConfiguration.class)
-			.run((context) -> {
-				verifyContext(context);
-				assertThat(context).hasSingleBean(DispatcherServlet.class);
-			});
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServletWebServerFactoryCustomizer.class));
 	}
 
 	@Test
 	void webServerHasNoServletContext() {
-		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class).run(verifyContext());
+		this.contextRunner.withUserConfiguration(EnsureWebServerHasNoServletContext.class)
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
-	void customizeWebServerFactoryThroughCallback() {
-		this.contextRunner.withUserConfiguration(CallbackEmbeddedServerFactoryCustomizer.class).run((context) -> {
-			verifyContext(context);
-			assertThat(context.getBean(MockServletWebServerFactory.class).getPort()).isEqualTo(9000);
-		});
+	void webServerFactoryCustomizerBeansAreCalledToCustomizeWebServerFactory() {
+		this.contextRunner
+			.withBean(WebServerFactoryCustomizer.class,
+					() -> (WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>) (factory) -> factory
+						.setPort(9000))
+			.run((context) -> assertThat(context.getBean(MockServletWebServerFactory.class).getPort()).isEqualTo(9000));
 	}
 
 	@Test
@@ -424,17 +377,6 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		});
 	}
 
-	private ContextConsumer<AssertableWebApplicationContext> verifyContext() {
-		return this::verifyContext;
-	}
-
-	private void verifyContext(ApplicationContext context) {
-		MockServletWebServerFactory factory = context.getBean(MockServletWebServerFactory.class);
-		Servlet servlet = context.getBean(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
-				Servlet.class);
-		then(factory.getServletContext()).should().addServlet("dispatcherServlet", servlet);
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnExpression("true")
 	static class WebServerConfiguration {
@@ -442,68 +384,6 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		@Bean
 		ServletWebServerFactory webServerFactory() {
 			return new MockServletWebServerFactory();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class DispatcherServletConfiguration {
-
-		@Bean
-		DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class SpringServletConfiguration {
-
-		@Bean
-		DispatcherServlet springServlet() {
-			return new DispatcherServlet();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class NonSpringServletConfiguration {
-
-		@Bean
-		FrameworkServlet dispatcherServlet() {
-			return new FrameworkServlet() {
-				@Override
-				protected void doService(HttpServletRequest request, HttpServletResponse response) {
-				}
-			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class NonServletConfiguration {
-
-		@Bean
-		String dispatcherServlet() {
-			return "foo";
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class DispatcherServletWithRegistrationConfiguration {
-
-		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
-		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
-					"/app/*");
-			registration.setName(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			return registration;
 		}
 
 	}
@@ -523,17 +403,6 @@ class ServletWebServerFactoryAutoConfigurationTests {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			return bean;
-		}
-
-	}
-
-	@Component
-	static class CallbackEmbeddedServerFactoryCustomizer
-			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
-
-		@Override
-		public void customize(ConfigurableServletWebServerFactory serverFactory) {
-			serverFactory.setPort(9000);
 		}
 
 	}

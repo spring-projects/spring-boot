@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.json;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,6 +32,7 @@ import org.springframework.boot.json.JsonValueWriter.Series;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonValueWriter} .
@@ -194,6 +198,16 @@ class JsonValueWriterTests {
 	}
 
 	@Test
+	void writePairsWhenDuplicateThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> doWrite((valueWriter) -> {
+			valueWriter.start(Series.OBJECT);
+			valueWriter.writePairs(Map.of("a", "A")::forEach);
+			valueWriter.writePairs(Map.of("a", "B")::forEach);
+			valueWriter.end(Series.OBJECT);
+		})).withMessage("The name 'a' has already been written");
+	}
+
+	@Test
 	void writeArray() {
 		List<String> list = List.of("a", "b", "c");
 		String actual = doWrite((valueWriter) -> valueWriter.writeArray(list::forEach));
@@ -227,6 +241,47 @@ class JsonValueWriterTests {
 	void endWhenNotStartedThrowsException() {
 		doWrite((valueWriter) -> assertThatExceptionOfType(NoSuchElementException.class)
 			.isThrownBy(() -> valueWriter.end(Series.ARRAY)));
+	}
+
+	@Test // gh-44502
+	void writeJavaNioPathWhenSingleElementShouldBeSerializedAsString() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a")))).isEqualTo(quoted("a"));
+	}
+
+	@Test // gh-44502
+	void writeJavaNioPathShouldBeSerializedAsString() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c"))))
+			.isEqualTo(quoted("a\\%1$sb\\%1$sc".formatted(File.separator)));
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenCollectionExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(list))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenMapExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("foo", Map.of("bar", map));
+		assertThatIllegalStateException().isThrownBy(() -> writer.write(map))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: foo.bar.foo.bar.foo.bar.foo");
+	}
+
+	@Test
+	void illegalStateExceptionShouldBeThrownWhenIterableExceededNestingDepth() {
+		JsonValueWriter writer = new JsonValueWriter(new StringBuilder(), 128);
+		List<Object> list = new ArrayList<>();
+		list.add(list);
+		assertThatIllegalStateException().isThrownBy(() -> writer.write((Iterable<Object>) list::iterator))
+			.withMessageStartingWith(
+					"JSON nesting depth (129) exceeds maximum depth of 128 (current path: [0][0][0][0][0][0][0][0][0][0][0][0]");
 	}
 
 	private <V> String write(V value) {

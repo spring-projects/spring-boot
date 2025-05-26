@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
@@ -56,7 +57,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		Map<String, AnsiElement> ansiElements = new HashMap<>();
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
-			.forEach((color) -> ansiElements.put(color.name().toLowerCase(), color));
+			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
 		ansiElements.put("faint", AnsiStyle.FAINT);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}

@@ -16,16 +16,18 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -61,18 +63,23 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private List<Descriptor> getDescriptors(String propertyName) {
+		Set<Origin> seen = new HashSet<>();
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
 			.map((source) -> Descriptor.get(source, propertyName))
+			.filter((descriptor) -> seen.add(getOrigin(descriptor)))
 			.toList();
 	}
 
-	private Stream<PropertySource<?>> getPropertySources() {
-		if (this.environment == null) {
-			return Stream.empty();
+	private Origin getOrigin(Descriptor descriptor) {
+		Origin origin = descriptor.origin;
+		if (origin instanceof PropertySourceOrigin propertySourceOrigin) {
+			origin = propertySourceOrigin.getOrigin();
 		}
-		return this.environment.getPropertySources()
-			.stream()
-			.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
+		return origin;
+	}
+
+	private Stream<PropertySource<?>> getPropertySources() {
+		return (this.environment != null) ? this.environment.getPropertySources().stream() : Stream.empty();
 	}
 
 	private void appendDetails(StringBuilder message, InvalidConfigurationPropertyValueException cause,

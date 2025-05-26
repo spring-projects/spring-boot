@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import io.micrometer.registry.otlp.OtlpMetricsSender;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
@@ -30,9 +32,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
@@ -47,12 +52,12 @@ import org.springframework.core.env.Environment;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(OtlpMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("otlp")
-@EnableConfigurationProperties({ OtlpProperties.class, OpenTelemetryProperties.class })
+@EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
-	private final OtlpProperties properties;
+	private final OtlpMetricsProperties properties;
 
-	OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+	OtlpMetricsExportAutoConfiguration(OtlpMetricsProperties properties) {
 		this.properties = properties;
 	}
 
@@ -66,24 +71,42 @@ public class OtlpMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
 			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
-		return new OtlpPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
 				environment);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
-		return new OtlpMeterRegistry(otlpConfig, clock);
+	@ConditionalOnThreading(Threading.PLATFORM)
+	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		return builder(otlpConfig, clock, metricsSender).build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		VirtualThreadTaskExecutor executor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
+		return builder(otlpConfig, clock, metricsSender).threadFactory(executor.getVirtualThreadFactory()).build();
+	}
+
+	private OtlpMeterRegistry.Builder builder(OtlpConfig otlpConfig, Clock clock,
+			ObjectProvider<OtlpMetricsSender> metricsSender) {
+		OtlpMeterRegistry.Builder builder = OtlpMeterRegistry.builder(otlpConfig).clock(clock);
+		metricsSender.ifAvailable(builder::metricsSender);
+		return builder;
 	}
 
 	/**
-	 * Adapts {@link OtlpProperties} to {@link OtlpMetricsConnectionDetails}.
+	 * Adapts {@link OtlpMetricsProperties} to {@link OtlpMetricsConnectionDetails}.
 	 */
 	static class PropertiesOtlpMetricsConnectionDetails implements OtlpMetricsConnectionDetails {
 
-		private final OtlpProperties properties;
+		private final OtlpMetricsProperties properties;
 
-		PropertiesOtlpMetricsConnectionDetails(OtlpProperties properties) {
+		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties) {
 			this.properties = properties;
 		}
 

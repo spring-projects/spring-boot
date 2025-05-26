@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.ConnectionLimit;
@@ -33,11 +34,14 @@ import org.mockito.InOrder;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -68,7 +72,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -76,7 +80,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -144,6 +148,19 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Test
+	void sslServerNameBundlesConfigurationThrowsException() {
+		Ssl ssl = new Ssl();
+		ssl.setBundle("test");
+		List<ServerNameSslBundle> bundles = List.of(new ServerNameSslBundle("first", "test1"),
+				new ServerNameSslBundle("second", "test2"));
+		ssl.setServerNameBundles(bundles);
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		assertThatIllegalStateException().isThrownBy(() -> this.webServer = factory.getWebServer(new EchoHandler()))
+			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
 	}
 
 	@Override

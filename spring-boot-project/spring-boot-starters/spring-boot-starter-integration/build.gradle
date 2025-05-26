@@ -5,6 +5,6 @@ plugins {
 description = "Starter for using Spring Integration"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-aop"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework.integration:spring-integration-core")
 }

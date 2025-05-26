@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public interface PathMapper {
 	 * @return the path of the endpoint
 	 */
 	static String getRootPath(List<PathMapper> pathMappers, EndpointId endpointId) {
-		Assert.notNull(endpointId, "EndpointId must not be null");
+		Assert.notNull(endpointId, "'endpointId' must not be null");
 		if (pathMappers != null) {
 			for (PathMapper mapper : pathMappers) {
 				String path = mapper.getRootPath(endpointId);

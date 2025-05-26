@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,9 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.4.0
  * @see ResetMocksTestExecutionListener
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
  * {@link org.springframework.test.context.bean.override.mockito.MockReset}
  */
-
 @Deprecated(since = "3.4.0", forRemoval = true)
 public enum MockReset {
 
@@ -92,7 +91,7 @@ public enum MockReset {
 	 * @return the configured settings
 	 */
 	public static MockSettings apply(MockReset reset, MockSettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		if (reset != null && reset != NONE) {
 			settings.invocationListeners(new ResetInvocationListener(reset));
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
-import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.cfg.MappingSettings;
+import org.hibernate.cfg.PersistenceSettings;
+import org.hibernate.cfg.SchemaToolingSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -59,9 +61,9 @@ class HibernatePropertiesTests {
 	void noCustomNamingStrategy() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> {
 			assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
-			assertThat(hibernateProperties).containsEntry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
+			assertThat(hibernateProperties).containsEntry(MappingSettings.PHYSICAL_NAMING_STRATEGY,
 					CamelCaseToUnderscoresNamingStrategy.class.getName());
-			assertThat(hibernateProperties).containsEntry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
+			assertThat(hibernateProperties).containsEntry(MappingSettings.IMPLICIT_NAMING_STRATEGY,
 					SpringImplicitNamingStrategy.class.getName());
 		}));
 	}
@@ -73,8 +75,8 @@ class HibernatePropertiesTests {
 					"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 			.run(assertHibernateProperties((hibernateProperties) -> {
 				assertThat(hibernateProperties).contains(
-						entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
-						entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+						entry(MappingSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+						entry(MappingSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
 				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			}));
 	}
@@ -87,8 +89,8 @@ class HibernatePropertiesTests {
 			.run(assertHibernateProperties((hibernateProperties) -> {
 				// You can override them as we don't provide any default
 				assertThat(hibernateProperties).contains(
-						entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
-						entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+						entry(MappingSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+						entry(MappingSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
 				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			}));
 	}
@@ -96,15 +98,15 @@ class HibernatePropertiesTests {
 	@Test
 	void scannerUsesDisabledScannerByDefault() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-			.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+			.containsEntry(PersistenceSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
 	}
 
 	@Test
 	void scannerCanBeCustomized() {
 		this.contextRunner.withPropertyValues(
 				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
-			.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.StandardScanner")));
+			.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
+					PersistenceSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.StandardScanner")));
 	}
 
 	@Test
@@ -125,8 +127,8 @@ class HibernatePropertiesTests {
 			.withPropertyValues(
 					"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=drop-and-create")
 			.run(assertHibernateProperties((hibernateProperties) -> {
-				assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
-				assertThat(hibernateProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+				assertThat(hibernateProperties).doesNotContainKey(SchemaToolingSettings.HBM2DDL_AUTO);
+				assertThat(hibernateProperties).containsEntry(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
 						"drop-and-create");
 				then(this.ddlAutoSupplier).should(never()).get();
 			}));
@@ -134,7 +136,7 @@ class HibernatePropertiesTests {
 
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
 		return assertHibernateProperties((hibernateProperties) -> {
-			assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, expectedDdlAuto);
+			assertThat(hibernateProperties).containsEntry(SchemaToolingSettings.HBM2DDL_AUTO, expectedDdlAuto);
 			then(this.ddlAutoSupplier).should(never()).get();
 		});
 	}

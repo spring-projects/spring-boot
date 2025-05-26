@@ -1,10 +1,9 @@
 pluginManagement {
+	evaluate(new File("${rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
+		spring.mavenRepositories();
 	}
 	resolutionStrategy {
 		eachPlugin {
@@ -19,8 +18,7 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.develocity" version "3.17.5"
-	id "io.spring.develocity.conventions" version "0.0.19"
+	id "io.spring.develocity.conventions" version "0.0.22"
 }
 
 rootProject.name="spring-boot-build"
@@ -39,8 +37,18 @@ settings.gradle.projectsLoaded {
 	}
 }
 
+include "spring-boot-project:spring-boot"
+include "spring-boot-project:spring-boot-actuator"
+include "spring-boot-project:spring-boot-actuator-autoconfigure"
+include "spring-boot-project:spring-boot-autoconfigure"
 include "spring-boot-project:spring-boot-dependencies"
+include "spring-boot-project:spring-boot-devtools"
+include "spring-boot-project:spring-boot-docker-compose"
+include "spring-boot-project:spring-boot-docs"
 include "spring-boot-project:spring-boot-parent"
+include "spring-boot-project:spring-boot-test"
+include "spring-boot-project:spring-boot-test-autoconfigure"
+include "spring-boot-project:spring-boot-testcontainers"
 include "spring-boot-project:spring-boot-tools:spring-boot-antlib"
 include "spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor"
 include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
@@ -58,24 +66,14 @@ include "spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-properties-migrator"
 include "spring-boot-project:spring-boot-tools:spring-boot-test-support"
 include "spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"
-include "spring-boot-project:spring-boot"
-include "spring-boot-project:spring-boot-autoconfigure"
-include "spring-boot-project:spring-boot-actuator"
-include "spring-boot-project:spring-boot-actuator-autoconfigure"
-include "spring-boot-project:spring-boot-docker-compose"
-include "spring-boot-project:spring-boot-devtools"
-include "spring-boot-project:spring-boot-docs"
-include "spring-boot-project:spring-boot-test"
-include "spring-boot-project:spring-boot-testcontainers"
-include "spring-boot-project:spring-boot-test-autoconfigure"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-classic-tests"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
-include "spring-boot-tests:spring-boot-integration-tests:spring-boot-sni-tests"
 include "spring-boot-system-tests:spring-boot-deployment-tests"
 include "spring-boot-system-tests:spring-boot-image-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-classic-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-sni-tests"
 
 file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {
 	include "spring-boot-project:spring-boot-starters:${it.name}"

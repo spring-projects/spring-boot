@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
@@ -56,27 +57,30 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 
 	private void registerBeanDefinitions(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry) {
 		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
-				new ConnectionDetailsFactories());
+				new ConnectionDetailsFactories(null));
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			for (ServiceConnection annotation : getAnnotations(beanFactory, beanName, beanDefinition)) {
-				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotation);
+			MergedAnnotations annotations = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
+					? testcontainerBeanDefinition.getAnnotations() : null;
+			for (ServiceConnection serviceConnection : getServiceConnections(beanFactory, beanName, annotations)) {
+				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotations,
+						serviceConnection);
 				registrar.registerBeanDefinitions(registry, source);
 			}
 		}
 	}
 
-	private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName,
-			BeanDefinition beanDefinition) {
-		Set<ServiceConnection> annotations = new LinkedHashSet<>(
-				beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false));
-		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
-			testcontainerBeanDefinition.getAnnotations()
-				.stream(ServiceConnection.class)
+	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
+			MergedAnnotations annotations) {
+		Set<ServiceConnection> serviceConnections = beanFactory.findAllAnnotationsOnBean(beanName,
+				ServiceConnection.class, false);
+		if (annotations != null) {
+			serviceConnections = new LinkedHashSet<>(serviceConnections);
+			annotations.stream(ServiceConnection.class)
 				.map(MergedAnnotation::synthesize)
-				.forEach(annotations::add);
+				.forEach(serviceConnections::add);
 		}
-		return annotations;
+		return serviceConnections;
 	}
 
 	private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
@@ -91,13 +95,14 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 	@SuppressWarnings("unchecked")
 	private <C extends Container<?>> ContainerConnectionSource<C> createSource(
 			ConfigurableListableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition,
-			ServiceConnection annotation) {
+			MergedAnnotations annotations, ServiceConnection serviceConnection) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);
 		Class<C> containerType = (Class<C>) beanFactory.getType(beanName, false);
 		String containerImageName = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
 				? testcontainerBeanDefinition.getContainerImageName() : null;
-		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, annotation,
-				() -> beanFactory.getBean(beanName, containerType));
+		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, serviceConnection,
+				() -> beanFactory.getBean(beanName, containerType),
+				SslBundleSource.get(beanFactory, beanName, annotations), annotations);
 	}
 
 }

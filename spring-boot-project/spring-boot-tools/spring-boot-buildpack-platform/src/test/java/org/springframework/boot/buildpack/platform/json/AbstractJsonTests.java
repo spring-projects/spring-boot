@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.buildpack.platform.json;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -45,8 +47,13 @@ public abstract class AbstractJsonTests {
 	}
 
 	protected final String getContentAsString(String name) {
-		return new BufferedReader(new InputStreamReader(getContent(name), StandardCharsets.UTF_8)).lines()
-			.collect(Collectors.joining("\n"));
+		try (InputStream in = getContent(name)) {
+			return new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining("\n"));
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 }

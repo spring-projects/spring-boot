@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.web.embedded.test.MockPkcs11Security;
-import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
+import org.springframework.boot.testsupport.ssl.MockPkcs11Security;
+import org.springframework.boot.testsupport.ssl.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerSslBundle;
@@ -53,6 +54,7 @@ class SslServerCustomizerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
+	@WithPackageResources("test.jks")
 	void whenHttp2IsNotEnabledServerConnectorHasSslAndHttpConnectionFactories() {
 		Server server = createCustomizedServer();
 		assertThat(server.getConnectors()).hasSize(1);
@@ -63,6 +65,7 @@ class SslServerCustomizerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
+	@WithPackageResources("test.jks")
 	@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 			disabledReason = "conscrypt doesn't support Linux/macOS aarch64, see https://github.com/google/conscrypt/issues/1051")
 	void whenHttp2IsEnabledServerConnectorsHasSslAlpnH2AndHttpConnectionFactories() {
@@ -77,6 +80,7 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 			disabledReason = "conscrypt doesn't support Linux/macOS aarch64, see https://github.com/google/conscrypt/issues/1051")
 	void alpnConnectionFactoryHasNullDefaultProtocolToAllowNegotiationToHttp11() {
@@ -98,11 +102,12 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void configureSslWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsException() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		assertThatIllegalStateException().isThrownBy(() -> {
 			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));

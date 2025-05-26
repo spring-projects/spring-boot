@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 }
 
 description = "Spring Boot Gradle Testing Support"
@@ -9,22 +8,7 @@ dependencies {
 	compileOnly("org.junit.jupiter:junit-jupiter")
 
 	implementation(gradleTestKit())
-	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
-	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	implementation("io.spring.gradle:dependency-management-plugin")
-	implementation("net.java.dev.jna:jna-platform")
-	implementation("org.graalvm.buildtools:native-gradle-plugin")
-	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
-	implementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
-	implementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
-	implementation("org.apache.commons:commons-compress")
-	implementation("org.apache.commons:commons-compress")
-	implementation("org.apache.httpcomponents.client5:httpclient5")
-	implementation("org.springframework:spring-core")
-	implementation("org.tomlj:tomlj:1.0.0")
-
 	implementation("org.assertj:assertj-core")
+	implementation("org.springframework:spring-core")
 }

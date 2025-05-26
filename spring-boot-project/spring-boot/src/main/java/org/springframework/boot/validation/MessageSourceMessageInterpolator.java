@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * @author Scott Frederick
  */
 class MessageSourceMessageInterpolator implements MessageInterpolator {
+
+	private static final String DEFAULT_MESSAGE = MessageSourceMessageInterpolator.class.getName();
 
 	private static final char PREFIX = '{';
 
@@ -115,13 +117,11 @@ class MessageSourceMessageInterpolator implements MessageInterpolator {
 
 	private String replaceParameter(String parameter, Locale locale, Set<String> visitedParameters) {
 		parameter = replaceParameters(parameter, locale, visitedParameters);
-		String value = this.messageSource.getMessage(parameter, null, null, locale);
-		return (value != null && !isUsingCodeAsDefaultMessage(value, parameter))
-				? replaceParameters(value, locale, visitedParameters) : null;
-	}
-
-	private boolean isUsingCodeAsDefaultMessage(String value, String parameter) {
-		return value.equals(parameter);
+		String value = this.messageSource.getMessage(parameter, null, DEFAULT_MESSAGE, locale);
+		if (value == null || value.equals(DEFAULT_MESSAGE)) {
+			return null;
+		}
+		return replaceParameters(value, locale, visitedParameters);
 	}
 
 }

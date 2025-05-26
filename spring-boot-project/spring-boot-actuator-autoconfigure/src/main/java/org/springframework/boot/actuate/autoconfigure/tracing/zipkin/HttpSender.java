@@ -27,7 +27,8 @@ import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier.Factory;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -60,20 +61,20 @@ abstract class HttpSender extends BaseHttpSender<URI, byte[]> {
 
 	@Override
 	protected void postSpans(URI endpoint, byte[] body) throws IOException {
-		HttpHeaders headers = getDefaultHeaders();
+		MultiValueMap<String, String> headers = getDefaultHeaders();
 		if (needsCompression(body)) {
 			body = compress(body);
-			headers.set("Content-Encoding", "gzip");
+			headers.add("Content-Encoding", "gzip");
 		}
 		postSpans(endpoint, headers, body);
 	}
 
-	abstract void postSpans(URI endpoint, HttpHeaders headers, byte[] body) throws IOException;
+	abstract void postSpans(URI endpoint, MultiValueMap<String, String> headers, byte[] body) throws IOException;
 
-	HttpHeaders getDefaultHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("b3", "0");
-		headers.set("Content-Type", this.encoding.mediaType());
+	MultiValueMap<String, String> getDefaultHeaders() {
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("b3", "0");
+		headers.add("Content-Type", this.encoding.mediaType());
 		return headers;
 	}
 

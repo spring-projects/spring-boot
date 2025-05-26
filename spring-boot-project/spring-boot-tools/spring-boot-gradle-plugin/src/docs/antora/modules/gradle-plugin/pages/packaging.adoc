@@ -9,7 +9,7 @@ The plugin can create executable archives (jar files and war files) that contain
 == Packaging Executable Jars
 
 Executable jars can be built using the `bootJar` task.
-The task is automatically created when the `java` plugin is applied and is an instance of xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`].
+The task is automatically created when the `java` plugin is applied and is an instance of {apiref-gradle-plugin-boot-jar}[`BootJar`].
 The `assemble` task is automatically configured to depend upon the `bootJar` task so running `assemble` (or `build`) will also run the `bootJar` task.
 
 
@@ -101,7 +101,7 @@ See https://github.com/spring-projects/spring-boot/issues/33238[#33238] for deta
 [[packaging-executable.configuring]]
 == Configuring Executable Archive Packaging
 
-The xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`] and {apiref-gradle-plugin-boot-war}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
+The {apiref-gradle-plugin-boot-jar}[`BootJar`] and {apiref-gradle-plugin-boot-war}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
 As a result, all of the standard configuration options that are available when packaging a jar or war are also available when packaging an executable jar or war.
 A number of configuration options that are specific to executable jars and wars are also provided.
 

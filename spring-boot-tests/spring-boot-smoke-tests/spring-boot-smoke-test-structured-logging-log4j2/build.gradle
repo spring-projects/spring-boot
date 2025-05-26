@@ -1,0 +1,16 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot structured logging Log4j2 smoke test"
+
+configurations.all {
+	exclude module: "spring-boot-starter-logging"
+}
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-log4j2"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

@@ -5,8 +5,7 @@ import org.gradle.plugins.ide.eclipse.model.Library
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
-	id "org.antora"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
@@ -15,7 +14,6 @@ plugins {
 description = "Spring Boot Gradle Plugins"
 
 configurations {
-	antoraContent
 	"testCompileClasspath" {
 		// Downgrade SLF4J is required for tests to run in Eclipse
 		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
@@ -47,10 +45,21 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
+	testImplementation("net.java.dev.jna:jna-platform")
+	testImplementation("org.apache.commons:commons-compress")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.graalvm.buildtools:native-gradle-plugin")
+	testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.tomlj:tomlj:1.0.0")
 }
 
 repositories {
@@ -78,7 +87,7 @@ gradlePlugin {
 	}
 }
 
-task preparePluginValidationClasses(type: Copy) {
+tasks.register("preparePluginValidationClasses", Copy) {
 	destinationDir = layout.buildDirectory.dir("classes/java/pluginValidation").get().asFile
 	from(sourceSets.main.output.classesDirs) {
 		exclude "**/CreateBootStartScripts.class"
@@ -104,40 +113,30 @@ javadoc {
 		splitIndex = true
 		use = true
 		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
-		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc/"
-		links "https://docs.oracle.com/en/java/javase/17/docs/api/"
+		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc"
+		links "https://docs.oracle.com/en/java/javase/17/docs/api"
 	}
 }
 
-def antoraGradlePluginLocalAggregateContent  = tasks.register("antoraGradlePluginLocalAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "gradle-plugin-local-aggregate-content"
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraGradlePluginCatalogContent = tasks.register("antoraGradlePluginCatalogContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "gradle-plugin-catalog-content"
-	from(javadoc) {
-		into "api/java"
+antoraContributions {
+	'gradle-plugin' {
+		catalogContent {
+			from(javadoc) {
+				into("api/java")
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
 	}
 }
 
 tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
-	excludeJavadocExtension = true
-	alwaysInclude = [name: "gradle-plugin", classifier: "local-aggregate-content"]
-	dependsOn antoraGradlePluginLocalAggregateContent
-}
-
-tasks.named("antora") {
-	inputs.files(antoraGradlePluginLocalAggregateContent, antoraGradlePluginCatalogContent)
-}
-
-artifacts {
-	antoraContent antoraGradlePluginCatalogContent
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
 }
 
 plugins.withType(EclipsePlugin) {
@@ -154,4 +153,8 @@ plugins.withType(EclipsePlugin) {
 			}
 		}
 	}
+}
+
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
 }

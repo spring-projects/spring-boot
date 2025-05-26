@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.logging.logback;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -42,7 +43,7 @@ class LogbackConfigurator {
 	private final LoggerContext context;
 
 	LogbackConfigurator(LoggerContext context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		this.context = context;
 	}
 
@@ -54,17 +55,18 @@ class LogbackConfigurator {
 		return this.context.getConfigurationLock();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void conversionRule(String conversionWord, Class<? extends Converter> converterClass) {
-		Assert.hasLength(conversionWord, "Conversion word must not be empty");
-		Assert.notNull(converterClass, "Converter class must not be null");
-		Map<String, String> registry = (Map<String, String>) this.context
-			.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
+	@SuppressWarnings("unchecked")
+	<T extends Converter<?>> void conversionRule(String conversionWord, Class<T> converterClass,
+			Supplier<T> converterSupplier) {
+		Assert.hasLength(conversionWord, "'conversionWord' must not be empty");
+		Assert.notNull(converterSupplier, "'converterSupplier' must not be null");
+		Map<String, Supplier<?>> registry = (Map<String, Supplier<?>>) this.context
+			.getObject(CoreConstants.PATTERN_RULE_REGISTRY_FOR_SUPPLIERS);
 		if (registry == null) {
 			registry = new HashMap<>();
-			this.context.putObject(CoreConstants.PATTERN_RULE_REGISTRY, registry);
+			this.context.putObject(CoreConstants.PATTERN_RULE_REGISTRY_FOR_SUPPLIERS, registry);
 		}
-		registry.put(conversionWord, converterClass.getName());
+		registry.put(conversionWord, converterSupplier);
 	}
 
 	void appender(String name, Appender<?> appender) {

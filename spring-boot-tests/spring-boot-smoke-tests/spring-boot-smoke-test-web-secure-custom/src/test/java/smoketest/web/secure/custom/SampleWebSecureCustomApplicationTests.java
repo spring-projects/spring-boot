@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -55,8 +56,8 @@ class SampleWebSecureCustomApplicationTests {
 	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+			.exchange("/", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
 	}
@@ -65,8 +66,8 @@ class SampleWebSecureCustomApplicationTests {
 	void testLoginPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.GET, new HttpEntity<>(headers),
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Login</title>");
 	}
@@ -79,8 +80,8 @@ class SampleWebSecureCustomApplicationTests {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
-				new HttpEntity<>(form, headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.withRedirects(Redirects.DONT_FOLLOW)
+			.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
 	}

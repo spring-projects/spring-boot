@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
@@ -64,7 +65,8 @@ import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.apache.hc.client5.http.HttpHostConnectException;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.NoHttpResponseException;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
@@ -80,6 +82,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -147,12 +150,20 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@Test
 	void defaultTomcatListeners() {
 		TomcatServletWebServerFactory factory = getFactory();
-		if (AprLifecycleListener.isAprAvailable()) {
-			assertThat(factory.getContextLifecycleListeners()).singleElement().isInstanceOf(AprLifecycleListener.class);
-		}
-		else {
-			assertThat(factory.getContextLifecycleListeners()).isEmpty();
-		}
+		assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+	}
+
+	@Test
+	void aprShouldBeOptIn() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.setUseApr(true);
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer();
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
+			.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test
@@ -260,7 +271,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
-			.withMessageContaining("Connectors must not be null");
+			.withMessageContaining("'connectors' must not be null");
 	}
 
 	@Test
@@ -297,7 +308,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatContextCustomizers(null))
-			.withMessageContaining("TomcatContextCustomizers must not be null");
+			.withMessageContaining("'tomcatContextCustomizers' must not be null");
 	}
 
 	@Test
@@ -305,14 +316,14 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null))
-			.withMessageContaining("TomcatContextCustomizers must not be null");
+			.withMessageContaining("'tomcatContextCustomizers' must not be null");
 	}
 
 	@Test
 	void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
-			.withMessageContaining("TomcatConnectorCustomizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
@@ -320,14 +331,14 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
-			.withMessageContaining("TomcatConnectorCustomizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
 	void setNullTomcatProtocolHandlerCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizer' must not be null");
 	}
 
 	@Test
@@ -335,7 +346,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizers' must not be null");
 	}
 
 	@Test
@@ -659,40 +670,39 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@WithPackageResources({ "1.crt", "1.key", "2.crt", "2.key" })
 	void shouldUpdateSslWhenReloadingSslBundles() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("test",
-				createPemSslBundle("classpath:org/springframework/boot/web/embedded/tomcat/1.crt",
-						"classpath:org/springframework/boot/web/embedded/tomcat/1.key"));
+				createPemSslBundle("classpath:1.crt", "classpath:1.key"));
 		factory.setSslBundles(bundles);
 		factory.setSsl(Ssl.forBundle("test"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		RememberingHostnameVerifier verifier = new RememberingHostnameVerifier();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build(), verifier);
-		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+		TlsSocketStrategy tlsSocketStrategy = new DefaultClientTlsStrategy(sslContext, verifier);
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(tlsSocketStrategy);
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 		assertThat(verifier.getLastPrincipal()).isEqualTo("CN=1");
-		requestFactory = createHttpComponentsRequestFactory(socketFactory);
-		bundles.updateBundle("test", createPemSslBundle("classpath:org/springframework/boot/web/embedded/tomcat/2.crt",
-				"classpath:org/springframework/boot/web/embedded/tomcat/2.key"));
+		requestFactory = createHttpComponentsRequestFactory(tlsSocketStrategy);
+		bundles.updateBundle("test", createPemSslBundle("classpath:2.crt", "classpath:2.key"));
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 		assertThat(verifier.getLastPrincipal()).isEqualTo("CN=2");
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWithHttp11Nio2Protocol() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setProtocol(Http11Nio2Protocol.class.getName());
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(null, "password", "classpath:test.jks"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(
+				createTrustSelfSignedTlsSocketStrategy());
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ public class Handler extends URLStreamHandler {
 		if (file.startsWith(TOMCAT_WARFILE_PROTOCOL) || !file.contains("*/")) {
 			try {
 				URLConnection connection = new URL(file).openConnection();
-				if (connection.getClass().getName().startsWith("org.apache.catalina")) {
+				if (connection.getClass().getName().startsWith("org.apache.catalina.")) {
 					return true;
 				}
 			}

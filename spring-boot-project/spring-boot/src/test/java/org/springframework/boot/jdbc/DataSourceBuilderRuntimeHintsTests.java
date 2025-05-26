@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ class DataSourceBuilderRuntimeHintsTests {
 	void shouldRegisterDataSourceConstructors() {
 		ReflectionHints hints = registerHints();
 		Stream
-			.of(com.mchange.v2.c3p0.ComboPooledDataSource.class, org.h2.jdbcx.JdbcDataSource.class,
-					com.zaxxer.hikari.HikariDataSource.class, org.apache.commons.dbcp2.BasicDataSource.class,
+			.of(com.mchange.v2.c3p0.ComboPooledDataSource.class, com.zaxxer.hikari.HikariDataSource.class,
 					oracle.jdbc.datasource.OracleDataSource.class, oracle.ucp.jdbc.PoolDataSource.class,
-					org.postgresql.ds.PGSimpleDataSource.class,
+					org.apache.commons.dbcp2.BasicDataSource.class, org.apache.tomcat.jdbc.pool.DataSource.class,
+					org.h2.jdbcx.JdbcDataSource.class, org.postgresql.ds.PGSimpleDataSource.class,
 					org.springframework.jdbc.datasource.SimpleDriverDataSource.class,
-					org.apache.tomcat.jdbc.pool.DataSource.class)
+					org.vibur.dbcp.ViburDBCPDataSource.class)
 			.forEach((dataSourceType) -> {
 				TypeHint typeHint = hints.getTypeHint(dataSourceType);
 				assertThat(typeHint).withFailMessage(() -> "No hints found for data source type " + dataSourceType)

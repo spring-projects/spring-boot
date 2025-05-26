@@ -57,6 +57,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -523,9 +524,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public boolean isUserInRole(String role) {
 			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
-			return AuthorityAuthorizationManager.hasAuthority(authority)
-				.check(this::getAuthentication, null)
-				.isGranted();
+			AuthorizationResult result = AuthorityAuthorizationManager.hasAuthority(authority)
+				.authorize(this::getAuthentication, null);
+			return result != null && result.isGranted();
 		}
 
 	}

@@ -10,7 +10,7 @@ Then at some point, potentially after some workloads that will warm up your JVM 
 A memory representation of the running JVM, including its warmness, is then serialized to disk, allowing a fast restoration at a later point, potentially on another machine with a similar operating system and CPU architecture.
 The restored process retains all the capabilities of the HotSpot JVM, including further JIT optimizations at runtime.
 
-Based on the foundations provided by Spring Framework, Spring Boot provides support for checkpointing and restoring your application, and manages out-of-the-box the lifecycle of resources such as socket, files and thread pools https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/STATUS.adoc[on a limited scope].
+Based on the foundations provided by Spring Framework, Spring Boot provides support for checkpointing and restoring your application, and manages out-of-the-box the lifecycle of resources such as socket, files and thread pools https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/ci/STATUS.adoc[on a limited scope].
 Additional lifecycle management is expected for other dependencies and potentially for the application code dealing with such resources.
 
 You can find more details about the two modes supported ("on demand checkpoint/restore of a running application" and "automatic checkpoint/restore at startup"), how to enable checkpoint and restore support and some guidelines in {url-spring-framework-docs}/integration/checkpoint-restore.html[the Spring Framework JVM Checkpoint Restore support documentation].

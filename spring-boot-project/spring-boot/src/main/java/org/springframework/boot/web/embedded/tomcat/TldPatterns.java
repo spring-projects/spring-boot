@@ -106,6 +106,7 @@ final class TldPatterns {
 		skipPatterns.add("tagsoup-*.jar");
 		skipPatterns.add("tomcat-api.jar");
 		skipPatterns.add("tomcat-coyote.jar");
+		skipPatterns.add("tomcat-coyote-ffm.jar");
 		skipPatterns.add("tomcat-dbcp.jar");
 		skipPatterns.add("tomcat-i18n-*.jar");
 		skipPatterns.add("tomcat-jdbc.jar");

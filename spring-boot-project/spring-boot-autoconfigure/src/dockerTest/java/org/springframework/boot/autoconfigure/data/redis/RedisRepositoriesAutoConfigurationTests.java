@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,6 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.redis.city.City;
 import org.springframework.boot.autoconfigure.data.redis.city.CityRepository;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;

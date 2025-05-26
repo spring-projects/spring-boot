@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package org.springframework.boot.test.context.assertj;
 
 import java.io.Closeable;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * An {@link ApplicationContext} that additionally supports AssertJ style assertions. Can
@@ -101,16 +103,46 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 * {@link ApplicationContext} or throw an exception if the context fails to start.
 	 * @return a {@link ApplicationContextAssertProvider} instance
 	 */
-	@SuppressWarnings("unchecked")
 	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
 			Class<? extends C> contextType, Supplier<? extends C> contextSupplier) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.isTrue(type.isInterface(), "Type must be an interface");
-		Assert.notNull(contextType, "ContextType must not be null");
-		Assert.isTrue(contextType.isInterface(), "ContextType must be an interface");
-		Class<?>[] interfaces = { type, contextType };
+		return get(type, contextType, contextSupplier, new Class<?>[0]);
+	}
+
+	/**
+	 * Factory method to create a new {@link ApplicationContextAssertProvider} instance.
+	 * @param <T> the assert provider type
+	 * @param <C> the context type
+	 * @param type the type of {@link ApplicationContextAssertProvider} required (must be
+	 * an interface)
+	 * @param contextType the type of {@link ApplicationContext} being managed (must be an
+	 * interface)
+	 * @param contextSupplier a supplier that will either return a fully configured
+	 * {@link ApplicationContext} or throw an exception if the context fails to start.
+	 * @param additionalContextInterfaces and additional context interfaces to add to the
+	 * proxy
+	 * @return a {@link ApplicationContextAssertProvider} instance
+	 * @since 3.4.0
+	 */
+	@SuppressWarnings("unchecked")
+	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
+			Class<? extends C> contextType, Supplier<? extends C> contextSupplier,
+			Class<?>... additionalContextInterfaces) {
+		Assert.notNull(type, "'type' must not be null");
+		Assert.isTrue(type.isInterface(), "'type' must be an interface");
+		Assert.notNull(contextType, "'contextType' must not be null");
+		Assert.isTrue(contextType.isInterface(), "'contextType' must be an interface");
+		Class<?>[] interfaces = merge(new Class<?>[] { type, contextType }, additionalContextInterfaces);
 		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
 				new AssertProviderApplicationContextInvocationHandler(contextType, contextSupplier));
+	}
+
+	private static Class<?>[] merge(Class<?>[] classes, Class<?>[] additional) {
+		if (ObjectUtils.isEmpty(additional)) {
+			return classes;
+		}
+		Class<?>[] result = Arrays.copyOf(classes, classes.length + additional.length);
+		System.arraycopy(additional, 0, result, classes.length, additional.length);
+		return result;
 	}
 
 }

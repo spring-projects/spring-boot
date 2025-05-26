@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -61,6 +59,8 @@ import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -84,20 +84,22 @@ import static org.mockito.Mockito.times;
  * @author Rafael Ceccone
  * @author Moritz Halbritter
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ MockitoExtension.class, OutputCaptureExtension.class })
 class DockerApiTests {
 
-	private static final String API_URL = "/v" + DockerApi.MINIMUM_API_VERSION;
+	private static final String API_URL = "/v" + DockerApi.API_VERSION;
+
+	private static final String PLATFORM_API_URL = "/v" + DockerApi.PLATFORM_API_VERSION;
 
 	public static final String PING_URL = "/_ping";
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
-	private static final String IMAGES_1_41_URL = "/v" + ApiVersion.of(1, 41) + "/images";
+	private static final String PLATFORM_IMAGES_URL = PLATFORM_API_URL + "/images";
 
 	private static final String CONTAINERS_URL = API_URL + "/containers";
 
-	private static final String CONTAINERS_1_41_URL = "/v" + ApiVersion.of(1, 41) + "/containers";
+	private static final String PLATFORM_CONTAINERS_URL = PLATFORM_API_URL + "/containers";
 
 	private static final String VOLUMES_URL = API_URL + "/volumes";
 
@@ -108,7 +110,7 @@ class DockerApiTests {
 
 	@BeforeEach
 	void setup() {
-		this.dockerApi = new DockerApi(this.http);
+		this.dockerApi = new DockerApi(this.http, DockerLog.toSystemOut());
 	}
 
 	private HttpTransport http() {
@@ -191,21 +193,21 @@ class DockerApiTests {
 		@Test
 		void pullWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.pull(null, null, this.pullListener))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
 		void pullWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.pull(ImageReference.of("ubuntu"), null, null))
-				.withMessage("Listener must not be null");
+				.withMessage("'listener' must not be null");
 		}
 
 		@Test
 		void pullPullsImageAndProducesEvents() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener);
@@ -218,9 +220,9 @@ class DockerApiTests {
 
 		@Test
 		void pullWithRegistryAuthPullsImageAndProducesEvents() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), eq("auth token"))).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener, "auth token");
@@ -235,9 +237,9 @@ class DockerApiTests {
 		void pullWithPlatformPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			URI createUri = new URI(IMAGES_1_41_URL
+			URI createUri = new URI(PLATFORM_IMAGES_URL
 					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(IMAGES_1_41_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			URI imageUri = new URI(PLATFORM_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
 			given(http().head(eq(new URI(PING_URL))))
 				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
@@ -254,9 +256,9 @@ class DockerApiTests {
 		void pullWithPlatformAndInsufficientApiVersionThrowsException() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
-					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.MINIMUM_API_VERSION)));
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.pull(reference, platform, this.pullListener))
+			given(http().head(eq(new URI(PING_URL)))).willReturn(
+					responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.API_VERSION)));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.pull(reference, platform, this.pullListener))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");
 		}
@@ -264,14 +266,14 @@ class DockerApiTests {
 		@Test
 		void pushWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.push(null, this.pushListener, null))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
 		void pushWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.push(ImageReference.of("ubuntu"), null, null))
-				.withMessage("Listener must not be null");
+				.withMessage("'listener' must not be null");
 		}
 
 		@Test
@@ -299,14 +301,14 @@ class DockerApiTests {
 		@Test
 		void loadWhenArchiveIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.load(null, UpdateListener.none()))
-				.withMessage("Archive must not be null");
+				.withMessage("'archive' must not be null");
 		}
 
 		@Test
 		void loadWhenListenerIsNullThrowsException() {
 			ImageArchive archive = mock(ImageArchive.class);
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.load(archive, null))
-				.withMessage("Listener must not be null");
+				.withMessage("'listener' must not be null");
 		}
 
 		@Test // gh-23130
@@ -317,6 +319,16 @@ class DockerApiTests {
 			given(http().post(eq(loadUri), eq("application/x-tar"), any())).willReturn(emptyResponse());
 			assertThatIllegalStateException().isThrownBy(() -> this.api.load(archive, this.loadListener))
 				.withMessageContaining("Invalid response received");
+		}
+
+		@Test // gh-31243
+		void loadWithErrorResponseThrowsException() throws Exception {
+			Image image = Image.of(getClass().getResourceAsStream("type/image.json"));
+			ImageArchive archive = ImageArchive.from(image);
+			URI loadUri = new URI(IMAGES_URL + "/load");
+			given(http().post(eq(loadUri), eq("application/x-tar"), any())).willReturn(responseOf("load-error.json"));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.load(archive, this.loadListener))
+				.withMessageContaining("Error response received");
 		}
 
 		@Test
@@ -339,7 +351,7 @@ class DockerApiTests {
 		@Test
 		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
@@ -367,37 +379,22 @@ class DockerApiTests {
 		@Test
 		void inspectWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.inspect(null))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
 		void inspectInspectImage() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.inspect(reference);
 			assertThat(image.getLayers()).hasSize(46);
 		}
 
 		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWhenReferenceIsNullThrowsException() {
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(null, (name, archive) -> {
-			})).withMessage("Reference must not be null");
-		}
-
-		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWhenExportsIsNullThrowsException() {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(reference, null))
-				.withMessage("Exports must not be null");
-		}
-
-		@Test
 		void exportLayersExportsLayerTars() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
 			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
 			this.api.exportLayers(reference, (name, archive) -> {
@@ -424,8 +421,8 @@ class DockerApiTests {
 
 		@Test
 		void exportLayersWithSymlinksExportsLayerTars() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-symlinks.tar"));
 			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
 			this.api.exportLayers(reference, (name, archive) -> {
@@ -451,40 +448,17 @@ class DockerApiTests {
 		}
 
 		@Test
-		@SuppressWarnings("removal")
-		void exportLayerFilesDeletesTempFiles() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
-			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
-			List<Path> layerFilePaths = new ArrayList<>();
-			this.api.exportLayerFiles(reference, (name, path) -> layerFilePaths.add(path));
-			layerFilePaths.forEach((path) -> assertThat(path.toFile()).doesNotExist());
-		}
-
-		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWithNoManifestThrowsException() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
-			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-no-manifest.tar"));
-			String expectedMessage = "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
-				.formatted(reference);
-			assertThatIllegalStateException().isThrownBy(() -> this.api.exportLayerFiles(reference, (name, archive) -> {
-			})).withMessageContaining(expectedMessage);
-		}
-
-		@Test
 		void tagWhenReferenceIsNullThrowsException() {
 			ImageReference tag = ImageReference.of("localhost:5000/ubuntu");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(null, tag))
-				.withMessage("SourceReference must not be null");
+				.withMessage("'sourceReference' must not be null");
 		}
 
 		@Test
 		void tagWhenTargetIsNullThrowsException() {
 			ImageReference reference = ImageReference.of("localhost:5000/ubuntu");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(reference, null))
-				.withMessage("TargetReference must not be null");
+				.withMessage("'targetReference' must not be null");
 		}
 
 		@Test
@@ -528,7 +502,7 @@ class DockerApiTests {
 		@Test
 		void createWhenConfigIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.create(null, null))
-				.withMessage("Config must not be null");
+				.withMessage("'config' must not be null");
 		}
 
 		@Test
@@ -573,12 +547,23 @@ class DockerApiTests {
 
 		@Test
 		void createWithPlatformCreatesContainer() throws Exception {
+			createWithPlatform("1.41");
+		}
+
+		@Test
+		void createWithPlatformAndUnknownApiVersionAttemptsCreate() throws Exception {
+			createWithPlatform(null);
+		}
+
+		private void createWithPlatform(String apiVersion) throws IOException, URISyntaxException {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
-			URI createUri = new URI(CONTAINERS_1_41_URL + "/create?platform=linux%2Farm64%2Fv1");
+			if (apiVersion != null) {
+				given(http().head(eq(new URI(PING_URL))))
+					.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, apiVersion)));
+			}
+			URI createUri = new URI(PLATFORM_CONTAINERS_URL + "/create?platform=linux%2Farm64%2Fv1");
 			given(http().post(eq(createUri), eq("application/json"), any()))
 				.willReturn(responseOf("create-container-response.json"));
 			ContainerReference containerReference = this.api.create(config, platform);
@@ -590,11 +575,13 @@ class DockerApiTests {
 		}
 
 		@Test
-		void createWithPlatformAndInsufficientApiVersionThrowsException() throws Exception {
+		void createWithPlatformAndKnownInsufficientApiVersionThrowsException() throws Exception {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.create(config, platform))
+			given(http().head(eq(new URI(PING_URL))))
+				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.24")));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.create(config, platform))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");
 		}
@@ -602,7 +589,7 @@ class DockerApiTests {
 		@Test
 		void startWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.start(null))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
@@ -617,14 +604,14 @@ class DockerApiTests {
 		@Test
 		void logsWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.logs(null, UpdateListener.none()))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
 		void logsWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.logs(ContainerReference.of("e90e34656806"), null))
-				.withMessage("Listener must not be null");
+				.withMessage("'listener' must not be null");
 		}
 
 		@Test
@@ -642,7 +629,7 @@ class DockerApiTests {
 		@Test
 		void waitWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.wait(null))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
@@ -657,7 +644,7 @@ class DockerApiTests {
 		@Test
 		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
-				.withMessage("Reference must not be null");
+				.withMessage("'reference' must not be null");
 		}
 
 		@Test
@@ -693,7 +680,7 @@ class DockerApiTests {
 		@Test
 		void deleteWhenNameIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.delete(null, false))
-				.withMessage("Name must not be null");
+				.withMessage("'name' must not be null");
 		}
 
 		@Test
@@ -734,22 +721,23 @@ class DockerApiTests {
 		}
 
 		@Test
-		void getApiVersionWithEmptyVersionHeaderReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithEmptyVersionHeaderReturnsUnknownVersion() throws Exception {
 			given(http().head(eq(new URI(PING_URL))))
 				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "")));
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
 		}
 
 		@Test
-		void getApiVersionWithNoVersionHeaderReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithNoVersionHeaderReturnsUnknownVersion() throws Exception {
 			given(http().head(eq(new URI(PING_URL)))).willReturn(emptyResponse());
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
 		}
 
 		@Test
-		void getApiVersionWithExceptionReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithExceptionReturnsUnknownVersion(CapturedOutput output) throws Exception {
 			given(http().head(eq(new URI(PING_URL)))).willThrow(new IOException("simulated error"));
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
+			assertThat(output).contains("Warning: Failed to determine Docker API version: simulated error");
 		}
 
 	}

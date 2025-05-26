@@ -94,7 +94,7 @@ By default, metadata about the running application as well as service connection
 This architecture decision is due to Cloud Foundry's polyglot (any language and platform can be supported as a buildpack) nature.
 Process-scoped environment variables are language agnostic.
 
-Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's `Environment` abstraction, as shown in the following example:
+Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's javadoc:org.springframework.core.env.Environment[] abstraction, as shown in the following example:
 
 include-code::MyBean[]
 
@@ -124,7 +124,22 @@ Because this shutdown processing happens in parallel (and due to the nature of d
 
 You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
-The preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
+
+If you're using Kubernetes 1.32 or up, the preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
+
+[source,yaml]
+----
+spec:
+  containers:
+  - name: "example-container"
+    image: "example-image"
+    lifecycle:
+      preStop:
+        sleep:
+          seconds: 10
+----
+
+If you're not on Kubernetes 1.32 yet, you can use an `exec` command to invoke `sleep`.
 
 [source,yaml]
 ----
@@ -137,6 +152,8 @@ spec:
         exec:
           command: ["sh", "-c", "sleep 10"]
 ----
+
+NOTE: The container needs to have a shell for this to work.
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and xref:reference:web/graceful-shutdown.adoc[graceful shutdown] will begin, allowing any remaining in-flight requests to complete.
 
@@ -161,7 +178,7 @@ The following example shows the `Procfile` for our starter REST application:
 web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
 ----
 
-Spring Boot makes `-D` arguments available as properties accessible from a Spring `Environment` instance.
+Spring Boot makes `-D` arguments available as properties accessible from a Spring javadoc:org.springframework.core.env.Environment[] instance.
 The `server.port` configuration property is fed to the embedded Tomcat, Jetty, or Undertow instance, which then uses the port when it starts up.
 The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 
@@ -227,7 +244,6 @@ For more details, see https://devcenter.heroku.com/articles/deploying-spring-boo
 https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
-* https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[Architecture guide]
 * https://blog.openshift.com/using-spring-boot-on-openshift/[Running as a traditional web application on Wildfly]
 * https://blog.openshift.com/openshift-commons-briefing-96-cloud-native-applications-spring-rhoar/[OpenShift Commons Briefing]
 

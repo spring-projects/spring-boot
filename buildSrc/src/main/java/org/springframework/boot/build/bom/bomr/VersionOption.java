@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.util.List;
 
+import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
@@ -42,6 +44,10 @@ class VersionOption {
 	@Override
 	public String toString() {
 		return this.version.toString();
+	}
+
+	Upgrade upgrade(Library library) {
+		return new Upgrade(library, library.withVersion(new LibraryVersion(this.version)));
 	}
 
 	static final class AlignedVersionOption extends VersionOption {
@@ -76,6 +82,28 @@ class VersionOption {
 			}
 			return super.toString() + " (some modules are missing: "
 					+ StringUtils.collectionToDelimitedString(this.missingModules, ", ") + ")";
+		}
+
+	}
+
+	static final class SnapshotVersionOption extends VersionOption {
+
+		private final DependencyVersion releaseVersion;
+
+		SnapshotVersionOption(DependencyVersion version, DependencyVersion releaseVersion) {
+			super(version);
+			this.releaseVersion = releaseVersion;
+		}
+
+		@Override
+		public String toString() {
+			return super.toString() + " (for " + this.releaseVersion + ")";
+		}
+
+		@Override
+		Upgrade upgrade(Library library) {
+			return new Upgrade(library, library.withVersion(new LibraryVersion(super.version)),
+					library.withVersion(new LibraryVersion(this.releaseVersion)));
 		}
 
 	}

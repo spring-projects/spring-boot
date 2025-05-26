@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,11 +66,13 @@ import static org.mockito.Mockito.mock;
 class ObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingContextRunner = new ApplicationContextRunner()
 		.with(MetricsRun.simple())
+		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withUserConfiguration(TracerConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
@@ -141,6 +143,7 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreAndTracingAreOnClassPathButThereIsNoTracer() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
+			.withPropertyValues("management.observations.annotations.enabled=true")
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
 			.run((context) -> {
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
@@ -178,6 +181,12 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void allowsObservedAspectToBeDisabled() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
+	}
+
+	@Test
+	void allowsObservedAspectToBeDisabledWithProperty() {
+		this.contextRunner.withPropertyValues("management.observations.annotations.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
 	}
 

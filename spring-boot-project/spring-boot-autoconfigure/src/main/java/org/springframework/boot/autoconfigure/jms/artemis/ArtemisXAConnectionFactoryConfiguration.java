@@ -47,14 +47,14 @@ class ArtemisXAConnectionFactoryConfiguration {
 			ArtemisConnectionDetails connectionDetails, XAConnectionFactoryWrapper wrapper) throws Exception {
 		return wrapper
 			.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
-				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
+				.createConnectionFactory(ActiveMQXAConnectionFactory::new, ActiveMQXAConnectionFactory::new));
 	}
 
 	@Bean
 	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
-			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+			.createConnectionFactory(ActiveMQXAConnectionFactory::new, ActiveMQXAConnectionFactory::new);
 	}
 
 }

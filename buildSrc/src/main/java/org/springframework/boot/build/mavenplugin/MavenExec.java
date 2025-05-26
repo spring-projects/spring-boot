@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MavenExec extends JavaExec {
 
-	private final Logger log = LoggerFactory.getLogger(MavenExec.class);
+	private final Logger logger = LoggerFactory.getLogger(MavenExec.class);
 
 	public MavenExec() {
 		setClasspath(mavenConfiguration(getProject()));
@@ -69,8 +69,8 @@ public abstract class MavenExec extends JavaExec {
 			try {
 				args("--log-file", logFile.toFile().getAbsolutePath());
 				super.exec();
-				if (this.log.isInfoEnabled()) {
-					Files.readAllLines(logFile).forEach(this.log::info);
+				if (this.logger.isInfoEnabled()) {
+					Files.readAllLines(logFile).forEach(this.logger::info);
 				}
 			}
 			catch (ExecException ex) {

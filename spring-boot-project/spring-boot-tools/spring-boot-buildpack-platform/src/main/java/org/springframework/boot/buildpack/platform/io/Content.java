@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public interface Content {
 	 * @return a new {@link Content} instance
 	 */
 	static Content of(String string) {
-		Assert.notNull(string, "String must not be null");
+		Assert.notNull(string, "'string' must not be null");
 		return of(string.getBytes(StandardCharsets.UTF_8));
 	}
 
@@ -64,7 +64,7 @@ public interface Content {
 	 * @return a new {@link Content} instance
 	 */
 	static Content of(byte[] bytes) {
-		Assert.notNull(bytes, "Bytes must not be null");
+		Assert.notNull(bytes, "'bytes' must not be null");
 		return of(bytes.length, () -> new ByteArrayInputStream(bytes));
 	}
 
@@ -74,7 +74,7 @@ public interface Content {
 	 * @return a new {@link Content} instance
 	 */
 	static Content of(File file) {
-		Assert.notNull(file, "File must not be null");
+		Assert.notNull(file, "'file' must not be null");
 		return of((int) file.length(), () -> new FileInputStream(file));
 	}
 
@@ -86,8 +86,8 @@ public interface Content {
 	 * @return a new {@link Content} instance
 	 */
 	static Content of(int size, IOSupplier<InputStream> supplier) {
-		Assert.isTrue(size >= 0, "Size must not be negative");
-		Assert.notNull(supplier, "Supplier must not be null");
+		Assert.isTrue(size >= 0, "'size' must not be negative");
+		Assert.notNull(supplier, "'supplier' must not be null");
 		return new Content() {
 
 			@Override

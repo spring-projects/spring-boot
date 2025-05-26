@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.hazelcast;
 
-import java.util.Map;
-
 import com.hazelcast.core.HazelcastInstance;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator;
@@ -52,8 +51,8 @@ public class HazelcastHealthContributorAutoConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "hazelcastHealthIndicator", "hazelcastHealthContributor" })
-	public HealthContributor hazelcastHealthContributor(Map<String, HazelcastInstance> hazelcastInstances) {
-		return createContributor(hazelcastInstances);
+	public HealthContributor hazelcastHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, HazelcastInstance.class);
 	}
 
 }

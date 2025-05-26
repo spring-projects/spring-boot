@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,14 +105,6 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(AuthenticationManagerResolverConfig.class)
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveAuthenticationManagerResolver.class)
 				.doesNotHaveBean(ReactiveUserDetailsService.class));
-	}
-
-	@Test
-	void doesNotConfigureDefaultUserIfResourceServerWithJWTIsUsed() {
-		this.contextRunner.withUserConfiguration(JwtDecoderConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
-			assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class);
-		});
 	}
 
 	@Test
@@ -228,26 +219,6 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 		@Bean
 		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JwtDecoderConfiguration {
-
-		@Bean
-		ReactiveJwtDecoder jwtDecoder() {
-			return mock(ReactiveJwtDecoder.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ReactiveOpaqueTokenIntrospectorConfiguration {
-
-		@Bean
-		ReactiveOpaqueTokenIntrospector introspectionClient() {
-			return mock(ReactiveOpaqueTokenIntrospector.class);
 		}
 
 	}

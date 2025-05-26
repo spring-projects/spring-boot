@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class WebServerManager {
 	WebServerManager(ReactiveWebServerApplicationContext applicationContext, ReactiveWebServerFactory factory,
 			Supplier<HttpHandler> handlerSupplier, boolean lazyInit) {
 		this.applicationContext = applicationContext;
-		Assert.notNull(factory, "Factory must not be null");
+		Assert.notNull(factory, "'factory' must not be null");
 		this.handler = new DelayedInitializationHttpHandler(handlerSupplier, lazyInit);
 		this.webServer = factory.getWebServer(this.handler);
 	}

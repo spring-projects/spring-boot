@@ -49,7 +49,7 @@ import static org.mockito.BDDMockito.given;
  * Integration tests for {@link MockitoTestExecutionListener}.
  *
  * @author Moritz Halbritter
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
@@ -236,6 +236,7 @@ class MockitoTestExecutionListenerIntegrationTests {
 	@Nested
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	@TestInstance(Lifecycle.PER_CLASS)
+	@Disabled("https://github.com/spring-projects/spring-framework/issues/33690")
 	class ConfigureMockInBeforeAll {
 
 		@Mock

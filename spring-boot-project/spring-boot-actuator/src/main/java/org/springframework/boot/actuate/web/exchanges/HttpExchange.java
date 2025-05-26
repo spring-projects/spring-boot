@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -434,7 +435,7 @@ public final class HttpExchange {
 
 		void excludeUnless(String header, Include exception) {
 			if (!this.includes.contains(exception)) {
-				this.filteredHeaderNames.add(header.toLowerCase());
+				this.filteredHeaderNames.add(header.toLowerCase(Locale.ROOT));
 			}
 		}
 
@@ -444,7 +445,7 @@ public final class HttpExchange {
 			}
 			Map<String, List<String>> filtered = new LinkedHashMap<>();
 			headers.forEach((name, value) -> {
-				if (!this.filteredHeaderNames.contains(name.toLowerCase())) {
+				if (!this.filteredHeaderNames.contains(name.toLowerCase(Locale.ROOT))) {
 					filtered.put(name, value);
 				}
 			});

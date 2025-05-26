@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,27 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.json.JsonWriter.ValueProcessor;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StructuredLogFormatterFactory}.
@@ -50,7 +62,7 @@ class StructuredLogFormatterFactoryTests {
 	private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 				(instantiator) -> new TestEcsFormatter(instantiator.getArg(Environment.class),
-						instantiator.getArg(StringBuilder.class)));
+						instantiator.getArg(StackTracePrinter.class), instantiator.getArg(StringBuilder.class)));
 	}
 
 	@Test
@@ -74,7 +86,7 @@ class StructuredLogFormatterFactoryTests {
 
 	@Test
 	void getUsingClassNameWhenHasGenericMismatch() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
+		assertThatIllegalStateException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
 			.withMessage("Type argument of org.springframework.boot.logging.structured."
 					+ "StructuredLogFormatterFactoryTests$DifferentFormatter "
 					+ "must be org.springframework.boot.logging.structured."
@@ -84,15 +96,68 @@ class StructuredLogFormatterFactoryTests {
 	}
 
 	@Test
-	void getUsingClassNameInjectsApplicationMetadata() {
+	void getUsingClassNameInjectsEnvironment() {
 		TestEcsFormatter formatter = (TestEcsFormatter) this.factory.get(TestEcsFormatter.class.getName());
 		assertThat(formatter.getEnvironment()).isSameAs(this.environment);
+	}
+
+	@Test
+	void getUsingClassNameInjectsStackTracePrinter() {
+		this.environment.setProperty("logging.structured.json.stacktrace.printer", "standard");
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(LogEvent.class,
+				this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		TestEcsFormatter formatter = (TestEcsFormatter) factory.get(TestEcsFormatter.class.getName());
+		assertThat(formatter.getStackTracePrinter()).isInstanceOf(StandardStackTracePrinter.class);
 	}
 
 	@Test
 	void getUsingClassNameInjectsCustomParameter() {
 		TestEcsFormatter formatter = (TestEcsFormatter) this.factory.get(TestEcsFormatter.class.getName());
 		assertThat(formatter.getCustom()).hasToString("Hello");
+	}
+
+	@Test
+	void getInjectStringMembersCustomizer() {
+		this.environment.setProperty("logging.structured.json.rename.spring", "test");
+		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
+		given(factoriesLoader.load(any(), any(ArgumentResolver.class)))
+			.willReturn(List.of(new StringMembersStructuredLoggingJsonMembersCustomizer()));
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
+				LogEvent.class, this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		CustomizedFormatter formatter = (CustomizedFormatter) factory.get(CustomizedFormatter.class.getName());
+		assertThat(formatter.format(new LogEvent())).contains("\"test\":\"BOOT\"");
+	}
+
+	@Test
+	void getInjectObjectMembersCustomizer() {
+		this.environment.setProperty("logging.structured.json.rename.spring", "test");
+		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
+		given(factoriesLoader.load(any(), any(ArgumentResolver.class)))
+			.willReturn(List.of(new ObjectMembersStructuredLoggingJsonMembersCustomizer()));
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
+				LogEvent.class, this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		CustomizedFormatter formatter = (CustomizedFormatter) factory.get(CustomizedFormatter.class.getName());
+		assertThat(formatter.format(new LogEvent())).contains("\"test\":\"BOOT\"");
+	}
+
+	static class StringMembersStructuredLoggingJsonMembersCustomizer
+			implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+			members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+		}
+
+	}
+
+	static class ObjectMembersStructuredLoggingJsonMembersCustomizer
+			implements StructuredLoggingJsonMembersCustomizer<Object> {
+
+		@Override
+		public void customize(Members<Object> members) {
+			members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+		}
+
 	}
 
 	static class LogEvent {
@@ -105,12 +170,15 @@ class StructuredLogFormatterFactoryTests {
 
 	static class TestEcsFormatter implements StructuredLogFormatter<LogEvent> {
 
-		private Environment environment;
+		private final Environment environment;
 
-		private StringBuilder custom;
+		private final StackTracePrinter stackTracePrinter;
 
-		TestEcsFormatter(Environment environment, StringBuilder custom) {
+		private final StringBuilder custom;
+
+		TestEcsFormatter(Environment environment, StackTracePrinter stackTracePrinter, StringBuilder custom) {
 			this.environment = environment;
+			this.stackTracePrinter = stackTracePrinter;
 			this.custom = custom;
 		}
 
@@ -123,6 +191,10 @@ class StructuredLogFormatterFactoryTests {
 			return this.environment;
 		}
 
+		StackTracePrinter getStackTracePrinter() {
+			return this.stackTracePrinter;
+		}
+
 		StringBuilder getCustom() {
 			return this.custom;
 		}
@@ -131,8 +203,8 @@ class StructuredLogFormatterFactoryTests {
 
 	static class ExtendedTestEcsFormatter extends TestEcsFormatter {
 
-		ExtendedTestEcsFormatter(Environment environment, StringBuilder custom) {
-			super(environment, custom);
+		ExtendedTestEcsFormatter(Environment environment, StackTracePrinter stackTracePrinter, StringBuilder custom) {
+			super(environment, stackTracePrinter, custom);
 		}
 
 	}
@@ -142,6 +214,14 @@ class StructuredLogFormatterFactoryTests {
 		@Override
 		public String format(DifferentLogEvent event) {
 			return "";
+		}
+
+	}
+
+	static class CustomizedFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
+
+		CustomizedFormatter(StructuredLoggingJsonMembersCustomizer<?> customizer) {
+			super((members) -> members.add("spring", "boot"), customizer);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
+import java.util.Locale;
 import java.util.Map;
 import java.util.jar.JarFile;
 
@@ -50,7 +51,7 @@ public class Repackager extends Packager {
 	@Override
 	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
-		if (getSource().getName().toLowerCase().endsWith(".jar") && hasSignedLibrary(writtenLibraries)) {
+		if (getSource().getName().toLowerCase(Locale.ROOT).endsWith(".jar") && hasSignedLibrary(writtenLibraries)) {
 			writer.writeEntry("META-INF/BOOT.SF", (entryWriter) -> {
 			});
 		}

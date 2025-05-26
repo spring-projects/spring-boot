@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	private boolean detectRootUri = true;
 
-	private boolean bufferContent = false;
+	private boolean bufferContent;
 
 	public MockServerRestTemplateCustomizer() {
 		this(SimpleRequestExpectationManager::new);
@@ -82,7 +82,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 */
 	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		this(() -> BeanUtils.instantiateClass(expectationManager));
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+		Assert.notNull(expectationManager, "'expectationManager' must not be null");
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	 * @since 3.0.0
 	 */
 	public MockServerRestTemplateCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
-		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
+		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
 		this.expectationManagerSupplier = expectationManagerSupplier;
 	}
 

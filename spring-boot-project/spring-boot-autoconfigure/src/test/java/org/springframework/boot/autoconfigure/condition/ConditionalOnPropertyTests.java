@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -271,6 +273,36 @@ class ConditionalOnPropertyTests {
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
+	@Test
+	void multiplePropertiesConditionReportWhenMatched() {
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1", "property2=value2");
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(getConditionEvaluationReport()).contains("@ConditionalOnProperty ([property1,property2]) matched");
+	}
+
+	@Test
+	void multiplePropertiesConditionReportWhenDoesNotMatch() {
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1");
+		assertThat(getConditionEvaluationReport())
+			.contains("@ConditionalOnProperty ([property1,property2]) did not find property 'property2'");
+	}
+
+	@Test
+	void repeatablePropertiesConditionReportWhenMatched() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=value1", "property2=value2");
+		assertThat(this.context.containsBean("foo")).isTrue();
+		String report = getConditionEvaluationReport();
+		assertThat(report).contains("@ConditionalOnProperty (property1) matched");
+		assertThat(report).contains("@ConditionalOnProperty (property2) matched");
+	}
+
+	@Test
+	void repeatablePropertiesConditionReportWhenDoesNotMatch() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=value1");
+		assertThat(getConditionEvaluationReport())
+			.contains("@ConditionalOnProperty (property2) did not find property 'property2'");
+	}
+
 	private void load(Class<?> config, String... environment) {
 		TestPropertyValues.of(environment).applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(config).environment(this.environment)
@@ -278,9 +310,31 @@ class ConditionalOnPropertyTests {
 			.run();
 	}
 
+	private String getConditionEvaluationReport() {
+		return ConditionEvaluationReport.get(this.context.getBeanFactory())
+			.getConditionAndOutcomesBySource()
+			.values()
+			.stream()
+			.flatMap(ConditionAndOutcomes::stream)
+			.map(Object::toString)
+			.collect(Collectors.joining("\n"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = { "property1", "property2" })
 	static class MultiplePropertiesRequiredConfiguration {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty("property1")
+	@ConditionalOnProperty("property2")
+	static class RepeatablePropertiesRequiredConfiguration {
 
 		@Bean
 		String foo() {

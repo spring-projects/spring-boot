@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,27 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
 
 /**
@@ -43,31 +51,60 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
-			ThrowableProxyConverter throwableProxyConverter) {
-		super((members) -> jsonMembers(environment, throwableProxyConverter, members));
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
+			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
+				customizer);
 	}
 
-	private static void jsonMembers(Environment environment, ThrowableProxyConverter throwableProxyConverter,
+	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
 			JsonWriter.Members<ILoggingEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant);
-		members.add("log.level", ILoggingEvent::getLevel);
-		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
-			.when(Objects::nonNull);
-		members.add("process.thread.name", ILoggingEvent::getThreadName);
-		ElasticCommonSchemaService.get(environment).jsonMembers(members);
-		members.add("log.logger", ILoggingEvent::getLoggerName);
-		members.add("message", ILoggingEvent::getFormattedMessage);
-		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
-		members.from(ILoggingEvent::getKeyValuePairs)
-			.whenNotEmpty()
-			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
-		members.add().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
-			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
-			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-			throwableMembers.add("error.stack_trace", throwableProxyConverter::convert);
+		members.add("log").usingMembers((log) -> {
+			log.add("level", ILoggingEvent::getLevel);
+			log.add("logger", ILoggingEvent::getLoggerName);
 		});
-		members.add("ecs.version", "8.11");
+		members.add("process").usingMembers((process) -> {
+			process.add("pid", environment.getProperty("spring.application.pid", Long.class)).when(Objects::nonNull);
+			process.add("thread").usingMembers((thread) -> thread.add("name", ILoggingEvent::getThreadName));
+		});
+		ElasticCommonSchemaProperties.get(environment).jsonMembers(members);
+		members.add("message", ILoggingEvent::getFormattedMessage);
+		members.add().usingPairs(contextPairs.nested((pairs) -> {
+			pairs.addMapEntries(ILoggingEvent::getMDCPropertyMap);
+			pairs.add(ILoggingEvent::getKeyValuePairs, keyValuePairExtractor);
+		}));
+		members.add().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
+			throwableMembers.add("error").usingMembers((error) -> {
+				error.add("type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
+				error.add("message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
+				error.add("stack_trace", extractor::stackTrace);
+			});
+		});
+		members.add("tags", ILoggingEvent::getMarkerList)
+			.whenNotNull()
+			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
+			.whenNotEmpty();
+		members.add("ecs").usingMembers((ecs) -> ecs.add("version", "8.11"));
+	}
+
+	private static Set<String> getMarkers(List<Marker> markers) {
+		Set<String> result = new TreeSet<>();
+		addMarkers(result, markers.iterator());
+		return result;
+	}
+
+	private static void addMarkers(Set<String> result, Iterator<Marker> iterator) {
+		while (iterator.hasNext()) {
+			Marker marker = iterator.next();
+			result.add(marker.getName());
+			if (marker.hasReferences()) {
+				addMarkers(result, marker.iterator());
+			}
+		}
 	}
 
 }

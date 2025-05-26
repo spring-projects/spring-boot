@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,15 +35,20 @@ import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.StartParameter;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.Directory;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
-import org.springframework.boot.build.constraints.ExtractVersionConstraints;
+import org.springframework.boot.build.bom.ResolvedBom;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -56,27 +61,38 @@ public class AntoraConventions {
 
 	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
 
-	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
-
 	private static final List<String> NAV_FILES = List.of("nav.adoc", "local-nav.adoc");
+
+	/**
+	 * Default Antora source directory.
+	 */
+	public static final String ANTORA_SOURCE_DIR = "src/docs/antora";
+
+	/**
+	 * Name of the {@link GenerateAntoraPlaybook} task.
+	 */
+	public static final String GENERATE_ANTORA_PLAYBOOK_TASK_NAME = "generateAntoraPlaybook";
 
 	void apply(Project project) {
 		project.getPlugins().withType(AntoraPlugin.class, (antoraPlugin) -> apply(project, antoraPlugin));
 	}
 
 	private void apply(Project project, AntoraPlugin antoraPlugin) {
-		ExtractVersionConstraints dependencyVersionsTask = addDependencyVersionsTask(project);
+		Configuration resolvedBom = project.getConfigurations().create("resolveBom");
+		project.getDependencies()
+			.add(resolvedBom.getName(), project.getDependencies()
+				.project(Map.of("path", DEPENDENCIES_PATH, "configuration", "resolvedBom")));
 		project.getPlugins().apply(GenerateAntoraYmlPlugin.class);
 		TaskContainer tasks = project.getTasks();
-		GenerateAntoraPlaybook generateAntoraPlaybookTask = tasks.create("generateAntoraPlaybook",
-				GenerateAntoraPlaybook.class);
-		configureGenerateAntoraPlaybookTask(project, generateAntoraPlaybookTask);
-		Copy copyAntoraPackageJsonTask = tasks.create("copyAntoraPackageJson", Copy.class);
-		configureCopyAntoraPackageJsonTask(project, copyAntoraPackageJsonTask);
-		NpmInstallTask npmInstallTask = tasks.create("antoraNpmInstall", NpmInstallTask.class);
-		configureNpmInstallTask(project, npmInstallTask, copyAntoraPackageJsonTask);
-		tasks.withType(GenerateAntoraYmlTask.class, (generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project,
-				generateAntoraYmlTask, dependencyVersionsTask));
+		TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask = tasks.register(
+				GENERATE_ANTORA_PLAYBOOK_TASK_NAME, GenerateAntoraPlaybook.class,
+				(task) -> configureGenerateAntoraPlaybookTask(project, task));
+		TaskProvider<Copy> copyAntoraPackageJsonTask = tasks.register("copyAntoraPackageJson", Copy.class,
+				(task) -> configureCopyAntoraPackageJsonTask(project, task));
+		TaskProvider<NpmInstallTask> npmInstallTask = tasks.register("antoraNpmInstall", NpmInstallTask.class,
+				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask));
+		tasks.withType(GenerateAntoraYmlTask.class,
+				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask, resolvedBom));
 		tasks.withType(AntoraTask.class,
 				(antoraTask) -> configureAntoraTask(project, antoraTask, npmInstallTask, generateAntoraPlaybookTask));
 		project.getExtensions()
@@ -85,17 +101,20 @@ public class AntoraConventions {
 
 	private void configureGenerateAntoraPlaybookTask(Project project,
 			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
-		File nodeProjectDir = getNodeProjectDir(project.getBuildDir());
-		generateAntoraPlaybookTask.getOutputFile().set(new File(nodeProjectDir, "antora-playbook.yml"));
+		Provider<Directory> nodeProjectDir = getNodeProjectDir(project);
+		generateAntoraPlaybookTask.getOutputFile()
+			.set(nodeProjectDir.map((directory) -> directory.file("antora-playbook.yml")));
 	}
 
 	private void configureCopyAntoraPackageJsonTask(Project project, Copy copyAntoraPackageJsonTask) {
 		copyAntoraPackageJsonTask
-			.from(project.getRootProject().file("antora"), (spec) -> spec.include("package.json", "package-lock.json"))
-			.into(getNodeProjectDir(project.getBuildDir()));
+			.from(project.getRootProject().file("antora"),
+					(spec) -> spec.include("package.json", "package-lock.json", "patches/**"))
+			.into(getNodeProjectDir(project));
 	}
 
-	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask, Copy copyAntoraPackageJson) {
+	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask,
+			TaskProvider<Copy> copyAntoraPackageJson) {
 		npmInstallTask.dependsOn(copyAntoraPackageJson);
 		Map<String, String> environment = new HashMap<>();
 		environment.put("npm_config_omit", "optional");
@@ -104,22 +123,15 @@ public class AntoraConventions {
 		npmInstallTask.getNpmCommand().set(List.of("ci", "--silent", "--no-progress"));
 	}
 
-	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
-		return project.getTasks()
-			.create("dependencyVersions", ExtractVersionConstraints.class,
-					(task) -> task.enforcedPlatform(DEPENDENCIES_PATH));
-	}
-
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
-			ExtractVersionConstraints dependencyVersionsTask) {
+			Configuration resolvedBom) {
 		generateAntoraYmlTask.getOutputs().doNotCacheIf("getAsciidocAttributes() changes output", (task) -> true);
-		generateAntoraYmlTask.dependsOn(dependencyVersionsTask);
+		generateAntoraYmlTask.dependsOn(resolvedBom);
 		generateAntoraYmlTask.setProperty("componentName", "boot");
 		generateAntoraYmlTask.setProperty("outputFile",
-				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
+				project.getLayout().getBuildDirectory().file("generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml(project));
-		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
-			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
+		generateAntoraYmlTask.getAsciidocAttributes().putAll(getAsciidocAttributes(project, resolvedBom));
 	}
 
 	private Map<String, ?> getDefaultYml(Project project) {
@@ -138,16 +150,17 @@ public class AntoraConventions {
 		return defaultYml;
 	}
 
-	private Map<String, String> getAsciidocAttributes(Project project,
-			ExtractVersionConstraints dependencyVersionsTask) {
-		BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
-		Map<String, String> dependencyVersions = dependencyVersionsTask.getVersionConstraints();
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes(project, bom, dependencyVersions);
-		return attributes.get();
+	private Provider<Map<String, String>> getAsciidocAttributes(Project project, FileCollection resolvedBoms) {
+		return project.provider(() -> {
+			BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
+			ResolvedBom resolvedBom = ResolvedBom.readFrom(resolvedBoms.getSingleFile());
+			return new AntoraAsciidocAttributes(project, bom, resolvedBom).get();
+		});
 	}
 
-	private void configureAntoraTask(Project project, AntoraTask antoraTask, NpmInstallTask npmInstallTask,
-			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
+	private void configureAntoraTask(Project project, AntoraTask antoraTask,
+			TaskProvider<NpmInstallTask> npmInstallTask,
+			TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		antoraTask.setGroup("Documentation");
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
 		antoraTask.setPlaybook("antora-playbook.yml");
@@ -200,14 +213,13 @@ public class AntoraConventions {
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
-		File buildDir = project.getBuildDir();
-		nodeExtension.getWorkDir().set(buildDir.toPath().resolve(".gradle/nodejs").toFile());
-		nodeExtension.getNpmWorkDir().set(buildDir.toPath().resolve(".gradle/npm").toFile());
-		nodeExtension.getNodeProjectDir().set(getNodeProjectDir(buildDir));
+		nodeExtension.getWorkDir().set(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"));
+		nodeExtension.getNpmWorkDir().set(project.getLayout().getBuildDirectory().dir(".gradle/npm"));
+		nodeExtension.getNodeProjectDir().set(getNodeProjectDir(project));
 	}
 
-	private File getNodeProjectDir(File buildDir) {
-		return buildDir.toPath().resolve(".gradle/nodeproject").toFile();
+	private Provider<Directory> getNodeProjectDir(Project project) {
+		return project.getLayout().getBuildDirectory().dir(".gradle/nodeproject");
 	}
 
 }

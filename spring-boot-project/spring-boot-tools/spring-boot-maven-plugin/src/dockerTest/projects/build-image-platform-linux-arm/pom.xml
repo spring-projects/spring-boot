@@ -23,10 +23,10 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1</builder>
-								<runImage>paketobuildpacks/run-jammy-tiny</runImage>
+								<builder>ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2</builder>
+								<runImage>paketobuildpacks/run-noble-tiny</runImage>
 								<buildpacks>
-									<buildpack>ghcr.io/spring-io/spring-boot-test-info:0.0.1</buildpack>
+									<buildpack>ghcr.io/spring-io/spring-boot-test-info:0.0.2</buildpack>
 								</buildpacks>
 								<imagePlatform>linux/arm64</imagePlatform>
 							</image>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 import org.springframework.boot.configurationprocessor.test.CompiledMetadataReader;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.core.test.tools.ResourceFile;
 import org.springframework.core.test.tools.SourceFile;
 import org.springframework.core.test.tools.SourceFiles;
 import org.springframework.core.test.tools.TestCompiler;
@@ -55,12 +60,31 @@ public class TestProject {
 	}
 
 	public ConfigurationMetadata compile() {
+		return compile(null);
+	}
+
+	public ConfigurationMetadata compile(ConfigurationMetadata previousMetadata) {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor();
 		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor);
+		if (previousMetadata != null) {
+			compiler = compiler.withResources(
+					ResourceFile.of("META-INF/spring-configuration-metadata.json", asBytes(previousMetadata)));
+		}
 		AtomicReference<ConfigurationMetadata> configurationMetadata = new AtomicReference<>();
 		compiler.compile(this.sources,
 				(compiled) -> configurationMetadata.set(CompiledMetadataReader.getMetadata(compiled)));
 		return configurationMetadata.get();
+	}
+
+	private byte[] asBytes(ConfigurationMetadata previousMetadata) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			new JsonMarshaller().write(previousMetadata, output);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+		return output.toByteArray();
 	}
 
 	/**

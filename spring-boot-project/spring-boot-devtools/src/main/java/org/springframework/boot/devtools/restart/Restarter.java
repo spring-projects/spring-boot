@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private boolean finished = false;
+	private boolean finished;
 
 	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<>();
 
@@ -129,9 +129,9 @@ public class Restarter {
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
-		Assert.notNull(thread, "Thread must not be null");
-		Assert.notNull(args, "Args must not be null");
-		Assert.notNull(initializer, "Initializer must not be null");
+		Assert.notNull(thread, "'thread' must not be null");
+		Assert.notNull(args, "'args' must not be null");
+		Assert.notNull(initializer, "'initializer' must not be null");
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Creating new Restarter for thread " + thread);
 		}
@@ -208,7 +208,7 @@ public class Restarter {
 	 * @param urls the urls to add
 	 */
 	public void addUrls(Collection<URL> urls) {
-		Assert.notNull(urls, "Urls must not be null");
+		Assert.notNull(urls, "'urls' must not be null");
 		this.urls.addAll(urls);
 	}
 
@@ -217,7 +217,7 @@ public class Restarter {
 	 * @param classLoaderFiles the files to add
 	 */
 	public void addClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
-		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		Assert.notNull(classLoaderFiles, "'classLoaderFiles' must not be null");
 		this.classLoaderFiles.addAll(classLoaderFiles);
 	}
 
@@ -272,7 +272,7 @@ public class Restarter {
 	}
 
 	private Throwable doStart() throws Exception {
-		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
+		Assert.state(this.mainClassName != null, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
 		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles);
@@ -440,7 +440,12 @@ public class Restarter {
 	}
 
 	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
-		return this.attributes.computeIfAbsent(name, (ignore) -> objectFactory.getObject());
+		Object value = this.attributes.get(name);
+		if (value == null) {
+			value = objectFactory.getObject();
+			this.attributes.put(name, value);
+		}
+		return value;
 	}
 
 	public Object removeAttribute(String name) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHookInstance;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -72,14 +73,21 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			b=file
+			c=file
+			""")
+	@WithResource(name = "application-foo.properties", content = "b=profile-specific-file")
 	void profileAndProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
 			.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 			.profiles("foo")
-			.properties("foo=bar");
+			.properties("a=default");
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
-		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
+		assertThat(this.context.getEnvironment().getProperty("a")).isEqualTo("default");
+		assertThat(this.context.getEnvironment().getProperty("b")).isEqualTo("profile-specific-file");
+		assertThat(this.context.getEnvironment().getProperty("c")).isEqualTo("file");
 		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("foo"))).isTrue();
 	}
 
@@ -194,6 +202,7 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	@WithResource(name = "application-node.properties", content = "bar=spam")
 	void parentFirstCreationWithProfileAndDefaultArgs() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).profiles("node")
 			.properties("transport=redis")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,6 +34,7 @@ import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyCaching;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -45,6 +45,7 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * A container object which Binds objects from one or more
@@ -68,6 +69,10 @@ public class Binder {
 	private final BindHandler defaultBindHandler;
 
 	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
+
+	private final Map<Object, Object> cache = new ConcurrentReferenceHashMap<>();
+
+	private ConfigurationPropertyCaching configurationPropertyCaching;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -184,11 +189,12 @@ public class Binder {
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		for (ConfigurationPropertySource source : sources) {
-			Assert.notNull(source, "Sources must not contain null elements");
+			Assert.notNull(source, "'sources' must not contain null elements");
 		}
 		this.sources = sources;
+		this.configurationPropertyCaching = ConfigurationPropertyCaching.get(sources);
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
 		this.bindConverter = BindConverter.get(conversionServices, propertyEditorInitializer);
 		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
@@ -272,8 +278,8 @@ public class Binder {
 
 	/**
 	 * Bind the specified target {@link Class} using this binder's
-	 * {@link ConfigurationPropertySource property sources} or create a new instance using
-	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * {@link ConfigurationPropertySource property sources} or create a new instance of
+	 * the specified target {@link Class} if the result of the binding is {@code null}.
 	 * @param name the configuration property name to bind
 	 * @param target the target class
 	 * @param <T> the bound type
@@ -332,8 +338,8 @@ public class Binder {
 	}
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(target, "Target must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(target, "'target' must not be null");
 		handler = (handler != null) ? handler : this.defaultBindHandler;
 		Context context = new Context();
 		return bind(name, target, handler, context, false, create);
@@ -341,17 +347,19 @@ public class Binder {
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
 			boolean allowRecursiveBinding, boolean create) {
-		try {
-			Bindable<T> replacementTarget = handler.onStart(name, target, context);
-			if (replacementTarget == null) {
-				return handleBindResult(name, target, handler, context, null, create);
+		try (ConfigurationPropertyCaching.CacheOverride cacheOverride = this.configurationPropertyCaching.override()) {
+			try {
+				Bindable<T> replacementTarget = handler.onStart(name, target, context);
+				if (replacementTarget == null) {
+					return handleBindResult(name, target, handler, context, null, create);
+				}
+				target = replacementTarget;
+				Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
+				return handleBindResult(name, target, handler, context, bound, create);
 			}
-			target = replacementTarget;
-			Object bound = bindObject(name, target, handler, context, allowRecursiveBinding);
-			return handleBindResult(name, target, handler, context, bound, create);
-		}
-		catch (Exception ex) {
-			return handleBindError(name, target, handler, context, ex);
+			catch (Exception ex) {
+				return handleBindError(name, target, handler, context, ex);
+			}
 		}
 	}
 
@@ -481,12 +489,13 @@ public class Binder {
 	}
 
 	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
-		return this.dataObjectBinders.get(bindMethod)
-			.stream()
-			.map(operation)
-			.filter(Objects::nonNull)
-			.findFirst()
-			.orElse(null);
+		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders.get(bindMethod)) {
+			Object bound = operation.apply(dataObjectBinder);
+			if (bound != null) {
+				return bound;
+			}
+		}
+		return null;
 	}
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
@@ -627,6 +636,10 @@ public class Binder {
 
 		BindConverter getConverter() {
 			return Binder.this.bindConverter;
+		}
+
+		Map<Object, Object> getCache() {
+			return Binder.this.cache;
 		}
 
 		@Override

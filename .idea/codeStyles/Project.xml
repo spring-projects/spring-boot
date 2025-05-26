@@ -41,6 +41,7 @@
       </option>
     </GroovyCodeStyleSettings>
     <JavaCodeStyleSettings>
+      <option name="BLANK_LINES_AROUND_FIELD_WITH_ANNOTATIONS" value="1" />
       <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
       <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
       <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
@@ -50,6 +51,8 @@
       </option>
       <option name="IMPORT_LAYOUT_TABLE">
         <value>
+          <package name="" withSubpackages="true" static="false" module="true" />
+          <emptyLine />
           <package name="java" withSubpackages="true" static="false" />
           <emptyLine />
           <package name="javax" withSubpackages="true" static="false" />

@@ -5,6 +5,7 @@ This section includes information about using Class Data Sharing (CDS) with Spri
 For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
 
 
+
 [[howto.class-data-sharing.buildpacks]]
 == Packaging an Application Using CDS and Buildpacks
 
@@ -14,6 +15,16 @@ To enable CDS optimization in a generated Docker image, the buildpack environmen
 This will cause the buildpack to do a training run of the application, save the CDS archive in the image, and use the CDS archive when launching the application.
 
 The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
+
+
+
+[[howto.class-data-sharing.dockerfiles]]
+== Packaging an Application Using CDS and Dockerfiles
+
+If you don't want to use Cloud Native Buildpacks, it is also possible to use CDS with a `Dockerfile`.
+For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles reference documentation].
+
+
 
 [[howto.class-data-sharing.training-run-configuration]]
 == Preventing Remote Services Interaction During the Training Run

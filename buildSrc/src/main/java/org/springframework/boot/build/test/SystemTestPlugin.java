@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
@@ -63,6 +64,8 @@ public class SystemTestPlugin implements Plugin<Project> {
 				.add(project.getConfigurations()
 					.getByName(systemTestSourceSet.getRuntimeClasspathConfigurationName())));
 		});
+		project.getDependencies()
+			.add(systemTestSourceSet.getRuntimeOnlyConfigurationName(), "org.junit.platform:junit-platform-launcher");
 	}
 
 	private SourceSet createSourceSet(Project project) {
@@ -76,17 +79,18 @@ public class SystemTestPlugin implements Plugin<Project> {
 		return systemTestSourceSet;
 	}
 
-	private void createTestTask(Project project, SourceSet systemTestSourceSet) {
-		Test systemTest = project.getTasks().create(SYSTEM_TEST_TASK_NAME, Test.class);
-		systemTest.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-		systemTest.setDescription("Runs system tests.");
-		systemTest.setTestClassesDirs(systemTestSourceSet.getOutput().getClassesDirs());
-		systemTest.setClasspath(systemTestSourceSet.getRuntimeClasspath());
-		systemTest.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
-		if (isCi()) {
-			systemTest.getOutputs().upToDateWhen(NEVER);
-			systemTest.getOutputs().doNotCacheIf("System tests are always rerun on CI", (task) -> true);
-		}
+	private TaskProvider<Test> createTestTask(Project project, SourceSet systemTestSourceSet) {
+		return project.getTasks().register(SYSTEM_TEST_TASK_NAME, Test.class, (task) -> {
+			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+			task.setDescription("Runs system tests.");
+			task.setTestClassesDirs(systemTestSourceSet.getOutput().getClassesDirs());
+			task.setClasspath(systemTestSourceSet.getRuntimeClasspath());
+			task.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
+			if (isCi()) {
+				task.getOutputs().upToDateWhen(NEVER);
+				task.getOutputs().doNotCacheIf("System tests are always rerun on CI", (spec) -> true);
+			}
+		});
 	}
 
 	private boolean isCi() {

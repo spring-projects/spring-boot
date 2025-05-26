@@ -1,6 +1,5 @@
 plugins {
-	id "org.antora"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -10,7 +9,6 @@ description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
-	antoraContent
 }
 
 dependencies {
@@ -84,7 +82,7 @@ dependencies {
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
 
-	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
+	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "resolvedBom"))
 }
 
 ext {
@@ -92,15 +90,21 @@ ext {
 	xsdVersion = versionElements[0] + "." + versionElements[1]
 }
 
+tasks.register("copySettingsXml", Copy) {
+	from file("src/intTest/projects/settings.xml")
+	into layout.buildDirectory.dir("generated-resources/settings")
+	filter(springRepositoryTransformers.mavenSettings())
+}
+
 sourceSets {
 	main {
-		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
+		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
 	dockerTest {
-		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
 	}
 }
 
@@ -117,14 +121,14 @@ javadoc {
 	}
 }
 
-task xsdResources(type: Sync) {
+tasks.register("xsdResources", Sync) {
 	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
-	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
+	into layout.buildDirectory.dir("generated/resources/xsd/org/springframework/boot/maven")
 	rename { fileName -> "layers.xsd" }
 }
 
 prepareMavenBinaries {
-	versions = [ "3.9.6", "3.6.3" ]
+	versions = [ "3.9.9", "3.6.3" ]
 }
 
 tasks.named("documentPluginGoals") {
@@ -143,45 +147,30 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
-def antoraMavenPluginLocalAggregateContent  = tasks.register("antoraMavenPluginLocalAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-local-aggregate-content"
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraMavenPluginAggregateContent = tasks.register("antoraMavenPluginAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-aggregate-content"
-	from(documentPluginGoals) {
-		into "modules/maven-plugin/partials/goals"
-	}
-}
-
-def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-catalog-content"
-	from(javadoc) {
-		into "api/java"
+antoraContributions {
+	'maven-plugin' {
+		aggregateContent {
+			from(documentPluginGoals) {
+				into "modules/maven-plugin/partials/goals"
+			}
+		}
+		catalogContent {
+			from(javadoc) {
+				into "api/java"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
 	}
 }
 
 tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
-	excludeJavadocExtension = true
-	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
-	dependsOn antoraMavenPluginLocalAggregateContent
-}
-
-
-tasks.named("antora") {
-	inputs.files(antoraMavenPluginLocalAggregateContent, antoraMavenPluginAggregateContent, antoraMavenPluginCatalogContent)
-}
-
-artifacts {
-	antoraContent antoraMavenPluginAggregateContent
-	antoraContent antoraMavenPluginCatalogContent
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
 }
 
 tasks.named("dockerTest").configure {

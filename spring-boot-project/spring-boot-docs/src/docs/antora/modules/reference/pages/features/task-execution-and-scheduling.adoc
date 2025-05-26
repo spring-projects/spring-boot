@@ -1,26 +1,102 @@
 [[features.task-execution-and-scheduling]]
 = Task Execution and Scheduling
 
-In the absence of an `Executor` bean in the context, Spring Boot auto-configures an `AsyncTaskExecutor`.
-When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a `SimpleAsyncTaskExecutor` that uses virtual threads.
-Otherwise, it will be a `ThreadPoolTaskExecutor` with sensible defaults.
-In either case, the auto-configured executor will be automatically used for:
+In the absence of an javadoc:java.util.concurrent.Executor[] bean in the context, Spring Boot auto-configures an javadoc:org.springframework.core.task.AsyncTaskExecutor[].
+When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a javadoc:org.springframework.core.task.SimpleAsyncTaskExecutor[] that uses virtual threads.
+Otherwise, it will be a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor[] with sensible defaults.
 
-- asynchronous task execution (`@EnableAsync`)
-- Spring for GraphQL's asynchronous handling of `Callable` return values from controller methods
-- Spring MVC's asynchronous request processing
-- Spring WebFlux's blocking execution support
+The auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[] is used for the following integrations unless a custom javadoc:java.util.concurrent.Executor[] bean is defined:
+
+- Execution of asynchronous tasks using javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation], unless a bean of type javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] is defined.
+- Asynchronous handling of javadoc:java.util.concurrent.Callable[] return values from controller methods in Spring for GraphQL.
+- Asynchronous request handling in Spring MVC.
+- Support for blocking execution in Spring WebFlux.
+- Utilized for inbound and outbound message channels in Spring WebSocket.
+- Bootstrap executor for JPA, based on the bootstrap mode of JPA repositories.
+- Bootstrap executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`.
+
+While this approach works in most scenarios, Spring Boot allows you to override the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[].
+By default, when a custom javadoc:java.util.concurrent.Executor[] bean is registered, the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[] backs off, and the custom javadoc:java.util.concurrent.Executor[] is used for regular task execution (via javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation]).
+
+However, Spring MVC, Spring WebFlux, and Spring GraphQL all require a bean named `applicationTaskExecutor`.
+For Spring MVC and Spring WebFlux, this bean must be of type javadoc:org.springframework.core.task.AsyncTaskExecutor[], whereas Spring GraphQL does not enforce this type requirement.
+
+Spring WebSocket and JPA will use javadoc:org.springframework.core.task.AsyncTaskExecutor[] if either a single bean of this type is available or a bean named `applicationTaskExecutor` is defined.
+
+Finally, the boostrap executor of the `ApplicationContext` uses a bean named `applicationTaskExecutor` unless a bean named `bootstrapExecutor` is defined.
+
+The following code snippet demonstrates how to register a custom javadoc:org.springframework.core.task.AsyncTaskExecutor[] to be used with Spring MVC, Spring WebFlux, Spring GraphQL, Spring WebSocket, JPA, and background initialization of beans.
+
+include-code::application/MyTaskExecutorConfiguration[]
+
+[NOTE]
+====
+The `applicationTaskExecutor` bean will also be used for regular task execution if there is no javadoc:org.springframework.context.annotation.Primary[format=annotation] bean or a bean named `taskExecutor` of type javadoc:java.util.concurrent.Executor[] or javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] present in the application context.
+====
+
+[WARNING]
+====
+If neither the auto-configured `AsyncTaskExecutor` nor the `applicationTaskExecutor` bean is defined, the application defaults to a bean named `taskExecutor` for regular task execution (javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation]), following Spring Framework's behavior.
+However, this bean will not be used for Spring MVC, Spring WebFlux, Spring GraphQL.
+It could, however, be used for Spring WebSocket or JPA if the bean's type is javadoc:org.springframework.core.task.AsyncTaskExecutor[].
+====
+
+If your application needs multiple `Executor` beans for different integrations, such as one for regular task execution with javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation] and other for Spring MVC, Spring WebFlux, Spring WebSocket and JPA, you can configure them as follows.
+
+include-code::multiple/MyTaskExecutorConfiguration[]
 
 [TIP]
 ====
-If you have defined a custom `Executor` in the context, both regular task execution (that is `@EnableAsync`) and Spring for GraphQL will use it.
-However, the Spring MVC and Spring WebFlux support will only use it if it is an `AsyncTaskExecutor` implementation (named `applicationTaskExecutor`).
-Depending on your target arrangement, you could change your `Executor` into an `AsyncTaskExecutor` or define both an `AsyncTaskExecutor` and an `AsyncConfigurer` wrapping your custom `Executor`.
+The auto-configured javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] or javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] allow you to easily create instances of type javadoc:org.springframework.core.task.AsyncTaskExecutor[] that replicate the default behavior of auto-configuration.
 
-The auto-configured `ThreadPoolTaskExecutorBuilder` allows you to easily create instances that reproduce what the auto-configuration does by default.
+include-code::builder/MyTaskExecutorConfiguration[]
 ====
 
-When a `ThreadPoolTaskExecutor` is auto-configured, the thread pool uses 8 core threads that can grow and shrink according to the load.
+If a `taskExecutor` named bean is not an option, you can mark your bean as javadoc:org.springframework.context.annotation.Primary[format=annotation] or define an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[]  bean to specify the `Executor` responsible for handling regular task execution with javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation].
+The following example demonstrates how to achieve this.
+
+include-code::async/MyTaskExecutorConfiguration[]
+
+To register a custom javadoc:java.util.concurrent.Executor[] while keeping the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[], you can create a custom javadoc:java.util.concurrent.Executor[] bean and set the `defaultCandidate=false` attribute in its javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation, as demonstrated in the following example:
+
+include-code::defaultcandidate/MyTaskExecutorConfiguration[]
+
+In that case, you will be able to autowire your custom javadoc:java.util.concurrent.Executor[] into other components while retaining the auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[].
+However, remember to use the javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation] annotation alongside javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation].
+
+If this is not possible for you, you can request Spring Boot to auto-configure an javadoc:org.springframework.core.task.AsyncTaskExecutor[] anyway, as follows:
+
+[configprops,yaml]
+----
+spring:
+  task:
+    execution:
+      mode: force
+----
+
+The auto-configured javadoc:org.springframework.core.task.AsyncTaskExecutor[]  will be used automatically for all integrations, even if a custom javadoc:java.util.concurrent.Executor[] bean is registered, including those marked as javadoc:org.springframework.context.annotation.Primary[format=annotation].
+These integrations include:
+
+- Asynchronous task execution (javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation]), unless an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] bean is present.
+- Spring for GraphQL's asynchronous handling of javadoc:java.util.concurrent.Callable[] return values from controller methods.
+- Spring MVC's asynchronous request processing.
+- Spring WebFlux's blocking execution support.
+- Utilized for inbound and outbound message channels in Spring WebSocket.
+- Bootstrap executor for JPA, based on the bootstrap mode of JPA repositories.
+- Bootstrap executor for {url-spring-framework-docs}/core/beans/java/composing-configuration-classes.html#beans-java-startup-background[background initialization] of beans in the `ApplicationContext`, unless a bean named `bootstrapExecutor` is defined.
+
+[TIP]
+====
+Depending on your target arrangement, you could set configprop:spring.task.execution.mode[] to `force` to auto-configure an `applicationTaskExecutor`, change your javadoc:java.util.concurrent.Executor[] into an javadoc:org.springframework.core.task.AsyncTaskExecutor[] or define both an javadoc:org.springframework.core.task.AsyncTaskExecutor[] and an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] wrapping your custom javadoc:java.util.concurrent.Executor[].
+====
+
+[WARNING]
+====
+When `force` mode is enabled, `applicationTaskExecutor` will also be configured for regular task execution with javadoc:org.springframework.scheduling.annotation.EnableAsync[format=annotation], even if a javadoc:org.springframework.context.annotation.Primary[format=annotation] bean or a bean named `taskExecutor` of type javadoc:java.util.concurrent.Executor[] is present.
+The only way to override the `Executor` for regular tasks is by registering an javadoc:org.springframework.scheduling.annotation.AsyncConfigurer[] bean.
+====
+
+When a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor[] is auto-configured, the thread pool uses 8 core threads that can grow and shrink according to the load.
 Those default settings can be fine-tuned using the `spring.task.execution` namespace, as shown in the following example:
 
 [configprops,yaml]
@@ -37,13 +113,13 @@ spring:
 This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
 Shrinking of the pool is more aggressive as threads are reclaimed when they are idle for 10 seconds (rather than 60 seconds by default).
 
-A scheduler can also be auto-configured if it needs to be associated with scheduled task execution (using `@EnableScheduling` for instance).
+A scheduler can also be auto-configured if it needs to be associated with scheduled task execution (using javadoc:org.springframework.scheduling.annotation.EnableScheduling[format=annotation] for instance).
 
-If virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a `SimpleAsyncTaskScheduler` that uses virtual threads.
-This `SimpleAsyncTaskScheduler` will ignore any pooling related properties.
+If virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a javadoc:org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler[] that uses virtual threads.
+This javadoc:org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler[] will ignore any pooling related properties.
 
-If virtual threads are not enabled, it will be a `ThreadPoolTaskScheduler` with sensible defaults.
-The `ThreadPoolTaskScheduler` uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
+If virtual threads are not enabled, it will be a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler[] with sensible defaults.
+The javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler[] uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -55,5 +131,5 @@ spring:
         size: 2
 ----
 
-A `ThreadPoolTaskExecutorBuilder` bean, a `SimpleAsyncTaskExecutorBuilder` bean, a `ThreadPoolTaskSchedulerBuilder` bean and a `SimpleAsyncTaskSchedulerBuilder` are made available in the context if a custom executor or scheduler needs to be created.
-The `SimpleAsyncTaskExecutorBuilder` and `SimpleAsyncTaskSchedulerBuilder` beans are auto-configured to use virtual threads if they are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`).
+A javadoc:org.springframework.boot.task.ThreadPoolTaskExecutorBuilder[] bean, a javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] bean, a javadoc:org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder[] bean and a javadoc:org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder[] are made available in the context if a custom executor or scheduler needs to be created.
+The javadoc:org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder[] and javadoc:org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder[] beans are auto-configured to use virtual threads if they are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`).

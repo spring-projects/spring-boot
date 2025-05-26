@@ -27,7 +27,8 @@ the<DependencyManagementExtension>().apply {
 }
 
 tasks.register("slf4jVersion") {
+	val dependencyManagement = project.the<DependencyManagementExtension>()
 	doLast {
-		println(project.the<DependencyManagementExtension>().managedVersions["org.slf4j:slf4j-api"])
+		println(dependencyManagement.managedVersions["org.slf4j:slf4j-api"])
 	}
 }

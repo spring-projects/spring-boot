@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
-import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -29,6 +27,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,9 +59,11 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 	@Test
 	void registersRequestMatcherProviderIfMvcPresent() {
 		this.contextRunner.withUserConfiguration(TestMvcConfiguration.class).run((context) -> {
-			AntPathRequestMatcherProvider matcherProvider = context.getBean(AntPathRequestMatcherProvider.class);
-			RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
-			assertThat(requestMatcher).extracting("pattern").isEqualTo("/custom/example");
+			PathPatternRequestMatcherProvider matcherProvider = context
+				.getBean(PathPatternRequestMatcherProvider.class);
+			RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example", null);
+			assertThat(requestMatcher).extracting("pattern")
+				.isEqualTo(PathPatternParser.defaultInstance.parse("/custom/example"));
 		});
 	}
 
@@ -71,29 +72,31 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 			.withUserConfiguration(TestJerseyConfiguration.class)
 			.run((context) -> {
-				AntPathRequestMatcherProvider matcherProvider = context.getBean(AntPathRequestMatcherProvider.class);
-				RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");
-				assertThat(requestMatcher).extracting("pattern").isEqualTo("/admin/example");
+				PathPatternRequestMatcherProvider matcherProvider = context
+					.getBean(PathPatternRequestMatcherProvider.class);
+				RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example", null);
+				assertThat(requestMatcher).extracting("pattern")
+					.isEqualTo(PathPatternParser.defaultInstance.parse("/admin/example"));
 			});
 	}
 
 	@Test
 	void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-			.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PathPatternRequestMatcherProvider.class));
 	}
 
 	@Test
 	void mvcRequestMatcherProviderConditionalOnDispatcherServletPathBean() {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PathPatternRequestMatcherProvider.class));
 	}
 
 	@Test
 	void jerseyRequestMatcherProviderConditionalOnResourceConfigClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.glassfish.jersey.server.ResourceConfig"))
-			.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PathPatternRequestMatcherProvider.class));
 	}
 
 	@Test
@@ -101,7 +104,7 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class))
 			.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-			.run((context) -> assertThat(context).doesNotHaveBean(AntPathRequestMatcherProvider.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PathPatternRequestMatcherProvider.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

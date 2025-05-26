@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.availability;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.util.Assert;
@@ -35,7 +41,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
+class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups, AdditionalPathsMapper {
 
 	private final HealthEndpointGroups groups;
 
@@ -48,7 +54,7 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 	private static final String READINESS = "readiness";
 
 	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups, boolean addAdditionalPaths) {
-		Assert.notNull(groups, "Groups must not be null");
+		Assert.notNull(groups, "'groups' must not be null");
 		this.groups = groups;
 		this.probeGroups = createProbeGroups(addAdditionalPaths);
 		Set<String> names = new LinkedHashSet<>(groups.getNames());
@@ -105,6 +111,25 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
 	private boolean isProbeGroup(String name) {
 		return name.equals(LIVENESS) || name.equals(READINESS);
+	}
+
+	@Override
+	public List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace) {
+		if (!HealthEndpoint.ID.equals(endpointId)) {
+			return null;
+		}
+		List<String> additionalPaths = new ArrayList<>();
+		if (this.groups instanceof AdditionalPathsMapper additionalPathsMapper) {
+			additionalPaths.addAll(additionalPathsMapper.getAdditionalPaths(endpointId, webServerNamespace));
+		}
+		additionalPaths.addAll(this.probeGroups.values()
+			.stream()
+			.map(HealthEndpointGroup::getAdditionalPath)
+			.filter(Objects::nonNull)
+			.filter((additionalPath) -> additionalPath.hasNamespace(webServerNamespace))
+			.map(AdditionalHealthEndpointPath::getValue)
+			.toList());
+		return additionalPaths;
 	}
 
 }

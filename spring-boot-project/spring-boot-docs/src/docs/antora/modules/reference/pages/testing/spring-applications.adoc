@@ -5,7 +5,7 @@ One of the major advantages of dependency injection is that it should make your 
 You can instantiate objects by using the `new` operator without even involving Spring.
 You can also use _mock objects_ instead of real dependencies.
 
-Often, you need to move beyond unit testing and start integration testing (with a Spring `ApplicationContext`).
+Often, you need to move beyond unit testing and start integration testing (with a Spring javadoc:org.springframework.context.ApplicationContext[]).
 It is useful to be able to perform integration testing without requiring deployment of your application or needing to connect to other infrastructure.
 
 The Spring Framework includes a dedicated test module for such integration testing.

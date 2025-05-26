@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,13 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ResolvedDockerHost}.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class ResolvedDockerHostTests {
 
@@ -65,11 +64,20 @@ class ResolvedDockerHostTests {
 	}
 
 	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void resolveWhenUsingDefaultContextReturnsWindowsDefault() {
+		this.environment.put("DOCKER_CONTEXT", "default");
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get, null);
+		assertThat(dockerHost.getAddress()).isEqualTo("//./pipe/docker_engine");
+		assertThat(dockerHost.isSecure()).isFalse();
+		assertThat(dockerHost.getCertificatePath()).isNull();
+	}
+
+	@Test
 	@DisabledOnOs(OS.WINDOWS)
-	void resolveWhenDockerHostAddressIsNullReturnsLinuxDefault() throws Exception {
-		this.environment.put("DOCKER_CONFIG", pathToResource("with-default-context/config.json"));
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress(null));
+	void resolveWhenUsingDefaultContextReturnsLinuxDefault() {
+		this.environment.put("DOCKER_CONTEXT", "default");
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get, null);
 		assertThat(dockerHost.getAddress()).isEqualTo("/var/run/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();
@@ -79,7 +87,7 @@ class ResolvedDockerHostTests {
 	void resolveWhenDockerHostAddressIsLocalReturnsAddress(@TempDir Path tempDir) throws IOException {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress(socketFilePath));
+				new DockerConnectionConfiguration.Host(socketFilePath));
 		assertThat(dockerHost.isLocalFileReference()).isTrue();
 		assertThat(dockerHost.isRemote()).isFalse();
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
@@ -91,7 +99,7 @@ class ResolvedDockerHostTests {
 	void resolveWhenDockerHostAddressIsLocalWithSchemeReturnsAddress(@TempDir Path tempDir) throws IOException {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("unix://" + socketFilePath));
+				new DockerConnectionConfiguration.Host("unix://" + socketFilePath));
 		assertThat(dockerHost.isLocalFileReference()).isTrue();
 		assertThat(dockerHost.isRemote()).isFalse();
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
@@ -102,7 +110,7 @@ class ResolvedDockerHostTests {
 	@Test
 	void resolveWhenDockerHostAddressIsHttpReturnsAddress() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("http://docker.example.com"));
+				new DockerConnectionConfiguration.Host("http://docker.example.com"));
 		assertThat(dockerHost.isLocalFileReference()).isFalse();
 		assertThat(dockerHost.isRemote()).isTrue();
 		assertThat(dockerHost.getAddress()).isEqualTo("http://docker.example.com");
@@ -113,7 +121,7 @@ class ResolvedDockerHostTests {
 	@Test
 	void resolveWhenDockerHostAddressIsHttpsReturnsAddress() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("https://docker.example.com", true, "/cert-path"));
+				new DockerConnectionConfiguration.Host("https://docker.example.com", true, "/cert-path"));
 		assertThat(dockerHost.isLocalFileReference()).isFalse();
 		assertThat(dockerHost.isRemote()).isTrue();
 		assertThat(dockerHost.getAddress()).isEqualTo("https://docker.example.com");
@@ -124,7 +132,7 @@ class ResolvedDockerHostTests {
 	@Test
 	void resolveWhenDockerHostAddressIsTcpReturnsAddress() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("tcp://192.168.99.100:2376", true, "/cert-path"));
+				new DockerConnectionConfiguration.Host("tcp://192.168.99.100:2376", true, "/cert-path"));
 		assertThat(dockerHost.isLocalFileReference()).isFalse();
 		assertThat(dockerHost.isRemote()).isTrue();
 		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
@@ -137,7 +145,7 @@ class ResolvedDockerHostTests {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
 		this.environment.put("DOCKER_HOST", socketFilePath);
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("/unused"));
+				new DockerConnectionConfiguration.Host("/unused"));
 		assertThat(dockerHost.isLocalFileReference()).isTrue();
 		assertThat(dockerHost.isRemote()).isFalse();
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
@@ -150,7 +158,7 @@ class ResolvedDockerHostTests {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
 		this.environment.put("DOCKER_HOST", "unix://" + socketFilePath);
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("/unused"));
+				new DockerConnectionConfiguration.Host("/unused"));
 		assertThat(dockerHost.isLocalFileReference()).isTrue();
 		assertThat(dockerHost.isRemote()).isFalse();
 		assertThat(dockerHost.getAddress()).isEqualTo(socketFilePath);
@@ -164,7 +172,7 @@ class ResolvedDockerHostTests {
 		this.environment.put("DOCKER_TLS_VERIFY", "1");
 		this.environment.put("DOCKER_CERT_PATH", "/cert-path");
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forAddress("tcp://1.1.1.1"));
+				new DockerConnectionConfiguration.Host("tcp://1.1.1.1"));
 		assertThat(dockerHost.isLocalFileReference()).isFalse();
 		assertThat(dockerHost.isRemote()).isTrue();
 		assertThat(dockerHost.getAddress()).isEqualTo("tcp://192.168.99.100:2376");
@@ -176,7 +184,7 @@ class ResolvedDockerHostTests {
 	void resolveWithDockerHostContextReturnsAddress() throws Exception {
 		this.environment.put("DOCKER_CONFIG", pathToResource("with-default-context/config.json"));
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
-				DockerHostConfiguration.forContext("test-context"));
+				new DockerConnectionConfiguration.Context("test-context"));
 		assertThat(dockerHost.getAddress()).isEqualTo("/home/user/.docker/docker.sock");
 		assertThat(dockerHost.isSecure()).isTrue();
 		assertThat(dockerHost.getCertificatePath()).isNotNull();

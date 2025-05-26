@@ -16,7 +16,8 @@
 
 package smoketest.data.cassandra;
 
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -25,10 +26,11 @@ import org.testcontainers.utility.MountableFile;
  *
  * @author Scott Frederick
  */
-class SecureCassandraContainer extends CassandraContainer<SecureCassandraContainer> {
+class SecureCassandraContainer extends CassandraContainer {
 
 	SecureCassandraContainer(DockerImageName dockerImageName) {
 		super(dockerImageName);
+		setWaitStrategy(Wait.defaultWaitStrategy()); // default strategy uses plain text
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/cassandra.yaml"),
 				"/etc/cassandra/cassandra.yaml");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.p12"),

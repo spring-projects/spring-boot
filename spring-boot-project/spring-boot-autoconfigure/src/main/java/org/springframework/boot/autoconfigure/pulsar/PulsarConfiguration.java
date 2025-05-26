@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,9 @@ import org.apache.pulsar.common.naming.TopicDomain;
 import org.apache.pulsar.common.schema.SchemaType;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.SchemaInfo;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.TypeMapping;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -170,7 +171,7 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.pulsar.function.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.function.enabled", matchIfMissing = true)
 	PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,
 			ObjectProvider<PulsarFunction> pulsarFunctions, ObjectProvider<PulsarSink> pulsarSinks,
 			ObjectProvider<PulsarSource> pulsarSources) {
@@ -180,12 +181,19 @@ class PulsarConfiguration {
 	}
 
 	@Bean
-	@Scope("prototype")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.pulsar.defaults.topic.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.defaults.topic.enabled", matchIfMissing = true)
 	PulsarTopicBuilder pulsarTopicBuilder() {
 		return new PulsarTopicBuilder(TopicDomain.persistent, this.properties.getDefaults().getTopic().getTenant(),
 				this.properties.getDefaults().getTopic().getNamespace());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarContainerFactoryCustomizers pulsarContainerFactoryCustomizers(
+			ObjectProvider<PulsarContainerFactoryCustomizer<?>> customizers) {
+		return new PulsarContainerFactoryCustomizers(customizers.orderedStream().toList());
 	}
 
 }

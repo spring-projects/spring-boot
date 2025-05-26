@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 
 	public HazelcastHealthIndicator(HazelcastInstance hazelcast) {
 		super("Hazelcast health check failed");
-		Assert.notNull(hazelcast, "HazelcastInstance must not be null");
+		Assert.notNull(hazelcast, "'hazelcast' must not be null");
 		this.hazelcast = hazelcast;
 	}
 

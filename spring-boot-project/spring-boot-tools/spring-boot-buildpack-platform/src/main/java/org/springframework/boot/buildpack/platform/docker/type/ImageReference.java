@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public final class ImageReference {
 	private final String string;
 
 	private ImageReference(ImageName name, String tag, String digest) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 		this.tag = tag;
 		this.digest = digest;
@@ -186,8 +186,10 @@ public final class ImageReference {
 	 * @return an {@link ImageName} for the jar file.
 	 */
 	public static ImageReference forJarFile(File jarFile) {
+		Assert.notNull(jarFile, "'jarFile' must not be null");
 		String filename = jarFile.getName();
-		Assert.isTrue(filename.toLowerCase().endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
+		Assert.isTrue(filename.toLowerCase(Locale.ROOT).endsWith(".jar"),
+				() -> "'jarFile' must end with '.jar' [" + jarFile + "]");
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {
@@ -236,7 +238,7 @@ public final class ImageReference {
 	 * @return an {@link ImageName} instance
 	 */
 	public static ImageReference of(String value) {
-		Assert.hasText(value, "Value must not be null");
+		Assert.hasText(value, "'value' must not be null");
 		String domain = ImageName.parseDomain(value);
 		String path = (domain != null) ? value.substring(domain.length() + 1) : value;
 		String digest = null;
@@ -261,11 +263,10 @@ public final class ImageReference {
 				path = path.substring(0, tagSplit) + remainder;
 			}
 		}
-
 		Assert.isTrue(isLowerCase(path) && matchesPathRegex(path),
-				() -> "Unable to parse image reference \"" + value + "\". "
-						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
-						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+				() -> "'value' [" + value + "] must be an image reference in the form "
+						+ "'[domainHost:port/][path/]name[:tag][@digest]' "
+						+ "(with 'path' and 'name' containing only [a-z0-9][.][_][-])");
 		ImageName name = new ImageName(domain, path);
 		return new ImageReference(name, tag, digest);
 	}

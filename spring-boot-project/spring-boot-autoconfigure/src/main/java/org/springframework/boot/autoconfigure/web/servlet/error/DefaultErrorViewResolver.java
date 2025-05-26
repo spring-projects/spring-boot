@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,8 +81,8 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 * @since 2.4.0
 	 */
 	public DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resources) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(resources, "Resources must not be null");
+		Assert.notNull(applicationContext, "'applicationContext' must not be null");
+		Assert.notNull(resources, "'resources' must not be null");
 		this.applicationContext = applicationContext;
 		this.resources = resources;
 		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);

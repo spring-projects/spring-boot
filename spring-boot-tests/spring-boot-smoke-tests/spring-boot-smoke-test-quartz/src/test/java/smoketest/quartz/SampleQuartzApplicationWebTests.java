@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,31 @@
 
 package smoketest.quartz;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Web tests for {@link SampleQuartzApplication}.
@@ -39,6 +48,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Stephane Nicoll
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ExtendWith(OutputCaptureExtension.class)
 class SampleQuartzApplicationWebTests {
 
 	@Autowired
@@ -89,6 +99,22 @@ class SampleQuartzApplicationWebTests {
 		ResponseEntity<String> response = this.restTemplate
 			.getForEntity("/actuator/quartz/triggers/samples/does-not-exist", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void quartzJobTriggeredManually(CapturedOutput output) {
+		ResponseEntity<Map<String, Object>> result = asMapEntity(this.restTemplate.postForEntity(
+				"/actuator/quartz/jobs/samples/onDemandJob", new HttpEntity<>(Map.of("state", "running")), Map.class));
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		Map<String, Object> content = result.getBody();
+		assertThat(content).contains(entry("group", "samples"), entry("name", "onDemandJob"),
+				entry("className", SampleJob.class.getName()));
+		assertThat(content).extractingByKey("triggerTime", InstanceOfAssertFactories.STRING)
+			.satisfies((triggerTime) -> assertThat(Instant.parse(triggerTime)).isCloseTo(Instant.now(),
+					within(10, ChronoUnit.SECONDS)));
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.untilAsserted(() -> assertThat(output).contains("Hello On Demand Job"));
 	}
 
 	private Map<String, Object> getContent(String path) {

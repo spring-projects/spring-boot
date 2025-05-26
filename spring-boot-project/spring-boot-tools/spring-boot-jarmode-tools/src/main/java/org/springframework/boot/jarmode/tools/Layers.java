@@ -19,6 +19,8 @@ package org.springframework.boot.jarmode.tools;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
+
 /**
  * Provides information about the jar layers.
  *
@@ -62,22 +64,13 @@ interface Layers extends Iterable<String> {
 	 * Return a {@link Layers} instance for the currently running application.
 	 * @param context the command context
 	 * @return a new layers instance
-	 * @throws LayersNotEnabledException if layers are not enabled
 	 */
 	static Layers get(Context context) {
 		IndexedLayers indexedLayers = IndexedLayers.get(context);
 		if (indexedLayers == null) {
-			throw new LayersNotEnabledException();
+			throw new JarModeErrorException("Layers are not enabled");
 		}
 		return indexedLayers;
-	}
-
-	final class LayersNotEnabledException extends RuntimeException {
-
-		LayersNotEnabledException() {
-			super("Layers not enabled: Failed to load layer index file");
-		}
-
 	}
 
 }

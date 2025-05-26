@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -88,7 +89,7 @@ public abstract class FileUtils {
 	}
 
 	private static boolean isDigestName(Object name) {
-		return String.valueOf(name).toUpperCase().endsWith("-DIGEST");
+		return String.valueOf(name).toUpperCase(Locale.ROOT).endsWith("-DIGEST");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.BindException;
@@ -68,6 +70,7 @@ import org.springframework.boot.convert.PeriodFormat;
 import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.boot.env.RandomValuePropertySource;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -260,6 +263,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	@WithResource(name = "testProperties.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+						<bean
+							id="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties"
+							class="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties">
+							<property name="name" value="bar"/>
+						</bean>
+
+					</beans>
+					""")
 	void loadWhenBindingWithDefaultsInXmlShouldBind() {
 		removeSystemProperties();
 		load(new Class<?>[] { DefaultsInXmlConfiguration.class });
@@ -396,9 +414,9 @@ class ConfigurationPropertiesTests {
 
 		};
 		this.context.register(WithFactoryBeanConfiguration.class);
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(FactoryBeanTester.class);
-		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(FactoryBeanTester.class)
+			.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE)
+			.getBeanDefinition();
 		this.context.registerBeanDefinition("test", beanDefinition);
 		this.context.refresh();
 		assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized).as("Not Initialized").isTrue();
@@ -584,13 +602,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldSupportRebindableConfigurationProperties() {
-		// gh-9160
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testRebindableConfigurationProperties(PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testRebindableConfigurationProperties(PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testRebindableConfigurationProperties(Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
 		assertThat(first.getOne()).isEqualTo("foo");
@@ -602,12 +628,24 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+			Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.register(PropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
@@ -632,6 +670,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties")
 	void customProtocolResolver() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -1355,7 +1394,7 @@ class ConfigurationPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
+	@ImportResource("testProperties.xml")
 	static class DefaultsInXmlConfiguration {
 
 	}
@@ -1400,7 +1439,7 @@ class ConfigurationPropertiesTests {
 	static class PrefixedPropertiesReplacedOnBeanMethodConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spam")
+		@ConfigurationProperties("spam")
 		PrefixProperties prefixProperties() {
 			return new PrefixProperties();
 		}
@@ -1495,10 +1534,10 @@ class ConfigurationPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	static class PrototypePropertiesConfiguration {
+	static class PrototypePropertiesBeanConfiguration {
 
 		@Bean
-		@Scope("prototype")
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConfigurationProperties("example")
 		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
@@ -1506,8 +1545,20 @@ class ConfigurationPropertiesTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(PrototypeBeanProperties.class)
+	static class PrototypePropertiesRegistrarConfiguration {
+
+	}
+
+	@ConfigurationProperties("example")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	static class PrototypeBeanProperties extends PrototypeBean {
+
+	}
+
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PropertiesWithResource {
 
 		private Resource resource;
@@ -1542,7 +1593,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, Person> personConverter() {
+		static Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
@@ -1553,7 +1604,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Converter<String, Alien> alienConverter() {
+		static Converter<String, Alien> alienConverter() {
 			return new AlienConverter();
 		}
 
@@ -1574,7 +1625,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		GenericConverter genericPersonConverter() {
+		static GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
@@ -1585,7 +1636,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		Formatter<Person> personFormatter() {
+		static Formatter<Person> personFormatter() {
 			return new PersonFormatter();
 		}
 
@@ -1796,12 +1847,12 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "spring.foo")
+	@ConfigurationProperties("spring.foo")
 	static class PrefixProperties extends BasicProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "spring.bar")
+	@ConfigurationProperties("spring.bar")
 	static class AnotherPrefixProperties extends BasicProperties {
 
 	}
@@ -1933,7 +1984,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class WithPropertyPlaceholderValueProperties {
 
@@ -1951,7 +2002,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithEnumProperties {
 
 		private FooEnum theValue;
@@ -1999,7 +2050,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithRelaxedNamesProperties {
 
 		private String fooBar;
@@ -2026,7 +2077,7 @@ class ConfigurationPropertiesTests {
 
 	@Validated
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithMapProperties {
 
 		private Map<String, String> map;
@@ -2042,7 +2093,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithComplexMapProperties {
 
 		private Map<String, Map<String, String>> map;
@@ -2058,7 +2109,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithIntegerMapProperties {
 
 		private Map<String, Map<Integer, Foo>> map;
@@ -2100,7 +2151,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonProperties {
 
 		private Person person;
@@ -2116,7 +2167,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonAndAlienProperties {
 
 		private Person person;
@@ -2142,7 +2193,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class PersonAndAliensProperties {
 
 		private Person person;
@@ -2168,7 +2219,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "sample")
+	@ConfigurationProperties("sample")
 	static class MapWithNumericKeyProperties {
 
 		private final Map<String, BasicProperties> properties = new LinkedHashMap<>();
@@ -2236,7 +2287,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class WithSetterThatThrowsValidationExceptionProperties {
 
 		private String foo;
@@ -2254,7 +2305,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "custom")
+	@ConfigurationProperties("custom")
 	static class WithCustomValidatorProperties {
 
 		private String foo;
@@ -2270,7 +2321,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ListOfGenericClassProperties {
 
 		private List<Class<? extends Throwable>> list;
@@ -2286,7 +2337,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class FileProperties {
 
 		private File file;
@@ -2302,7 +2353,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class DataSizeProperties {
 
 		private DataSize size;
@@ -2328,7 +2379,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class OtherInjectedProperties {
 
 		final DataSizeProperties dataSizeProperties;
@@ -2345,7 +2396,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class ConstructorParameterProperties {
 
@@ -2369,7 +2420,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterEmptyDefaultValueProperties {
 
 		private final Set<String> set;
@@ -2407,7 +2458,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterWithUnitProperties {
 
 		private final Duration duration;
@@ -2439,7 +2490,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class ConstructorParameterWithFormatProperties {
 
 		private final Duration duration;
@@ -2463,7 +2514,7 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 
@@ -3013,7 +3064,7 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		WithObjectToObjectMethodConverter withObjectToObjectMethodConverter() {
+		static WithObjectToObjectMethodConverter withObjectToObjectMethodConverter() {
 			return new WithObjectToObjectMethodConverter();
 		}
 

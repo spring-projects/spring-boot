@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.docs.appendix.configurationmetadata.annotationp
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "my.server")
+@ConfigurationProperties("my.server")
 public class MyServerProperties {
 
 	private String name;
@@ -65,7 +65,7 @@ public class MyServerProperties {
 		public void setPort(int port) {
 			this.port = port;
 		}
-		// @fold:off // getters/setters ...
+		// @fold:off
 
 	}
 

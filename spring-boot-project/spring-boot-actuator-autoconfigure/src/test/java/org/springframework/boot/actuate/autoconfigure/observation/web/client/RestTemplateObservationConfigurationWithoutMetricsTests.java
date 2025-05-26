@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.observation.tck.TestObservationRegistryAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -34,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
@@ -58,8 +58,7 @@ class RestTemplateObservationConfigurationWithoutMetricsTests {
 			RestTemplate restTemplate = buildRestTemplate(context);
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
+			assertThat(registry).hasObservationWithNameEqualToIgnoringCase("http.client.requests");
 		});
 	}
 

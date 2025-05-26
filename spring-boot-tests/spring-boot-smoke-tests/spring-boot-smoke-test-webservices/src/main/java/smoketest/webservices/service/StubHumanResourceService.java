@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package smoketest.webservices.service;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,13 +24,13 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StubHumanResourceService implements HumanResourceService {
+class StubHumanResourceService implements HumanResourceService {
 
-	private final Log logger = LogFactory.getLog(StubHumanResourceService.class);
+	private static final Log logger = LogFactory.getLog(StubHumanResourceService.class);
 
 	@Override
-	public void bookHoliday(Date startDate, Date endDate, String name) {
-		this.logger.info("Booking holiday for [" + startDate + " - " + endDate + "] for [" + name + "]");
+	public void bookHoliday(LocalDate startDate, LocalDate endDate, String name) {
+		logger.info("Booking holiday for [" + startDate + " - " + endDate + "] for [" + name + "]");
 	}
 
 }

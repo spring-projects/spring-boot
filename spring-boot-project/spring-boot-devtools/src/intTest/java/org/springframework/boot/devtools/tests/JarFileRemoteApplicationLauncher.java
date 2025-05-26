@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 		List<String> entries = new ArrayList<>();
 		entries.add(appJar.getAbsolutePath());
 		entries.addAll(getDependencyJarPaths());
-		String classpath = StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
-		return classpath;
+		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 
 	private void addToJar(JarOutputStream output, File root, File current) throws IOException {

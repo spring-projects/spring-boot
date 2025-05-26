@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ package org.springframework.boot.build.antora;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.build.antora.Extensions.AntoraExtensionsConfiguration.ZipContentsCollector.AlwaysInclude;
+import org.springframework.boot.build.antora.GenerateAntoraPlaybook.AntoraExtensions.ZipContentsCollector;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,23 +45,26 @@ class GenerateAntoraPlaybookTests {
 	@Test
 	void writePlaybookGeneratesExpectedContent() throws Exception {
 		writePlaybookYml((task) -> {
-			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
-			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
+			task.getAntoraExtensions().getXref().getStubs().addAll("appendix:.*", "api:.*", "reference:.*");
+			ZipContentsCollector zipContentsCollector = task.getAntoraExtensions().getZipContentsCollector();
+			zipContentsCollector.getAlwaysInclude().set(List.of(new AlwaysInclude("test", "local-aggregate-content")));
+			zipContentsCollector.getDependencies().add("test-dependency");
 		});
 		String actual = Files.readString(this.temp.toPath()
 			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
 		String expected = Files
 			.readString(Path.of("src/test/resources/org/springframework/boot/build/antora/expected-playbook.yml"));
-		System.out.println(actual);
 		assertThat(actual.replace('\\', '/')).isEqualToNormalizingNewlines(expected.replace('\\', '/'));
 	}
 
 	@Test
 	void writePlaybookWhenHasJavadocExcludeGeneratesExpectedContent() throws Exception {
 		writePlaybookYml((task) -> {
-			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
-			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
-			task.getExcludeJavadocExtension().set(true);
+			task.getAntoraExtensions().getXref().getStubs().addAll("appendix:.*", "api:.*", "reference:.*");
+			ZipContentsCollector zipContentsCollector = task.getAntoraExtensions().getZipContentsCollector();
+			zipContentsCollector.getAlwaysInclude().set(List.of(new AlwaysInclude("test", "local-aggregate-content")));
+			zipContentsCollector.getDependencies().add("test-dependency");
+			task.getAsciidocExtensions().getExcludeJavadocExtension().set(true);
 		});
 		String actual = Files.readString(this.temp.toPath()
 			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
@@ -73,9 +78,10 @@ class GenerateAntoraPlaybookTests {
 		File projectDir = new File(rootProjectDir, "project");
 		projectDir.mkdirs();
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).withParent(rootProject).build();
-		GenerateAntoraPlaybook task = project.getTasks().create("generateAntoraPlaybook", GenerateAntoraPlaybook.class);
-		customizer.accept(task);
-		task.writePlaybookYml();
+		project.getTasks()
+			.register("generateAntoraPlaybook", GenerateAntoraPlaybook.class, customizer::accept)
+			.get()
+			.writePlaybookYml();
 	}
 
 }

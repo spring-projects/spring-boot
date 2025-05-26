@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.authorization.event.AuthorizationDeniedEvent;
 import org.springframework.security.authorization.event.AuthorizationEvent;
 
@@ -48,7 +49,7 @@ class AuthorizationAuditListenerTests {
 
 	@Test
 	void authorizationDeniedEvent() {
-		AuthorizationDecision decision = new AuthorizationDecision(false);
+		AuthorizationResult decision = new AuthorizationDecision(false);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
 				"password");
 		authentication.setDetails("details");
@@ -62,7 +63,7 @@ class AuthorizationAuditListenerTests {
 
 	@Test
 	void authorizationDeniedEventWhenAuthenticationIsNotAvailable() {
-		AuthorizationDecision decision = new AuthorizationDecision(false);
+		AuthorizationResult decision = new AuthorizationDecision(false);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
 				"password");
 		authentication.setDetails("details");
@@ -77,7 +78,7 @@ class AuthorizationAuditListenerTests {
 
 	@Test
 	void authorizationDeniedEventWhenAuthenticationDoesNotHaveDetails() {
-		AuthorizationDecision decision = new AuthorizationDecision(false);
+		AuthorizationResult decision = new AuthorizationDecision(false);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("spring",
 				"password");
 		AuthorizationDeniedEvent<?> authorizationEvent = new AuthorizationDeniedEvent<>(() -> authentication, "",

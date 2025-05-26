@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.KeyValueCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnIssuerLocationJwtDecoder;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ConditionalOnPublicKeyJwtDecoder;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -114,15 +114,22 @@ class OAuth2ResourceServerJwtConfiguration {
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
 			validators.add(defaultValidator);
 			if (!CollectionUtils.isEmpty(audiences)) {
-				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
-						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+				validators.add(audValidator(audiences));
 			}
 			validators.addAll(this.additionalValidators);
 			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 
+		private JwtClaimValidator<List<String>> audValidator(List<String> audiences) {
+			return new JwtClaimValidator<>(JwtClaimNames.AUD, (aud) -> nullSafeDisjoint(aud, audiences));
+		}
+
+		private boolean nullSafeDisjoint(List<String> c1, List<String> c2) {
+			return c1 != null && !Collections.disjoint(c1, c2);
+		}
+
 		@Bean
-		@Conditional(KeyValueCondition.class)
+		@ConditionalOnPublicKeyJwtDecoder
 		JwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
@@ -150,7 +157,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		}
 
 		@Bean
-		@Conditional(IssuerUriCondition.class)
+		@ConditionalOnIssuerLocationJwtDecoder
 		SupplierJwtDecoder jwtDecoderByIssuerUri(ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> customizers) {
 			return new SupplierJwtDecoder(() -> {
 				String issuerUri = this.properties.getIssuerUri();
@@ -212,17 +219,17 @@ class OAuth2ResourceServerJwtConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authority-prefix")
 		static class OnAuthorityPrefix {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.principal-claim-name")
 		static class OnPrincipalClaimName {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authorities-claim-name")
 		static class OnAuthoritiesClaimName {
 
 		}

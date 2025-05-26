@@ -165,10 +165,12 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			if (this.failure != null) {
-				ReflectionUtils.rethrowRuntimeException(this.failure);
+			Throwable failure = this.failure;
+			if (failure != null) {
+				ReflectionUtils.rethrowRuntimeException(failure);
 			}
-			return this.outcomes;
+			ConditionOutcome[] outcomes = this.outcomes;
+			return (outcomes != null) ? outcomes : new ConditionOutcome[0];
 		}
 
 	}

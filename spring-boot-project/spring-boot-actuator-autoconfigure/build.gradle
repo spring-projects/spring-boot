@@ -1,22 +1,17 @@
 plugins {
 	id "java-library"
-	id "org.antora"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Actuator AutoConfigure"
 
-configurations {
-	antoraContent
-}
-
 dependencies {
-	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	implementation("com.fasterxml.jackson.core:jackson-databind")
@@ -34,6 +29,7 @@ dependencies {
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
 	optional("io.micrometer:micrometer-jakarta9")
+	optional("io.micrometer:micrometer-java21")
 	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
@@ -54,22 +50,18 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-new-relic")
 	optional("io.micrometer:micrometer-registry-otlp")
 	optional("io.micrometer:micrometer-registry-prometheus")
-	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	optional("io.micrometer:micrometer-registry-stackdriver") {
 		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "javax.annotation", module: "javax.annotation-api"
-	}
-	optional("io.prometheus:simpleclient_pushgateway") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("io.micrometer:micrometer-registry-signalfx")
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
-	optional("io.zipkin.reporter2:zipkin-sender-urlconnection")
 	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
 	optional("io.opentelemetry:opentelemetry-exporter-otlp")
 	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.r2dbc:r2dbc-spi")
@@ -77,6 +69,7 @@ dependencies {
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.cache:cache-api")
+	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.activemq:activemq-client")
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -105,6 +98,7 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
+	optional("org.junit.platform:junit-platform-launcher")
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
@@ -140,7 +134,9 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("io.micrometer:micrometer-observation-test")
+	testImplementation("io.opentelemetry:opentelemetry-exporter-common")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
 	testImplementation("io.r2dbc:r2dbc-h2")
@@ -161,6 +157,7 @@ dependencies {
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring6")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")
@@ -198,7 +195,7 @@ dependencies {
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
-		excludeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+		excludeTestsMatching("*DocumentationTests")
 	}
 }
 
@@ -207,9 +204,9 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	classpath = testing.suites.test.sources.runtimeClasspath
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
-		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+		includeTestsMatching("*DocumentationTests")
 	}
-	outputs.dir("${buildDir}/generated-snippets")
+	outputs.dir(layout.buildDirectory.dir("generated-snippets"))
 	develocity {
 		predictiveTestSelection {
 			enabled = false
@@ -217,36 +214,22 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
-def antoraActuatorRestApiLocalAggregateContent  = tasks.register("antoraActuatorRestApiLocalAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "actuator-rest-api-local-aggregate-content"
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraActuatorRestApiAggregateContent = tasks.register("antoraActuatorRestApiAggregateContent", Zip) {
-	dependsOn documentationTest
-	inputs.dir("${buildDir}/generated-snippets")
-		.withPathSensitivity(PathSensitivity.RELATIVE)
-		.withPropertyName("generatedSnippets")
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "actuator-rest-api-aggregate-content"
-	from("${buildDir}/generated-snippets") {
-		into "modules/api/partials/rest/actuator"
-	}
-}
-
 tasks.named("generateAntoraPlaybook") {
-	alwaysInclude = [name: "actuator-rest-api", classifier: "local-aggregate-content"]
-	dependsOn antoraActuatorRestApiLocalAggregateContent
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
 }
 
-tasks.named("antora") {
-	inputs.files(antoraActuatorRestApiAggregateContent)
+antoraContributions {
+	'actuator-rest-api' {
+		aggregateContent {
+			from(documentationTest.map { layout.buildDirectory.dir("generated-snippets") }) {
+				into "modules/api/partials/rest/actuator"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
+	}
 }
-
-artifacts {
-	antoraContent antoraActuatorRestApiAggregateContent
-}
-

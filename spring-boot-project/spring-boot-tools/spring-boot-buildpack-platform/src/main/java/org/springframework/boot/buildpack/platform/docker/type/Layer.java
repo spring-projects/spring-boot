@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class Layer implements Content {
 	 * @throws IOException on IO error
 	 */
 	public static Layer of(IOConsumer<Layout> layout) throws IOException {
-		Assert.notNull(layout, "Layout must not be null");
+		Assert.notNull(layout, "'layout' must not be null");
 		return fromTarArchive(TarArchive.of(layout));
 	}
 
@@ -82,7 +82,7 @@ public class Layer implements Content {
 	 * @throws IOException on error
 	 */
 	public static Layer fromTarArchive(TarArchive tarArchive) throws IOException {
-		Assert.notNull(tarArchive, "TarArchive must not be null");
+		Assert.notNull(tarArchive, "'tarArchive' must not be null");
 		try {
 			return new Layer(tarArchive);
 		}

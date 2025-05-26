@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ public class LoggersEndpoint {
 	 * @param loggerGroups the logger group to expose
 	 */
 	public LoggersEndpoint(LoggingSystem loggingSystem, LoggerGroups loggerGroups) {
-		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
-		Assert.notNull(loggerGroups, "LoggerGroups must not be null");
+		Assert.notNull(loggingSystem, "'loggingSystem' must not be null");
+		Assert.notNull(loggerGroups, "'loggerGroups' must not be null");
 		this.loggingSystem = loggingSystem;
 		this.loggerGroups = loggerGroups;
 	}
@@ -88,7 +88,7 @@ public class LoggersEndpoint {
 
 	@ReadOperation
 	public LoggerLevelsDescriptor loggerLevels(@Selector String name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null) {
 			return new GroupLoggerLevelsDescriptor(group.getConfiguredLevel(), group.getMembers());
@@ -99,7 +99,7 @@ public class LoggersEndpoint {
 
 	@WriteOperation
 	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
-		Assert.notNull(name, "Name must not be empty");
+		Assert.notNull(name, "'name' must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null && group.hasMembers()) {
 			group.configureLogLevel(configuredLevel, this.loggingSystem::setLogLevel);

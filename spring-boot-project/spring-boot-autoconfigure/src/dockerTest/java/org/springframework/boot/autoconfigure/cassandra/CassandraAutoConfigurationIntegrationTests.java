@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.cassandra;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.spy;
 class CassandraAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))

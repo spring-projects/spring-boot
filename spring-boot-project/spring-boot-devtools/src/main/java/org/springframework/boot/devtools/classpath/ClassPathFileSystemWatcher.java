@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	 */
 	public ClassPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 			ClassPathRestartStrategy restartStrategy, URL[] urls) {
-		Assert.notNull(fileSystemWatcherFactory, "FileSystemWatcherFactory must not be null");
-		Assert.notNull(urls, "Urls must not be null");
+		Assert.notNull(fileSystemWatcherFactory, "'fileSystemWatcherFactory' must not be null");
+		Assert.notNull(urls, "'urls' must not be null");
 		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();
 		this.restartStrategy = restartStrategy;
 		this.fileSystemWatcher.addSourceDirectories(new ClassPathDirectories(urls));

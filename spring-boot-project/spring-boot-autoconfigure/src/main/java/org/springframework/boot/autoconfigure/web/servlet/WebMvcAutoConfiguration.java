@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -76,6 +76,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
@@ -163,14 +164,14 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled")
+	@ConditionalOnBooleanProperty("spring.mvc.hiddenmethod.filter.enabled")
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(FormContentFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.filter", name = "enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.mvc.formcontent.filter.enabled", matchIfMissing = true)
 	public OrderedFormContentFilter formContentFilter() {
 		return new OrderedFormContentFilter();
 	}
@@ -271,8 +272,12 @@ public class WebMvcAutoConfiguration {
 			if (contentnegotiation.getParameterName() != null) {
 				configurer.parameterName(contentnegotiation.getParameterName());
 			}
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation().getMediaTypes();
+			Map<String, MediaType> mediaTypes = contentnegotiation.getMediaTypes();
 			mediaTypes.forEach(configurer::mediaType);
+			List<MediaType> defaultContentTypes = contentnegotiation.getDefaultContentTypes();
+			if (!CollectionUtils.isEmpty(defaultContentTypes)) {
+				configurer.defaultContentType(defaultContentTypes.toArray(new MediaType[0]));
+			}
 		}
 
 		@Bean
@@ -366,7 +371,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
-		@ConditionalOnMissingFilterBean(RequestContextFilter.class)
+		@ConditionalOnMissingFilterBean
 		public static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
 		}
@@ -666,7 +671,7 @@ public class WebMvcAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.mvc.problemdetails", name = "enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty("spring.mvc.problemdetails.enabled")
 	static class ProblemDetailsErrorHandlingConfiguration {
 
 		@Bean

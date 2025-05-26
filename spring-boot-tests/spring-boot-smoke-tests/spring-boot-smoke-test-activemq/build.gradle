@@ -1,10 +1,9 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.docker-test"
 }
 
-description = "Spring Boot Actuator ActiveMQ smoke test"
+description = "Spring Boot ActiveMQ smoke test"
 
 dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))

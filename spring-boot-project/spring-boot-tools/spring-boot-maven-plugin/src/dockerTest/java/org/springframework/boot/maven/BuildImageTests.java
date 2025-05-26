@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -270,9 +270,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
-			.systemProperty("spring-boot.build-image.builder", "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1")
+			.systemProperty("spring-boot.build-image.builder", "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2")
 			.systemProperty("spring-boot.build-image.trustBuilder", "true")
-			.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run-jammy-tiny")
+			.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run-noble-tiny")
 			.systemProperty("spring-boot.build-image.createdDate", "2020-07-01T12:34:56Z")
 			.systemProperty("spring-boot.build-image.applicationDirectory", "/application")
 			.execute((project) -> {
@@ -464,9 +464,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			});
 	}
 
-	private static void cleanupCache(Path buildCachePath) {
+	private static void cleanupCache(Path cachePath) {
 		try {
-			FileSystemUtils.deleteRecursively(buildCachePath);
+			FileSystemUtils.deleteRecursively(cachePath);
 		}
 		catch (Exception ex) {
 			// ignore
@@ -475,7 +475,6 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCreatedDate(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
@@ -541,9 +540,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "aarch64",
 			disabledReason = "Lifecycle will only run on ARM architecture")
 	void whenBuildImageIsInvokedOnLinuxArmWithImagePlatformLinuxArm(MavenBuild mavenBuild) throws IOException {
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
-		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
+		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
 		removeImages(builderImage, runImage, buildpackImage);
 		mavenBuild.project("dockerTest", "build-image-platform-linux-arm").goals("package").execute((project) -> {
 			File jar = new File(project, "target/build-image-platform-linux-arm-0.0.1.BUILD-SNAPSHOT.jar");
@@ -565,9 +564,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "amd64",
 			disabledReason = "The expected failure condition will not fail on ARM architectures")
 	void failsWhenBuildImageIsInvokedOnLinuxAmdWithImagePlatformLinuxArm(MavenBuild mavenBuild) throws IOException {
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
-		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
+		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
 		removeImages(buildpackImage, runImage, buildpackImage);
 		mavenBuild.project("dockerTest", "build-image-platform-linux-arm")
 			.goals("package")

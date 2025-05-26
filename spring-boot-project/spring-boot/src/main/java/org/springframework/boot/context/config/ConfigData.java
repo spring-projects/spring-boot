@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public final class ConfigData {
 	 */
 	public ConfigData(Collection<? extends PropertySource<?>> propertySources,
 			PropertySourceOptions propertySourceOptions) {
-		Assert.notNull(propertySources, "PropertySources must not be null");
-		Assert.notNull(propertySourceOptions, "PropertySourceOptions must not be null");
+		Assert.notNull(propertySources, "'propertySources' must not be null");
+		Assert.notNull(propertySourceOptions, "'propertySourceOptions' must not be null");
 		this.propertySources = Collections.unmodifiableList(new ArrayList<>(propertySources));
 		this.propertySourceOptions = propertySourceOptions;
 	}
@@ -250,7 +250,7 @@ public final class ConfigData {
 		 * @return a new {@link Options} instance
 		 */
 		public static Options of(Option... options) {
-			Assert.notNull(options, "Options must not be null");
+			Assert.notNull(options, "'options' must not be null");
 			if (options.length == 0) {
 				return NONE;
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ class LambdaSafeTests {
 	@Test
 	void callbackWhenCallbackTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))
-			.withMessageContaining("CallbackType must not be null");
+			.withMessageContaining("'callbackType' must not be null");
 	}
 
 	@Test
 	void callbackWhenCallbackInstanceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(Object.class, null, null))
-			.withMessageContaining("CallbackInstance must not be null");
+			.withMessageContaining("'callbackInstance' must not be null");
 	}
 
 	@Test

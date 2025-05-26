@@ -20,17 +20,22 @@ import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class MyContainersConfiguration {
 
 	@Bean
-	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
-		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
-		properties.add("spring.data.mongodb.host", container::getHost);
-		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
-		return container;
+	public MongoDBContainer mongoDbContainer() {
+		return new MongoDBContainer("mongo:5.0");
+	}
+
+	@Bean
+	public DynamicPropertyRegistrar mongoDbProperties(MongoDBContainer container) {
+		return (properties) -> {
+			properties.add("spring.data.mongodb.host", container::getHost);
+			properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
+		};
 	}
 
 }

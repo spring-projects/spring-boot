@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.webflux")
+@ConfigurationProperties("spring.webflux")
 public class WebFluxProperties {
 
 	/**
@@ -145,7 +145,7 @@ public class WebFluxProperties {
 	public static class Problemdetails {
 
 		/**
-		 * Whether RFC 7807 Problem Details support should be enabled.
+		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
 		private boolean enabled = false;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Mark Jeffrey
  */
 @Value
-@ConfigurationProperties(prefix = "value")
+@ConfigurationProperties("value")
 @SuppressWarnings("unused")
 public class LombokSimpleValueProperties {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,6 +205,32 @@ public enum DatabaseDriver {
 			return Collections.singleton("tc");
 		}
 
+	},
+
+	/**
+	 * ClickHouse.
+	 * @since 3.4.0
+	 */
+	CLICKHOUSE("ClickHouse", "com.clickhouse.jdbc.ClickHouseDriver", null, "SELECT 1") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Arrays.asList("ch", "clickhouse");
+		}
+
+	},
+
+	/**
+	 * AWS Advanced JDBC Wrapper.
+	 * @since 3.5.0
+	 */
+	AWS_WRAPPER(null, "software.amazon.jdbc.Driver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("aws-wrapper");
+		}
+
 	};
 
 	private final String productName;
@@ -281,7 +307,7 @@ public enum DatabaseDriver {
 	 */
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
-			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
+			Assert.isTrue(url.startsWith("jdbc"), "'url' must start with \"jdbc\"");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {

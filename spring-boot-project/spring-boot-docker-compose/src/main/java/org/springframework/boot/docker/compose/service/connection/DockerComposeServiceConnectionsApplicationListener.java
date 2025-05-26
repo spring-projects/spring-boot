@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeServicesReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -47,7 +49,7 @@ class DockerComposeServiceConnectionsApplicationListener
 	private final ConnectionDetailsFactories factories;
 
 	DockerComposeServiceConnectionsApplicationListener() {
-		this(new ConnectionDetailsFactories());
+		this(new ConnectionDetailsFactories(null));
 	}
 
 	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories) {
@@ -58,13 +60,15 @@ class DockerComposeServiceConnectionsApplicationListener
 	public void onApplicationEvent(DockerComposeServicesReadyEvent event) {
 		ApplicationContext applicationContext = event.getSource();
 		if (applicationContext instanceof BeanDefinitionRegistry registry) {
-			registerConnectionDetails(registry, event.getRunningServices());
+			Environment environment = applicationContext.getEnvironment();
+			registerConnectionDetails(registry, environment, event.getRunningServices());
 		}
 	}
 
-	private void registerConnectionDetails(BeanDefinitionRegistry registry, List<RunningService> runningServices) {
+	private void registerConnectionDetails(BeanDefinitionRegistry registry, Environment environment,
+			List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
-			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
+			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService, environment);
 			this.factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
 				register(registry, runningService, connectionDetailsType, connectionDetails);
 				this.factories.getConnectionDetails(connectionDetails, false)
@@ -77,10 +81,13 @@ class DockerComposeServiceConnectionsApplicationListener
 	@SuppressWarnings("unchecked")
 	private <T> void register(BeanDefinitionRegistry registry, RunningService runningService,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
+		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(runningService.image().toString());
 		String beanName = getBeanName(runningService, connectionDetailsType);
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
-		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		containerMetadata.addTo(beanDefinition);
+		registry.registerBeanDefinition(beanName, beanDefinition);
 	}
 
 	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType) {

@@ -3,18 +3,16 @@ on:
   push:
     branches:
       - main
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
+    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
     runs-on: ${{ matrix.os.id }}
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - id: ubuntu-latest
+          - id: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
             name: Linux
           - id: windows-latest
             name: Windows
@@ -26,13 +24,17 @@ jobs:
           - version: 22
             toolchain: false
           - version: 23
+            toolchain: true
+          - version: 24
             early-access: true
-            toolchain: false
+            toolchain: true
         exclude:
           - os:
               name: Linux
             java:
               version: 17
+          - os:
+              name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
       - name: Prepare Windows runner
         if: ${{ runner.os == 'Windows' }}
@@ -46,15 +48,21 @@ jobs:
         id: build
         uses: ./.github/actions/build
         with:
-          java-version: ${{ matrix.java.version }}
+          commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
+          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+          commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          gradle-cache-read-only: false
           java-early-access: ${{ matrix.java.early-access || 'false' }}
+          java-distribution: ${{ matrix.java.distribution }}
           java-toolchain: ${{ matrix.java.toolchain }}
-          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          java-version: ${{ matrix.java.version }}
       - name: Send Notification
-        uses: ./.github/actions/send-notification
         if: always()
+        uses: ./.github/actions/send-notification
         with:
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          status: ${{ job.status }}
           build-scan-url: ${{ steps.build.outputs.build-scan-url }}
           run-name: ${{ format('{0} | {1} | Java {2}', github.ref_name, matrix.os.name, matrix.java.version) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

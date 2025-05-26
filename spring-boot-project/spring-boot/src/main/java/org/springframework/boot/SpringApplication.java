@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,7 +233,7 @@ public class SpringApplication {
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
-	private boolean isCustomEnvironment = false;
+	private boolean isCustomEnvironment;
 
 	private String environmentPrefix;
 
@@ -270,7 +270,7 @@ public class SpringApplication {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
-		Assert.notNull(primarySources, "PrimarySources must not be null");
+		Assert.notNull(primarySources, "'primarySources' must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.properties.setWebApplicationType(WebApplicationType.deduceFromClasspath());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
@@ -365,16 +365,13 @@ public class SpringApplication {
 	}
 
 	private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
+		WebApplicationType webApplicationType = this.properties.getWebApplicationType();
 		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
-			.getEnvironmentType(this.properties.getWebApplicationType());
+			.getEnvironmentType(webApplicationType);
 		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
-			environmentType = ApplicationContextFactory.DEFAULT
-				.getEnvironmentType(this.properties.getWebApplicationType());
+			environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(webApplicationType);
 		}
-		if (environmentType == null) {
-			return ApplicationEnvironment.class;
-		}
-		return environmentType;
+		return (environmentType != null) ? environmentType : ApplicationEnvironment.class;
 	}
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
@@ -413,7 +410,7 @@ public class SpringApplication {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			// Load the sources
 			Set<Object> sources = getAllSources();
-			Assert.notEmpty(sources, "Sources must not be empty");
+			Assert.state(!ObjectUtils.isEmpty(sources), "No sources defined");
 			load(context, sources.toArray(new Object[0]));
 		}
 		listeners.contextLoaded(context);
@@ -466,17 +463,17 @@ public class SpringApplication {
 	}
 
 	private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
-		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
+		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader(null)).load(type, argumentResolver);
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		ConfigurableEnvironment environment = this.applicationContextFactory
-			.createEnvironment(this.properties.getWebApplicationType());
+		WebApplicationType webApplicationType = this.properties.getWebApplicationType();
+		ConfigurableEnvironment environment = this.applicationContextFactory.createEnvironment(webApplicationType);
 		if (environment == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
-			environment = ApplicationContextFactory.DEFAULT.createEnvironment(this.properties.getWebApplicationType());
+			environment = ApplicationContextFactory.DEFAULT.createEnvironment(webApplicationType);
 		}
 		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
@@ -611,7 +608,7 @@ public class SpringApplication {
 		for (ApplicationContextInitializer initializer : getInitializers()) {
 			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
 					ApplicationContextInitializer.class);
-			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
+			Assert.state(requiredType.isInstance(context), "Unable to call initializer");
 			initializer.initialize(context);
 		}
 	}
@@ -633,7 +630,7 @@ public class SpringApplication {
 	 * Called to log startup information, subclasses may override to add additional
 	 * logging.
 	 * @param isRoot true if this application is the root of a context hierarchy
-	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
 	 * {@link #logStartupInfo(ConfigurableApplicationContext)}
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
@@ -716,10 +713,11 @@ public class SpringApplication {
 	 * @return a ClassLoader (never null)
 	 */
 	public ClassLoader getClassLoader() {
-		if (this.resourceLoader != null) {
-			return this.resourceLoader.getClassLoader();
-		}
-		return ClassUtils.getDefaultClassLoader();
+		return getClassLoader(ClassUtils.getDefaultClassLoader());
+	}
+
+	private ClassLoader getClassLoader(ClassLoader fallback) {
+		return (this.resourceLoader != null) ? this.resourceLoader.getClassLoader() : fallback;
 	}
 
 	/**
@@ -962,7 +960,7 @@ public class SpringApplication {
 	 * @since 2.0.0
 	 */
 	public void setWebApplicationType(WebApplicationType webApplicationType) {
-		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
+		Assert.notNull(webApplicationType, "'webApplicationType' must not be null");
 		this.properties.setWebApplicationType(webApplicationType);
 	}
 
@@ -1071,7 +1069,7 @@ public class SpringApplication {
 	 * @since 2.4.5
 	 */
 	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer bootstrapRegistryInitializer) {
-		Assert.notNull(bootstrapRegistryInitializer, "BootstrapRegistryInitializer must not be null");
+		Assert.notNull(bootstrapRegistryInitializer, "'bootstrapRegistryInitializer' must not be null");
 		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializer));
 	}
 
@@ -1172,7 +1170,7 @@ public class SpringApplication {
 	 * @see #getAllSources()
 	 */
 	public void setSources(Set<String> sources) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		this.properties.setSources(sources);
 	}
 
@@ -1199,7 +1197,7 @@ public class SpringApplication {
 	 * @param resourceLoader the resource loader
 	 */
 	public void setResourceLoader(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		this.resourceLoader = resourceLoader;
 	}
 
@@ -1393,7 +1391,7 @@ public class SpringApplication {
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context, ExitCodeGenerator... exitCodeGenerators) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		int exitCode = 0;
 		try {
 			try {
@@ -1429,8 +1427,8 @@ public class SpringApplication {
 	 * @see #withHook(SpringApplicationHook, Runnable)
 	 */
 	public static SpringApplication.Augmented from(ThrowingConsumer<String[]> main) {
-		Assert.notNull(main, "Main must not be null");
-		return new Augmented(main, Collections.emptySet());
+		Assert.notNull(main, "'main' must not be null");
+		return new Augmented(main, Collections.emptySet(), Collections.emptySet());
 	}
 
 	/**
@@ -1492,9 +1490,12 @@ public class SpringApplication {
 
 		private final Set<Class<?>> sources;
 
-		Augmented(ThrowingConsumer<String[]> main, Set<Class<?>> sources) {
+		private final Set<String> additionalProfiles;
+
+		Augmented(ThrowingConsumer<String[]> main, Set<Class<?>> sources, Set<String> additionalProfiles) {
 			this.main = main;
 			this.sources = Set.copyOf(sources);
+			this.additionalProfiles = additionalProfiles;
 		}
 
 		/**
@@ -1506,7 +1507,20 @@ public class SpringApplication {
 		public Augmented with(Class<?>... sources) {
 			LinkedHashSet<Class<?>> merged = new LinkedHashSet<>(this.sources);
 			merged.addAll(Arrays.asList(sources));
-			return new Augmented(this.main, merged);
+			return new Augmented(this.main, merged, this.additionalProfiles);
+		}
+
+		/**
+		 * Return a new {@link SpringApplication.Augmented} instance with additional
+		 * profiles that should be applied when the application runs.
+		 * @param profiles the profiles that should be applied
+		 * @return a new {@link SpringApplication.Augmented} instance
+		 * @since 3.4.0
+		 */
+		public Augmented withAdditionalProfiles(String... profiles) {
+			Set<String> merged = new LinkedHashSet<>(this.additionalProfiles);
+			merged.addAll(Arrays.asList(profiles));
+			return new Augmented(this.main, this.sources, merged);
 		}
 
 		/**
@@ -1518,6 +1532,7 @@ public class SpringApplication {
 			RunListener runListener = new RunListener();
 			SpringApplicationHook hook = new SingleUseSpringApplicationHook((springApplication) -> {
 				springApplication.addPrimarySources(this.sources);
+				springApplication.setAdditionalProfiles(this.additionalProfiles.toArray(String[]::new));
 				return runListener;
 			});
 			withHook(hook, () -> this.main.accept(args));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -255,7 +255,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param initializers the set of initializers to apply
 	 */
 	protected final void configureWebAppContext(WebAppContext context, ServletContextInitializer... initializers) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		context.clearAliasChecks();
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
@@ -284,7 +284,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		SameSite sessionSameSite = getSession().getCookie().getSameSite();
-		if (sessionSameSite != null) {
+		if (sessionSameSite != null && sessionSameSite != SameSite.OMITTED) {
 			handler.setSameSite(HttpCookie.SameSite.valueOf(sessionSameSite.name()));
 		}
 		Duration sessionTimeout = getSession().getTimeout();
@@ -365,7 +365,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param context the jetty {@link WebAppContext}
 	 */
 	protected final void addDefaultServlet(WebAppContext context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.ee10.servlet.DefaultServlet");
@@ -381,7 +381,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param context the jetty {@link WebAppContext}
 	 */
 	protected final void addJspServlet(WebAppContext context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
 		holder.setClassName(getJsp().getClassName());
@@ -512,7 +512,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param customizers the Jetty customizers to apply
 	 */
 	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.jettyServerCustomizers = new LinkedHashSet<>(customizers);
 	}
 
@@ -527,7 +527,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	@Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -538,7 +538,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param configurations the Jetty configurations to apply
 	 */
 	public void setConfigurations(Collection<? extends Configuration> configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+		Assert.notNull(configurations, "'configurations' must not be null");
 		this.configurations = new ArrayList<>(configurations);
 	}
 
@@ -557,7 +557,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @param configurations the configurations to add
 	 */
 	public void addConfigurations(Configuration... configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+		Assert.notNull(configurations, "'configurations' must not be null");
 		this.configurations.addAll(Arrays.asList(configurations));
 	}
 

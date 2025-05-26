@@ -71,6 +71,9 @@ do as they were designed before this was clarified.
 | https://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
+| https://dapr.io[Dapr]
+| https://github.com/dapr/java-sdk/
+
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
@@ -256,6 +259,9 @@ do as they were designed before this was clarified.
 
 | https://github.com/structurizr/java[Structurizr]
 | https://github.com/Catalysts/structurizr-extensions
+
+| https://docs.styra.com/das/systems/springboot/[Styra DAS] (https://www.openpolicyagent.org/[OPA])
+| https://github.com/styrainc/opa-springboot
 
 | https://www.torproject.org/[Tor]
 | https://github.com/theborakompanioni/tor-spring-boot-starter

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	private Session session = new Session();
 
-	private boolean registerDefaultServlet = false;
+	private boolean registerDefaultServlet;
 
 	private MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 
@@ -131,7 +131,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	}
 
 	private void checkContextPath(String contextPath) {
-		Assert.notNull(contextPath, "ContextPath must not be null");
+		Assert.notNull(contextPath, "'contextPath' must not be null");
 		if (!contextPath.isEmpty()) {
 			if ("/".equals(contextPath)) {
 				throw new IllegalArgumentException("Root ContextPath must be specified using an empty string");
@@ -174,7 +174,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void setMimeMappings(MimeMappings mimeMappings) {
-		Assert.notNull(mimeMappings, "MimeMappings must not be null");
+		Assert.notNull(mimeMappings, "'mimeMappings' must not be null");
 		this.mimeMappings = new MimeMappings(mimeMappings);
 	}
 
@@ -199,13 +199,13 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+		Assert.notNull(initializers, "'initializers' must not be null");
 		this.initializers = new ArrayList<>(initializers);
 	}
 
 	@Override
 	public void addInitializers(ServletContextInitializer... initializers) {
-		Assert.notNull(initializers, "Initializers must not be null");
+		Assert.notNull(initializers, "'initializers' must not be null");
 		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
@@ -237,7 +237,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
-		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
+		Assert.notNull(localeCharsetMappings, "'localeCharsetMappings' must not be null");
 		this.localeCharsetMappings = localeCharsetMappings;
 	}
 
@@ -252,13 +252,13 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void setCookieSameSiteSuppliers(List<? extends CookieSameSiteSupplier> cookieSameSiteSuppliers) {
-		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
+		Assert.notNull(cookieSameSiteSuppliers, "'cookieSameSiteSuppliers' must not be null");
 		this.cookieSameSiteSuppliers = new ArrayList<>(cookieSameSiteSuppliers);
 	}
 
 	@Override
 	public void addCookieSameSiteSuppliers(CookieSameSiteSupplier... cookieSameSiteSuppliers) {
-		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
+		Assert.notNull(cookieSameSiteSuppliers, "'cookieSameSiteSuppliers' must not be null");
 		this.cookieSameSiteSuppliers.addAll(Arrays.asList(cookieSameSiteSuppliers));
 	}
 
@@ -350,6 +350,9 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			map.from(cookie::getHttpOnly).to(config::setHttpOnly);
 			map.from(cookie::getSecure).to(config::setSecure);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);
+			map.from(cookie::getPartitioned)
+				.as(Object::toString)
+				.to((partitioned) -> config.setAttribute("Partitioned", partitioned));
 		}
 
 		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.lettuce.core.dynamic.support.ResolvableType;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.health.NamedContributor;
+import org.springframework.boot.actuate.health.NamedContributors;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +54,7 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 	void createContributorWhenBeansIsEmptyThrowsException() {
 		Map<String, TestBean> beans = Collections.emptyMap();
 		assertThatIllegalArgumentException().isThrownBy(() -> newComposite().createContributor(beans))
-			.withMessage("Beans must not be empty");
+			.withMessage("'beans' must not be empty");
 	}
 
 	@Test
@@ -69,9 +74,76 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 		assertThat(ClassUtils.getShortName(contributor.getClass())).startsWith("Composite");
 	}
 
+	@Test
+	void createContributorWhenBeanFactoryHasNoBeansThrowsException() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.refresh();
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> newComposite().createContributor(context.getBeanFactory(), TestBean.class));
+		}
+	}
+
+	@Test
+	void createContributorWhenBeanFactoryHasSingleBeanCreatesIndicator() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(SingleBeanConfiguration.class);
+			context.refresh();
+			C contributor = newComposite().createContributor(context.getBeanFactory(), TestBean.class);
+			assertThat(contributor).isInstanceOf(this.indicatorType);
+		}
+	}
+
+	@Test
+	void createContributorWhenBeanFactoryHasMultipleBeansCreatesComposite() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(MultipleBeansConfiguration.class);
+			context.refresh();
+			C contributor = newComposite().createContributor(context.getBeanFactory(), TestBean.class);
+			assertThat(contributor).isNotInstanceOf(this.indicatorType);
+			assertThat(ClassUtils.getShortName(contributor.getClass())).startsWith("Composite");
+			assertThat(((NamedContributors<?>) contributor).stream().map(NamedContributor::getName))
+				.containsExactlyInAnyOrder("standard", "nonDefault");
+		}
+	}
+
 	protected abstract AbstractCompositeHealthContributorConfiguration<C, I, TestBean> newComposite();
 
 	static class TestBean {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleBeansConfiguration {
+
+		@Bean
+		TestBean standard() {
+			return new TestBean();
+		}
+
+		@Bean(defaultCandidate = false)
+		TestBean nonDefault() {
+			return new TestBean();
+		}
+
+		@Bean(autowireCandidate = false)
+		TestBean nonAutowire() {
+			return new TestBean();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SingleBeanConfiguration {
+
+		@Bean
+		TestBean standard() {
+			return new TestBean();
+		}
+
+		@Bean(autowireCandidate = false)
+		TestBean nonAutowire() {
+			return new TestBean();
+		}
 
 	}
 

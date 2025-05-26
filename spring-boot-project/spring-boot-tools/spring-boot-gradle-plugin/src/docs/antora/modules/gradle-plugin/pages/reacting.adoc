@@ -17,7 +17,7 @@ When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a proje
 3. Configures the `jar` task to use `plain` as the convention for its archive classifier.
 4. Creates a {apiref-gradle-plugin-boot-build-image}[`BootBuildImage`] task named `bootBuildImage` that will create a OCI image using a https://buildpacks.io[buildpack].
 5. Creates a {apiref-gradle-plugin-boot-run}[`BootRun`] task named `bootRun` that can be used to run your application using the `main` source set to find its main method and provide its runtime classpath.
-6. Creates a {apiref-gradle-plugin-boot-run}['BootRun`] task named `bootTestRun` that can be used to run your application using the `test` source set to find its main method and provide its runtime classpath.
+6. Creates a {apiref-gradle-plugin-boot-run}[`BootRun`] task named `bootTestRun` that can be used to run your application using the `test` source set to find its main method and provide its runtime classpath.
 7. Creates a configuration named `bootArchives` that contains the artifact produced by the `bootJar` task.
 8. Creates a configuration named `developmentOnly` for dependencies that are only required at development time, such as Spring Boot's Devtools, and should not be packaged in executable jars and wars.
 9. Creates a configuration named `testAndDevelopmentOnly` for dependencies that are only required at development time and when writing and running tests and that should not be packaged in executable jars and wars.
@@ -89,6 +89,15 @@ When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin
 . Configures the GraalVM extension to disable Toolchain detection.
 . Configures each GraalVM native binary to require GraalVM 22.3 or later.
 . Configures the `bootJar` task to include the reachability metadata produced by the `collectReachabilityMetadata` task in its jar.
-. Configures the `bootBuildImage` task to set `BP_NATIVE_IMAGE` to `true` in its environment.
+. Configures the `bootJar` task to add the `Spring-Boot-Native-Processed: true` manifest entry.
 
 
+
+[[reacting-to-other-plugins.cyclonedx]]
+== Reacting to the CycloneDX Plugin
+
+When the {url-cyclonedx-docs-gradle-plugin}[CycloneDX plugin] is applied to a project, the Spring Boot plugin:
+
+. Configures the `cyclonedxBom` task to use the `application` project type and output the SBOM to the `application.cdx` file in JSON format without full license texts.
+. Adds the SBOM under `META-INF/sbom` in the generated jar or war file.
+. Adds the `Sbom-Format` and `Sbom-Location` to the manifest of the jar or war file.

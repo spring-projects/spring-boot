@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
 
 /**
- * Configures {@link AbstractConnectionFactory Rabbit ConnectionFactory} with sensible
- * defaults.
+ * Base class for configurers of sub-classes of {@link AbstractConnectionFactory}.
  *
  * @param <T> the connection factory type.
  * @author Chris Bono
@@ -48,7 +47,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param properties the properties to use to configure the connection factory
 	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
-		this(properties, new PropertiesRabbitConnectionDetails(properties));
+		this(properties, new PropertiesRabbitConnectionDetails(properties, null));
 	}
 
 	/**
@@ -61,8 +60,8 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails) {
-		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
+		Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
 		this.rabbitProperties = properties;
 		this.connectionDetails = connectionDetails;
 	}
@@ -80,7 +79,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param connectionFactory connection factory to configure
 	 */
 	public final void configure(T connectionFactory) {
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		PropertyMapper map = PropertyMapper.get();
 		String addresses = this.connectionDetails.getAddresses()
 			.stream()

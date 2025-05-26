@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
@@ -53,6 +54,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
+@WithResource(name = "graphql/types/book.graphqls", content = """
+		type Book {
+		    id: ID
+		    name: String
+		    pageCount: Int
+		    author: String
+		}
+		""")
+@WithResource(name = "graphql/schema.graphqls", content = """
+		type Query {
+		    greeting(name: String! = "Spring"): String!
+		    bookById(id: ID): Book
+		    books: BookConnection
+		}
+
+		type Subscription {
+		    booksOnSale(minPages: Int) : Book!
+		}
+		""")
 class GraphQlRSocketAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()

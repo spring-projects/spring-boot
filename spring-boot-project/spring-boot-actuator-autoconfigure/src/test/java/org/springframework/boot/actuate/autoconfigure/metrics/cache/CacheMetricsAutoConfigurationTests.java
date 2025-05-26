@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +27,12 @@ import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.interceptor.CacheResolver;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +60,9 @@ class CacheMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguredCacheManagerIsInstrumented() {
-		this.contextRunner.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2")
+		this.contextRunner
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2",
+					"spring.cache.caffeine.spec=recordStats")
 			.run((context) -> {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();
@@ -87,6 +98,54 @@ class CacheMetricsAutoConfigurationTests {
 					.tags("cache.manager", "cacheManager")
 					.meter()).isNull();
 			});
+	}
+
+	@Test
+	void customCacheManagersAreInstrumented() {
+		this.contextRunner
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2",
+					"spring.cache.caffeine.spec=recordStats")
+			.withUserConfiguration(CustomCacheManagersConfiguration.class)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("cache.gets").meters()).map((meter) -> meter.getId().getTag("cache"))
+					.containsOnly("standard", "non-default");
+			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomCacheManagersConfiguration implements CachingConfigurer {
+
+		@Bean
+		CacheManager standardCacheManager() {
+			CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+			cacheManager.setCaffeineSpec(CaffeineSpec.parse("recordStats"));
+			cacheManager.setCacheNames(List.of("standard"));
+			return cacheManager;
+		}
+
+		@Bean(defaultCandidate = false)
+		CacheManager nonDefaultCacheManager() {
+			CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+			cacheManager.setCaffeineSpec(CaffeineSpec.parse("recordStats"));
+			cacheManager.setCacheNames(List.of("non-default"));
+			return cacheManager;
+		}
+
+		@Bean(autowireCandidate = false)
+		CacheManager nonAutowireCacheManager() {
+			CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+			cacheManager.setCaffeineSpec(CaffeineSpec.parse("recordStats"));
+			cacheManager.setCacheNames(List.of("non-autowire"));
+			return cacheManager;
+		}
+
+		@Bean
+		@Override
+		public CacheResolver cacheResolver() {
+			return (context) -> Collections.emptyList();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

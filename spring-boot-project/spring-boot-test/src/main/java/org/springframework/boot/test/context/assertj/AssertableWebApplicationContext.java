@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,22 @@ public interface AssertableWebApplicationContext
 	static AssertableWebApplicationContext get(Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
 		return ApplicationContextAssertProvider.get(AssertableWebApplicationContext.class,
 				ConfigurableWebApplicationContext.class, contextSupplier);
+	}
+
+	/**
+	 * Factory method to create a new {@link AssertableWebApplicationContext} instance.
+	 * @param contextSupplier a supplier that will either return a fully configured
+	 * {@link ConfigurableWebApplicationContext} or throw an exception if the context
+	 * fails to start.
+	 * @param additionalContextInterfaces and additional context interfaces to add to the
+	 * proxy
+	 * @return a {@link AssertableWebApplicationContext} instance
+	 * @since 3.4.0
+	 */
+	static AssertableWebApplicationContext get(Supplier<? extends ConfigurableWebApplicationContext> contextSupplier,
+			Class<?>... additionalContextInterfaces) {
+		return ApplicationContextAssertProvider.get(AssertableWebApplicationContext.class,
+				ConfigurableWebApplicationContext.class, contextSupplier, additionalContextInterfaces);
 	}
 
 }

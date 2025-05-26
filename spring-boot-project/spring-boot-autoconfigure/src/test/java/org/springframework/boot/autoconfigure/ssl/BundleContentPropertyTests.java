@@ -22,9 +22,15 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link BundleContentProperty}.
@@ -72,7 +78,7 @@ class BundleContentPropertyTests {
 	@Test
 	void toWatchPathWhenNotPathThrowsException() {
 		BundleContentProperty property = new BundleContentProperty("name", PEM_TEXT);
-		assertThatIllegalStateException().isThrownBy(property::toWatchPath)
+		assertThatIllegalStateException().isThrownBy(() -> property.toWatchPath(ApplicationResourceLoader.get()))
 			.withMessage("Unable to convert value of property 'name' to a path");
 	}
 
@@ -81,13 +87,24 @@ class BundleContentPropertyTests {
 		URL resource = getClass().getResource("keystore.jks");
 		Path file = Path.of(resource.toURI()).toAbsolutePath();
 		BundleContentProperty property = new BundleContentProperty("name", file.toString());
-		assertThat(property.toWatchPath()).isEqualTo(file);
+		assertThat(property.toWatchPath(ApplicationResourceLoader.get())).isEqualTo(file);
+	}
+
+	@Test
+	void toWatchPathUsesResourceLoader() throws URISyntaxException {
+		URL resource = getClass().getResource("keystore.jks");
+		Path file = Path.of(resource.toURI()).toAbsolutePath();
+		BundleContentProperty property = new BundleContentProperty("name", file.toString());
+		ResourceLoader resourceLoader = spy(ApplicationResourceLoader.get());
+		assertThat(property.toWatchPath(resourceLoader)).isEqualTo(file);
+		then(resourceLoader).should(atLeastOnce()).getResource(file.toString());
 	}
 
 	@Test
 	void shouldThrowBundleContentNotWatchableExceptionIfContentIsNotWatchable() {
 		BundleContentProperty property = new BundleContentProperty("name", "https://example.com/");
-		assertThatExceptionOfType(BundleContentNotWatchableException.class).isThrownBy(property::toWatchPath)
+		assertThatExceptionOfType(BundleContentNotWatchableException.class)
+			.isThrownBy(() -> property.toWatchPath(ApplicationResourceLoader.get()))
 			.withMessageContaining("Only 'file:' resources are watchable");
 	}
 

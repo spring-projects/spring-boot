@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import ch.qos.logback.core.model.Model;
 import org.xml.sax.Attributes;
 
 /**
- * Logback {@link BaseModelAction} for {@code <springProperty>} tags. Allows a section of
- * a Logback configuration to only be enabled when a specific profile is active.
+ * Logback {@link BaseModelAction} for {@code <springProfile>} tags. Allows a section of a
+ * Logback configuration to only be enabled when a specific profile is active.
  *
  * @author Phillip Webb
  * @author Eddú Meléndez

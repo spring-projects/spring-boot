@@ -24,17 +24,16 @@ After=syslog.target network.target
 User=myapp
 Group=myapp
 
-Environment="JAVA_HOME=/path/to/java/home"
-
-ExecStart=${JAVA_HOME}/bin/java -jar /var/myapp/myapp.jar
-ExecStop=/bin/kill -15 $MAINPID
+Type=exec
+ExecStart=/path/to/java/home/bin/java -jar /var/myapp/myapp.jar
+WorkingDirectory=/var/myapp
 SuccessExitStatus=143
 
 [Install]
 WantedBy=multi-user.target
 ----
 
-IMPORTANT: Remember to change the `Description`, `User`, `Group`, `Environment` and `ExecStart` fields for your application.
+IMPORTANT: Remember to change the `Description`, `User`, `Group`, `ExecStart` and `WorkingDirectory` fields for your application.
 
 NOTE: The `ExecStart` field does not declare the script action command, which means that the `run` command is used by default.
 

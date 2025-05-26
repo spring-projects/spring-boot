@@ -34,6 +34,23 @@ public final class ConnectionFactoryUnwrapper {
 	}
 
 	/**
+	 * Return the native {@link ConnectionFactory} by unwrapping from a
+	 * {@link CachingConnectionFactory}. Return the given {@link ConnectionFactory} if no
+	 * {@link CachingConnectionFactory} wrapper has been detected.
+	 * @param connectionFactory a connection factory
+	 * @return the native connection factory that a {@link CachingConnectionFactory}
+	 * wraps, if any
+	 * @since 3.4.1
+	 */
+	public static ConnectionFactory unwrapCaching(ConnectionFactory connectionFactory) {
+		if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {
+			ConnectionFactory unwrapedConnectionFactory = cachingConnectionFactory.getTargetConnectionFactory();
+			return (unwrapedConnectionFactory != null) ? unwrapCaching(unwrapedConnectionFactory) : connectionFactory;
+		}
+		return connectionFactory;
+	}
+
+	/**
 	 * Return the native {@link ConnectionFactory} by unwrapping it from a cache or pool
 	 * connection factory. Return the given {@link ConnectionFactory} if no caching
 	 * wrapper has been detected.

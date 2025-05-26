@@ -1,4 +1,4 @@
-= Spring Boot image:https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml/badge.svg?branch=main["Build Status", link="https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml?query=branch%3Amain"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
+= Spring Boot image:https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml/badge.svg?branch=main["Build Status", link="https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml?query=branch%3Amain"] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
 
 :docs: https://docs.spring.io/spring-boot
 :github: https://github.com/spring-projects/spring-boot
@@ -57,7 +57,6 @@ Are you having trouble with Spring Boot? We want to help!
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
 * Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
-  You can also chat with the community on https://gitter.im/spring-projects/spring-boot[Gitter].
 * Report bugs with Spring Boot at {github}/issues[github.com/spring-projects/spring-boot/issues].
 
 
@@ -185,7 +184,6 @@ The https://spring.io/[spring.io] site contains several guides that show how to 
 
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot] is an introductory guide that shows you how to create an application, run it, and add some management services.
 * https://spring.io/guides/gs/actuator-service/[Building a RESTful Web Service with Spring Boot Actuator] is a guide to creating a REST web service and also shows how the server can be configured.
-* https://spring.io/guides/gs/convert-jar-to-war/[Converting a Spring Boot JAR Application to a WAR] shows you how to run applications in a web server as a WAR file.
 
 
 

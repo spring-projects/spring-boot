@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import static org.mockito.BDDMockito.then;
  * @author Phillip Webb
  * @author Mike Smithson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 @ExtendWith(MockitoExtension.class)
 class HttpClientTransportTests {
@@ -306,6 +307,18 @@ class HttpClientTransportTests {
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).isNull();
 				assertThat(ex.getResponseMessage()).isNull();
+			});
+	}
+
+	@Test
+	void shouldReturnErrorsAndMessage() throws IOException {
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("message-and-errors.json"));
+		given(this.response.getCode()).willReturn(404);
+		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).hasSize(2);
+				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
 			});
 	}
 

@@ -17,8 +17,6 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -58,7 +56,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		File repositoryLocation = new File(project.getBuildDir(), "maven-repository");
+		File repositoryLocation = project.getLayout().getBuildDirectory().dir("maven-repository").get().getAsFile();
 		publishing.getRepositories().maven((mavenRepository) -> {
 			mavenRepository.setName("project");
 			mavenRepository.setUrl(repositoryLocation.toURI());
@@ -97,10 +95,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 			.getDependencies()
 			.withType(ProjectDependency.class)
 			.all((dependency) -> {
-				Map<String, String> dependencyDescriptor = new HashMap<>();
-				dependencyDescriptor.put("path", dependency.getDependencyProject().getPath());
-				dependencyDescriptor.put("configuration", MAVEN_REPOSITORY_CONFIGURATION_NAME);
-				target.add(project.getDependencies().project(dependencyDescriptor));
+				ProjectDependency copy = dependency.copy();
+				if (copy.getAttributes().isEmpty()) {
+					copy.setTargetConfiguration(MAVEN_REPOSITORY_CONFIGURATION_NAME);
+				}
+				target.add(copy);
 			});
 	}
 

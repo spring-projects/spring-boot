@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
-import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.TestApplicationEnvironment;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindException;
@@ -46,6 +48,9 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.testsupport.classpath.resources.WithResourceDirectory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +64,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -115,6 +121,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "foo=bucket")
 	void runLoadsApplicationPropertiesOnClasspath() {
 		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("foo");
@@ -122,13 +129,15 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = "yamlkey: yamlvalue")
 	void runLoadsApplicationYamlOnClasspath() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=customapplication");
+		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("yamlkey");
 		assertThat(property).isEqualTo("yamlvalue");
 	}
 
 	@Test
+	@WithResource(name = "testproperties.properties", content = "the.property=frompropertiesfile")
 	void runLoadsFileWithCustomName() {
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testproperties");
 		String property = context.getEnvironment().getProperty("the.property");
@@ -136,45 +145,84 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			duplicate=properties
+			only-properties = properties
+			""")
+	@WithResource(name = "application.yaml", content = """
+			duplicate: yaml
+			only-yaml: yaml
+			""")
 	void runWhenPropertiesAndYamlShouldPreferProperties() {
 		ConfigurableApplicationContext context = this.application.run();
-		String property = context.getEnvironment().getProperty("duplicate");
-		assertThat(property).isEqualTo("properties");
+		assertThat(context.getEnvironment().getProperty("duplicate")).isEqualTo("properties");
+		assertThat(context.getEnvironment().getProperty("only-properties")).isEqualTo("properties");
+		assertThat(context.getEnvironment().getProperty("only-yaml")).isEqualTo("yaml");
 	}
 
 	@Test
+	@WithResource(name = "moreproperties.properties", content = """
+			the.property=more
+			only.more=more
+			""")
+	@WithResource(name = "testproperties.properties", content = """
+			the.property=test
+			only.test=test
+			""")
 	void runWhenMultipleCustomNamesLoadsEachName() {
 		ConfigurableApplicationContext context = this.application
 			.run("--spring.config.name=moreproperties,testproperties");
-		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property).isEqualTo("frompropertiesfile");
+		assertThat(context.getEnvironment().getProperty("the.property")).isEqualTo("test");
+		assertThat(context.getEnvironment().getProperty("only.more")).isEqualTo("more");
+		assertThat(context.getEnvironment().getProperty("only.test")).isEqualTo("test");
 	}
 
 	@Test
+	@WithResource(name = "application-default.properties", content = "my.property=fromdefaultpropertiesfile")
 	void runWhenNoActiveProfilesLoadsDefaultProfileFile() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofiles");
+		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromdefaultpropertiesfile");
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			other: notempty
+			---
+			spring.config.activate.on-profile: default
+			my:
+			  property: fromdefaultprofile
+			---
+			spring.config.activate.on-profile: other
+			my:
+			  property: fromotherprofile
+			""")
 	void runWhenActiveProfilesDoesNotLoadDefault() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofilesdocument",
-				"--spring.config.location=classpath:configdata/profiles/", "--spring.profiles.default=thedefault",
-				"--spring.profiles.active=other");
+		ConfigurableApplicationContext context = this.application.run("--spring.profiles.active=other");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromotherprofile");
 	}
 
 	@Test
+	@WithResource(name = "application-thedefault.properties", content = "the.property=fromdefaultpropertiesfile")
 	void runWhenHasCustomDefaultProfileLoadsDefaultProfileFile() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofiles",
-				"--spring.profiles.default=thedefault");
+		ConfigurableApplicationContext context = this.application.run("--spring.profiles.default=thedefault");
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromdefaultpropertiesfile");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			foo=bucket
+			my.property=fromapplicationproperties
+			""")
+	@WithResource(name = "testproperties.properties", content = """
+			my.property=frompropertiesfile
+			the.property=frompropertiesfile
+			""")
 	void runWhenHasCustomSpringConfigLocationLoadsAllFromSpecifiedLocation() {
 		ConfigurableApplicationContext context = this.application
 			.run("--spring.config.location=classpath:application.properties,classpath:testproperties.properties");
@@ -187,29 +235,68 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenOneCustomLocationDoesNotExistLoadsOthers() {
+	@WithResource(name = "application.properties", content = """
+			foo=bucket
+			my.property=fromapplicationproperties
+			""")
+	@WithResource(name = "testproperties.properties", content = """
+			my.property=frompropertiesfile
+			the.property=frompropertiesfile
+			""")
+	void runWhenOneCustomOptionalLocationDoesNotExistLoadsOthers() {
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.location=classpath:application.properties,classpath:testproperties.properties,optional:classpath:nonexistent.properties");
-		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property).isEqualTo("frompropertiesfile");
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("frompropertiesfile");
+		assertThat(context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: prod
+			spring.config.import: file:./non-existent.yml
+			""")
 	void runWhenProfileSpecificMandatoryLocationDoesNotExistShouldNotFail() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
+		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromyamlfile");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: prod
+			spring.config.import: file:./non-existent.yml
+			""")
 	void runWhenProfileSpecificMandatoryLocationDoesNotExistShouldFailWhenProfileActive() {
 		this.application.setAdditionalProfiles("prod");
-		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(() -> this.application
-			.run("--spring.config.name=testprofiles", "--spring.config.location=classpath:configdata/profiles/"));
+		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(() -> this.application.run())
+			.withMessageContaining("non-existent.yml");
 	}
 
 	@Test
+	@WithResource(name = "enableprofile.properties", content = """
+			spring.profiles.active=myprofile
+			my.property=frompropertiesfile
+			the.property=frompropertiesfile
+			one.more=${my.property}
+			""")
+	@WithResource(name = "enableother.properties", content = """
+			spring.profiles.active=other
+			my.property=fromenableotherpropertiesfile
+			one.more=${my.property}
+			""")
+	@WithResource(name = "enableprofile-other.properties", content = "other.property=fromotherpropertiesfile")
+	@WithResource(name = "enableprofile-myprofile.properties", content = """
+			my.property=fromprofilepropertiesfile
+			the.property=fromprofilepropertiesfile
+			""")
 	void runWhenHasActiveProfilesFromMultipleLocationsActivatesProfileFromOneLocation() {
 		ConfigurableApplicationContext context = this.application
 			.run("--spring.config.location=classpath:enableprofile.properties,classpath:enableother.properties");
@@ -220,13 +307,27 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "enableprofile.properties", content = """
+			spring.profiles.active=myprofile
+			my.property=frompropertiesfile
+			""")
+	@WithResource(name = "enabletwoprofiles.properties", content = """
+			spring.profiles.active=myprofile,another
+			my.property=fromtwopropertiesfile
+			""")
+	@WithResource(name = "enableprofile-myprofile.properties", content = """
+			my.property=frommyprofilepropertiesfile
+			""")
+	@WithResource(name = "enableprofile-another.properties", content = """
+			my.property=fromanotherprofilepropertiesfile
+			""")
 	void runWhenHasActiveProfilesFromMultipleAdditionalLocationsWithOneSwitchedOffLoadsExpectedProperties() {
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.additional-location=classpath:enabletwoprofiles.properties,classpath:enableprofile.properties");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getActiveProfiles()).containsExactly("myprofile");
 		String property = environment.getProperty("my.property");
-		assertThat(property).isEqualTo("fromprofilepropertiesfile");
+		assertThat(property).isEqualTo("frommyprofilepropertiesfile");
 	}
 
 	@Test
@@ -249,14 +350,18 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			my.property=frompropertiesfile
+			the.property=frompropertiesfile
+			""")
 	void runWhenHasCommandLinePropertiesLoadsWithCommandLineTakingPrecedence() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources()
 			.addFirst(new SimpleCommandLinePropertySource("--the.property=fromcommandline"));
 		this.application.setEnvironment(environment);
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testproperties");
-		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property).isEqualTo("fromcommandline");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("the.property")).isEqualTo("fromcommandline");
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -268,15 +373,17 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "my.property=fromapplicationproperties")
 	void runWhenHasDefaultPropertiesIncludesDefaultPropertiesLast() {
-		this.application.setDefaultProperties(Collections.singletonMap("my.fallback", "foo"));
+		this.application.setDefaultProperties(Map.of("my.property", "fromdefaults", "my.fallback", "fromdefaults"));
 		ConfigurableApplicationContext context = this.application.run();
-		String property = context.getEnvironment().getProperty("my.fallback");
-		assertThat(property).isEqualTo("foo");
+		assertThat(context.getEnvironment().getProperty("my.fallback")).isEqualTo("fromdefaults");
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromapplicationproperties");
 	}
 
 	@Test
-	void runWhenHasDefaultPropertiesWithConfigLocationConfigurationLoadsExpectedProperties() {
+	@WithResource(name = "testproperties.properties", content = "the.property=frompropertiesfile")
+	void runWhenHasDefaultPropertiesWithConfigNameLoadsExpectedProperties() {
 		this.application.setDefaultProperties(Collections.singletonMap("spring.config.name", "testproperties"));
 		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("the.property");
@@ -284,13 +391,15 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasActiveProfilesFromDefaultPropertiesAndFileLoadsWithFileTakingPrecedence() {
+	@WithResource(name = "application.properties", content = "spring.profiles.active=myprofile")
+	void runWhenHasActiveProfilesFromDefaultPropertiesAndFileLoadsWithActiveProfilesFromFileTakingPrecedence() {
 		this.application.setDefaultProperties(Collections.singletonMap("spring.profiles.active", "dev"));
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=enableprofile");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("myprofile");
 	}
 
 	@Test
+	@WithResource(name = "application-other.properties", content = "my.property=fromotherpropertiesfile")
 	void runWhenProgrammaticallySetProfilesLoadsWithSetProfilesTakePrecedenceOverDefaultProfile() {
 		this.application.setAdditionalProfiles("other");
 		ConfigurableApplicationContext context = this.application.run();
@@ -299,6 +408,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application-dev.properties", content = "my.property=fromdevpropertiesfile")
+	@WithResource(name = "application-other.properties", content = "my.property=fromotherpropertiesfile")
 	void runWhenTwoProfilesSetProgrammaticallyLoadsWithPreservedProfileOrder() {
 		this.application.setAdditionalProfiles("other", "dev");
 		ConfigurableApplicationContext context = this.application.run();
@@ -307,9 +418,12 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "spring.profiles.active=myprofile")
+	@WithResource(name = "application-myprofile.properties", content = "the.property=fromprofilepropertiesfile")
+	@WithResource(name = "application-other.properties", content = "other.property=fromotherpropertiesfile")
 	void runWhenProfilesPresentBeforeConfigFileProcessingAugmentsProfileActivatedByConfigFile() {
 		this.application.setAdditionalProfiles("other");
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=enableprofile");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("other", "myprofile");
 		String property = context.getEnvironment().getProperty("other.property");
 		assertThat(property).isEqualTo("fromotherpropertiesfile");
@@ -318,13 +432,19 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=myprofile
+			one.more=${my.property}
+			""")
+	@WithResource(name = "application-myprofile.properties", content = "my.property=fromprofilepropertiesfile")
 	void runWhenProfilePropertiesUsedInPlaceholdersLoadsWithResolvedPlaceholders() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=enableprofile");
-		String property = context.getEnvironment().getProperty("one.more");
-		assertThat(property).isEqualTo("fromprofilepropertiesfile");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("one.more")).isEqualTo("fromprofilepropertiesfile");
 	}
 
 	@Test
+	@WithResource(name = "application-dev.properties", content = "my.property=fromdevpropertiesfile")
+	@WithResource(name = "application-other.properties", content = "my.property=fromotherpropertiesfile")
 	void runWhenDuplicateProfileSetProgrammaticallyAndViaPropertyLoadsWithProfiles() {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application.run("--spring.profiles.active=dev,other");
@@ -333,6 +453,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application-dev.properties", content = "my.property=fromdevpropertiesfile")
+	@WithResource(name = "application-other.properties", content = "my.property=fromotherpropertiesfile")
 	void runWhenProfilesActivatedViaBracketNotationSetsProfiles() {
 		ConfigurableApplicationContext context = this.application.run("--spring.profiles.active[0]=dev",
 				"--spring.profiles.active[1]=other");
@@ -340,22 +462,59 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromotherpropertiesfile");
 	}
 
-	@Test
-	void loadWhenProfileInMultiDocumentFilesLoadsExpectedProperties() {
-		this.application.setAdditionalProfiles("dev");
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
-		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property).isEqualTo("fromdevprofile");
-		property = context.getEnvironment().getProperty("my.other");
-		assertThat(property).isEqualTo("notempty");
+	@Test // gh-45387
+	void runWhenProfileActivatedViaSystemEnvironmentVariableWithPrefix() {
+		this.application.setEnvironmentPrefix("example.prefix");
+		this.application.setEnvironment(new TestApplicationEnvironment() {
+
+			@Override
+			public Map<String, Object> getSystemEnvironment() {
+				return Map.of("EXAMPLE_PREFIX_SPRING_PROFILES_ACTIVE", "other,dev");
+			}
+
+		});
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev", "other");
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			  other: notempty
+			---
+			spring.config.activate.on-profile: dev
+			my:
+			  property: fromdevprofile
+			""")
+	void loadWhenProfileInMultiDocumentFilesLoadsExpectedProperties() {
+		this.application.setAdditionalProfiles("dev");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevprofile");
+		assertThat(context.getEnvironment().getProperty("my.other")).isEqualTo("notempty");
+	}
+
+	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			  other: notempty
+			---
+			spring.config.activate.on-profile: dev
+			my:
+			  property: fromdevprofile
+			dev:
+			  property: devproperty
+			---
+			spring.config.activate.on-profile: other
+			my:
+			  property: fromotherprofile
+			""")
 	void runWhenMultipleActiveProfilesWithMultiDocumentFilesLoadsInOrderOfDocument() {
 		this.application.setAdditionalProfiles("other", "dev");
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
+		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromotherprofile");
 		property = context.getEnvironment().getProperty("my.other");
@@ -365,106 +524,223 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: dev & other
+			my:
+			  property: devandother
+			---
+			spring.config.activate.on-profile: (dev | other) & another
+			my:
+			  property: devorotherandanother
+			""")
 	void runWhenHasAndProfileExpressionLoadsExpectedProperties() {
-		assertProfileExpression("devandother", "dev", "other");
+		this.application.setAdditionalProfiles("dev", "other");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("devandother");
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: dev & other
+			my:
+			  property: devandother
+			---
+			spring.config.activate.on-profile: (dev | other) & another
+			my:
+			  property: devorotherandanother
+			""")
 	void runWhenHasComplexProfileExpressionsLoadsExpectedProperties() {
-		assertProfileExpression("devorotherandanother", "dev", "another");
+		this.application.setAdditionalProfiles("dev", "another");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("devorotherandanother");
 	}
 
 	@Test
+	@WithResource(name = "application.yaml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: dev & other
+			my:
+			  property: devandother
+			---
+			spring.config.activate.on-profile: (dev | other) & another
+			my:
+			  property: devorotherandanother
+			""")
 	void runWhenProfileExpressionsDoNotMatchLoadsExpectedProperties() {
-		assertProfileExpression("fromyamlfile", "dev");
+		this.application.setAdditionalProfiles("dev");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromyamlfile");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			  other: notempty
+			---
+			spring.config.activate.on-profile: other
+			my:
+			  property: fromotherprofile
+			---
+			spring.config.activate.on-profile: "!other"
+			my:
+			  property: fromnototherprofile
+			  notother: foo
+
+			""")
 	void runWhenHasNegatedProfilesLoadsExpectedProperties() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testnegatedprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
-		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property).isEqualTo("fromnototherprofile");
-		property = context.getEnvironment().getProperty("my.notother");
-		assertThat(property).isEqualTo("foo");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromnototherprofile");
+		assertThat(context.getEnvironment().getProperty("my.notother")).isEqualTo("foo");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			my:
+			  property: fromyamlfile
+			  other: notempty
+			---
+			spring.config.activate.on-profile: other
+			my:
+			  property: fromotherprofile
+			---
+			spring.config.activate.on-profile: "!other"
+			my:
+			  property: fromnototherprofile
+			  notother: foo
+
+			""")
 	void runWhenHasNegatedProfilesWithProfileActiveLoadsExpectedProperties() {
 		this.application.setAdditionalProfiles("other");
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testnegatedprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
-		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property).isEqualTo("fromotherprofile");
-		property = context.getEnvironment().getProperty("my.notother");
-		assertThat(property).isNull();
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromotherprofile");
+		assertThat(context.getEnvironment().getProperty("my.notother")).isNull();
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			spring:
+			  profiles:
+			    active: dev
+			my:
+			  property: fromyamlfile
+			---
+			spring.config.activate.on-profile: dev
+			my:
+			  property: fromdevprofile
+			""")
 	void runWhenHasActiveProfileConfigurationInMultiDocumentFileLoadsInExpectedOrder() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testsetprofiles",
-				"--spring.config.location=classpath:configdata/profiles/");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("dev");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
 		assertThat(context.getEnvironment().getPropertySources()).extracting("name")
 			.contains(
-					"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #0)",
-					"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #1)");
+					"Config resource 'class path resource [application.yml]' via location 'optional:classpath:/' (document #0)",
+					"Config resource 'class path resource [application.yml]' via location 'optional:classpath:/' (document #1)");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			spring:
+			  profiles:
+			    active: dev,healthcheck
+			""")
 	void runWhenHasYamlWithCommaSeparatedMultipleProfilesLoadsExpectedProperties() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testsetmultiprofiles");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("dev", "healthcheck");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			spring:
+			  profiles:
+			    active:
+			      - dev
+			      - healthcheck
+			""")
 	void runWhenHasYamlWithListProfilesLoadsExpectedProperties() {
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testsetmultiprofileslist");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("dev", "healthcheck");
 	}
 
 	@Test
+	@WithResource(name = "application.yml", content = """
+			---
+			spring:
+			  profiles:
+			    active: dev  ,    healthcheck
+			""")
 	void loadWhenHasWhitespaceTrims() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=testsetmultiprofileswhitespace");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("dev", "healthcheck");
 	}
 
 	@Test
-	void loadWhenHasConfigLocationAsFile() {
-		String location = "file:src/test/resources/specificlocation.properties";
+	void loadWhenHasConfigLocationAsFile() throws IOException {
+		File properties = new File(this.temp, "specificlocation.properties");
+		Files.write(properties.toPath(),
+				List.of("my.property=fromspecificlocation", "the.property=fromspecificlocation"));
+		String location = properties.toURI().toURL().toString();
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
-		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file [" + Strings
-			.join(Arrays.asList("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
-				+ "]' via location '" + location + "'"));
+		assertThat(context.getEnvironment())
+			.has(matchingPropertySource("Config resource 'file [" + properties + "]' via location '" + location + "'"));
 	}
 
 	@Test
-	void loadWhenHasRelativeConfigLocationUsesFileLocation() {
-		String location = "src/test/resources/specificlocation.properties";
-		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
-		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file [" + Strings
-			.join(Arrays.asList("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
-				+ "]' via location '" + location + "'"));
+	void loadWhenHasRelativeConfigLocationUsesFileLocation() throws IOException {
+		File buildOutput = new BuildOutput(getClass()).getRootLocation();
+		File resources = new File(buildOutput, "resources-" + UUID.randomUUID());
+		try {
+			resources.mkdirs();
+			File properties = new File(resources, "specificlocation.properties").getAbsoluteFile();
+			Files.write(properties.toPath(),
+					List.of("my.property=fromspecificlocation", "the.property=fromspecificlocation"));
+			Path relative = new File("").getAbsoluteFile().toPath().relativize(properties.toPath());
+			ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + relative);
+			assertThat(context.getEnvironment()).has(matchingPropertySource(
+					"Config resource 'file [" + relative + "]' via location '" + relative + "'"));
+		}
+		finally {
+			FileSystemUtils.deleteRecursively(resources);
+		}
 	}
 
 	@Test
+	@WithResource(name = "application-customdefault.properties", content = "customdefault=true")
+	@WithResource(name = "application-dev.properties", content = "my.property=fromdevpropertiesfile")
 	void loadWhenCustomDefaultProfileAndActiveFromPreviousSourceDoesNotActivateDefault() {
 		ConfigurableApplicationContext context = this.application.run("--spring.profiles.default=customdefault",
 				"--spring.profiles.active=dev");
-		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property).isEqualTo("fromdevpropertiesfile");
+		assertThat(context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
 		assertThat(context.getEnvironment().containsProperty("customdefault")).isFalse();
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=customdefault
+			customprofile=true
+			""")
+	@WithResource(name = "application-customdefault.properties", content = "customprofile-customdefault=true")
 	void runWhenCustomDefaultProfileSameAsActiveFromFileActivatesProfile() {
-		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=classpath:configdata/profiles/", "--spring.profiles.default=customdefault",
-				"--spring.config.name=customprofile");
+		ConfigurableApplicationContext context = this.application.run("--spring.profiles.default=customdefault");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.containsProperty("customprofile")).isTrue();
 		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
@@ -472,13 +748,18 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "spring.profiles.active=${activeProfile:propertiesfile}")
 	void runWhenActiveProfilesCanBeConfiguredUsingPlaceholdersResolvedAgainstTheEnvironmentLoadsExpectedProperties() {
-		ConfigurableApplicationContext context = this.application.run("--activeProfile=testPropertySource",
-				"--spring.config.name=testactiveprofiles");
+		ConfigurableApplicationContext context = this.application.run("--activeProfile=testPropertySource");
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("testPropertySource");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			foo=bucket
+			value=1234
+			""")
+	@WithResource(name = "override.properties", content = "foo=bar")
 	void runWhenHasAdditionalLocationLoadsWithAdditionalTakingPrecedenceOverDefaultLocation() {
 		ConfigurableApplicationContext context = this.application
 			.run("--spring.config.additional-location=classpath:override.properties");
@@ -487,6 +768,12 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			foo=bucket
+			value=1234
+			""")
+	@WithResource(name = "override.properties", content = "foo=bar")
+	@WithResource(name = "some.properties", content = "foo=spam")
 	void runWhenMultipleAdditionalLocationsLoadsWithLastWinning() {
 		ConfigurableApplicationContext context = this.application
 			.run("--spring.config.additional-location=classpath:override.properties,classpath:some.properties");
@@ -495,6 +782,9 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "value=1234")
+	@WithResource(name = "override.properties", content = "foo=bar")
+	@WithResource(name = "some.properties", content = "foo=spam")
 	void runWhenAdditionalLocationAndLocationLoadsWithAdditionalTakingPrecedenceOverConfigured() {
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.location=classpath:some.properties",
@@ -504,12 +794,19 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.custom", content = "")
+	@WithResource(name = "META-INF/spring.factories", content = """
+			org.springframework.boot.env.PropertySourceLoader=\
+			org.springframework.boot.context.config.TestPropertySourceLoader1,\
+			org.springframework.boot.context.config.TestPropertySourceLoader2
+			""")
 	void runWhenPropertiesFromCustomPropertySourceLoaderShouldLoadFromCustomSource() {
 		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getProperty("customloader1")).isEqualTo("true");
 	}
 
 	@Test
+	@WithResource(name = "gh17001.properties", content = "gh17001loaded=true")
 	void runWhenCustomDefaultPropertySourceLoadsWithoutReplacingCustomSource() {
 		// gh-17011
 		Map<String, Object> source = new HashMap<>();
@@ -581,75 +878,123 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenConfigLocationHasNonOptionalEmptyFileDoesNotThrowException() throws IOException {
 		File location = new File(this.temp, "application.properties");
 		FileCopyUtils.copy(new byte[0], location);
-		assertThatNoException()
-			.isThrownBy(() -> this.application.run("--spring.config.location=classpath:/application.properties,"
-					+ StringUtils.cleanPath(location.getAbsolutePath())));
+		assertThatNoException().isThrownBy(() -> this.application
+			.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath())));
 	}
 
 	@Test
+	@WithResource(name = "META-INF/spring.factories", content = """
+			org.springframework.boot.context.config.ConfigDataLocationResolver=\
+			org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorIntegrationTests$LocationResolver
+
+			org.springframework.boot.context.config.ConfigDataLoader=\
+			org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorIntegrationTests$Loader
+			""")
 	void runWhenResolvedIsOptionalDoesNotThrowException() {
 		ApplicationContext context = this.application.run("--spring.config.location=test:optionalresult");
 		assertThat(context.getEnvironment().containsProperty("spring")).isFalse();
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "spring.profiles=a")
 	void runWhenUsingInvalidPropertyThrowsException() {
-		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-			.isThrownBy(() -> this.application.run("--spring.config.location=classpath:invalidproperty.properties"));
+		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(() -> this.application.run());
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			my.import=imported
+			spring.config.import=classpath:${my.import}.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=iwasimported")
 	void runWhenImportUsesPlaceholder() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-import-with-placeholder.properties");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			my.import=imported
+			#---
+			spring.config.import=classpath:${my.import}.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=iwasimported")
 	void runWhenImportFromEarlierDocumentUsesPlaceholder() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-import-with-placeholder-in-document.properties");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
 	}
 
 	@Test // gh-26858
+	@WithResource(name = "application.properties", content = """
+			spring.config.import=classpath:imported.properties
+			my.value=application.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=imported.properties")
+	@WithResource(name = "application-dev.properties", content = "my.value=application-dev.properties")
 	void runWhenImportWithProfileVariantOrdersPropertySourcesCorrectly() {
 		this.application.setAdditionalProfiles("dev");
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
-		assertThat(context.getEnvironment().getProperty("my.value"))
-			.isEqualTo("application-import-with-profile-variant-imported-dev");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("application-dev.properties");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.config.import=classpath:imported.properties
+			my.value=application.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=imported.properties")
+	@WithResource(name = "imported-dev.properties", content = "my.value=imported-dev.properties")
+	@WithResource(name = "application-dev.properties", content = """
+			spring.config.import=imported-dev.properties
+			my.value=application-dev.properties""")
 	void runWhenImportWithProfileVariantAndDirectProfileImportOrdersPropertySourcesCorrectly() {
 		this.application.setAdditionalProfiles("dev");
-		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=classpath:application-import-with-profile-variant-and-direct-profile-import.properties");
-		assertThat(context.getEnvironment().getProperty("my.value"))
-			.isEqualTo("application-import-with-profile-variant-imported-dev");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("imported-dev.properties");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			my.import=application-import-with-placeholder-imported
+			#---
+			spring.config.import=classpath:org/springframework/boot/context/config/${my.import}.properties
+			#---
+			my.import=badbadbad
+			spring.config.activate.on-profile=missing
+			""")
 	void runWhenHasPropertyInProfileDocumentThrowsException() {
-		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
-				"--spring.config.location=classpath:application-import-with-placeholder-in-profile-document.properties"))
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run())
 			.withCauseInstanceOf(InactiveConfigDataAccessException.class);
 	}
 
 	@Test // gh-29386
+	@WithResource(name = "application.properties", content = """
+			my.value=application
+			#---
+			my.import=imported
+			spring.config.activate.on-profile=missing
+			#---
+			spring.config.import=${my.import}.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=imported")
 	void runWhenHasPropertyInEarlierProfileDocumentThrowsException() {
-		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
-				"--spring.config.location=classpath:application-import-with-placeholder-in-earlier-profile-document.properties"))
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run())
 			.withCauseInstanceOf(InactiveConfigDataAccessException.class);
 	}
 
 	@Test // gh-29386
+	@WithResource(name = "application.properties", content = """
+			my.import=imported
+			#---
+			my.value=should-be-ignored
+			spring.config.activate.on-profile=missing
+			#---
+			spring.config.import=classpath:${my.import}.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=imported")
 	void runWhenHasPropertyInEarlierDocumentLoads() {
-		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=classpath:application-import-with-placeholder-in-earlier-document.properties");
-		assertThat(context.getEnvironment().getProperty("my.value"))
-			.isEqualTo("application-import-with-placeholder-in-earlier-document-imported");
+		ConfigurableApplicationContext context = this.application.run();
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("imported");
 	}
 
 	@Test
@@ -665,38 +1010,69 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=p1
+			spring.profiles.include=p2
+			#---
+			spring.profiles.include=p3,p4
+			#---
+			spring.profiles.include=p5
+			""")
 	void runWhenHasIncludedProfilesActivatesProfiles() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-include-profiles.properties");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactlyInAnyOrder("p1", "p2", "p3", "p4",
 				"p5");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=p1
+			spring.profiles.include=p2
+			#---
+			myprofile=p4
+			spring.profiles.include=p3,${myprofile}
+			#---
+			myotherprofile=p5
+			spring.profiles.include=${myotherprofile}
+			""")
 	void runWhenHasIncludedProfilesWithPlaceholderActivatesProfiles() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-include-profiles-with-placeholder.properties");
+		ConfigurableApplicationContext context = this.application.run();
 		assertThat(context.getEnvironment().getActiveProfiles()).containsExactlyInAnyOrder("p1", "p2", "p3", "p4",
 				"p5");
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=p1
+			spring.profiles.include=p2
+			#---
+			spring.config.activate.on-profile=p2
+			spring.profiles.include=p3
+			""")
 	void runWhenHasIncludedProfilesWithProfileSpecificDocumentThrowsException() {
-		assertThatExceptionOfType(InactiveConfigDataAccessException.class).isThrownBy(() -> this.application.run(
-				"--spring.config.location=classpath:application-include-profiles-in-profile-specific-document.properties"));
+		assertThatExceptionOfType(InactiveConfigDataAccessException.class).isThrownBy(() -> this.application.run());
 	}
 
 	@Test
+	@WithResource(name = "application-test.yaml", content = """
+			spring:
+			  profiles:
+			    include:
+			      - p
+			""")
 	void runWhenHasIncludedProfilesWithListSyntaxWithProfileSpecificDocumentThrowsException() {
-		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(() -> this.application.run(
-				"--spring.config.name=application-include-profiles-list-in-profile-specific-file",
-				"--spring.profiles.active=test"));
+		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
+			.isThrownBy(() -> this.application.run("--spring.profiles.active=test"));
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = """
+			my.import=imported
+			spring.config.import=classpath:${my.import}.properties
+			""")
+	@WithResource(name = "imported.properties", content = "my.value=imported")
 	void runWhenImportingIncludesParentOrigin() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=classpath:application-import-with-placeholder.properties");
+		ConfigurableApplicationContext context = this.application.run();
 		Binder binder = Binder.get(context.getEnvironment());
 		List<ConfigurationProperty> properties = new ArrayList<>();
 		BindHandler bindHandler = new BindHandler() {
@@ -712,107 +1088,158 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		binder.bind("my.value", Bindable.of(String.class), bindHandler);
 		assertThat(properties).hasSize(1);
 		Origin origin = properties.get(0).getOrigin();
-		assertThat(origin.toString()).contains("application-import-with-placeholder-imported");
-		assertThat(origin.getParent().toString()).contains("application-import-with-placeholder");
+		assertThat(origin.toString()).contains("imported.properties");
+		assertThat(origin.getParent().toString()).contains("application.properties");
 	}
 
 	@Test
+	@WithResource(name = "config/first/application.properties", content = "first.property=apple")
+	@WithResource(name = "config/second/application.properties", content = "second.property=ball")
+	@WithResource(name = "config/third/nested/application.properties", content = "third.property=three")
 	void runWhenHasWildcardLocationLoadsFromAllMatchingLocations() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.location=file:src/test/resources/config/*/", "--spring.config.name=testproperties");
+		ConfigurableApplicationContext context = this.application.run("--spring.config.location=classpath:config/*/");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("first.property")).isEqualTo("apple");
 		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
+		assertThat(environment.getProperty("third.property")).isNull();
 	}
 
 	@Test
-	void runWhenOptionalWildcardLocationDoesNotExistDoesNotThrowException() {
+	void runWhenOptionalWildcardFileDoesNotExistDoesNotThrowException() {
 		assertThatNoException().isThrownBy(() -> this.application
-			.run("--spring.config.location=optional:file:src/test/resources/nonexistent/*/testproperties.properties"));
+			.run("--spring.config.location=optional:classpath:nonexistent/*/testproperties.properties"));
 	}
 
 	@Test
-	void runWhenMandatoryWildcardLocationDoesNotExistThrowsException() {
+	void runWhenMandatoryWildcardFileDoesNotExistThrowsException() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(() -> this.application
-			.run("--spring.config.location=file:src/test/resources/nonexistent/*/testproperties.properties"));
+			.run("--spring.config.location=classpath:nonexistent/*/testproperties.properties"));
 	}
 
 	@Test
-	void runWhenMandatoryWildcardLocationHasEmptyFileDirectory() {
+	@WithResourceDirectory("config/empty")
+	void runWhenMandatoryWildcardDirectoryHasEmptyDirectoryDoesNotThrowException() {
+		assertThatNoException().isThrownBy(() -> this.application.run("--spring.config.location=classpath:config/*/"));
+	}
+
+	@Test
+	@WithResourceDirectory("config/empty")
+	void runWhenOptionalWildcardDirectoryHasNoSubdirectoriesDoesNotThrow() {
 		assertThatNoException()
-			.isThrownBy(() -> this.application.run("--spring.config.location=file:src/test/resources/config/*/"));
+			.isThrownBy(() -> this.application.run("--spring.config.location=optional:classpath:config/*/"));
 	}
 
 	@Test
-	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
+	@WithResourceDirectory("config")
+	void runWhenMandatoryWildcardDirectoryHasNoSubdirectoriesThrows() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
-			.isThrownBy(
-					() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
-			.withMessage("Config data location 'file:src/test/resources/config/0-empty/*/' contains no subdirectories");
+			.isThrownBy(() -> this.application.run("--spring.config.location=classpath:config/*/"))
+			.withMessage("Config data location 'classpath:config/*/' contains no subdirectories");
 	}
 
 	@Test
-	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
-			.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
-	}
-
-	@Test
-	void runWhenHasOptionalWildcardLocationThatDoesNotExistDoesNotThrow() {
+	void runWhenOptionalWildcardDirectoryDoesNotExistDoesNotThrowException() {
 		assertThatNoException()
 			.isThrownBy(() -> this.application.run("--spring.config.location=optional:file:invalid/*/"));
 	}
 
-	@Test
-	void runWhenOptionalWildcardLocationHasNoSubdirectoriesDoesNotThrow() {
-		assertThatNoException().isThrownBy(() -> this.application
-			.run("--spring.config.location=optional:file:src/test/resources/config/0-empty/*/"));
-	}
-
 	@Test // gh-24990
+	@WithResource(name = "application.properties", content = "spring.profiles.active=test,other")
+	@WithResource(name = "application-test.properties", content = """
+			test1=test1
+			#---
+			spring.config.activate.on-profile=other
+			test2=test2
+			""")
 	void runWhenHasProfileSpecificFileWithActiveOnProfileProperty() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=application-activate-on-profile-in-profile-specific-file");
+		ConfigurableApplicationContext context = this.application.run();
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("test1")).isEqualTo("test1");
 		assertThat(environment.getProperty("test2")).isEqualTo("test2");
 	}
 
 	@Test // gh-26960
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=p1,p2
+			application=true
+			""")
+	@WithResource(name = "application-p1.properties", content = """
+			application-p1=true
+			spring.config.import=import.properties
+			""")
+	@WithResource(name = "import.properties", content = "import=true")
+	@WithResource(name = "import-p1.properties", content = "import-p1=true")
+	@WithResource(name = "import-p2.properties", content = "import-p2=true")
 	void runWhenHasProfileSpecificImportWithImportImportsSecondProfileSpecificFile() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=application-profile-specific-import-with-import");
+		ConfigurableApplicationContext context = this.application.run();
 		ConfigurableEnvironment environment = context.getEnvironment();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import")).isTrue();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p1")).isTrue();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p2")).isFalse();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import")).isTrue();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p1")).isTrue();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isTrue();
+		assertThat(environment.containsProperty("application")).isTrue();
+		assertThat(environment.containsProperty("application-p1")).isTrue();
+		assertThat(environment.containsProperty("application-p2")).isFalse();
+		assertThat(environment.containsProperty("import")).isTrue();
+		assertThat(environment.containsProperty("import-p1")).isTrue();
+		assertThat(environment.containsProperty("import-p2")).isTrue();
 	}
 
 	@Test // gh-26960
+	@WithResource(name = "application.properties", content = "spring.profiles.active=p1,p2")
+	@WithResource(name = "application-p1.properties", content = "spring.config.import:test:boot")
+	@WithResource(name = "META-INF/spring.factories", content = """
+			org.springframework.boot.context.config.ConfigDataLocationResolver=\
+			org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorIntegrationTests$LocationResolver
+
+			org.springframework.boot.context.config.ConfigDataLoader=\
+			org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorIntegrationTests$Loader
+			""")
 	void runWhenHasProfileSpecificImportWithCustomImportResolvesProfileSpecific() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=application-profile-specific-import-with-custom-import");
+		ConfigurableApplicationContext context = this.application.run();
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.containsProperty("test:boot")).isTrue();
 		assertThat(environment.containsProperty("test:boot:ps")).isTrue();
 	}
 
 	@Test // gh-26593
+	@WithResource(name = "application.properties", content = """
+			root=true
+			v1=root
+			v2=root
+			""")
+	@WithResource(name = "application-p1.properties", content = """
+			root-p1=true
+			v1=root-p1
+			v2=root-p1
+			""")
+	@WithResource(name = "application-p2.properties", content = """
+			root-p2=true
+			v1=root-p2
+			v2=root-p2
+			""")
+	@WithResource(name = "config/application.properties", content = """
+			config=true
+			v1=config
+			v2=config
+			""")
+	@WithResource(name = "config/application-p1.properties", content = """
+			config-p1=true
+			v1=config-p1
+			#v2 intentionally missing
+			""")
+	@WithResource(name = "config/application-p2.properties", content = """
+			config-p2=true
+			v1=config-p2
+			#v2 intentionally missing
+			""")
 	void runWhenHasFilesInRootAndConfigWithProfiles() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=file-in-root-and-config-with-profile", "--spring.profiles.active=p1,p2");
+		ConfigurableApplicationContext context = this.application.run("--spring.profiles.active=p1,p2");
 		ConfigurableEnvironment environment = context.getEnvironment();
-		assertThat(environment.containsProperty("file-in-root-and-config-with-profile")).isTrue();
-		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p1")).isTrue();
-		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p2")).isTrue();
-		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile")).isTrue();
-		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p1")).isTrue();
-		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p2")).isTrue();
-		assertThat(environment.getProperty("v1")).isEqualTo("config-file-in-root-and-config-with-profile-p2");
-		assertThat(environment.getProperty("v2")).isEqualTo("file-in-root-and-config-with-profile-p2");
+		assertThat(environment.containsProperty("root")).isTrue();
+		assertThat(environment.containsProperty("root-p1")).isTrue();
+		assertThat(environment.containsProperty("root-p2")).isTrue();
+		assertThat(environment.containsProperty("config")).isTrue();
+		assertThat(environment.containsProperty("config-p1")).isTrue();
+		assertThat(environment.containsProperty("config-p2")).isTrue();
+		assertThat(environment.getProperty("v1")).isEqualTo("config-p2");
+		assertThat(environment.getProperty("v2")).isEqualTo("root-p2");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
@@ -820,19 +1247,10 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
-				value.getPropertySources().forEach((ps) -> System.out.println(ps.getName()));
 				return value.getPropertySources().contains(sourceName);
 			}
 
 		};
-	}
-
-	private void assertProfileExpression(String value, String... activeProfiles) {
-		this.application.setAdditionalProfiles(activeProfiles);
-		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testprofileexpression",
-				"--spring.config.location=classpath:configdata/profiles/");
-		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property).isEqualTo(value);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,16 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import java.io.IOException;
-
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 import jakarta.jms.Session;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -45,7 +41,6 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpoint;
 import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -69,29 +64,28 @@ import static org.mockito.Mockito.mock;
 class JmsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class));
+		.withBean(ConnectionFactory.class, () -> mock(ConnectionFactory.class))
+		.withConfiguration(AutoConfigurations.of(JmsAutoConfiguration.class));
+
+	@Test
+	void testNoConnectionFactoryJmsConfiguration() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(JmsAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(JmsTemplate.class)
+				.doesNotHaveBean(JmsMessagingTemplate.class)
+				.doesNotHaveBean(DefaultJmsListenerContainerFactoryConfigurer.class)
+				.doesNotHaveBean(DefaultJmsListenerContainerFactory.class));
+	}
 
 	@Test
 	void testDefaultJmsConfiguration() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ConnectionFactory.class);
-			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
-			CachingConnectionFactory factory = context.getBean(CachingConnectionFactory.class);
-			assertThat(factory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
+			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
 			JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 			JmsMessagingTemplate messagingTemplate = context.getBean(JmsMessagingTemplate.class);
-			assertThat(factory).isEqualTo(jmsTemplate.getConnectionFactory());
+			assertThat(jmsTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
 			assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
-			assertThat(getBrokerUrl(factory)).startsWith("vm://");
 			assertThat(context.containsBean("jmsListenerContainerFactory")).isTrue();
 		});
-	}
-
-	@Test
-	void testConnectionFactoryBackOff() {
-		this.contextRunner.withUserConfiguration(TestConfiguration2.class)
-			.run((context) -> assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class))
-				.containsOnlyKeys("customConnectionFactory"));
 	}
 
 	@Test
@@ -108,26 +102,9 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
-	void testJmsTemplateBackOffEverything() {
-		this.contextRunner
-			.withUserConfiguration(TestConfiguration2.class, TestConfiguration3.class, TestConfiguration5.class)
-			.run(this::testJmsTemplateBackOffEverything);
-	}
-
-	private void testJmsTemplateBackOffEverything(AssertableApplicationContext loaded) {
-		JmsTemplate jmsTemplate = loaded.getBean(JmsTemplate.class);
-		assertThat(jmsTemplate.getPriority()).isEqualTo(999);
-		assertThat(loaded.getBeansOfType(ActiveMQConnectionFactory.class)).containsOnlyKeys("customConnectionFactory");
-		JmsMessagingTemplate messagingTemplate = loaded.getBean(JmsMessagingTemplate.class);
-		assertThat(messagingTemplate.getDefaultDestinationName()).isEqualTo("fooBar");
-		assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
-	}
-
-	@Test
 	void testDefaultJmsListenerConfiguration() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((loaded) -> {
-			assertThat(loaded).hasSingleBean(CachingConnectionFactory.class);
-			CachingConnectionFactory connectionFactory = loaded.getBean(CachingConnectionFactory.class);
+			ConnectionFactory connectionFactory = loaded.getBean(ConnectionFactory.class);
 			assertThat(loaded).hasSingleBean(DefaultJmsListenerContainerFactory.class);
 			DefaultJmsListenerContainerFactory containerFactory = loaded
 				.getBean(DefaultJmsListenerContainerFactory.class);
@@ -137,7 +114,7 @@ class JmsAutoConfigurationTests {
 			DefaultMessageListenerContainer container = containerFactory.createListenerContainer(jmsListenerEndpoint);
 			assertThat(container.getClientId()).isNull();
 			assertThat(container.getConcurrentConsumers()).isEqualTo(1);
-			assertThat(container.getConnectionFactory()).isSameAs(connectionFactory.getTargetConnectionFactory());
+			assertThat(container.getConnectionFactory()).isSameAs(connectionFactory);
 			assertThat(container.getMaxConcurrentConsumers()).isEqualTo(1);
 			assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.AUTO_ACKNOWLEDGE);
 			assertThat(container.isAutoStartup()).isTrue();
@@ -176,7 +153,8 @@ class JmsAutoConfigurationTests {
 					"spring.jms.listener.session.acknowledgeMode=client",
 					"spring.jms.listener.session.transacted=false", "spring.jms.listener.minConcurrency=2",
 					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10",
-					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId")
+					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId",
+					"spring.jms.listener.max-messages-per-task=5")
 			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}
 
@@ -188,6 +166,7 @@ class JmsAutoConfigurationTests {
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
 		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
 		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+		assertThat(container).hasFieldOrPropertyWithValue("maxMessagesPerTask", 5);
 		assertThat(container.isSubscriptionDurable()).isTrue();
 		assertThat(container.getClientId()).isEqualTo("exampleId");
 	}
@@ -423,16 +402,6 @@ class JmsAutoConfigurationTests {
 			});
 	}
 
-	private String getBrokerUrl(CachingConnectionFactory connectionFactory) {
-		assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
-		try {
-			return ((ActiveMQConnectionFactory) connectionFactory.getTargetConnectionFactory()).toURI().toString();
-		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
 	@Test
 	void enableJmsAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableJmsConfiguration.class)
@@ -444,7 +413,7 @@ class JmsAutoConfigurationTests {
 	@Test
 	void runtimeHintsAreRegisteredForBindingOfAcknowledgeMode() {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			context.register(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class);
+			context.register(TestConfiguration2.class, JmsAutoConfiguration.class);
 			TestGenerationContext generationContext = new TestGenerationContext();
 			new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
 			assertThat(RuntimeHintsPredicates.reflection().onMethod(AcknowledgeMode.class, "of").invoke())
@@ -462,7 +431,7 @@ class JmsAutoConfigurationTests {
 
 		@Bean
 		ConnectionFactory customConnectionFactory() {
-			return new ActiveMQConnectionFactory();
+			return mock(ConnectionFactory.class);
 		}
 
 	}
@@ -593,12 +562,12 @@ class JmsAutoConfigurationTests {
 
 		@Bean
 		ConnectionFactory connectionFactory1() {
-			return new ActiveMQConnectionFactory();
+			return mock(ConnectionFactory.class);
 		}
 
 		@Bean
 		ConnectionFactory connectionFactory2() {
-			return new ActiveMQConnectionFactory();
+			return mock(ConnectionFactory.class);
 		}
 
 	}

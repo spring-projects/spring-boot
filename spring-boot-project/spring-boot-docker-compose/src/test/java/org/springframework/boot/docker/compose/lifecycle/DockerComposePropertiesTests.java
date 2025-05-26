@@ -63,6 +63,7 @@ class DockerComposePropertiesTests {
 	@Test
 	void getWhenPropertiesReturnsBound() {
 		Map<String, String> source = new LinkedHashMap<>();
+		source.put("spring.docker.compose.arguments", "--project-name=test,--progress=auto");
 		source.put("spring.docker.compose.file", "my-compose.yml");
 		source.put("spring.docker.compose.lifecycle-management", "start-only");
 		source.put("spring.docker.compose.host", "myhost");
@@ -76,6 +77,7 @@ class DockerComposePropertiesTests {
 		source.put("spring.docker.compose.readiness.tcp.read-timeout", "500ms");
 		Binder binder = new Binder(new MapConfigurationPropertySource(source));
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
+		assertThat(properties.getArguments()).containsExactly("--project-name=test", "--progress=auto");
 		assertThat(properties.getFile()).containsExactly(new File("my-compose.yml"));
 		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_ONLY);
 		assertThat(properties.getHost()).isEqualTo("myhost");

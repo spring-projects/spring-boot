@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -49,7 +50,8 @@ public class ServletManagementContextAutoConfiguration {
 	@Bean
 	public static ManagementContextFactory servletWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				ServletWebServerFactoryAutoConfiguration.class);
+				ServletWebServerFactoryAutoConfiguration.class,
+				EmbeddedWebServerFactoryCustomizerAutoConfiguration.class);
 	}
 
 	@Bean
@@ -60,7 +62,7 @@ public class ServletManagementContextAutoConfiguration {
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.server", name = "add-application-context-header", havingValue = "true")
+	@ConditionalOnBooleanProperty("management.server.add-application-context-header")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean

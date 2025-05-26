@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 	void createMinimalAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret",
 				"https://docker.example.com", "docker@example.com");
-		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader()), false);
+		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader()), true);
 	}
 
 	@Test

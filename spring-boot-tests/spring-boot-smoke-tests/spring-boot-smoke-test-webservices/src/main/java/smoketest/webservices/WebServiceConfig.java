@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 package smoketest.webservices;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.XsdSchema;
 
 @Configuration(proxyBeanMethods = false)
-public class WebServiceConfig extends WsConfigurerAdapter {
+class WebServiceConfig {
 
 	@Bean(name = "holiday")
-	public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
+	DefaultWsdl11Definition defaultWsdl11Definition(@Qualifier("hr") XsdSchema hrSchema) {
 		DefaultWsdl11Definition wsdl = new DefaultWsdl11Definition();
 		wsdl.setPortTypeName("HumanResource");
 		wsdl.setLocationUri("/holidayService/");
 		wsdl.setTargetNamespace("https://company.example.com/hr/definitions");
-		wsdl.setSchema(countriesSchema);
+		wsdl.setSchema(hrSchema);
 		return wsdl;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -42,6 +43,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link ReactiveWebServerApplicationContext}.
@@ -121,13 +125,59 @@ class ReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	void whenContextIsClosedThenWebServerIsStopped() {
+	void whenContextRefreshFailedThenWebServerIsStoppedAndDestroyed() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh);
+		WebServer webServer = this.context.getWebServer();
+		then(webServer).should(times(2)).stop();
+		then(webServer).should().destroy();
+	}
+
+	@Test
+	void whenContextRefreshFailedThenWebServerStopFailedCatchStopException() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class, () -> {
+			willThrow(new RuntimeException("WebServer has failed to stop")).willCallRealMethod()
+				.given(this.context.getWebServer())
+				.stop();
+			return new RefreshFailure();
+		}));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.withStackTraceContaining("WebServer has failed to stop");
+		WebServer webServer = this.context.getWebServer();
+		then(webServer).should().stop();
+		then(webServer).should(never()).destroy();
+	}
+
+	@Test
+	void whenContextRefreshFailedThenWebServerIsStoppedAndDestroyFailedCatchDestroyException() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class, () -> {
+			willThrow(new RuntimeException("WebServer has failed to destroy")).willCallRealMethod()
+				.given(this.context.getWebServer())
+				.destroy();
+			return new RefreshFailure();
+		}));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.withStackTraceContaining("WebServer has failed to destroy");
+		WebServer webServer = this.context.getWebServer();
+		then(webServer).should().stop();
+		then(webServer).should().destroy();
+	}
+
+	@Test
+	void whenContextIsClosedThenWebServerIsStoppedAndDestroyed() {
 		addWebServerFactoryBean();
 		addHttpHandlerBean();
 		this.context.refresh();
 		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		this.context.close();
-		then(factory.getWebServer()).should().stop();
+		then(factory.getWebServer()).should(times(2)).stop();
+		then(factory.getWebServer()).should().destroy();
 	}
 
 	@Test

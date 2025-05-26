@@ -93,6 +93,9 @@ logging:
 NOTE: In the example above, configprop:logging.include-application-name[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
 It's also worth mentioning that configprop:logging.pattern.correlation[] contains a trailing space so that it is separated from the logger name that comes right after it by default.
 
+TIP: Correlation IDs rely on context propagation.
+Please read xref:reference:actuator/observability.adoc#actuator.observability.context-propagation[this documentation for more details].
+
 
 
 [[actuator.micrometer-tracing.propagating-traces]]
@@ -100,7 +103,7 @@ It's also worth mentioning that configprop:logging.pattern.correlation[] contain
 
 To automatically propagate traces over the network, use the auto-configured xref:io/rest-client.adoc#io.rest-client.resttemplate[`RestTemplateBuilder`], xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient.Builder`] or xref:io/rest-client.adoc#io.rest-client.webclient[`WebClient.Builder`] to construct the client.
 
-WARNING: If you create the `RestTemplate`, the `RestClient` or the `WebClient` without using the auto-configured builders, automatic trace propagation won't work!
+WARNING: If you create the javadoc:org.springframework.web.client.RestTemplate[], the javadoc:org.springframework.web.client.RestClient[] or the javadoc:org.springframework.web.reactive.function.client.WebClient[] without using the auto-configured builders, automatic trace propagation won't work!
 
 
 
@@ -147,6 +150,10 @@ Tracing with OpenTelemetry and reporting using OTLP requires the following depen
 
 Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
 
+NOTE: If you need to apply advanced customizations to OTLP span exporters, consider registering javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpHttpSpanExporterBuilderCustomizer[] or javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpGrpcSpanExporterBuilderCustomizer[] beans.
+These will be invoked before the creation of the `OtlpHttpSpanExporter` or `OtlpGrpcSpanExporter`.
+The customizers take precedence over anything applied by the auto-configuration.
+
 
 
 [[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
@@ -176,7 +183,7 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 [[actuator.micrometer-tracing.micrometer-observation]]
 == Integration with Micrometer Observation
 
-A `TracingAwareMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates spans for every completed observation.
+A javadoc:io.micrometer.tracing.handler.TracingAwareMeterObservationHandler[] is automatically registered on the javadoc:io.micrometer.observation.ObservationRegistry[], which creates spans for every completed observation.
 
 
 
@@ -184,7 +191,7 @@ A `TracingAwareMeterObservationHandler` is automatically registered on the `Obse
 == Creating Custom Spans
 
 You can create your own spans by starting an observation.
-For this, inject `ObservationRegistry` into your component:
+For this, inject javadoc:io.micrometer.observation.ObservationRegistry[] into your component:
 
 include-code::CustomObservation[]
 
@@ -197,7 +204,7 @@ TIP: If you want to create a span without creating a metric, you need to use the
 [[actuator.micrometer-tracing.baggage]]
 == Baggage
 
-You can create baggage with the `Tracer` API:
+You can create baggage with the javadoc:io.micrometer.tracing.Tracer[] API:
 
 include-code::CreatingBaggage[]
 
@@ -215,5 +222,5 @@ For the example above, setting this property to `baggage1` results in an MDC ent
 [[actuator.micrometer-tracing.tests]]
 == Tests
 
-Tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
+Tracing components which are reporting data are not auto-configured when using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[] for more details.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -57,15 +58,15 @@ public class ResourceBanner implements Banner {
 	private final Resource resource;
 
 	public ResourceBanner(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
-		Assert.isTrue(resource.exists(), "Resource must exist");
+		Assert.notNull(resource, "'resource' must not be null");
+		Assert.isTrue(resource.exists(), "'resource' must exist");
 		this.resource = resource;
 	}
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-		try {
-			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
+		try (InputStream input = this.resource.getInputStream()) {
+			String banner = StreamUtils.copyToString(input,
 					environment.getProperty("spring.banner.charset", Charset.class, StandardCharsets.UTF_8));
 			for (PropertyResolver resolver : getPropertyResolvers(environment, sourceClass)) {
 				banner = resolver.resolvePlaceholders(banner);
@@ -86,22 +87,34 @@ public class ResourceBanner implements Banner {
 	 * @return a mutable list of property resolvers
 	 */
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
-		MutablePropertySources sources = new MutablePropertySources();
-		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
-			configurableEnvironment.getPropertySources().forEach(sources::addLast);
-		}
-		sources.addLast(getTitleSource(sourceClass));
-		sources.addLast(getAnsiSource());
-		sources.addLast(getVersionSource(sourceClass, environment));
 		List<PropertyResolver> resolvers = new ArrayList<>();
-		resolvers.add(new PropertySourcesPropertyResolver(sources));
+		resolvers.add(new PropertySourcesPropertyResolver(createNullDefaultSources(environment, sourceClass)));
+		resolvers.add(new PropertySourcesPropertyResolver(createEmptyDefaultSources(environment, sourceClass)));
 		return resolvers;
 	}
 
-	private MapPropertySource getTitleSource(Class<?> sourceClass) {
+	private MutablePropertySources createNullDefaultSources(Environment environment, Class<?> sourceClass) {
+		MutablePropertySources nullDefaultSources = new MutablePropertySources();
+		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
+			configurableEnvironment.getPropertySources().forEach(nullDefaultSources::addLast);
+		}
+		nullDefaultSources.addLast(getTitleSource(sourceClass, null));
+		nullDefaultSources.addLast(getAnsiSource());
+		nullDefaultSources.addLast(getVersionSource(sourceClass, environment, null));
+		return nullDefaultSources;
+	}
+
+	private MutablePropertySources createEmptyDefaultSources(Environment environment, Class<?> sourceClass) {
+		MutablePropertySources emptyDefaultSources = new MutablePropertySources();
+		emptyDefaultSources.addLast(getTitleSource(sourceClass, ""));
+		emptyDefaultSources.addLast(getVersionSource(sourceClass, environment, ""));
+		return emptyDefaultSources;
+	}
+
+	private MapPropertySource getTitleSource(Class<?> sourceClass, String defaultValue) {
 		String applicationTitle = getApplicationTitle(sourceClass);
 		Map<String, Object> titleMap = Collections.singletonMap("application.title",
-				(applicationTitle != null) ? applicationTitle : "");
+				(applicationTitle != null) ? applicationTitle : defaultValue);
 		return new MapPropertySource("title", titleMap);
 	}
 
@@ -120,21 +133,21 @@ public class ResourceBanner implements Banner {
 		return new AnsiPropertySource("ansi", true);
 	}
 
-	private MapPropertySource getVersionSource(Class<?> sourceClass, Environment environment) {
-		return new MapPropertySource("version", getVersionsMap(sourceClass, environment));
+	private MapPropertySource getVersionSource(Class<?> sourceClass, Environment environment, String defaultValue) {
+		return new MapPropertySource("version", getVersionsMap(sourceClass, environment, defaultValue));
 	}
 
-	private Map<String, Object> getVersionsMap(Class<?> sourceClass, Environment environment) {
+	private Map<String, Object> getVersionsMap(Class<?> sourceClass, Environment environment, String defaultValue) {
 		String appVersion = getApplicationVersion(sourceClass);
 		if (appVersion == null) {
 			appVersion = getApplicationVersion(environment);
 		}
 		String bootVersion = getBootVersion();
 		Map<String, Object> versions = new HashMap<>();
-		versions.put("application.version", getVersionString(appVersion, false));
-		versions.put("spring-boot.version", getVersionString(bootVersion, false));
-		versions.put("application.formatted-version", getVersionString(appVersion, true));
-		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
+		versions.put("application.version", getVersionString(appVersion, false, defaultValue));
+		versions.put("spring-boot.version", getVersionString(bootVersion, false, defaultValue));
+		versions.put("application.formatted-version", getVersionString(appVersion, true, defaultValue));
+		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true, defaultValue));
 		return versions;
 	}
 
@@ -142,7 +155,7 @@ public class ResourceBanner implements Banner {
 	 * Returns the application version.
 	 * @param sourceClass the source class
 	 * @return the application version or {@code null} if unknown
-	 * @deprecated since 3.4.0 for removal in 3.6.0
+	 * @deprecated since 3.4.0 for removal in 4.0.0
 	 */
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	protected String getApplicationVersion(Class<?> sourceClass) {
@@ -157,9 +170,9 @@ public class ResourceBanner implements Banner {
 		return SpringBootVersion.getVersion();
 	}
 
-	private String getVersionString(String version, boolean format) {
+	private String getVersionString(String version, boolean format, String fallback) {
 		if (version == null) {
-			return "";
+			return fallback;
 		}
 		return format ? " (v" + version + ")" : version;
 	}

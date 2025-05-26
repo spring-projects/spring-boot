@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +40,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Rob Winch
  * @author Madhura Bhave
+ * @author Lasse Wulff
  * @since 2.0.0
  */
 @AutoConfiguration
@@ -61,6 +64,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
 		AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
+@ConditionalOnWebApplication(type = Type.SERVLET)
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
@@ -109,12 +113,12 @@ public class UserDetailsServiceAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "name")
+		@ConditionalOnProperty("spring.security.user.name")
 		static final class NameConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "password")
+		@ConditionalOnProperty("spring.security.user.password")
 		static final class PasswordConfigured {
 
 		}

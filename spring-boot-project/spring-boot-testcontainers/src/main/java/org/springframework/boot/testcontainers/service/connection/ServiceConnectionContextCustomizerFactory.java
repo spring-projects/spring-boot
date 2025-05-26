@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import org.testcontainers.containers.Container;
 
 import org.springframework.boot.origin.Origin;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -60,7 +61,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		ReflectionUtils.doWithLocalFields(candidate, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
-				.forEach((annotation) -> sources.add(createSource(field, annotation)));
+				.forEach((serviceConnection) -> sources.add(createSource(field, annotations, serviceConnection)));
 		});
 		if (TestContextAnnotationUtils.searchEnclosingClass(candidate)) {
 			collectSources(candidate.getEnclosingClass(), sources);
@@ -73,7 +74,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 
 	@SuppressWarnings("unchecked")
 	private <C extends Container<?>> ContainerConnectionSource<?> createSource(Field field,
-			MergedAnnotation<ServiceConnection> annotation) {
+			MergedAnnotations annotations, MergedAnnotation<ServiceConnection> serviceConnection) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
 				() -> "@ServiceConnection field '%s' must be static".formatted(field.getName()));
 		Origin origin = new FieldOrigin(field);
@@ -86,8 +87,8 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		// When running tests that doesn't matter, but running AOT processing should be
 		// possible without a Docker environment
 		String dockerImageName = isAotProcessingInProgress() ? null : container.getDockerImageName();
-		return new ContainerConnectionSource<>("test", origin, containerType, dockerImageName, annotation,
-				() -> container);
+		return new ContainerConnectionSource<>("test", origin, containerType, dockerImageName, serviceConnection,
+				() -> container, SslBundleSource.get(annotations), annotations);
 	}
 
 	private Object getFieldValue(Field field) {
@@ -96,7 +97,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 }

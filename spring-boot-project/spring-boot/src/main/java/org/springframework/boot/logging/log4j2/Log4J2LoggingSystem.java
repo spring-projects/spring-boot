@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -47,6 +49,8 @@ import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
 import org.apache.logging.log4j.core.util.AuthorizationProvider;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
+import org.apache.logging.log4j.status.StatusConsoleListener;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
@@ -62,10 +66,10 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.core.Conventions;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -83,6 +87,8 @@ import org.springframework.util.StringUtils;
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
+	private static final String OPTIONAL_PREFIX = "optional:";
+
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
@@ -91,6 +97,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
 			"environment");
+
+	static final String STATUS_LISTENER_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
+			"statusListener");
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
@@ -213,9 +222,12 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
+		StatusConsoleListener listener = new StatusConsoleListener(Level.WARN);
+		StatusLogger.getLogger().registerListener(listener);
+		loggerContext.putObject(STATUS_LISTENER_KEY, listener);
 		Environment environment = initializationContext.getEnvironment();
 		if (environment != null) {
-			getLoggerContext().putObject(ENVIRONMENT_KEY, environment);
+			loggerContext.putObject(ENVIRONMENT_KEY, environment);
 			Log4J2LoggingSystem.propertySource.setEnvironment(environment);
 			PropertiesUtil.getProperties().addPropertySource(Log4J2LoggingSystem.propertySource);
 		}
@@ -238,9 +250,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
 		List<String> overrides = getOverrides(initializationContext);
-		if (initializationContext != null) {
-			applySystemProperties(initializationContext.getEnvironment(), logFile);
-		}
+		applySystemProperties(initializationContext.getEnvironment(), logFile);
 		loadConfiguration(location, logFile, overrides);
 	}
 
@@ -259,32 +269,31 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * @since 2.6.0
 	 */
 	protected void loadConfiguration(String location, LogFile logFile, List<String> overrides) {
-		Assert.notNull(location, "Location must not be null");
+		Assert.notNull(location, "'location' must not be null");
 		try {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();
-			configurations.add(load(location, context));
+			ResourceLoader resourceLoader = ApplicationResourceLoader.get();
+			configurations.add(load(resourceLoader.getResource(location), context));
 			for (String override : overrides) {
-				configurations.add(load(override, context));
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
+				if (overrideConfiguration != null) {
+					configurations.add(overrideConfiguration);
+				}
 			}
-			Configuration configuration = (configurations.size() > 1) ? createComposite(configurations)
-					: configurations.iterator().next();
-			context.start(configuration);
+			context.start(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 
-	private Configuration load(String location, LoggerContext context) throws IOException {
-		Resource resource = new ApplicationResourceLoader().getResource(location);
-		ConfigurationSource source = getConfigurationSource(resource);
-		return ConfigurationFactory.getInstance().getConfiguration(context, source);
-	}
-
-	private ConfigurationSource getConfigurationSource(Resource resource) throws IOException {
+	private Configuration load(Resource resource, LoggerContext context) throws IOException {
+		ConfigurationFactory factory = ConfigurationFactory.getInstance();
 		if (resource.isFile()) {
-			return new ConfigurationSource(resource.getInputStream(), resource.getFile());
+			try (InputStream inputStream = resource.getInputStream()) {
+				return factory.getConfiguration(context, new ConfigurationSource(inputStream, resource.getFile()));
+			}
 		}
 		URL url = resource.getURL();
 		AuthorizationProvider authorizationProvider = ConfigurationFactory
@@ -293,10 +302,30 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				? SslConfigurationFactory.getSslConfiguration() : null;
 		URLConnection connection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration,
 				authorizationProvider);
-		return new ConfigurationSource(connection.getInputStream(), url, connection.getLastModified());
+		try (InputStream inputStream = connection.getInputStream()) {
+			return factory.getConfiguration(context,
+					new ConfigurationSource(inputStream, url, connection.getLastModified()));
+		}
 	}
 
-	private CompositeConfiguration createComposite(List<Configuration> configurations) {
+	private Configuration loadOverride(ResourceLoader resourceLoader, String location, LoggerContext context)
+			throws IOException {
+		if (location.startsWith(OPTIONAL_PREFIX)) {
+			Resource resource = resourceLoader.getResource(location.substring(OPTIONAL_PREFIX.length()));
+			try {
+				return (resource.exists()) ? load(resource, context) : null;
+			}
+			catch (FileNotFoundException ex) {
+				return null;
+			}
+		}
+		return load(resourceLoader.getResource(location), context);
+	}
+
+	private Configuration mergeConfigurations(List<Configuration> configurations) {
+		if (configurations.size() == 1) {
+			return configurations.iterator().next();
+		}
 		return new CompositeConfiguration(configurations.stream().map(AbstractConfiguration.class::cast).toList());
 	}
 
@@ -314,19 +343,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void reinitializeWithOverrides(List<String> overrides) {
 		LoggerContext context = getLoggerContext();
-		Configuration base = context.getConfiguration();
-		List<AbstractConfiguration> configurations = new ArrayList<>();
-		configurations.add((AbstractConfiguration) base);
+		List<Configuration> configurations = new ArrayList<>();
+		configurations.add(context.getConfiguration());
+		ResourceLoader resourceLoader = ApplicationResourceLoader.get();
 		for (String override : overrides) {
 			try {
-				configurations.add((AbstractConfiguration) load(override, context));
+				Configuration overrideConfiguration = loadOverride(resourceLoader, override, context);
+				if (overrideConfiguration != null) {
+					configurations.add(overrideConfiguration);
+				}
 			}
 			catch (IOException ex) {
 				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
-		CompositeConfiguration composite = new CompositeConfiguration(configurations);
-		context.reconfigure(composite);
+		context.reconfigure(mergeConfigurations(configurations));
 	}
 
 	@Override
@@ -439,9 +470,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
 		markAsUninitialized(loggerContext);
+		StatusConsoleListener listener = (StatusConsoleListener) loggerContext.getObject(STATUS_LISTENER_KEY);
+		if (listener != null) {
+			StatusLogger.getLogger().removeListener(listener);
+			loggerContext.removeObject(STATUS_LISTENER_KEY);
+		}
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		Log4J2LoggingSystem.propertySource.setEnvironment(null);
-		getLoggerContext().removeObject(ENVIRONMENT_KEY);
+		loggerContext.removeObject(ENVIRONMENT_KEY);
 	}
 
 	private LoggerConfig getLogger(String name) {
@@ -492,7 +528,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link Log4J2LoggingSystem} if possible.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(0)
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils

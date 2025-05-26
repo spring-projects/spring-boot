@@ -2,7 +2,7 @@
 = Cloud Foundry Support
 
 Spring Boot's actuator module includes additional support that is activated when you deploy to a compatible Cloud Foundry instance.
-The `/cloudfoundryapplication` path provides an alternative secured route to all `@Endpoint` beans.
+The `/cloudfoundryapplication` path provides an alternative secured route to all javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation] beans.
 
 The extended support lets Cloud Foundry management UIs (such as the web application that you can use to view deployed applications) be augmented with Spring Boot actuator information.
 For example, an application status page can include full health information instead of the typical "`running`" or "`stopped`" status.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.lang.ref.SoftReference;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -32,6 +33,9 @@ import java.util.function.UnaryOperator;
 class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
 	private static final Duration UNLIMITED = Duration.ZERO;
+
+	static final CacheOverride NO_OP_OVERRIDE = () -> {
+	};
 
 	private final boolean neverExpire;
 
@@ -63,6 +67,25 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	@Override
 	public void clear() {
 		this.lastAccessed = null;
+	}
+
+	@Override
+	public CacheOverride override() {
+		if (this.neverExpire) {
+			return NO_OP_OVERRIDE;
+		}
+		ActiveCacheOverride override = new ActiveCacheOverride(this);
+		if (override.timeToLive() == null) {
+			// Ensure we don't use stale data on the first access
+			clear();
+		}
+		this.timeToLive = UNLIMITED;
+		return override;
+	}
+
+	void restore(ActiveCacheOverride override) {
+		this.timeToLive = override.timeToLive();
+		this.lastAccessed = override.lastAccessed();
 	}
 
 	/**
@@ -109,6 +132,25 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	protected void setValue(T value) {
 		this.value = new SoftReference<>(value);
+	}
+
+	/**
+	 * An active {@link CacheOverride} with a stored time-to-live.
+	 */
+	private record ActiveCacheOverride(SoftReferenceConfigurationPropertyCache<?> cache, Duration timeToLive,
+			Instant lastAccessed, AtomicBoolean active) implements CacheOverride {
+
+		ActiveCacheOverride(SoftReferenceConfigurationPropertyCache<?> cache) {
+			this(cache, cache.timeToLive, cache.lastAccessed, new AtomicBoolean());
+		}
+
+		@Override
+		public void close() {
+			if (active().compareAndSet(false, true)) {
+				this.cache.restore(this);
+			}
+		}
+
 	}
 
 }

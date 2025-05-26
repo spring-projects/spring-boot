@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
@@ -43,15 +44,16 @@ class JspTemplateAvailabilityProviderTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-templates/custom.jsp")
 	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
 		assertThat(isTemplateAvailable("custom.jsp")).isTrue();
 	}
 
 	@Test
+	@WithResource(name = "suffixed.java-server-pages")
 	void availabilityOfTemplateWithCustomSuffix() {
-		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
-		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
+		this.environment.setProperty("spring.mvc.view.suffix", ".java-server-pages");
 		assertThat(isTemplateAvailable("suffixed")).isTrue();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -910,9 +910,8 @@ class RabbitAutoConfigurationTests {
 	void enableSslWithBundle() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle",
-					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
-					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
-					"spring.ssl.bundle.jks.test-bundle.key.password=password")
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret")
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();

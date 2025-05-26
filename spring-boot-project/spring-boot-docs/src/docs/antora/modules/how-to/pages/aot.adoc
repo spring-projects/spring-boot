@@ -9,7 +9,7 @@ This section addresses those questions.
 [[howto.aot.conditions]]
 == Conditions
 
-Ahead-of-time processing optimizes the application and evaluates javadoc:{url-spring-framework-javadoc}/org.springframework.context.annotation.Conditional[format=annotation] annotations based on the environment at build time.
+Ahead-of-time processing optimizes the application and evaluates javadoc:org.springframework.context.annotation.Conditional[format=annotation] annotations based on the environment at build time.
 xref:reference:features/profiles.adoc[Profiles] are implemented through conditions and are therefore affected, too.
 
 If you want beans that are created based on a condition in an ahead-of-time optimized application, you have to set up the environment when building the application.

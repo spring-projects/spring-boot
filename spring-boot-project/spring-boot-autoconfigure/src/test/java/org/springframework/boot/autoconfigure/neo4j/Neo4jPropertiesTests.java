@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class Neo4jPropertiesTests {
 	}
 
 	private static void assertDuration(Duration duration, long expectedValueInMillis) {
-		if (expectedValueInMillis == org.neo4j.driver.internal.async.pool.PoolSettings.NOT_CONFIGURED) {
+		if (expectedValueInMillis == -1) {
 			assertThat(duration).isNull();
 		}
 		else {

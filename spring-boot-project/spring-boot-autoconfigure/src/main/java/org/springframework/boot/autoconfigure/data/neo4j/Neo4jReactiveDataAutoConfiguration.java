@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
@@ -44,6 +45,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @AutoConfiguration(after = Neo4jDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jTemplate.class, ReactiveTransactionManager.class, Flux.class })
 @ConditionalOnBean(Driver.class)
+@EnableConfigurationProperties(Neo4jDataProperties.class)
 public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean
@@ -63,6 +65,7 @@ public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveNeo4jOperations.class)
+	@ConditionalOnBean(Neo4jMappingContext.class)
 	public ReactiveNeo4jTemplate reactiveNeo4jTemplate(ReactiveNeo4jClient neo4jClient,
 			Neo4jMappingContext neo4jMappingContext) {
 		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.build.bom;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -31,9 +30,8 @@ import org.gradle.internal.impldep.org.apache.http.client.config.CookieSpecs;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -57,29 +55,21 @@ public abstract class CheckLinks extends DefaultTask {
 		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(config).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
-		restTemplate.setErrorHandler(new IgnoringErrorHandler());
+		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 		for (Library library : this.bom.getLibraries()) {
-			library.getLinks().forEach((name, link) -> {
+			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
 				URI uri;
 				try {
-					uri = new URI(link);
+					uri = new URI(link.url(library));
 					ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.HEAD, null, String.class);
-					System.out.println("[%3d] %s - %s (%s)".formatted(response.getStatusCode().value(),
-							library.getName(), name, uri));
+					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), name,
+							uri);
 				}
 				catch (URISyntaxException ex) {
 					throw new RuntimeException(ex);
 				}
-			});
+			}));
 		}
-	}
-
-	static class IgnoringErrorHandler extends DefaultResponseErrorHandler {
-
-		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
-		}
-
 	}
 
 }

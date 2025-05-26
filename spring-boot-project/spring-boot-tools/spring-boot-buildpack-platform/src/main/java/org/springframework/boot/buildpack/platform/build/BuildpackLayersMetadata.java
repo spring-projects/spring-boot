@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackLayersMetadata fromImage(Image image) throws IOException {
-		Assert.notNull(image, "Image must not be null");
+		Assert.notNull(image, "'image' must not be null");
 		return fromImageConfig(image.getConfig());
 	}
 
@@ -75,9 +75,9 @@ final class BuildpackLayersMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackLayersMetadata fromImageConfig(ImageConfig imageConfig) throws IOException {
-		Assert.notNull(imageConfig, "ImageConfig must not be null");
+		Assert.notNull(imageConfig, "'imageConfig' must not be null");
 		String json = imageConfig.getLabels().get(LABEL_NAME);
-		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
+		Assert.state(json != null, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
 				+ StringUtils.collectionToCommaDelimitedString(imageConfig.getLabels().keySet()) + "'");
 		return fromJson(json);
 	}
@@ -118,8 +118,8 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private static Buildpacks fromJson(JsonNode node) {
 			Buildpacks buildpacks = new Buildpacks();
-			node.fields()
-				.forEachRemaining((field) -> buildpacks.addBuildpackVersions(field.getKey(),
+			node.properties()
+				.forEach((field) -> buildpacks.addBuildpackVersions(field.getKey(),
 						BuildpackVersions.fromJson(field.getValue())));
 			return buildpacks;
 		}
@@ -140,8 +140,8 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private static BuildpackVersions fromJson(JsonNode node) {
 			BuildpackVersions versions = new BuildpackVersions();
-			node.fields()
-				.forEachRemaining((field) -> versions.addBuildpackVersion(field.getKey(),
+			node.properties()
+				.forEach((field) -> versions.addBuildpackVersion(field.getKey(),
 						BuildpackLayerDetails.fromJson(field.getValue())));
 			return versions;
 		}

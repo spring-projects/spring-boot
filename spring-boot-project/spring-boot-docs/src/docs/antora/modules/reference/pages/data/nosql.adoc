@@ -6,7 +6,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {url-spring-data-cassandra-site}[Cassandra]
 * {url-spring-data-couchbase-site}[Couchbase]
 * {url-spring-data-elasticsearch-site}[Elasticsearch]
-* {url-spring-data-gemfire-site}[GemFire] or {url-spring-data-geode-site}[Geode]
+* {url-spring-data-geode-site}[Geode]
 * {url-spring-data-ldap-site}[LDAP]
 * {url-spring-data-mongodb-site}[MongoDB]
 * {url-spring-data-neo4j-site}[Neo4J]
@@ -38,7 +38,7 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` starter for con
 [[data.nosql.redis.connecting]]
 === Connecting to Redis
 
-You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
+You can inject an auto-configured javadoc:org.springframework.data.redis.connection.RedisConnectionFactory[], javadoc:org.springframework.data.redis.core.StringRedisTemplate[], or vanilla javadoc:org.springframework.data.redis.core.RedisTemplate[] instance as you would any other Spring Bean.
 The following listing shows an example of such a bean:
 
 include-code::MyBean[]
@@ -72,16 +72,16 @@ spring:
 ----
 
 
-TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
-`ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
-If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
-Alternatively, you can register a bean of type `RedisStandaloneConfiguration`, `RedisSentinelConfiguration`, or `RedisClusterConfiguration` to take full control over the configuration.
+TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer[] for more advanced customizations.
+javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer[].
+If you use Jedis, javadoc:org.springframework.boot.autoconfigure.data.redis.JedisClientConfigurationBuilderCustomizer[] is also available.
+Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[] to take full control over the configuration.
 
-If you add your own `@Bean` of any of the auto-configured types, it replaces the default (except in the case of `RedisTemplate`, when the exclusion is based on the bean name, `redisTemplate`, not its type).
+If you add your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of any of the auto-configured types, it replaces the default (except in the case of javadoc:org.springframework.data.redis.core.RedisTemplate[], when the exclusion is based on the bean name, `redisTemplate`, not its type).
 
 By default, a pooled connection factory is auto-configured if `commons-pool2` is on the classpath.
 
-The auto-configured `RedisConnectionFactory` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+The auto-configured javadoc:org.springframework.data.redis.connection.RedisConnectionFactory[] can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
 [configprops,yaml]
 ----
@@ -92,7 +92,7 @@ spring:
         enabled: true
 ----
 
-Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `RedisConnectionFactory` as shown in this example:
+Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the javadoc:org.springframework.data.redis.connection.RedisConnectionFactory[] as shown in this example:
 
 [configprops,yaml]
 ----
@@ -116,19 +116,19 @@ Spring Boot offers several conveniences for working with MongoDB, including the 
 [[data.nosql.mongodb.connecting]]
 === Connecting to a MongoDB Database
 
-To access MongoDB databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
+To access MongoDB databases, you can inject an auto-configured javadoc:org.springframework.data.mongodb.MongoDatabaseFactory[].
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
 include-code::MyBean[]
 
-If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
+If you have defined your own javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[], it will be used to auto-configure a suitable javadoc:org.springframework.data.mongodb.MongoDatabaseFactory[].
 
-The auto-configured `MongoClient` is created using a `MongoClientSettings` bean.
-If you have defined your own `MongoClientSettings`, it will be used without modification and the `spring.data.mongodb` properties will be ignored.
-Otherwise a `MongoClientSettings` will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
-In either case, you can declare one or more `MongoClientSettingsBuilderCustomizer` beans to fine-tune the `MongoClientSettings` configuration.
-Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] is created using a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] bean.
+If you have defined your own javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[], it will be used without modification and the `spring.data.mongodb` properties will be ignored.
+Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+In either case, you can declare one or more javadoc:org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
+Each will be called in order with the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings$Builder[] that is used to build the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[].
 
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
@@ -157,7 +157,7 @@ spring:
       password: "secret"
 ----
 
-The auto-configured `MongoClient` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
 [configprops,yaml]
 ----
@@ -169,7 +169,7 @@ spring:
         enabled: true
 ----
 
-Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `MongoClient` as shown in this example:
+Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] as shown in this example:
 
 [configprops,yaml]
 ----
@@ -191,8 +191,8 @@ You can also specify the port as part of the host address by using the `host:por
 This format should be used if you need to change the port of an `additional-hosts` entry.
 ====
 
-TIP: If you do not use Spring Data MongoDB, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
-If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.
+TIP: If you do not use Spring Data MongoDB, you can inject a javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] bean instead of using javadoc:org.springframework.data.mongodb.MongoDatabaseFactory[].
+If you want to take complete control of establishing the MongoDB connection, you can also declare your own javadoc:org.springframework.data.mongodb.MongoDatabaseFactory[] or javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] bean.
 
 NOTE: If you are using the reactive driver, Netty is required for SSL.
 The auto-configuration configures this factory automatically if Netty is available and the factory to use has not been customized already.
@@ -202,12 +202,12 @@ The auto-configuration configures this factory automatically if Netty is availab
 [[data.nosql.mongodb.template]]
 === MongoTemplate
 
-{url-spring-data-mongodb-site}[Spring Data MongoDB] provides a javadoc:{url-spring-data-mongodb-javadoc}/org.springframework.data.mongodb.core.MongoTemplate[] class that is very similar in its design to Spring's `JdbcTemplate`.
-As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
+{url-spring-data-mongodb-site}[Spring Data MongoDB] provides a javadoc:org.springframework.data.mongodb.core.MongoTemplate[] class that is very similar in its design to Spring's javadoc:org.springframework.jdbc.core.JdbcTemplate[].
+As with javadoc:org.springframework.jdbc.core.JdbcTemplate[], Spring Boot auto-configures a bean for you to inject the template, as follows:
 
 include-code::MyBean[]
 
-See the javadoc:{url-spring-data-mongodb-javadoc}/org.springframework.data.mongodb.core.MongoOperations[] API documentation for complete details.
+See the javadoc:org.springframework.data.mongodb.core.MongoOperations[] API documentation for complete details.
 
 
 
@@ -218,13 +218,13 @@ Spring Data includes repository support for MongoDB.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.
 
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
+You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way, as shown in the following example:
 
 include-code::CityRepository[]
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using `@EnableMongoRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {url-spring-data-mongodb-docs}[reference documentation].
 
@@ -241,9 +241,9 @@ Spring Boot offers several conveniences for working with Neo4j, including the `s
 [[data.nosql.neo4j.connecting]]
 === Connecting to a Neo4j Database
 
-To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
+To access a Neo4j server, you can inject an auto-configured javadoc:org.neo4j.driver.Driver[].
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
-The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
+The following example shows how to inject a Neo4j javadoc:org.neo4j.driver.Driver[] that gives you access, amongst other things, to a javadoc:org.neo4j.driver.Session[]:
 
 include-code::MyBean[]
 
@@ -260,9 +260,9 @@ spring:
       password: "secret"
 ----
 
-The auto-configured `Driver` is created using `ConfigBuilder`.
-To fine-tune its configuration, declare one or more `ConfigBuilderCustomizer` beans.
-Each will be called in order with the `ConfigBuilder` that is used to build the `Driver`.
+The auto-configured javadoc:org.neo4j.driver.Driver[] is created using `org.neo4j.driver.Config$ConfigBuilder`.
+To fine-tune its configuration, declare one or more javadoc:org.springframework.boot.autoconfigure.neo4j.ConfigBuilderCustomizer[] beans.
+Each will be called in order with the `org.neo4j.driver.Config$ConfigBuilder` that is used to build the javadoc:org.neo4j.driver.Driver[].
 
 
 
@@ -273,21 +273,21 @@ Spring Data includes repository support for Neo4j.
 For complete details of Spring Data Neo4j, see the {url-spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `City` as Spring Data Neo4j javadoc:org.springframework.data.neo4j.core.schema.Node[format=annotation] rather than JPA javadoc:jakarta.persistence.Entity[format=annotation] and the repository abstraction works in the same way, as shown in the following example:
 
 include-code::CityRepository[]
 
 The `spring-boot-starter-data-neo4j` starter enables the repository support as well as transaction management.
-Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
+Spring Boot supports both classic and reactive Neo4j repositories, using the javadoc:org.springframework.data.neo4j.core.Neo4jTemplate[] or javadoc:org.springframework.data.neo4j.core.ReactiveNeo4jTemplate[] beans.
 When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
 [NOTE]
 ====
-In an application using the reactive style, a `ReactiveTransactionManager` is not auto-configured.
+In an application using the reactive style, a javadoc:org.springframework.transaction.ReactiveTransactionManager[] is not auto-configured.
 To enable transaction management, the following bean must be defined in your configuration:
 
 include-code::MyNeo4jConfiguration[]
@@ -305,7 +305,7 @@ Spring Boot supports several clients:
 
 * The official low-level REST client
 * The official Java API client
-* The `ReactiveElasticsearchClient` provided by Spring Data Elasticsearch
+* The javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] provided by Spring Data Elasticsearch
 
 Spring Boot provides a dedicated starter, `spring-boot-starter-data-elasticsearch`.
 
@@ -334,14 +334,14 @@ spring:
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
 ==== Connecting to Elasticsearch Using RestClient
 
-If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
-In addition to the properties described previously, to fine-tune the `RestClient` you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the clients' configuration, define a `RestClientBuilder` bean.
+If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a javadoc:org.springframework.web.client.RestClient[] bean.
+In addition to the properties described previously, to fine-tune the javadoc:org.springframework.web.client.RestClient[] you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer[] for more advanced customizations.
+To take full control over the clients' configuration, define a javadoc:org.elasticsearch.client.RestClientBuilder[] bean.
 
 
 
-Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestClient` bean.
-You can further tune how `Sniffer` is configured, as shown in the following example:
+Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a javadoc:org.elasticsearch.client.sniff.Sniffer[] is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the javadoc:org.springframework.web.client.RestClient[] bean.
+You can further tune how javadoc:org.elasticsearch.client.sniff.Sniffer[] is configured, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -358,38 +358,38 @@ spring:
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
 ==== Connecting to Elasticsearch Using ElasticsearchClient
 
-If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an `ElasticsearchClient` bean.
+If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean.
 
-The `ElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.
-Therefore, the properties described previously can be used to configure the `ElasticsearchClient`.
-Furthermore, you can define a `RestClientOptions` bean to take further control of the behavior of the transport.
+The javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] uses a transport that depends upon the previously described javadoc:org.springframework.web.client.RestClient[].
+Therefore, the properties described previously can be used to configure the javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[].
+Furthermore, you can define a javadoc:co.elastic.clients.transport.rest_client.RestClientOptions[] bean to take further control of the behavior of the transport.
 
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.reactiveclient]]
 ==== Connecting to Elasticsearch using ReactiveElasticsearchClient
 
-{url-spring-data-elasticsearch-site}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
-If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`.
+{url-spring-data-elasticsearch-site}[Spring Data Elasticsearch] ships javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] for querying Elasticsearch instances in a reactive fashion.
+If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[].
 
-The `ReactiveElasticsearchclient` uses a transport that depends upon the previously described `RestClient`.
-Therefore, the properties described previously can be used to configure the `ReactiveElasticsearchClient`.
-Furthermore, you can define a `RestClientOptions` bean to take further control of the behavior of the transport.
+The javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[] uses a transport that depends upon the previously described javadoc:org.springframework.web.client.RestClient[].
+Therefore, the properties described previously can be used to configure the javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient[].
+Furthermore, you can define a javadoc:co.elastic.clients.transport.rest_client.RestClientOptions[] bean to take further control of the behavior of the transport.
 
 
 
 [[data.nosql.elasticsearch.connecting-using-spring-data]]
 === Connecting to Elasticsearch by Using Spring Data
 
-To connect to Elasticsearch, an `ElasticsearchClient` bean must be defined,
+To connect to Elasticsearch, an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean must be defined,
 auto-configured by Spring Boot or manually provided by the application (see previous sections).
 With this configuration in place, an
-`ElasticsearchTemplate` can be injected like any other Spring bean,
+javadoc:org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate[] can be injected like any other Spring bean,
 as shown in the following example:
 
 include-code::MyBean[]
 
-In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[`ReactiveElasticsearchClient`] and a `ReactiveElasticsearchTemplate` as beans.
+In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[`ReactiveElasticsearchClient`] and a javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate[] as beans.
 They are the reactive equivalent of the other REST clients.
 
 
@@ -401,19 +401,19 @@ Spring Data includes repository support for Elasticsearch.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed for you automatically based on method names.
 
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
+You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch javadoc:org.springframework.data.elasticsearch.annotations.Document[format=annotation] class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using `@EnableElasticsearchRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data Elasticsearch, see the {url-spring-data-elasticsearch-docs}[reference documentation].
 
-Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
+Spring Boot supports both classic and reactive Elasticsearch repositories, using the javadoc:org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate[] or javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate[] beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.
 
-If you wish to use your own template for backing the Elasticsearch repositories, you can add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`, as long as it is named `"elasticsearchTemplate"`.
-Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperations`, with the bean name `"reactiveElasticsearchTemplate"`.
+If you wish to use your own template for backing the Elasticsearch repositories, you can add your own javadoc:org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate[] or javadoc:org.springframework.data.elasticsearch.core.ElasticsearchOperations[] javadoc:org.springframework.context.annotation.Bean[format=annotation], as long as it is named `"elasticsearchTemplate"`.
+Same applies to javadoc:org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate[] and javadoc:org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations[], with the bean name `"reactiveElasticsearchTemplate"`.
 
 You can choose to disable the repositories support with the following property:
 
@@ -440,7 +440,7 @@ There is a `spring-boot-starter-data-cassandra` starter for collecting the depen
 [[data.nosql.cassandra.connecting]]
 === Connecting to Cassandra
 
-You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
+You can inject an auto-configured javadoc:org.springframework.data.cassandra.core.cql.CqlTemplate[], javadoc:org.springframework.data.cassandra.core.CassandraTemplate[], or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
@@ -501,8 +501,8 @@ The Cassandra driver has its own configuration infrastructure that loads an `app
 Spring Boot does not look for such a file by default but can load one using `spring.cassandra.config`.
 If a property is both present in `+spring.cassandra.*+` and the configuration file, the value in `+spring.cassandra.*+` takes precedence.
 
-For more advanced driver customizations, you can register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer`.
-The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
+For more advanced driver customizations, you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.cassandra.DriverConfigLoaderBuilderCustomizer[].
+The `CqlSession` can be customized with a bean of type javadoc:org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer[].
 ====
 
 NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
@@ -511,7 +511,7 @@ The following code listing shows how to inject a Cassandra bean:
 
 include-code::MyBean[]
 
-If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
+If you add your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.data.cassandra.core.CassandraTemplate[], it replaces the default.
 
 
 
@@ -519,13 +519,13 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 === Spring Data Cassandra Repositories
 
 Spring Data includes basic repository support for Cassandra.
-Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
+Currently, this is more limited than the JPA repositories discussed earlier and needs javadoc:org.springframework.data.cassandra.repository.Query[format=annotation] annotated finder methods.
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using `@EnableCassandraRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.cassandra.repository.config.EnableCassandraRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
-TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+TIP: For complete details of Spring Data Cassandra, see the {url-spring-data-cassandra-docs}[reference documentation].
 
 
 
@@ -541,7 +541,7 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 [[data.nosql.couchbase.connecting]]
 === Connecting to Couchbase
 
-You can get a `Cluster` by adding the Couchbase SDK and some configuration.
+You can get a javadoc:com.couchbase.client.java.Cluster[] by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://docs.couchbase.com/dotnet-sdk/current/howtos/managing-connections.html[connection string] and credentials for authentication. Basic authentication with username and password can be configured as shown in the following example:
 
@@ -587,8 +587,8 @@ spring:
         private-key: "classpath:client.key"
 ----
 
-It is also possible to customize some of the `ClusterEnvironment` settings.
-For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support with a reference to a configured xref:features/ssl.adoc[SSL bundle]:
+It is also possible to customize some of the javadoc:com.couchbase.client.java.env.ClusterEnvironment[] settings.
+For instance, the following configuration changes the timeout to open a new javadoc:com.couchbase.client.java.Bucket[] and enables SSL support with a reference to a configured xref:features/ssl.adoc[SSL bundle]:
 
 [configprops,yaml]
 ----
@@ -602,7 +602,7 @@ spring:
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
-To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans can be used.
+To take more control, one or more javadoc:org.springframework.boot.autoconfigure.couchbase.ClusterEnvironmentBuilderCustomizer[] beans can be used.
 
 
 
@@ -613,12 +613,12 @@ Spring Data includes repository support for Couchbase.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using `@EnableCouchbaseRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
 For complete details of Spring Data Couchbase, see the {url-spring-data-couchbase-docs}[reference documentation].
 
-You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
+You can inject an auto-configured javadoc:org.springframework.data.couchbase.core.CouchbaseTemplate[] instance as you would with any other Spring Bean, provided a javadoc:org.springframework.data.couchbase.CouchbaseClientFactory[] bean is available.
+This happens when a javadoc:com.couchbase.client.java.Cluster[] is available, as described above, and a bucket name has been specified:
 
 [configprops,yaml]
 ----
@@ -628,17 +628,17 @@ spring:
       bucket-name: "my-bucket"
 ----
 
-The following examples shows how to inject a `CouchbaseTemplate` bean:
+The following examples shows how to inject a javadoc:org.springframework.data.couchbase.core.CouchbaseTemplate[] bean:
 
 include-code::MyBean[]
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
 
-* A `CouchbaseMappingContext` `@Bean` with a name of `couchbaseMappingContext`.
-* A `CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
-* A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
+* A javadoc:org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext[] javadoc:org.springframework.context.annotation.Bean[format=annotation] with a name of `couchbaseMappingContext`.
+* A javadoc:org.springframework.data.convert.CustomConversions[] javadoc:org.springframework.context.annotation.Bean[format=annotation] with a name of `couchbaseCustomConversions`.
+* A javadoc:org.springframework.data.couchbase.core.CouchbaseTemplate[] javadoc:org.springframework.context.annotation.Bean[format=annotation] with a name of `couchbaseTemplate`.
 
-To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
+To avoid hard-coding those names in your own config, you can reuse javadoc:org.springframework.data.couchbase.config.BeanNames[] provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
 include-code::MyCouchbaseConfiguration[]
@@ -672,10 +672,10 @@ spring:
 
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
 
-An `LdapContextSource` is auto-configured based on these settings.
-If a `DirContextAuthenticationStrategy` bean is available, it is associated to the auto-configured `LdapContextSource`.
-If you need to customize it, for instance to use a `PooledContextSource`, you can still inject the auto-configured `LdapContextSource`.
-Make sure to flag your customized `ContextSource` as `@Primary` so that the auto-configured `LdapTemplate` uses it.
+An javadoc:org.springframework.ldap.core.support.LdapContextSource[] is auto-configured based on these settings.
+If a javadoc:org.springframework.ldap.core.support.DirContextAuthenticationStrategy[] bean is available, it is associated to the auto-configured javadoc:org.springframework.ldap.core.support.LdapContextSource[].
+If you need to customize it, for instance to use a javadoc:org.springframework.ldap.pool2.factory.PooledContextSource[], you can still inject the auto-configured javadoc:org.springframework.ldap.core.support.LdapContextSource[].
+Make sure to flag your customized javadoc:org.springframework.ldap.core.ContextSource[] as javadoc:org.springframework.context.annotation.Primary[format=annotation] so that the auto-configured javadoc:org.springframework.ldap.core.LdapTemplate[] uses it.
 
 
 
@@ -686,11 +686,11 @@ Spring Data includes repository support for LDAP.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using `@EnableLdapRepositories` and `@EntityScan` respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.ldap.repository.config.EnableLdapRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
 
-For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+TIP: For complete details of Spring Data LDAP, see the {url-spring-data-ldap-docs}[reference documentation].
 
-You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
+You can also inject an auto-configured javadoc:org.springframework.ldap.core.LdapTemplate[] instance as you would with any other Spring Bean, as shown in the following example:
 
 
 include-code::MyBean[]
@@ -734,26 +734,3 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
-
-
-
-[[data.nosql.influxdb]]
-== InfluxDB
-
-WARNING: Auto-configuration for InfluxDB is deprecated and scheduled for removal in Spring Boot 3.4 in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
-
-https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
-
-
-
-[[data.nosql.influxdb.connecting]]
-=== Connecting to InfluxDB
-
-Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set using configprop:spring.influx.url[deprecated].
-
-If the connection to InfluxDB requires a user and password, you can set the configprop:spring.influx.user[deprecated] and configprop:spring.influx.password[deprecated] properties accordingly.
-
-InfluxDB relies on OkHttp.
-If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
-
-If you need more control over the configuration, consider registering an `InfluxDbCustomizer` bean.

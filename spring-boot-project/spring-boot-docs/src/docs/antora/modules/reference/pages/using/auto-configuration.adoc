@@ -4,10 +4,10 @@
 Spring Boot auto-configuration attempts to automatically configure your Spring application based on the jar dependencies that you have added.
 For example, if `HSQLDB` is on your classpath, and you have not manually configured any database connection beans, then Spring Boot auto-configures an in-memory database.
 
-You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration` or `@SpringBootApplication` annotations to one of your `@Configuration` classes.
+You need to opt-in to auto-configuration by adding the javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] or javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotations to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes.
 
-TIP: You should only ever add one `@SpringBootApplication` or `@EnableAutoConfiguration` annotation.
-We generally recommend that you add one or the other to your primary `@Configuration` class only.
+TIP: You should only ever add one javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] or javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] annotation.
+We generally recommend that you add one or the other to your primary javadoc:org.springframework.context.annotation.Configuration[format=annotation] class only.
 
 
 
@@ -16,7 +16,7 @@ We generally recommend that you add one or the other to your primary `@Configura
 
 Auto-configuration is non-invasive.
 At any point, you can start to define your own configuration to replace specific parts of the auto-configuration.
-For example, if you add your own `DataSource` bean, the default embedded database support backs away.
+For example, if you add your own javadoc:javax.sql.DataSource[] bean, the default embedded database support backs away.
 
 If you need to find out what auto-configuration is currently being applied, and why, start your application with the `--debug` switch.
 Doing so enables debug logs for a selection of core loggers and logs a conditions report to the console.
@@ -26,12 +26,12 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 [[using.auto-configuration.disabling-specific]]
 == Disabling Specific Auto-configuration Classes
 
-If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@SpringBootApplication` to disable them, as shown in the following example:
+If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] to disable them, as shown in the following example:
 
 include-code::MyApplication[]
 
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.
-If you prefer to use `@EnableAutoConfiguration` rather than `@SpringBootApplication`, `exclude` and `excludeName` are also available.
+If you prefer to use javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] rather than javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation], `exclude` and `excludeName` are also available.
 Finally, you can also control the list of auto-configuration classes to exclude by using the configprop:spring.autoconfigure.exclude[] property.
 
 TIP: You can define exclusions both at the annotation level and by using the property.
@@ -45,5 +45,5 @@ The actual contents of those classes, such as nested configuration classes or be
 == Auto-configuration Packages
 
 Auto-configuration packages are the packages that various auto-configured features look in by default when scanning for things such as entities and Spring Data repositories.
-The `@EnableAutoConfiguration` annotation (either directly or through its presence on `@SpringBootApplication`) determines the default auto-configuration package.
-Additional packages can be configured using the `@AutoConfigurationPackage` annotation.
+The javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] annotation (either directly or through its presence on javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]) determines the default auto-configuration package.
+Additional packages can be configured using the javadoc:org.springframework.boot.autoconfigure.AutoConfigurationPackage[format=annotation] annotation.

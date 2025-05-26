@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Map;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.CacheMetricsRegistrar;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -50,9 +52,9 @@ class CacheMetricsRegistrarConfiguration {
 	private final Map<String, CacheManager> cacheManagers;
 
 	CacheMetricsRegistrarConfiguration(MeterRegistry registry, Collection<CacheMeterBinderProvider<?>> binderProviders,
-			Map<String, CacheManager> cacheManagers) {
+			ConfigurableListableBeanFactory beanFactory) {
 		this.registry = registry;
-		this.cacheManagers = cacheManagers;
+		this.cacheManagers = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, CacheManager.class);
 		this.cacheMetricsRegistrar = new CacheMetricsRegistrar(this.registry, binderProviders);
 		bindCachesToRegistry();
 	}

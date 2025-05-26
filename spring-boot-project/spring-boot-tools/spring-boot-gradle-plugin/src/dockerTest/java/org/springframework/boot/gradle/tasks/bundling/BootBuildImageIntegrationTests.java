@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,8 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT",
-				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1",
-				"--trustBuilder", "--runImage=paketobuildpacks/run-jammy-tiny", "--createdDate=2020-07-01T12:34:56Z",
+				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2",
+				"--trustBuilder", "--runImage=paketobuildpacks/run-noble-tiny", "--createdDate=2020-07-01T12:34:56Z",
 				"--applicationDirectory=/application");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
@@ -337,9 +337,9 @@ class BootBuildImageIntegrationTests {
 		cleanupCache(launchCachePath);
 	}
 
-	private static void cleanupCache(Path buildCachePath) {
+	private static void cleanupCache(Path cachePath) {
 		try {
-			FileSystemUtils.deleteRecursively(buildCachePath);
+			FileSystemUtils.deleteRecursively(cachePath);
 		}
 		catch (Exception ex) {
 			// ignore
@@ -412,9 +412,9 @@ class BootBuildImageIntegrationTests {
 	void buildsImageOnLinuxArmWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
-		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
+		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
@@ -440,9 +440,9 @@ class BootBuildImageIntegrationTests {
 	void failsWhenBuildingOnLinuxAmdWithImagePlatformLinuxArm() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
-		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
-		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2";
+		String runImage = "docker.io/paketobuildpacks/run-noble-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.2";
 		removeImages(builderImage, runImage, buildpackImage);
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
@@ -482,7 +482,7 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--imageName=example/Invalid-Image-Name");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
+		assertThat(result.getOutput()).containsPattern("must be an image reference")
 			.containsPattern("example/Invalid-Image-Name");
 	}
 
@@ -501,7 +501,7 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
+		assertThat(result.getOutput()).containsPattern("must be an image reference")
 			.containsPattern("example/Invalid-Tag-Name");
 	}
 
@@ -511,6 +511,14 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.getOutput()).containsPattern("Each image building cache can be configured only once");
+	}
+
+	@TestTemplate
+	void failsWithIncompatiblePlatform() throws IOException {
+		writeMainClass();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
+		assertThat(result.getOutput()).contains(
+				"Image platform mismatch detected. The configured platform 'linux/arm64' is not supported by the image 'ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.3-amd64'. Requested platform 'linux/arm64' but got 'linux/amd64'");
 	}
 
 	private void writeMainClass() throws IOException {

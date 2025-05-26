@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,12 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
-import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryTests.TestContainerConnectionDetailsFactory.TestContainerConnectionDetails;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,7 +65,7 @@ class ContainerConnectionDetailsFactoryTests {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 	}
 
 	@Test
@@ -113,7 +109,8 @@ class ContainerConnectionDetailsFactoryTests {
 	void getConnectionDetailsWhenContainerTypeDoesNotMatchReturnsNull() {
 		ElasticsearchContainer container = mock(ElasticsearchContainer.class);
 		ContainerConnectionSource<?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
-				ElasticsearchContainer.class, container.getDockerImageName(), this.annotation, () -> container);
+				ElasticsearchContainer.class, container.getDockerImageName(), this.annotation, () -> container, null,
+				null);
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		ConnectionDetails connectionDetails = getConnectionDetails(factory, source);
 		assertThat(connectionDetails).isNull();
@@ -135,14 +132,11 @@ class ContainerConnectionDetailsFactoryTests {
 	}
 
 	@Test
-	void getContainerWhenInitializedPublishesEventAndReturnsSuppliedContainer() throws Exception {
+	void getContainerWhenInitializedReturnsSuppliedContainer() throws Exception {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		TestContainerConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
-		ApplicationContext context = mock(ApplicationContext.class);
-		connectionDetails.setApplicationContext(context);
 		connectionDetails.afterPropertiesSet();
 		assertThat(connectionDetails.callGetContainer()).isSameAs(this.container);
-		then(context).should().publishEvent(any(BeforeTestcontainerUsedEvent.class));
 	}
 
 	@Test

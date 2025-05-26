@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.ConfigData.Option;
 import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorIntegrationTests.Config;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -45,6 +46,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@WithResource(name = "application.properties", content = """
+		spring.config.import=icwps:
+		prop=fromfile
+		""")
+@WithResource(name = "application-prod.properties", content = "prop=fromprofilefile")
+@WithResource(name = "META-INF/spring.factories",
+		content = """
+				org.springframework.boot.context.config.ConfigDataLoader=\
+				org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegrationTests.Loader
+				org.springframework.boot.context.config.ConfigDataLocationResolver=\
+				org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegrationTests.LocationResolver
+				""")
 class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegrationTests {
 
 	private SpringApplication application;
@@ -60,16 +73,14 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 
 	@Test
 	void testWithoutProfile() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=configimportwithprofilespecific");
+		ConfigurableApplicationContext context = this.application.run();
 		String value = context.getEnvironment().getProperty("prop");
 		assertThat(value).isEqualTo("fromicwps1");
 	}
 
 	@Test
 	void testWithProfile() {
-		ConfigurableApplicationContext context = this.application
-			.run("--spring.config.name=configimportwithprofilespecific", "--spring.profiles.active=prod");
+		ConfigurableApplicationContext context = this.application.run("--spring.profiles.active=prod");
 		String value = context.getEnvironment().getProperty("prop");
 		assertThat(value).isEqualTo("fromicwps2");
 	}

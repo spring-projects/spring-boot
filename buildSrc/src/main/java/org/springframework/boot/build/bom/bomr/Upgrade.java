@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,20 @@
 package org.springframework.boot.build.bom.bomr;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
  * An upgrade to change a {@link Library} to use a new version.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @param from the library we're upgrading from
+ * @param to the library we're upgrading to (may be a SNAPSHOT)
+ * @param toRelease the release version of the library we're ultimately upgrading to
  */
-final class Upgrade {
+record Upgrade(Library from, Library to, Library toRelease) {
 
-	private final Library library;
-
-	private final DependencyVersion version;
-
-	Upgrade(Library library, DependencyVersion version) {
-		this.library = library;
-		this.version = version;
-	}
-
-	Library getLibrary() {
-		return this.library;
-	}
-
-	DependencyVersion getVersion() {
-		return this.version;
+	Upgrade(Library from, Library to) {
+		this(from, to, to);
 	}
 
 }

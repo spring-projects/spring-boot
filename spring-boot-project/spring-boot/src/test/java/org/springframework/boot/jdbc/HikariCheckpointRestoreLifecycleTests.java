@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.ConfigurableApplicationContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -47,7 +49,8 @@ class HikariCheckpointRestoreLifecycleTests {
 		config.setJdbcUrl("jdbc:hsqldb:mem:test-" + UUID.randomUUID());
 		config.setPoolName("lifecycle-tests");
 		this.dataSource = new HikariDataSource(config);
-		this.lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource);
+		this.lifecycle = new HikariCheckpointRestoreLifecycle(this.dataSource,
+				mock(ConfigurableApplicationContext.class));
 	}
 
 	@Test
@@ -88,7 +91,7 @@ class HikariCheckpointRestoreLifecycleTests {
 	@Test
 	void startHasNoEffectWhenDataSourceIsNotAHikariDataSource() {
 		HikariCheckpointRestoreLifecycle nonHikariLifecycle = new HikariCheckpointRestoreLifecycle(
-				mock(DataSource.class));
+				mock(DataSource.class), mock(ConfigurableApplicationContext.class));
 		assertThat(nonHikariLifecycle.isRunning()).isFalse();
 		nonHikariLifecycle.start();
 		assertThat(nonHikariLifecycle.isRunning()).isFalse();
@@ -97,7 +100,7 @@ class HikariCheckpointRestoreLifecycleTests {
 	@Test
 	void stopHasNoEffectWhenDataSourceIsNotAHikariDataSource() {
 		HikariCheckpointRestoreLifecycle nonHikariLifecycle = new HikariCheckpointRestoreLifecycle(
-				mock(DataSource.class));
+				mock(DataSource.class), mock(ConfigurableApplicationContext.class));
 		assertThat(nonHikariLifecycle.isRunning()).isFalse();
 		nonHikariLifecycle.stop();
 		assertThat(nonHikariLifecycle.isRunning()).isFalse();

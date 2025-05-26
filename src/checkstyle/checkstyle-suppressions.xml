@@ -22,7 +22,7 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
-	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="Javadoc*" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
@@ -82,6 +82,8 @@
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
 	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
+	<suppress files="MyInterface\.java" checks="InterfaceIsType" />
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
 	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
+	<suppress files="ConfigurationPropertyCaching\.java" checks="SpringJavadoc" message="\@since"/>
 </suppressions>

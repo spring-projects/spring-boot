@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ public class ContainerConfig {
 	ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
 			List<Binding> bindings, Map<String, String> env, String networkMode, List<String> securityOptions)
 			throws IOException {
-		Assert.notNull(image, "Image must not be null");
-		Assert.hasText(command, "Command must not be empty");
+		Assert.notNull(image, "'image' must not be null");
+		Assert.hasText(command, "'command' must not be empty");
 		ObjectMapper objectMapper = SharedObjectMapper.get();
 		ObjectNode node = objectMapper.createObjectNode();
 		if (StringUtils.hasText(user)) {
@@ -100,8 +100,8 @@ public class ContainerConfig {
 	 * @return a new {@link ContainerConfig} instance
 	 */
 	public static ContainerConfig of(ImageReference imageReference, Consumer<Update> update) {
-		Assert.notNull(imageReference, "ImageReference must not be null");
-		Assert.notNull(update, "Update must not be null");
+		Assert.notNull(imageReference, "'imageReference' must not be null");
+		Assert.notNull(update, "'update' must not be null");
 		return new Update(imageReference).run(update);
 	}
 

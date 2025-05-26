@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.validation.beanvalidation.CustomValidatorBean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
+import org.springframework.validation.method.MethodValidationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ValidationAutoConfigurationTests {
 
@@ -205,6 +207,26 @@ class ValidationAutoConfigurationTests {
 				service.doSomething(42);
 				assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
 			});
+	}
+
+	@Test
+	void validationCanBeConfiguredToAdaptConstraintViolations() {
+		this.contextRunner.withUserConfiguration(AnotherSampleServiceConfiguration.class)
+			.withPropertyValues("spring.validation.method.adapt-constraint-violations=true")
+			.run((context) -> {
+				assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
+				AnotherSampleService service = context.getBean(AnotherSampleService.class);
+				service.doSomething(42);
+				assertThatExceptionOfType(MethodValidationException.class).isThrownBy(() -> service.doSomething(2));
+			});
+	}
+
+	@Test
+	void validationUseDefaultAdaptToConstraintViolationsValue() {
+		this.contextRunner.withUserConfiguration(AnotherSampleServiceConfiguration.class).run((context) -> {
+			MethodValidationPostProcessor postProcessor = context.getBean(MethodValidationPostProcessor.class);
+			assertThat(postProcessor).hasFieldOrPropertyWithValue("adaptConstraintViolations", false);
+		});
 	}
 
 	@Test

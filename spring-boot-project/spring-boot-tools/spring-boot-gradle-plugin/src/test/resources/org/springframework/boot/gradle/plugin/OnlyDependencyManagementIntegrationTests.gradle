@@ -6,7 +6,9 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 
 repositories {
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencyManagement {

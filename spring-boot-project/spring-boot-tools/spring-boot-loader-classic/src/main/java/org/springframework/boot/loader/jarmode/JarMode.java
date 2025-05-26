@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ public interface JarMode {
 	 * Run the jar in the given mode.
 	 * @param mode the mode to use
 	 * @param args any program arguments
+	 * @throws JarModeErrorException on an error that should print a simple error message
 	 */
-	void run(String mode, String[] args);
+	void run(String mode, String[] args) throws JarModeErrorException;
 
 }

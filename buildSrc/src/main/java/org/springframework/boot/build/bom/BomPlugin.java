@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
@@ -60,13 +61,20 @@ public class BomPlugin implements Plugin<Project> {
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
-		BomExtension bom = project.getExtensions()
-			.create("bom", BomExtension.class, project.getDependencies(), project);
-		CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
+		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project);
+		TaskProvider<CreateResolvedBom> createResolvedBom = project.getTasks()
+			.register("createResolvedBom", CreateResolvedBom.class, bom);
+		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
+		checkBom.configure(
+				(task) -> task.getResolvedBomFile().set(createResolvedBom.flatMap(CreateResolvedBom::getOutputFile)));
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
-		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
-		project.getTasks().create("moveToSnapshots", MoveToSnapshots.class, bom);
+		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
+		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
 		project.getTasks().register("checkLinks", CheckLinks.class, bom);
+		Configuration resolvedBomConfiguration = project.getConfigurations().create("resolvedBom");
+		project.getArtifacts()
+			.add(resolvedBomConfiguration.getName(), createResolvedBom.map(CreateResolvedBom::getOutputFile),
+					(artifact) -> artifact.builtBy(createResolvedBom));
 		new PublishingCustomizer(project, bom).customize();
 	}
 
@@ -269,13 +277,8 @@ public class BomPlugin implements Plugin<Project> {
 
 		private Node findChild(Node parent, String name) {
 			for (Object child : parent.children()) {
-				if (child instanceof Node node) {
-					if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
-						return node;
-					}
-					if (name.equals(node.name())) {
-						return node;
-					}
+				if (isNodeWithName(child, name)) {
+					return (Node) child;
 				}
 			}
 			return null;

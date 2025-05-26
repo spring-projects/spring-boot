@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,21 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
+import org.apache.hc.client5.http.impl.classic.RedirectExec;
+import org.apache.hc.client5.http.protocol.RedirectStrategy;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -38,6 +46,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -66,6 +75,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Yanming Zhou
  */
 class TestRestTemplateTests {
 
@@ -130,13 +140,115 @@ class TestRestTemplateTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void options() {
-		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
-		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-			.getRestTemplate()
-			.getRequestFactory();
-		RequestConfig config = factory.createRequestConfig();
+		RequestConfig config = getRequestConfig(
+				new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS, HttpClientOption.ENABLE_COOKIES));
 		assertThat(config.isRedirectsEnabled()).isTrue();
+		assertThat(config.getCookieSpec()).isEqualTo("strict");
+	}
+
+	@Test
+	void jdkBuilderCanBeSpecifiedWithSpecificRedirects() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk());
+		TestRestTemplate templateWithRedirects = new TestRestTemplate(builder.redirects(Redirects.FOLLOW));
+		assertThat(getJdkHttpClient(templateWithRedirects).followRedirects()).isEqualTo(Redirect.NORMAL);
+		TestRestTemplate templateWithoutRedirects = new TestRestTemplate(builder.redirects(Redirects.DONT_FOLLOW));
+		assertThat(getJdkHttpClient(templateWithoutRedirects).followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
+		assertThat(getRedirectStrategy((RestTemplateBuilder) null)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(null, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW))).matches(this::isDontFollowStrategy);
+		assertThat(getRedirectStrategy(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
+			.matches(this::isFollowStrategy);
+	}
+
+	@Test
+	void withRequestFactorySettingsRedirectsForHttpComponents() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template
+			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW))))
+			.matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW))))
+			.matches(this::isDontFollowStrategy);
+	}
+
+	@Test
+	void withRedirects() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRedirectStrategy(template)).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.FOLLOW))).matches(this::isFollowStrategy);
+		assertThat(getRedirectStrategy(template.withRedirects(Redirects.DONT_FOLLOW)))
+			.matches(this::isDontFollowStrategy);
+	}
+
+	@Test
+	void withRequestFactorySettingsRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void withRequestFactorySettingsUpdateRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(
+				template.withRequestFactorySettings((settings) -> settings.withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	private RequestConfig getRequestConfig(TestRestTemplate template) {
+		ClientHttpRequestFactory requestFactory = template.getRestTemplate().getRequestFactory();
+		return (RequestConfig) Extractors.byName("httpClient.defaultConfig").apply(requestFactory);
+	}
+
+	private RedirectStrategy getRedirectStrategy(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
+		builder = (builder != null) ? builder : new RestTemplateBuilder();
+		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
+		return getRedirectStrategy(template);
+	}
+
+	private RedirectStrategy getRedirectStrategy(TestRestTemplate template) {
+		ClientHttpRequestFactory requestFactory = template.getRestTemplate().getRequestFactory();
+		Object chain = Extractors.byName("httpClient.execChain").apply(requestFactory);
+		while (chain != null) {
+			Object handler = Extractors.byName("handler").apply(chain);
+			if (handler instanceof RedirectExec) {
+				return (RedirectStrategy) Extractors.byName("redirectStrategy").apply(handler);
+			}
+			chain = Extractors.byName("next").apply(chain);
+		}
+		return null;
+	}
+
+	private boolean isFollowStrategy(RedirectStrategy redirectStrategy) {
+		return redirectStrategy instanceof DefaultRedirectStrategy;
+	}
+
+	private boolean isDontFollowStrategy(RedirectStrategy redirectStrategy) {
+		return redirectStrategy.getClass().getName().contains("NoFollow");
+	}
+
+	private HttpClient getJdkHttpClient(TestRestTemplate template) {
+		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) template.getRestTemplate()
+			.getRequestFactory();
+		return (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
 	}
 
 	@Test
@@ -270,13 +382,13 @@ class TestRestTemplateTests {
 	@Test
 	void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
 	void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
 			}));
 	}
 

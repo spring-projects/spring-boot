@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBuilder;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -42,7 +47,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new PostgresJdbcDockerComposeConnectionDetails(source.getRunningService());
+		return new PostgresJdbcDockerComposeConnectionDetails(source.getRunningService(), source.getEnvironment());
 	}
 
 	/**
@@ -57,10 +62,11 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresJdbcDockerComposeConnectionDetails(RunningService service, Environment environment) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
-			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
+			this.jdbcUrl = addApplicationNameIfNecessary(jdbcUrlBuilder.build(service, this.environment.getDatabase()),
+					environment);
 		}
 
 		@Override
@@ -76,6 +82,27 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
+		}
+
+		private static String addApplicationNameIfNecessary(String jdbcUrl, Environment environment) {
+			if (jdbcUrl.contains("&ApplicationName=") || jdbcUrl.contains("?ApplicationName=")) {
+				return jdbcUrl;
+			}
+			String applicationName = environment.getProperty("spring.application.name");
+			if (!StringUtils.hasText(applicationName)) {
+				return jdbcUrl;
+			}
+			StringBuilder jdbcUrlBuilder = new StringBuilder(jdbcUrl);
+			if (!jdbcUrl.contains("?")) {
+				jdbcUrlBuilder.append("?");
+			}
+			else if (!jdbcUrl.endsWith("&")) {
+				jdbcUrlBuilder.append("&");
+			}
+			return jdbcUrlBuilder.append("ApplicationName")
+				.append('=')
+				.append(URLEncoder.encode(applicationName, StandardCharsets.UTF_8))
+				.toString();
 		}
 
 	}

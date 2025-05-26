@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -70,6 +71,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class));
 
 	@Test
+	@WithResource(name = "templates/template.html", content = "<html th:text=\"${foo}\">foo</html>")
 	void createFromConfigClass() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.suffix:.html").run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -188,6 +190,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/data-dialect.html", content = "<html><body data:foo=\"${foo}\"></body></html>")
 	void useDataDialect() {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
@@ -198,6 +201,8 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/java8time-dialect.html",
+			content = "<html><body th:text=\"${#temporals.create('2015','11','24')}\"></body></html>")
 	void useJava8TimeDialect() {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
@@ -208,6 +213,8 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/security-dialect.html",
+			content = "<html><body><div sec:authentication=\"name\"></div></body></html>")
 	void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
@@ -218,7 +225,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 			WebContext attrs = new WebContext(SpringWebFluxWebApplication.buildApplication(null)
 				.buildExchange(exchange, Locale.US, MediaType.TEXT_HTML, StandardCharsets.UTF_8));
 			String result = engine.process("security-dialect", attrs);
-			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
+			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>");
 		});
 	}
 
@@ -229,6 +236,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.html", content = "<html><body th:text=\"${foo}\">Home</body></html>")
 	void renderTemplate() {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);

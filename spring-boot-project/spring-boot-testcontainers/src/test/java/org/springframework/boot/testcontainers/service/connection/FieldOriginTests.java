@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class FieldOriginTests {
 	@Test
 	void createWhenFieldIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FieldOrigin(null))
-			.withMessage("Field must not be null");
+			.withMessage("'field' must not be null");
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class FieldOriginTests {
 		Origin o2 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "one"));
 		Origin o3 = new FieldOrigin(ReflectionUtils.findField(Fields.class, "two"));
 		assertThat(o1).isEqualTo(o1).isEqualTo(o2).isNotEqualTo(o3);
-		assertThat(o1.hashCode()).isEqualTo(o2.hashCode());
+		assertThat(o1).hasSameHashCodeAs(o2);
 	}
 
 	@Test

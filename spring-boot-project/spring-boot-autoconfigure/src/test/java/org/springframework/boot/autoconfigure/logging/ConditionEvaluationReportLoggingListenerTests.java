@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
+import java.time.Duration;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -24,10 +26,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -35,7 +38,6 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebAp
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,19 +128,42 @@ class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@ImportAutoConfiguration({ MatchingAutoConfiguration.class, NonMatchingAutoConfiguration.class,
+			UnconditionalAutoConfiguration.class })
 	static class Config {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(WebMvcAutoConfiguration.class)
+	@ImportAutoConfiguration({ MatchingAutoConfiguration.class, NonMatchingAutoConfiguration.class,
+			UnconditionalAutoConfiguration.class })
 	static class ErrorConfig {
 
 		@Bean
 		String iBreak() {
 			throw new RuntimeException();
+		}
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnProperty(name = "com.example.property", matchIfMissing = true)
+	static class MatchingAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnBean(Duration.class)
+	static class NonMatchingAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	static class UnconditionalAutoConfiguration {
+
+		@Bean
+		String example() {
+			return "example";
 		}
 
 	}

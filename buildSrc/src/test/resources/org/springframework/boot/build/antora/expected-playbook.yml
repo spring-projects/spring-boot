@@ -13,7 +13,7 @@ antora:
       name: test
     locations:
     - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
-    - project/build/generated/docs/antora-dependencies-content/test-${version}-${name}-${classifier}.zip
+    - project/build/generated/docs/antora-dependencies-content/test-dependency/test-${version}-${name}-${classifier}.zip
     version_file: gradle.properties
   - require: '@springio/antora-extensions/root-component-extension'
     root_component_name: boot

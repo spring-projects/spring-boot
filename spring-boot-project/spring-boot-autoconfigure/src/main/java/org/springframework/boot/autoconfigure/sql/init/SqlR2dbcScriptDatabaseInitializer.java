@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.sql.init;
 
 import io.r2dbc.spi.ConnectionFactory;
 
-import org.springframework.boot.autoconfigure.batch.BatchDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -35,7 +34,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 public class SqlR2dbcScriptDatabaseInitializer extends R2dbcScriptDatabaseInitializer {
 
 	/**
-	 * Create a new {@link SqlDataSourceScriptDatabaseInitializer} instance.
+	 * Create a new {@code SqlR2dbcScriptDatabaseInitializer} instance.
 	 * @param connectionFactory the primary SQL connection factory
 	 * @param properties the SQL initialization properties
 	 * @see #getSettings
@@ -46,7 +45,7 @@ public class SqlR2dbcScriptDatabaseInitializer extends R2dbcScriptDatabaseInitia
 	}
 
 	/**
-	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
+	 * Create a new {@code SqlR2dbcScriptDatabaseInitializer} instance.
 	 * @param connectionFactory the primary SQL connection factory
 	 * @param settings the database initialization settings
 	 * @see #getSettings

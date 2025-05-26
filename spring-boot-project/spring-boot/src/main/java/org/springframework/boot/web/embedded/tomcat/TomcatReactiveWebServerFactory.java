@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.startup.Tomcat.FixContextListener;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
@@ -82,8 +84,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
-
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
 	private Set<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new LinkedHashSet<>();
@@ -100,6 +100,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private boolean disableMBeanRegistry = true;
 
+	private boolean useApr;
+
 	/**
 	 * Create a new {@link TomcatReactiveWebServerFactory} instance.
 	 */
@@ -115,10 +117,12 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		super(port);
 	}
 
-	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
-		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
-		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
-				: new ArrayList<>();
+	private List<LifecycleListener> getDefaultServerLifecycleListeners() {
+		ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
+		if (this.useApr) {
+			lifecycleListeners.add(new AprLifecycleListener());
+		}
+		return lifecycleListeners;
 	}
 
 	@Override
@@ -129,7 +133,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
-		for (LifecycleListener listener : this.serverLifecycleListeners) {
+		for (LifecycleListener listener : getDefaultServerLifecycleListeners()) {
 			tomcat.getServer().addLifecycleListener(listener);
 		}
 		Connector connector = new Connector(this.protocol);
@@ -165,9 +169,12 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
 		File docBase = createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		StandardRoot resourcesRoot = new StandardRoot();
+		resourcesRoot.setReadOnly(true);
+		context.setResources(resourcesRoot);
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
-		context.addLifecycleListener(new Tomcat.FixContextListener());
+		context.addLifecycleListener(new FixContextListener());
 		ClassLoader parentClassLoader = ClassUtils.getDefaultClassLoader();
 		context.setParentClassLoader(parentClassLoader);
 		skipAllTldScanning(context);
@@ -268,7 +275,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers = new LinkedHashSet<>(tomcatContextCustomizers);
 	}
 
@@ -288,7 +295,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
@@ -299,7 +306,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
@@ -310,7 +317,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addConnectorCustomizers(TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
 	}
 
@@ -331,7 +338,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizers) {
-		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizers, "'tomcatProtocolHandlerCustomizers' must not be null");
 		this.tomcatProtocolHandlerCustomizers = new LinkedHashSet<>(tomcatProtocolHandlerCustomizers);
 	}
 
@@ -343,7 +350,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	@Override
 	public void addProtocolHandlerCustomizers(TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers) {
-		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizers, "'tomcatProtocolHandlerCustomizers' must not be null");
 		this.tomcatProtocolHandlerCustomizers.addAll(Arrays.asList(tomcatProtocolHandlerCustomizers));
 	}
 
@@ -366,7 +373,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @since 2.2.0
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
-		Assert.notNull(connectors, "Connectors must not be null");
+		Assert.notNull(connectors, "'connectors' must not be null");
 		this.additionalTomcatConnectors.addAll(Arrays.asList(connectors));
 	}
 
@@ -382,7 +389,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	@Override
 	public void addEngineValves(Valve... engineValves) {
-		Assert.notNull(engineValves, "Valves must not be null");
+		Assert.notNull(engineValves, "'engineValves' must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));
 	}
 
@@ -419,7 +426,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(Collection<? extends LifecycleListener> contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners = new ArrayList<>(contextLifecycleListeners);
 	}
 
@@ -437,7 +444,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @param contextLifecycleListeners the listeners to add
 	 */
 	public void addContextLifecycleListeners(LifecycleListener... contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 
@@ -458,7 +465,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
-		Assert.hasLength(protocol, "Protocol must not be empty");
+		Assert.hasLength(protocol, "'protocol' must not be empty");
 		this.protocol = protocol;
 	}
 
@@ -470,6 +477,15 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 */
 	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
 		this.disableMBeanRegistry = disableMBeanRegistry;
+	}
+
+	/**
+	 * Whether to use APR.
+	 * @param useApr whether to use APR
+	 * @since 3.4.4
+	 */
+	public void setUseApr(boolean useApr) {
+		this.useApr = useApr;
 	}
 
 }

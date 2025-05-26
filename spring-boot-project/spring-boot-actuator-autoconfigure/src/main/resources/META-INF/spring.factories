@@ -13,4 +13,4 @@ org.springframework.boot.actuate.autoconfigure.tracing.LogCorrelationEnvironment
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherApplicationListener
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherBeansApplicationListener

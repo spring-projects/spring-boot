@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,8 +35,6 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -61,7 +60,6 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Scott Frederick
  */
 @ExtendWith({ GradleBuildInjectionExtension.class, GradleBuildExtension.class })
-@EnabledForJreRange(max = JRE.JAVA_21)
 class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
@@ -267,7 +265,7 @@ class PaketoBuilderTests {
 		writeServletInitializerClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
-		BuildResult result = buildImage(imageName);
+		BuildResult result = buildImageWithRetry(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
@@ -280,9 +278,9 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
-					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
+					.containsSubsequence("sh", "/layers/paketo-buildpacks_apache-tomcat/tomcat/bin/catalina.sh", "run");
 				metadata.processOfType("tomcat")
-					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
+					.containsSubsequence("sh", "/layers/paketo-buildpacks_apache-tomcat/tomcat/bin/catalina.sh", "run");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");
@@ -375,6 +373,30 @@ class PaketoBuilderTests {
 		}
 		finally {
 			removeImage(imageReference);
+		}
+	}
+
+	private BuildResult buildImageWithRetry(String imageName, String... arguments) {
+		long start = System.nanoTime();
+		while (true) {
+			try {
+				return buildImage(imageName, arguments);
+			}
+			catch (Exception ex) {
+				if (Duration.ofNanos(System.nanoTime() - start).toMinutes() > 6) {
+					throw ex;
+				}
+				sleep(500);
+			}
+		}
+	}
+
+	private void sleep(long time) {
+		try {
+			Thread.sleep(time);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

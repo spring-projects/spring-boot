@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -189,8 +190,10 @@ public class JerseyEndpointResourceFactory {
 		}
 
 		@SuppressWarnings("unchecked")
-		private Map<String, Object> extractBodyArguments(ContainerRequestContext data) {
-			Map<String, Object> entity = ((ContainerRequest) data).readEntity(Map.class);
+		private Map<String, String> extractBodyArguments(ContainerRequestContext data) {
+			Map<String, String> entity = ((ContainerRequest) data).readEntity(Map.class,
+					new ParameterizedTypeReference<Map<String, String>>() {
+					}.getType());
 			return (entity != null) ? entity : Collections.emptyMap();
 		}
 

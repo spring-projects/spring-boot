@@ -17,16 +17,19 @@ dependencyManagement {
 
 repositories {
 	mavenCentral()
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {
 	implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8')
 }
 
-task kotlinVersion {
+tasks.register("kotlinVersion") {
+	def properties = project.properties
 	doLast {
-		def kotlinVersion = project.hasProperty('kotlin.version') ? project.getProperty('kotlin.version') : 'none'
+		def kotlinVersion = properties.getOrDefault('kotlin.version', 'none')
 		println "Kotlin version: ${kotlinVersion}"
 	}
 }

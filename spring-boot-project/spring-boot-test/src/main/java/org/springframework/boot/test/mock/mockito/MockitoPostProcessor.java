@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andreas Neiser
  * @since 1.4.0
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of Spring Framework's
  * {@link MockitoBean} and {@link MockitoSpyBean} support
  */
 @SuppressWarnings("removal")
@@ -123,15 +123,14 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory,
-				"Mock beans can only be used with a ConfigurableListableBeanFactory");
+		Assert.isTrue(beanFactory instanceof ConfigurableListableBeanFactory,
+				"'beanFactory' must be a ConfigurableListableBeanFactory");
 		this.beanFactory = beanFactory;
 	}
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		Assert.isInstanceOf(BeanDefinitionRegistry.class, beanFactory,
-				"@MockBean can only be used on bean factories that implement BeanDefinitionRegistry");
+		Assert.isTrue(beanFactory instanceof BeanDefinitionRegistry, "'beanFactory' must be a BeanDefinitionRegistry");
 		postProcessBeanFactory(beanFactory, (BeanDefinitionRegistry) beanFactory);
 	}
 
@@ -336,6 +335,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		SpyDefinition definition = this.spies.get(beanName);
 		if (definition != null) {
 			bean = definition.createSpy(beanName, bean);
+			this.mockitoBeans.add(bean);
 		}
 		return bean;
 	}

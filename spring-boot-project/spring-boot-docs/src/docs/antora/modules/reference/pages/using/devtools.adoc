@@ -78,7 +78,7 @@ NOTE: If you do not want property defaults to be applied you can set configprop:
 
 Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools suggests you to enable `DEBUG` logging for the `web` logging group.
 This will give you information about the incoming request, which handler is processing it, the response outcome, and other details.
-If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
+If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.http.codecs.log-request-details[] configuration properties.
 
 
 
@@ -112,9 +112,9 @@ Other devtools features (such as LiveReload and property overrides) can still be
 NOTE: DevTools relies on the application context's shutdown hook to close it during a restart.
 It does not work correctly if you have disabled the shutdown hook (`SpringApplication.setRegisterShutdownHook(false)`).
 
-NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationContext`.
+NOTE: DevTools needs to customize the javadoc:org.springframework.core.io.ResourceLoader[] used by the javadoc:org.springframework.context.ApplicationContext[].
 If your application provides one already, it is going to be wrapped.
-Direct override of the `getResource` method on the `ApplicationContext` is not supported.
+Direct override of the `getResource` method on the javadoc:org.springframework.context.ApplicationContext[] is not supported.
 
 CAUTION: Automatic restart is not supported when using AspectJ weaving.
 
@@ -187,7 +187,7 @@ You can use the configprop:spring.devtools.restart.exclude[] property xref:using
 If you do not want to use the restart feature, you can disable it by using the configprop:spring.devtools.restart.enabled[] property.
 In most cases, you can set this property in your `application.properties` (doing so still initializes the restart classloader, but it does not watch for file changes).
 
-If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
+If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] javadoc:java.lang.System[] property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
 include-code::MyApplication[]
 
@@ -241,9 +241,9 @@ As described earlier in the xref:#using.devtools.restart.restart-vs-reload[] sec
 If this causes issues, you can diagnose the problem by using the `spring.devtools.restart.enabled` system property, and if the app works with restart switched off, you might need to customize what gets loaded by which classloader.
 
 By default, any open project in your IDE is loaded with the "`restart`" classloader, and any regular `.jar` file is loaded with the "`base`" classloader.
-The same is true if you use `mvn spring-boot:run` or `gradle bootRun`: the project containing your `@SpringBootApplication` is loaded with the "`restart`" classloader, and everything else with the "`base`" classloader.
+The same is true if you use `mvn spring-boot:run` or `gradle bootRun`: the project containing your javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] is loaded with the "`restart`" classloader, and everything else with the "`base`" classloader.
 The classpath is printed on the console when you start the app, which can help to identify any problematic entries.
-Classes used reflectively, especially annotations, can be loaded into the parent (fixed) classloader on startup before the application classes which uses them, and this might lead to them not being detected by Spring in the application.
+Classes used reflectively, especially annotations, can be loaded into the parent (fixed) classloader on startup before the application classes which use them, and this might lead to them not being detected by Spring in the application.
 
 You can instruct Spring Boot to load parts of your project with a different classloader by creating a `META-INF/spring-devtools.properties` file.
 The `spring-devtools.properties` file can contain properties prefixed with `restart.exclude` and `restart.include`.
@@ -272,8 +272,8 @@ System properties can not be used, only the properties file.
 [[using.devtools.restart.limitations]]
 === Known Limitations
 
-Restart functionality does not work well with objects that are deserialized by using a standard `ObjectInputStream`.
-If you need to deserialize data, you may need to use Spring's `ConfigurableObjectInputStream` in combination with `Thread.currentThread().getContextClassLoader()`.
+Restart functionality does not work well with objects that are deserialized by using a standard javadoc:java.io.ObjectInputStream[].
+If you need to deserialize data, you may need to use Spring's javadoc:org.springframework.core.ConfigurableObjectInputStream[] in combination with `Thread.currentThread().getContextClassLoader()`.
 
 Unfortunately, several third-party libraries deserialize without considering the context classloader.
 If you find such a problem, you need to request a fix with the original authors.
@@ -395,7 +395,7 @@ NOTE: Remote devtools is not supported for Spring WebFlux applications.
 === Running the Remote Client Application
 
 The remote client application is designed to be run from within your IDE.
-You need to run `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as the remote project that you connect to.
+You need to run javadoc:org.springframework.boot.devtools.RemoteSpringApplication[] with the same classpath as the remote project that you connect to.
 The application's single required argument is the remote URL to which it connects.
 
 For example, if you are using Eclipse or Spring Tools and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
@@ -403,7 +403,7 @@ For example, if you are using Eclipse or Spring Tools and you have a project nam
 * Select `Run Configurations...` from the `Run` menu.
 * Create a new `Java Application` "`launch configuration`".
 * Browse for the `my-app` project.
-* Use `org.springframework.boot.devtools.RemoteSpringApplication` as the main class.
+* Use javadoc:org.springframework.boot.devtools.RemoteSpringApplication[] as the main class.
 * Add `+++https://myapp.cfapps.io+++` to the `Program arguments` (or whatever your remote URL is).
 
 A running remote client might resemble the following listing:
@@ -434,7 +434,7 @@ On a slower development environment, it may happen that the quiet period is not 
 The server is restarted after the first batch of class changes is uploaded.
 The next batch can’t be sent to the application, since the server is restarting.
 
-This is typically manifested by a warning in the `RemoteSpringApplication` logs about failing to upload some of the classes, and a consequent retry.
+This is typically manifested by a warning in the javadoc:org.springframework.boot.devtools.RemoteSpringApplication[] logs about failing to upload some of the classes, and a consequent retry.
 But it may also lead to application code inconsistency and failure to restart after the first batch of changes is uploaded.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment.
 See the xref:using/devtools.adoc#using.devtools.globalsettings.configuring-file-system-watcher[] section for configuring these properties.

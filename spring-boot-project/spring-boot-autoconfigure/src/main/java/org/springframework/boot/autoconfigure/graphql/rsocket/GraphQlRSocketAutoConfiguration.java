@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 @AutoConfiguration(after = { GraphQlAutoConfiguration.class, RSocketMessagingAutoConfiguration.class })
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, RSocketServer.class, HttpServer.class })
 @ConditionalOnBean({ RSocketMessageHandler.class, AnnotatedControllerConfigurer.class })
-@ConditionalOnProperty(prefix = "spring.graphql.rsocket", name = "mapping")
+@ConditionalOnProperty("spring.graphql.rsocket.mapping")
 public class GraphQlRSocketAutoConfiguration {
 
 	@Bean

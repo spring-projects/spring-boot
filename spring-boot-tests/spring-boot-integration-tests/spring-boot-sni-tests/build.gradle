@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
 }
 
@@ -28,19 +27,19 @@ dependencies {
 	intTestImplementation("org.testcontainers:testcontainers")
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
-	into "${buildDir}/int-test-maven-repository"
+	into layout.buildDirectory.dir("int-test-maven-repository")
 }
 
-task syncReactiveServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncReactiveServerAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-reactive-app")
-	destinationDirectory = file("${buildDir}/spring-boot-sni-reactive-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-reactive-app"))
 }
 
-task buildReactiveServerApps(type: GradleBuild) {
+tasks.register("buildReactiveServerApps", GradleBuild) {
 	dependsOn syncReactiveServerAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-sni-reactive-app"
+	dir = layout.buildDirectory.dir("spring-boot-sni-reactive-app")
 	startParameter.buildCacheEnabled = false
 	tasks = [
 			"nettyServerApp",
@@ -49,14 +48,14 @@ task buildReactiveServerApps(type: GradleBuild) {
 	]
 }
 
-task syncServletServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncServletServerAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-servlet-app")
-	destinationDirectory = file("${buildDir}/spring-boot-sni-servlet-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-servlet-app"))
 }
 
-task buildServletServerApps(type: GradleBuild) {
+tasks.register("buildServletServerApps", GradleBuild) {
 	dependsOn syncServletServerAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-sni-servlet-app"
+	dir = layout.buildDirectory.dir("spring-boot-sni-servlet-app")
 	startParameter.buildCacheEnabled = false
 	tasks = [
 			"tomcatServerApp",
@@ -64,25 +63,26 @@ task buildServletServerApps(type: GradleBuild) {
 	]
 }
 
-task syncClientAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncClientAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-sni-client-app")
-	destinationDirectory = file("${buildDir}/spring-boot-sni-client-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-client-app"))
 }
 
-task buildClientApp(type: GradleBuild) {
+tasks.register("buildClientApp", GradleBuild) {
 	dependsOn syncClientAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-sni-client-app"
+	dir = layout.buildDirectory.dir("spring-boot-sni-client-app")
 	startParameter.buildCacheEnabled = false
 	tasks = ["build"]
 }
 
 intTest {
 	inputs.files(
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-netty-reactive.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-reactive.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-servlet.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-reactive.jar",
-			"${buildDir}/spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-servlet.jar")
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-netty-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-servlet.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-servlet.jar")
+	)
 			.withPropertyName("applicationArchives")
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withNormalizer(ClasspathNormalizer)

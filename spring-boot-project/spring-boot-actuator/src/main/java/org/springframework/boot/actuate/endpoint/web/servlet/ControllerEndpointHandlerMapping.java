@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,20 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.actuate.endpoint.Access;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -42,15 +48,22 @@ import org.springframework.web.util.pattern.PathPattern;
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.3.5 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
+@Deprecated(since = "3.3.5", forRemoval = true)
 @SuppressWarnings("removal")
 public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMapping {
+
+	private static final Set<RequestMethod> READ_ONLY_ACCESS_REQUEST_METHODS = EnumSet.of(RequestMethod.GET,
+			RequestMethod.HEAD);
 
 	private final EndpointMapping endpointMapping;
 
 	private final CorsConfiguration corsConfiguration;
 
 	private final Map<Object, ExposableControllerEndpoint> handlers;
+
+	private final EndpointAccessResolver accessResolver;
 
 	/**
 	 * Create a new {@link ControllerEndpointHandlerMapping} instance providing mappings
@@ -61,11 +74,26 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
-		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
-		Assert.notNull(endpoints, "Endpoints must not be null");
+		this(endpointMapping, endpoints, corsConfiguration, (endpointId, defaultAccess) -> Access.NONE);
+	}
+
+	/**
+	 * Create a new {@link ControllerEndpointHandlerMapping} instance providing mappings
+	 * for the specified endpoints.
+	 * @param endpointMapping the base mapping for all endpoints
+	 * @param endpoints the web endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param endpointAccessResolver resolver for endpoint access
+	 */
+	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
+			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration,
+			EndpointAccessResolver endpointAccessResolver) {
+		Assert.notNull(endpointMapping, "'endpointMapping' must not be null");
+		Assert.notNull(endpoints, "'endpoints' must not be null");
 		this.endpointMapping = endpointMapping;
 		this.handlers = getHandlers(endpoints);
 		this.corsConfiguration = corsConfiguration;
+		this.accessResolver = endpointAccessResolver;
 		setOrder(-100);
 	}
 
@@ -83,8 +111,30 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	@Override
 	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		ExposableControllerEndpoint endpoint = this.handlers.get(handler);
+		Access access = this.accessResolver.accessFor(endpoint.getEndpointId(), endpoint.getDefaultAccess());
+		if (access == Access.NONE) {
+			return;
+		}
+		if (access == Access.READ_ONLY) {
+			mapping = withReadOnlyAccess(access, mapping);
+			if (CollectionUtils.isEmpty(mapping.getMethodsCondition().getMethods())) {
+				return;
+			}
+		}
 		mapping = withEndpointMappedPatterns(endpoint, mapping);
 		super.registerHandlerMethod(handler, method, mapping);
+	}
+
+	private RequestMappingInfo withReadOnlyAccess(Access access, RequestMappingInfo mapping) {
+		Set<RequestMethod> methods = mapping.getMethodsCondition().getMethods();
+		Set<RequestMethod> modifiedMethods = new HashSet<>(methods);
+		if (modifiedMethods.isEmpty()) {
+			modifiedMethods.addAll(READ_ONLY_ACCESS_REQUEST_METHODS);
+		}
+		else {
+			modifiedMethods.retainAll(READ_ONLY_ACCESS_REQUEST_METHODS);
+		}
+		return mapping.mutate().methods(modifiedMethods.toArray(new RequestMethod[0])).build();
 	}
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,

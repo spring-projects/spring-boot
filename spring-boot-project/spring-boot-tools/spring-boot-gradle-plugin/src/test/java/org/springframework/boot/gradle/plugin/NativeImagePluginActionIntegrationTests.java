@@ -89,13 +89,6 @@ class NativeImagePluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageIsConfiguredToBuildANativeImage() {
-		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("bootBuildImageConfiguration");
-		assertThat(result.getOutput()).contains("BP_NATIVE_IMAGE = true");
-	}
-
-	@TestTemplate
 	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
 		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
@@ -129,9 +122,10 @@ class NativeImagePluginActionIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
-		JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"));
-		Manifest manifest = jarFile.getManifest();
-		assertThat(manifest.getMainAttributes().getValue("Spring-Boot-Native-Processed")).isEqualTo("true");
+		try (JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"))) {
+			Manifest manifest = jarFile.getManifest();
+			assertThat(manifest.getMainAttributes().getValue("Spring-Boot-Native-Processed")).isEqualTo("true");
+		}
 	}
 
 	private String projectPath(String path) {

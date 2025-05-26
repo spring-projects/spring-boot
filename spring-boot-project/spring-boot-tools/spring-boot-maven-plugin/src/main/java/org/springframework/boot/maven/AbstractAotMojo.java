@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.toolchain.ToolchainManager;
-
-import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 
 /**
  * Abstract base class for AOT processing MOJOs.
@@ -147,32 +145,31 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null)) {
 			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
-			List<String> options = new ArrayList<>();
-			options.add("-cp");
-			options.add(ClasspathBuilder.build(Arrays.asList(classPath)));
-			options.add("-d");
-			options.add(outputDirectory.toPath().toAbsolutePath().toString());
+			List<String> args = new ArrayList<>();
+			args.addAll(ClassPath.of(classPath).args(false));
+			args.add("-d");
+			args.add(outputDirectory.toPath().toAbsolutePath().toString());
 			String releaseVersion = compilerConfiguration.getReleaseVersion();
 			if (releaseVersion != null) {
-				options.add("--release");
-				options.add(releaseVersion);
+				args.add("--release");
+				args.add(releaseVersion);
 			}
 			else {
 				String source = compilerConfiguration.getSourceMajorVersion();
 				if (source != null) {
-					options.add("--source");
-					options.add(source);
+					args.add("--source");
+					args.add(source);
 				}
 				String target = compilerConfiguration.getTargetMajorVersion();
 				if (target != null) {
-					options.add("--target");
-					options.add(target);
+					args.add("--target");
+					args.add(target);
 				}
 			}
-			options.addAll(new RunArguments(this.compilerArguments).getArgs());
+			args.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();
-			CompilationTask task = compiler.getTask(null, fileManager, errors, options, null, compilationUnits);
+			CompilationTask task = compiler.getTask(null, fileManager, errors, args, null, compilationUnits);
 			boolean result = task.call();
 			if (!result || errors.hasReportedErrors()) {
 				throw new IllegalStateException("Unable to compile generated source" + errors);

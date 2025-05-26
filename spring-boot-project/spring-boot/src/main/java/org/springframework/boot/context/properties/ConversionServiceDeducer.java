@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,13 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.format.Formatter;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
 
 /**
@@ -61,13 +55,9 @@ class ConversionServiceDeducer {
 
 	private List<ConversionService> getConversionServices(ConfigurableApplicationContext applicationContext) {
 		List<ConversionService> conversionServices = new ArrayList<>();
-		ConverterBeans converterBeans = new ConverterBeans(applicationContext);
+		FormattingConversionService beansConverterService = new FormattingConversionService();
+		Map<String, Object> converterBeans = addBeans(applicationContext, beansConverterService);
 		if (!converterBeans.isEmpty()) {
-			FormattingConversionService beansConverterService = new FormattingConversionService();
-			DefaultConversionService.addCollectionConverters(beansConverterService);
-			beansConverterService
-				.addConverter(new ConfigurationPropertiesCharSequenceToObjectConverter(beansConverterService));
-			converterBeans.addTo(beansConverterService);
 			conversionServices.add(beansConverterService);
 		}
 		if (applicationContext.getBeanFactory().getConversionService() != null) {
@@ -83,50 +73,18 @@ class ConversionServiceDeducer {
 		return conversionServices;
 	}
 
+	private Map<String, Object> addBeans(ConfigurableApplicationContext applicationContext,
+			FormattingConversionService converterService) {
+		DefaultConversionService.addCollectionConverters(converterService);
+		converterService.addConverter(new ConfigurationPropertiesCharSequenceToObjectConverter(converterService));
+		return ApplicationConversionService.addBeans(converterService, applicationContext.getBeanFactory(),
+				ConfigurationPropertiesBinding.VALUE);
+	}
+
 	private boolean hasUserDefinedConfigurationServiceBean() {
 		String beanName = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 		return this.applicationContext.containsBean(beanName) && this.applicationContext.getAutowireCapableBeanFactory()
 			.isTypeMatch(beanName, ConversionService.class);
-	}
-
-	private static class ConverterBeans {
-
-		@SuppressWarnings("rawtypes")
-		private final List<Converter> converters;
-
-		private final List<GenericConverter> genericConverters;
-
-		@SuppressWarnings("rawtypes")
-		private final List<Formatter> formatters;
-
-		ConverterBeans(ConfigurableApplicationContext applicationContext) {
-			ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-			this.converters = beans(Converter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
-			this.genericConverters = beans(GenericConverter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
-			this.formatters = beans(Formatter.class, ConfigurationPropertiesBinding.VALUE, beanFactory);
-		}
-
-		private <T> List<T> beans(Class<T> type, String qualifier, ListableBeanFactory beanFactory) {
-			return new ArrayList<>(
-					BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, type, qualifier).values());
-		}
-
-		boolean isEmpty() {
-			return this.converters.isEmpty() && this.genericConverters.isEmpty() && this.formatters.isEmpty();
-		}
-
-		void addTo(FormatterRegistry registry) {
-			for (Converter<?, ?> converter : this.converters) {
-				registry.addConverter(converter);
-			}
-			for (GenericConverter genericConverter : this.genericConverters) {
-				registry.addConverter(genericConverter);
-			}
-			for (Formatter<?> formatter : this.formatters) {
-				registry.addFormatter(formatter);
-			}
-		}
-
 	}
 
 }

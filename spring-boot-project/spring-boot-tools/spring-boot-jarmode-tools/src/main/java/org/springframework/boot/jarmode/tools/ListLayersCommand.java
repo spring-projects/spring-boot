@@ -20,8 +20,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.jarmode.tools.Layers.LayersNotEnabledException;
-
 /**
  * The {@code 'list-layers'} tools command.
  *
@@ -38,22 +36,12 @@ class ListLayersCommand extends Command {
 
 	@Override
 	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
-		try {
-			Layers layers = Layers.get(this.context);
-			printLayers(out, layers);
-		}
-		catch (LayersNotEnabledException ex) {
-			printError(out, "Layers are not enabled");
-		}
+		Layers layers = Layers.get(this.context);
+		printLayers(out, layers);
 	}
 
 	void printLayers(PrintStream out, Layers layers) {
 		layers.forEach(out::println);
-	}
-
-	private void printError(PrintStream out, String message) {
-		out.println("Error: " + message);
-		out.println();
 	}
 
 }

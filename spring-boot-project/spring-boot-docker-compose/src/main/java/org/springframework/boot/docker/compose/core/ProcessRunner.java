@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -42,7 +43,7 @@ class ProcessRunner {
 
 	private static final String USR_LOCAL_BIN = "/usr/local/bin";
 
-	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase().contains("mac");
+	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 
 	private static final Log logger = LogFactory.getLog(ProcessRunner.class);
 

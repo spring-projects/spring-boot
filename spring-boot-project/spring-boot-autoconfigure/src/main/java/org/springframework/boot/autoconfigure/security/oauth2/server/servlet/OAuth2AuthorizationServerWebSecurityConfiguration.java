@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
@@ -51,7 +50,11 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+		OAuth2AuthorizationServerConfigurer authorizationServer = OAuth2AuthorizationServerConfigurer
+			.authorizationServer();
+		http.securityMatcher(authorizationServer.getEndpointsMatcher());
+		http.with(authorizationServer, withDefaults());
+		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated());
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(withDefaults());
 		http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(withDefaults()));
 		http.exceptionHandling((exceptions) -> exceptions.defaultAuthenticationEntryPointFor(

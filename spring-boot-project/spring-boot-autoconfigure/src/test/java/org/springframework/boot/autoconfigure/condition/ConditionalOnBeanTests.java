@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Uladzislau Seuruk
  */
 class ConditionalOnBeanTests {
 
@@ -116,8 +117,8 @@ class ConditionalOnBeanTests {
 	@Test
 	void withPropertyPlaceholderClassName() {
 		this.contextRunner
-			.withUserConfiguration(PropertySourcesPlaceholderConfigurer.class, WithPropertyPlaceholderClassName.class,
-					OnBeanClassConfiguration.class)
+			.withUserConfiguration(PropertySourcesPlaceholderConfigurer.class,
+					WithPropertyPlaceholderClassNameConfiguration.class, OnBeanClassConfiguration.class)
 			.withPropertyValues("mybeanclass=java.lang.String")
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
@@ -165,7 +166,8 @@ class ConditionalOnBeanTests {
 	@Test
 	void conditionEvaluationConsidersChangeInTypeWhenBeanIsOverridden() {
 		this.contextRunner.withAllowBeanDefinitionOverriding(true)
-			.withUserConfiguration(OriginalDefinition.class, OverridingDefinition.class, ConsumingConfiguration.class)
+			.withUserConfiguration(OriginalDefinitionConfiguration.class, OverridingDefinitionConfiguration.class,
+					ConsumingConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasBean("testBean");
 				assertThat(context).hasSingleBean(Integer.class);
@@ -176,69 +178,73 @@ class ConditionalOnBeanTests {
 	@Test
 	void parameterizedContainerWhenValueIsOfMissingBeanDoesNotMatch() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithoutCustomConfig.class, ParameterizedConditionWithValueConfig.class)
-			.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
+			.withUserConfiguration(ParameterizedWithoutCustomConfiguration.class,
+					ParameterizedConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context)
+				.satisfies(beansAndContainersNamed(ExampleBean.class, "otherExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfExistingBeanMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomConfig.class, ParameterizedConditionWithValueConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfiguration.class,
+					ParameterizedConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfMissingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
-					ParameterizedConditionWithValueConfig.class)
-			.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
+			.withUserConfiguration(ParameterizedWithoutCustomContainerConfiguration.class,
+					ParameterizedConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context)
+				.satisfies(beansAndContainersNamed(ExampleBean.class, "otherExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-					ParameterizedConditionWithValueConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfiguration.class,
+					ParameterizedConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomConfig.class,
-					ParameterizedConditionWithReturnTypeConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfiguration.class,
+					ParameterizedConditionWithReturnTypeConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-					ParameterizedConditionWithReturnTypeConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfiguration.class,
+					ParameterizedConditionWithReturnTypeConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomConfig.class,
-					ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfiguration.class,
+					ParameterizedConditionWithReturnRegistrationTypeConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-					ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-			.run((context) -> assertThat(context)
-				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfiguration.class,
+					ParameterizedConditionWithReturnRegistrationTypeConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(
+					beansAndContainersNamed(ExampleBean.class, "customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
@@ -257,13 +263,21 @@ class ConditionalOnBeanTests {
 	@Test
 	void conditionalOnAnnotatedBeanIgnoresNotAutowireCandidateBean() {
 		this.contextRunner
-			.withUserConfiguration(AnnotatedNotAutowireCandidateConfig.class, OnAnnotationConfiguration.class)
+			.withUserConfiguration(AnnotatedNotAutowireCandidateConfiguration.class, OnAnnotationConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	void conditionalOnBeanTypeIgnoresNotDefaultCandidateBean() {
 		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanClassConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanTypeIgnoresNotDefaultCandidateFactoryBean() {
+		this.contextRunner
+			.withUserConfiguration(NotDefaultCandidateFactoryBeanConfiguration.class,
+					OnBeanClassWithFactoryBeanConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
@@ -276,13 +290,66 @@ class ConditionalOnBeanTests {
 	@Test
 	void conditionalOnAnnotatedBeanIgnoresNotDefaultCandidateBean() {
 		this.contextRunner
-			.withUserConfiguration(AnnotatedNotDefaultCandidateConfig.class, OnAnnotationConfiguration.class)
+			.withUserConfiguration(AnnotatedNotDefaultCandidateConfiguration.class, OnAnnotationConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
-	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
+	@Test
+	void genericWhenTypeArgumentMatches() {
+		this.contextRunner.withUserConfiguration(ParameterizedWithCustomGenericConfiguration.class,
+				GenericWithStringTypeArgumentsConfiguration.class, GenericWithIntegerTypeArgumentsConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(beansAndContainersNamed(GenericExampleBean.class,
+					"customGenericExampleBean", "genericStringTypeArgumentsExampleBean")));
+	}
+
+	@Test
+	void genericWhenTypeArgumentWithValueMatches() {
+		this.contextRunner
+			.withUserConfiguration(GenericWithStringConfiguration.class,
+					TypeArgumentsConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(beansAndContainersNamed(GenericExampleBean.class,
+					"genericStringExampleBean", "genericStringWithValueExampleBean")));
+	}
+
+	@Test
+	void genericWithValueWhenSubclassTypeArgumentMatches() {
+		this.contextRunner
+			.withUserConfiguration(ParameterizedWithCustomGenericConfiguration.class,
+					TypeArgumentsConditionWithValueConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(beansAndContainersNamed(GenericExampleBean.class,
+					"customGenericExampleBean", "genericStringWithValueExampleBean")));
+	}
+
+	@Test
+	void parameterizedContainerGenericWhenTypeArgumentNotMatches() {
+		this.contextRunner
+			.withUserConfiguration(GenericWithIntegerConfiguration.class,
+					TypeArgumentsConditionWithParameterizedContainerConfiguration.class)
+			.run((context) -> assertThat(context)
+				.satisfies(beansAndContainersNamed(GenericExampleBean.class, "genericIntegerExampleBean")));
+	}
+
+	@Test
+	void parameterizedContainerGenericWhenTypeArgumentMatches() {
+		this.contextRunner
+			.withUserConfiguration(GenericWithStringConfiguration.class,
+					TypeArgumentsConditionWithParameterizedContainerConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(beansAndContainersNamed(GenericExampleBean.class,
+					"genericStringExampleBean", "parameterizedContainerGenericExampleBean")));
+	}
+
+	@Test
+	void parameterizedContainerGenericWhenSubclassTypeArgumentMatches() {
+		this.contextRunner
+			.withUserConfiguration(ParameterizedWithCustomGenericConfiguration.class,
+					TypeArgumentsConditionWithParameterizedContainerConfiguration.class)
+			.run((context) -> assertThat(context).satisfies(beansAndContainersNamed(GenericExampleBean.class,
+					"customGenericExampleBean", "parameterizedContainerGenericExampleBean")));
+	}
+
+	private Consumer<ConfigurableApplicationContext> beansAndContainersNamed(Class<?> type, String... names) {
 		return (context) -> {
-			String[] beans = context.getBeanNamesForType(ExampleBean.class);
+			String[] beans = context.getBeanNamesForType(type);
 			String[] containers = context.getBeanNamesForType(TestParameterizedContainer.class);
 			assertThat(StringUtils.concatenateStringArrays(beans, containers)).containsOnly(names);
 		};
@@ -324,6 +391,17 @@ class ConditionalOnBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
 	static class OnBeanClassConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(ExampleFactoryBean.class)
+	static class OnBeanClassWithFactoryBeanConfiguration {
 
 		@Bean
 		String bar() {
@@ -386,6 +464,16 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateFactoryBeanConfiguration {
+
+		@Bean(defaultCandidate = false)
+		ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	static class XmlConfiguration {
 
@@ -400,7 +488,7 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(WithPropertyPlaceholderClassNameRegistrar.class)
-	static class WithPropertyPlaceholderClassName {
+	static class WithPropertyPlaceholderClassNameConfiguration {
 
 	}
 
@@ -466,27 +554,8 @@ class ConditionalOnBeanTests {
 
 	}
 
-	static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
-
-		@Override
-		public ExampleBean getObject() {
-			return new ExampleBean("fromFactory");
-		}
-
-		@Override
-		public Class<?> getObjectType() {
-			return ExampleBean.class;
-		}
-
-		@Override
-		public boolean isSingleton() {
-			return false;
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
-	static class OriginalDefinition {
+	static class OriginalDefinitionConfiguration {
 
 		@Bean
 		String testBean() {
@@ -497,7 +566,7 @@ class ConditionalOnBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
-	static class OverridingDefinition {
+	static class OverridingDefinitionConfiguration {
 
 		@Bean
 		Integer testBean() {
@@ -516,7 +585,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedWithCustomConfig {
+	static class ParameterizedWithCustomConfiguration {
 
 		@Bean
 		CustomExampleBean customExampleBean() {
@@ -526,7 +595,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedWithoutCustomConfig {
+	static class ParameterizedWithoutCustomConfiguration {
 
 		@Bean
 		OtherExampleBean otherExampleBean() {
@@ -536,7 +605,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedWithoutCustomContainerConfig {
+	static class ParameterizedWithoutCustomContainerConfiguration {
 
 		@Bean
 		TestParameterizedContainer<OtherExampleBean> otherExampleBean() {
@@ -546,7 +615,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedWithCustomContainerConfig {
+	static class ParameterizedWithCustomContainerConfiguration {
 
 		@Bean
 		TestParameterizedContainer<CustomExampleBean> customExampleBean() {
@@ -556,7 +625,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedConditionWithValueConfig {
+	static class ParameterizedConditionWithValueConfiguration {
 
 		@Bean
 		@ConditionalOnBean(value = CustomExampleBean.class, parameterizedContainer = TestParameterizedContainer.class)
@@ -567,7 +636,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedConditionWithReturnTypeConfig {
+	static class ParameterizedConditionWithReturnTypeConfiguration {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
@@ -578,7 +647,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ParameterizedConditionWithReturnRegistrationTypeConfig {
+	static class ParameterizedConditionWithReturnRegistrationTypeConfiguration {
 
 		@Bean
 		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
@@ -589,7 +658,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class AnnotatedNotAutowireCandidateConfig {
+	static class AnnotatedNotAutowireCandidateConfiguration {
 
 		@Bean(autowireCandidate = false)
 		ExampleBean exampleBean() {
@@ -599,11 +668,104 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class AnnotatedNotDefaultCandidateConfig {
+	static class AnnotatedNotDefaultCandidateConfiguration {
 
 		@Bean(defaultCandidate = false)
 		ExampleBean exampleBean() {
 			return new ExampleBean("value");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ParameterizedWithCustomGenericConfiguration {
+
+		@Bean
+		CustomGenericExampleBean customGenericExampleBean() {
+			return new CustomGenericExampleBean();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class GenericWithStringConfiguration {
+
+		@Bean
+		GenericExampleBean<String> genericStringExampleBean() {
+			return new GenericExampleBean<>("genericStringExampleBean");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class GenericWithStringTypeArgumentsConfiguration {
+
+		@Bean
+		@ConditionalOnBean
+		GenericExampleBean<String> genericStringTypeArgumentsExampleBean() {
+			return new GenericExampleBean<>("genericStringTypeArgumentsExampleBean");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class GenericWithIntegerConfiguration {
+
+		@Bean
+		GenericExampleBean<Integer> genericIntegerExampleBean() {
+			return new GenericExampleBean<>(1_000);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class GenericWithIntegerTypeArgumentsConfiguration {
+
+		@Bean
+		@ConditionalOnBean
+		GenericExampleBean<Integer> genericIntegerTypeArgumentsExampleBean() {
+			return new GenericExampleBean<>(1_000);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TypeArgumentsConditionWithValueConfiguration {
+
+		@Bean
+		@ConditionalOnBean(GenericExampleBean.class)
+		GenericExampleBean<String> genericStringWithValueExampleBean() {
+			return new GenericExampleBean<>("genericStringWithValueExampleBean");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TypeArgumentsConditionWithParameterizedContainerConfiguration {
+
+		@Bean
+		@ConditionalOnBean(parameterizedContainer = TestParameterizedContainer.class)
+		TestParameterizedContainer<GenericExampleBean<String>> parameterizedContainerGenericExampleBean() {
+			return new TestParameterizedContainer<>();
+		}
+
+	}
+
+	static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+
+		@Override
+		public ExampleBean getObject() {
+			return new ExampleBean("fromFactory");
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleBean.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return false;
 		}
 
 	}
@@ -636,6 +798,30 @@ class ConditionalOnBeanTests {
 
 		OtherExampleBean() {
 			super("other subclass");
+		}
+
+	}
+
+	@TestAnnotation
+	static class GenericExampleBean<T> {
+
+		private final T value;
+
+		GenericExampleBean(T value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return String.valueOf(this.value);
+		}
+
+	}
+
+	static class CustomGenericExampleBean extends GenericExampleBean<String> {
+
+		CustomGenericExampleBean() {
+			super("custom subclass");
 		}
 
 	}

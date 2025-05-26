@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -54,7 +55,7 @@ public class EntityManagerFactoryBuilder {
 
 	private final PersistenceUnitManager persistenceUnitManager;
 
-	private final Map<String, Object> jpaProperties;
+	private final Function<DataSource, Map<String, ?>> jpaPropertiesFactory;
 
 	private final URL persistenceUnitRootLocation;
 
@@ -66,13 +67,52 @@ public class EntityManagerFactoryBuilder {
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaPropertiesFactory the JPA properties to be passed to the persistence
+	 * provider, based on the {@linkplain #dataSource(DataSource) configured data source}
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @since 3.4.4
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager) {
+		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, null);
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaPropertiesFactory the JPA properties to be passed to the persistence
+	 * provider, based on the {@linkplain #dataSource(DataSource) configured data source}
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
+	 * fallback or {@code null}
+	 * @since 3.4.4
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager,
+			URL persistenceUnitRootLocation) {
+		this.jpaVendorAdapter = jpaVendorAdapter;
+		this.persistenceUnitManager = persistenceUnitManager;
+		this.jpaPropertiesFactory = jpaPropertiesFactory;
+		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
 	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
+	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager)}
 	 */
+	@Deprecated(since = "3.4.4", forRemoval = true)
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
 			PersistenceUnitManager persistenceUnitManager) {
-		this(jpaVendorAdapter, jpaProperties, persistenceUnitManager, null);
+		this(jpaVendorAdapter, (datasource) -> jpaProperties, persistenceUnitManager, null);
 	}
 
 	/**
@@ -85,15 +125,21 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
 	 * fallback or {@code null}
 	 * @since 1.4.1
+	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
+	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL)}
 	 */
+	@Deprecated(since = "3.4.4", forRemoval = true)
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
 			PersistenceUnitManager persistenceUnitManager, URL persistenceUnitRootLocation) {
-		this.jpaVendorAdapter = jpaVendorAdapter;
-		this.persistenceUnitManager = persistenceUnitManager;
-		this.jpaProperties = new LinkedHashMap<>(jpaProperties);
-		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
+		this(jpaVendorAdapter, (datasource) -> jpaProperties, persistenceUnitManager, persistenceUnitRootLocation);
 	}
 
+	/**
+	 * Create a new {@link Builder} for a {@code EntityManagerFactory} using the settings
+	 * of the given instance, and the given {@link DataSource}.
+	 * @param dataSource the data source to use
+	 * @return a builder to create an {@code EntityManagerFactory}
+	 */
 	public Builder dataSource(DataSource dataSource) {
 		return new Builder(dataSource);
 	}
@@ -255,7 +301,8 @@ public class EntityManagerFactoryBuilder {
 			else {
 				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			}
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(EntityManagerFactoryBuilder.this.jpaProperties);
+			Map<String, ?> jpaProperties = EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource);
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(new LinkedHashMap<>(jpaProperties));
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			if (!ObjectUtils.isEmpty(this.mappingResources)) {
 				entityManagerFactoryBean.setMappingResources(this.mappingResources);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.springframework.boot.logging.LogLevel;
 
@@ -42,7 +44,7 @@ abstract sealed class DockerCliCommand<R> {
 
 	private final boolean listResponse;
 
-	private final List<String> command;
+	private final Function<ComposeVersion, List<String>> command;
 
 	private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
 		this(type, LogLevel.OFF, responseType, listResponse, command);
@@ -50,11 +52,16 @@ abstract sealed class DockerCliCommand<R> {
 
 	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
 			String... command) {
+		this(type, logLevel, responseType, listResponse, (version) -> List.of(command));
+	}
+
+	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
+			Function<ComposeVersion, List<String>> command) {
 		this.type = type;
 		this.logLevel = logLevel;
 		this.responseType = responseType;
 		this.listResponse = listResponse;
-		this.command = List.of(command);
+		this.command = command;
 	}
 
 	Type getType() {
@@ -65,8 +72,8 @@ abstract sealed class DockerCliCommand<R> {
 		return this.logLevel;
 	}
 
-	List<String> getCommand() {
-		return this.command;
+	List<String> getCommand(ComposeVersion composeVersion) {
+		return this.command.apply(composeVersion);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,7 +97,8 @@ abstract sealed class DockerCliCommand<R> {
 		boolean result = this.type == other.type;
 		result = result && this.responseType == other.responseType;
 		result = result && this.listResponse == other.listResponse;
-		result = result && this.command.equals(other.command);
+		result = result
+				&& this.command.apply(ComposeVersion.UNKNOWN).equals(other.command.apply(ComposeVersion.UNKNOWN));
 		return result;
 	}
 
@@ -150,8 +158,16 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
 
+		private static final List<String> WITHOUT_ORPHANS = List.of("ps", "--format=json");
+
+		private static final List<String> WITH_ORPHANS = List.of("ps", "--orphans=false", "--format=json");
+
 		ComposePs() {
-			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--format=json");
+			super(Type.DOCKER_COMPOSE, LogLevel.OFF, DockerCliComposePsResponse.class, true, ComposePs::getPsCommand);
+		}
+
+		private static List<String> getPsCommand(ComposeVersion composeVersion) {
+			return (composeVersion.isLessThan(2, 24)) ? WITHOUT_ORPHANS : WITH_ORPHANS;
 		}
 
 	}
@@ -249,6 +265,33 @@ abstract sealed class DockerCliCommand<R> {
 		 * A command executed using {@code docker compose} or {@code docker-compose}.
 		 */
 		DOCKER_COMPOSE
+
+	}
+
+	/**
+	 * Docker compose version.
+	 *
+	 * @param major the major component
+	 * @param minor the minor component
+	 */
+	record ComposeVersion(int major, int minor) {
+
+		static final ComposeVersion UNKNOWN = new ComposeVersion(0, 0);
+
+		boolean isLessThan(int major, int minor) {
+			return major() < major || major() == major && minor() < minor;
+		}
+
+		static ComposeVersion of(String value) {
+			try {
+				value = (!value.toLowerCase(Locale.ROOT).startsWith("v")) ? value : value.substring(1);
+				String[] parts = value.split("\\.");
+				return new ComposeVersion(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+			}
+			catch (Exception ex) {
+				return UNKNOWN;
+			}
+		}
 
 	}
 

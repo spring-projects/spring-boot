@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,11 +109,10 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 
 	@Test
 	void allConnectionPoolsCanBeInstrumented() {
-		this.contextRunner.withUserConfiguration(TwoConnectionPoolsConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(MultipleConnectionPoolsConfiguration.class).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
-				.extracting((id) -> id.getTag("name"))
-				.containsExactlyInAnyOrder("firstPool", "secondPool");
+			assertThat(registry.find("r2dbc.pool.acquired").meters()).map((meter) -> meter.getId().getTag("name"))
+				.containsOnly("standardPool", "nonDefaultPool");
 		});
 	}
 
@@ -179,7 +178,7 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TwoConnectionPoolsConfiguration {
+	static class MultipleConnectionPoolsConfiguration {
 
 		@Bean
 		CloseableConnectionFactory connectionFactory() {
@@ -188,12 +187,17 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		}
 
 		@Bean
-		ConnectionPool firstPool(ConnectionFactory connectionFactory) {
+		ConnectionPool standardPool(ConnectionFactory connectionFactory) {
 			return new ConnectionPool(ConnectionPoolConfiguration.builder(connectionFactory).build());
 		}
 
-		@Bean
-		ConnectionPool secondPool(ConnectionFactory connectionFactory) {
+		@Bean(defaultCandidate = false)
+		ConnectionPool nonDefaultPool(ConnectionFactory connectionFactory) {
+			return new ConnectionPool(ConnectionPoolConfiguration.builder(connectionFactory).build());
+		}
+
+		@Bean(autowireCandidate = false)
+		ConnectionPool nonAutowirePool(ConnectionFactory connectionFactory) {
 			return new ConnectionPool(ConnectionPoolConfiguration.builder(connectionFactory).build());
 		}
 

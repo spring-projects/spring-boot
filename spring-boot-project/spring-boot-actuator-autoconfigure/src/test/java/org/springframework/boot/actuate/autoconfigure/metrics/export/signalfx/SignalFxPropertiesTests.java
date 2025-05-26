@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import io.micrometer.signalfx.SignalFxConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxProperties.HistogramType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SignalFxProperties}.
  *
  * @author Stephane Nicoll
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.5.0", forRemoval = true)
 class SignalFxPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
@@ -43,7 +45,7 @@ class SignalFxPropertiesTests extends StepRegistryPropertiesTests {
 		// histogram type should be published.
 		assertThat(config.publishCumulativeHistogram()).isFalse();
 		assertThat(config.publishDeltaHistogram()).isFalse();
-		assertThat(properties.getPublishedHistogramType()).isEqualTo(HistogramType.DEFAULT);
+		assertThat(properties.getPublishedHistogramType()).isEqualTo(SignalFxProperties.HistogramType.DEFAULT);
 	}
 
 }

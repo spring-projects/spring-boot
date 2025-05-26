@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,16 @@ import org.springframework.context.annotation.DependsOn;
 public @interface AutoConfigureBefore {
 
 	/**
-	 * The auto-configure classes that should have not yet been applied.
+	 * The auto-configuration classes that should have not yet been applied.
 	 * @return the classes
 	 */
 	Class<?>[] value() default {};
 
 	/**
-	 * The names of the auto-configure classes that should have not yet been applied.
+	 * The names of the auto-configuration classes that should have not yet been applied.
+	 * In the unusual case that an auto-configuration class is not a top-level class, its
+	 * class name should use {@code $} to separate it from its containing class, for
+	 * example {@code com.example.Outer$NestedAutoConfiguration}.
 	 * @return the class names
 	 * @since 1.2.2
 	 */

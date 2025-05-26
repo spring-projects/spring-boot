@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -196,18 +197,19 @@ class CouchbaseAutoConfigurationTests {
 		testClusterEnvironment((env) -> {
 			SecurityConfig securityConfig = env.securityConfig();
 			assertThat(securityConfig.tlsEnabled()).isTrue();
-			assertThat(securityConfig.trustManagerFactory()).isNull();
+			assertThat(securityConfig.trustManagerFactory()).isNotNull();
 		}, "spring.couchbase.env.ssl.enabled=true");
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void enableSslWithBundle() {
 		testClusterEnvironment((env) -> {
 			SecurityConfig securityConfig = env.securityConfig();
 			assertThat(securityConfig.tlsEnabled()).isTrue();
 			assertThat(securityConfig.trustManagerFactory()).isNotNull();
-		}, "spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
-				"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+		}, "spring.ssl.bundle.jks.test-bundle.truststore.location=classpath:test.jks",
+				"spring.ssl.bundle.jks.test-bundle.truststore.password=secret",
 				"spring.couchbase.env.ssl.bundle=test-bundle");
 	}
 
@@ -263,20 +265,22 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
+	@WithPackageResources({ "key.crt", "key.pem" })
 	void certificateAuthenticationWithPemPrivateKeyAndCertificate() {
-		this.contextRunner.withPropertyValues("spring.couchbase.connection-string=localhost",
-				"spring.couchbase.env.ssl.enabled=true",
-				"spring.couchbase.authentication.pem.private-key=classpath:org/springframework/boot/autoconfigure/ssl/key2.pem",
-				"spring.couchbase.authentication.pem.certificates=classpath:org/springframework/boot/autoconfigure/ssl/key2.crt")
+		this.contextRunner
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.env.ssl.enabled=true",
+					"spring.couchbase.authentication.pem.private-key=classpath:key.pem",
+					"spring.couchbase.authentication.pem.certificates=classpath:key.crt")
 			.run((context) -> assertThat(context).hasSingleBean(CertificateAuthenticator.class));
 	}
 
 	@Test
+	@WithPackageResources("keystore.jks")
 	void certificateAuthenticationWithJavaKeyStore() {
-		this.contextRunner.withPropertyValues("spring.couchbase.connection-string=localhost",
-				"spring.couchbase.env.ssl.enabled=true",
-				"spring.couchbase.authentication.jks.location=classpath:org/springframework/boot/autoconfigure/ssl/keystore.jks",
-				"spring.couchbase.authentication.jks.password=secret")
+		this.contextRunner
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.env.ssl.enabled=true",
+					"spring.couchbase.authentication.jks.location=classpath:keystore.jks",
+					"spring.couchbase.authentication.jks.password=secret")
 			.run((context) -> assertThat(context).hasSingleBean(CertificateAuthenticator.class));
 	}
 

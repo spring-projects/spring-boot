@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,7 +329,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class FooConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		Foo foo() {
 			return new Foo();
 		}
@@ -341,7 +341,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class SelfReferentialConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		SelfReferential foo() {
 			return new SelfReferential();
 		}
@@ -353,7 +353,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class MetadataCycleConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "bar")
+		@ConfigurationProperties("bar")
 		SelfReferential foo() {
 			return new SelfReferential();
 		}
@@ -365,7 +365,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class MapConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		MapHolder foo() {
 			return new MapHolder();
 		}
@@ -377,7 +377,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class ListConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		ListHolder foo() {
 			return new ListHolder();
 		}
@@ -389,7 +389,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class MetadataMapConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spam")
+		@ConfigurationProperties("spam")
 		MapHolder foo() {
 			return new MapHolder();
 		}
@@ -401,7 +401,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class AddressedConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		Addressed foo() {
 			return new Addressed();
 		}
@@ -413,7 +413,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 	static class InitializedMapAndListPropertiesConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo")
+		@ConfigurationProperties("foo")
 		InitializedMapAndListProperties foo() {
 			return new InitializedMapAndListProperties();
 		}
@@ -569,7 +569,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		@Bean
 		// gh-11037
-		@ConfigurationProperties(prefix = "cycle")
+		@ConfigurationProperties("cycle")
 		Cycle cycle() {
 			return new Cycle();
 		}
@@ -586,7 +586,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "test.datasource")
+		@ConfigurationProperties("test.datasource")
 		HikariDataSource hikariDataSource() {
 			return new HikariDataSource();
 		}

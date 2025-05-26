@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Docker configuration options.
@@ -24,7 +25,11 @@ import org.springframework.util.Assert;
  * @author Wei Jiang
  * @author Scott Frederick
  * @since 2.4.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@link org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration}.
  */
+@Deprecated(since = "3.5.0", forRemoval = true)
+@SuppressWarnings("removal")
 public final class DockerConfiguration {
 
 	private final DockerHostConfiguration host;
@@ -64,13 +69,13 @@ public final class DockerConfiguration {
 	}
 
 	public DockerConfiguration withHost(String address, boolean secure, String certificatePath) {
-		Assert.notNull(address, "Address must not be null");
+		Assert.notNull(address, "'address' must not be null");
 		return new DockerConfiguration(DockerHostConfiguration.forAddress(address, secure, certificatePath),
 				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withContext(String context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		return new DockerConfiguration(DockerHostConfiguration.forContext(context), this.builderAuthentication,
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
@@ -81,29 +86,29 @@ public final class DockerConfiguration {
 	}
 
 	public DockerConfiguration withBuilderRegistryTokenAuthentication(String token) {
-		Assert.notNull(token, "Token must not be null");
+		Assert.notNull(token, "'token' must not be null");
 		return new DockerConfiguration(this.host, new DockerRegistryTokenAuthentication(token),
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withBuilderRegistryUserAuthentication(String username, String password, String url,
 			String email) {
-		Assert.notNull(username, "Username must not be null");
-		Assert.notNull(password, "Password must not be null");
+		Assert.notNull(username, "'username' must not be null");
+		Assert.notNull(password, "'password' must not be null");
 		return new DockerConfiguration(this.host, new DockerRegistryUserAuthentication(username, password, url, email),
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withPublishRegistryTokenAuthentication(String token) {
-		Assert.notNull(token, "Token must not be null");
+		Assert.notNull(token, "'token' must not be null");
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryTokenAuthentication(token), this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withPublishRegistryUserAuthentication(String username, String password, String url,
 			String email) {
-		Assert.notNull(username, "Username must not be null");
-		Assert.notNull(password, "Password must not be null");
+		Assert.notNull(username, "'username' must not be null");
+		Assert.notNull(password, "'password' must not be null");
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryUserAuthentication(username, password, url, email), this.bindHostToBuilder);
 	}
@@ -113,6 +118,13 @@ public final class DockerConfiguration {
 				new DockerRegistryUserAuthentication("", "", "", ""), this.bindHostToBuilder);
 	}
 
+	/**
+	 * Docker host configuration.
+	 *
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link DockerHostConfiguration}
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public static class DockerHostConfiguration {
 
 		private final String address;
@@ -156,6 +168,24 @@ public final class DockerConfiguration {
 
 		static DockerHostConfiguration forContext(String context) {
 			return new DockerHostConfiguration(null, context, false, null);
+		}
+
+		/**
+		 * Adapts a {@link DockerHostConfiguration} to a
+		 * {@link DockerConnectionConfiguration}.
+		 * @param configuration the configuration to adapt
+		 * @return the adapted configuration
+		 * @since 3.5.0
+		 */
+		public static DockerConnectionConfiguration asConnectionConfiguration(DockerHostConfiguration configuration) {
+			if (configuration != null && StringUtils.hasLength(configuration.context)) {
+				return new DockerConnectionConfiguration.Context(configuration.context);
+			}
+			if (configuration != null && StringUtils.hasLength(configuration.address)) {
+				return new DockerConnectionConfiguration.Host(configuration.address, configuration.secure,
+						configuration.certificatePath);
+			}
+			return null;
 		}
 
 	}

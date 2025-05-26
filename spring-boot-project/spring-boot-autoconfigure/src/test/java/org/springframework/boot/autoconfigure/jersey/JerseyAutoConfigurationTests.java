@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,25 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
+import java.util.Collections;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration.JerseyWebApplicationInitializer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.filter.RequestContextFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,6 +113,21 @@ class JerseyAutoConfigurationTests {
 					.stream()
 					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).isEmpty();
 			});
+	}
+
+	@Test
+	void webApplicationInitializerDisablesJerseyWebApplicationInitializer() throws ServletException {
+		ServletContext context = new MockServletContext();
+		new JerseyWebApplicationInitializer().onStartup(context);
+		assertThat(context.getInitParameter("contextConfigLocation")).isEqualTo("<NONE>");
+	}
+
+	@Test
+	@ClassPathExclusions("jersey-spring6-*.jar")
+	void webApplicationInitializerHasNoEffectWhenJerseyIsAbsent() throws ServletException {
+		ServletContext context = new MockServletContext();
+		new JerseyWebApplicationInitializer().onStartup(context);
+		assertThat(Collections.list(context.getInitParameterNames())).isEmpty();
 	}
 
 	@Configuration(proxyBeanMethods = false)

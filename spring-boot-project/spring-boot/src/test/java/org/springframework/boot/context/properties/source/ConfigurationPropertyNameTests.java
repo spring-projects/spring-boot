@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void ofNameShouldNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyName.of(null))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
@@ -490,6 +491,21 @@ class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.subName(1)).hasToString("bar.baz");
 		assertThat(name.subName(2)).hasToString("baz");
+	}
+
+	@Test
+	void subNameOfAdaptedNameWhenOffsetLessThanSizeShouldReturnSubName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("MY_LOGGING_LEVEL_ONE", '_');
+		assertThat(name.subName(1)).hasToString("logging.level.one");
+		assertThat(name.subName(2)).hasToString("level.one");
+	}
+
+	@Test
+	void subNameOfAdaptedNameWithValueProcessorWhenOffsetLessThanSizeShouldReturnSubName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("MY_LOGGING_LEVEL_ONE", '_',
+				(value) -> value.toString().toLowerCase(Locale.ENGLISH));
+		assertThat(name.subName(1)).hasToString("logging.level.one");
+		assertThat(name.subName(2)).hasToString("level.one");
 	}
 
 	@Test

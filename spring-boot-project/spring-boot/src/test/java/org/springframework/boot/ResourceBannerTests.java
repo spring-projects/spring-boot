@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,14 @@ class ResourceBannerTests {
 	}
 
 	@Test
+	void renderWithoutVersionsWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a} ${spring-boot.version:X.Y.Z} ${application.version:A.B.C}".getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner 1 X.Y.Z A.B.C");
+	}
+
+	@Test
 	void renderFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
@@ -79,9 +87,18 @@ class ResourceBannerTests {
 	@Test
 	void renderWithoutFormattedVersions() {
 		Resource resource = new ByteArrayResource(
-				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
+				"banner ${a} ${spring-boot.formatted-version} ${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner).startsWith("banner 1");
+		assertThat(banner).startsWith("banner 1  ");
+	}
+
+	@Test
+	void renderWithoutFormattedVersionsWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a} ${spring-boot.formatted-version:(vX.Y.Z)} ${application.formatted-version:(vA.B.C)}"
+					.getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner 1 (vX.Y.Z) (vA.B.C)");
 	}
 
 	@Test
@@ -128,6 +145,13 @@ class ResourceBannerTests {
 		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner  1");
+	}
+
+	@Test
+	void renderWithoutTitleWithDefaultValue() {
+		Resource resource = new ByteArrayResource("banner ${application.title:Default Title} ${a}".getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner Default Title 1");
 	}
 
 	@Test

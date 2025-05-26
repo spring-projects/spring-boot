@@ -16,38 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
-import io.micrometer.tracing.otel.bridge.OtelTracer;
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
-import io.opentelemetry.sdk.trace.SdkTracerProvider;
-
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OTLP. Brave does not support
- * OTLP, so we only configure it for OpenTelemetry. OTLP defines three transports that are
- * supported: gRPC (/protobuf), HTTP/protobuf, HTTP/JSON. From these transports HTTP/JSON
- * is not supported by the OTel Java SDK, and it seems there are no plans supporting it in
- * the future, see: <a href=
- * "https://github.com/open-telemetry/opentelemetry-java/issues/3651">opentelemetry-java#3651</a>.
- * Because this class configures components from the OTel SDK, it can't support HTTP/JSON.
- * To keep things simple, we only auto-configure HTTP/protobuf. If you want to use gRPC,
- * define an {@link OtlpGrpcSpanExporter} and this auto-configuration will back off.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting traces with OTLP.
  *
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Eddú Meléndez
  * @since 3.1.0
+ * @deprecated since 3.4.0 in favor of {@link OtlpTracingAutoConfiguration}
  */
-@AutoConfiguration
-@ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class, OtlpHttpSpanExporter.class })
-@EnableConfigurationProperties(OtlpProperties.class)
-@Import({ OtlpTracingConfigurations.ConnectionDetails.class, OtlpTracingConfigurations.Exporters.class })
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class OtlpAutoConfiguration {
 
 }

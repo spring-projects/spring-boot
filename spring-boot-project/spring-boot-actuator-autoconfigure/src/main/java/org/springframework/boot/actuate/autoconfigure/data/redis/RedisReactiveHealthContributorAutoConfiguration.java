@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.data.redis;
 
-import java.util.Map;
-
 import reactor.core.publisher.Flux;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator;
@@ -50,18 +49,14 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 public class RedisReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
 
-	private final Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories;
-
-	RedisReactiveHealthContributorAutoConfiguration(
-			Map<String, ReactiveRedisConnectionFactory> redisConnectionFactories) {
+	RedisReactiveHealthContributorAutoConfiguration() {
 		super(RedisReactiveHealthIndicator::new);
-		this.redisConnectionFactories = redisConnectionFactories;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
-	public ReactiveHealthContributor redisHealthContributor() {
-		return createContributor(this.redisConnectionFactories);
+	public ReactiveHealthContributor redisHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, ReactiveRedisConnectionFactory.class);
 	}
 
 }

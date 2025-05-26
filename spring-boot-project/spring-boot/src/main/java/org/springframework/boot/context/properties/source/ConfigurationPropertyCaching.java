@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,14 @@ public interface ConfigurationPropertyCaching {
 	void clear();
 
 	/**
+	 * Override caching to temporarily enable it. Once caching is no longer needed the
+	 * returned {@link CacheOverride} should be closed to restore previous cache settings.
+	 * @return a {@link CacheOverride}
+	 * @since 3.5.0
+	 */
+	CacheOverride override();
+
+	/**
 	 * Get for all configuration property sources in the environment.
 	 * @param environment the spring environment
 	 * @return a caching instance that controls all sources in the environment
@@ -92,7 +100,7 @@ public interface ConfigurationPropertyCaching {
 	 * @return a caching instance that controls the matching source
 	 */
 	static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources, Object underlyingSource) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		if (underlyingSource == null) {
 			return new ConfigurationPropertySourcesCaching(sources);
 		}
@@ -105,6 +113,19 @@ public interface ConfigurationPropertyCaching {
 			}
 		}
 		throw new IllegalStateException("Unable to find cache from configuration property sources");
+	}
+
+	/**
+	 * {@link AutoCloseable} used to control a
+	 * {@link ConfigurationPropertyCaching#override() cache override}.
+	 *
+	 * @since 3.5.0
+	 */
+	interface CacheOverride extends AutoCloseable {
+
+		@Override
+		void close();
+
 	}
 
 }

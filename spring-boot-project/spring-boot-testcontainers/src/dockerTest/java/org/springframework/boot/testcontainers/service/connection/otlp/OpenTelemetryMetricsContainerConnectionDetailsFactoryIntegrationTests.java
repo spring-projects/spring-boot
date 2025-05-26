@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ import static org.hamcrest.Matchers.matchesPattern;
  * @author Jonatan Ivanov
  */
 @SpringJUnitConfig
-@TestPropertySource(properties = { "management.otlp.metrics.export.resource-attributes.service.name=test",
+@TestPropertySource(properties = { "management.opentelemetry.resource-attributes.service.name=test",
 		"management.otlp.metrics.export.step=1s" })
 @Testcontainers(disabledWithoutDocker = true)
 class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
@@ -80,24 +80,20 @@ class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 		Timer.builder("test.timer").register(this.meterRegistry).record(Duration.ofMillis(123));
 		DistributionSummary.builder("test.distributionsummary").register(this.meterRegistry).record(24);
 		Awaitility.await()
-			.atMost(Duration.ofSeconds(5))
-			.pollDelay(Duration.ofMillis(100))
-			.pollInterval(Duration.ofMillis(100))
+			.atMost(Duration.ofSeconds(30))
 			.untilAsserted(() -> whenPrometheusScraped().then()
 				.statusCode(200)
 				.contentType(OPENMETRICS_001)
-				.body(endsWith("# EOF\n"), containsString("service_name")));
-		whenPrometheusScraped().then()
-			.body(containsString(
-					"{job=\"test\",service_name=\"test\",telemetry_sdk_language=\"java\",telemetry_sdk_name=\"io.micrometer\""),
-					matchesPattern("(?s)^.*test_counter\\{.+} 42\\.0\\n.*$"),
-					matchesPattern("(?s)^.*test_gauge\\{.+} 12\\.0\\n.*$"),
-					matchesPattern("(?s)^.*test_timer_count\\{.+} 1\\n.*$"),
-					matchesPattern("(?s)^.*test_timer_sum\\{.+} 123\\.0\\n.*$"),
-					matchesPattern("(?s)^.*test_timer_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$"),
-					matchesPattern("(?s)^.*test_distributionsummary_count\\{.+} 1\\n.*$"),
-					matchesPattern("(?s)^.*test_distributionsummary_sum\\{.+} 24\\.0\\n.*$"),
-					matchesPattern("(?s)^.*test_distributionsummary_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$"));
+				.body(endsWith("# EOF\n"), containsString(
+						"{job=\"test\",service_name=\"test\",telemetry_sdk_language=\"java\",telemetry_sdk_name=\"io.micrometer\""),
+						matchesPattern("(?s)^.*test_counter\\{.+} 42\\.0\\n.*$"),
+						matchesPattern("(?s)^.*test_gauge\\{.+} 12\\.0\\n.*$"),
+						matchesPattern("(?s)^.*test_timer_count\\{.+} 1\\n.*$"),
+						matchesPattern("(?s)^.*test_timer_sum\\{.+} 123\\.0\\n.*$"),
+						matchesPattern("(?s)^.*test_timer_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$"),
+						matchesPattern("(?s)^.*test_distributionsummary_count\\{.+} 1\\n.*$"),
+						matchesPattern("(?s)^.*test_distributionsummary_sum\\{.+} 24\\.0\\n.*$"),
+						matchesPattern("(?s)^.*test_distributionsummary_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$")));
 	}
 
 	private Response whenPrometheusScraped() {

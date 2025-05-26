@@ -1,6 +1,5 @@
 plugins {
 	id 'java-gradle-plugin'
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.system-test"
 }
 
@@ -13,9 +12,9 @@ configurations {
 	}
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
-	into "${buildDir}/system-test-maven-repository"
+	into layout.buildDirectory.dir("system-test-maven-repository")
 }
 
 systemTest {
@@ -36,11 +35,14 @@ dependencies {
 	}
 
 	systemTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	systemTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	systemTestImplementation(gradleTestKit())
 	systemTestImplementation("org.assertj:assertj-core")
 	systemTestImplementation("org.testcontainers:junit-jupiter")
 	systemTestImplementation("org.testcontainers:testcontainers")
+}
+
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
 }

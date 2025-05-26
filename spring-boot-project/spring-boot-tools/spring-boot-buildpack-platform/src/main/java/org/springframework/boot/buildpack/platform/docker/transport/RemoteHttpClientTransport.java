@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.socket.LayeredConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.util.Timeout;
@@ -35,6 +35,7 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerHo
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HttpClientTransport} that talks to a remote Docker.
@@ -74,7 +75,7 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 			.create()
 			.setDefaultSocketConfig(socketConfig);
 		if (host.isSecure()) {
-			connectionManagerBuilder.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory));
+			connectionManagerBuilder.setTlsSocketStrategy(getTlsSocketStrategy(host, sslContextFactory));
 		}
 		HttpClientBuilder builder = HttpClients.custom();
 		builder.setConnectionManager(connectionManagerBuilder.build());
@@ -83,13 +84,12 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		return new RemoteHttpClientTransport(builder.build(), httpHost);
 	}
 
-	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
-			SslContextFactory sslContextFactory) {
+	private static TlsSocketStrategy getTlsSocketStrategy(DockerHost host, SslContextFactory sslContextFactory) {
 		String directory = host.getCertificatePath();
-		Assert.hasText(directory,
-				() -> "Docker host TLS verification requires trust material location to be specified with certificate path");
+		Assert.state(StringUtils.hasText(directory),
+				"Docker host TLS verification requires trust material location to be specified with certificate path");
 		SSLContext sslContext = sslContextFactory.forDirectory(directory);
-		return new SSLConnectionSocketFactory(sslContext);
+		return new DefaultClientTlsStrategy(sslContext);
 	}
 
 }

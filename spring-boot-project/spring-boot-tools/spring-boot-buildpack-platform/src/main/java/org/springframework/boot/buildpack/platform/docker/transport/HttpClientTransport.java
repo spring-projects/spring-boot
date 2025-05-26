@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
-import org.apache.hc.core5.http.message.StatusLine;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -51,6 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Mike Smithson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 abstract class HttpClientTransport implements HttpTransport {
 
@@ -61,8 +62,8 @@ abstract class HttpClientTransport implements HttpTransport {
 	private final HttpHost host;
 
 	protected HttpClientTransport(HttpClient client, HttpHost host) {
-		Assert.notNull(client, "Client must not be null");
-		Assert.notNull(host, "Host must not be null");
+		Assert.notNull(client, "'client' must not be null");
+		Assert.notNull(host, "'host' must not be null");
 		this.client = client;
 		this.host = host;
 	}
@@ -156,15 +157,16 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private Response execute(HttpUriRequest request) {
 		try {
+			beforeExecute(request);
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
 			if (statusCode >= 400 && statusCode <= 500) {
-				HttpEntity entity = response.getEntity();
-				Errors errors = (statusCode != 500) ? getErrorsFromResponse(entity) : null;
-				Message message = getMessageFromResponse(entity);
-				StatusLine statusLine = new StatusLine(response);
+				byte[] content = readContent(response);
+				response.close();
+				Errors errors = (statusCode != 500) ? deserializeErrors(content) : null;
+				Message message = deserializeMessage(content);
 				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
-						statusLine.getReasonPhrase(), errors, message);
+						response.getReasonPhrase(), errors, message);
 			}
 			return new HttpClientResponse(response);
 		}
@@ -173,19 +175,38 @@ abstract class HttpClientTransport implements HttpTransport {
 		}
 	}
 
-	private Errors getErrorsFromResponse(HttpEntity entity) {
+	protected void beforeExecute(HttpRequest request) {
+	}
+
+	private byte[] readContent(ClassicHttpResponse response) throws IOException {
+		HttpEntity entity = response.getEntity();
+		if (entity == null) {
+			return null;
+		}
+		try (InputStream stream = entity.getContent()) {
+			return (stream != null) ? stream.readAllBytes() : null;
+		}
+	}
+
+	private Errors deserializeErrors(byte[] content) {
+		if (content == null) {
+			return null;
+		}
 		try {
-			return SharedObjectMapper.get().readValue(entity.getContent(), Errors.class);
+			return SharedObjectMapper.get().readValue(content, Errors.class);
 		}
 		catch (IOException ex) {
 			return null;
 		}
 	}
 
-	private Message getMessageFromResponse(HttpEntity entity) {
+	private Message deserializeMessage(byte[] content) {
+		if (content == null) {
+			return null;
+		}
 		try {
-			return (entity.getContent() != null)
-					? SharedObjectMapper.get().readValue(entity.getContent(), Message.class) : null;
+			Message message = SharedObjectMapper.get().readValue(content, Message.class);
+			return (message.getMessage() != null) ? message : null;
 		}
 		catch (IOException ex) {
 			return null;

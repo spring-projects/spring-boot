@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,11 @@ public class DockerComposeProperties {
 	private boolean enabled = true;
 
 	/**
+	 * Arguments to pass to the Docker Compose command.
+	 */
+	private final List<String> arguments = new ArrayList<>();
+
+	/**
 	 * Paths to the Docker Compose configuration files.
 	 */
 	private final List<File> file = new ArrayList<>();
@@ -86,6 +91,10 @@ public class DockerComposeProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public List<String> getArguments() {
+		return this.arguments;
 	}
 
 	public List<File> getFile() {

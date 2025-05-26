@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
@@ -74,7 +73,6 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 	}
 
 	@Test
-	@Disabled("gh-26271")
 	void incrementalBuildTypeRenamed() {
 		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.compile();
@@ -85,7 +83,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter").fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
-		metadata = project.compile();
+		metadata = project.compile(metadata);
 		assertThat(metadata)
 			.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)

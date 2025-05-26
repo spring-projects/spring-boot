@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
@@ -115,8 +115,8 @@ class DefinitionsParser {
 
 	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value, Class<?> source) {
 		Set<ResolvableType> types = new LinkedHashSet<>();
-		for (Class<?> clazz : value) {
-			types.add(ResolvableType.forClass(clazz));
+		for (Class<?> type : value) {
+			types.add(ResolvableType.forClass(type));
 		}
 		if (types.isEmpty() && element instanceof Field field) {
 			types.add((field.getGenericType() instanceof TypeVariable) ? ResolvableType.forField(field, source)

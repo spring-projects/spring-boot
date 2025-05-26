@@ -78,7 +78,7 @@ public abstract class HealthProperties {
 	public static class Status {
 
 		/**
-		 * Comma-separated list of health statuses in order of severity.
+		 * List of health statuses in order of severity.
 		 */
 		private List<String> order = new ArrayList<>();
 

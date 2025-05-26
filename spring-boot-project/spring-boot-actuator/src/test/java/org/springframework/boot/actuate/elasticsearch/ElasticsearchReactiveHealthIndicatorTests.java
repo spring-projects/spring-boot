@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 
 	@Test
 	void elasticsearchIsUp() {
-		setupMockResponse(200, "green");
+		setupMockResponse("green");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
@@ -80,7 +80,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 
 	@Test
 	void elasticsearchWithYellowStatusIsUp() {
-		setupMockResponse(200, "yellow");
+		setupMockResponse("yellow");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
@@ -104,7 +104,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 
 	@Test
 	void elasticsearchIsOutOfServiceByStatus() {
-		setupMockResponse(200, "red");
+		setupMockResponse("red");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertHealthDetailsWithStatus(health.getDetails(), "red");
@@ -116,10 +116,11 @@ class ElasticsearchReactiveHealthIndicatorTests {
 				entry("active_primary_shards", 0), entry("active_shards", 0), entry("relocating_shards", 0),
 				entry("initializing_shards", 0), entry("unassigned_shards", 0), entry("delayed_unassigned_shards", 0),
 				entry("number_of_pending_tasks", 0), entry("number_of_in_flight_fetch", 0),
-				entry("task_max_waiting_in_queue_millis", 0L), entry("active_shards_percent_as_number", 100.0));
+				entry("task_max_waiting_in_queue_millis", 0L), entry("active_shards_percent_as_number", 100.0),
+				entry("unassigned_primary_shards", 10));
 	}
 
-	private void setupMockResponse(int responseCode, String status) {
+	private void setupMockResponse(String status) {
 		MockResponse mockResponse = new MockResponse().setBody(createJsonResult(status))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.setHeader("X-Elastic-Product", "Elasticsearch");
@@ -133,7 +134,8 @@ class ElasticsearchReactiveHealthIndicatorTests {
 						+ "\"active_shards\":0,\"relocating_shards\":0,\"initializing_shards\":0,"
 						+ "\"unassigned_shards\":0,\"delayed_unassigned_shards\":0,"
 						+ "\"number_of_pending_tasks\":0,\"number_of_in_flight_fetch\":0,"
-						+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0}",
+						+ "\"task_max_waiting_in_queue_millis\":0,\"active_shards_percent_as_number\":100.0,"
+						+ "\"unassigned_primary_shards\": 10 }",
 				status);
 	}
 

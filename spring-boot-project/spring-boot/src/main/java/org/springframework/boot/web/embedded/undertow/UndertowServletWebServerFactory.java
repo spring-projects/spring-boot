@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private boolean eagerFilterInit = true;
 
-	private boolean preservePathOnForward = false;
+	private boolean preservePathOnForward;
 
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
@@ -227,7 +227,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers = new LinkedHashSet<>(customizers);
 	}
 
@@ -237,7 +237,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
-		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
@@ -369,7 +369,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
 		Initializer initializer = new Initializer(mergedInitializers);
 		deployment.addServletContainerInitializer(new ServletContainerInitializerInfo(Initializer.class,
-				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer), NO_CLASSES));
+				new ImmediateInstanceFactory<>(initializer), NO_CLASSES));
 	}
 
 	private ClassLoader getServletClassLoader() {
@@ -635,7 +635,10 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		private void beforeCommit(HttpServerExchange exchange) {
 			for (Cookie cookie : exchange.responseCookies()) {
 				SameSite sameSite = getSameSite(asServletCookie(cookie));
-				if (sameSite != null) {
+				if (sameSite == SameSite.OMITTED) {
+					cookie.setSameSite(false);
+				}
+				else if (sameSite != null) {
 					cookie.setSameSiteMode(sameSite.attributeValue());
 				}
 			}

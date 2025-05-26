@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 
 package org.springframework.boot.json;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.util.StreamUtils;
+import org.springframework.boot.testsupport.classpath.resources.ResourceContent;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -192,26 +191,22 @@ abstract class AbstractJsonParserTests {
 	}
 
 	@Test // gh-31868
-	void listWithRepeatedOpenArray() throws IOException {
-		String input = StreamUtils.copyToString(
-				AbstractJsonParserTests.class.getResourceAsStream("repeated-open-array.txt"), StandardCharsets.UTF_8);
+	@WithPackageResources("repeated-open-array.txt")
+	void listWithRepeatedOpenArray(@ResourceContent("repeated-open-array.txt") String input) {
 		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input))
 			.havingCause()
 			.withMessageContaining("too deeply nested");
 	}
 
 	@Test // gh-31869
-	void largeMalformed() throws IOException {
-		String input = StreamUtils.copyToString(
-				AbstractJsonParserTests.class.getResourceAsStream("large-malformed-json.txt"), StandardCharsets.UTF_8);
+	@WithPackageResources("large-malformed-json.txt")
+	void largeMalformed(@ResourceContent("large-malformed-json.txt") String input) {
 		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input));
 	}
 
 	@Test // gh-32029
-	void deeplyNestedMap() throws IOException {
-		String input = StreamUtils.copyToString(
-				AbstractJsonParserTests.class.getResourceAsStream("deeply-nested-map-json.txt"),
-				StandardCharsets.UTF_8);
+	@WithPackageResources("deeply-nested-map-json.txt")
+	void deeplyNestedMap(@ResourceContent("deeply-nested-map-json.txt") String input) {
 		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input));
 	}
 

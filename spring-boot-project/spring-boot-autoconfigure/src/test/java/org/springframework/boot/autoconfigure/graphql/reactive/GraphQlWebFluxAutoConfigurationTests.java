@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -41,6 +42,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webflux.GraphQlHttpHandler;
+import org.springframework.graphql.server.webflux.GraphQlSseHandler;
 import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,6 +59,25 @@ import static org.hamcrest.Matchers.containsString;
  *
  * @author Brian Clozel
  */
+@WithResource(name = "graphql/types/book.graphqls", content = """
+		type Book {
+		    id: ID
+		    name: String
+		    pageCount: Int
+		    author: String
+		}
+		""")
+@WithResource(name = "graphql/schema.graphqls", content = """
+		type Query {
+		    greeting(name: String! = "Spring"): String!
+		    bookById(id: ID): Book
+		    books: BookConnection
+		}
+
+		type Subscription {
+		    booksOnSale(minPages: Int) : Book!
+		}
+		""")
 class GraphQlWebFluxAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/";
@@ -249,6 +270,24 @@ class GraphQlWebFluxAutoConfigurationTests {
 					.isEqualTo(Duration.ofSeconds(120));
 				assertThat(graphQlWebSocketHandler).extracting("keepAliveDuration").isEqualTo(Duration.ofSeconds(30));
 			});
+	}
+
+	@Test
+	void shouldConfigureSseTimeout() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.timeout=10s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("timeout", Duration.ofSeconds(10));
+		});
+	}
+
+	@Test
+	void shouldConfigureSseKeepAlive() {
+		this.contextRunner.withPropertyValues("spring.graphql.http.sse.keep-alive=5s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("keepAliveDuration", Duration.ofSeconds(5));
+		});
 	}
 
 	@Test

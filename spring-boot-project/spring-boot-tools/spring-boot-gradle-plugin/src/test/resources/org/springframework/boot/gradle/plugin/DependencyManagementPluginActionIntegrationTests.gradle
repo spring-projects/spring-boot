@@ -17,18 +17,21 @@ if (project.hasProperty('applyDependencyManagementPlugin')) {
 }
 
 repositories {
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
-task doesNotHaveDependencyManagement {
+tasks.register("doesNotHaveDependencyManagement") {
+	def extensions = project.extensions
 	doLast {
-		if (project.extensions.findByName('dependencyManagement') != null) {
+		if (extensions.findByName('dependencyManagement') != null) {
 			throw new GradleException('Found dependency management extension')
 		}
 	}
 }
 
-task hasDependencyManagement {
+tasks.register("hasDependencyManagement") {
 	doLast {
 		if (!dependencyManagement.managedVersions) {
 			throw new GradleException('No managed versions have been configured')

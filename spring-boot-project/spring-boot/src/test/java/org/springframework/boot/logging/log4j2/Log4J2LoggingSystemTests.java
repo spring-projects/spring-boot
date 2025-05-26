@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ package org.springframework.boot.logging.log4j2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.ProtocolException;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -40,10 +43,12 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
+import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
+import org.apache.logging.log4j.status.StatusListener;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
-import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,12 +64,12 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -110,7 +115,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
-		cleanUpPropertySources();
 	}
 
 	@AfterEach
@@ -119,17 +123,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		loggerContext.stop();
 		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
-		cleanUpPropertySources();
 		PluginRegistry.getInstance().clear();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
-		PropertiesUtil properties = PropertiesUtil.getProperties();
-		Object environment = ReflectionTestUtils.getField(properties, "environment");
-		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
-		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
-				|| candidate instanceof SpringBootPropertySource);
 	}
 
 	@Test
@@ -154,20 +148,20 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).exists();
-		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
+		assertThat(configuration.getConfigurationSource().getLocation()).contains("log4j2-file.xml");
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void testNonDefaultConfigLocation(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, "classpath:log4j2-nondefault.xml",
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
 		assertThat(new File(tmpDir() + "/tmp.log")).doesNotExist();
-		assertThat(configuration.getConfigurationSource().getFile().getAbsolutePath())
-			.contains("log4j2-nondefault.xml");
+		assertThat(configuration.getConfigurationSource().getFile().getAbsolutePath()).contains("nondefault.xml");
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
@@ -461,15 +455,60 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void compositeConfigurationWithCustomBaseConfiguration() {
-		this.environment.setProperty("logging.log4j2.config.override", "src/test/resources/log4j2-override.xml");
-		this.loggingSystem.initialize(this.initializationContext, "src/test/resources/log4j2-nondefault.xml", null);
+	@WithNonDefaultXmlResource
+	void loadOptionalOverrideConfigurationWhenDoesNotExist() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml", null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+	}
+
+	@Test
+	void loadOptionalOverrideConfigurationWhenDoesNotExistUponReinitialization() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+		this.loggingSystem.cleanUp();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(XmlConfiguration.class);
+	}
+
+	@Test
+	@WithNonDefaultXmlResource
+	@WithOverrideXmlResource
+	void loadOptionalOverrideConfiguration() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml", null);
 		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
 	}
 
 	@Test
+	@WithOverrideXmlResource
+	void loadOptionalOverrideConfigurationUponReinitialization() {
+		this.environment.setProperty("logging.log4j2.config.override", "optional:classpath:override.xml");
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+		this.loggingSystem.cleanUp();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+	}
+
+	@Test
+	@WithNonDefaultXmlResource
+	@WithOverrideXmlResource
+	void compositeConfigurationWithCustomBaseConfiguration() {
+		this.environment.setProperty("logging.log4j2.config.override", "classpath:override.xml");
+		this.loggingSystem.initialize(this.initializationContext, "classpath:nondefault.xml", null);
+		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
+	}
+
+	@Test
+	@WithOverrideXmlResource
 	void compositeConfigurationWithStandardConfigLocationConfiguration() {
-		this.environment.setProperty("logging.log4j2.config.override", "src/test/resources/log4j2-override.xml");
+		this.environment.setProperty("logging.log4j2.config.override", "classpath:override.xml");
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		assertThat(this.loggingSystem.getConfiguration()).isInstanceOf(CompositeConfiguration.class);
 	}
@@ -481,6 +520,42 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
 		assertThat(environment).isSameAs(this.environment);
+	}
+
+	@Test
+	void initializeRegisterStatusListenerAndAttachToLoggerContext() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		StatusListener statusListener = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener);
+	}
+
+	@Test
+	void statusListenerIsUpdatedUponReinitialization() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		// listener should be registered
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		StatusListener statusListener = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener);
+
+		this.loggingSystem.cleanUp();
+		// listener should be removed from context and StatusLogger
+		assertThat(StatusLogger.getLogger().getListeners()).doesNotContain(statusListener);
+		assertThat(loggerContext.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY)).isNull();
+
+		// a new listener should be registered
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		StatusListener statusListener1 = (StatusListener) loggerContext
+			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
+		assertThat(statusListener1).isNotNull();
+		assertThat(StatusLogger.getLogger().getListeners()).contains(statusListener1);
 	}
 
 	@Test
@@ -600,7 +675,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationNameLoggingToConsoleWhenDisabled(CapturedOutput output) {
-		this.environment.setProperty("spring.application.name", "application-name");
+		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		this.loggingSystem.setStandardConfigLocations(false);
 		this.loggingSystem.beforeInitialize();
@@ -639,7 +714,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationNameLoggingToFileWhenDisabled() {
-		this.environment.setProperty("spring.application.name", "application-name");
+		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
@@ -675,15 +750,14 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationGroupLoggingToConsoleWhenDisabled(CapturedOutput output) {
-		this.environment.setProperty("spring.application.group", "application-group");
+		this.environment.setProperty("spring.application.group", "mygroup");
 		this.environment.setProperty("logging.include-application-group", "false");
 		this.loggingSystem.setStandardConfigLocations(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
-		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_GROUP}")
-			.doesNotContain("${sys:APPLICATION_GROUP}")
-			.doesNotContain("myapp");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:APPLICATION_GROUP}")
+			.doesNotContain("mygroup");
 	}
 
 	@Test
@@ -714,7 +788,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationGroupLoggingToFileWhenDisabled() {
-		this.environment.setProperty("spring.application.group", "application-group");
+		this.environment.setProperty("spring.application.group", "mygroup");
 		this.environment.setProperty("logging.include-application-group", "false");
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
@@ -723,9 +797,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
-		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_GROUP}")
-			.doesNotContain("${sys:APPLICATION_GROUP}")
-			.doesNotContain("myapp");
+		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:APPLICATION_GROUP}")
+			.doesNotContain("mygroup");
 	}
 
 	@Test
@@ -752,6 +825,47 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 		@SuppressWarnings("unused")
 		private static final Log logger = LogFactory.getLog(Nested.class);
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nondefault.xml",
+			content = """
+					<Configuration status="WARN" monitorInterval="30">
+						<Properties>
+							<Property name="PID">????</Property>
+							<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+						</Properties>
+						<Appenders>
+							<Console name="Console" target="SYSTEM_OUT" follow="true">
+								<PatternLayout pattern="${LOG_PATTERN}"/>
+							</Console>
+						</Appenders>
+						<Loggers>
+							<Root level="info">
+								<AppenderRef ref="Console"/>
+							</Root>
+						</Loggers>
+					</Configuration>
+					""")
+	private @interface WithNonDefaultXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "override.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Configuration status="WARN" monitorInterval="30">
+				<Appenders>
+					<Console name="Console" target="SYSTEM_OUT" follow="true">
+						<PatternLayout pattern="${LOG_PATTERN}"/>
+					</Console>
+				</Appenders>
+			</Configuration>
+			""")
+	private @interface WithOverrideXmlResource {
 
 	}
 

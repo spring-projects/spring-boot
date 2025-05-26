@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cache;
 
-import java.util.Map;
-
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
@@ -45,8 +45,9 @@ public class CachesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CachesEndpoint cachesEndpoint(Map<String, CacheManager> cacheManagers) {
-		return new CachesEndpoint(cacheManagers);
+	public CachesEndpoint cachesEndpoint(ConfigurableListableBeanFactory beanFactory) {
+		return new CachesEndpoint(
+				SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, CacheManager.class));
 	}
 
 	@Bean

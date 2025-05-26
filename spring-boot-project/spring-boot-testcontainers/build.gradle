@@ -2,7 +2,6 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
@@ -21,6 +20,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	dockerTestImplementation("com.couchbase.client:java-client")
+	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
 	dockerTestImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -64,11 +64,13 @@ dependencies {
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.testcontainers:activemq")
 	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:ldap")
 	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:mssqlserver")
@@ -81,6 +83,8 @@ dependencies {
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
+	optional("com.redis:testcontainers-redis")
+	optional("com.hazelcast:hazelcast")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -97,4 +101,8 @@ dependencies {
 	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
+}
+
+dockerTest {
+	jvmArgs += "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED"
 }

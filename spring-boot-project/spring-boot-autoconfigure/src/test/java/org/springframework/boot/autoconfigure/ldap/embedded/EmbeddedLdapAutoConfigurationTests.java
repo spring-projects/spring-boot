@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.ldap.embedded;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.sdk.BindResult;
 import com.unboundid.ldap.sdk.DN;
@@ -30,6 +35,7 @@ import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -100,6 +106,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	@WithSchemaLdifResource
 	void testSetLdifFile() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org").run((context) -> {
 			InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
@@ -108,6 +115,7 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	@WithSchemaLdifResource
 	void testQueryEmbeddedLdap() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
 			.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class))
@@ -130,6 +138,34 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-schema.ldif", content = """
+			dn: cn=schema
+			attributeTypes: ( 1.3.6.1.4.1.32473.1.1.1
+			  NAME 'exampleAttributeName'
+			  DESC 'An example attribute type definition'
+			  EQUALITY caseIgnoreMatch
+			  ORDERING caseIgnoreOrderingMatch
+			  SUBSTR caseIgnoreSubstringsMatch
+			  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+			  SINGLE-VALUE
+			  X-ORIGIN 'Managing Schema Document' )
+			objectClasses: ( 1.3.6.1.4.1.32473.1.2.2
+			  NAME 'exampleAuxiliaryClass'
+			  DESC 'An example auxiliary object class definition'
+			  SUP top
+			  AUXILIARY
+			  MAY exampleAttributeName
+			  X-ORIGIN 'Managing Schema Document' )
+			""")
+	@WithResource(name = "custom-schema-sample.ldif", content = """
+			dn: dc=spring,dc=org
+			objectclass: top
+			objectclass: domain
+			objectclass: extensibleObject
+			objectClass: exampleAuxiliaryClass
+			dc: spring
+			exampleAttributeName: exampleAttributeName
+			""")
 	void testCustomSchemaValidation() {
 		this.contextRunner
 			.withPropertyValues("spring.ldap.embedded.validation.schema:classpath:custom-schema.ldif",
@@ -144,6 +180,122 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "schema-multi-basedn.ldif", content = """
+			dn: dc=spring,dc=org
+			objectclass: top
+			objectclass: domain
+			objectclass: extensibleObject
+			dc: spring
+
+			dn: ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: organizationalUnit
+			ou: groups
+
+			dn: cn=ROLE_USER,ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: groupOfUniqueNames
+			cn: ROLE_USER
+			uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person3,ou=company1,c=Sweden,dc=spring,dc=org
+
+			dn: cn=ROLE_ADMIN,ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: groupOfUniqueNames
+			cn: ROLE_ADMIN
+			uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+
+			dn: c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: country
+			c: Sweden
+			description: The country of Sweden
+
+			dn: ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: organizationalUnit
+			ou: company1
+			description: First company in Sweden
+
+			dn: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person
+			userPassword: password
+			cn: Some Person
+			sn: Person
+			description: Sweden, Company1, Some Person
+			telephoneNumber: +46 555-123456
+
+			dn: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person2
+			userPassword: password
+			cn: Some Person2
+			sn: Person2
+			description: Sweden, Company1, Some Person2
+			telephoneNumber: +46 555-654321
+
+			dn: cn=Some Person3,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person3
+			userPassword: password
+			cn: Some Person3
+			sn: Person3
+			description: Sweden, Company1, Some Person3
+			telephoneNumber: +46 555-123654
+
+			dn: cn=Some Person4,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person4
+			userPassword: password
+			cn: Some Person
+			sn: Person
+			description: Sweden, Company1, Some Person
+			telephoneNumber: +46 555-456321
+
+			dn: dc=vmware,dc=com
+			objectclass: top
+			objectclass: domain
+			objectclass: extensibleObject
+			dc: vmware
+
+			dn: ou=groups,dc=vmware,dc=com
+			objectclass: top
+			objectclass: organizationalUnit
+			ou: groups
+
+			dn: c=Sweden,dc=vmware,dc=com
+			objectclass: top
+			objectclass: country
+			c: Sweden
+			description:The country of Sweden
+
+			dn: cn=Some Random Person,c=Sweden,dc=vmware,dc=com
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.random.person
+			userPassword: password
+			cn: Some Random Person
+			sn: Person
+			description: Sweden, VMware, Some Random Person
+			telephoneNumber: +46 555-123456
+			""")
 	void testMultiBaseDn() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.ldif:classpath:schema-multi-basedn.ldif",
 				"spring.ldap.embedded.base-dn[0]:dc=spring,dc=org", "spring.ldap.embedded.base-dn[1]:dc=vmware,dc=com")
@@ -203,6 +355,99 @@ class EmbeddedLdapAutoConfigurationTests {
 			con.connect("localhost", port);
 			return con;
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "schema.ldif", content = """
+			dn: dc=spring,dc=org
+			objectclass: top
+			objectclass: domain
+			objectclass: extensibleObject
+			dc: spring
+
+			dn: ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: organizationalUnit
+			ou: groups
+
+			dn: cn=ROLE_USER,ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: groupOfUniqueNames
+			cn: ROLE_USER
+			uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			uniqueMember: cn=Some Person3,ou=company1,c=Sweden,dc=spring,dc=org
+
+			dn: cn=ROLE_ADMIN,ou=groups,dc=spring,dc=org
+			objectclass: top
+			objectclass: groupOfUniqueNames
+			cn: ROLE_ADMIN
+			uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+
+			dn: c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: country
+			c: Sweden
+			description: The country of Sweden
+
+			dn: ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: organizationalUnit
+			ou: company1
+			description: First company in Sweden
+
+			dn: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person
+			userPassword: password
+			cn: Some Person
+			sn: Person
+			description: Sweden, Company1, Some Person
+			telephoneNumber: +46 555-123456
+
+			dn: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person2
+			userPassword: password
+			cn: Some Person2
+			sn: Person2
+			description: Sweden, Company1, Some Person2
+			telephoneNumber: +46 555-654321
+
+			dn: cn=Some Person3,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person3
+			userPassword: password
+			cn: Some Person3
+			sn: Person3
+			description: Sweden, Company1, Some Person3
+			telephoneNumber: +46 555-123654
+
+			dn: cn=Some Person4,ou=company1,c=Sweden,dc=spring,dc=org
+			objectclass: top
+			objectclass: person
+			objectclass: organizationalPerson
+			objectclass: inetOrgPerson
+			uid: some.person4
+			userPassword: password
+			cn: Some Person
+			sn: Person
+			description: Sweden, Company1, Some Person
+			telephoneNumber: +46 555-456321
+			""")
+	@interface WithSchemaLdifResource {
 
 	}
 

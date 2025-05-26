@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Pedro Xavier Leite Cavadas
  * @since 3.1.0
  */
 public class ConnectionDetailsFactories {
@@ -47,8 +48,23 @@ public class ConnectionDetailsFactories {
 
 	private final List<Registration<?, ?>> registrations = new ArrayList<>();
 
+	/**
+	 * Create a new {@link ConnectionDetailsFactories} instance.
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #ConnectionDetailsFactories(ClassLoader)}
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public ConnectionDetailsFactories() {
-		this(SpringFactoriesLoader.forDefaultResourceLocation(ConnectionDetailsFactory.class.getClassLoader()));
+		this((ClassLoader) null);
+	}
+
+	/**
+	 * Create a new {@link ConnectionDetailsFactories} instance.
+	 * @param classLoader the class loader used to load factories
+	 * @since 3.5.0
+	 */
+	public ConnectionDetailsFactories(ClassLoader classLoader) {
+		this(SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

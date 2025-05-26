@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,33 +86,46 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				.add(project.getDependencies()
 					.project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
-			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
+			project.getTasks().register("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
 				SourceSet main = project.getExtensions()
 					.getByType(JavaPluginExtension.class)
 					.getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
-				task.getOutputFile().set(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
+				task.getOutputFile()
+					.set(project.getLayout().getBuildDirectory().file("auto-configuration-metadata.properties"));
 				project.getArtifacts()
 					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME, task.getOutputFile(),
 							(artifact) -> artifact.builtBy(task));
 			});
-			project.getPlugins().withType(ArchitecturePlugin.class, (architecturePlugin) -> {
-				project.getTasks().named("checkArchitectureMain", ArchitectureCheck.class).configure((task) -> {
-					SourceSet main = project.getExtensions()
-						.getByType(JavaPluginExtension.class)
-						.getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-					File resourcesDirectory = main.getOutput().getResourcesDir();
-					task.dependsOn(main.getProcessResourcesTaskName());
-					task.getInputs().files(resourcesDirectory).optional().withPathSensitivity(PathSensitivity.RELATIVE);
-					task.getRules()
-						.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
-								autoConfigurationImports(project, resourcesDirectory)));
-				});
-			});
+			project.getPlugins()
+				.withType(ArchitecturePlugin.class, (plugin) -> configureArchitecturePluginTasks(project));
 		});
+	}
+
+	private void configureArchitecturePluginTasks(Project project) {
+		project.getTasks().configureEach((task) -> {
+			if ("checkArchitectureMain".equals(task.getName()) && task instanceof ArchitectureCheck architectureCheck) {
+				configureCheckArchitectureMain(project, architectureCheck);
+			}
+		});
+	}
+
+	private void configureCheckArchitectureMain(Project project, ArchitectureCheck architectureCheck) {
+		SourceSet main = project.getExtensions()
+			.getByType(JavaPluginExtension.class)
+			.getSourceSets()
+			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		File resourcesDirectory = main.getOutput().getResourcesDir();
+		architectureCheck.dependsOn(main.getProcessResourcesTaskName());
+		architectureCheck.getInputs()
+			.files(resourcesDirectory)
+			.optional()
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+		architectureCheck.getRules()
+			.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+					autoConfigurationImports(project, resourcesDirectory)));
 	}
 
 	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(

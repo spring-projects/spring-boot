@@ -1,7 +1,5 @@
 plugins {
 	id "org.springframework.boot.bom"
-	id "org.springframework.boot.conventions"
-	id "org.springframework.boot.deployed"
 }
 
 description = "Spring Boot Parent"
@@ -27,10 +25,25 @@ bom {
 			]
 		}
 	}
+	library("AWS Advanced JDBC Wrapper", "2.5.4") {
+		group("software.amazon.jdbc") {
+			modules = [
+				"aws-advanced-jdbc-wrapper"
+			]
+		}
+	}
 	library("C3P0", "0.9.5.5") {
 		group("com.mchange") {
 			modules = [
 				"c3p0"
+			]
+		}
+	}
+	library("ClickHouse", "0.6.5") {
+		group("com.clickhouse") {
+			modules = [
+				"clickhouse-jdbc",
+				"clickhouse-r2dbc"
 			]
 		}
 	}
@@ -48,7 +61,7 @@ bom {
 			]
 		}
 	}
-	library("CycloneDX Gradle Plugin", "1.10.0") {
+	library("CycloneDX Gradle Plugin", "2.3.0") {
 		group("org.cyclonedx") {
 			modules = [
 				"cyclonedx-gradle-plugin"
@@ -57,9 +70,9 @@ bom {
 	}
 	library("Janino", "3.1.10") {
 		group("org.codehaus.janino") {
-			imports = [
-				"janino"
-			]
+			bom("janino") {
+				permit("junit:junit")
+			}
 		}
 	}
 	library("JLine", "2.11") {
@@ -159,6 +172,20 @@ bom {
 			]
 		}
 	}
+	library("OkHttp", "4.12.0") {
+		group("com.squareup.okhttp3") {
+			modules = [
+				"mockwebserver"
+			]
+		}
+	}
+	library("OpenTelemetry Logback Appender", "2.7.0-alpha") {
+		group("io.opentelemetry.instrumentation") {
+			modules = [
+				"opentelemetry-logback-appender-1.0"
+			]
+		}
+	}
 	library("Plexus Build API", "0.0.7") {
 		group("org.sonatype.plexus") {
 			modules = [
@@ -189,8 +216,8 @@ bom {
 	}
 	library("Spock Framework", "2.3-groovy-4.0") {
 		group("org.spockframework") {
-			imports = [
-				"spock-bom"
+			modules = [
+				"spock-core"
 			]
 		}
 	}

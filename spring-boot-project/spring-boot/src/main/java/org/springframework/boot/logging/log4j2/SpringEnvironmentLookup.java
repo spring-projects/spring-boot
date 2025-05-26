@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  *
  * @author Ralph Goers
  * @author Phillip Webb
+ * @author Dmytro Nosan
  */
 @Plugin(name = "spring", category = StrLookup.CATEGORY)
 class SpringEnvironmentLookup implements LoggerContextAware, StrLookup {
@@ -43,7 +44,10 @@ class SpringEnvironmentLookup implements LoggerContextAware, StrLookup {
 
 	@Override
 	public String lookup(String key) {
-		Assert.state(this.environment != null, "Unable to obtain Spring Environment from LoggerContext");
+		Assert.state(this.environment != null,
+				"Unable to obtain Spring Environment from LoggerContext. "
+						+ "This can happen if your log4j2 configuration filename does not end with '-spring' "
+						+ "(for example using 'log4j2.xml' instead of 'log4j2-spring.xml')");
 		return this.environment.getProperty(key);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,21 +60,21 @@ class ReflectiveOperationInvokerTests {
 	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
-			.withMessageContaining("Target must not be null");
+			.withMessageContaining("'target' must not be null");
 	}
 
 	@Test
 	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
-			.withMessageContaining("OperationMethod must not be null");
+			.withMessageContaining("'operationMethod' must not be null");
 	}
 
 	@Test
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
-			.withMessageContaining("ParameterValueMapper must not be null");
+			.withMessageContaining("'parameterValueMapper' must not be null");
 	}
 
 	@Test

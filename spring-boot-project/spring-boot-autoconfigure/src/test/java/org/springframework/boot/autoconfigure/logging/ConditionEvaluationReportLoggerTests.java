@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import ch.qos.logback.classic.Level;
@@ -25,12 +26,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListenerTests.Config;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -53,7 +58,7 @@ class ConditionEvaluationReportLoggerTests {
 	void supportsOnlyInfoAndDebugLogLevels() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
-			.withMessageContaining("LogLevel must be INFO or DEBUG");
+			.withMessageContaining("'logLevel' must be INFO or DEBUG");
 	}
 
 	@Test
@@ -104,7 +109,8 @@ class ConditionEvaluationReportLoggerTests {
 			ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(Arrays.asList("com.foo.Bar"));
 			context.refresh();
 			withDebugLogging(() -> logger.logReport(false));
-			assertThat(output).contains("not a servlet web application (OnWebApplicationCondition)");
+			assertThat(output).contains("did not find any beans of type java.time.Duration (OnBeanCondition)")
+				.contains("@ConditionalOnProperty (com.example.property) matched (OnPropertyCondition)");
 		}
 	}
 
@@ -119,6 +125,24 @@ class ConditionEvaluationReportLoggerTests {
 		finally {
 			logger.setLevel(currentLevel);
 		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ MatchingAutoConfiguration.class, NonMatchingAutoConfiguration.class })
+	static class Config {
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnProperty(name = "com.example.property", matchIfMissing = true)
+	static class MatchingAutoConfiguration {
+
+	}
+
+	@AutoConfiguration
+	@ConditionalOnBean(Duration.class)
+	static class NonMatchingAutoConfiguration {
+
 	}
 
 }

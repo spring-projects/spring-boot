@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server;
 
 import java.net.BindException;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
@@ -81,7 +82,7 @@ public class PortInUseException extends WebServerException {
 	public static void ifPortBindingException(Exception ex, Consumer<BindException> action) {
 		ifCausedBy(ex, BindException.class, (bindException) -> {
 			// bind exception can be also thrown because an address can't be assigned
-			if (bindException.getMessage().toLowerCase().contains("in use")) {
+			if (bindException.getMessage().toLowerCase(Locale.ROOT).contains("in use")) {
 				action.accept(bindException);
 			}
 		});

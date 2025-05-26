@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,31 @@ public final class JarModeLauncher {
 
 	static final String DISABLE_SYSTEM_EXIT = JarModeLauncher.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
+	static final String SUPPRESSED_SYSTEM_EXIT_CODE = JarModeLauncher.class.getName() + ".SUPPRESSED_SYSTEM_EXIT_CODE";
+
 	private JarModeLauncher() {
 	}
 
 	public static void main(String[] args) {
 		String mode = System.getProperty("jarmode");
+		boolean disableSystemExit = Boolean.getBoolean(DISABLE_SYSTEM_EXIT);
+		try {
+			runJarMode(mode, args);
+			if (disableSystemExit) {
+				System.setProperty(SUPPRESSED_SYSTEM_EXIT_CODE, "0");
+			}
+		}
+		catch (Throwable ex) {
+			printError(ex);
+			if (disableSystemExit) {
+				System.setProperty(SUPPRESSED_SYSTEM_EXIT_CODE, "1");
+				return;
+			}
+			System.exit(1);
+		}
+	}
+
+	private static void runJarMode(String mode, String[] args) {
 		List<JarMode> candidates = SpringFactoriesLoader.loadFactories(JarMode.class,
 				ClassUtils.getDefaultClassLoader());
 		for (JarMode candidate : candidates) {
@@ -44,10 +64,17 @@ public final class JarModeLauncher {
 				return;
 			}
 		}
-		System.err.println("Unsupported jarmode '" + mode + "'");
-		if (!Boolean.getBoolean(DISABLE_SYSTEM_EXIT)) {
-			System.exit(1);
+		throw new JarModeErrorException("Unsupported jarmode '" + mode + "'");
+	}
+
+	private static void printError(Throwable ex) {
+		if (ex instanceof JarModeErrorException) {
+			String message = ex.getMessage();
+			System.err.println("Error: " + message);
+			System.err.println();
+			return;
 		}
+		ex.printStackTrace();
 	}
 
 }

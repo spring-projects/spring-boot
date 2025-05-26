@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraDriverHealthIndicator;
@@ -49,8 +50,8 @@ class CassandraHealthContributorConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
-		HealthContributor cassandraHealthContributor(Map<String, CqlSession> sessions) {
-			return createContributor(sessions);
+		HealthContributor cassandraHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+			return createContributor(beanFactory, CqlSession.class);
 		}
 
 	}

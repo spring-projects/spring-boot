@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PemCertificateParserTests {
 
 	@Test
+	@WithPackageResources("test-cert.pem")
 	void parseCertificate() throws Exception {
 		List<X509Certificate> certificates = PemCertificateParser.parse(read("test-cert.pem"));
 		assertThat(certificates).isNotNull();
@@ -43,6 +45,7 @@ class PemCertificateParserTests {
 	}
 
 	@Test
+	@WithPackageResources("test-cert-chain.pem")
 	void parseCertificateChain() throws Exception {
 		List<X509Certificate> certificates = PemCertificateParser.parse(read("test-cert-chain.pem"));
 		assertThat(certificates).isNotNull();

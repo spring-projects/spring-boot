@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 
+import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
@@ -96,7 +97,7 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new GradleBuild().gradleVersion(this.gradleVersion);
+			GradleBuild gradleBuild = new PluginClasspathGradleBuild().gradleVersion(this.gradleVersion);
 			if (this.configurationCache) {
 				gradleBuild.configurationCache();
 			}

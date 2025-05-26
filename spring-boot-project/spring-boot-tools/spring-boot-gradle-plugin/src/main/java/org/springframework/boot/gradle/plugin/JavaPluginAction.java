@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		project.afterEvaluate(this::configureUtf8Encoding);
 		configureParametersCompilerArg(project);
 		configureAdditionalMetadataLocations(project);
+		configureSpringBootStarterTestToDependOnJUnitPlatformLauncher(project);
 	}
 
 	private void classifyJarTask(Project project) {
@@ -315,6 +316,15 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Configuration testImplementation = project.getConfigurations()
 			.getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME);
 		testImplementation.extendsFrom(testAndDevelopmentOnly);
+	}
+
+	private void configureSpringBootStarterTestToDependOnJUnitPlatformLauncher(Project project) {
+		project.getDependencies()
+			.components((components) -> components.withModule("org.springframework.boot:spring-boot-starter-test",
+					(metadata) -> metadata.withVariant("runtimeElements", (variant) -> variant.withDependencies(
+							(dependencies) -> dependencies.add("org.junit.platform:junit-platform-launcher")
+
+					))));
 	}
 
 	/**

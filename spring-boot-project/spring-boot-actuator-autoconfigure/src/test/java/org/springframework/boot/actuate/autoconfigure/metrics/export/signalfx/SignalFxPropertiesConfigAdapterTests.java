@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxProperties.HistogramType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SignalFxPropertiesConfigAdapter}.
  *
  * @author Mirko Sobeck
+ * @deprecated since 3.5.0 for removal in 4.0.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.5.0", forRemoval = true)
 class SignalFxPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<SignalFxProperties, SignalFxPropertiesConfigAdapter> {
 
@@ -70,7 +72,7 @@ class SignalFxPropertiesConfigAdapterTests
 	@Test
 	void whenPropertiesPublishHistogramTypeIsCumulativeAdapterPublishCumulativeHistogramReturnsIt() {
 		SignalFxProperties properties = createProperties();
-		properties.setPublishedHistogramType(HistogramType.CUMULATIVE);
+		properties.setPublishedHistogramType(SignalFxProperties.HistogramType.CUMULATIVE);
 		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isTrue();
 		assertThat(createConfigAdapter(properties).publishDeltaHistogram()).isFalse();
 	}
@@ -78,7 +80,7 @@ class SignalFxPropertiesConfigAdapterTests
 	@Test
 	void whenPropertiesPublishHistogramTypeIsDeltaAdapterPublishDeltaHistogramReturnsIt() {
 		SignalFxProperties properties = createProperties();
-		properties.setPublishedHistogramType(HistogramType.DELTA);
+		properties.setPublishedHistogramType(SignalFxProperties.HistogramType.DELTA);
 		assertThat(createConfigAdapter(properties).publishDeltaHistogram()).isTrue();
 		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isFalse();
 	}

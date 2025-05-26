@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.reactive.server;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -55,12 +54,15 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -166,13 +168,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void basicSslFromClassPath() {
 		testBasicSslWithKeyStore("classpath:test.jks", "password");
 	}
 
 	@Test
-	void basicSslFromFileSystem() {
-		testBasicSslWithKeyStore("src/test/resources/test.jks", "password");
+	@WithPackageResources("test.jks")
+	void basicSslFromFileSystem(@ResourcePath("test.jks") String keyStore) {
+		testBasicSslWithKeyStore(keyStore, "password");
 
 	}
 
@@ -200,6 +204,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWithValidAlias() {
 		String keyStore = "classpath:test.jks";
 		String keyPassword = "password";
@@ -229,6 +234,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWithInvalidAliasFailsDuringStartup() {
 		String keyStore = "classpath:test.jks";
 		String keyPassword = "password";
@@ -255,6 +261,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
@@ -266,6 +273,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
@@ -276,10 +284,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		testClientAuthSuccess(ssl, buildTrustAllSslConnector());
 	}
 
-	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector(String keyStoreFile,
+	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector(String keyStore,
 			String keyStorePassword) throws Exception {
 		KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		try (InputStream stream = new FileInputStream("src/test/resources/" + keyStoreFile)) {
+		try (InputStream stream = new ClassPathResource(keyStore).getInputStream()) {
 			clientKeyStore.load(stream, "secret".toCharArray());
 		}
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
@@ -313,6 +321,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
@@ -324,6 +333,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
@@ -335,6 +345,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test-cert.pem", "test-key.pem", "test.p12" })
 	void sslWithPemCertificates() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
@@ -570,18 +581,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
-				new HttpClientTransportOverHTTP2(new HTTP2Client()));
-		client.start();
-		try {
+
+		try (org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()))) {
+			client.start();
 			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
 				.body(new StringRequestContent("text/plain", "Hello World"))
 				.send();
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
-		}
-		finally {
-			client.stop();
 		}
 	}
 

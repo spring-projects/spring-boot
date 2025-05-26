@@ -1,15 +1,17 @@
 pluginManagement {
+	evaluate(new File("{parentRootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		exclusiveContent {
 			forRepository {
-				maven { url '{systemTestMavenRepository}' }
+				maven {
+					url = '{systemTestMavenRepository}'
+				}
 			}
 			filter {
 				includeGroup "org.springframework.boot"
 			}
 		}
-		maven { url 'https://repo.spring.io/milestone' }
-		maven { url 'https://repo.spring.io/snapshot' }
+		spring.mavenRepositories()
 		gradlePluginPortal()
 	}
 	resolutionStrategy {

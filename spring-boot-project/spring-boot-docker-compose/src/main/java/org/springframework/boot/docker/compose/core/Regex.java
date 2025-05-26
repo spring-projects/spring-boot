@@ -19,17 +19,15 @@ package org.springframework.boot.docker.compose.core;
 import java.util.regex.Pattern;
 
 /**
- * Regular Expressions for image names and references based on those found in the Docker
- * codebase.
+ * Regular Expressions for image names and references based on those found in the CNCF
+ * Distribution Project codebase.
  *
  * @author Scott Frederick
  * @author Phillip Webb
- * @see <a href=
- * "https://github.com/docker/distribution/blob/master/reference/reference.go">Docker
- * grammar reference</a>
- * @see <a href=
- * "https://github.com/docker/distribution/blob/master/reference/regexp.go">Docker grammar
- * implementation</a>
+ * @see <a href="https://github.com/distribution/reference/blob/main/reference.go">OCI
+ * Image grammar reference</a>
+ * @see <a href="https://github.com/distribution/reference/blob/main/regexp.go">OCI Image
+ * grammar implementation</a>
  * @see <a href=
  * "https://stackoverflow.com/questions/37861791/how-are-docker-image-names-parsed">How
  * are Docker image names parsed?</a>

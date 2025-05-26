@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@ package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,6 +66,7 @@ import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationEvent;
@@ -160,26 +165,28 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void overrideConfigLocation() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml");
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
 	}
 
 	@Test
-	@ClassPathExclusions("janino-*.jar")
-	void tryingToUseJaninoWhenItIsNotOnTheClasspathFailsGracefully(CapturedOutput output) {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-janino.xml");
+	void throwableFromInitializeResultsInGracefulFailure(CapturedOutput output) {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, BrokenInitializationLoggingSystem.class.getName());
+		multicastEvent(this.listener,
+				new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
-		assertThat(output)
-			.contains("Logging system failed to initialize using configuration from 'classpath:logback-janino.xml'");
+		assertThat(output).contains("Deliberately broken");
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void trailingWhitespaceInLoggingConfigShouldBeTrimmed() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml ");
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml ");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
@@ -226,8 +233,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void addLogFileProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml",
 				"logging.file.name=" + this.logFile);
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -248,8 +256,9 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	@WithNonDefaultXmlResource
 	void addLogPathProperty() {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-nondefault.xml",
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:nondefault.xml",
 				"logging.file.path=" + this.tempDir);
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
@@ -682,7 +691,7 @@ class LoggingApplicationListenerTests {
 
 	static final class TestCleanupLoggingSystem extends LoggingSystem {
 
-		private boolean cleanedUp = false;
+		private boolean cleanedUp;
 
 		TestCleanupLoggingSystem(ClassLoader classLoader) {
 		}
@@ -708,6 +717,38 @@ class LoggingApplicationListenerTests {
 		@Override
 		public void cleanUp() {
 			this.cleanedUp = true;
+		}
+
+	}
+
+	static final class BrokenInitializationLoggingSystem extends LoggingSystem {
+
+		BrokenInitializationLoggingSystem(ClassLoader classLoader) {
+
+		}
+
+		@Override
+		public void beforeInitialize() {
+		}
+
+		@Override
+		public void initialize(LoggingInitializationContext initializationContext, String configLocation,
+				LogFile logFile) {
+			throw new Error("Deliberately broken");
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
 		}
 
 	}
@@ -744,6 +785,24 @@ class LoggingApplicationListenerTests {
 		public int getPhase() {
 			return Integer.MAX_VALUE - 1;
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nondefault.xml", content = """
+			<configuration>
+				<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+					<encoder>
+						<pattern>%property{LOG_FILE} [%t] ${PID:-????} %c{1}: %m%n BOOTBOOT</pattern>
+					</encoder>
+				</appender>
+				<root level="INFO">
+					<appender-ref ref="CONSOLE"/>
+				</root>
+			</configuration>
+			""")
+	private @interface WithNonDefaultXmlResource {
 
 	}
 

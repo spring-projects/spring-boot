@@ -1,5 +1,4 @@
 plugins {
-	id "org.springframework.boot.conventions"
 	id "java-base"
 }
 
@@ -30,25 +29,35 @@ dependencies {
 	antDependencies "org.apache.ant:ant-launcher:1.10.7"
 	antDependencies "org.apache.ant:ant:1.10.7"
 
-	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-classic", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
 
 	testImplementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-task syncTestRepository(type: Sync) {
-	destinationDir = file("${buildDir}/test-repository")
+tasks.register("syncTestRepository", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("test-repository"))
 	from configurations.testRepository
 	rename {
 		it.replaceAll("-[0-9]+\\.[0-9]+-[0-9]+\\.", "-SNAPSHOT.")
 	}
 }
 
-task antRun(type: JavaExec) {
-	dependsOn syncTestRepository, configurations.antDependencies
+tasks.register("syncAntSources", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("ant"))
+	from project.layout.projectDirectory
+	include "*.xml"
+	filter(springRepositoryTransformers.ant())
+}
+
+tasks.register("antRun", JavaExec) {
+	workingDir = layout.buildDirectory.dir("ant")
+	dependsOn syncTestRepository, syncAntSources, configurations.antDependencies
 	classpath = configurations.antDependencies;
 	mainClass = "org.apache.tools.ant.launch.Launcher"
 	args = [ "clean", "build" ]
@@ -58,7 +67,7 @@ task antRun(type: JavaExec) {
 	]
 }
 
-task test(type: Test) {
+tasks.register("test", Test) {
 	dependsOn antRun
 	testClassesDirs = sourceSets.test.output.classesDirs
 	classpath = sourceSets.test.runtimeClasspath

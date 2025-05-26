@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -47,9 +48,10 @@ class SpringApplicationBannerPrinterTests {
 	}
 
 	@Test
+	@WithResource(name = "banner.txt", content = "\uD83D\uDE0D Spring Boot! \uD83D\uDE0D")
 	void shouldUseUtf8() {
 		ResourceLoader resourceLoader = new GenericApplicationContext();
-		Resource resource = resourceLoader.getResource("classpath:/banner-utf8.txt");
+		Resource resource = resourceLoader.getResource("classpath:banner.txt");
 		SpringApplicationBannerPrinter printer = new SpringApplicationBannerPrinter(resourceLoader,
 				new ResourceBanner(resource));
 		Log log = mock(Log.class);

@@ -1,8 +1,8 @@
 # Logging Systems
 org.springframework.boot.logging.LoggingSystemFactory=\
-org.springframework.boot.logging.logback.LogbackLoggingSystem.Factory,\
-org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.Factory,\
-org.springframework.boot.logging.java.JavaLoggingSystem.Factory
+org.springframework.boot.logging.java.JavaLoggingSystem$Factory,\
+org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory,\
+org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory
 
 # PropertySource Loaders
 org.springframework.boot.env.PropertySourceLoader=\
@@ -12,12 +12,14 @@ org.springframework.boot.env.YamlPropertySourceLoader
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver,\
-org.springframework.boot.context.config.StandardConfigDataLocationResolver
+org.springframework.boot.context.config.StandardConfigDataLocationResolver,\
+org.springframework.boot.context.config.SystemEnvironmentConfigDataLocationResolver
 
 # ConfigData Loaders
 org.springframework.boot.context.config.ConfigDataLoader=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
-org.springframework.boot.context.config.StandardConfigDataLoader
+org.springframework.boot.context.config.StandardConfigDataLoader,\
+org.springframework.boot.context.config.SystemEnvironmentConfigDataLoader
 
 # Application Context Factories
 org.springframework.boot.ApplicationContextFactory=\
@@ -97,11 +99,17 @@ org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
 
 # Depends On Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
-org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
-org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
+org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector
 
 # Resource Locator Protocol Resolvers
 org.springframework.core.io.ProtocolResolver=\
 org.springframework.boot.io.Base64ProtocolResolver
+
+# Resource File Path Resolvers
+org.springframework.boot.io.ApplicationResourceLoader$FilePathResolver=\
+org.springframework.boot.io.ClassPathResourceFilePathResolver,\
+org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver,\
+org.springframework.boot.web.servlet.context.ServletContextResourceFilePathResolver

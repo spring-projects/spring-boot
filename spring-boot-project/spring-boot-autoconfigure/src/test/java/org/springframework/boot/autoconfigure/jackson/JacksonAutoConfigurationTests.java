@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import com.fasterxml.jackson.databind.cfg.EnumFeature;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -72,6 +73,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -318,8 +320,20 @@ class JacksonAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ModuleConfig.class).run((context) -> {
 			ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
 			assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
-			assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
+			assertThat(((DefaultSerializerProvider) objectMapper.getSerializerProviderInstance())
+				.hasSerializerFor(Baz.class, null)).isTrue();
 		});
+	}
+
+	@Test
+	void customModulesRegisteredByBuilderCustomizerShouldBeRetained() {
+		this.contextRunner.withUserConfiguration(ModuleConfig.class, CustomModuleBuilderCustomizerConfig.class)
+			.run((context) -> {
+				ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
+				assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
+				assertThat(objectMapper.getRegisteredModuleIds()).contains("module-A", "module-B",
+						CustomModule.class.getName());
+			});
 	}
 
 	@Test
@@ -586,6 +600,23 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
 			return (builder) -> builder.dateFormat(new MyDateFormat());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomModuleBuilderCustomizerConfig {
+
+		@Bean
+		@Order(-1)
+		Jackson2ObjectMapperBuilderCustomizer highPrecedenceCustomizer() {
+			return (builder) -> builder.modulesToInstall((modules) -> modules.add(new SimpleModule("module-A")));
+		}
+
+		@Bean
+		@Order(1)
+		Jackson2ObjectMapperBuilderCustomizer lowPrecedenceCustomizer() {
+			return (builder) -> builder.modulesToInstall((modules) -> modules.add(new SimpleModule("module-B")));
 		}
 
 	}

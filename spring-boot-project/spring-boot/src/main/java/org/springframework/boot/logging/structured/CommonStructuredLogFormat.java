@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,16 @@ package org.springframework.boot.logging.structured;
 public enum CommonStructuredLogFormat {
 
 	/**
-	 * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">Elasic Common
+	 * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">Elastic Common
 	 * Schema</a> (ECS) log format.
 	 */
 	ELASTIC_COMMON_SCHEMA("ecs"),
+
+	/**
+	 * <a href="https://go2docs.graylog.org/current/getting_in_log_data/gelf.html">Graylog
+	 * Extended Log Format</a> (GELF) log format.
+	 */
+	GRAYLOG_EXTENDED_LOG_FORMAT("gelf"),
 
 	/**
 	 * The <a href=

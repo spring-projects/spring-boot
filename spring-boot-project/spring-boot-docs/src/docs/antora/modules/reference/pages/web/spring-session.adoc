@@ -20,7 +20,7 @@ If you have more than one implementation, Spring Boot uses the following order f
 . JDBC
 . Hazelcast
 . MongoDB
-. If none of Redis, JDBC, Hazelcast and MongoDB are available, we do not configure a `SessionRepository`.
+. If none of Redis, JDBC, Hazelcast and MongoDB are available, we do not configure a javadoc:org.springframework.session.SessionRepository[].
 
 
 When building a reactive web application, the following stores can be auto-configured:
@@ -34,7 +34,7 @@ Similar to the servlet configuration, if you have more than one implementation, 
 
 . Redis
 . MongoDB
-. If neither Redis nor MongoDB are available, we do not configure a `ReactiveSessionRepository`.
+. If neither Redis nor MongoDB are available, we do not configure a javadoc:org.springframework.session.ReactiveSessionRepository[].
 
 
 Each store has specific additional settings.

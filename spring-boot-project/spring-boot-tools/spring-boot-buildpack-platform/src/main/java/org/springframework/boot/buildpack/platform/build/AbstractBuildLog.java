@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -115,6 +116,13 @@ public abstract class AbstractBuildLog implements BuildLog {
 		}
 		log();
 		log(message.toString());
+		log();
+	}
+
+	@Override
+	public void sensitiveTargetBindingDetected(Binding binding) {
+		log("Warning: Binding '%s' uses a container path which is used by buildpacks while building. Binding to it can cause problems!"
+			.formatted(binding));
 		log();
 	}
 

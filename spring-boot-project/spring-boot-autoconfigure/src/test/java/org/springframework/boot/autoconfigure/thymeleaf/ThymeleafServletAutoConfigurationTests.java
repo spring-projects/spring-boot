@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +61,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -88,6 +90,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/template.html", content = "<html th:text=\"${foo}\">foo</html>")
 	void createFromConfigClass() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.mode:HTML", "spring.thymeleaf.suffix:")
 			.run((context) -> {
@@ -183,6 +186,19 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/view.html",
+			content = """
+					<html xmlns:th="https://www.thymeleaf.org" xmlns:layout="https://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
+					  <head>
+					    <title layout:fragment="title">Content</title>
+					  </head>
+					  <body>
+					    <div layout:fragment="content">
+					    	<span th:text="${foo}">foo</span>
+					    </div>
+					  </body>
+					</html>
+					""")
 	void createLayoutFromConfigClass() {
 		this.contextRunner.run((context) -> {
 			ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class)
@@ -199,6 +215,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/data-dialect.html", content = "<html><body data:foo=\"${foo}\"></body></html>")
 	void useDataDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -209,6 +226,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/java8time-dialect.html",
+			content = "<html><body th:text=\"${#temporals.create('2015','11','24')}\"></body></html>")
 	void useJava8TimeDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -219,6 +238,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/security-dialect.html",
+			content = "<html><body><div sec:authentication=\"name\"></div></body></html>")
 	void useSecurityDialect() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -230,7 +251,7 @@ class ThymeleafServletAutoConfigurationTests {
 				SecurityContextHolder
 					.setContext(new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
 				String result = engine.process("security-dialect", attrs);
-				assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
+				assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>");
 			}
 			finally {
 				SecurityContextHolder.clearContext();
@@ -245,6 +266,7 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.html", content = "<html><body th:text=\"${foo}\">Home</body></html>")
 	void renderTemplate() {
 		this.contextRunner.run((context) -> {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
@@ -255,6 +277,8 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/message.html",
+			content = "<html><body>Message: <span th:text=\"${greeting}\">Hello</span></body></html>")
 	void renderNonWebAppTemplate() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(ThymeleafAutoConfiguration.class))
 			.run((context) -> {
@@ -334,6 +358,12 @@ class ThymeleafServletAutoConfigurationTests {
 			SpringResourceTemplateResolver templateResolver = context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(templateResolver.isCacheable()).isFalse();
 		});
+	}
+
+	@Test
+	void missingAbstractCachingViewResolver() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(AbstractCachingViewResolver.class))
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean("thymeleafViewResolver"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

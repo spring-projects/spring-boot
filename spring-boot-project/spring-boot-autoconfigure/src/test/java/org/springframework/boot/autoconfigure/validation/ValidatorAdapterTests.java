@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class ValidatorAdapterTests {
 		this.contextRunner.withUserConfiguration(LocalValidatorFactoryBeanConfig.class).run((context) -> {
 			ValidatorAdapter wrapper = context.getBean(ValidatorAdapter.class);
 			assertThat(wrapper.supports(SampleData.class)).isTrue();
-			MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "test");
+			MapBindingResult errors = new MapBindingResult(new HashMap<>(), "test");
 			wrapper.validate(new SampleData(40), errors);
 			assertThat(errors.getErrorCount()).isOne();
 		});
@@ -157,8 +157,8 @@ class ValidatorAdapterTests {
 			}
 
 			@Override
-			public boolean supports(Class<?> clazz) {
-				return this.delegate.supports(clazz);
+			public boolean supports(Class<?> type) {
+				return this.delegate.supports(type);
 			}
 
 			@Override

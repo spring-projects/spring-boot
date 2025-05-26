@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.StatusAggregator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,8 +73,8 @@ class HealthEndpointConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	HealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
+	@ConditionalOnMissingBean(HealthEndpointGroups.class)
+	AutoConfiguredHealthEndpointGroups healthEndpointGroups(ApplicationContext applicationContext,
 			HealthEndpointProperties properties) {
 		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 	}
@@ -91,8 +91,7 @@ class HealthEndpointConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "management.endpoint.health.validate-group-membership", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "management.endpoint.health.validate-group-membership", matchIfMissing = true)
 	HealthEndpointGroupMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
 			HealthContributorRegistry healthContributorRegistry) {
 		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry);

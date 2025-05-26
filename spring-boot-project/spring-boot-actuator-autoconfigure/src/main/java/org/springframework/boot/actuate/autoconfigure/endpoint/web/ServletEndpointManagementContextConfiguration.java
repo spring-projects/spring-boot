@@ -20,6 +20,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -62,10 +63,10 @@ public class ServletEndpointManagementContextConfiguration {
 		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
 				WebEndpointProperties properties,
 				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
-				DispatcherServletPath dispatcherServletPath) {
+				DispatcherServletPath dispatcherServletPath, EndpointAccessResolver endpointAccessResolver) {
 			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
 					dispatcherServletPath.getRelativePath(properties.getBasePath()),
-					servletEndpointsSupplier.getEndpoints());
+					servletEndpointsSupplier.getEndpoints(), endpointAccessResolver);
 		}
 
 	}
@@ -80,10 +81,10 @@ public class ServletEndpointManagementContextConfiguration {
 		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
 				WebEndpointProperties properties,
 				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
-				JerseyApplicationPath jerseyApplicationPath) {
+				JerseyApplicationPath jerseyApplicationPath, EndpointAccessResolver endpointAccessResolver) {
 			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
 					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
-					servletEndpointsSupplier.getEndpoints());
+					servletEndpointsSupplier.getEndpoints(), endpointAccessResolver);
 		}
 
 	}

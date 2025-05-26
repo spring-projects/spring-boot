@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,11 +99,12 @@ class DefaultLogbackConfiguration {
 
 	private void defaults(LogbackConfigurator config) {
 		deprecatedDefaults(config);
-		config.conversionRule("clr", ColorConverter.class);
-		config.conversionRule("correlationId", CorrelationIdConverter.class);
-		config.conversionRule("esb", EnclosedInSquareBracketsConverter.class);
-		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
-		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
+		config.conversionRule("clr", ColorConverter.class, ColorConverter::new);
+		config.conversionRule("correlationId", CorrelationIdConverter.class, CorrelationIdConverter::new);
+		config.conversionRule("esb", EnclosedInSquareBracketsConverter.class, EnclosedInSquareBracketsConverter::new);
+		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class, WhitespaceThrowableProxyConverter::new);
+		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class,
+				ExtendedWhitespaceThrowableProxyConverter::new);
 		putProperty(config, "CONSOLE_LOG_PATTERN", CONSOLE_LOG_PATTERN);
 		putProperty(config, "CONSOLE_LOG_CHARSET", "${CONSOLE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
 		putProperty(config, "CONSOLE_LOG_THRESHOLD", "${CONSOLE_LOG_THRESHOLD:-TRACE}");
@@ -124,7 +125,7 @@ class DefaultLogbackConfiguration {
 
 	@SuppressWarnings("removal")
 	private void deprecatedDefaults(LogbackConfigurator config) {
-		config.conversionRule("applicationName", ApplicationNameConverter.class);
+		config.conversionRule("applicationName", ApplicationNameConverter.class, ApplicationNameConverter::new);
 	}
 
 	void putProperty(LogbackConfigurator config, String name, String val) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.observation.tck.TestObservationRegistryAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -72,8 +71,7 @@ class RestClientObservationConfigurationTests {
 			RestClient restClient = buildRestClient(context);
 			restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
+			assertThat(registry).hasObservationWithNameEqualToIgnoringCase("http.client.requests");
 		});
 	}
 
@@ -85,8 +83,7 @@ class RestClientObservationConfigurationTests {
 				RestClient restClient = buildRestClient(context);
 				restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
 				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-				TestObservationRegistryAssert.assertThat(registry)
-					.hasObservationWithNameEqualToIgnoringCase(observationName);
+				assertThat(registry).hasObservationWithNameEqualToIgnoringCase(observationName);
 			});
 	}
 
@@ -96,8 +93,7 @@ class RestClientObservationConfigurationTests {
 			RestClient restClient = buildRestClient(context);
 			restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasObservationWithNameEqualTo("http.client.requests")
+			assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
 				.that()
 				.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
@@ -118,8 +114,7 @@ class RestClientObservationConfigurationTests {
 					restClient.get().uri("/test/" + i, String.class).retrieve().toBodilessEntity();
 				}
 				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-				TestObservationRegistryAssert.assertThat(registry)
-					.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
 				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
 				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")

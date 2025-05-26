@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
  * Utility methods for creating Java trust material from key and certificate files.
@@ -50,10 +51,11 @@ final class KeyStoreFactory {
 	static KeyStore create(Path certPath, Path keyPath, String alias) {
 		try {
 			KeyStore keyStore = getKeyStore();
-			X509Certificate[] certificates = CertificateParser.parse(certPath);
+			String certificateText = Files.readString(certPath);
+			List<X509Certificate> certificates = PemCertificateParser.parse(certificateText);
 			PrivateKey privateKey = getPrivateKey(keyPath);
 			try {
-				addCertificates(keyStore, certificates, privateKey, alias);
+				addCertificates(keyStore, certificates.toArray(X509Certificate[]::new), privateKey, alias);
 			}
 			catch (KeyStoreException ex) {
 				throw new IllegalStateException("Error adding certificates to KeyStore: " + ex.getMessage(), ex);
@@ -72,9 +74,10 @@ final class KeyStoreFactory {
 		return keyStore;
 	}
 
-	private static PrivateKey getPrivateKey(Path path) {
+	private static PrivateKey getPrivateKey(Path path) throws IOException {
 		if (path != null && Files.exists(path)) {
-			return PrivateKeyParser.parse(path);
+			String text = Files.readString(path);
+			return PemPrivateKeyParser.parse(text);
 		}
 		return null;
 	}

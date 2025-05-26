@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -45,6 +47,8 @@ import javax.tools.Diagnostic.Kind;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
@@ -59,15 +63,15 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @author Moritz Halbritter
  * @since 1.2.0
  */
-@SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
-		ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+@SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+		ConfigurationMetadataAnnotationProcessor.AUTO_CONFIGURATION_ANNOTATION,
+		ConfigurationMetadataAnnotationProcessor.CONFIGURATION_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.JMX_ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.REST_CONTROLLER_ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.SERVLET_ENDPOINT_ANNOTATION,
-		ConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION,
-		"org.springframework.context.annotation.Configuration" })
+		ConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION })
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String ADDITIONAL_METADATA_LOCATIONS_OPTION = "org.springframework.boot.configurationprocessor.additionalMetadataLocations";
@@ -83,6 +87,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
 
 	static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.context.properties.bind.DefaultValue";
+
+	static final String AUTO_CONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
+
+	static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
 
 	static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint";
 
@@ -100,7 +108,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
-	static final String AUTO_CONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
+	static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.actuate.endpoint.Access";
 
 	private static final Set<String> SUPPORTED_OPTIONS = Set.of(ADDITIONAL_METADATA_LOCATIONS_OPTION);
 
@@ -145,6 +153,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String nameAnnotation() {
 		return NAME_ANNOTATION;
+	}
+
+	protected String endpointAccessEnum() {
+		return ENDPOINT_ACCESS_ENUM;
 	}
 
 	@Override
@@ -289,13 +301,21 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			return; // Can't process that endpoint
 		}
 		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.", endpointId);
-		boolean enabledByDefault = (boolean) elementValues.getOrDefault("enableByDefault", true);
+		boolean enabledByDefaultAttribute = (boolean) elementValues.getOrDefault("enableByDefault", true);
+		String defaultAccess = (!enabledByDefaultAttribute) ? "none"
+				: (elementValues.getOrDefault("defaultAccess", "unrestricted").toString()).toLowerCase(Locale.ENGLISH);
+		boolean enabledByDefault = !"none".equals(defaultAccess) && enabledByDefaultAttribute;
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
 		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
+		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
+				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
 		this.metadataCollector.add(
 				ItemMetadata.newProperty(endpointKey, "enabled", Boolean.class.getName(), type, null,
-						"Whether to enable the %s endpoint.".formatted(endpointId), enabledByDefault, null),
+						"Whether to enable the %s endpoint.".formatted(endpointId), enabledByDefault,
+						new ItemDeprecation(null, accessProperty.getName(), "3.4.0")),
 				(existing) -> checkEnabledValueMatchesExisting(existing, enabledByDefault, type));
+		this.metadataCollector.add(accessProperty,
+				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
 		if (hasMainReadOperation(element)) {
 			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
 					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
@@ -309,6 +329,17 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
 						.formatted(existing.getName(), existing.getSourceType(), existingDefaultValue, sourceType,
 								enabledByDefault));
+		}
+	}
+
+	private void checkDefaultAccessValueMatchesExisting(ItemMetadata existing, String defaultAccess,
+			String sourceType) {
+		String existingDefaultAccess = (String) existing.getDefaultValue();
+		if (!Objects.equals(defaultAccess, existingDefaultAccess)) {
+			throw new IllegalStateException(
+					"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
+						.formatted(existing.getName(), existing.getSourceType(), existingDefaultAccess, sourceType,
+								defaultAccess));
 		}
 	}
 
@@ -342,11 +373,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
+		removeIgnored(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			this.metadataStore.writeMetadata(metadata);
 			return metadata;
 		}
 		return null;
+	}
+
+	private void removeIgnored(ConfigurationMetadata metadata) {
+		for (ItemIgnore itemIgnore : metadata.getIgnored()) {
+			metadata.removeMetadata(itemIgnore.getType(), itemIgnore.getName());
+		}
 	}
 
 	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {

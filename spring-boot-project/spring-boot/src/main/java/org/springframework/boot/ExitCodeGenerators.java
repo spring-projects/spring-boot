@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,39 +42,39 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	private final List<ExitCodeGenerator> generators = new ArrayList<>();
 
 	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(exception, "'exception' must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		addAll(exception, Arrays.asList(mappers));
 	}
 
 	void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(exception, "'exception' must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		for (ExitCodeExceptionMapper mapper : mappers) {
 			add(exception, mapper);
 		}
 	}
 
 	void add(Throwable exception, ExitCodeExceptionMapper mapper) {
-		Assert.notNull(exception, "Exception must not be null");
-		Assert.notNull(mapper, "Mapper must not be null");
+		Assert.notNull(exception, "'exception' must not be null");
+		Assert.notNull(mapper, "'mapper' must not be null");
 		add(new MappedExitCodeGenerator(exception, mapper));
 	}
 
 	void addAll(ExitCodeGenerator... generators) {
-		Assert.notNull(generators, "Generators must not be null");
+		Assert.notNull(generators, "'generators' must not be null");
 		addAll(Arrays.asList(generators));
 	}
 
 	void addAll(Iterable<? extends ExitCodeGenerator> generators) {
-		Assert.notNull(generators, "Generators must not be null");
+		Assert.notNull(generators, "'generators' must not be null");
 		for (ExitCodeGenerator generator : generators) {
 			add(generator);
 		}
 	}
 
 	void add(ExitCodeGenerator generator) {
-		Assert.notNull(generator, "Generator must not be null");
+		Assert.notNull(generator, "'generator' must not be null");
 		this.generators.add(generator);
 		AnnotationAwareOrderComparator.sort(this.generators);
 	}

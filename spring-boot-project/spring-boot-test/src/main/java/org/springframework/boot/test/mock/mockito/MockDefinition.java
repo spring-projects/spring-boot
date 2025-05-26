@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  * A complete definition that can be used to create a Mockito mock.
  *
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
@@ -56,7 +56,7 @@ class MockDefinition extends Definition {
 	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces, Answers answer,
 			boolean serializable, MockReset reset, QualifierDefinition qualifier) {
 		super(name, reset, false, qualifier);
-		Assert.notNull(typeToMock, "TypeToMock must not be null");
+		Assert.notNull(typeToMock, "'typeToMock' must not be null");
 		this.typeToMock = typeToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
 		this.answer = (answer != null) ? answer : Answers.RETURNS_DEFAULTS;

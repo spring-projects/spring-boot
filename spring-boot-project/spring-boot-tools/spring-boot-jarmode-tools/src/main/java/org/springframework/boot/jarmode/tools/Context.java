@@ -25,6 +25,7 @@ import java.net.URLConnection;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.Locale;
 import java.util.jar.JarFile;
 
 import org.springframework.util.Assert;
@@ -67,7 +68,7 @@ class Context {
 	}
 
 	private boolean isJarOrWar(File jarFile) {
-		String name = jarFile.getName().toLowerCase();
+		String name = jarFile.getName().toLowerCase(Locale.ROOT);
 		return name.endsWith(".jar") || name.endsWith(".war");
 	}
 

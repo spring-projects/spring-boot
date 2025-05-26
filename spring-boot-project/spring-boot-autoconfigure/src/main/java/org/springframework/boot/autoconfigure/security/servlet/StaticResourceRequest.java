@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -86,7 +86,7 @@ public final class StaticResourceRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+		Assert.notNull(locations, "'locations' must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}
 
@@ -124,7 +124,7 @@ public final class StaticResourceRequest {
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
 		public StaticResourceRequestMatcher excluding(Set<StaticResourceLocation> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+			Assert.notNull(locations, "'locations' must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceRequestMatcher(subset);
@@ -136,7 +136,7 @@ public final class StaticResourceRequest {
 		}
 
 		private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
-			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new);
+			return getPatterns(dispatcherServletPath).map(PathPatternRequestMatcher.withDefaults()::matcher);
 		}
 
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {

@@ -40,7 +40,7 @@ For Gradle, you need to ensure that your build includes the `org.graalvm.buildto
 If your application starts with the `spring.aot.enabled` property set to `true`, then you have higher confidence that it will work when converted to a native image.
 
 You can also consider running integration tests against the running application.
-For example, you could use the Spring `WebClient` to call your application REST endpoints.
+For example, you could use the Spring javadoc:org.springframework.web.reactive.function.client.WebClient[] to call your application REST endpoints.
 Or you might consider using a project like Selenium to check your application's HTML responses.
 
 
@@ -57,15 +57,15 @@ For example, you might choose to run native tests once a day.
 
 Spring Framework includes ahead-of-time support for running tests.
 All the usual Spring testing features work with native image tests.
-For example, you can continue to use the `@SpringBootTest` annotation.
+For example, you can continue to use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation.
 You can also use Spring Boot xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test slices] to test only specific parts of your application.
 
 Spring Framework's native testing support works in the following way:
 
-* Tests are analyzed in order to discover any `ApplicationContext` instances that will be required.
+* Tests are analyzed in order to discover any javadoc:org.springframework.context.ApplicationContext[] instances that will be required.
 * Ahead-of-time processing is applied to each of these application contexts and assets are generated.
 * A native image is created, with the generated assets being processed by GraalVM.
-* The native image also includes the JUnit `TestEngine` configured with a list of the discovered tests.
+* The native image also includes the JUnit javadoc:org.junit.platform.engine.TestEngine[] configured with a list of the discovered tests.
 * The native image is started, triggering the engine which will run each test and report results.
 
 
@@ -85,7 +85,9 @@ You should have a `<parent>` section that looks like this:
 </parent>
 ----
 
-The `spring-boot-starter-parent` declares a `nativeTest` profile that configures the executions that are needed to run the native tests.
+The `spring-boot-starter-parent` defines a `nativeTest` profile that provides the necessary configuration for the Spring Boot and Native Build Tools plugins.
+First you need to add those two plugin in the module to opt-in for the feature.
+Your tests are executed in native mode only when the `nativeTest` is enabled.
 You can activate profiles using the `-P` flag on the command line.
 
 TIP: If you don't want to use `spring-boot-starter-parent` you'll need to configure executions for the `process-test-aot` goal from the Spring Boot plugin and the `test` goal from the Native Build Tools plugin.

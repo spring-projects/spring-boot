@@ -1,8 +1,11 @@
+import org.springframework.boot.build.docs.ConfigureJavadocLinks
+
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.antora-contributor"
+	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
 }
@@ -13,9 +16,9 @@ configurations {
 	autoConfiguration
 	configurationProperties
 	remoteSpringApplicationExample
+	resolvedBom
 	springApplicationExample
 	testSlices
-	antoraContent
 	all {
 		resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 			if (details.requested.module.group == "org.apache.kafka" && details.requested.module.name == "kafka-server-common") {
@@ -50,8 +53,8 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
 
@@ -59,8 +62,8 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 
@@ -70,19 +73,21 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
-	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
-	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers"))
-	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("ch.qos.logback:logback-classic")
+	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-jakarta9")
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
+	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
 	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("io.undertow:undertow-core")
 	implementation("jakarta.annotation:jakarta.annotation-api")
@@ -105,7 +110,6 @@ dependencies {
 	implementation("org.hibernate.orm:hibernate-jcache") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
 	implementation("org.htmlunit:htmlunit") {
@@ -113,9 +117,7 @@ dependencies {
 		exclude group: "xml-apis", module: "xml-apis"
 	}
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	implementation("org.jooq:jooq")
 	implementation("org.mockito:mockito-core")
 	implementation("org.mongodb:mongodb-driver-sync")
 	implementation("org.postgresql:r2dbc-postgresql")
@@ -140,7 +142,6 @@ dependencies {
 	implementation("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
 	implementation("org.springframework.data:spring-data-jpa")
@@ -169,6 +170,7 @@ dependencies {
 	implementation("org.testcontainers:junit-jupiter")
 	implementation("org.testcontainers:neo4j")
 	implementation("org.testcontainers:mongodb")
+	implementation("org.testcontainers:elasticsearch")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
 
@@ -177,12 +179,10 @@ dependencies {
 	remoteSpringApplicationExample(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 	remoteSpringApplicationExample("org.springframework:spring-web")
 
+	resolvedBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "resolvedBom"))
+
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
-
-	antoraContent(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "antoraContent"))
-	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "antoraContent"))
-	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "antoraContent"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -200,100 +200,91 @@ dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
-task aggregatedJavadoc(type: Javadoc) {
-	dependsOn dependencyVersions
-	project.rootProject.gradle.projectsEvaluated {
-		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
-			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !it.path.contains(":spring-boot-tools:") ||
-						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") }
-			.findAll { !it.name.startsWith('spring-boot-starter') }
+def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
+	dependsOn configurations.resolvedBom
+	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
+	options {
+		author = true
+		docTitle = "Spring Boot ${project.version} API"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot ${project.version} API"
+	}
+	doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
+}
+
+project.rootProject.gradle.projectsEvaluated {
+	Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
+		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+		.findAll { !it.path.contains(":spring-boot-tools:") ||
+					it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
+					it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
+					(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
+		.findAll { !it.name.startsWith('spring-boot-starter') }
+	aggregatedJavadoc.configure {
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
-		destinationDir = project.file "${buildDir}/docs/javadoc"
-		options {
-			author = true
-			docTitle = "Spring Boot ${project.version} API"
-			memberLevel = "protected"
-			outputLevel = "quiet"
-			splitIndex = true
-			use = true
-			windowTitle = "Spring Boot ${project.version} API"
-		}
-		doFirst {
-			def versionConstraints = dependencyVersions.versionConstraints
-			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
-			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
-			options.links = [
-				"https://docs.oracle.com/en/java/javase/17/docs/api/",
-				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
-				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
-				"https://jakarta.ee/specifications/platform/9/apidocs/",
-				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
-			] as String[]
-		}
 	}
 }
 
-task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
+tasks.register("documentTestSlices", org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
-	outputFile = file("${buildDir}/generated/docs/test-auto-configuration/documented-slices.adoc")
+	outputFile = layout.buildDirectory.file("generated/docs/test-auto-configuration/documented-slices.adoc")
 }
 
-task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("${buildDir}/generated/docs/using/starters/")
+tasks.register("documentStarters", org.springframework.boot.build.starters.DocumentStarters) {
+	outputDir = layout.buildDirectory.dir("generated/docs/using/starters/")
 }
 
-task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
+tasks.register("documentAutoConfigurationClasses", org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
-	outputDir = file("${buildDir}/generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
+	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
-task documentDependencyVersionCoordinates(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
-	dependsOn dependencyVersions
-	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("${buildDir}/generated/docs/dependency-versions/documented-coordinates.adoc")
+tasks.register("documentDependencyVersionCoordinates", org.springframework.boot.build.docs.DocumentManagedDependencies) {
+	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-coordinates.adoc")
+	resolvedBoms = configurations.resolvedBom
 }
 
-task documentDependencyVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
-	dependsOn dependencyVersions
-	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
-	outputFile = file("${buildDir}/generated/docs/dependency-versions/documented-properties.adoc")
+tasks.register("documentDependencyVersionProperties", org.springframework.boot.build.docs.DocumentVersionProperties) {
+	outputFile = layout.buildDirectory.file("generated/docs/dependency-versions/documented-properties.adoc")
+	resolvedBoms = configurations.resolvedBom
 }
 
-task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/generated/docs/application-properties")
+	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
 }
 
-task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
+tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
 
-task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runRemoteSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.remoteSpringApplicationExample
 	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
 	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
-	output = file("$buildDir/example-output/remote-spring-application.txt")
+	output = layout.buildDirectory.file("example-output/remote-spring-application.txt")
 	expectedLogging = "Started RemoteSpringApplication in "
 	applicationJar = "/Users/myuser/.m2/repository/org/springframework/boot/spring-boot-devtools/${project.version}/spring-boot-devtools-${project.version}.jar"
 	normalizeLiveReloadPort()
 }
 
-task runSpringApplicationExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--server.port=0"]
-	output = file("$buildDir/example-output/spring-application.txt")
+	output = layout.buildDirectory.file("example-output/spring-application.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
 }
 
-task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
+tasks.register("runLoggingFormatExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.logexample.MyApplication"
 	args = ["--spring.main.banner-mode=off", "--server.port=0", "--spring.application.name=myapp"]
-	output = file("$buildDir/example-output/logging-format.txt")
+	output = layout.buildDirectory.file("example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
 }
@@ -303,100 +294,93 @@ def getRelativeExamplesPath(var outputs) {
 	'example$example-output/' + fileName
 }
 
-def antoraRootAggregateContent = tasks.register("antoraRootAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "root-aggregate-content"
-	from("src/main") {
-		into "modules/ROOT/examples"
+antoraDependencies {
+	'actuator-rest-api' {
+		path = ":spring-boot-project:spring-boot-actuator-autoconfigure"
+		source()
+		aggregateContent()
 	}
-	from(project.configurations.configurationProperties) {
-		eachFile {
-			it.path = rootProject
-				.projectDir
-				.toPath()
-				.relativize(it.file.toPath())
-				.toString()
-				.replace('\\', '/')
-				.replaceAll('.*/([^/]+)/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
+	'gradle-plugin' {
+		path = ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
+		source()
+		catalogContent()
+	}
+	'maven-plugin' {
+		path = ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
+		source()
+		catalogContent()
+		aggregateContent()
+	}
+}
+
+antoraContributions {
+	'api' {
+		publish()
+		catalogContent {
+			from(aggregatedJavadoc) {
+				into "java"
+			}
+			from(tasks.named("dokkatooGeneratePublicationHtml")) {
+				into "kotlin"
+			}
 		}
 	}
-	from(runRemoteSpringApplicationExample) {
-		into "modules/ROOT/examples"
-	}
-	from(documentDevtoolsPropertyDefaults) {
-		into "modules/ROOT/partials/propertydefaults"
-	}
-	from(documentStarters) {
-		into "modules/ROOT/partials/starters"
-	}
-	from(documentTestSlices) {
-		into "modules/appendix/partials/slices"
-	}
-	from(runSpringApplicationExample) {
-		into "modules/ROOT/partials/application"
-	}
-	from(runLoggingFormatExample) {
-		into "modules/ROOT/partials/logging"
-	}
-	from(documentDependencyVersionCoordinates) {
-		into "modules/appendix/partials/dependency-versions"
-	}
-	from(documentDependencyVersionProperties) {
-		into "modules/appendix/partials/dependency-versions"
-	}
-	from(documentAutoConfigurationClasses) {
-		into "modules/appendix/partials/auto-configuration-classes"
-	}
-	from(documentConfigurationProperties) {
-		into "modules/appendix/partials/configuration-properties"
-	}
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraApiCatalogContent = tasks.register("antoraApiCatalogContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "api-catalog-content"
-	from(aggregatedJavadoc) {
-		into "java"
-	}
-	from(tasks.named("dokkatooGeneratePublicationHtml")) {
-		into "kotlin"
-	}
-}
-
-def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Copy) {
-	into layout.buildDirectory.dir('generated/docs/antora-dependencies-content')
-	from(configurations.antoraContent)
-	rename("spring-boot-actuator-autoconfigure", "spring-boot-docs")
-	rename("spring-boot-maven-plugin", "spring-boot-docs")
-	rename("spring-boot-gradle-plugin", "spring-boot-docs")
-}
-
-tasks.named("antora") {
-	inputs.files(antoraRootAggregateContent, antoraApiCatalogContent, copyAntoraContentDependencies)
-}
-
-gradle.projectsEvaluated {
-	def mavenPublication = publishing.publications.getByName("maven");
-	configurations.antoraContent.dependencies.forEach { dependency ->
-		dependency.dependencyProject.configurations.getByName(dependency.targetConfiguration)
-			.artifacts.forEach(mavenPublication::artifact)
+	'root' {
+		publish()
+		aggregateContent {
+			from("src/main") {
+				into "modules/ROOT/examples"
+			}
+			from(project.configurations.configurationProperties) {
+				eachFile {
+					it.path = rootProject
+						.projectDir
+						.toPath()
+						.relativize(it.file.toPath())
+						.toString()
+						.replace('\\', '/')
+						.replaceAll('.*/([^/]+)/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
+				}
+			}
+			from(runRemoteSpringApplicationExample) {
+				into "modules/ROOT/examples"
+			}
+			from(documentDevtoolsPropertyDefaults) {
+				into "modules/ROOT/partials/propertydefaults"
+			}
+			from(documentStarters) {
+				into "modules/ROOT/partials/starters"
+			}
+			from(documentTestSlices) {
+				into "modules/appendix/partials/slices"
+			}
+			from(runSpringApplicationExample) {
+				into "modules/ROOT/partials/application"
+			}
+			from(runLoggingFormatExample) {
+				into "modules/ROOT/partials/logging"
+			}
+			from(documentDependencyVersionCoordinates) {
+				into "modules/appendix/partials/dependency-versions"
+			}
+			from(documentDependencyVersionProperties) {
+				into "modules/appendix/partials/dependency-versions"
+			}
+			from(documentAutoConfigurationClasses) {
+				into "modules/appendix/partials/auto-configuration-classes"
+			}
+			from(documentConfigurationProperties) {
+				into "modules/appendix/partials/configuration-properties"
+			}
+			from(tasks.getByName("generateAntoraYml")) {
+				into "modules"
+			}
+		}
 	}
 }
 
 dokkatoo {
 	dokkatooPublications.configureEach {
 		includes.from("src/docs/dokkatoo/dokka-overview.md")
-	}
-}
-
-publishing {
-	publications {
-		getByName("maven") {
-			artifact antoraRootAggregateContent
-			artifact antoraApiCatalogContent
-		}
 	}
 }

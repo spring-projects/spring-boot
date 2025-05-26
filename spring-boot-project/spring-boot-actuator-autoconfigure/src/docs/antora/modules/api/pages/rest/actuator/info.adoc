@@ -47,3 +47,32 @@ include::partial$rest/actuator/info/response-fields-beneath-git.adoc[]
 
 NOTE: This is the "simple" output.
 The contributor can also be configured to output all available data.
+
+
+[[info.retrieving.response-structure.os]]
+==== OS Response Structure
+
+The following table describes the structure of the `os` section of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/info/response-fields-beneath-os.adoc[]
+
+
+
+[[info.retrieving.response-structure.process]]
+==== Process Response Structure
+
+The following table describes the structure of the `process` section of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/info/response-fields-beneath-process.adoc[]
+
+
+
+[[info.retrieving.response-structure.java]]
+==== Java Response Structure
+
+The following table describes the structure of the `java` section of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/info/response-fields-beneath-java.adoc[]

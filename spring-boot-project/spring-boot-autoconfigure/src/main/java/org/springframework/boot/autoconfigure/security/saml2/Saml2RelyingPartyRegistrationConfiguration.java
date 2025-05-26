@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,8 +175,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		try (InputStream inputStream = location.getInputStream()) {
 			PemContent pemContent = PemContent.load(inputStream);
 			PrivateKey privateKey = pemContent.getPrivateKey();
-			Assert.isInstanceOf(RSAPrivateKey.class, privateKey,
-					"PrivateKey in resource '" + location + "' must be an RSAPrivateKey");
+			Assert.state(privateKey instanceof RSAPrivateKey,
+					() -> "PrivateKey in resource '" + location + "' must be an RSAPrivateKey");
 			return (RSAPrivateKey) privateKey;
 		}
 		catch (Exception ex) {

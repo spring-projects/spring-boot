@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -30,10 +29,8 @@ class DataJpaTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(DataJpaTest.class)
-			.getValue("properties", String[].class)
-			.orElse(null);
+		DataJpaTest dataJpaTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataJpaTest.class);
+		return (dataJpaTest != null) ? dataJpaTest.properties() : null;
 	}
 
 }

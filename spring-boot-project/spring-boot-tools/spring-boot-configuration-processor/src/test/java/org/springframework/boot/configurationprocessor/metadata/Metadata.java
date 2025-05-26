@@ -25,6 +25,7 @@ import org.assertj.core.api.Condition;
 import org.hamcrest.collection.IsMapContaining;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
+import org.springframework.boot.configurationsample.Access;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -64,6 +65,10 @@ public final class Metadata {
 
 	public static Metadata.MetadataItemCondition withEnabledFlag(String key) {
 		return withProperty(key).ofType(Boolean.class);
+	}
+
+	public static Metadata.MetadataItemCondition withAccess(String key) {
+		return withProperty(key).ofType(Access.class);
 	}
 
 	public static MetadataHintCondition withHint(String name) {

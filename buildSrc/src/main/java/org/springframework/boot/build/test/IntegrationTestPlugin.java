@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
@@ -51,7 +52,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 
 	private void configureIntegrationTesting(Project project) {
 		SourceSet intTestSourceSet = createSourceSet(project);
-		Test intTest = createTestTask(project, intTestSourceSet);
+		TaskProvider<Test> intTest = createTestTask(project, intTestSourceSet);
 		project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME).dependsOn(intTest);
 		project.getPlugins().withType(EclipsePlugin.class, (eclipsePlugin) -> {
 			EclipseModel eclipse = project.getExtensions().getByType(EclipseModel.class);
@@ -71,14 +72,14 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		return intTestSourceSet;
 	}
 
-	private Test createTestTask(Project project, SourceSet intTestSourceSet) {
-		Test intTest = project.getTasks().create(INT_TEST_TASK_NAME, Test.class);
-		intTest.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-		intTest.setDescription("Runs integration tests.");
-		intTest.setTestClassesDirs(intTestSourceSet.getOutput().getClassesDirs());
-		intTest.setClasspath(intTestSourceSet.getRuntimeClasspath());
-		intTest.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
-		return intTest;
+	private TaskProvider<Test> createTestTask(Project project, SourceSet intTestSourceSet) {
+		return project.getTasks().register(INT_TEST_TASK_NAME, Test.class, (task) -> {
+			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+			task.setDescription("Runs integration tests.");
+			task.setTestClassesDirs(intTestSourceSet.getOutput().getClassesDirs());
+			task.setClasspath(intTestSourceSet.getRuntimeClasspath());
+			task.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
+		});
 	}
 
 }

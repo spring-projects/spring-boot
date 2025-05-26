@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 }
 
@@ -19,28 +18,30 @@ dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
 	antIvy "org.apache.ivy:ivy:2.5.0"
 
-	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	compileOnly("org.apache.ant:ant:${antVersion}")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("org.springframework:spring-core")
 }
 
-task copyIntegrationTestSources(type: Copy) {
+tasks.register("syncIntegrationTestSources", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("it"))
 	from file("src/it")
-	into "${buildDir}/it"
+	filter(springRepositoryTransformers.ant())
 }
 
 processResources {
+	def version = project.version
 	eachFile {
-		filter { it.replace('${spring-boot.version}', project.version) }
+		filter { it.replace('${spring-boot.version}', version) }
 	}
-	inputs.property "version", project.version
+	inputs.property "version", version
 }
 
-task integrationTest {
-	dependsOn copyIntegrationTestSources, jar
-	def resultsDir = file("${buildDir}/test-results/integrationTest")
+tasks.register("integrationTest") {
+	dependsOn syncIntegrationTestSources, jar
+	def resultsDir = file(layout.buildDirectory.dir("test-results/integrationTest"))
 	inputs.dir(file("src/it")).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("source")
 	inputs.files(sourceSets.main.runtimeClasspath).withNormalizer(ClasspathNormalizer).withPropertyName("classpath")
 	outputs.dirs resultsDir
@@ -62,9 +63,9 @@ task integrationTest {
 					ant.propertyref(name: "ivy.class.path")
 				}
 				plainlistener()
-				file("${buildDir}/test-results/integrationTest").mkdirs()
+				file(layout.buildDirectory.dir("test-results/integrationTest")).mkdirs()
 				xmllistener(toDir: resultsDir)
-				fileset(dir: "${buildDir}/it", includes: "**/build.xml")
+				fileset(dir: layout.buildDirectory.dir("it").get().asFile.toString(), includes: "**/build.xml")
 			}
 		}
 	}

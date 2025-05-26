@@ -211,9 +211,9 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public void setAllowUserInteraction(boolean allowuserinteraction) {
+	public void setAllowUserInteraction(boolean allowUserInteraction) {
 		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setAllowUserInteraction(allowuserinteraction);
+			this.jarFileConnection.setAllowUserInteraction(allowUserInteraction);
 		}
 	}
 
@@ -223,9 +223,9 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public void setUseCaches(boolean usecaches) {
+	public void setUseCaches(boolean useCaches) {
 		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setUseCaches(usecaches);
+			this.jarFileConnection.setUseCaches(useCaches);
 		}
 	}
 
@@ -235,9 +235,9 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public void setDefaultUseCaches(boolean defaultusecaches) {
+	public void setDefaultUseCaches(boolean defaultUseCaches) {
 		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setDefaultUseCaches(defaultusecaches);
+			this.jarFileConnection.setDefaultUseCaches(defaultUseCaches);
 		}
 	}
 

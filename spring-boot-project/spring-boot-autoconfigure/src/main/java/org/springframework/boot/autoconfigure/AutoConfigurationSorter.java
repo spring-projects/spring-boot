@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.UnaryOperator;
 
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -47,11 +49,14 @@ class AutoConfigurationSorter {
 
 	private final AutoConfigurationMetadata autoConfigurationMetadata;
 
+	private final UnaryOperator<String> replacementMapper;
+
 	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
-			AutoConfigurationMetadata autoConfigurationMetadata) {
-		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
+			AutoConfigurationMetadata autoConfigurationMetadata, UnaryOperator<String> replacementMapper) {
+		Assert.notNull(metadataReaderFactory, "'metadataReaderFactory' must not be null");
 		this.metadataReaderFactory = metadataReaderFactory;
 		this.autoConfigurationMetadata = autoConfigurationMetadata;
+		this.replacementMapper = replacementMapper;
 	}
 
 	List<String> getInPriorityOrder(Collection<String> classNames) {
@@ -108,7 +113,7 @@ class AutoConfigurationSorter {
 				() -> "AutoConfigure cycle detected between " + current + " and " + after);
 	}
 
-	private static class AutoConfigurationClasses {
+	private class AutoConfigurationClasses {
 
 		private final Map<String, AutoConfigurationClass> classes = new LinkedHashMap<>();
 
@@ -157,7 +162,7 @@ class AutoConfigurationSorter {
 
 	}
 
-	private static class AutoConfigurationClass {
+	private class AutoConfigurationClass {
 
 		private final String className;
 
@@ -192,18 +197,34 @@ class AutoConfigurationSorter {
 
 		Set<String> getBefore() {
 			if (this.before == null) {
-				this.before = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
-						"AutoConfigureBefore", Collections.emptySet()) : getAnnotationValue(AutoConfigureBefore.class));
+				this.before = getClassNames("AutoConfigureBefore", AutoConfigureBefore.class);
 			}
 			return this.before;
 		}
 
 		Set<String> getAfter() {
 			if (this.after == null) {
-				this.after = (wasProcessed() ? this.autoConfigurationMetadata.getSet(this.className,
-						"AutoConfigureAfter", Collections.emptySet()) : getAnnotationValue(AutoConfigureAfter.class));
+				this.after = getClassNames("AutoConfigureAfter", AutoConfigureAfter.class);
 			}
 			return this.after;
+		}
+
+		private Set<String> getClassNames(String metadataKey, Class<? extends Annotation> annotation) {
+			Set<String> annotationValue = wasProcessed()
+					? this.autoConfigurationMetadata.getSet(this.className, metadataKey, Collections.emptySet())
+					: getAnnotationValue(annotation);
+			return applyReplacements(annotationValue);
+		}
+
+		private Set<String> applyReplacements(Set<String> values) {
+			if (AutoConfigurationSorter.this.replacementMapper == null) {
+				return values;
+			}
+			Set<String> replaced = new LinkedHashSet<>(values);
+			for (String value : values) {
+				replaced.add(AutoConfigurationSorter.this.replacementMapper.apply(value));
+			}
+			return replaced;
 		}
 
 		private int getOrder() {

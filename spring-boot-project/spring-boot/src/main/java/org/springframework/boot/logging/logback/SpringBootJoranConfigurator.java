@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ByteArrayResource;
@@ -140,7 +141,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 	static final class LogbackConfigurationAotContribution implements BeanFactoryInitializationAotContribution {
@@ -230,12 +231,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			return modelClasses;
 		}
 
-		private Set<String> reflectionTypes(Model model) {
+		private Set<Class<?>> reflectionTypes(Model model) {
 			return reflectionTypes(model, () -> null);
 		}
 
-		private Set<String> reflectionTypes(Model model, Supplier<Object> parent) {
-			Set<String> reflectionTypes = new HashSet<>();
+		private Set<Class<?>> reflectionTypes(Model model, Supplier<Object> parent) {
+			Set<Class<?>> reflectionTypes = new HashSet<>();
 			Class<?> componentType = determineType(model, parent);
 			if (componentType != null) {
 				processComponent(componentType, reflectionTypes);
@@ -305,15 +306,15 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			}
 		}
 
-		private void processComponent(Class<?> componentType, Set<String> reflectionTypes) {
+		private void processComponent(Class<?> componentType, Set<Class<?>> reflectionTypes) {
 			BeanDescription beanDescription = this.modelInterpretationContext.getBeanDescriptionCache()
 				.getBeanDescription(componentType);
 			reflectionTypes.addAll(parameterTypesNames(beanDescription.getPropertyNameToAdder().values()));
 			reflectionTypes.addAll(parameterTypesNames(beanDescription.getPropertyNameToSetter().values()));
-			reflectionTypes.add(componentType.getCanonicalName());
+			reflectionTypes.add(componentType);
 		}
 
-		private Collection<String> parameterTypesNames(Collection<Method> methods) {
+		private Collection<Class<?>> parameterTypesNames(Collection<Method> methods) {
 			return methods.stream()
 				.filter((method) -> !method.getDeclaringClass().equals(ContextAware.class)
 						&& !method.getDeclaringClass().equals(ContextAwareBase.class))
@@ -321,7 +322,6 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				.flatMap(Stream::of)
 				.filter((type) -> !type.isPrimitive() && !type.equals(String.class))
 				.map((type) -> type.isArray() ? type.getComponentType() : type)
-				.map(Class::getName)
 				.toList();
 		}
 

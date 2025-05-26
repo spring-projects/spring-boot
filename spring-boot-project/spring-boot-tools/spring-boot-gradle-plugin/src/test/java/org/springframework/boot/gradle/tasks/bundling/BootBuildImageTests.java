@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class BootBuildImageTests {
 		projectDir.mkdirs();
 		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName("build-image-test").build();
 		this.project.setDescription("Test project for BootBuildImage");
-		this.buildImage = this.project.getTasks().create("buildImage", BootBuildImage.class);
+		this.buildImage = this.project.getTasks().register("buildImage", BootBuildImage.class).get();
 	}
 
 	@Test
@@ -174,7 +174,7 @@ class BootBuildImageTests {
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
 		BuildRequest request = this.buildImage.createRequest();
-		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/builder-jammy-tiny");
+		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/builder-noble-java-tiny");
 		assertThat(request.isTrustBuilder()).isTrue();
 	}
 

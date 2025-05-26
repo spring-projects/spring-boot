@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SpyDefinition}.
  *
  * @author Phillip Webb
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @deprecated since 3.4.0 for removal in 4.0.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
@@ -45,7 +45,7 @@ class SpyDefinitionTests {
 	@Test
 	void classToSpyMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpyDefinition(null, null, null, true, null))
-			.withMessageContaining("TypeToSpy must not be null");
+			.withMessageContaining("'typeToSpy' must not be null");
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class SpyDefinitionTests {
 	void createSpyWhenNullInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		assertThatIllegalArgumentException().isThrownBy(() -> definition.createSpy(null))
-			.withMessageContaining("Instance must not be null");
+			.withMessageContaining("'instance' must not be null");
 	}
 
 	@Test

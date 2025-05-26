@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.redis.testcontainers.RedisContainer;
+import com.redis.testcontainers.RedisStackContainer;
 import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.activemq.ArtemisContainer;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -37,6 +38,8 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.ldap.LLdapContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -79,19 +82,35 @@ public enum TestImage {
 	 * A container image suitable for testing Cassandra.
 	 */
 	CASSANDRA("cassandra", "3.11.10", () -> CassandraContainer.class,
-			(container) -> ((CassandraContainer<?>) container).withStartupTimeout(Duration.ofMinutes(10))),
+			(container) -> ((CassandraContainer) container).withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
-	 * A Docker image suitable for running.
+	 * A container image suitable for testing Cassandra using the deprecated
+	 * {@link org.testcontainers.containers.CassandraContainer}.
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CASSANDRA}
+	 */
+	@SuppressWarnings("deprecation")
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	CASSANDRA_DEPRECATED("cassandra", "3.11.10", () -> org.testcontainers.containers.CassandraContainer.class,
+			(container) -> ((org.testcontainers.containers.CassandraContainer<?>) container)
+				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing ClickHouse.
+	 */
+	CLICKHOUSE("clickhouse/clickhouse-server", "24.3"),
+
+	/**
+	 * A container image suitable for testing Couchbase.
 	 */
 	COUCHBASE("couchbase/server", "7.1.4", () -> CouchbaseContainer.class,
 			(container) -> ((CouchbaseContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
-	 * A Docker image suitable for Elasticsearch 7.
+	 * A container image suitable for testing Elasticsearch 7.
 	 */
-	ELASTICSEARCH("docker.elastic.co/elasticsearch/elasticsearch", "7.17.5", () -> ElasticsearchContainer.class,
+	ELASTICSEARCH("docker.elastic.co/elasticsearch/elasticsearch", "7.17.28", () -> ElasticsearchContainer.class,
 			(container) -> ((ElasticsearchContainer) container).withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
 				.withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
@@ -99,7 +118,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Elasticsearch 8.
 	 */
-	ELASTICSEARCH_8("elasticsearch", "8.6.1"),
+	ELASTICSEARCH_8("elasticsearch", "8.17.1"),
 
 	/**
 	 * A container image suitable for testing Grafana OTel LGTM.
@@ -108,9 +127,29 @@ public enum TestImage {
 			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
+	 * A container image suitable for testing Hazelcast.
+	 */
+	HAZELCAST("hazelcast/hazelcast", "5.5.0-slim-jdk17", () -> HazelcastContainer.class),
+
+	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
-	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
+	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> ConfluentKafkaContainer.class),
+
+	/**
+	 * A container image suitable for testing Confluent's distribution of Kafka using the
+	 * deprecated {@link org.testcontainers.containers.KafkaContainer}.
+	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CONFLUENT_KAFKA}
+	 */
+	@SuppressWarnings("deprecation")
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	CONFLUENT_KAFKA_DEPRECATED("confluentinc/cp-kafka", "7.4.0",
+			() -> org.testcontainers.containers.KafkaContainer.class),
+
+	/**
+	 * A container image suitable for testing LLDAP.
+	 */
+	LLDAP("lldap/lldap", "v0.6.1-alpine", () -> LLdapContainer.class),
 
 	/**
 	 * A container image suitable for testing OpenLDAP.
@@ -128,7 +167,7 @@ public enum TestImage {
 	MARIADB("mariadb", "10.10"),
 
 	/**
-	 * A Docker image suitable for MongoDB.
+	 * A container image suitable for testing MongoDB.
 	 */
 	MONGODB("mongo", "5.0.17", () -> MongoDBContainer.class,
 			(container) -> ((MongoDBContainer) container).withStartupAttempts(5)
@@ -142,14 +181,14 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Neo4j.
 	 */
-	NEO4J("neo4j", "4.4.11", () -> Neo4jContainer.class,
+	NEO4J("neo4j", "4.4.41", () -> Neo4jContainer.class,
 			(container) -> ((Neo4jContainer<?>) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
 	 * A container image suitable for testing Oracle Free.
 	 */
-	ORACLE_FREE("gvenzl/oracle-free", "23.3-slim", () -> org.testcontainers.oracle.OracleContainer.class,
+	ORACLE_FREE("gvenzl/oracle-free", "23.6-slim", () -> org.testcontainers.oracle.OracleContainer.class,
 			(container) -> ((org.testcontainers.oracle.OracleContainer) container)
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
@@ -173,7 +212,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Pulsar.
 	 */
-	PULSAR("apachepulsar/pulsar", "3.2.4", () -> PulsarContainer.class,
+	PULSAR("apachepulsar/pulsar", "3.3.3", () -> PulsarContainer.class,
 			(container) -> ((PulsarContainer) container).withStartupAttempts(2)
 				.withStartupTimeout(Duration.ofMinutes(3))),
 
@@ -211,7 +250,7 @@ public enum TestImage {
 			(container) -> ((RedpandaContainer) container).withStartupTimeout(Duration.ofMinutes(5))),
 
 	/**
-	 * A container image suitable for testing a Docker registry.
+	 * A container image suitable for testing Docker Registry.
 	 */
 	REGISTRY("registry", "2.7.1", () -> RegistryContainer.class,
 			(container) -> ((RegistryContainer) container).withStartupAttempts(5)
@@ -233,6 +272,11 @@ public enum TestImage {
 	BITNAMI_CASSANDRA("bitnami/cassandra", "4.1.3"),
 
 	/**
+	 * A container image suitable for testing ClickHouse via Bitnami.
+	 */
+	BITNAMI_CLICKHOUSE("bitnami/clickhouse", "24.3"),
+
+	/**
 	 * A container image suitable for testing Elasticsearch via Bitnami.
 	 */
 	BITNAMI_ELASTICSEARCH("bitnami/elasticsearch", "8.12.1"),
@@ -243,7 +287,7 @@ public enum TestImage {
 	BITNAMI_MARIADB("bitnami/mariadb", "11.2.3"),
 
 	/**
-	 * A Docker image suitable for MongoDB via Bitnami.
+	 * A container image suitable for testing MongoDB via Bitnami.
 	 */
 	BITNAMI_MONGODB("bitnami/mongodb", "7.0.5"),
 
@@ -339,6 +383,10 @@ public enum TestImage {
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to create container " + containerClass, ex);
 		}
+	}
+
+	public String getTag() {
+		return this.tag;
 	}
 
 	@Override

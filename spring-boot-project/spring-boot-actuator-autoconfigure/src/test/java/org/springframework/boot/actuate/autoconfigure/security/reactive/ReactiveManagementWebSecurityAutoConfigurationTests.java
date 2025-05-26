@@ -80,6 +80,35 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
+	void withAdditionalPathsOnSamePort() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.test1.include=*",
+					"management.endpoint.health.group.test2.include=*",
+					"management.endpoint.health.group.test1.additional-path=server:/check1",
+					"management.endpoint.health.group.test2.additional-path=management:/check2")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
+				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
+			});
+	}
+
+	@Test
+	void withAdditionalPathsOnDifferentPort() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.test1.include=*",
+					"management.endpoint.health.group.test2.include=*",
+					"management.endpoint.health.group.test1.additional-path=server:/check1",
+					"management.endpoint.health.group.test2.additional-path=management:/check2",
+					"management.server.port=0")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
+				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getAuthenticateHeader(context, "/actuator/health").get(0)).contains("Basic realm=");
+			});
+	}
+
+	@Test
 	void securesEverythingElse() {
 		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class).run((context) -> {
 			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");

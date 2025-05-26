@@ -34,7 +34,6 @@ public interface JCachePropertiesCustomizer {
 	/**
 	 * Customize the properties.
 	 * @param properties the current properties
-	 *
 	 */
 	void customize(Properties properties);
 

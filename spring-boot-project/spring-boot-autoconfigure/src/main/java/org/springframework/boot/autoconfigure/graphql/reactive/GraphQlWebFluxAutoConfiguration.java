@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,28 +87,30 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
-			ObjectProvider<WebGraphQlInterceptor> interceptors) {
-		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public GraphQlHttpHandler graphQlHttpHandler(WebGraphQlHandler webGraphQlHandler) {
 		return new GraphQlHttpHandler(webGraphQlHandler);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler) {
-		return new GraphQlSseHandler(webGraphQlHandler);
+	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
+		return new GraphQlSseHandler(webGraphQlHandler, properties.getHttp().getSse().getTimeout(),
+				properties.getHttp().getSse().getKeepAlive());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
+			ObjectProvider<WebGraphQlInterceptor> interceptors) {
+		return WebGraphQlHandler.builder(service).interceptors(interceptors.orderedStream().toList()).build();
 	}
 
 	@Bean
 	@Order(0)
 	public RouterFunction<ServerResponse> graphQlRouterFunction(GraphQlHttpHandler httpHandler,
-			GraphQlSseHandler sseHandler, GraphQlSource graphQlSource, GraphQlProperties properties) {
-		String path = properties.getPath();
+			GraphQlSseHandler sseHandler, ObjectProvider<GraphQlSource> graphQlSourceProvider,
+			GraphQlProperties properties) {
+		String path = properties.getHttp().getPath();
 		logger.info(LogMessage.format("GraphQL endpoint HTTP POST %s", path));
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
@@ -119,7 +121,8 @@ public class GraphQlWebFluxAutoConfiguration {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
 			builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
 		}
-		if (properties.getSchema().getPrinter().isEnabled()) {
+		GraphQlSource graphQlSource = graphQlSourceProvider.getIfAvailable();
+		if (properties.getSchema().getPrinter().isEnabled() && graphQlSource != null) {
 			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
@@ -158,14 +161,14 @@ public class GraphQlWebFluxAutoConfiguration {
 		public void addCorsMappings(CorsRegistry registry) {
 			CorsConfiguration configuration = this.corsProperties.toCorsConfiguration();
 			if (configuration != null) {
-				registry.addMapping(this.graphQlProperties.getPath()).combine(configuration);
+				registry.addMapping(this.graphQlProperties.getHttp().getPath()).combine(configuration);
 			}
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
+	@ConditionalOnProperty("spring.graphql.websocket.path")
 	public static class WebSocketConfiguration {
 
 		@Bean

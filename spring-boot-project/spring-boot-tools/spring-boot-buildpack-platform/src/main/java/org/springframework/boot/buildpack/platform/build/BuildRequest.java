@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,13 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-jammy-tiny";
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-noble-java-tiny";
 
 	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
 
 	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
+			ImageReference.of("paketobuildpacks/builder-noble-java-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-java-tiny"),
 			ImageReference.of("paketobuildpacks/builder-jammy-tiny"),
 			ImageReference.of("paketobuildpacks/builder-jammy-base"),
 			ImageReference.of("paketobuildpacks/builder-jammy-full"),
@@ -106,8 +108,8 @@ public class BuildRequest {
 	private final ImagePlatform platform;
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(applicationContent, "ApplicationContent must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(applicationContent, "'applicationContent' must not be null");
 		this.name = name.inTaggedForm();
 		this.applicationContent = applicationContent;
 		this.builder = DEFAULT_BUILDER;
@@ -168,7 +170,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withBuilder(ImageReference builder) {
-		Assert.notNull(builder, "Builder must not be null");
+		Assert.notNull(builder, "'builder' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.trustBuilder,
 				this.runImage, this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy,
 				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace,
@@ -209,7 +211,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withCreator(Creator creator) {
-		Assert.notNull(creator, "Creator must not be null");
+		Assert.notNull(creator, "'creator' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks,
 				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
@@ -223,8 +225,8 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withEnv(String name, String value) {
-		Assert.hasText(name, "Name must not be empty");
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(name, "'name' must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
@@ -240,7 +242,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withEnv(Map<String, String> env) {
-		Assert.notNull(env, "Env must not be null");
+		Assert.notNull(env, "'env' must not be null");
 		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
@@ -305,7 +307,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(BuildpackReference... buildpacks) {
-		Assert.notEmpty(buildpacks, "Buildpacks must not be empty");
+		Assert.notEmpty(buildpacks, "'buildpacks' must not be empty");
 		return withBuildpacks(Arrays.asList(buildpacks));
 	}
 
@@ -316,7 +318,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(List<BuildpackReference> buildpacks) {
-		Assert.notNull(buildpacks, "Buildpacks must not be null");
+		Assert.notNull(buildpacks, "'buildpacks' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks,
 				this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
@@ -330,7 +332,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(Binding... bindings) {
-		Assert.notEmpty(bindings, "Bindings must not be empty");
+		Assert.notEmpty(bindings, "'bindings' must not be empty");
 		return withBindings(Arrays.asList(bindings));
 	}
 
@@ -341,7 +343,7 @@ public class BuildRequest {
 	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(List<Binding> bindings) {
-		Assert.notNull(bindings, "Bindings must not be null");
+		Assert.notNull(bindings, "'bindings' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -367,7 +369,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withTags(ImageReference... tags) {
-		Assert.notEmpty(tags, "Tags must not be empty");
+		Assert.notEmpty(tags, "'tags' must not be empty");
 		return withTags(Arrays.asList(tags));
 	}
 
@@ -377,7 +379,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withTags(List<ImageReference> tags) {
-		Assert.notNull(tags, "Tags must not be null");
+		Assert.notNull(tags, "'tags' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, tags, this.buildWorkspace, this.buildCache,
@@ -391,7 +393,7 @@ public class BuildRequest {
 	 * @since 3.2.0
 	 */
 	public BuildRequest withBuildWorkspace(Cache buildWorkspace) {
-		Assert.notNull(buildWorkspace, "BuildWorkspace must not be null");
+		Assert.notNull(buildWorkspace, "'buildWorkspace' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, buildWorkspace, this.buildCache,
@@ -404,7 +406,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withBuildCache(Cache buildCache) {
-		Assert.notNull(buildCache, "BuildCache must not be null");
+		Assert.notNull(buildCache, "'buildCache' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, buildCache,
@@ -417,7 +419,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withLaunchCache(Cache launchCache) {
-		Assert.notNull(launchCache, "LaunchCache must not be null");
+		Assert.notNull(launchCache, "'launchCache' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -430,7 +432,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withCreatedDate(String createdDate) {
-		Assert.notNull(createdDate, "CreatedDate must not be null");
+		Assert.notNull(createdDate, "'createdDate' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -456,7 +458,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 */
 	public BuildRequest withApplicationDirectory(String applicationDirectory) {
-		Assert.notNull(applicationDirectory, "ApplicationDirectory must not be null");
+		Assert.notNull(applicationDirectory, "'applicationDirectory' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -470,7 +472,7 @@ public class BuildRequest {
 	 * @since 3.2.0
 	 */
 	public BuildRequest withSecurityOptions(List<String> securityOptions) {
-		Assert.notNull(securityOptions, "SecurityOption must not be null");
+		Assert.notNull(securityOptions, "'securityOptions' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -484,7 +486,7 @@ public class BuildRequest {
 	 * @since 3.4.0
 	 */
 	public BuildRequest withImagePlatform(String platform) {
-		Assert.notNull(platform, "Platform must not be null");
+		Assert.notNull(platform, "'platform' must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
@@ -713,9 +715,9 @@ public class BuildRequest {
 	}
 
 	private static void assertJarFile(File jarFile) {
-		Assert.notNull(jarFile, "JarFile must not be null");
-		Assert.isTrue(jarFile.exists(), "JarFile must exist");
-		Assert.isTrue(jarFile.isFile(), "JarFile must be a file");
+		Assert.notNull(jarFile, "'jarFile' must not be null");
+		Assert.isTrue(jarFile.exists(), "'jarFile' must exist");
+		Assert.isTrue(jarFile.isFile(), "'jarFile' must be a file");
 	}
 
 }

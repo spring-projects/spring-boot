@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import sampleconfig.MyComponentInPackageWithoutDot;
 
 import org.springframework.boot.sampleconfig.MyComponent;
 import org.springframework.boot.sampleconfig.MyNamedComponent;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
@@ -72,8 +73,9 @@ class BeanDefinitionLoaderTests {
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
 	void loadXmlResource() {
-		ClassPathResource resource = new ClassPathResource("sample-beans.xml", getClass());
+		ClassPathResource resource = new ClassPathResource("org/springframework/boot/sample-beans.xml");
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(load(loader)).isOne();
 		assertThat(this.registry.containsBean("myXmlComponent")).isTrue();
@@ -81,8 +83,15 @@ class BeanDefinitionLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "org/springframework/boot/sample-beans.groovy", content = """
+			import org.springframework.boot.sampleconfig.MyComponent;
+
+			beans {
+				myGroovyComponent(MyComponent) {}
+			}
+			""")
 	void loadGroovyResource() {
-		ClassPathResource resource = new ClassPathResource("sample-beans.groovy", getClass());
+		ClassPathResource resource = new ClassPathResource("org/springframework/boot/sample-beans.groovy");
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(load(loader)).isOne();
 		assertThat(this.registry.containsBean("myGroovyComponent")).isTrue();
@@ -90,8 +99,17 @@ class BeanDefinitionLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "org/springframework/boot/sample-namespace.groovy", content = """
+			import org.springframework.boot.sampleconfig.MyComponent;
+
+			beans {
+				xmlns([ctx:'http://www.springframework.org/schema/context'])
+				ctx.'component-scan'('base-package':'nonexistent')
+				myGroovyComponent(MyComponent) {}
+			}
+			""")
 	void loadGroovyResourceWithNamespace() {
-		ClassPathResource resource = new ClassPathResource("sample-namespace.groovy", getClass());
+		ClassPathResource resource = new ClassPathResource("org/springframework/boot/sample-namespace.groovy");
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		assertThat(load(loader)).isOne();
 		assertThat(this.registry.containsBean("myGroovyComponent")).isTrue();
@@ -114,7 +132,8 @@ class BeanDefinitionLoaderTests {
 	}
 
 	@Test
-	void loadResourceName() {
+	@WithSampleBeansXmlResource
+	void loadXmlName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.xml");
 		assertThat(load(loader)).isOne();
@@ -122,6 +141,13 @@ class BeanDefinitionLoaderTests {
 	}
 
 	@Test
+	@WithResource(name = "org/springframework/boot/sample-beans.groovy", content = """
+			import org.springframework.boot.sampleconfig.MyComponent;
+
+			beans {
+				myGroovyComponent(MyComponent) {}
+			}
+			""")
 	void loadGroovyName() {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				"classpath:org/springframework/boot/sample-beans.groovy");

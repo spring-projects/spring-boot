@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.flywaydb.core.api.resource.LoadableResource;
 import org.flywaydb.core.internal.resource.NoopResourceProvider;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -44,6 +46,7 @@ class NativeImageResourceProviderCustomizerTests {
 	}
 
 	@Test
+	@WithResource(name = "db/migration/V1__init.sql")
 	void nativeImageResourceProviderShouldFindMigrations() {
 		FluentConfiguration configuration = new FluentConfiguration();
 		this.customizer.customize(configuration);

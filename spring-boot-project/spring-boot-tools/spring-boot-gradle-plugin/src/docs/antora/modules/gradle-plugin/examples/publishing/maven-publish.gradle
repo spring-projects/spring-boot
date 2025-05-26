@@ -13,7 +13,7 @@ publishing {
 	}
 	repositories {
 		maven {
-			url 'https://repo.example.com'
+			url = 'https://repo.example.com'
 		}
 	}
 }

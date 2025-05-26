@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.jooq.SQLDialect;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionSubclassTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.util.Assert;
 
 /**
@@ -63,7 +63,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 
 	private DefaultExceptionTranslatorExecuteListener(Log logger,
 			Function<ExecuteContext, SQLExceptionTranslator> translatorFactory) {
-		Assert.notNull(translatorFactory, "TranslatorFactory must not be null");
+		Assert.notNull(translatorFactory, "'translatorFactory' must not be null");
 		this.logger = logger;
 		this.translatorFactory = translatorFactory;
 	}
@@ -114,7 +114,7 @@ final class DefaultExceptionTranslatorExecuteListener implements ExceptionTransl
 		private SQLExceptionTranslator apply(SQLDialect dialect) {
 			String dbName = getSpringDbName(dialect);
 			return (dbName != null) ? new SQLErrorCodeSQLExceptionTranslator(dbName)
-					: new SQLStateSQLExceptionTranslator();
+					: new SQLExceptionSubclassTranslator();
 		}
 
 		private String getSpringDbName(SQLDialect dialect) {

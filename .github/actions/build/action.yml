@@ -1,31 +1,51 @@
-name: 'Build'
+name: Build
 description: 'Builds the project, optionally publishing it to a local deployment repository'
 inputs:
+  commercial-release-repository-url:
+    description: 'URL of the release repository'
+    required: false
+  commercial-repository-password:
+    description: 'Password for authentication with the commercial repository'
+    required: false
+  commercial-repository-username:
+    description: 'Username for authentication with the commercial repository'
+    required: false
+  commercial-snapshot-repository-url:
+    description: 'URL of the snapshot repository'
+    required: false
+  develocity-access-key:
+    description: 'Access key for authentication with ge.spring.io'
+    required: false
+  gradle-cache-read-only:
+    description: 'Whether Gradle''s cache should be read only'
+    required: false
+    default: 'true'
+  java-distribution:
+    description: 'Java distribution to use'
+    required: false
+    default: 'liberica'
+  java-early-access:
+    description: 'Whether the Java version is in early access'
+    required: false
+    default: 'false'
+  java-toolchain:
+    description: 'Whether a Java toolchain should be used'
+    required: false
+    default: 'false'
   java-version:
+    description: 'Java version to compile and test with'
     required: false
     default: '17'
-    description: 'The Java version to compile and test with'
-  java-early-access:
-    required: false
-    default: 'false'
-    description: 'Whether the Java version is in early access'
-  java-toolchain:
-    required: false
-    default: 'false'
-    description: 'Whether a Java toolchain should be used'
   publish:
+    description: 'Whether to publish artifacts ready for deployment to Artifactory'
     required: false
     default: 'false'
-    description: 'Whether to publish artifacts ready for deployment to Artifactory'
-  develocity-access-key:
-    required: false
-    description: 'The access key for authentication with ge.spring.io'
 outputs:
   build-scan-url:
-    description: 'The URL, if any, of the build scan produced by the build'
+    description: 'URL, if any, of the build scan produced by the build'
     value: ${{ (inputs.publish == 'true' && steps.publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
   version:
-    description: 'The version that was built'
+    description: 'Version that was built'
     value: ${{ steps.read-version.outputs.version }}
 runs:
   using: composite
@@ -33,19 +53,31 @@ runs:
     - name: Prepare Gradle Build
       uses: ./.github/actions/prepare-gradle-build
       with:
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
         develocity-access-key: ${{ inputs.develocity-access-key }}
-        java-version: ${{ inputs.java-version }}
+        java-distribution: ${{ inputs.java-distribution }}
         java-early-access: ${{ inputs.java-early-access }}
         java-toolchain: ${{ inputs.java-toolchain }}
+        java-version: ${{ inputs.java-version }}
     - name: Build
       id: build
       if: ${{ inputs.publish == 'false' }}
       shell: bash
+      env:
+        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
       run: ./gradlew build
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
       shell: bash
+      env:
+        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
       run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.sbom.SbomEndpointWebExtension.SbomType;
 import org.springframework.boot.actuate.sbom.SbomProperties.Sbom;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -53,7 +54,7 @@ class SbomEndpointWebExtensionTests {
 
 	@Test
 	void shouldReturnHttpOk() {
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
@@ -66,26 +67,27 @@ class SbomEndpointWebExtensionTests {
 
 	@Test
 	void shouldAutoDetectContentTypeForCycloneDx() {
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
 		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("application/vnd.cyclonedx+json"));
 	}
 
 	@Test
 	void shouldAutoDetectContentTypeForSpdx() {
-		this.properties.getApplication().setLocation("classpath:sbom/spdx.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/spdx.json");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
 		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("application/spdx+json"));
 	}
 
 	@Test
 	void shouldAutoDetectContentTypeForSyft() {
-		this.properties.getApplication().setLocation("classpath:sbom/syft.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/syft.json");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
 		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("application/vnd.syft+json"));
 	}
 
 	@Test
+	@WithResource(name = "git.properties", content = "git.commit.id.abbrev=e02a4f3")
 	void shouldSupportUnknownFiles() {
 		this.properties.getApplication().setLocation("classpath:git.properties");
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
@@ -94,7 +96,7 @@ class SbomEndpointWebExtensionTests {
 
 	@Test
 	void shouldUseContentTypeIfSet() {
-		this.properties.getApplication().setLocation("classpath:sbom/cyclonedx.json");
+		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
 		this.properties.getApplication().setMediaType(MimeType.valueOf("text/plain"));
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("application");
 		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("text/plain"));
@@ -103,7 +105,8 @@ class SbomEndpointWebExtensionTests {
 	@Test
 	void shouldUseContentTypeForAdditionalSbomsIfSet() {
 		this.properties.getAdditional()
-			.put("alpha", sbom("classpath:sbom/cyclonedx.json", MediaType.valueOf("text/plain")));
+			.put("alpha", sbom("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json",
+					MediaType.valueOf("text/plain")));
 		WebEndpointResponse<Resource> response = createWebExtension().sbom("alpha");
 		assertThat(response.getContentType()).isEqualTo(MimeType.valueOf("text/plain"));
 	}
@@ -120,9 +123,9 @@ class SbomEndpointWebExtensionTests {
 
 	private String getSbomContent(SbomType type) throws IOException {
 		return switch (type) {
-			case CYCLONE_DX -> readResource("/sbom/cyclonedx.json");
-			case SPDX -> readResource("/sbom/spdx.json");
-			case SYFT -> readResource("/sbom/syft.json");
+			case CYCLONE_DX -> readResource("cyclonedx.json");
+			case SPDX -> readResource("spdx.json");
+			case SYFT -> readResource("syft.json");
 			case UNKNOWN -> throw new IllegalArgumentException("UNKNOWN is not supported");
 		};
 	}

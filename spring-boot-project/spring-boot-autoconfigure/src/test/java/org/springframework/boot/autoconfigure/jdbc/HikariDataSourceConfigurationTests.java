@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
+
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -28,12 +34,15 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration} with Hikari.
@@ -80,7 +89,33 @@ class HikariDataSourceConfigurationTests {
 				HikariDataSource ds = context.getBean(HikariDataSource.class);
 				assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
 					.isEqualTo("org.h2.JDBCDataSource");
+			});
+	}
 
+	@Test
+	@SuppressWarnings("resource")
+	@ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar" })
+	void configureDataSourceClassNameWithNoEmbeddedDatabaseAvailable() {
+		this.contextRunner
+			.withPropertyValues("spring.datasource.url=jdbc:example//",
+					"spring.datasource.hikari.data-source-class-name=" + MockDataSource.class.getName())
+			.run((context) -> {
+				HikariDataSource ds = context.getBean(HikariDataSource.class);
+				assertThat(ds.getDataSourceClassName()).isEqualTo(MockDataSource.class.getName());
+				assertThatNoException().isThrownBy(() -> ds.getConnection().close());
+			});
+	}
+
+	@Test
+	@SuppressWarnings("resource")
+	void configureDataSourceClassNameToOverrideUseOfAnEmbeddedDatabase() {
+		this.contextRunner
+			.withPropertyValues("spring.datasource.url=jdbc:example//",
+					"spring.datasource.hikari.data-source-class-name=" + MockDataSource.class.getName())
+			.run((context) -> {
+				HikariDataSource ds = context.getBean(HikariDataSource.class);
+				assertThat(ds.getDataSourceClassName()).isEqualTo(MockDataSource.class.getName());
+				assertThatNoException().isThrownBy(() -> ds.getConnection().close());
 			});
 	}
 
@@ -197,6 +232,53 @@ class HikariDataSourceConfigurationTests {
 				.username("user")
 				.password("password")
 				.build();
+		}
+
+	}
+
+	public static class MockDataSource implements DataSource {
+
+		@Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			return null;
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return null;
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return false;
+		}
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			return mock(Connection.class);
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			return getConnection();
+		}
+
+		@Override
+		public PrintWriter getLogWriter() throws SQLException {
+			return null;
+		}
+
+		@Override
+		public void setLogWriter(PrintWriter out) throws SQLException {
+		}
+
+		@Override
+		public void setLoginTimeout(int seconds) throws SQLException {
+		}
+
+		@Override
+		public int getLoginTimeout() throws SQLException {
+			return -1;
 		}
 
 	}

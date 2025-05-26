@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,19 +39,19 @@ class InspectedContentTests {
 	@Test
 	void ofWhenInputStreamThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((InputStream) null))
-			.withMessage("InputStream must not be null");
+			.withMessage("'inputStream' must not be null");
 	}
 
 	@Test
 	void ofWhenContentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((Content) null))
-			.withMessage("Content must not be null");
+			.withMessage("'content' must not be null");
 	}
 
 	@Test
 	void ofWhenConsumerIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((IOConsumer<OutputStream>) null))
-			.withMessage("Writer must not be null");
+			.withMessage("'writer' must not be null");
 	}
 
 	@Test

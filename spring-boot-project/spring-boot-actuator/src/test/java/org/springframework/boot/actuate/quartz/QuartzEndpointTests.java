@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetailsDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummaryDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobSummaryDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobTriggerDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummaryDescriptor;
 import org.springframework.scheduling.quartz.DelegatingJob;
 import org.springframework.util.LinkedMultiValueMap;
@@ -73,9 +74,12 @@ import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link QuartzEndpoint}.
@@ -753,6 +757,31 @@ class QuartzEndpointTests {
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", false);
 		assertThat(jobDetails.getData()).containsOnly(entry("user", "******"), entry("password", "******"),
 				entry("url", "******"));
+	}
+
+	@Test
+	void quartzJobShouldBeTriggered() throws SchedulerException {
+		JobDetail job = JobBuilder.newJob(Job.class)
+			.withIdentity("hello", "samples")
+			.withDescription("A sample job")
+			.storeDurably()
+			.requestRecovery(false)
+			.build();
+		mockJobs(job);
+		QuartzJobTriggerDescriptor quartzJobTriggerDescriptor = this.endpoint.triggerQuartzJob("samples", "hello");
+		assertThat(quartzJobTriggerDescriptor).isNotNull();
+		assertThat(quartzJobTriggerDescriptor.getName()).isEqualTo("hello");
+		assertThat(quartzJobTriggerDescriptor.getGroup()).isEqualTo("samples");
+		assertThat(quartzJobTriggerDescriptor.getClassName()).isEqualTo("org.quartz.Job");
+		assertThat(quartzJobTriggerDescriptor.getTriggerTime()).isCloseTo(Instant.now(), within(5, ChronoUnit.SECONDS));
+		then(this.scheduler).should().triggerJob(new JobKey("hello", "samples"));
+	}
+
+	@Test
+	void quartzJobShouldNotBeTriggeredWhenJobDoesNotExist() throws SchedulerException {
+		QuartzJobTriggerDescriptor quartzJobTriggerDescriptor = this.endpoint.triggerQuartzJob("samples", "hello");
+		assertThat(quartzJobTriggerDescriptor).isNull();
+		then(this.scheduler).should(never()).triggerJob(any());
 	}
 
 	private void mockJobs(JobDetail... jobs) throws SchedulerException {

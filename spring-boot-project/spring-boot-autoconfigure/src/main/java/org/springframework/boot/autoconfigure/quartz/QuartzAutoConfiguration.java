@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class QuartzAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	@ConditionalOnProperty(prefix = "spring.quartz", name = "job-store-type", havingValue = "jdbc")
+	@ConditionalOnProperty(name = "spring.quartz.job-store-type", havingValue = "jdbc")
 	@Import(DatabaseInitializationDependencyConfigurer.class)
 	protected static class JdbcStoreTypeConfiguration {
 
@@ -132,7 +132,7 @@ public class QuartzAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(QuartzDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		@Conditional(OnQuartzDatasourceInitializationCondition.class)
 		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
 				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,

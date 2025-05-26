@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,20 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	@Test
 	void defaultTomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		if (AprLifecycleListener.isAprAvailable()) {
-			assertThat(factory.getContextLifecycleListeners()).singleElement().isInstanceOf(AprLifecycleListener.class);
-		}
-		else {
-			assertThat(factory.getContextLifecycleListeners()).isEmpty();
-		}
+		assertThat(factory.getContextLifecycleListeners()).isEmpty();
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).isEmpty();
+	}
+
+	@Test
+	void aprShouldBeOptIn() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		factory.setUseApr(true);
+		TomcatWebServer tomcatWebServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		this.webServer = tomcatWebServer;
+		assertThat(tomcatWebServer.getTomcat().getServer().findLifecycleListeners()).singleElement()
+			.isInstanceOf(AprLifecycleListener.class);
 	}
 
 	@Test
@@ -121,7 +129,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
@@ -129,14 +137,14 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'tomcatConnectorCustomizers' must not be null");
 	}
 
 	@Test
 	void setNullProtocolHandlerCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizers' must not be null");
 	}
 
 	@Test
@@ -144,7 +152,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("'tomcatProtocolHandlerCustomizers' must not be null");
 	}
 
 	@Test
@@ -193,7 +201,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	void addNullAdditionalConnectorsThrows() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
-			.withMessageContaining("Connectors must not be null");
+			.withMessageContaining("'connectors' must not be null");
 	}
 
 	@Test

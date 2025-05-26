@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ class CacheMetricsRegistrarTests {
 	void bindToSupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
-		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
+		assertThat(
+				registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().recordStats().build())))
+			.isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 
@@ -49,8 +51,8 @@ class CacheMetricsRegistrarTests {
 	void bindToSupportedCacheWrappedInTransactionProxy() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
-		assertThat(registrar.bindCacheToRegistry(
-				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build()))))
+		assertThat(registrar.bindCacheToRegistry(new TransactionAwareCacheDecorator(
+				new CaffeineCache("test", Caffeine.newBuilder().recordStats().build()))))
 			.isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
@@ -58,7 +60,9 @@ class CacheMetricsRegistrarTests {
 	@Test
 	void bindToUnsupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry, Collections.emptyList());
-		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
+		assertThat(
+				registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().recordStats().build())))
+			.isFalse();
 		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter()).isNull();
 	}
 

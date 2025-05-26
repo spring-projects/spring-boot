@@ -2,7 +2,6 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.integration-test"
 	id "org.springframework.boot.optional-dependencies"
@@ -84,8 +83,8 @@ dependencies {
 	testRuntimeOnly("io.r2dbc:r2dbc-h2")
 }
 
-task syncIntTestDependencies(type: Sync) {
-	destinationDir = file("${buildDir}/dependencies")
+tasks.register("syncIntTestDependencies", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("dependencies"))
 	from {
 		configurations.intTestDependencies
 	}

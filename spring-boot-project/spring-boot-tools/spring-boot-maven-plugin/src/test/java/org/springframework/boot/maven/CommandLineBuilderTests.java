@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,25 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.maven.sample.ClassWithMainMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +89,60 @@ class CommandLineBuilderTests {
 	void buildWithNullIntermediateArgumentIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withArguments("--test", null, "--another").build())
 			.containsExactly(CLASS_NAME, "--test", "--another");
+	}
+
+	@Test
+	@DisabledOnOs(OS.WINDOWS)
+	void buildWithClassPath(@TempDir Path tempDir) throws Exception {
+		Path file = tempDir.resolve("test.jar");
+		Path file1 = tempDir.resolve("test1.jar");
+		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME)
+			.withClasspath(file.toUri().toURL(), file1.toUri().toURL())
+			.build()).containsExactly("-cp", file + File.pathSeparator + file1, CLASS_NAME);
+	}
+
+	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void buildWithClassPathOnWindows(@TempDir Path tempDir) throws Exception {
+		Path file = tempDir.resolve("test.jar");
+		Path file1 = tempDir.resolve("test1.jar");
+		List<String> args = CommandLineBuilder.forMainClass(CLASS_NAME)
+			.withClasspath(file.toUri().toURL(), file1.toUri().toURL())
+			.build();
+		assertThat(args).hasSize(3);
+		assertThat(args.get(0)).isEqualTo("-cp");
+		assertThat(args.get(1)).startsWith("@");
+		assertThat(args.get(2)).isEqualTo(CLASS_NAME);
+		assertThat(Paths.get(args.get(1).substring(1)))
+			.hasContent("\"" + (file + File.pathSeparator + file1).replace("\\", "\\\\") + "\"");
+	}
+
+	@Test
+	void buildAndRunWithLongClassPath() throws IOException, InterruptedException {
+		StringBuilder classPath = new StringBuilder(ManagementFactory.getRuntimeMXBean().getClassPath());
+		// Simulates [CreateProcess error=206, The filename or extension is too long]
+		while (classPath.length() < 35000) {
+			classPath.append(File.pathSeparator).append(classPath);
+		}
+		URL[] urls = Arrays.stream(classPath.toString().split(File.pathSeparator)).map(this::toURL).toArray(URL[]::new);
+		List<String> command = CommandLineBuilder.forMainClass(ClassWithMainMethod.class.getName())
+			.withClasspath(urls)
+			.build();
+		ProcessBuilder pb = new JavaExecutable().processBuilder(command.toArray(new String[0]));
+		Process process = pb.start();
+		assertThat(process.waitFor()).isEqualTo(0);
+		try (InputStream inputStream = process.getInputStream()) {
+			assertThat(inputStream).hasContent("Hello World");
+		}
+	}
+
+	private URL toURL(String path) {
+		try {
+			return Paths.get(path).toUri().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

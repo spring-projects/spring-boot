@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,6 +108,15 @@ class WebServerPortFileWriterTests {
 		String content = contentOf(new File(file.getParentFile(), managementFile));
 		assertThat(content).isEqualTo("9090");
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
+	}
+
+	@Test
+	void getPortFileWhenPortFileNameDoesNotHaveExtension() {
+		File file = new File(this.tempDir, "portfile");
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
+		WebServerApplicationContext applicationContext = mock(WebServerApplicationContext.class);
+		given(applicationContext.getServerNamespace()).willReturn("management");
+		assertThat(listener.getPortFile(applicationContext).getName()).isEqualTo("portfile-management");
 	}
 
 	private WebServerInitializedEvent mockEvent(String namespace, int port) {

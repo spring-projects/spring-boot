@@ -2,7 +2,6 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
@@ -25,7 +24,10 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-test")
@@ -37,7 +39,6 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:pulsar")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-	dockerTestImplementation("org.awaitility:awaitility")
 
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -76,6 +77,7 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
+	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.activemq:activemq-client")
 	optional("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -140,9 +142,7 @@ dependencies {
 	optional("org.infinispan:infinispan-jcache")
 	optional("org.infinispan:infinispan-spring6-embedded")
 	optional("org.influxdb:influxdb-java")
-	optional("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
@@ -173,7 +173,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-envers") {
 		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.persistence", module: "javax.persistence-api"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
 	}
 	optional("org.springframework.data:spring-data-jpa")
@@ -196,9 +195,7 @@ dependencies {
 	optional("org.springframework.pulsar:spring-pulsar-reactive")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
-	optional("org.springframework.security:spring-security-data") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	optional("org.springframework.security:spring-security-data")
 	optional("org.springframework.security:spring-security-messaging")
 	optional("org.springframework.security:spring-security-oauth2-authorization-server")
 	optional("org.springframework.security:spring-security-oauth2-client")
@@ -231,8 +228,9 @@ dependencies {
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot")))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("commons-fileupload:commons-fileupload")
 	testImplementation("com.github.h-thurow:simple-jndi")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.loader.launch;
 import java.util.List;
 
 import org.springframework.boot.loader.jarmode.JarMode;
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.ClassUtils;
 
@@ -31,11 +32,31 @@ final class JarModeRunner {
 
 	static final String DISABLE_SYSTEM_EXIT = JarModeRunner.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
+	static final String SUPPRESSED_SYSTEM_EXIT_CODE = JarModeRunner.class.getName() + ".SUPPRESSED_SYSTEM_EXIT_CODE";
+
 	private JarModeRunner() {
 	}
 
 	static void main(String[] args) {
 		String mode = System.getProperty("jarmode");
+		boolean disableSystemExit = Boolean.getBoolean(DISABLE_SYSTEM_EXIT);
+		try {
+			runJarMode(mode, args);
+			if (disableSystemExit) {
+				System.setProperty(SUPPRESSED_SYSTEM_EXIT_CODE, "0");
+			}
+		}
+		catch (Throwable ex) {
+			printError(ex);
+			if (disableSystemExit) {
+				System.setProperty(SUPPRESSED_SYSTEM_EXIT_CODE, "1");
+				return;
+			}
+			System.exit(1);
+		}
+	}
+
+	private static void runJarMode(String mode, String[] args) {
 		List<JarMode> candidates = SpringFactoriesLoader.loadFactories(JarMode.class,
 				ClassUtils.getDefaultClassLoader());
 		for (JarMode candidate : candidates) {
@@ -44,10 +65,17 @@ final class JarModeRunner {
 				return;
 			}
 		}
-		System.err.println("Unsupported jarmode '" + mode + "'");
-		if (!Boolean.getBoolean(DISABLE_SYSTEM_EXIT)) {
-			System.exit(1);
+		throw new JarModeErrorException("Unsupported jarmode '" + mode + "'");
+	}
+
+	private static void printError(Throwable ex) {
+		if (ex instanceof JarModeErrorException) {
+			String message = ex.getMessage();
+			System.err.println("Error: " + message);
+			System.err.println();
+			return;
 		}
+		ex.printStackTrace();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,10 +83,10 @@ class ImportsContextCustomizerFactoryTests {
 			.createContextCustomizer(TestWithImportAndComponentScanOfSomePackage.class, null);
 		ContextCustomizer customizer3 = this.factory
 			.createContextCustomizer(TestWithImportAndComponentScanOfAnotherPackage.class, null);
-		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
 		assertThat(customizer1).isEqualTo(customizer2);
-		assertThat(customizer3.hashCode()).isNotEqualTo(customizer2.hashCode()).isNotEqualTo(customizer1.hashCode());
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer3).isNotEqualTo(customizer2).isNotEqualTo(customizer1);
+		assertThat(customizer3).doesNotHaveSameHashCodeAs(customizer2).doesNotHaveSameHashCodeAs(customizer1);
 	}
 
 	@Test

@@ -4,13 +4,15 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-task launch(type: JavaExec) {
+tasks.register("launch", JavaExec) {
 	classpath = files(bootJar)
 }
 
 repositories {
 	mavenCentral()
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {

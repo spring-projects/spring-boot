@@ -24,8 +24,8 @@ import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * {@link ApplicationContextInitializer} that adds all {@link ProtocolResolver}s
- * registered in a {@code spring.factories} file.
+ * {@link ApplicationContextInitializer} that adds all {@link ProtocolResolver
+ * ProtocolResolvers} registered in a {@code spring.factories} file.
  *
  * @author Scott Frederick
  */

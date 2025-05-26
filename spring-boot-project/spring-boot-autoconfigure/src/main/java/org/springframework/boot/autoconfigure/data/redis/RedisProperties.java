@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.redis")
+@ConfigurationProperties("spring.data.redis")
 public class RedisProperties {
 
 	/**
@@ -42,8 +43,8 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Connection URL. Overrides host, port, username, and password. Example:
-	 * redis://user:password@example.com:6379
+	 * Connection URL. Overrides host, port, username, password, and database. Example:
+	 * redis://user:password@example.com:6379/8
 	 */
 	private String url;
 
@@ -322,8 +323,8 @@ public class RedisProperties {
 	public static class Cluster {
 
 		/**
-		 * Comma-separated list of "host:port" pairs to bootstrap from. This represents an
-		 * "initial" list of cluster nodes and is required to have at least one entry.
+		 * List of "host:port" pairs to bootstrap from. This represents an "initial" list
+		 * of cluster nodes and is required to have at least one entry.
 		 */
 		private List<String> nodes;
 
@@ -362,7 +363,7 @@ public class RedisProperties {
 		private String master;
 
 		/**
-		 * Comma-separated list of "host:port" pairs.
+		 * List of "host:port" pairs.
 		 */
 		private List<String> nodes;
 
@@ -468,6 +469,11 @@ public class RedisProperties {
 		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
+		 * Defines from which Redis nodes data is read.
+		 */
+		private String readFrom;
+
+		/**
 		 * Lettuce pool configuration.
 		 */
 		private final Pool pool = new Pool();
@@ -480,6 +486,14 @@ public class RedisProperties {
 
 		public void setShutdownTimeout(Duration shutdownTimeout) {
 			this.shutdownTimeout = shutdownTimeout;
+		}
+
+		public void setReadFrom(String readFrom) {
+			this.readFrom = readFrom;
+		}
+
+		public String getReadFrom() {
+			return this.readFrom;
 		}
 
 		public Pool getPool() {

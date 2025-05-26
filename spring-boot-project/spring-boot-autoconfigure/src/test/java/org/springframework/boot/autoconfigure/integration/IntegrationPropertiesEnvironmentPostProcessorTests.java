@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import io.lettuce.core.dynamic.support.ReflectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -47,6 +47,7 @@ import org.springframework.integration.context.IntegrationProperties;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -60,6 +61,8 @@ import static org.mockito.Mockito.mock;
 class IntegrationPropertiesEnvironmentPostProcessorTests {
 
 	@Test
+	@WithResource(name = "META-INF/spring.integration.properties",
+			content = "spring.integration.endpoints.noAutoStartup=testService*")
 	void postProcessEnvironmentAddPropertySource() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		new IntegrationPropertiesEnvironmentPostProcessor().postProcessEnvironment(environment,
@@ -69,6 +72,8 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	@WithResource(name = "META-INF/spring.integration.properties",
+			content = "spring.integration.endpoints.noAutoStartup=testService*")
 	void postProcessEnvironmentAddPropertySourceLast() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources()

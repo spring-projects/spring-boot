@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 final class PulsarReactivePropertiesMapper {
 
@@ -87,12 +88,14 @@ final class PulsarReactivePropertiesMapper {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
+		map.from(properties::getName).to(containerProperties::setSubscriptionName);
 	}
 
 	private void customizePulsarContainerListenerProperties(ReactivePulsarContainerProperties<?> containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
+		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
 	}
 
 	void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {

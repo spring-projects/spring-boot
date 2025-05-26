@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import jakarta.servlet.Servlet;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
@@ -68,7 +68,7 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 
 	@Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
-	@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
 	FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
 		getProperties().applyToMvcViewResolver(resolver);
@@ -77,7 +77,7 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 
 	@Bean
 	@ConditionalOnEnabledResourceChain
-	@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
+	@ConditionalOnMissingFilterBean
 	FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter() {
 		FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(
 				new ResourceUrlEncodingFilter());

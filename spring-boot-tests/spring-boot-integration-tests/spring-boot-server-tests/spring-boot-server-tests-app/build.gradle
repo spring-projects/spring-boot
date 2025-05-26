@@ -7,8 +7,6 @@ plugins {
 	id "war"
 }
 
-apply plugin: "io.spring.dependency-management"
-
 java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
@@ -17,18 +15,7 @@ java {
 repositories {
 	maven { url "file:${rootDir}/../test-repository"}
 	mavenCentral()
-	maven {
-		url "https://repo.spring.io/milestone"
-		content {
-			excludeGroup "org.springframework.boot"
-		}
-	}
-	maven {
-		url "https://repo.spring.io/snapshot"
-		content {
-			excludeGroup "org.springframework.boot"
-		}
-	}
+	spring.mavenRepositoriesExcludingBootGroup()
 }
 
 configurations {
@@ -66,6 +53,7 @@ dependencies {
 	compileOnly("org.eclipse.jetty.ee10:jetty-ee10-servlet")
 	compileOnly("org.springframework:spring-web")
 
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter")
 
 	app(files(resourcesJar))

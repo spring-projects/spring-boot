@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.TestConfigDataBootstrap.LoaderHelper;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,9 +46,24 @@ class ConfigDataEnvironmentPostProcessorBootstrapContextIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "imported.properties", content = """
+			spring.config.import=testbootstrap:test
+			spring.profiles.active=test
+			myprop=igotbound
+			#---
+			spring.config.activate.on-profile=test
+			myprofileprop=igotprofilebound
+
+			""")
+	@WithResource(name = "META-INF/spring.factories", content = """
+			org.springframework.boot.context.config.ConfigDataLoader=\
+			org.springframework.boot.context.config.TestConfigDataBootstrap.Loader
+			org.springframework.boot.context.config.ConfigDataLocationResolver=\
+			org.springframework.boot.context.config.TestConfigDataBootstrap.LocationResolver
+			""")
 	void bootstrapsApplicationContext() {
 		try (ConfigurableApplicationContext context = this.application
-			.run("--spring.config.import=classpath:application-bootstrap-registry-integration-tests.properties")) {
+			.run("--spring.config.import=classpath:imported.properties")) {
 			LoaderHelper bean = context.getBean(TestConfigDataBootstrap.LoaderHelper.class);
 			assertThat(bean).isNotNull();
 			assertThat(bean.getBound()).isEqualTo("igotbound");

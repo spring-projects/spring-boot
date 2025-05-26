@@ -150,7 +150,7 @@ abstract class PropertyDescriptor {
 		}
 		returnType = getTopLevelType(returnType);
 		Element candidate = element;
-		while (candidate != null && candidate instanceof TypeElement) {
+		while (candidate instanceof TypeElement) {
 			if (returnType.equals(getTopLevelType(candidate))) {
 				return true;
 			}

@@ -15,10 +15,10 @@ The `name` attribute of each hint refers to the `name` of a property.
 In the xref:configuration-metadata/format.adoc[initial example shown earlier], we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
 
-If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
+If your property is of type javadoc:java.util.Map[], you can provide hints for both the keys and the values (but not for the map itself).
 The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
 
-Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
+Assume a `my.contexts` maps magic javadoc:java.lang.String[] values to an integer, as shown in the following example:
 
 include-code::MyProperties[]
 
@@ -42,7 +42,7 @@ In order to offer additional content assistance for the keys, you could add the 
 ]}
 ----
 
-TIP: We recommend that you use an `Enum` for those two values instead.
+TIP: We recommend that you use an javadoc:java.lang.Enum[] for those two values instead.
 If your IDE supports it, this is by far the most effective approach to auto-completion.
 
 
@@ -139,7 +139,7 @@ This provider supports the following parameters:
 | Parameter | Type | Default value | Description
 
 | `target`
-| `String` (`Class`)
+| javadoc:java.lang.String[] (`Class`)
 | _none_
 | The fully qualified name of the class that should be assignable to the chosen value.
   Typically used to filter out-non candidate classes.
@@ -152,7 +152,7 @@ This provider supports the following parameters:
 |===
 
 
-The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
+The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the class name to use must be an javadoc:jakarta.servlet.http.HttpServlet[]:
 
 [source,json]
 ----
@@ -177,7 +177,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 === Handle As
 
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
-This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
+This typically happens when the property has a javadoc:java.lang.String[] type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
 This provider supports the following parameters:
 
 [cols="1,1,2,4"]
@@ -185,7 +185,7 @@ This provider supports the following parameters:
 | Parameter | Type | Default value | Description
 
 | **`target`**
-| `String` (`Class`)
+| javadoc:java.lang.String[] (`Class`)
 | _none_
 | The fully qualified name of the type to consider for the property.
   This parameter is mandatory.
@@ -193,17 +193,17 @@ This provider supports the following parameters:
 
 The following types can be used:
 
-* Any `java.lang.Enum`: Lists the possible values for the property.
-  (We recommend defining the property with the `Enum` type, as no further hint should be required for the IDE to auto-complete the values)
-* `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as `UTF-8`)
-* `java.util.Locale`: auto-completion of locales (such as `en_US`)
-* `org.springframework.util.MimeType`: Supports auto-completion of content type values (such as `text/plain`)
-* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to refer to a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
+* Any javadoc:java.lang.Enum[]: Lists the possible values for the property.
+  (We recommend defining the property with the javadoc:java.lang.Enum[] type, as no further hint should be required for the IDE to auto-complete the values)
+* javadoc:java.nio.charset.Charset[]: Supports auto-completion of charset/encoding values (such as `UTF-8`)
+* javadoc:java.util.Locale[]: auto-completion of locales (such as `en_US`)
+* javadoc:org.springframework.util.MimeType[]: Supports auto-completion of content type values (such as `text/plain`)
+* javadoc:org.springframework.core.io.Resource[]: Supports auto-completion of Spring’s Resource abstraction to refer to a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
 
-TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE about it.
+TIP: If multiple values can be provided, use a javadoc:java.util.Collection[] or _Array_ type to teach the IDE about it.
 
 The following metadata snippet corresponds to the standard `spring.liquibase.change-log` property that defines the path to the changelog to use.
-It is actually used internally as a `org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.
+It is actually used internally as a javadoc:org.springframework.core.io.Resource[] but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.
 
 [source,json]
 ----
@@ -323,13 +323,13 @@ This provider supports the following parameters:
 | Parameter | Type | Default value | Description
 
 | `target`
-| `String` (`Class`)
+| javadoc:java.lang.String[] (`Class`)
 | _none_
 | The fully qualified name of the bean class that should be assignable to the candidate.
   Typically used to filter out non-candidate beans.
 |===
 
-The following metadata snippet corresponds to the standard `spring.jmx.server` property that defines the name of the `MBeanServer` bean to use:
+The following metadata snippet corresponds to the standard `spring.jmx.server` property that defines the name of the javadoc:javax.management.MBeanServer[] bean to use:
 
 [source,json]
 ----
@@ -349,7 +349,7 @@ The following metadata snippet corresponds to the standard `spring.jmx.server` p
 ----
 
 NOTE: The binder is not aware of the metadata.
-If you provide that hint, you still need to transform the bean name into an actual Bean reference using by the `ApplicationContext`.
+If you provide that hint, you still need to transform the bean name into an actual Bean reference using by the javadoc:org.springframework.context.ApplicationContext[].
 
 
 

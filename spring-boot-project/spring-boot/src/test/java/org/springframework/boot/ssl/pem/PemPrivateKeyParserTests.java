@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,36 +47,25 @@ class PemPrivateKeyParserTests {
 			"rsa.key,		RSA",
 			"rsa-pss.key,	RSASSA-PSS"
 	})
-		// @formatter:on
+	// @formatter:on
 	void shouldParseTraditionalPkcs8(String file, String algorithm) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs8/" + file));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
 	}
 
-	@ParameterizedTest
-	// @formatter:off
-	@CsvSource({
-			"rsa.key,	RSA"
-	})
-		// @formatter:on
-	void shouldParseTraditionalPkcs1(String file, String algorithm) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs1/" + file));
+	@Test
+	void shouldParseTraditionalPkcs1() throws IOException {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs1/rsa.key"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
+		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
 	}
 
-	@ParameterizedTest
-	// @formatter:off
-	@ValueSource(strings = {
-			"dsa.key"
-	})
-		// @formatter:on
-	void shouldNotParseUnsupportedTraditionalPkcs1(String file) {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs1/" + file)))
+	@Test
+	void shouldNotParseUnsupportedTraditionalPkcs1() {
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("pkcs1/dsa.key")))
 			.withMessageContaining("Missing private key or unrecognized format");
 	}
 
@@ -94,9 +83,9 @@ class PemPrivateKeyParserTests {
 			"secp384r1.key,			secp384r1,			1.3.132.0.34",
 			"secp521r1.key,			secp521r1,			1.3.132.0.35"
 	})
-		// @formatter:on
+	// @formatter:on
 	void shouldParseEcPkcs8(String file, String curveName, String oid) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs8/" + file));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
@@ -115,8 +104,7 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldNotParseUnsupportedEcPkcs8(String file) {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file)))
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("pkcs8/" + file)))
 			.withMessageContaining("Missing private key or unrecognized format");
 	}
 
@@ -128,7 +116,7 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldParseEdDsaPkcs8(String file) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs8/" + file));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EdDSA");
@@ -142,7 +130,7 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldParseXdhPkcs8(String file) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs8/" + file));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("XDH");
@@ -164,7 +152,7 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldParseEcSec1(String file, String curveName, String oid) throws IOException {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/sec1/" + file));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("sec1/" + file));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
@@ -183,14 +171,13 @@ class PemPrivateKeyParserTests {
 	})
 		// @formatter:on
 	void shouldNotParseUnsupportedEcSec1(String file) {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/sec1/" + file)))
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("sec1/" + file)))
 			.withMessageContaining("Missing private key or unrecognized format");
 	}
 
 	@Test
 	void parseWithNonKeyTextWillThrowException() {
-		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("test-banner.txt")));
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("file.txt")));
 	}
 
 	@ParameterizedTest
@@ -208,8 +195,7 @@ class PemPrivateKeyParserTests {
 		// openssl pkcs8 -topk8 -in <input file> -out <output file> -v2 <algorithm>
 		// -passout pass:test
 		// where <algorithm> is aes128 or aes256
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("org/springframework/boot/web/server/pkcs8/" + file),
-				"test");
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("pkcs8/" + file), "test");
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo(algorithm);
@@ -221,8 +207,7 @@ class PemPrivateKeyParserTests {
 		// openssl pkcs8 -topk8 -in rsa.key -out rsa-des-ede3-cbc.key -v2 des3 -passout
 		// pass:test
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser
-				.parse(read("org/springframework/boot/web/server/pkcs8/rsa-des-ede3-cbc.key"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("pkcs8/rsa-des-ede3-cbc.key"), "test"))
 			.isInstanceOf(IllegalStateException.class)
 			.withMessageContaining("Error decrypting private key");
 	}
@@ -233,8 +218,7 @@ class PemPrivateKeyParserTests {
 		// openssl pkcs8 -topk8 -in rsa.key -out rsa-des-ede3-cbc.key -scrypt -passout
 		// pass:test
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser
-				.parse(read("org/springframework/boot/web/server/pkcs8/rsa-scrypt.key"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("pkcs8/rsa-scrypt.key"), "test"))
 			.withMessageContaining("Error decrypting private key");
 	}
 
@@ -244,8 +228,7 @@ class PemPrivateKeyParserTests {
 		// openssl ecparam -genkey -name prime256v1 | openssl ec -aes-128-cbc -out
 		// prime256v1-aes-128-cbc.key
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser
-				.parse(read("org/springframework/boot/web/server/sec1/prime256v1-aes-128-cbc.key"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("sec1/prime256v1-aes-128-cbc.key"), "test"))
 			.withMessageContaining("Missing private key or unrecognized format");
 	}
 
@@ -254,13 +237,13 @@ class PemPrivateKeyParserTests {
 		// created with:
 		// openssl genrsa -aes-256-cbc -out rsa-aes-256-cbc.key
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser
-				.parse(read("org/springframework/boot/web/server/pkcs1/rsa-aes-256-cbc.key"), "test"))
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("pkcs1/rsa-aes-256-cbc.key"), "test"))
 			.withMessageContaining("Missing private key or unrecognized format");
 	}
 
 	private String read(String path) throws IOException {
-		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
+		return new ClassPathResource("org/springframework/boot/ssl/pem/" + path)
+			.getContentAsString(StandardCharsets.UTF_8);
 	}
 
 }

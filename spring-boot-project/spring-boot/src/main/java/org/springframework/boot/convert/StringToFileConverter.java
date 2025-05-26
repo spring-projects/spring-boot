@@ -34,8 +34,7 @@ class StringToFileConverter implements Converter<String, File> {
 
 	@Override
 	public File convert(String source) {
-		Resource resource = new ApplicationResourceLoader().getResource(source);
-		return getFile(resource);
+		return getFile(ApplicationResourceLoader.get().getResource(source));
 	}
 
 	private File getFile(Resource resource) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.gson;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.LongSerializationPolicy;
-import com.google.gson.Strictness;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -30,7 +29,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Ivan Golovko
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.gson")
+@ConfigurationProperties("spring.gson")
 public class GsonProperties {
 
 	/**
@@ -188,6 +187,32 @@ public class GsonProperties {
 
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
+	}
+
+	/**
+	 * Enumeration of levels of strictness. Values are the same as those on
+	 * {@link com.google.gson.Strictness} that was introduced in Gson 2.11. To maximize
+	 * backwards compatibility, the Gson enum is not used directly.
+	 *
+	 * @since 3.4.2
+	 */
+	public enum Strictness {
+
+		/**
+		 * Lenient compliance.
+		 */
+		LENIENT,
+
+		/**
+		 * Strict compliance with some small deviations for legacy reasons.
+		 */
+		LEGACY_STRICT,
+
+		/**
+		 * Strict compliance.
+		 */
+		STRICT
+
 	}
 
 }

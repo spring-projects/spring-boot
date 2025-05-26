@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
+import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
  * Interactive {@link UpgradeResolver} that uses command line input to choose the upgrades
@@ -50,27 +54,58 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		for (Library library : libraries) {
 			librariesByName.put(library.getName(), library);
 		}
-		List<LibraryWithVersionOptions> libraryUpdates = this.libraryUpdateResolver
-			.findLibraryUpdates(librariesToUpgrade, librariesByName);
-		return libraryUpdates.stream().map(this::resolveUpgrade).filter(Objects::nonNull).toList();
+		try {
+			return this.libraryUpdateResolver.findLibraryUpdates(librariesToUpgrade, librariesByName)
+				.stream()
+				.map(this::resolveUpgrade)
+				.filter(Objects::nonNull)
+				.toList();
+		}
+		catch (UpgradesInterruptedException ex) {
+			return Collections.emptyList();
+		}
 	}
 
 	private Upgrade resolveUpgrade(LibraryWithVersionOptions libraryWithVersionOptions) {
-		if (libraryWithVersionOptions.getVersionOptions().isEmpty()) {
+		Library library = libraryWithVersionOptions.getLibrary();
+		List<VersionOption> versionOptions = libraryWithVersionOptions.getVersionOptions();
+		if (versionOptions.isEmpty()) {
 			return null;
 		}
-		VersionOption defaultOption = new VersionOption(
-				libraryWithVersionOptions.getLibrary().getVersion().getVersion());
+		VersionOption defaultOption = defaultOption(library);
+		VersionOption selected = selectOption(defaultOption, library, versionOptions);
+		return (selected.equals(defaultOption)) ? null : selected.upgrade(library);
+	}
+
+	private VersionOption defaultOption(Library library) {
+		VersionAlignment alignment = library.getVersionAlignment();
+		Set<String> alignedVersions = (alignment != null) ? alignment.resolve() : null;
+		if (alignedVersions != null && alignedVersions.size() == 1) {
+			DependencyVersion alignedVersion = DependencyVersion.parse(alignedVersions.iterator().next());
+			if (alignedVersion.equals(library.getVersion().getVersion())) {
+				return new VersionOption.AlignedVersionOption(alignedVersion, alignment);
+			}
+		}
+		return new VersionOption(library.getVersion().getVersion());
+	}
+
+	private VersionOption selectOption(VersionOption defaultOption, Library library,
+			List<VersionOption> versionOptions) {
 		VersionOption selected = this.userInputHandler.askUser((questions) -> {
-			String question = libraryWithVersionOptions.getLibrary().getName() + " "
-					+ libraryWithVersionOptions.getLibrary().getVersion().getVersion();
+			String question = library.getNameAndVersion();
 			List<VersionOption> options = new ArrayList<>();
 			options.add(defaultOption);
-			options.addAll(libraryWithVersionOptions.getVersionOptions());
+			options.addAll(versionOptions);
 			return questions.selectOption(question, options, defaultOption);
 		}).get();
-		return (selected.equals(defaultOption)) ? null
-				: new Upgrade(libraryWithVersionOptions.getLibrary(), selected.getVersion());
+		if (this.userInputHandler.interrupted()) {
+			throw new UpgradesInterruptedException();
+		}
+		return selected;
+	}
+
+	static class UpgradesInterruptedException extends RuntimeException {
+
 	}
 
 }

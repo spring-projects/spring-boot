@@ -2,37 +2,49 @@ name: Verify
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
       staging:
+        description: 'Whether the release to verify is in the staging repository'
         required: false
         default: false
         type: boolean
+      version:
+        description: 'Version to verify'
+        required: true
+        type: string
     secrets:
-      repository-username:
+      commercial-repository-password:
+        description: 'Password for authentication with the commercial repository'
         required: false
-      repository-password:
+      commercial-repository-username:
+        description: 'Username for authentication with the commercial repository'
         required: false
       google-chat-webhook-url:
+        description: 'Google Chat Webhook URL'
         required: true
+      opensource-repository-password:
+        description: 'Password for authentication with the open-source repository'
+        required: false
+      opensource-repository-username:
+        description: 'Username for authentication with the open-source repository'
+        required: false
       token:
+        description: 'Token to use for authentication with GitHub'
         required: true
 jobs:
   verify:
     name: Verify
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Release Verification Tests
         uses: actions/checkout@v4
         with:
+          ref: 'v0.0.10'
           repository: spring-projects/spring-boot-release-verification
-          ref: 'v0.0.3'
           token: ${{ secrets.token }}
       - name: Check Out Send Notification Action
         uses: actions/checkout@v4
         with:
-          path: spring-boot
+          path: send-notification
           sparse-checkout: .github/actions/send-notification
       - name: Set Up Java
         uses: actions/setup-java@v4
@@ -40,9 +52,10 @@ jobs:
           distribution: 'liberica'
           java-version: 17
       - name: Set Up Homebrew
+        if: ${{ !vars.COMMERCIAL }}
         uses: Homebrew/actions/setup-homebrew@7657c9512f50e1c35b640971116425935bab3eea
       - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
         with:
           cache-read-only: false
       - name: Configure Gradle Properties
@@ -52,22 +65,24 @@ jobs:
           echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
       - name: Run Release Verification Tests
         env:
-          RVT_VERSION: ${{ inputs.version }}
-          RVT_RELEASE_TYPE: oss
+          RVT_COMMERCIAL_REPOSITORY_PASSWORD: ${{ secrets.commercial-repository-password }}
+          RVT_COMMERCIAL_REPOSITORY_USERNAME: ${{ secrets.commercial-repository-username }}
+          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.opensource-repository-password }}
+          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.opensource-repository-username }}
+          RVT_RELEASE_TYPE: ${{ vars.COMMERCIAL && 'commercial' || 'oss' }}
           RVT_STAGING: ${{ inputs.staging }}
-          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.repository-username }}
-          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.repository-password }}
+          RVT_VERSION: ${{ inputs.version }}
         run: ./gradlew spring-boot-release-verification-tests:test
       - name: Upload Build Reports on Failure
-        uses: actions/upload-artifact@v4
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: '**/build/reports/'
       - name: Send Notification
-        uses: ./spring-boot/.github/actions/send-notification
         if: always()
+        uses: ./send-notification/.github/actions/send-notification
         with:
-          webhook-url: ${{ secrets.google-chat-webhook-url }}
-          status: ${{ job.status }}
           run-name: ${{ format('{0} | Verification | {1}', github.ref_name, inputs.version) }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.google-chat-webhook-url }}

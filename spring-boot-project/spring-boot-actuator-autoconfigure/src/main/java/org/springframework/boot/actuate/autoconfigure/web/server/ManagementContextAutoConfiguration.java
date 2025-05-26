@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -45,7 +44,7 @@ import org.springframework.util.Assert;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-@EnableConfigurationProperties({ WebEndpointProperties.class, ManagementServerProperties.class })
+@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -112,7 +111,7 @@ public class ManagementContextAutoConfiguration {
 
 		@Bean
 		static ChildManagementContextInitializer childManagementContextInitializer(
-				ManagementContextFactory managementContextFactory, ApplicationContext parentContext) {
+				ManagementContextFactory managementContextFactory, AbstractApplicationContext parentContext) {
 			return new ChildManagementContextInitializer(managementContextFactory, parentContext);
 		}
 

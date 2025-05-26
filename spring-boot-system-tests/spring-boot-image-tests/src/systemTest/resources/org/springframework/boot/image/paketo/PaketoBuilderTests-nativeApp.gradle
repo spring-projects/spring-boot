@@ -9,15 +9,16 @@ plugins {
 repositories {
 	exclusiveContent {
 		forRepository {
-			maven { url '{systemTestMavenRepository}' }
+			maven {
+				url = '{systemTestMavenRepository}'
+			}
 		}
 		filter {
 			includeGroup "org.springframework.boot"
 		}
 	}
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
+	spring.mavenRepositories()
 }
 
 dependencies {
@@ -28,13 +29,7 @@ bootJar {
 	manifest {
 		attributes(
 				'Implementation-Version': '1.0.0',
-				'Implementation-Title': "Paketo Test"
+				'Implementation-Title': 'Paketo Test'
 		)
 	}
-}
-
-bootBuildImage {
-	environment = ['BP_NATIVE_IMAGE': 'true',
-					//see https://github.com/paketo-buildpacks/native-image/issues/321
-				   'BP_NATIVE_IMAGE_BUILD_ARGUMENTS': '-H:-AddAllFileSystemProviders']
 }

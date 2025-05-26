@@ -22,6 +22,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
@@ -112,9 +113,9 @@ class SqlInitializationAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
 			.run((context) -> {
-				BeanDefinition beanDefinition = context.getBeanFactory()
-					.getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(
+						"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
 				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
 			});
 	}
@@ -124,9 +125,9 @@ class SqlInitializationAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
 			.run((context) -> {
-				BeanDefinition beanDefinition = context.getBeanFactory()
-					.getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(
+						"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
 				assertThat(beanDefinition.getDependsOn())
 					.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
 			});

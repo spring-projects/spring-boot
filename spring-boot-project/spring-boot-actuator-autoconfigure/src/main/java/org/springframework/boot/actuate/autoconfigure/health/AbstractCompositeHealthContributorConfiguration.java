@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -46,8 +48,20 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 		this.indicatorFactory = indicatorFactory;
 	}
 
+	/**
+	 * Creates a composite contributor from the beans of the given {@code beanType}
+	 * retrieved from the given {@code beanFactory}.
+	 * @param beanFactory the bean factory from which the beans are retrieved
+	 * @param beanType the type of the beans that are retrieved
+	 * @return the contributor
+	 * @since 3.4.3
+	 */
+	protected final C createContributor(ConfigurableListableBeanFactory beanFactory, Class<B> beanType) {
+		return createContributor(SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, beanType));
+	}
+
 	protected final C createContributor(Map<String, B> beans) {
-		Assert.notEmpty(beans, "Beans must not be empty");
+		Assert.notEmpty(beans, "'beans' must not be empty");
 		if (beans.size() == 1) {
 			return createIndicator(beans.values().iterator().next());
 		}

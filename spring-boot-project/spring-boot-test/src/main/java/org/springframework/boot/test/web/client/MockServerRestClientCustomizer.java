@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 
 	private final Supplier<? extends RequestExpectationManager> expectationManagerSupplier;
 
-	private boolean bufferContent = false;
+	private boolean bufferContent;
 
 	public MockServerRestClientCustomizer() {
 		this(SimpleRequestExpectationManager::new);
@@ -80,7 +80,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 */
 	public MockServerRestClientCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		this(() -> BeanUtils.instantiateClass(expectationManager));
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+		Assert.notNull(expectationManager, "'expectationManager' must not be null");
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	 * @since 3.0.0
 	 */
 	public MockServerRestClientCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
-		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
+		Assert.notNull(expectationManagerSupplier, "'expectationManagerSupplier' must not be null");
 		this.expectationManagerSupplier = expectationManagerSupplier;
 	}
 

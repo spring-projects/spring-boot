@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,9 +101,9 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	protected void loadConfiguration(String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+		Assert.notNull(location, "'location' must not be null");
 		try {
-			Resource resource = new ApplicationResourceLoader().getResource(location);
+			Resource resource = ApplicationResourceLoader.get().getResource(location);
 			String configuration = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
 			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}", StringUtils.cleanPath(logFile.toString()));
@@ -176,7 +176,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link JavaLoggingSystem} if possible.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(Ordered.LOWEST_PRECEDENCE - 1024)
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils.isPresent("java.util.logging.LogManager",

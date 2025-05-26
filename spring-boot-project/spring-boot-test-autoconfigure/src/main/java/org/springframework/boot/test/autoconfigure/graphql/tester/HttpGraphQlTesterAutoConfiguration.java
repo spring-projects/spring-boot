@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class HttpGraphQlTesterAutoConfiguration {
 	@ConditionalOnBean(WebTestClient.class)
 	@ConditionalOnMissingBean
 	public HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
-		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getPath()).build();
+		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getHttp().getPath()).build();
 		return HttpGraphQlTester.create(mutatedWebTestClient);
 	}
 

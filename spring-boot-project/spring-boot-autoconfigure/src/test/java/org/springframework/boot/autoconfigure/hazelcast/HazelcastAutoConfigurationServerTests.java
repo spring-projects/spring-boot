@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 import com.hazelcast.config.Config;
@@ -37,7 +41,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -50,13 +54,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ClassPathExclusions("hazelcast-client-*.jar")
 class HazelcastAutoConfigurationServerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
+	@WithHazelcastXmlResource
 	void defaultConfigFile() {
 		// hazelcast.xml present in root classpath
 		this.contextRunner.run((context) -> {
@@ -201,6 +205,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredConfigUsesApplicationClassLoader() {
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
@@ -209,6 +214,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredConfigUsesSpringManagedContext() {
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
@@ -217,6 +223,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredConfigCanUseSpringAwareComponent() {
 		this.contextRunner.withPropertyValues("test.hazelcast.key=42").run((context) -> {
 			HazelcastInstance hz = context.getBean(HazelcastInstance.class);
@@ -226,14 +233,19 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredConfigWithoutHazelcastSpringDoesNotUseSpringManagedContext() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(SpringManagedContext.class)).run((context) -> {
-			Config config = context.getBean(HazelcastInstance.class).getConfig();
-			assertThat(config.getManagedContext()).isNull();
-		});
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(Thread.currentThread().getContextClassLoader(), SpringManagedContext.class))
+			.run((context) -> {
+				Config config = context.getBean(HazelcastInstance.class).getConfig();
+				assertThat(config.getManagedContext()).isNull();
+			});
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredContextCanOverrideManagementContextUsingCustomizer() {
 		this.contextRunner.withBean(TestHazelcastConfigCustomizer.class).run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
@@ -242,6 +254,7 @@ class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
+	@WithHazelcastXmlResource
 	void autoConfiguredConfigSetsHazelcastLoggingToSlf4j() {
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
@@ -319,6 +332,26 @@ class HazelcastAutoConfigurationServerTests {
 		public void customize(Config config) {
 			config.setManagedContext(null);
 		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "hazelcast.xml", content = """
+			<hazelcast
+				xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-5.0.xsd"
+				xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<instance-name>default-instance</instance-name>
+				<map name="defaultCache" />
+				<network>
+					<join>
+						<auto-detection enabled="false" />
+						<multicast enabled="false" />
+					</join>
+				</network>
+			</hazelcast>
+			""")
+	@interface WithHazelcastXmlResource {
 
 	}
 

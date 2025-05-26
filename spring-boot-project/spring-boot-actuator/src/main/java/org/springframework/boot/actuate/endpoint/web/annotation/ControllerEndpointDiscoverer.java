@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -60,7 +61,7 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	 */
 	public ControllerEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableControllerEndpoint>> filters) {
-		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters);
+		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters, Collections.emptyList());
 		this.endpointPathMappers = endpointPathMappers;
 	}
 
@@ -71,10 +72,10 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	@Override
-	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath, enabledByDefault);
+		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath, defaultAccess);
 	}
 
 	@Override
@@ -86,6 +87,11 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ControllerEndpoints must not declare operations");
+	}
+
+	@Override
+	protected boolean isInvocable(ExposableControllerEndpoint endpoint) {
+		return true;
 	}
 
 	static class ControllerEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {

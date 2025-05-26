@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,24 @@ class SslOptionsTests {
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
 		assertThat(options.getCiphers()).isNull();
 		assertThat(options.getEnabledProtocols()).isNull();
+	}
+
+	@Test
+	void isSpecifiedWhenHasCiphers() {
+		SslOptions options = SslOptions.of(Set.of("a", "b", "c"), null);
+		assertThat(options.isSpecified()).isTrue();
+	}
+
+	@Test
+	void isSpecifiedWhenHasEnabledProtocols() {
+		SslOptions options = SslOptions.of(null, Set.of("d", "e", "f"));
+		assertThat(options.isSpecified()).isTrue();
+	}
+
+	@Test
+	void isSpecifiedWhenHasNoCiphersOrEnabledProtocols() {
+		SslOptions options = SslOptions.NONE;
+		assertThat(options.isSpecified()).isFalse();
 	}
 
 }

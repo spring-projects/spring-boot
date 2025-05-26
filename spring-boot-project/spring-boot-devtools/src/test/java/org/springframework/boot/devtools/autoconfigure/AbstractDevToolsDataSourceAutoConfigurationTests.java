@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,32 +51,35 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
-		DataSource dataSource = context.getBean(DataSource.class);
-		Statement statement = configureDataSourceBehavior(dataSource);
-		then(statement).should(never()).execute("SHUTDOWN");
-	}
-
-	@Test
-	void multipleDataSourcesAreIgnored() throws Exception {
-		ConfigurableApplicationContext context = getContext(
-				() -> createContext(MultipleDataSourcesConfiguration.class));
-		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
-		for (DataSource dataSource : dataSources) {
+		try (ConfigurableApplicationContext context = getContext(
+				() -> createContext(SingleDataSourceConfiguration.class))) {
+			DataSource dataSource = context.getBean(DataSource.class);
 			Statement statement = configureDataSourceBehavior(dataSource);
 			then(statement).should(never()).execute("SHUTDOWN");
 		}
 	}
 
 	@Test
+	void multipleDataSourcesAreIgnored() throws Exception {
+		try (ConfigurableApplicationContext context = getContext(
+				() -> createContext(MultipleDataSourcesConfiguration.class))) {
+			Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
+			for (DataSource dataSource : dataSources) {
+				Statement statement = configureDataSourceBehavior(dataSource);
+				then(statement).should(never()).execute("SHUTDOWN");
+			}
+		}
+	}
+
+	@Test
 	void emptyFactoryMethodMetadataIgnored() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		DataSource dataSource = mock(DataSource.class);
-		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
-		context.registerBeanDefinition("dataSource", beanDefinition);
-		context.register(DevToolsDataSourceAutoConfiguration.class);
-		context.refresh();
-		context.close();
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			DataSource dataSource = mock(DataSource.class);
+			AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
+			context.registerBeanDefinition("dataSource", beanDefinition);
+			context.register(DevToolsDataSourceAutoConfiguration.class);
+			context.refresh();
+		}
 	}
 
 	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {

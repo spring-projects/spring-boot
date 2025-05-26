@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import org.apache.catalina.core.AprLifecycleListener;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.util.Assert;
 
 /**
  * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Tomcat reactive
@@ -38,7 +43,27 @@ public class TomcatReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.setDisableMBeanRegistry(!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
+		Tomcat tomcatProperties = this.serverProperties.getTomcat();
+		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
+		factory.setUseApr(getUseApr(tomcatProperties.getUseApr()));
+	}
+
+	private boolean getUseApr(UseApr useApr) {
+		return switch (useApr) {
+			case ALWAYS -> {
+				Assert.state(isAprAvailable(), "APR has been configured to 'ALWAYS', but it's not available");
+				yield true;
+			}
+			case WHEN_AVAILABLE -> isAprAvailable();
+			case NEVER -> false;
+		};
+	}
+
+	private boolean isAprAvailable() {
+		// At least one instance of AprLifecycleListener has to be created for
+		// isAprAvailable() to work
+		new AprLifecycleListener();
+		return AprLifecycleListener.isAprAvailable();
 	}
 
 }

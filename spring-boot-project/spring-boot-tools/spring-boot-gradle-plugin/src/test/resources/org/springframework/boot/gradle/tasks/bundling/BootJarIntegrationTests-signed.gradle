@@ -9,7 +9,9 @@ bootJar {
 
 repositories {
 	mavenCentral()
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {

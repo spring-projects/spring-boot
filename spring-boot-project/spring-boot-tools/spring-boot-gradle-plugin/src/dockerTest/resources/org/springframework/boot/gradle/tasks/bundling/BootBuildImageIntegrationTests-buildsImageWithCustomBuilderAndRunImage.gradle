@@ -5,7 +5,7 @@ plugins {
 
 bootBuildImage {
 	imageName = "example/test-image-custom"
-	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
-	runImage = "paketobuildpacks/run-jammy-tiny"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.2"
+	runImage = "paketobuildpacks/run-noble-tiny"
 	pullPolicy = "IF_NOT_PRESENT"
 }

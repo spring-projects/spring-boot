@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
-import java.lang.reflect.Constructor;
+import java.util.function.Function;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.client.ActiveMQClient;
@@ -53,18 +53,19 @@ class ArtemisConnectionFactoryFactory {
 
 	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails) {
-		Assert.notNull(beanFactory, "BeanFactory must not be null");
-		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
+		Assert.notNull(beanFactory, "'beanFactory' must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
+		Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.connectionDetails = connectionDetails;
 	}
 
-	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
+	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Function<String, T> nativeFactoryCreator,
+			Function<ServerLocator, T> embeddedFactoryCreator) {
 		try {
 			startEmbeddedJms();
-			return doCreateConnectionFactory(factoryClass);
+			return doCreateConnectionFactory(nativeFactoryCreator, embeddedFactoryCreator);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to create ActiveMQConnectionFactory", ex);
@@ -84,15 +85,16 @@ class ArtemisConnectionFactoryFactory {
 		}
 	}
 
-	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
+	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Function<String, T> nativeFactoryCreator,
+			Function<ServerLocator, T> embeddedFactoryCreator) throws Exception {
 		ArtemisMode mode = this.connectionDetails.getMode();
 		if (mode == null) {
 			mode = deduceMode();
 		}
 		if (mode == ArtemisMode.EMBEDDED) {
-			return createEmbeddedConnectionFactory(factoryClass);
+			return createEmbeddedConnectionFactory(embeddedFactoryCreator);
 		}
-		return createNativeConnectionFactory(factoryClass);
+		return createNativeConnectionFactory(nativeFactoryCreator);
 	}
 
 	/**
@@ -115,13 +117,13 @@ class ArtemisConnectionFactoryFactory {
 		return false;
 	}
 
-	private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(Class<T> factoryClass)
-			throws Exception {
+	private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(
+			Function<ServerLocator, T> factoryCreator) throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
 					InVMConnectorFactory.class.getName(), this.properties.getEmbedded().generateTransportParameters());
-			ServerLocator serviceLocator = ActiveMQClient.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class).newInstance(serviceLocator);
+			ServerLocator serverLocator = ActiveMQClient.createServerLocatorWithoutHA(transportConfiguration);
+			return factoryCreator.apply(serverLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
@@ -129,9 +131,8 @@ class ArtemisConnectionFactoryFactory {
 		}
 	}
 
-	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
-			throws Exception {
-		T connectionFactory = newNativeConnectionFactory(factoryClass);
+	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Function<String, T> factoryCreator) {
+		T connectionFactory = newNativeConnectionFactory(factoryCreator);
 		String user = this.connectionDetails.getUser();
 		if (StringUtils.hasText(user)) {
 			connectionFactory.setUser(user);
@@ -140,12 +141,10 @@ class ArtemisConnectionFactoryFactory {
 		return connectionFactory;
 	}
 
-	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
+	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Function<String, T> factoryCreator) {
 		String brokerUrl = StringUtils.hasText(this.connectionDetails.getBrokerUrl())
 				? this.connectionDetails.getBrokerUrl() : DEFAULT_BROKER_URL;
-		Constructor<T> constructor = factoryClass.getConstructor(String.class);
-		return constructor.newInstance(brokerUrl);
-
+		return factoryCreator.apply(brokerUrl);
 	}
 
 }

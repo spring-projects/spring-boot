@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfigurationTests.DefaultCacheConfiguration;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -49,6 +50,34 @@ class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfiguration
 	}
 
 	@Test
+	@WithResource(name = "ehcache3.xml", content = """
+			<config
+					xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+					xmlns='http://www.ehcache.org/v3'
+					xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+					xsi:schemaLocation="
+			        http://www.ehcache.org/v3 https://www.ehcache.org/schema/ehcache-core-3.10.xsd
+			        http://www.ehcache.org/v3/jsr107 https://www.ehcache.org/schema/ehcache-107-ext-3.10.xsd">
+
+				<cache-template name="example">
+					<heap unit="entries">200</heap>
+				</cache-template>
+
+				<cache alias="foo" uses-template="example">
+					<expiry>
+						<ttl unit="seconds">600</ttl>
+					</expiry>
+					<jsr107:mbeans enable-statistics="true"/>
+				</cache>
+
+				<cache alias="bar" uses-template="example">
+					<expiry>
+						<ttl unit="seconds">400</ttl>
+					</expiry>
+				</cache>
+
+			</config>
+			""")
 	void ehcache3AsJCacheWithConfig() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";

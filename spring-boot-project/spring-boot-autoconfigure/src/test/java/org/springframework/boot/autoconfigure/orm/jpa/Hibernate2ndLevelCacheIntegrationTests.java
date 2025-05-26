@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
+import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -41,15 +41,12 @@ class Hibernate2ndLevelCacheIntegrationTests {
 		.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	void hibernate2ndLevelCacheWithJCacheAndHazelcast() {
-		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
-		String configLocation = "classpath:hazelcast.xml";
+	void hibernate2ndLevelCacheWithJCacheAndEhCache() {
+		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		this.contextRunner
 			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.jcache.config=" + configLocation,
 					"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
-					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
-					"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
+					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn)
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 

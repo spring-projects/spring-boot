@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -43,7 +44,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.servlet.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
@@ -127,12 +127,15 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
-	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
+	@Deprecated(since = "3.3.5", forRemoval = true)
+	public org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
-			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties,
+			EndpointAccessResolver endpointAccessResolver) {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
-		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
-				corsProperties.toCorsConfiguration());
+		return new org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping(
+				endpointMapping, controllerEndpointsSupplier.getEndpoints(), corsProperties.toCorsConfiguration(),
+				endpointAccessResolver);
 	}
 
 	@Bean

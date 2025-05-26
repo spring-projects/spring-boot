@@ -5,7 +5,9 @@ plugins {
 
 repositories {
 	mavenCentral()
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {
@@ -13,13 +15,13 @@ dependencies {
 	implementation("org.apache.commons:commons-lang3:3.9")
 }
 
-task explode(type: Sync) {
+tasks.register("explode", Sync) {
 	dependsOn(bootJar)
 	destinationDir = layout.buildDirectory.dir("exploded").get().asFile
 	from zipTree(files(bootJar).singleFile)
 }
 
-task launch(type: JavaExec) {
+tasks.register("launch", JavaExec) {
 	classpath = files(explode)
 	mainClass = 'org.springframework.boot.loader.launch.JarLauncher'
 }

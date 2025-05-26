@@ -48,20 +48,22 @@ So instead, when using Spring Boot to create native images, a closed-world is as
 A closed-world assumption implies, besides xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments[the limitations created by GraalVM itself], the following restrictions:
 
 * The beans defined in your application cannot change at runtime, meaning:
-- The Spring `@Profile` annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
-- Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
+- The Spring javadoc:org.springframework.context.annotation.Profile[format=annotation] annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
+- Properties that change if a bean is created are not supported (for example, javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation] and `.enabled` properties).
 
 When these restrictions are in place, it becomes possible for Spring to perform ahead-of-time processing during build-time and generate additional assets that GraalVM can use.
 A Spring AOT processed application will typically generate:
 
 * Java source code
-* Bytecode (for dynamic proxies etc)
-* GraalVM JSON hint files:
+* Bytecode (for dynamic proxies, etc.)
+* GraalVM JSON hint files in `+META-INF/native-image/{groupId}/{artifactId}/+`:
  - Resource hints (`resource-config.json`)
  - Reflection hints (`reflect-config.json`)
  - Serialization hints (`serialization-config.json`)
  - Java Proxy Hints (`proxy-config.json`)
  - JNI Hints (`jni-config.json`)
+
+If the generated hints are not sufficient, you can also xref:packaging/native-image/advanced-topics.adoc#packaging.native-image.advanced.custom-hints[provide your own].
 
 
 
@@ -73,19 +75,19 @@ Internally, Spring Framework uses two distinct concepts to manage beans.
 There are bean instances, which are the actual instances that have been created and can be injected into other beans.
 There are also bean definitions which are used to define attributes of a bean and how its instance should be created.
 
-If we take a typical `@Configuration` class:
+If we take a typical javadoc:org.springframework.context.annotation.Configuration[format=annotation] class:
 
 include-code::MyConfiguration[]
 
-The bean definition is created by parsing the `@Configuration` class and finding the `@Bean` methods.
-In the above example, we're defining a `BeanDefinition` for a singleton bean named `myBean`.
-We're also creating a `BeanDefinition` for the `MyConfiguration` class itself.
+The bean definition is created by parsing the javadoc:org.springframework.context.annotation.Configuration[format=annotation] class and finding the javadoc:org.springframework.context.annotation.Bean[format=annotation] methods.
+In the above example, we're defining a javadoc:org.springframework.beans.factory.config.BeanDefinition[] for a singleton bean named `myBean`.
+We're also creating a javadoc:org.springframework.beans.factory.config.BeanDefinition[] for the `MyConfiguration` class itself.
 
 When the `myBean` instance is required, Spring knows that it must invoke the `myBean()` method and use the result.
-When running on the JVM, `@Configuration` class parsing happens when your application starts and `@Bean` methods are invoked using reflection.
+When running on the JVM, javadoc:org.springframework.context.annotation.Configuration[format=annotation] class parsing happens when your application starts and javadoc:org.springframework.context.annotation.Bean[format=annotation] methods are invoked using reflection.
 
 When creating a native image, Spring operates in a different way.
-Rather than parsing `@Configuration` classes and generating bean definitions at runtime, it does it at build-time.
+Rather than parsing javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes and generating bean definitions at runtime, it does it at build-time.
 Once the bean definitions have been discovered, they are processed and converted into source code that can be analyzed by the GraalVM compiler.
 
 The Spring AOT process would convert the configuration class above to code like this:
@@ -94,18 +96,18 @@ include-code::MyConfiguration__BeanDefinitions[]
 
 NOTE: The exact code generated may differ depending on the nature of your bean definitions.
 
-You can see above that the generated code creates equivalent bean definitions to the `@Configuration` class, but in a direct way that can be understood by GraalVM.
+You can see above that the generated code creates equivalent bean definitions to the javadoc:org.springframework.context.annotation.Configuration[format=annotation] class, but in a direct way that can be understood by GraalVM.
 
 There is a bean definition for the `myConfiguration` bean, and one for `myBean`.
-When a `myBean` instance is required, a `BeanInstanceSupplier` is called.
+When a `myBean` instance is required, a javadoc:org.springframework.beans.factory.aot.BeanInstanceSupplier[] is called.
 This supplier will invoke the `myBean()` method on the `myConfiguration` bean.
 
 NOTE: During Spring AOT processing, your application is started up to the point that bean definitions are available.
 Bean instances are not created during the AOT processing phase.
 
 Spring AOT will generate code like this for all your bean definitions.
-It will also generate code when bean post-processing is required (for example, to call `@Autowired` methods).
-An `ApplicationContextInitializer` will also be generated which will be used by Spring Boot to initialize the `ApplicationContext` when an AOT processed application is actually run.
+It will also generate code when bean post-processing is required (for example, to call javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] methods).
+An javadoc:org.springframework.context.ApplicationContextInitializer[] will also be generated which will be used by Spring Boot to initialize the javadoc:org.springframework.context.ApplicationContext[] when an AOT processed application is actually run.
 
 TIP: Although AOT generated source code can be verbose, it is quite readable and can be helpful when debugging an application.
 Generated source files can be found in `target/spring-aot/main/sources` when using Maven and `build/generated/aotSources` with Gradle.

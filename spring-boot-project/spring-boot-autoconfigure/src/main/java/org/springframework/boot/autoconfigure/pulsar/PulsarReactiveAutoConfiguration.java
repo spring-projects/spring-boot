@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.apache.pulsar.reactive.client.producercache.CaffeineShadedProducerCac
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -90,7 +90,7 @@ public class PulsarReactiveAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ProducerCacheProvider.class)
 	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
-	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.producer.cache.enabled", matchIfMissing = true)
 	CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider() {
 		PulsarProperties.Producer.Cache properties = this.properties.getProducer().getCache();
 		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
@@ -99,7 +99,7 @@ public class PulsarReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.producer.cache.enabled", matchIfMissing = true)
 	ReactiveMessageSenderCache reactivePulsarMessageSenderCache(
 			ObjectProvider<ProducerCacheProvider> producerCacheProvider) {
 		return reactivePulsarMessageSenderCache(producerCacheProvider.getIfAvailable());
@@ -164,12 +164,15 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ReactivePulsarConsumerFactory<Object> reactivePulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver) {
+			TopicResolver topicResolver, PulsarContainerFactoryCustomizers containerFactoryCustomizers) {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
-		return new DefaultReactivePulsarListenerContainerFactory<>(reactivePulsarConsumerFactory, containerProperties);
+		DefaultReactivePulsarListenerContainerFactory<?> containerFactory = new DefaultReactivePulsarListenerContainerFactory<>(
+				reactivePulsarConsumerFactory, containerProperties);
+		containerFactoryCustomizers.customize(containerFactory);
+		return containerFactory;
 	}
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Safeer Ansari
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.mongodb")
+@ConfigurationProperties("spring.data.mongodb")
 public class MongoProperties {
 
 	/**
@@ -52,17 +52,22 @@ public class MongoProperties {
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
 
 	/**
-	 * Mongo server host. Cannot be set with URI.
+	 * Protocol to be used for the MongoDB connection. Ignored if 'uri' is set.
+	 */
+	private String protocol = "mongodb";
+
+	/**
+	 * Mongo server host. Ignored if 'uri' is set.
 	 */
 	private String host;
 
 	/**
-	 * Mongo server port. Cannot be set with URI.
+	 * Mongo server port. Ignored if 'uri' is set.
 	 */
 	private Integer port = null;
 
 	/**
-	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.
+	 * Additional server hosts. Ignored if 'uri' is set or if 'host' is omitted.
 	 * Additional hosts will use the default mongo port of 27017. If you want to use a
 	 * different port you can use the "host:port" syntax.
 	 */
@@ -86,17 +91,17 @@ public class MongoProperties {
 	private final Gridfs gridfs = new Gridfs();
 
 	/**
-	 * Login user of the mongo server. Cannot be set with URI.
+	 * Login user of the mongo server. Ignored if 'uri' is set.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the mongo server. Cannot be set with URI.
+	 * Login password of the mongo server. Ignored if 'uri' is set.
 	 */
 	private char[] password;
 
 	/**
-	 * Required replica set name for the cluster. Cannot be set with URI.
+	 * Required replica set name for the cluster. Ignored if 'uri' is set.
 	 */
 	private String replicaSetName;
 
@@ -116,6 +121,14 @@ public class MongoProperties {
 	 * Whether to enable auto-index creation.
 	 */
 	private Boolean autoIndexCreation;
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getProtocol() {
+		return this.protocol;
+	}
 
 	public String getHost() {
 		return this.host;

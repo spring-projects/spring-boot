@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -11,10 +10,11 @@ description = "Spring Boot Actuator"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	
+
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.springframework:spring-test")
@@ -39,9 +39,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	optional("io.prometheus:prometheus-metrics-exposition-formats")
-	optional("io.prometheus:simpleclient_pushgateway") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.undertow:undertow-servlet")
@@ -93,9 +91,9 @@ dependencies {
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.session:spring-session-core")
 
+	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.micrometer:micrometer-observation-test")

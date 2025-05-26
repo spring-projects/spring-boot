@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,10 +89,7 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 	}
 
 	private static int withinPercentageBounds(int value) {
-		if (value < 0) {
-			return 0;
-		}
-		return Math.min(value, 100);
+		return (value < 0) ? 0 : Math.min(value, 100);
 	}
 
 	/**
@@ -115,8 +112,7 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 		}
 
 		private int updateProgress(int current, ProgressDetail detail) {
-			int result = withinPercentageBounds((int) ((100.0 / detail.getTotal()) * detail.getCurrent()));
-			return Math.max(result, current);
+			return Math.max(detail.asPercentage(), current);
 		}
 
 		void finish() {
@@ -124,7 +120,7 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 		}
 
 		int getProgress() {
-			return withinPercentageBounds((this.progressByStatus.values().stream().mapToInt(Integer::valueOf).sum())
+			return withinPercentageBounds((this.progressByStatus.values().stream().mapToInt(Integer::intValue).sum())
 					/ this.progressByStatus.size());
 		}
 

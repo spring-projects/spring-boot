@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,6 +28,8 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -83,12 +86,14 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
-	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
+	public HealthContributor dbHealthContributor(ConfigurableListableBeanFactory beanFactory,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
+		Map<String, DataSource> dataSources = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory,
+				DataSource.class, false, true);
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
 				.stream()
-				.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
+				.filter((e) -> !isRoutingDataSource(e.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
 		}
@@ -96,7 +101,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(Map<String, DataSource> beans) {
-		Assert.notEmpty(beans, "Beans must not be empty");
+		Assert.notEmpty(beans, "'beans' must not be empty");
 		if (beans.size() == 1) {
 			return createContributor(beans.values().iterator().next());
 		}
@@ -104,8 +109,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(DataSource source) {
-		if (source instanceof AbstractRoutingDataSource routingDataSource) {
-			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
+		if (isRoutingDataSource(source)) {
+			return new RoutingDataSourceHealthContributor(extractRoutingDataSource(source), this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -113,6 +118,30 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
+	}
+
+	private static boolean isRoutingDataSource(DataSource dataSource) {
+		if (dataSource instanceof AbstractRoutingDataSource) {
+			return true;
+		}
+		try {
+			return dataSource.isWrapperFor(AbstractRoutingDataSource.class);
+		}
+		catch (SQLException ex) {
+			return false;
+		}
+	}
+
+	private static AbstractRoutingDataSource extractRoutingDataSource(DataSource dataSource) {
+		if (dataSource instanceof AbstractRoutingDataSource routingDataSource) {
+			return routingDataSource;
+		}
+		try {
+			return dataSource.unwrap(AbstractRoutingDataSource.class);
+		}
+		catch (SQLException ex) {
+			throw new IllegalStateException("Failed to unwrap AbstractRoutingDataSource from " + dataSource, ex);
+		}
 	}
 
 	/**

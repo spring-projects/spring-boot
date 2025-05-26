@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * Annotation that can be used to indicate which constructor to use when binding
  * configuration properties using constructor arguments rather than by calling setters. A
  * single parameterized constructor implicitly indicates that constructor binding should
- * be used unless the constructor is annotated with `@Autowired`.
+ * be used unless the constructor is annotated with {@code @Autowired}.
  *
  * @author Phillip Webb
  * @since 3.0.0

@@ -1,5 +1,4 @@
 plugins {
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.maven-repository"
 }
@@ -236,6 +235,9 @@ publishing.publications.withType(MavenPublication) {
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ServicesResourceTransformer')
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
 												delegate.mainClass('${start-class}')
+												manifestEntries {
+													delegate.'Multi-Release'('true')
+												}
 											}
 										}
 									}
@@ -265,13 +267,6 @@ publishing.publications.withType(MavenPublication) {
 								plugin {
 									delegate.groupId('org.springframework.boot')
 									delegate.artifactId('spring-boot-maven-plugin')
-									configuration {
-										image {
-											env {
-												delegate.BP_NATIVE_IMAGE("true")
-											}
-										}
-									}
 									executions {
 										execution {
 											delegate.id('process-aot')
@@ -311,31 +306,33 @@ publishing.publications.withType(MavenPublication) {
 						}
 					}
 					build {
-						plugins {
-							plugin {
-								delegate.groupId('org.springframework.boot')
-								delegate.artifactId('spring-boot-maven-plugin')
-								executions {
-									execution {
-										delegate.id('process-test-aot')
-										goals {
-											delegate.goal('process-test-aot')
+						pluginManagement {
+							plugins {
+								plugin {
+									delegate.groupId('org.springframework.boot')
+									delegate.artifactId('spring-boot-maven-plugin')
+									executions {
+										execution {
+											delegate.id('process-test-aot')
+											goals {
+												delegate.goal('process-test-aot')
+											}
 										}
 									}
 								}
-							}
-							plugin {
-								delegate.groupId('org.graalvm.buildtools')
-								delegate.artifactId('native-maven-plugin')
-								configuration {
-									delegate.classesDirectory('${project.build.outputDirectory}')
-									delegate.requiredVersion('22.3')
-								}
-								executions {
-									execution {
-										delegate.id('native-test')
-										goals {
-											delegate.goal('test')
+								plugin {
+									delegate.groupId('org.graalvm.buildtools')
+									delegate.artifactId('native-maven-plugin')
+									configuration {
+										delegate.classesDirectory('${project.build.outputDirectory}')
+										delegate.requiredVersion('22.3')
+									}
+									executions {
+										execution {
+											delegate.id('native-test')
+											goals {
+												delegate.goal('test')
+											}
 										}
 									}
 								}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,24 @@ package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.
 
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.MongoDBContainer
 
 @TestConfiguration(proxyBeanMethods = false)
 class MyContainersConfiguration {
 
 	@Bean
-	fun mongoDbContainer(properties: DynamicPropertyRegistry): MongoDBContainer {
-		var container = MongoDBContainer("mongo:5.0")
-		properties.add("spring.data.mongodb.host", container::getHost)
-		properties.add("spring.data.mongodb.port", container::getFirstMappedPort)
-		return container
+	fun mongoDbContainer(): MongoDBContainer {
+		return MongoDBContainer("mongo:5.0")
+	}
+	
+	@Bean
+	fun mongoDbProperties(container: MongoDBContainer): DynamicPropertyRegistrar {
+		return DynamicPropertyRegistrar { properties ->
+			properties.add("spring.data.mongodb.host") { container.host }
+			properties.add("spring.data.mongodb.port") { container.firstMappedPort }
+		}
 	}
 
 }
+

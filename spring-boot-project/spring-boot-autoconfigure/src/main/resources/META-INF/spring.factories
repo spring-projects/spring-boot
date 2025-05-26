@@ -27,6 +27,7 @@ org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer,
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jooq.JaxbNotAvailableExceptionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MissingR2dbcPoolDependencyFailureAnalyzer,\
@@ -37,8 +38,8 @@ org.springframework.boot.autoconfigure.ssl.BundleContentNotWatchableFailureAnaly
 # Template Availability Providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
-org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
 

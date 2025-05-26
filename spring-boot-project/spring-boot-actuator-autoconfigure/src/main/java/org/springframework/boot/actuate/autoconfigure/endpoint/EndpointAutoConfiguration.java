@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -71,6 +72,12 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public CachingOperationInvokerAdvisor endpointCachingOperationInvokerAdvisor(Environment environment) {
 		return new CachingOperationInvokerAdvisor(new EndpointIdTimeToLivePropertyFunction(environment));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(EndpointAccessResolver.class)
+	PropertiesEndpointAccessResolver propertiesEndpointAccessResolver(Environment environment) {
+		return new PropertiesEndpointAccessResolver(environment);
 	}
 
 }

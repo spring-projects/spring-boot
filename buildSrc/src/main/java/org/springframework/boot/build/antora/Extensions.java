@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.build.antora;
 
-import java.nio.file.Path;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,7 +84,7 @@ public final class Extensions {
 
 	static final class AntoraExtensionsConfiguration {
 
-		private Map<String, Map<String, Object>> extensions = new TreeMap<>();
+		private final Map<String, Map<String, Object>> extensions = new TreeMap<>();
 
 		private AntoraExtensionsConfiguration(List<String> names) {
 			names.forEach((name) -> this.extensions.put(name, null));
@@ -158,18 +158,22 @@ public final class Extensions {
 				customize("version_file", versionFile);
 			}
 
-			void locations(Path... locations) {
-				locations(Arrays.stream(locations).map(Path::toString).toList());
-			}
-
-			private void locations(List<String> locations) {
+			void locations(List<String> locations) {
 				customize("locations", locations);
 			}
 
-			void alwaysInclude(Map<String, String> alwaysInclude) {
+			void alwaysInclude(List<AlwaysInclude> alwaysInclude) {
 				if (alwaysInclude != null && !alwaysInclude.isEmpty()) {
-					customize("always_include", List.of(new TreeMap<>(alwaysInclude)));
+					customize("always_include", alwaysInclude.stream().map(AlwaysInclude::asMap).toList());
 				}
+			}
+
+			record AlwaysInclude(String name, String classifier) implements Serializable {
+
+				private Map<String, String> asMap() {
+					return new TreeMap<>(Map.of("name", name(), "classifier", classifier()));
+				}
+
 			}
 
 		}

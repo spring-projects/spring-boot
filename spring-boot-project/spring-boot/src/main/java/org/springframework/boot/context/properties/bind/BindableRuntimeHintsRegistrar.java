@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.util.stream.StreamSupport;
 
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -58,6 +60,8 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.0.0
  */
 public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+
+	private static final Log logger = LogFactory.getLog(BindableRuntimeHintsRegistrar.class);
 
 	private final Bindable<?>[] bindables;
 
@@ -89,7 +93,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 */
 	public void registerHints(RuntimeHints hints) {
 		for (Bindable<?> bindable : this.bindables) {
-			new Processor(bindable).process(hints.reflection());
+			try {
+				new Processor(bindable).process(hints.reflection());
+			}
+			catch (Exception ex) {
+				logger.debug("Skipping hints for " + bindable, ex);
+			}
 		}
 	}
 
@@ -99,7 +108,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
 	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Iterable<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return forTypes(StreamSupport.stream(types.spliterator(), false).toArray(Class<?>[]::new));
 	}
 
@@ -119,7 +128,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @since 3.0.8
 	 */
 	public static BindableRuntimeHintsRegistrar forBindables(Iterable<Bindable<?>> bindables) {
-		Assert.notNull(bindables, "Bindables must not be null");
+		Assert.notNull(bindables, "'bindables' must not be null");
 		return forBindables(StreamSupport.stream(bindables.spliterator(), false).toArray(Bindable[]::new));
 	}
 
@@ -211,6 +220,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				Method setter = property.getSetter();
 				if (setter != null) {
 					hints.registerMethod(setter, ExecutableMode.INVOKE);
+				}
+				Field field = property.getField();
+				if (field != null) {
+					hints.registerField(field);
 				}
 				handleProperty(hints, name, property.getType());
 			});

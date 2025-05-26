@@ -3,10 +3,10 @@
 
 Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` starter.
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
-If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
+If Spring Integration is available on your classpath, it is initialized through the javadoc:org.springframework.integration.config.EnableIntegration[format=annotation] annotation.
 
-Spring Integration polling logic relies xref:features/task-execution-and-scheduling.adoc[on the auto-configured `TaskScheduler`].
-The default `PollerMetadata` (poll unbounded number of messages every second) can be customized with `spring.integration.poller.*` configuration properties.
+Spring Integration polling logic relies xref:features/task-execution-and-scheduling.adoc[on the auto-configured javadoc:org.springframework.scheduling.TaskScheduler[]].
+The default javadoc:org.springframework.integration.scheduling.PollerMetadata[] (poll unbounded number of messages every second) can be customized with `spring.integration.poller.*` configuration properties.
 
 Spring Boot also configures some features that are triggered by the presence of additional Spring Integration modules.
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.
@@ -20,10 +20,10 @@ spring:
       initialize-schema: "always"
 ----
 
-If `spring-integration-rsocket` is available, developers can configure an RSocket server using `spring.rsocket.server.*` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
-This infrastructure can handle Spring Integration RSocket channel adapters and `@MessageMapping` handlers (given `spring.integration.rsocket.server.message-mapping-enabled` is configured).
+If `spring-integration-rsocket` is available, developers can configure an RSocket server using `spring.rsocket.server.*` properties and let it use javadoc:org.springframework.integration.rsocket.IntegrationRSocketEndpoint[] or javadoc:org.springframework.integration.rsocket.outbound.RSocketOutboundGateway[] components to handle incoming RSocket messages.
+This infrastructure can handle Spring Integration RSocket channel adapters and javadoc:org.springframework.messaging.handler.annotation.MessageMapping[format=annotation] handlers (given `spring.integration.rsocket.server.message-mapping-enabled` is configured).
 
-Spring Boot can also auto-configure an `ClientRSocketConnector` using configuration properties:
+Spring Boot can also auto-configure an javadoc:org.springframework.integration.rsocket.ClientRSocketConnector[] using configuration properties:
 
 [configprops,yaml]
 ----

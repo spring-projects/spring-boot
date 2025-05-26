@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -103,6 +104,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	@WithResource(name = "application.properties", content = "property=value")
+	@WithResource(name = "application-dev.properties", content = "property=dev-value")
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
 		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();

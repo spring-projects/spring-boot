@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.StringUtils;
 
 /**
  * Image details as returned from {@code Docker inspect}.
@@ -97,7 +98,7 @@ public class Image extends MappedObject {
 	 * @return the image OS
 	 */
 	public String getOs() {
-		return (this.os != null) ? this.os : "linux";
+		return (StringUtils.hasText(this.os)) ? this.os : "linux";
 	}
 
 	/**

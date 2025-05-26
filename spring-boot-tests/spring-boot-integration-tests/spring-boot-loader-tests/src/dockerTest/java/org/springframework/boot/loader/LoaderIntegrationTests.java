@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,15 @@ class LoaderIntegrationTests {
 			.withLogConsumer(this.output)
 			.withCopyFileToContainer(findApplication(name, classifier), "/app.jar")
 			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
-			.withCommand("java", "-jar", "app.jar");
+			.withCommand(command());
+	}
+
+	private String[] command() {
+		List<String> command = new ArrayList<>();
+		command.add("java");
+		command.add("-jar");
+		command.add("app.jar");
+		return command.toArray(new String[0]);
 	}
 
 	private MountableFile findApplication(String name, String classifier) {
@@ -111,7 +119,8 @@ class LoaderIntegrationTests {
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_ONE));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_TWO));
-		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_THREE));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_THREE));
+		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_FOUR));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 

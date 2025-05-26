@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1", "app.datasource.max-total=42" })
+@SpringBootTest(properties = { "app.datasource.jdbc-url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
+		"app.datasource.maximum-pool-size=42" })
 @Import(MyAdditionalDataSourceConfiguration.class)
 class MyDataSourcesConfigurationTests {
 
@@ -56,9 +57,10 @@ class MyDataSourcesConfigurationTests {
 		assertThat(this.context.getBean("dataSource")).isSameAs(this.dataSource);
 		assertThat(this.dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 		assertThat(this.context.getBean("secondDataSource")).isSameAs(this.secondDataSource);
-		assertThat(this.secondDataSource).extracting((dataSource) -> ((BasicDataSource) dataSource).getUrl())
+		assertThat(this.secondDataSource).extracting((dataSource) -> ((HikariDataSource) dataSource).getJdbcUrl())
 			.isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
-		assertThat(this.secondDataSource).extracting((dataSource) -> ((BasicDataSource) dataSource).getMaxTotal())
+		assertThat(this.secondDataSource)
+			.extracting((dataSource) -> ((HikariDataSource) dataSource).getMaximumPoolSize())
 			.isEqualTo(42);
 	}
 

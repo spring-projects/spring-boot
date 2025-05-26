@@ -1,26 +1,26 @@
 name: Sync to Maven Central
-description: Syncs a release to Maven Central and waits for it to be available for use
+description: 'Syncs a release to Maven Central and waits for it to be available for use'
 inputs:
   jfrog-cli-config-token:
     description: 'Config token for the JFrog CLI'
     required: true
-  spring-boot-version:
-    description: 'The version of Spring Boot that is being synced to Central'
-    required: true
-  ossrh-s01-token-username:
-    description: 'Username for authentication with s01.oss.sonatype.org'
+  ossrh-s01-staging-profile:
+    description: 'Staging profile to use when syncing to Central'
     required: true
   ossrh-s01-token-password:
     description: 'Password for authentication with s01.oss.sonatype.org'
     required: true
-  ossrh-s01-staging-profile:
-    description: 'Staging profile to use when syncing to Central'
+  ossrh-s01-token-username:
+    description: 'Username for authentication with s01.oss.sonatype.org'
+    required: true
+  spring-boot-version:
+    description: 'Version of Spring Boot that is being synced to Central'
     required: true
 runs:
   using: composite
   steps:
     - name: Set Up JFrog CLI
-      uses: jfrog/setup-jfrog-cli@26532cdb5b1ea07940f10d57666fd988048fc903 # v4.2.2
+      uses: jfrog/setup-jfrog-cli@ff5cb544114ffc152db9cea1cd3d5978d5074946 # v4.5.11
       env:
         JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
     - name: Download Release Artifacts
@@ -29,14 +29,14 @@ runs:
     - name: Sync
       uses: spring-io/nexus-sync-action@42477a2230a2f694f9eaa4643fa9e76b99b7ab84 # v0.0.1
       with:
-        username: ${{ inputs.ossrh-s01-token-username }}
-        password: ${{ inputs.ossrh-s01-token-password }}
-        staging-profile-name: ${{ inputs.ossrh-s01-staging-profile }}
-        create: true
-        upload: true
         close: true
-        release: true
+        create: true
         generate-checksums: true
+        password: ${{ inputs.ossrh-s01-token-password }}
+        release: true
+        staging-profile-name: ${{ inputs.ossrh-s01-staging-profile }}
+        upload: true
+        username: ${{ inputs.ossrh-s01-token-username }}
     - name: Await
       uses: ./.github/actions/await-http-resource
       with:

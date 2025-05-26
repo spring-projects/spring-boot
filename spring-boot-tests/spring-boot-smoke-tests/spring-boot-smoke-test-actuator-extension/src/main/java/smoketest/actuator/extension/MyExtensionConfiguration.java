@@ -50,7 +50,7 @@ public class MyExtensionConfiguration {
 		List<EndpointFilter<ExposableWebEndpoint>> filters = Collections
 			.singletonList(new MyExtensionEndpointFilter(environment));
 		WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(applicationContext, parameterMapper,
-				endpointMediaTypes, null, invokerAdvisors, filters);
+				endpointMediaTypes, null, null, invokerAdvisors, filters, Collections.emptyList());
 		Collection<ExposableWebEndpoint> endpoints = discoverer.getEndpoints();
 		return new MyExtensionWebMvcEndpointHandlerMapping(endpoints, endpointMediaTypes, corsConfiguration);
 	}

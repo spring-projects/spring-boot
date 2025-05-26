@@ -2,7 +2,6 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -45,7 +44,6 @@ dependencies {
 	testImplementation("io.mockk:mockk")
 	testImplementation("jakarta.json:jakarta.json-api")
 	testImplementation("ch.qos.logback:logback-classic")
-	testImplementation("com.squareup.okhttp3:okhttp")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.apache.groovy:groovy")
 	testImplementation("org.apache.groovy:groovy-xml")

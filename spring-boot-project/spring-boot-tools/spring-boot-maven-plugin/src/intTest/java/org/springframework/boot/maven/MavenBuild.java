@@ -160,7 +160,7 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = Files.readString(Paths.get("src", "intTest", "projects", "settings.xml"))
+			String settingsXml = Files.readString(Paths.get("build", "generated-resources", "settings", "settings.xml"))
 				.replace("@localCentralUrl@", new File("build/test-maven-repository").toURI().toURL().toString())
 				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);

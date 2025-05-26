@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.Console;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
@@ -85,14 +86,19 @@ public class LoggingSystemProperties {
 	 */
 	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
 			BiConsumer<String, String> setter) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
 		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
-	protected Charset getDefaultCharset() {
-		return StandardCharsets.UTF_8;
+	/**
+	 * Returns the {@link Console} to use.
+	 * @return the {@link Console} to use
+	 * @since 3.5.0
+	 */
+	protected Console getConsole() {
+		return System.console();
 	}
 
 	public final void apply() {
@@ -116,12 +122,14 @@ public class LoggingSystemProperties {
 	}
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
-		String defaultCharsetName = getDefaultCharset().name();
+		Charset defaultCharset = getDefaultCharset();
+		Charset consoleCharset = (defaultCharset != null) ? defaultCharset : getDefaultConsoleCharset();
+		Charset fileCharset = (defaultCharset != null) ? defaultCharset : getDefaultFileCharset();
 		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
 		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
-		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
-		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, consoleCharset.name());
+		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, fileCharset.name());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
@@ -135,6 +143,36 @@ public class LoggingSystemProperties {
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
+	}
+
+	/**
+	 * Returns the default charset.
+	 * @return the default charset
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #getDefaultConsoleCharset()} and {@link #getDefaultFileCharset()}.
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	protected Charset getDefaultCharset() {
+		return null;
+	}
+
+	/**
+	 * Returns the default console charset.
+	 * @return the default console charset
+	 * @since 3.5.0
+	 */
+	protected Charset getDefaultConsoleCharset() {
+		Console console = getConsole();
+		return (console != null) ? console.charset() : Charset.defaultCharset();
+	}
+
+	/**
+	 * Returns the default file charset.
+	 * @return the default file charset
+	 * @since 3.5.0
+	 */
+	protected Charset getDefaultFileCharset() {
+		return StandardCharsets.UTF_8;
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
@@ -164,7 +202,7 @@ public class LoggingSystemProperties {
 		value = mapper.apply(value);
 		setSystemProperty(property.getEnvironmentVariableName(), value);
 		if (property == LoggingSystemProperty.APPLICATION_NAME && StringUtils.hasText(value)) {
-			// LOGGED_APPLICATION_NAME is deprecated for removal in 3.6.0
+			// LOGGED_APPLICATION_NAME is deprecated for removal in 4.0.0
 			setSystemProperty("LOGGED_APPLICATION_NAME", "[%s] ".formatted(value));
 		}
 	}

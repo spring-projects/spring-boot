@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
@@ -133,12 +134,14 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");
 		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
+	@WithPackageResources({ "1.key", "1.crt", "2.key", "2.crt" })
 	void whenSslBundleIsUpdatedThenSslIsReloaded() {
 		DefaultSslBundleRegistry bundles = new DefaultSslBundleRegistry("bundle1", createSslBundle("1.key", "1.crt"));
 		Mono<String> result = testSslWithBundle(bundles, "bundle1");
@@ -231,9 +234,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 	private static SslBundle createSslBundle(String key, String certificate) {
 		return SslBundle.of(new PemSslStoreBundle(
-				new PemSslStoreDetails(null, "classpath:org/springframework/boot/web/embedded/netty/" + certificate,
-						"classpath:org/springframework/boot/web/embedded/netty/" + key),
-				null));
+				new PemSslStoreDetails(null, "classpath:" + certificate, "classpath:" + key), null));
 	}
 
 	static class NoPortNettyReactiveWebServerFactory extends NettyReactiveWebServerFactory {

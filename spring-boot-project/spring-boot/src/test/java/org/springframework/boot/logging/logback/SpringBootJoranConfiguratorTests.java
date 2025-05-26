@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -30,8 +35,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -77,6 +85,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithProductionProfileXmlResource
 	void profileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
@@ -85,6 +94,20 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithResource(name = "profile-in-include.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<include file="${resourceRoot}/include-with-profile.xml"/>
+			</configuration>
+			""")
+	@WithResource(name = "include-with-profile.xml", content = """
+			<included>
+				<springProfile name="production">
+					<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+				</springProfile>
+			</included>
+			""")
 	void profileInIncludeActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("profile-in-include.xml");
@@ -93,6 +116,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithMultiProfileNamesXmlResource
 	void multipleNamesFirstProfileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("multi-profile-names.xml");
@@ -101,6 +125,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithMultiProfileNamesXmlResource
 	void multipleNamesSecondProfileActive() throws Exception {
 		this.environment.setActiveProfiles("test");
 		initialize("multi-profile-names.xml");
@@ -109,6 +134,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithProductionProfileXmlResource
 	void profileNotActive() throws Exception {
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
@@ -116,6 +142,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionMatchFirst() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("profile-expression.xml");
@@ -124,6 +151,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionMatchSecond() throws Exception {
 		this.environment.setActiveProfiles("test");
 		initialize("profile-expression.xml");
@@ -132,6 +160,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithProfileExpressionXmlResource
 	void profileExpressionNoMatch() throws Exception {
 		this.environment.setActiveProfiles("development");
 		initialize("profile-expression.xml");
@@ -140,26 +169,31 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithNestedXmlResource
 	void profileNestedActiveActive() throws Exception {
 		doTestNestedProfile(true, "outer", "inner");
 	}
 
 	@Test
+	@WithNestedXmlResource
 	void profileNestedActiveNotActive() throws Exception {
 		doTestNestedProfile(false, "outer");
 	}
 
 	@Test
+	@WithNestedXmlResource
 	void profileNestedNotActiveActive() throws Exception {
 		doTestNestedProfile(false, "inner");
 	}
 
 	@Test
+	@WithNestedXmlResource
 	void profileNestedNotActiveNotActive() throws Exception {
 		doTestNestedProfile(false);
 	}
 
 	@Test
+	@WithPropertyXmlResource
 	void springProperty() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=test");
 		initialize("property.xml");
@@ -167,6 +201,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithPropertyXmlResource
 	void relaxedSpringProperty() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.EXAMPLE_PROPERTY=test");
 		ConfigurationPropertySources.attach(this.environment);
@@ -175,30 +210,35 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithPropertyXmlResource
 	void springPropertyNoValue() throws Exception {
 		initialize("property.xml");
 		assertThat(this.context.getProperty("SIMPLE")).isNull();
 	}
 
 	@Test
+	@WithPropertyXmlResource
 	void relaxedSpringPropertyNoValue() throws Exception {
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isNull();
 	}
 
 	@Test
+	@WithPropertyDefaultValueXmlResource
 	void springPropertyWithDefaultValue() throws Exception {
 		initialize("property-default-value.xml");
 		assertThat(this.context.getProperty("SIMPLE")).isEqualTo("foo");
 	}
 
 	@Test
+	@WithPropertyDefaultValueXmlResource
 	void relaxedSpringPropertyWithDefaultValue() throws Exception {
 		initialize("property-default-value.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
 	@Test
+	@WithPropertyInIfXmlResource
 	void springPropertyInIfWhenTrue() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=true");
 		initialize("property-in-if.xml");
@@ -206,6 +246,7 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithPropertyInIfXmlResource
 	void springPropertyInIfWhenFalse() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=false");
 		initialize("property-in-if.xml");
@@ -213,6 +254,19 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithResource(name = "property-in-include.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<include file="${resourceRoot}/include-with-property.xml"/>
+			</configuration>
+			""")
+	@WithResource(name = "include-with-property.xml", content = """
+			<included>
+				<springProperty scope="context" name="MINE" source="my.example-property" defaultValue="default-test"/>
+			</included>
+			""")
+	@ClassPathExclusions
 	void springPropertyInInclude() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=test");
 		initialize("property-in-include.xml");
@@ -220,8 +274,9 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	@WithPropertyXmlResource
 	void addsAotContributionToContextDuringAotProcessing() throws Exception {
-		withSystemProperty("spring.aot.processing", "true", () -> {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> {
 			initialize("property.xml");
 			Object contribution = this.context.getObject(BeanFactoryInitializationAotContribution.class.getName());
 			assertThat(contribution).isNotNull();
@@ -253,12 +308,121 @@ class SpringBootJoranConfiguratorTests {
 
 	private void initialize(String config) throws JoranException {
 		this.configurator.setContext(this.context);
-		this.configurator.doConfigure(getClass().getResourceAsStream(config));
+		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+		this.configurator.doConfigure(contextClassLoader.getResource(config));
 	}
 
 	private interface Action {
 
 		void perform() throws Exception;
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "property-default-value.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProperty scope="context" name="SIMPLE" source="testpropertyfoobar" defaultValue="foo"/>
+				<springProperty scope="context" name="MINE" source="my.example-property" defaultValue="bar"/>
+			</configuration>
+			""")
+	private @interface WithPropertyDefaultValueXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "property-in-if.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProperty scope="context" name="MINE" source="my.example-property"/>
+				<if condition='property("MINE").contains("true")'>
+					<then>
+						<variable scope="context" name="MYCHECK" value="i-was-included"/>
+					</then>
+				</if>
+			</configuration>
+			""")
+	private @interface WithPropertyInIfXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "property.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProperty scope="context" name="SIMPLE" source="testpropertyfoobar"/>
+				<springProperty scope="context" name="MINE" source="my.example-property"/>
+			</configuration>
+			""")
+	private @interface WithPropertyXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "profile-expression.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProfile name="production | test">
+					<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+				</springProfile>
+			</configuration>
+			""")
+	private @interface WithProfileExpressionXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "production-profile.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProfile name="production">
+					<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+				</springProfile>
+			</configuration>
+			""")
+	private @interface WithProductionProfileXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nested.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProfile name="outer">
+					<springProfile name="inner">
+						<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+					</springProfile>
+				</springProfile>
+			</configuration>
+			""")
+	private @interface WithNestedXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "multi-profile-names.xml", content = """
+			<?xml version="1.0" encoding="UTF-8"?>
+			<configuration>
+				<include resource="org/springframework/boot/logging/logback/base.xml"/>
+				<springProfile name="production, test">
+					<logger name="org.springframework.boot.logging.logback" level="TRACE"/>
+				</springProfile>
+			</configuration>
+			""")
+	private @interface WithMultiProfileNamesXmlResource {
 
 	}
 

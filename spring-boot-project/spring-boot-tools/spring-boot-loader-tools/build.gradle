@@ -1,12 +1,11 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 }
 
 description = "Spring Boot Loader Tools"
 
-def generatedResources = "${buildDir}/generated-resources/main"
+Provider<Directory> generatedResources = layout.buildDirectory.dir("generated-resources/main")
 
 configurations {
 	loader {
@@ -40,7 +39,7 @@ dependencies {
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
-task reproducibleLoaderJar(type: Jar) {
+tasks.register("reproducibleLoaderJar", Jar) {
 	dependsOn configurations.loader
 	from {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
@@ -52,10 +51,10 @@ task reproducibleLoaderJar(type: Jar) {
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader.jar"
-	destinationDirectory = file("${generatedResources}/META-INF/loader")
+	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
 }
 
-task reproducibleLoaderClassicJar(type: Jar) {
+tasks.register("reproducibleLoaderClassicJar", Jar) {
 	dependsOn configurations.loaderClassic
 	from {
 		zipTree(configurations.loaderClassic.incoming.files.singleFile).matching {
@@ -67,16 +66,16 @@ task reproducibleLoaderClassicJar(type: Jar) {
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader-classic.jar"
-	destinationDirectory = file("${generatedResources}/META-INF/loader")
+	destinationDirectory = file(generatedResources.map { it.dir("META-INF/loader") })
 }
 
-task toolsJar(type: Sync) {
+tasks.register("toolsJar", Sync) {
 	dependsOn configurations.jarmode
 	from {
 		file(configurations.jarmode.incoming.files.singleFile)
 	}
 	rename({ "spring-boot-jarmode-tools.jar" })
-	into(file("${generatedResources}/META-INF/jarmode"))
+	into(file(generatedResources.map { it.dir("META-INF/jarmode") }))
 }
 
 sourceSets {
@@ -85,8 +84,14 @@ sourceSets {
 	}
 }
 
-compileJava {
-	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
-		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.beforeMerged { content ->
+				if (content instanceof org.gradle.plugins.ide.eclipse.model.Classpath) {
+					content.entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder("build/generated-resources/main", "bin/main"))
+				}
+			}
+		}
 	}
 }

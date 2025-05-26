@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,20 @@
 
 package org.springframework.boot.build.architecture;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.testkit.runner.GradleRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ArchitectureCheck}.
@@ -38,152 +37,206 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Ivan Malutin
+ * @author Dmytro Nosan
  */
 class ArchitectureCheckTests {
 
-	@TempDir
-	File temp;
+	private Path projectDir;
 
-	@Test
-	void whenPackagesAreTangledTaskFailsAndWritesAReport() throws Exception {
-		prepareTask("tangled", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	private Path buildFile;
+
+	@BeforeEach
+	void setup(@TempDir Path projectDir) {
+		this.projectDir = projectDir;
+		this.buildFile = projectDir.resolve("build.gradle");
 	}
 
 	@Test
-	void whenPackagesAreNotTangledTaskSucceedsAndWritesAnEmptyReport() throws Exception {
-		prepareTask("untangled", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
-	}
-
-	File failureReport(ArchitectureCheck architectureCheck) {
-		return new File(architectureCheck.getProject().getBuildDir(), "checkArchitecture/failure-report.txt");
+	void whenPackagesAreTangledTaskFailsAndWritesAReport() throws IOException {
+		runGradleWithCompiledClasses("tangled",
+				shouldHaveFailureReportWithMessage("slices matching '(**)' should be free of cycles"));
 	}
 
 	@Test
-	void whenBeanPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws Exception {
-		prepareTask("bpp/nonstatic", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenPackagesAreNotTangledTaskSucceedsAndWritesAnEmptyReport() throws IOException {
+		runGradleWithCompiledClasses("untangled", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
-	void whenBeanPostProcessorBeanMethodIsStaticAndHasUnsafeParametersTaskFailsAndWritesAReport() throws Exception {
-		prepareTask("bpp/unsafeparameters", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenBeanPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws IOException {
+		runGradleWithCompiledClasses("bpp/nonstatic",
+				shouldHaveFailureReportWithMessage(
+						"methods that are annotated with @Bean and have raw return type assignable "
+								+ "to org.springframework.beans.factory.config.BeanPostProcessor"));
+	}
+
+	@Test
+	void whenBeanPostProcessorBeanMethodIsStaticAndHasUnsafeParametersTaskFailsAndWritesAReport() throws IOException {
+		runGradleWithCompiledClasses("bpp/unsafeparameters",
+				shouldHaveFailureReportWithMessage(
+						"methods that are annotated with @Bean and have raw return type assignable "
+								+ "to org.springframework.beans.factory.config.BeanPostProcessor"));
 	}
 
 	@Test
 	void whenBeanPostProcessorBeanMethodIsStaticAndHasSafeParametersTaskSucceedsAndWritesAnEmptyReport()
-			throws Exception {
-		prepareTask("bpp/safeparameters", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
+			throws IOException {
+		runGradleWithCompiledClasses("bpp/safeparameters", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
 	void whenBeanPostProcessorBeanMethodIsStaticAndHasNoParametersTaskSucceedsAndWritesAnEmptyReport()
-			throws Exception {
-		prepareTask("bpp/noparameters", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
+			throws IOException {
+		runGradleWithCompiledClasses("bpp/noparameters", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
-	void whenBeanFactoryPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws Exception {
-		prepareTask("bfpp/nonstatic", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenBeanFactoryPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws IOException {
+		runGradleWithCompiledClasses("bfpp/nonstatic",
+				shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+						+ "type assignable to org.springframework.beans.factory.config.BeanFactoryPostProcessor"));
 	}
 
 	@Test
-	void whenBeanFactoryPostProcessorBeanMethodIsStaticAndHasParametersTaskFailsAndWritesAReport() throws Exception {
-		prepareTask("bfpp/parameters", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenBeanFactoryPostProcessorBeanMethodIsStaticAndHasParametersTaskFailsAndWritesAReport() throws IOException {
+		runGradleWithCompiledClasses("bfpp/parameters",
+				shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+						+ "type assignable to org.springframework.beans.factory.config.BeanFactoryPostProcessor"));
 	}
 
 	@Test
 	void whenBeanFactoryPostProcessorBeanMethodIsStaticAndHasNoParametersTaskSucceedsAndWritesAnEmptyReport()
-			throws Exception {
-		prepareTask("bfpp/noparameters", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
+			throws IOException {
+		runGradleWithCompiledClasses("bfpp/noparameters", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
-	void whenClassLoadsResourceUsingResourceUtilsTaskFailsAndWritesReport() throws Exception {
-		prepareTask("resources/loads", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenClassLoadsResourceUsingResourceUtilsTaskFailsAndWritesReport() throws IOException {
+		runGradleWithCompiledClasses("resources/loads", shouldHaveFailureReportWithMessage(
+				"no classes should call method where target owner type org.springframework.util.ResourceUtils and target name 'getURL'"));
 	}
 
 	@Test
-	void whenClassUsesResourceUtilsWithoutLoadingResourcesTaskSucceedsAndWritesAnEmptyReport() throws Exception {
-		prepareTask("resources/noloads", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
+	void whenClassUsesResourceUtilsWithoutLoadingResourcesTaskSucceedsAndWritesAnEmptyReport() throws IOException {
+		runGradleWithCompiledClasses("resources/noloads", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
-	void whenClassDoesNotCallObjectsRequireNonNullTaskSucceedsAndWritesAnEmptyReport() throws Exception {
-		prepareTask("objects/noRequireNonNull", (architectureCheck) -> {
-			architectureCheck.checkArchitecture();
-			assertThat(failureReport(architectureCheck)).isEmpty();
-		});
+	void whenClassDoesNotCallObjectsRequireNonNullTaskSucceedsAndWritesAnEmptyReport() throws IOException {
+		runGradleWithCompiledClasses("objects/noRequireNonNull", shouldHaveEmptyFailureReport());
 	}
 
 	@Test
-	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws Exception {
-		prepareTask("objects/requireNonNullWithString", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws IOException {
+		runGradleWithCompiledClasses("objects/requireNonNullWithString", shouldHaveFailureReportWithMessage(
+				"no classes should call method Objects.requireNonNull(Object, String)"));
 	}
 
 	@Test
-	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws Exception {
-		prepareTask("objects/requireNonNullWithSupplier", (architectureCheck) -> {
-			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
-			assertThat(failureReport(architectureCheck)).isNotEmpty();
-		});
+	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws IOException {
+		runGradleWithCompiledClasses("objects/requireNonNullWithSupplier", shouldHaveFailureReportWithMessage(
+				"no classes should call method Objects.requireNonNull(Object, Supplier)"));
 	}
 
-	private void prepareTask(String classes, Callback<ArchitectureCheck> callback) throws Exception {
-		File projectDir = new File(this.temp, "project");
-		projectDir.mkdirs();
-		copyClasses(classes, projectDir);
-		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build();
-		ArchitectureCheck architectureCheck = project.getTasks()
-			.create("checkArchitecture", ArchitectureCheck.class, (task) -> task.setClasses(project.files("classes")));
-		callback.accept(architectureCheck);
+	@Test
+	void whenClassCallsStringToUpperCaseWithoutLocaleFailsAndWritesReport() throws IOException {
+		runGradleWithCompiledClasses("string/toUpperCase",
+				shouldHaveFailureReportWithMessage("because String.toUpperCase(Locale.ROOT) should be used instead"));
 	}
 
-	private void copyClasses(String name, File projectDir) throws IOException {
-		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		Resource root = resolver.getResource("classpath:org/springframework/boot/build/architecture/" + name);
-		FileSystemUtils.copyRecursively(root.getFile(),
-				new File(projectDir, "classes/org/springframework/boot/build/architecture/" + name));
+	@Test
+	void whenClassCallsStringToLowerCaseWithoutLocaleFailsAndWritesReport() throws IOException {
+		runGradleWithCompiledClasses("string/toLowerCase",
+				shouldHaveFailureReportWithMessage("because String.toLowerCase(Locale.ROOT) should be used instead"));
 	}
 
-	private interface Callback<T> {
+	@Test
+	void whenClassCallsStringToLowerCaseWithLocaleShouldNotFail() throws IOException {
+		runGradleWithCompiledClasses("string/toLowerCaseWithLocale", shouldHaveEmptyFailureReport());
+	}
 
-		void accept(T item) throws Exception;
+	@Test
+	void whenClassCallsStringToUpperCaseWithLocaleShouldNotFail() throws IOException {
+		runGradleWithCompiledClasses("string/toUpperCaseWithLocale", shouldHaveEmptyFailureReport());
+	}
 
+	@Test
+	void whenBeanPostProcessorBeanMethodIsNotStaticWithExternalClass() throws IOException {
+		Files.writeString(this.buildFile, """
+				plugins {
+					id 'java'
+					id 'org.springframework.boot.architecture'
+				}
+				repositories {
+					mavenCentral()
+				}
+				java {
+					sourceCompatibility = 17
+				}
+				dependencies {
+					implementation("org.springframework.integration:spring-integration-jmx:6.3.9")
+				}
+				""");
+		Path testClass = this.projectDir.resolve("src/main/java/boot/architecture/bpp/external/TestClass.java");
+		Files.createDirectories(testClass.getParent());
+		Files.writeString(testClass, """
+				package org.springframework.boot.build.architecture.bpp.external;
+				import org.springframework.context.annotation.Bean;
+				import org.springframework.integration.monitor.IntegrationMBeanExporter;
+				public class TestClass {
+					@Bean
+					IntegrationMBeanExporter integrationMBeanExporter() {
+						return new IntegrationMBeanExporter();
+					}
+				}
+				""");
+		runGradle(shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+				+ "type assignable to org.springframework.beans.factory.config.BeanPostProcessor "));
+	}
+
+	private Consumer<GradleRunner> shouldHaveEmptyFailureReport() {
+		return (gradleRunner) -> {
+			assertThat(gradleRunner.build().getOutput()).contains("BUILD SUCCESSFUL")
+				.contains("Task :checkArchitectureMain");
+			assertThat(failureReport()).isEmptyFile();
+		};
+	}
+
+	private Consumer<GradleRunner> shouldHaveFailureReportWithMessage(String message) {
+		return (gradleRunner) -> {
+			assertThat(gradleRunner.buildAndFail().getOutput()).contains("BUILD FAILED")
+				.contains("Task :checkArchitectureMain FAILED");
+			assertThat(failureReport()).content().contains(message);
+		};
+	}
+
+	private void runGradleWithCompiledClasses(String path, Consumer<GradleRunner> callback) throws IOException {
+		ClassPathResource classPathResource = new ClassPathResource(path, getClass());
+		FileSystemUtils.copyRecursively(classPathResource.getFile().toPath(),
+				this.projectDir.resolve("classes").resolve(classPathResource.getPath()));
+		Files.writeString(this.buildFile, """
+				plugins {
+					 id 'java'
+					 id 'org.springframework.boot.architecture'
+				}
+				sourceSets {
+					main {
+						  output.classesDirs.setFrom(file("classes"))
+					  }
+				}
+				""");
+		runGradle(callback);
+	}
+
+	private void runGradle(Consumer<GradleRunner> callback) {
+		callback.accept(GradleRunner.create()
+			.withProjectDir(this.projectDir.toFile())
+			.withArguments("checkArchitectureMain")
+			.withPluginClasspath());
+	}
+
+	private Path failureReport() {
+		return this.projectDir.resolve("build/checkArchitectureMain/failure-report.txt");
 	}
 
 }

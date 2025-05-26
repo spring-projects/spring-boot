@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
@@ -93,10 +95,22 @@ public interface PemSslStore {
 	 * @return a loaded {@link PemSslStore} or {@code null}.
 	 */
 	static PemSslStore load(PemSslStoreDetails details) {
+		return load(details, ApplicationResourceLoader.get());
+	}
+
+	/**
+	 * Return a {@link PemSslStore} instance loaded using the given
+	 * {@link PemSslStoreDetails}.
+	 * @param details the PEM store details
+	 * @param resourceLoader the resource loader used to load content
+	 * @return a loaded {@link PemSslStore} or {@code null}.
+	 * @since 3.3.5
+	 */
+	static PemSslStore load(PemSslStoreDetails details, ResourceLoader resourceLoader) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
-		return new LoadedPemSslStore(details);
+		return new LoadedPemSslStore(details, resourceLoader);
 	}
 
 	/**
@@ -136,7 +150,7 @@ public interface PemSslStore {
 	 */
 	static PemSslStore of(String type, String alias, String password, List<X509Certificate> certificates,
 			PrivateKey privateKey) {
-		Assert.notEmpty(certificates, "Certificates must not be empty");
+		Assert.notEmpty(certificates, "'certificates' must not be empty");
 		return new PemSslStore() {
 
 			@Override

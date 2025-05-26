@@ -7,7 +7,7 @@
 == Nested Configuration Properties
 
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
-Nested configuration properties which are not inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+Nested configuration properties which are not inner classes, however, *must* be annotated with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation], otherwise they won't be detected and will not be bindable.
 
 include-code::MyProperties[]
 
@@ -16,18 +16,18 @@ where `Nested` is:
 include-code::Nested[]
 
 The example above produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
-Without the `@NestedConfigurationProperty` annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
+Without the javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation] annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
 You can also annotate the getter method.
 
-When using constructor binding, you have to annotate the field with `@NestedConfigurationProperty`:
+When using constructor binding, you have to annotate the field with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesCtor[]
 
-When using records, you have to annotate the parameter with `@NestedConfigurationProperty`:
+When using records, you have to annotate the parameter with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesRecord[]
 
-When using Kotlin, you need to annotate the parameter of a data class with `@NestedConfigurationProperty`:
+When using Kotlin, you need to annotate the parameter of a data class with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesKotlin[]
 
@@ -54,19 +54,19 @@ NOTE: Your executable jar must include AOT generated assets such as generated cl
 === Using Buildpacks
 
 Spring Boot applications usually use Cloud Native Buildpacks through the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuildImage`) integrations.
-You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
+You can, however, also use {url-buildpacks-docs}/for-platform-operators/how-to/integrate-ci/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
 
 
 First, make sure that a Docker daemon is available (see https://docs.docker.com/installation/#installation[Get Docker] for more details).
 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
 
-You also need to install `pack` by following https://buildpacks.io//docs/tools/pack/#install[the installation guide on buildpacks.io].
+You also need to install `pack` by following {url-buildpacks-docs}/for-platform-operators/how-to/integrate-ci/pack/#install[the installation guide on buildpacks.io].
 
 Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
 
 [source,shell]
 ----
-$ pack build --builder paketobuildpacks/builder-jammy-tiny \
+$ pack build --builder paketobuildpacks/builder-noble-java-tiny \
     --path target/myproject-0.0.1-SNAPSHOT.jar \
     --env 'BP_NATIVE_IMAGE=true' \
     my-application:0.0.1-SNAPSHOT
@@ -158,28 +158,37 @@ For further reading, please see {url-graal-docs-native-image}/metadata/Automatic
 [[packaging.native-image.advanced.custom-hints]]
 == Custom Hints
 
-If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API.
-Create a class that implements the `RuntimeHintsRegistrar` interface, and then make appropriate calls to the provided `RuntimeHints` instance:
+If you need to provide your own hints for reflection, resources, serialization, proxy usage and so on, you can use the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] API.
+Create a class that implements the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] interface, and then make appropriate calls to the provided javadoc:org.springframework.aot.hint.RuntimeHints[] instance:
 
 include-code::MyRuntimeHints[]
 
-You can then use `@ImportRuntimeHints` on any `@Configuration` class (for example your `@SpringBootApplication` annotated application class) to activate those hints.
+You can then use javadoc:org.springframework.context.annotation.ImportRuntimeHints[format=annotation] on any javadoc:org.springframework.context.annotation.Configuration[format=annotation] class (for example your javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotated application class) to activate those hints.
 
 If you have classes which need binding (mostly needed when serializing or deserializing JSON), you can use {url-spring-framework-docs}/core/aot.html#aot.hints.register-reflection-for-binding[`@RegisterReflectionForBinding`] on any bean.
-Most of the hints are automatically inferred, for example when accepting or returning data from a `@RestController` method.
-But when you work with `WebClient`, `RestClient` or `RestTemplate` directly, you might need to use `@RegisterReflectionForBinding`.
+Most of the hints are automatically inferred, for example when accepting or returning data from a javadoc:org.springframework.web.bind.annotation.RestController[format=annotation] method.
+But when you work with javadoc:org.springframework.web.reactive.function.client.WebClient[], javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[] directly, you might need to use javadoc:org.springframework.aot.hint.annotation.RegisterReflectionForBinding[format=annotation].
 
 
 
 [[packaging.native-image.advanced.custom-hints.testing]]
 === Testing Custom Hints
 
-The `RuntimeHintsPredicates` API can be used to test your hints.
-The API provides methods that build a `Predicate` that can be used to test a `RuntimeHints` instance.
+The javadoc:org.springframework.aot.hint.predicate.RuntimeHintsPredicates[] API can be used to test your hints.
+The API provides methods that build a javadoc:java.util.function.Predicate[] that can be used to test a javadoc:org.springframework.aot.hint.RuntimeHints[] instance.
 
 If you're using AssertJ, your test would look like this:
 
 include-code::MyRuntimeHintsTests[]
+
+
+
+[[packaging.native-image.advanced.custom-hints.static]]
+=== Providing Hints Statically
+If you prefer, custom hints can be provided statically in one or more GraalVM JSON hint files.
+Such files should be placed in `src/main/resources/` within a `+META-INF/native-image/*/*/+` directory.
+The xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[hints generated during AOT processing] are written to a directory named `+META-INF/native-image/{groupId}/{artifactId}/+`.
+Place your static hint files in a directory that does not clash with this location, such as `+META-INF/native-image/{groupId}/{artifactId}-additional-hints/+`.
 
 
 

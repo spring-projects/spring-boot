@@ -53,9 +53,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -365,7 +363,6 @@ class HealthEndpointAutoConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
 			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
 					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
-			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JerseyAdditionalHealthEndpointPathsConfiguration.class);
 				assertThat(context).hasNotFailed();

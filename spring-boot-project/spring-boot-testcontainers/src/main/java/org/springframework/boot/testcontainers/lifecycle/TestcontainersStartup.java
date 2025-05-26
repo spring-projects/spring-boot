@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,13 @@
 package org.springframework.boot.testcontainers.lifecycle;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.testcontainers.containers.Container;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.lifecycle.Startables;
 
@@ -40,7 +46,7 @@ public enum TestcontainersStartup {
 
 		@Override
 		void start(Collection<? extends Startable> startables) {
-			startables.forEach(Startable::start);
+			startables.forEach(TestcontainersStartup::start);
 		}
 
 	},
@@ -52,7 +58,8 @@ public enum TestcontainersStartup {
 
 		@Override
 		void start(Collection<? extends Startable> startables) {
-			Startables.deepStart(startables).join();
+			SingleStartables singleStartables = new SingleStartables();
+			Startables.deepStart(startables.stream().map(singleStartables::getOrCreate)).join();
 		}
 
 	};
@@ -89,6 +96,71 @@ public enum TestcontainersStartup {
 			.map(Character::toLowerCase)
 			.forEach((c) -> canonicalName.append((char) c));
 		return canonicalName.toString();
+	}
+
+	/**
+	 * Start the given {@link Startable} unless is's detected as already running.
+	 * @param startable the startable to start
+	 * @since 3.4.1
+	 */
+	public static void start(Startable startable) {
+		if (!isRunning(startable)) {
+			startable.start();
+		}
+	}
+
+	private static boolean isRunning(Startable startable) {
+		try {
+			return (startable instanceof Container<?> container) && container.isRunning();
+		}
+		catch (Throwable ex) {
+			return false;
+
+		}
+	}
+
+	/**
+	 * Tracks and adapts {@link Startable} instances to use
+	 * {@link TestcontainersStartup#start(Startable)} so containers are only started once
+	 * even when calling {@link Startables#deepStart(java.util.stream.Stream)}.
+	 */
+	private static final class SingleStartables {
+
+		private final Map<Startable, SingleStartable> adapters = new HashMap<>();
+
+		SingleStartable getOrCreate(Startable startable) {
+			return this.adapters.computeIfAbsent(startable, this::create);
+		}
+
+		private SingleStartable create(Startable startable) {
+			return new SingleStartable(this, startable);
+		}
+
+		record SingleStartable(SingleStartables singleStartables, Startable startable) implements Startable {
+
+			@Override
+			public Set<Startable> getDependencies() {
+				Set<Startable> dependencies = this.startable.getDependencies();
+				if (dependencies.isEmpty()) {
+					return dependencies;
+				}
+				return dependencies.stream()
+					.map(this.singleStartables::getOrCreate)
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+			}
+
+			@Override
+			public void start() {
+				TestcontainersStartup.start(this.startable);
+			}
+
+			@Override
+			public void stop() {
+				this.startable.stop();
+			}
+
+		}
+
 	}
 
 }

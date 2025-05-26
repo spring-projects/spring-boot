@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 
 import com.sun.jna.Platform;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfigurationMetadata.DockerContext;
 import org.springframework.boot.buildpack.platform.system.Environment;
 
@@ -57,8 +56,11 @@ public class ResolvedDockerHost extends DockerHost {
 
 	@Override
 	public String getAddress() {
-		return super.getAddress().startsWith(UNIX_SOCKET_PREFIX)
-				? super.getAddress().substring(UNIX_SOCKET_PREFIX.length()) : super.getAddress();
+		String address = super.getAddress();
+		if (address == null) {
+			address = getDefaultAddress();
+		}
+		return address.startsWith(UNIX_SOCKET_PREFIX) ? address.substring(UNIX_SOCKET_PREFIX.length()) : address;
 	}
 
 	public boolean isRemote() {
@@ -74,33 +76,56 @@ public class ResolvedDockerHost extends DockerHost {
 		}
 	}
 
-	public static ResolvedDockerHost from(DockerHostConfiguration dockerHost) {
-		return from(Environment.SYSTEM, dockerHost);
+	/**
+	 * Create a new {@link ResolvedDockerHost} from the given host configuration.
+	 * @param dockerHostConfiguration the host configuration or {@code null}
+	 * @return the resolved docker host
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #from(DockerConnectionConfiguration)}
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public static ResolvedDockerHost from(DockerConfiguration.DockerHostConfiguration dockerHostConfiguration) {
+		return from(Environment.SYSTEM,
+				DockerConfiguration.DockerHostConfiguration.asConnectionConfiguration(dockerHostConfiguration));
 	}
 
-	static ResolvedDockerHost from(Environment environment, DockerHostConfiguration dockerHost) {
-		DockerConfigurationMetadata config = DockerConfigurationMetadata.from(environment);
+	/**
+	 * Create a new {@link ResolvedDockerHost} from the given host configuration.
+	 * @param connectionConfiguration the host configuration or {@code null}
+	 * @return the resolved docker host
+	 */
+	public static ResolvedDockerHost from(DockerConnectionConfiguration connectionConfiguration) {
+		return from(Environment.SYSTEM, connectionConfiguration);
+	}
+
+	static ResolvedDockerHost from(Environment environment, DockerConnectionConfiguration connectionConfiguration) {
+		DockerConfigurationMetadata environmentConfiguration = DockerConfigurationMetadata.from(environment);
 		if (environment.get(DOCKER_CONTEXT) != null) {
-			DockerContext context = config.forContext(environment.get(DOCKER_CONTEXT));
+			DockerContext context = environmentConfiguration.forContext(environment.get(DOCKER_CONTEXT));
 			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
 		}
-		if (dockerHost != null && dockerHost.getContext() != null) {
-			DockerContext context = config.forContext(dockerHost.getContext());
+		if (connectionConfiguration instanceof DockerConnectionConfiguration.Context contextConfiguration) {
+			DockerContext context = environmentConfiguration.forContext(contextConfiguration.context());
 			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
 		}
 		if (environment.get(DOCKER_HOST) != null) {
 			return new ResolvedDockerHost(environment.get(DOCKER_HOST), isTrue(environment.get(DOCKER_TLS_VERIFY)),
 					environment.get(DOCKER_CERT_PATH));
 		}
-		if (dockerHost != null && dockerHost.getAddress() != null) {
-			return new ResolvedDockerHost(dockerHost.getAddress(), dockerHost.isSecure(),
-					dockerHost.getCertificatePath());
+		if (connectionConfiguration instanceof DockerConnectionConfiguration.Host addressConfiguration) {
+			return new ResolvedDockerHost(addressConfiguration.address(), addressConfiguration.secure(),
+					addressConfiguration.certificatePath());
 		}
-		if (config.getContext().getDockerHost() != null) {
-			DockerContext context = config.getContext();
+		if (environmentConfiguration.getContext().getDockerHost() != null) {
+			DockerContext context = environmentConfiguration.getContext();
 			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
 		}
-		return new ResolvedDockerHost(Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH);
+		return new ResolvedDockerHost(getDefaultAddress());
+	}
+
+	private static String getDefaultAddress() {
+		return Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH;
 	}
 
 	private static boolean isTrue(String value) {

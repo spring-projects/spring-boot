@@ -30,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesHttpComponentsTests
 		extends AbstractClientHttpRequestFactoriesTests<HttpComponentsClientHttpRequestFactory> {
 

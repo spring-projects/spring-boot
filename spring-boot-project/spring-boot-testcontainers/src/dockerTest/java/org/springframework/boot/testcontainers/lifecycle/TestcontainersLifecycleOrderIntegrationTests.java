@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -30,7 +31,6 @@ import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycle
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.TestConfig;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +63,7 @@ class TestcontainersLifecycleOrderIntegrationTests {
 	static class ContainerConfig {
 
 		@Bean
-		@ServiceConnection("redis")
+		@ServiceConnection
 		RedisContainer redisContainer() {
 			return TestImage.container(EventRecordingRedisContainer.class);
 		}

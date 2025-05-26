@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.apache.commons.pool2.PooledObject;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,12 +43,11 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 class ArtemisConnectionFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "false",
-			matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.artemis.pool.enabled", havingValue = false, matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
 		@Bean(name = "jmsConnectionFactory")
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
+		@ConditionalOnBooleanProperty(name = "spring.jms.cache.enabled", havingValue = false)
 		ActiveMQConnectionFactory jmsConnectionFactory(ArtemisProperties properties, ListableBeanFactory beanFactory,
 				ArtemisConnectionDetails connectionDetails) {
 			return createJmsConnectionFactory(properties, connectionDetails, beanFactory);
@@ -57,13 +56,12 @@ class ArtemisConnectionFactoryConfiguration {
 		private static ActiveMQConnectionFactory createJmsConnectionFactory(ArtemisProperties properties,
 				ArtemisConnectionDetails connectionDetails, ListableBeanFactory beanFactory) {
 			return new ArtemisConnectionFactoryFactory(beanFactory, properties, connectionDetails)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory::new, ActiveMQConnectionFactory::new);
 		}
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(CachingConnectionFactory.class)
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
-				matchIfMissing = true)
+		@ConditionalOnBooleanProperty(name = "spring.jms.cache.enabled", matchIfMissing = true)
 		static class CachingConnectionFactoryConfiguration {
 
 			@Bean(name = "jmsConnectionFactory")
@@ -85,7 +83,7 @@ class ArtemisConnectionFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
-	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty("spring.artemis.pool.enabled")
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
@@ -93,7 +91,7 @@ class ArtemisConnectionFactoryConfiguration {
 				ArtemisConnectionDetails connectionDetails) {
 			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties,
 					connectionDetails)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory::new, ActiveMQConnectionFactory::new);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 				.createPooledConnectionFactory(connectionFactory);
 		}

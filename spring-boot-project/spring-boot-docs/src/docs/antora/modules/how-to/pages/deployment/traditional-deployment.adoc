@@ -11,9 +11,9 @@ This section answers common questions about traditional deployment.
 
 WARNING: Because Spring WebFlux does not strictly depend on the servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
 
-The first step in producing a deployable war file is to provide a `SpringBootServletInitializer` subclass and override its `configure` method.
+The first step in producing a deployable war file is to provide a javadoc:org.springframework.boot.web.servlet.support.SpringBootServletInitializer[] subclass and override its `configure` method.
 Doing so makes use of Spring Framework's servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
-Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
+Typically, you should update your application's main class to extend javadoc:org.springframework.boot.web.servlet.support.SpringBootServletInitializer[], as shown in the following example:
 
 include-code::MyApplication[]
 
@@ -72,28 +72,27 @@ This means that, in addition to being deployable to a servlet container, you can
 [[howto.traditional-deployment.convert-existing-application]]
 == Convert an Existing Application to Spring Boot
 
-To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
+To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your javadoc:org.springframework.context.ApplicationContext[] and replace it with calls to javadoc:org.springframework.boot.SpringApplication[] or javadoc:org.springframework.boot.builder.SpringApplicationBuilder[].
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
-See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on Converting a jar to a war].
 
-To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
+To create a deployable war by extending javadoc:org.springframework.boot.web.servlet.support.SpringBootServletInitializer[] (for example, in a class called `Application`) and adding the Spring Boot javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotation, use code similar to that shown in the following example:
 
 include-code::MyApplication[tag=!main]
 
-Remember that, whatever you put in the `sources` is merely a Spring `ApplicationContext`.
+Remember that, whatever you put in the `sources` is merely a Spring javadoc:org.springframework.context.ApplicationContext[].
 Normally, anything that already works should work here.
 There might be some beans you can remove later and let Spring Boot provide its own defaults for them, but it should be possible to get something working before you need to do that.
 
 Static resources can be moved to `/public` (or `/static` or `/resources` or `/META-INF/resources`) in the classpath root.
 The same applies to `messages.properties` (which Spring Boot automatically detects in the root of the classpath).
 
-Vanilla usage of Spring `DispatcherServlet` and Spring Security should require no further changes.
+Vanilla usage of Spring javadoc:org.springframework.web.servlet.DispatcherServlet[] and Spring Security should require no further changes.
 If you have other features in your application (for instance, using other servlets or filters), you may need to add some configuration to your `Application` context, by replacing those elements from the `web.xml`, as follows:
 
-* A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the container as if it were a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
-* A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (as a `<filter/>` and `<filter-mapping/>`).
-* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in your `Application`.
-  Alternatively, cases where annotation configuration is heavily used already can be recreated in a few lines as `@Bean` definitions.
+* A javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:jakarta.servlet.Servlet[] or javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[] installs that bean in the container as if it were a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
+* A javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:jakarta.servlet.Filter[] or javadoc:org.springframework.boot.web.servlet.FilterRegistrationBean[] behaves similarly (as a `<filter/>` and `<filter-mapping/>`).
+* An javadoc:org.springframework.context.ApplicationContext[] in an XML file can be added through an javadoc:org.springframework.context.annotation.ImportResource[format=annotation] in your `+Application+`.
+  Alternatively, cases where annotation configuration is heavily used already can be recreated in a few lines as javadoc:org.springframework.context.annotation.Bean[format=annotation] definitions.
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
@@ -101,7 +100,7 @@ include-code::MyApplication[tag=main]
 
 [NOTE]
 ====
-If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the `SpringBootServletInitializer` callback and in the `main` method in a class similar to the following:
+If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the javadoc:org.springframework.boot.web.servlet.support.SpringBootServletInitializer[] callback and in the `main` method in a class similar to the following:
 
 include-code::both/MyApplication[]
 ====
@@ -116,11 +115,11 @@ Applications can fall into more than one category:
 All of these should be amenable to translation, but each might require slightly different techniques.
 
 Servlet 3.0+ applications might translate pretty easily if they already use the Spring Servlet 3.0+ initializer support classes.
-Normally, all the code from an existing `WebApplicationInitializer` can be moved into a `SpringBootServletInitializer`.
-If your existing application has more than one `ApplicationContext` (for example, if it uses `AbstractDispatcherServletInitializer`) then you might be able to combine all your context sources into a single `SpringApplication`.
+Normally, all the code from an existing javadoc:org.springframework.web.WebApplicationInitializer[] can be moved into a javadoc:org.springframework.boot.web.servlet.support.SpringBootServletInitializer[].
+If your existing application has more than one javadoc:org.springframework.context.ApplicationContext[] (for example, if it uses javadoc:org.springframework.web.servlet.support.AbstractDispatcherServletInitializer[]) then you might be able to combine all your context sources into a single javadoc:org.springframework.boot.SpringApplication[].
 The main complication you might encounter is if combining does not work and you need to maintain the context hierarchy.
 See the xref:application.adoc#howto.application.context-hierarchy[entry on building a hierarchy] for examples.
-An existing parent context that contains web-specific features usually needs to be broken up so that all the `ServletContextAware` components are in the child context.
+An existing parent context that contains web-specific features usually needs to be broken up so that all the javadoc:org.springframework.web.context.ServletContextAware[] components are in the child context.
 
 Applications that are not already Spring applications might be convertible to Spring Boot applications, and the previously mentioned guidance may help.
 However, you may yet encounter problems.
@@ -131,7 +130,7 @@ In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[
 [[howto.traditional-deployment.weblogic]]
 ==  Deploying a WAR to WebLogic
 
-To deploy a Spring Boot application to WebLogic, you must ensure that your servlet initializer *directly* implements `WebApplicationInitializer` (even if you extend from a base class that already implements it).
+To deploy a Spring Boot application to WebLogic, you must ensure that your servlet initializer *directly* implements javadoc:org.springframework.web.WebApplicationInitializer[] (even if you extend from a base class that already implements it).
 
 A typical initializer for WebLogic should resemble the following example:
 

@@ -83,53 +83,145 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
-| `ActiveMQConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq" or "apache/activemq-classic"
 
-| `ArtemisConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis"
 
-| `CassandraConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
 | Containers named "cassandra" or "bitnami/cassandra"
 
-| `ElasticsearchConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
 | Containers named "elasticsearch" or "bitnami/elasticsearch"
 
-| `JdbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails[]
+| Containers named "hazelcast/hazelcast".
 
-| `LdapConnectionDetails`
-| Containers named "osixia/openldap"
+| javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
-| `MongoConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails[]
+| Containers named "osixia/openldap", "lldap/lldap"
+
+| javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
 | Containers named "mongo" or "bitnami/mongodb"
 
-| `Neo4jConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[]
 | Containers named "neo4j" or "bitnami/neo4j"
 
-| `OtlpMetricsConnectionDetails`
+| javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| `OtlpTracingConnectionDetails`
+| javadoc:org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| `PulsarConnectionDetails`
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails[]
+| Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
+
+| javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
 | Containers named "apachepulsar/pulsar"
 
-| `R2dbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
-| `RabbitConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
 | Containers named "rabbitmq" or "bitnami/rabbitmq"
 
-| `RedisConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
 | Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
-| `ZipkinConnectionDetails`
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin".
 |===
 
 
+
+[[features.dev-services.docker-compose.ssl]]
+=== SSL support
+
+Some images come with SSL enabled out of the box, or maybe you want to enable SSL for the container to mirror your production setup.
+Spring Boot supports SSL configuration for supported service connections.
+Please note that you still have to enable SSL on the service which is running inside the container yourself, this feature only configures SSL on the client side in your application.
+
+SSL is supported for the following service connections:
+
+* Cassandra
+* Couchbase
+* Elasticsearch
+* Kafka
+* MongoDB
+* RabbitMQ
+* Redis
+
+To enable SSL support for a service, you can use https://docs.docker.com/reference/compose-file/services/#labels[service labels].
+
+For JKS based keystores and truststores, you can use the following container labels:
+
+* `org.springframework.boot.sslbundle.jks.key.alias`
+* `org.springframework.boot.sslbundle.jks.key.password`
+* `org.springframework.boot.sslbundle.jks.options.ciphers`
+* `org.springframework.boot.sslbundle.jks.options.enabled-protocols`
+* `org.springframework.boot.sslbundle.jks.protocol`
+
+* `org.springframework.boot.sslbundle.jks.keystore.type`
+* `org.springframework.boot.sslbundle.jks.keystore.provider`
+* `org.springframework.boot.sslbundle.jks.keystore.location`
+* `org.springframework.boot.sslbundle.jks.keystore.password`
+
+* `org.springframework.boot.sslbundle.jks.truststore.type`
+* `org.springframework.boot.sslbundle.jks.truststore.provider`
+* `org.springframework.boot.sslbundle.jks.truststore.location`
+* `org.springframework.boot.sslbundle.jks.truststore.password`
+
+These labels mirror the properties available for xref:reference:features/ssl.adoc#features.ssl.jks[SSL bundles].
+
+For PEM based keystores and truststores, you can use the following container labels:
+
+* `org.springframework.boot.sslbundle.pem.key.alias`
+* `org.springframework.boot.sslbundle.pem.key.password`
+* `org.springframework.boot.sslbundle.pem.options.ciphers`
+* `org.springframework.boot.sslbundle.pem.options.enabled-protocols`
+* `org.springframework.boot.sslbundle.pem.protocol`
+
+* `org.springframework.boot.sslbundle.pem.keystore.type`
+* `org.springframework.boot.sslbundle.pem.keystore.certificate`
+* `org.springframework.boot.sslbundle.pem.keystore.private-key`
+* `org.springframework.boot.sslbundle.pem.keystore.private-key-password`
+
+* `org.springframework.boot.sslbundle.pem.truststore.type`
+* `org.springframework.boot.sslbundle.pem.truststore.certificate`
+* `org.springframework.boot.sslbundle.pem.truststore.private-key`
+* `org.springframework.boot.sslbundle.pem.truststore.private-key-password`
+
+These labels mirror the properties available for xref:reference:features/ssl.adoc#features.ssl.pem[SSL bundles].
+
+The following example enables SSL for a redis container:
+
+[source,yaml,]
+----
+services:
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379'
+    secrets:
+      - ssl-ca
+      - ssl-key
+      - ssl-cert
+    command: 'redis-server --tls-port 6379 --port 0 --tls-cert-file /run/secrets/ssl-cert --tls-key-file /run/secrets/ssl-key --tls-ca-cert-file /run/secrets/ssl-ca'
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+secrets:
+  ssl-ca:
+    file: 'ca.crt'
+  ssl-key:
+    file: 'server.key'
+  ssl-cert:
+    file: 'server.crt'
+----
 
 [[features.dev-services.docker-compose.custom-images]]
 === Custom Images
@@ -328,18 +420,18 @@ The `TestMyApplication` class can use the `SpringApplication.from(...)` method t
 
 include-code::launch/TestMyApplication[]
 
-You'll also need to define the `Container` instances that you want to start along with your application.
+You'll also need to define the javadoc:org.testcontainers.containers.Container[] instances that you want to start along with your application.
 To do this, you need to make sure that the `spring-boot-testcontainers` module has been added as a `test` dependency.
-Once that has been done, you can create a `@TestConfiguration` class that declares `@Bean` methods for the containers you want to start.
+Once that has been done, you can create a javadoc:org.springframework.boot.test.context.TestConfiguration[format=annotation] class that declares javadoc:org.springframework.context.annotation.Bean[format=annotation] methods for the containers you want to start.
 
-You can also annotate your `@Bean` methods with `@ServiceConnection` in order to create `ConnectionDetails` beans.
+You can also annotate your javadoc:org.springframework.context.annotation.Bean[format=annotation] methods with javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] in order to create javadoc:org.springframework.boot.autoconfigure.service.connection.ConnectionDetails[] beans.
 See xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[the service connections] section for details of the supported technologies.
 
 A typical Testcontainers configuration would look like this:
 
 include-code::test/MyContainersConfiguration[]
 
-NOTE: The lifecycle of `Container` beans is automatically managed by Spring Boot.
+NOTE: The lifecycle of javadoc:org.testcontainers.containers.Container[] beans is automatically managed by Spring Boot.
 Containers will be started and stopped automatically.
 
 TIP: You can use the configprop:spring.testcontainers.beans.startup[] property to change how containers are started.
@@ -358,22 +450,22 @@ TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootT
 [[features.dev-services.testcontainers.at-development-time.dynamic-properties]]
 ==== Contributing Dynamic Properties at Development Time
 
-If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
-This works in a similar way to the xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource` annotation] that you can use in your tests.
-It allows you to add properties that will become available once your container has started.
+If you want to contribute dynamic properties at development time from your javadoc:org.testcontainers.containers.Container[] javadoc:org.springframework.context.annotation.Bean[format=annotation] methods, define an additional javadoc:org.springframework.test.context.DynamicPropertyRegistrar[] bean.
+The registrar should be defined using a javadoc:org.springframework.context.annotation.Bean[format=annotation] method that injects the container from which the properties will be sourced as a parameter.
+This arrangement ensures that container has been started before the properties are used.
 
 A typical configuration would look like this:
 
 include-code::MyContainersConfiguration[]
 
-NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have `@ServiceConnection` support.
+NOTE: Using a javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] support.
 
 
 
 [[features.dev-services.testcontainers.at-development-time.importing-container-declarations]]
-==== Importing Testcontainer Declaration Classes
+==== Importing Testcontainers Declaration Classes
 
-A common pattern when using Testcontainers is to declare `Container` instances as static fields.
+A common pattern when using Testcontainers is to declare javadoc:org.testcontainers.containers.Container[] instances as static fields.
 Often these fields are defined directly on the test class.
 They can also be declared on a parent class or on an interface that the test implements.
 
@@ -381,22 +473,22 @@ For example, the following `MyContainers` interface declares `mongo` and `neo4j`
 
 include-code::MyContainers[]
 
-If you already have containers defined in this way, or you just prefer this style, you can import these declaration classes rather than defining your containers as `@Bean` methods.
-To do so, add the `@ImportTestcontainers` annotation to your test configuration class:
+If you already have containers defined in this way, or you just prefer this style, you can import these declaration classes rather than defining your containers as javadoc:org.springframework.context.annotation.Bean[format=annotation] methods.
+To do so, add the javadoc:org.springframework.boot.testcontainers.context.ImportTestcontainers[format=annotation] annotation to your test configuration class:
 
 include-code::MyContainersConfiguration[]
 
-TIP: If you don't intend to use the xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[service connections feature] but want to use xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the `@ServiceConnection` annotation from the `Container` fields.
-You can also add `@DynamicPropertySource` annotated methods to your declaration class.
+TIP: If you don't intend to use the xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[service connections feature] but want to use xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] annotation from the javadoc:org.testcontainers.containers.Container[] fields.
+You can also add javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation] annotated methods to your declaration class.
 
 
 
 [[features.dev-services.testcontainers.at-development-time.devtools]]
 ==== Using DevTools with Testcontainers at Development Time
 
-When using devtools, you can annotate beans and bean methods with `@RestartScope`.
+When using devtools, you can annotate beans and bean methods with javadoc:org.springframework.boot.devtools.restart.RestartScope[format=annotation].
 Such beans won't be recreated when the devtools restart the application.
-This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
+This is especially useful for javadoc:org.testcontainers.containers.Container[] beans, as they keep their state despite the application restart.
 
 include-code::MyContainersConfiguration[]
 

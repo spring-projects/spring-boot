@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
@@ -65,16 +66,13 @@ public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailab
 
 	}
 
-	static class GroovyTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
-
-		GroovyTemplateAvailabilityRuntimeHints() {
-			super(GroovyTemplateAvailabilityProperties.class);
-		}
+	static class GroovyTemplateAvailabilityRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			if (ClassUtils.isPresent(REQUIRED_CLASS_NAME, classLoader)) {
-				super.registerHints(hints, classLoader);
+				BindableRuntimeHintsRegistrar.forTypes(GroovyTemplateAvailabilityProperties.class)
+					.registerHints(hints, classLoader);
 			}
 		}
 

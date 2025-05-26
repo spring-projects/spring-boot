@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,8 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class)))
-			.withMessageContaining("PropertySource must not be null");
+			.isThrownBy(() -> new SpringConfigurationPropertySource(null, false, mock(PropertyMapper.class)))
+			.withMessageContaining("'propertySource' must not be null");
 	}
 
 	@Test
@@ -56,7 +57,8 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
+				mapper);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
 
@@ -68,7 +70,8 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
+				mapper);
 		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
 		assertThat(configurationProperty.getOrigin()).hasToString("\"key\" from property source \"test\"");
 		assertThat(configurationProperty.getSource()).isEqualTo(adapter);
@@ -82,7 +85,8 @@ class SpringConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, mapper);
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
+				mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin()).hasToString("TestOrigin key");
 	}
 
@@ -91,7 +95,7 @@ class SpringConfigurationPropertySourceTests {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("foo.bar", "value");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource,
+		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
 				DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
 			.isEqualTo(ConfigurationPropertyState.UNKNOWN);
@@ -100,7 +104,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void fromWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SpringConfigurationPropertySource.from(null))
-			.withMessageContaining("Source must not be null");
+			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
@@ -239,7 +243,7 @@ class SpringConfigurationPropertySourceTests {
 
 		@Override
 		public Object getProperty(String name) {
-			name = name.toLowerCase();
+			name = name.toLowerCase(Locale.ROOT);
 			if (!name.startsWith(this.prefix)) {
 				return null;
 			}

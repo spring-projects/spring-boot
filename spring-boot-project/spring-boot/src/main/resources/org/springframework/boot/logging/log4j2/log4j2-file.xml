@@ -34,22 +34,22 @@
 				<ThresholdFilter level="${sys:FILE_LOG_THRESHOLD:-TRACE}"/>
 			</Filters>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="10 MB" />
+				<SizeBasedTriggeringPolicy size="10 MB"/>
 			</Policies>
 		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Logger name="org.apache.catalina.startup.DigesterFactory" level="error" />
-		<Logger name="org.apache.catalina.util.LifecycleBase" level="error" />
-		<Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
-		<Logger name="org.apache.sshd.common.util.SecurityUtils" level="warn"/>
-		<Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
-		<Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error" />
-		<Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
-		<Logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
-		<Root level="info">
-			<AppenderRef ref="Console" />
-			<AppenderRef ref="File" />
+		<Logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
+		<Logger name="org.apache.catalina.util.LifecycleBase" level="ERROR"/>
+		<Logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+		<Logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
+		<Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
+		<Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
+		<Logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
+		<Logger name="org.springframework.boot.actuate.endpoint.jmx" level="WARN"/>
+		<Root level="INFO">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="File"/>
 		</Root>
 	</Loggers>
 </Configuration>

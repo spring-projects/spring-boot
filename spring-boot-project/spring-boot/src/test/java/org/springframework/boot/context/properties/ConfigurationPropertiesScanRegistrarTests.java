@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package org.springframework.boot.context.properties;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.boot.context.properties.scan.combined.c.CombinedConfiguration;
 import org.springframework.boot.context.properties.scan.combined.d.OtherCombinedConfiguration;
@@ -56,9 +56,9 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties");
 		BeanDefinition barDefinition = this.beanFactory.getBeanDefinition(
 				"bar-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$BarProperties");
-		assertThat(bingDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
-		assertThat(fooDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
-		assertThat(barDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.VALUE_OBJECT));
+		assertThat(bingDefinition).satisfies(hasBindMethod(BindMethod.JAVA_BEAN));
+		assertThat(fooDefinition).satisfies(hasBindMethod(BindMethod.JAVA_BEAN));
+		assertThat(barDefinition).satisfies(hasBindMethod(BindMethod.VALUE_OBJECT));
 	}
 
 	@Test
@@ -67,9 +67,12 @@ class ConfigurationPropertiesScanRegistrarTests {
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(
 				getAnnotationMetadata(ConfigurationPropertiesScanConfiguration.TestConfiguration.class), beanFactory);
-		BeanDefinition fooDefinition = beanFactory.getBeanDefinition(
-				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties");
-		assertThat(fooDefinition).isExactlyInstanceOf(RootBeanDefinition.class);
+		assertThat(beanFactory.containsBeanDefinition(
+				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties"))
+			.isTrue();
+		assertThat(beanFactory.getBeanDefinitionNames())
+			.filteredOn((name) -> name.toLowerCase(Locale.ENGLISH).contains("fooproperties"))
+			.hasSize(1);
 	}
 
 	@Test
@@ -88,11 +91,11 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties");
 		BeanDefinition bSecondDefinition = beanFactory.getBeanDefinition(
 				"b.second-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BSecondProperties");
-		assertThat(aDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
+		assertThat(aDefinition).satisfies(hasBindMethod(BindMethod.JAVA_BEAN));
 		// Constructor injection
-		assertThat(bFirstDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.VALUE_OBJECT));
+		assertThat(bFirstDefinition).satisfies(hasBindMethod(BindMethod.VALUE_OBJECT));
 		// Post-processing injection
-		assertThat(bSecondDefinition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
+		assertThat(bSecondDefinition).satisfies(hasBindMethod(BindMethod.JAVA_BEAN));
 	}
 
 	@Test
@@ -112,9 +115,8 @@ class ConfigurationPropertiesScanRegistrarTests {
 		assertThat(beanFactory.getBeanDefinitionCount()).isZero();
 	}
 
-	private Consumer<BeanDefinition> configurationPropertiesBeanDefinition(BindMethod bindMethod) {
+	private Consumer<BeanDefinition> hasBindMethod(BindMethod bindMethod) {
 		return (definition) -> {
-			assertThat(definition).isExactlyInstanceOf(RootBeanDefinition.class);
 			assertThat(definition.hasAttribute(BindMethod.class.getName())).isTrue();
 			assertThat(definition.getAttribute(BindMethod.class.getName())).isEqualTo(bindMethod);
 		};

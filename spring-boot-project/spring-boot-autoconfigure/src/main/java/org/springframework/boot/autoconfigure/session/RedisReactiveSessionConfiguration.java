@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -28,7 +29,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
+import org.springframework.session.data.redis.ReactiveRedisIndexedSessionRepository;
 import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
+import org.springframework.session.data.redis.config.ConfigureReactiveRedisAction;
+import org.springframework.session.data.redis.config.annotation.ConfigureNotifyKeyspaceEventsReactiveAction;
+import org.springframework.session.data.redis.config.annotation.web.server.RedisIndexedWebSessionConfiguration;
 import org.springframework.session.data.redis.config.annotation.web.server.RedisWebSessionConfiguration;
 
 /**
@@ -43,20 +48,58 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @EnableConfigurationProperties(RedisSessionProperties.class)
-@Import(RedisWebSessionConfiguration.class)
 class RedisReactiveSessionConfiguration {
 
-	@Bean
-	ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
-			SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
-			ServerProperties serverProperties) {
-		return (sessionRepository) -> {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
-				.to(sessionRepository::setDefaultMaxInactiveInterval);
-			map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-			map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-		};
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "default",
+			matchIfMissing = true)
+	@Import(RedisWebSessionConfiguration.class)
+	static class DefaultRedisSessionConfiguration {
+
+		@Bean
+		ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
+				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+				ServerProperties serverProperties) {
+			return (sessionRepository) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(sessionProperties
+					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
+				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "indexed")
+	@Import(RedisIndexedWebSessionConfiguration.class)
+	static class IndexedRedisSessionConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		ConfigureReactiveRedisAction configureReactiveRedisAction(RedisSessionProperties redisSessionProperties) {
+			return switch (redisSessionProperties.getConfigureAction()) {
+				case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsReactiveAction();
+				case NONE -> ConfigureReactiveRedisAction.NO_OP;
+			};
+		}
+
+		@Bean
+		ReactiveSessionRepositoryCustomizer<ReactiveRedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+				ServerProperties serverProperties) {
+			return (sessionRepository) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(sessionProperties
+					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
+				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+			};
+		}
+
 	}
 
 }

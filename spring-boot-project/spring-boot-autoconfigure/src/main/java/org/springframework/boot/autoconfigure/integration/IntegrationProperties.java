@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * @author Artem Bilan
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.integration")
+@ConfigurationProperties("spring.integration")
 public class IntegrationProperties {
 
 	private final Channel channel = new Channel();
@@ -130,14 +130,14 @@ public class IntegrationProperties {
 		private boolean throwExceptionOnLateReply = false;
 
 		/**
-		 * A comma-separated list of message header names that should not be populated
-		 * into Message instances during a header copying operation.
+		 * List of message header names that should not be populated into Message
+		 * instances during a header copying operation.
 		 */
 		private List<String> readOnlyHeaders = new ArrayList<>();
 
 		/**
-		 * A comma-separated list of endpoint bean names patterns that should not be
-		 * started automatically during application startup.
+		 * List of endpoint bean names patterns that should not be started automatically
+		 * during application startup.
 		 */
 		private List<String> noAutoStartup = new ArrayList<>();
 
@@ -430,11 +430,10 @@ public class IntegrationProperties {
 		private boolean defaultLoggingEnabled = true;
 
 		/**
-		 * Comma-separated list of simple patterns to match against the names of Spring
-		 * Integration components. When matched, observation instrumentation will be
-		 * performed for the component. Please refer to the javadoc of the smartMatch
-		 * method of Spring Integration's PatternMatchUtils for details of the pattern
-		 * syntax.
+		 * List of simple patterns to match against the names of Spring Integration
+		 * components. When matched, observation instrumentation will be performed for the
+		 * component. Please refer to the javadoc of the smartMatch method of Spring
+		 * Integration's PatternMatchUtils for details of the pattern syntax.
 		 */
 		private List<String> observationPatterns = new ArrayList<>();
 

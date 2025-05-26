@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @since 2.4.0
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of Spring Framework's
  * {@link MockitoBean} and {@link MockitoSpyBean}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
@@ -44,7 +44,7 @@ public class SpringBootMockResolver implements MockResolver {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T getUltimateTargetObject(Object candidate) {
-		Assert.notNull(candidate, "Candidate must not be null");
+		Assert.notNull(candidate, "'candidate' must not be null");
 		try {
 			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised advised) {
 				TargetSource targetSource = advised.getTargetSource();

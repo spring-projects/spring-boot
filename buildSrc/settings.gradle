@@ -1,4 +1,13 @@
 pluginManagement {
+	new File(rootDir.parentFile, "gradle.properties").withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		properties.forEach(settings.ext::set)
+		gradle.rootProject {
+			properties.forEach(project.ext::set)
+		}
+	}
+	evaluate(new File("${rootDir}/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()

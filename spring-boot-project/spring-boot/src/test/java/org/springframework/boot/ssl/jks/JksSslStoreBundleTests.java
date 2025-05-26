@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,18 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
-import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
+import org.springframework.boot.testsupport.ssl.MockPkcs11Security;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link JksSslStoreBundle}.
@@ -63,17 +69,16 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
-	void whenTypePKCS11AndLocationThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("PKCS11", null, "test.jks", null);
-			JksSslStoreDetails trustStoreDetails = null;
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		})
+	void whenTypePKCS11AndLocationGetKeyStoreThrowsException() {
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("PKCS11", null, "test.jks", null);
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getKeyStore)
 			.withMessageContaining(
 					"Unable to create key store: Location is 'test.jks', but must be empty or null for PKCS11 hardware key stores");
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreLocation() {
 		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("classpath:test.jks")
 			.withPassword("secret");
@@ -83,6 +88,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void getTrustStoreWithLocations() {
 		JksSslStoreDetails keyStoreDetails = null;
 		JksSslStoreDetails trustStoreDetails = JksSslStoreDetails.forLocation("classpath:test.jks")
@@ -92,6 +98,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreType() {
 		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
 		JksSslStoreDetails trustStoreDetails = null;
@@ -100,6 +107,7 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasTrustStoreType() {
 		JksSslStoreDetails keyStoreDetails = null;
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
@@ -108,26 +116,35 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasKeyStoreProvider() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
-					"classpath:test.jks", "secret");
-			JksSslStoreDetails trustStoreDetails = null;
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		}).withMessageContaining("com.example.KeyStoreProvider");
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
+				"classpath:test.jks", "secret");
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getKeyStore)
+			.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
+	@WithPackageResources("test.jks")
 	void whenHasTrustStoreProvider() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = null;
-			JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
-					"classpath:test.jks", "secret");
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		}).withMessageContaining("com.example.KeyStoreProvider");
+		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
+				"classpath:test.jks", "secret");
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(null, trustStoreDetails);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getTrustStore)
+			.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
+	void storeCreationIsLazy() {
+		JksSslStoreDetails details = new JksSslStoreDetails(null, null, "does-not-exist", null);
+		JksSslStoreBundle bundle = new JksSslStoreBundle(details, details);
+		assertThatIllegalStateException().isThrownBy(bundle::getKeyStore);
+		assertThatIllegalStateException().isThrownBy(bundle::getTrustStore);
+	}
+
+	@Test
+	@WithPackageResources({ "test.p12", "test.jks" })
 	void whenLocationsAreBase64Encoded() throws IOException {
 		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(encodeFileContent("classpath:test.p12"))
 			.withPassword("secret");
@@ -141,7 +158,8 @@ class JksSslStoreBundleTests {
 	@Test
 	void invalidBase64EncodedLocationThrowsException() {
 		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("base64:not base 64");
-		assertThatIllegalStateException().isThrownBy(() -> new JksSslStoreBundle(keyStoreDetails, null))
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getKeyStore)
 			.withMessageContaining("key store")
 			.withMessageContaining("base64:not base 64")
 			.havingRootCause()
@@ -152,9 +170,21 @@ class JksSslStoreBundleTests {
 	@Test
 	void invalidLocationThrowsException() {
 		JksSslStoreDetails trustStoreDetails = JksSslStoreDetails.forLocation("does-not-exist.p12");
-		assertThatIllegalStateException().isThrownBy(() -> new JksSslStoreBundle(null, trustStoreDetails))
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(null, trustStoreDetails);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getTrustStore)
 			.withMessageContaining("trust store")
 			.withMessageContaining("does-not-exist.p12");
+	}
+
+	@Test
+	@WithPackageResources("test.jks")
+	void usesResourceLoader() {
+		JksSslStoreDetails keyStoreDetails = null;
+		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
+		ResourceLoader resourceLoader = spy(new DefaultResourceLoader());
+		JksSslStoreBundle bundle = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails, resourceLoader);
+		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("jks", "test-alias", "password"));
+		then(resourceLoader).should(atLeastOnce()).getResource("classpath:test.jks");
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias, String keyPassword) {
@@ -172,7 +202,7 @@ class JksSslStoreBundleTests {
 	}
 
 	private String encodeFileContent(String location) throws IOException {
-		Resource resource = new ApplicationResourceLoader().getResource(location);
+		Resource resource = ApplicationResourceLoader.get().getResource(location);
 		byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
 		return "base64:" + Base64.getEncoder().encodeToString(bytes);
 	}

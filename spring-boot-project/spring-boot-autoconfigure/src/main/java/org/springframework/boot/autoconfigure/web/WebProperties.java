@@ -251,8 +251,7 @@ public class WebProperties {
 					private boolean enabled;
 
 					/**
-					 * Comma-separated list of patterns to apply to the content Version
-					 * Strategy.
+					 * List of patterns to apply to the content Version Strategy.
 					 */
 					private String[] paths = new String[] { "/**" };
 
@@ -293,8 +292,7 @@ public class WebProperties {
 					private boolean enabled;
 
 					/**
-					 * Comma-separated list of patterns to apply to the fixed Version
-					 * Strategy.
+					 * List of patterns to apply to the fixed Version Strategy.
 					 */
 					private String[] paths = new String[] { "/**" };
 

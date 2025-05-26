@@ -5,12 +5,93 @@ The https://www.testcontainers.org/[Testcontainers] library provides a way to ma
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 
-Testcontainers can be used in a Spring Boot test as follows:
+In following sections we will describe some of the methods you can use to integrate Testcontainers with your tests.
 
-include-code::vanilla/MyIntegrationTests[]
 
-This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
-In most cases, you will need to configure the application to connect to the service running in the container.
+[[testing.testcontainers.spring-beans]]
+== Using Spring Beans
+
+The containers provided by Testcontainers can be managed by Spring Boot as beans.
+
+To declare a container as a bean, add a javadoc:org.springframework.context.annotation.Bean[format=annotation] method to your test configuration:
+
+include-code::MyTestConfiguration[]
+
+You can then inject and use the container by importing the configuration class in the test class:
+
+include-code::MyIntegrationTests[]
+
+TIP: This method of managing containers is often used in combination with xref:#testing.testcontainers.service-connections[service connection annotations].
+
+
+
+[[testing.testcontainers.junit-extension]]
+== Using the JUnit Extension
+
+Testcontainers provides a JUnit extension which can be used to manage containers in your tests.
+The extension is activated by applying the javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation from Testcontainers to your test class.
+
+You can then use the javadoc:org.testcontainers.junit.jupiter.Container[format=annotation] annotation on static container fields.
+
+The javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation can be used on vanilla JUnit tests, or in combination with javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]:
+
+include-code::MyIntegrationTests[]
+
+The example above will start up a Neo4j container before any of the tests are run.
+The lifecycle of the container instance is managed by Testcontainers, as described in {url-testcontainers-docs}/test_framework_integration/junit_5/#extension[their official documentation].
+
+NOTE: In most cases, you will additionally need to configure the application to connect to the service running in the container.
+
+
+
+[[testing.testcontainers.importing-configuration-interfaces]]
+== Importing Container Configuration Interfaces
+
+A common pattern with Testcontainers is to declare the container instances as static fields in an interface.
+
+For example, the following interface declares two containers, one named `mongo` of type javadoc:org.testcontainers.containers.MongoDBContainer[] and another named `neo4j` of type javadoc:org.testcontainers.containers.Neo4jContainer.Neo4jContainer[]:
+
+include-code::MyContainers[]
+
+When you have containers declared in this way, you can reuse their configuration in multiple tests by having the test classes implement the interface.
+
+It's also possible to use the same interface configuration in your Spring Boot tests.
+To do so, add javadoc:org.springframework.boot.testcontainers.context.ImportTestcontainers[format=annotation] to your test configuration class:
+
+include-code::MyTestConfiguration[]
+
+
+
+[[testing.testcontainers.lifecycle]]
+== Lifecycle of Managed Containers
+
+If you have used the annotations and extensions provided by Testcontainers, then the lifecycle of container instances is managed entirely by Testcontainers.
+Please refer to the {url-testcontainers-docs}[offical Testcontainers documentation] for the information.
+
+When the containers are managed by Spring as beans, then their lifecycle is managed by Spring:
+
+* Container beans are created and started before all other beans.
+
+* Container beans are stopped after the destruction of all other beans.
+
+This process ensures that any beans, which rely on functionality provided by the containers, can use those functionalities.
+It also ensures that they are cleaned up whilst the container is still available.
+
+TIP: When your application beans rely on functionality of containers, prefer configuring the containers as Spring beans to ensure the correct lifecycle behavior.
+
+NOTE: Having containers managed by Testcontainers instead of as Spring beans provides no guarantee of the order in which beans and containers will shutdown.
+It can happen that containers are shutdown before the beans relying on container functionality are cleaned up.
+This can lead to exceptions being thrown by client beans, for example, due to loss of connection.
+
+Container beans are created and started once per application context managed by Spring's TestContext Framework.
+For details about how TestContext Framework manages the underlying application contexts and beans therein, please refer to the {url-spring-framework-docs}[Spring Framework documentation].
+
+Container beans are stopped as part of the TestContext Framework's standard application context shutdown process.
+When the application context gets shutdown, the containers are shutdown as well.
+This usually happens after all tests using that specific cached application context have finished executing.
+It may also happen earlier, depending on the caching behavior configured in TestContext Framework.
+
+NOTE: A single test container instance can, and often is, retained across execution of tests from multiple test classes.
 
 
 
@@ -25,105 +106,141 @@ When using Testcontainers, connection details can be automatically created for a
 
 include-code::MyIntegrationTests[]
 
-Thanks to `@ServiceConnection`, the above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
-This is done by automatically defining a `Neo4jConnectionDetails` bean which is then used by the Neo4j auto-configuration, overriding any connection-related configuration properties.
+Thanks to javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation], the above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
+This is done by automatically defining a javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[] bean which is then used by the Neo4j auto-configuration, overriding any connection-related configuration properties.
 
 NOTE: You'll need to add the `spring-boot-testcontainers` module as a test dependency in order to use service connections with Testcontainers.
 
-Service connection annotations are processed by `ContainerConnectionDetailsFactory` classes registered with `spring.factories`.
-A `ContainerConnectionDetailsFactory` can create a `ConnectionDetails` bean based on a specific `Container` subclass, or the Docker image name.
+Service connection annotations are processed by javadoc:org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory[] classes registered with `spring.factories`.
+A javadoc:org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory[] can create a javadoc:org.springframework.boot.autoconfigure.service.connection.ConnectionDetails[] bean based on a specific javadoc:org.testcontainers.containers.Container[] subclass, or the Docker image name.
 
 The following service connection factories are provided in the `spring-boot-testcontainers` jar:
 
 |===
 | Connection Details | Matched on
 
-| `ActiveMQConnectionDetails`
-| Containers named "symptoma/activemq" or `ActiveMQContainer`
+| javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails[]
+| Containers named "symptoma/activemq" or javadoc:org.testcontainers.activemq.ActiveMQContainer[]
 
-| `ArtemisConnectionDetails`
-| Containers of type `ArtemisContainer`
+| javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.activemq.ArtemisContainer[]
 
-| `CassandraConnectionDetails`
-| Containers of type `CassandraContainer`
+| javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.cassandra.CassandraContainer[]
 
-| `CouchbaseConnectionDetails`
-| Containers of type `CouchbaseContainer`
+| javadoc:org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.couchbase.CouchbaseContainer[]
 
-| `ElasticsearchConnectionDetails`
-| Containers of type `ElasticsearchContainer`
+| javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.elasticsearch.ElasticsearchContainer[]
 
-| `FlywayConnectionDetails`
-| Containers of type `JdbcDatabaseContainer`
+| javadoc:org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
-| `JdbcConnectionDetails`
-| Containers of type `JdbcDatabaseContainer`
+| javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
-| `KafkaConnectionDetails`
-| Containers of type `org.testcontainers.containers.KafkaContainer`, `org.testcontainers.kafka.KafkaContainer` or `RedpandaContainer`
+| javadoc:org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.kafka.KafkaContainer[], javadoc:org.testcontainers.kafka.ConfluentKafkaContainer[] or javadoc:org.testcontainers.redpanda.RedpandaContainer[]
 
-| `LiquibaseConnectionDetails`
-| Containers of type `JdbcDatabaseContainer`
+| javadoc:org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails[]
+| Containers named "osixia/openldap" or of type javadoc:org.testcontainers.ldap.LLdapContainer[]
 
-| `MongoConnectionDetails`
-| Containers of type `MongoDBContainer`
+| javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
-| `Neo4jConnectionDetails`
-| Containers of type `Neo4jContainer`
+| javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[]
 
-| `OtlpMetricsConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
-| `OtlpTracingConnectionDetails`
+| javadoc:org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
-| `PulsarConnectionDetails`
-| Containers of type `PulsarContainer`
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails[]
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
-| `R2dbcConnectionDetails`
-| Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
+| javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-pulsar-javadoc}/org.testcontainers.containers.PulsarContainer[]
 
-| `RabbitConnectionDetails`
-| Containers of type `RabbitMQContainer`
+| javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
+| Containers of type `ClickHouseContainer`, javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.containers.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.containers.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.containers.MySQLContainer[], javadoc:{url-testcontainers-oracle-free-javadoc}/org.testcontainers.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.oracle.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[]
 
-| `RedisConnectionDetails`
-| Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
+| javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[]
 
-| `ZipkinConnectionDetails`
+| javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
+| Containers of type javadoc:com.redis.testcontainers.RedisContainer[] or javadoc:com.redis.testcontainers.RedisStackContainer[], or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin"
 |===
 
 [TIP]
 ====
-By default all applicable connection details beans will be created for a given `Container`.
-For example, a `PostgreSQLContainer` will create both `JdbcConnectionDetails` and `R2dbcConnectionDetails`.
+By default all applicable connection details beans will be created for a given javadoc:org.testcontainers.containers.Container[].
+For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[] will create both javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[] and javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[].
 
-If you want to create only a subset of the applicable types, you can use the `type` attribute of `@ServiceConnection`.
+If you want to create only a subset of the applicable types, you can use the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
 ====
 
 By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.
 The repository portion of the Docker image name ignores any registry and the version.
-This works as long as Spring Boot is able to get the instance of the `Container`, which is the case when using a `static` field like in the example above.
+This works as long as Spring Boot is able to get the instance of the javadoc:org.testcontainers.containers.Container[], which is the case when using a `static` field like in the example above.
 
-If you're using a `@Bean` method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
+If you're using a javadoc:org.springframework.context.annotation.Bean[format=annotation] method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
 Instead, the return type of the bean method is used to find out which connection detail should be used.
-This works as long as you're using typed containers, e.g. `Neo4jContainer` or `RabbitMQContainer`.
-This stops working if you're using `GenericContainer`, e.g. with Redis, as shown in the following example:
+This works as long as you're using typed containers such as javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[] or javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[].
+This stops working if you're using javadoc:org.testcontainers.containers.GenericContainer[], for example with Redis as shown in the following example:
 
 include-code::MyRedisConfiguration[]
 
-Spring Boot can't tell from `GenericContainer` which container image is used, so the `name` attribute from `@ServiceConnection` must be used to provide that hint.
+Spring Boot can't tell from javadoc:org.testcontainers.containers.GenericContainer[] which container image is used, so the `name` attribute from javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] must be used to provide that hint.
 
-You can also use the `name` attribute of `@ServiceConnection` to override which connection detail will be used, for example when using custom images.
-If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure `RedisConnectionDetails` are created.
+You can also use the `name` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] to override which connection detail will be used, for example when using custom images.
+If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[] are created.
+
+
+
+[[testing.testcontainers.service-connections.ssl]]
+=== SSL with Service Connections
+
+You can use the javadoc:org.springframework.boot.testcontainers.service.connection.Ssl[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.JksKeyStore[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.JksTrustStore[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] and javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotations on a supported container to enable SSL support for that service connection.
+Please note that you still have to enable SSL on the service which is running inside the Testcontainer yourself, the annotations only configure SSL on the client side in your application.
+
+include-code::MyRedisWithSslIntegrationTests[]
+
+The above code uses the javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] annotation to load the client certificate and key into the keystore and the and javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotation to load the CA certificate into the truststore.
+This will authenticate the client against the server, and the CA certificate in the truststore makes sure that the server certificate is valid and trusted.
+
+The `SecureRedisContainer` in this example is a custom subclass of `RedisContainer` which copies certificates to the correct places and invokes `redis-server` with commandline parameters enabling SSL.
+
+The SSL annotations are supported for the following service connections:
+
+* Cassandra
+* Couchbase
+* Elasticsearch
+* Kafka
+* MongoDB
+* RabbitMQ
+* Redis
+
+The `ElasticsearchContainer` additionally supports automatic detection of server side SSL.
+To use this feature, annotate the container with javadoc:org.springframework.boot.testcontainers.service.connection.Ssl[format=annotation], as seen in the following example, and Spring Boot takes care of the client side SSL configuration for you:
+
+include-code::MyElasticsearchWithSslIntegrationTests[]
 
 
 
 [[testing.testcontainers.dynamic-properties]]
 == Dynamic Properties
 
-A slightly more verbose but also more flexible alternative to service connections is `@DynamicPropertySource`.
-A static `@DynamicPropertySource` method allows adding dynamic property values to the Spring Environment.
+A slightly more verbose but also more flexible alternative to service connections is javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation].
+A static javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation] method allows adding dynamic property values to the Spring Environment.
 
 include-code::MyIntegrationTests[]
 

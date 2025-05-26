@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
@@ -13,17 +12,23 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.zaxxer:HikariCP")
 	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("com.h2database:h2")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.postgresql:postgresql")
 	dockerTestImplementation("org.testcontainers:cassandra")
 	dockerTestImplementation("org.testcontainers:couchbase")
 	dockerTestImplementation("org.testcontainers:elasticsearch")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:postgresql")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
@@ -86,7 +91,7 @@ dependencies {
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("io.lettuce:lettuce-core")
-	testImplementation("io.micrometer:micrometer-registry-prometheus-simpleclient")
+	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
@@ -101,18 +106,25 @@ dependencies {
 	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
-	testImplementation("org.jooq:jooq") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	testImplementation("org.jooq:jooq")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.opensaml:opensaml-core:4.0.1")
+	testImplementation("org.opensaml:opensaml-saml-api:4.0.1")
+	testImplementation("org.opensaml:opensaml-saml-impl:4.0.1")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
+	testImplementation("org.springframework.security:spring-security-saml2-service-provider") {
+		exclude group: "org.opensaml", module: "opensaml-core"
+		exclude group: "org.opensaml", module: "opensaml-saml-api"
+		exclude group: "org.opensaml", module: "opensaml-saml-impl"
+	}
 	testImplementation("org.thymeleaf:thymeleaf")
 }
 
@@ -130,7 +142,7 @@ test {
 	include "**/*Tests.class"
 }
 
-task testSliceMetadata(type: org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
+tasks.register("testSliceMetadata", org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
 	sourceSet = sourceSets.main
-	outputFile = file("${buildDir}/test-slice-metadata.properties")
+	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
 }

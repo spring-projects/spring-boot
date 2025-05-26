@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
@@ -30,7 +33,7 @@ import org.springframework.util.MimeType;
  * @author Dave Syer
  * @since 1.2.2
  */
-@ConfigurationProperties(prefix = "spring.mustache")
+@ConfigurationProperties("spring.mustache")
 public class MustacheProperties {
 
 	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
@@ -41,7 +44,7 @@ public class MustacheProperties {
 
 	public static final String DEFAULT_SUFFIX = ".mustache";
 
-	private final Servlet servlet = new Servlet();
+	private final Servlet servlet = new Servlet(this::getCharset);
 
 	private final Reactive reactive = new Reactive();
 
@@ -190,6 +193,16 @@ public class MustacheProperties {
 		 */
 		private boolean exposeSpringMacroHelpers = true;
 
+		private final Supplier<Charset> charset;
+
+		public Servlet() {
+			this.charset = () -> null;
+		}
+
+		private Servlet(Supplier<Charset> charset) {
+			this.charset = charset;
+		}
+
 		public boolean isAllowRequestOverride() {
 			return this.allowRequestOverride;
 		}
@@ -215,6 +228,15 @@ public class MustacheProperties {
 		}
 
 		public MimeType getContentType() {
+			if (this.contentType != null && this.contentType.getCharset() == null) {
+				Charset charset = this.charset.get();
+				if (charset != null) {
+					Map<String, String> parameters = new LinkedHashMap<>();
+					parameters.put("charset", charset.name());
+					parameters.putAll(this.contentType.getParameters());
+					return new MimeType(this.contentType, parameters);
+				}
+			}
 			return this.contentType;
 		}
 

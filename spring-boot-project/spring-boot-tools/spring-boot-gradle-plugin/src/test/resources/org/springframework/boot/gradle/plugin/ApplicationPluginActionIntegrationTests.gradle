@@ -16,9 +16,9 @@ task('taskExists') {
 }
 
 task('distributionExists') {
+	def distributions = project.extensions.findByType(DistributionContainer)
 	doFirst {
-		boolean found = project.hasProperty('distributions') &&
-				distributions.findByName(distributionName) != null
+		boolean found = distributions != null && distributions.findByName(distributionName) != null
 		println "${distributionName} exists = ${found}"
 	}
 }

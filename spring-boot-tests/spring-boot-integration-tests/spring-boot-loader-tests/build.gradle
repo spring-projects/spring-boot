@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.docker-test"
 	id "de.undercouch.download"
 }
@@ -27,36 +26,36 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:testcontainers")
 }
 
-task syncMavenRepository(type: Sync) {
+tasks.register("syncMavenRepository", Sync) {
 	from configurations.app
-	into "${buildDir}/docker-test-maven-repository"
+	into layout.buildDirectory.dir("docker-test-maven-repository")
 }
 
-task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-loader-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-tests-app"))
 }
 
-task buildApp(type: GradleBuild) {
+tasks.register("buildApp", GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-loader-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-loader-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
 
-task syncSignedJarAppSource(type: org.springframework.boot.build.SyncAppSource) {
+tasks.register("syncSignedJarAppSource", org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-loader-tests-signed-jar")
-	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-signed-jar")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-tests-signed-jar"))
 }
 
-task buildSignedJarApp(type: GradleBuild) {
+tasks.register("buildSignedJarApp", GradleBuild) {
 	dependsOn syncSignedJarAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-loader-tests-signed-jar"
+	dir = layout.buildDirectory.dir("spring-boot-loader-tests-signed-jar")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
 
-task downloadJdk(type: Download) {
+tasks.register("downloadJdk", Download) {
 	def destFolder = new File(project.gradle.gradleUserHomeDir, "caches/springboot/downloads/jdk/oracle")
 	destFolder.mkdirs()
 	src "https://download.oracle.com/java/17/archive/jdk-${oracleJdkVersion}_linux-${oracleJdkArch}_bin.tar.gz"
@@ -66,11 +65,11 @@ task downloadJdk(type: Download) {
 	retries 3
 }
 
-task syncJdkDownloads(type: Sync) {
+tasks.register("syncJdkDownloads", Sync) {
 	dependsOn downloadJdk
 	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/oracle/"
 	include "jdk-${oracleJdkVersion}_linux-${oracleJdkArch}_bin.tar.gz"
-	into "${project.buildDir}/downloads/jdk/oracle/"
+	into layout.buildDirectory.dir("downloads/jdk/oracle/")
 }
 
 tasks.named("processDockerTestResources").configure {

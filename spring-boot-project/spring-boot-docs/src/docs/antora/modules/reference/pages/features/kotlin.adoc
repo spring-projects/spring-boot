@@ -33,8 +33,8 @@ TIP: These dependencies and plugins are provided by default if one bootstraps a 
 == Null-safety
 
 One of Kotlin's key features is {url-kotlin-docs}/null-safety.html[null-safety].
-It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a `NullPointerException`.
-This helps to eliminate a common source of bugs without paying the cost of wrappers like `Optional`.
+It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a javadoc:java.lang.NullPointerException[].
+This helps to eliminate a common source of bugs without paying the cost of wrappers like javadoc:java.util.Optional[].
 Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
 Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
@@ -92,7 +92,7 @@ runApplication<MyApplication>(*args) {
 Kotlin {url-kotlin-docs}/extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
 The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
 
-`TestRestTemplate` extensions, similar to those provided by Spring Framework for `RestOperations` in Spring Framework, are provided.
+javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
 Among other things, the extensions make it possible to take advantage of Kotlin reified type parameters.
 
 
@@ -114,8 +114,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 [[features.kotlin.configuration-properties]]
 == @ConfigurationProperties
-
-`@ConfigurationProperties` when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports classes with immutable `val` properties as shown in the following example:
+javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports data classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin]
 ----
@@ -132,6 +131,10 @@ data class KotlinExampleProperties(
 }
 ----
 
+Due to the limitations of their interoperability with Java, support for value classes is limited.
+In particular, relying upon a value class's default value will not work with configuration property binding.
+In such cases, a data class should be used instead.
+
 TIP: To generate xref:specification:configuration-metadata/annotation-processor.adoc[your own metadata] using the annotation processor, {url-kotlin-docs}/kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
@@ -142,10 +145,10 @@ Note that some features (such as detecting the default value or deprecated items
 
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
-This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
+This makes it possible to use javadoc:org.junit.jupiter.api.BeforeAll[format=annotation] and javadoc:org.junit.jupiter.api.AfterAll[format=annotation] annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
-If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockitoBean` and `@MockitoSpyBean` annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
+If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockitoBean` and javadoc:org.springframework.test.context.bean.override.mockito.MockitoSpyBean[format=annotation] annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
 
 
 

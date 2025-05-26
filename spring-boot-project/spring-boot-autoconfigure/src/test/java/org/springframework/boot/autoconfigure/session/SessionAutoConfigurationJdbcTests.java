@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.time.Duration;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,6 +38,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,13 +65,19 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-				MongoIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
-		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-				SessionAutoConfiguration.class))
-		.withPropertyValues("spring.datasource.generate-unique-name=true");
+	private WebApplicationContextRunner contextRunner;
+
+	@BeforeEach
+	void prepareRunner() {
+		this.contextRunner = new WebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader(Thread.currentThread().getContextClassLoader(),
+					HazelcastIndexedSessionRepository.class, MongoIndexedSessionRepository.class,
+					RedisIndexedSessionRepository.class))
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+					SessionAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true");
+	}
 
 	@Test
 	void defaultConfig() {
@@ -127,9 +135,8 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 
 	@Test
 	void customTableName() {
-		this.contextRunner
-			.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
-					"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+		this.contextRunner.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
+				"spring.session.jdbc.schema=classpath:org/springframework/boot/autoconfigure/session/custom-schema-h2.sql")
 			.run((context) -> {
 				JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 						JdbcIndexedSessionRepository.class);
@@ -211,6 +218,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	}
 
 	@Test
+	@WithResource(name = "db/changelog/db.changelog-master.yaml", content = "databaseChangeLog:")
 	void sessionRepositoryBeansDependOnLiquibase() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 			.withPropertyValues("spring.session.jdbc.initialize-schema=never")

@@ -29,11 +29,10 @@ Please don't report security vulnerabilities using GitHub issues, instead head o
 
 
 
-== Sign the Contributor License Agreement
+== Include a Signed Off By Trailer
 
-Before we accept a non-trivial patch or pull request we will need you to https://cla.pivotal.io/sign/spring[sign the Contributor License Agreement].
-Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does mean that we can accept your contributions, and you will get an author credit if we do.
-Active contributors might be asked to join the core team, and given the ability to merge pull requests.
+All commits must include a __Signed-off-by__ trailer at the end of each commit message to indicate that the contributor agrees to the Developer Certificate of Origin.
+For additional details, please refer to the blog post https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring[Hello DCO, Goodbye CLA: Simplifying Contributions to Spring].
 
 
 
@@ -43,7 +42,7 @@ None of these is essential for a pull request, but they will all help.  They can
 added after the original pull request but before a merge.
 
 * We use the https://github.com/spring-io/spring-javaformat/[Spring JavaFormat] project to apply code formatting conventions.
-  If you use Eclipse and you follow the '`Importing into eclipse`' instructions below you should get project specific formatting automatically.
+  If you use Eclipse and you follow the https://github.com/spring-projects/spring-boot/wiki/Working-with-the-Code#importing-into-eclipse["Importing into Eclipse"] instructions you should get project-specific formatting automatically.
   You can also install the https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ Plugin] or format the code from the Gradle build by running `./gradlew format`.
   Note that if you have format violations in `buildSrc`, you can fix them by running `./gradlew -p buildSrc format` from the project root directory.
 * The build includes Checkstyle rules for many of our code conventions. Run `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are compliant.

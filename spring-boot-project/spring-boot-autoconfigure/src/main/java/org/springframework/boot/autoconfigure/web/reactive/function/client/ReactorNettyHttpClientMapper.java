@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import reactor.netty.http.client.HttpClient;
 
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorBuilderCustomizer;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 
@@ -30,8 +32,12 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @author Phillip Webb
  * @since 2.3.0
+ * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+ * {@link ClientHttpConnectorBuilderCustomizer} or declaring a pre-configured
+ * {@link ClientHttpConnectorBuilder} bean
  */
 @FunctionalInterface
+@Deprecated(since = "3.5.0", forRemoval = true)
 public interface ReactorNettyHttpClientMapper {
 
 	/**
@@ -48,7 +54,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(Collection<ReactorNettyHttpClientMapper> mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return of(mappers.toArray(ReactorNettyHttpClientMapper[]::new));
 	}
 
@@ -59,7 +65,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(ReactorNettyHttpClientMapper... mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return (httpClient) -> {
 			for (ReactorNettyHttpClientMapper mapper : mappers) {
 				httpClient = mapper.configure(httpClient);

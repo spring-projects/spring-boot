@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,29 @@
 
 package org.springframework.boot.info;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.lang.management.PlatformManagedObject;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import org.springframework.util.ClassUtils;
 
 /**
  * Information about the process of the application.
  *
  * @author Jonatan Ivanov
+ * @author Andrey Litvitski
  * @since 3.3.0
  */
 public class ProcessInfo {
+
+	private static final String VIRTUAL_THREAD_SCHEDULER_CLASS = "jdk.management.VirtualThreadSchedulerMXBean";
+
+	private static final boolean VIRTUAL_THREAD_SCHEDULER_CLASS_PRESENT = ClassUtils
+		.isPresent(VIRTUAL_THREAD_SCHEDULER_CLASS, null);
 
 	private static final Runtime runtime = Runtime.getRuntime();
 
@@ -72,6 +84,41 @@ public class ProcessInfo {
 		return new MemoryInfo();
 	}
 
+	/**
+	 * Virtual threads information for the process. These values provide details about the
+	 * current state of virtual threads, including the number of mounted threads, queued
+	 * threads, the parallelism level, and the thread pool size.
+	 * @return an instance of {@link VirtualThreadsInfo} containing information about
+	 * virtual threads, or {@code null} if the VirtualThreadSchedulerMXBean is not
+	 * available
+	 * @since 3.5.0
+	 */
+	@SuppressWarnings("unchecked")
+	public VirtualThreadsInfo getVirtualThreads() {
+		if (!VIRTUAL_THREAD_SCHEDULER_CLASS_PRESENT) {
+			return null;
+		}
+		try {
+			Class<PlatformManagedObject> mxbeanClass = (Class<PlatformManagedObject>) ClassUtils
+				.forName(VIRTUAL_THREAD_SCHEDULER_CLASS, null);
+			PlatformManagedObject mxbean = ManagementFactory.getPlatformMXBean(mxbeanClass);
+			int mountedVirtualThreadCount = invokeMethod(mxbeanClass, mxbean, "getMountedVirtualThreadCount");
+			long queuedVirtualThreadCount = invokeMethod(mxbeanClass, mxbean, "getQueuedVirtualThreadCount");
+			int parallelism = invokeMethod(mxbeanClass, mxbean, "getParallelism");
+			int poolSize = invokeMethod(mxbeanClass, mxbean, "getPoolSize");
+			return new VirtualThreadsInfo(mountedVirtualThreadCount, queuedVirtualThreadCount, parallelism, poolSize);
+		}
+		catch (ReflectiveOperationException ex) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T invokeMethod(Class<?> mxbeanClass, Object mxbean, String name) throws ReflectiveOperationException {
+		Method method = mxbeanClass.getMethod(name);
+		return (T) method.invoke(mxbean);
+	}
+
 	public long getPid() {
 		return this.pid;
 	}
@@ -85,6 +132,46 @@ public class ProcessInfo {
 	}
 
 	/**
+	 * Virtual threads information.
+	 *
+	 * @since 3.5.0
+	 */
+	public static class VirtualThreadsInfo {
+
+		private final int mounted;
+
+		private final long queued;
+
+		private final int parallelism;
+
+		private final int poolSize;
+
+		VirtualThreadsInfo(int mounted, long queued, int parallelism, int poolSize) {
+			this.mounted = mounted;
+			this.queued = queued;
+			this.parallelism = parallelism;
+			this.poolSize = poolSize;
+		}
+
+		public int getMounted() {
+			return this.mounted;
+		}
+
+		public long getQueued() {
+			return this.queued;
+		}
+
+		public int getParallelism() {
+			return this.parallelism;
+		}
+
+		public int getPoolSize() {
+			return this.poolSize;
+		}
+
+	}
+
+	/**
 	 * Memory information.
 	 *
 	 * @since 3.4.0
@@ -93,13 +180,19 @@ public class ProcessInfo {
 
 		private static final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
 
+		private static final List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory
+			.getGarbageCollectorMXBeans();
+
 		private final MemoryUsageInfo heap;
 
 		private final MemoryUsageInfo nonHeap;
 
+		private final List<GarbageCollectorInfo> garbageCollectors;
+
 		MemoryInfo() {
 			this.heap = new MemoryUsageInfo(memoryMXBean.getHeapMemoryUsage());
 			this.nonHeap = new MemoryUsageInfo(memoryMXBean.getNonHeapMemoryUsage());
+			this.garbageCollectors = garbageCollectorMXBeans.stream().map(GarbageCollectorInfo::new).toList();
 		}
 
 		public MemoryUsageInfo getHeap() {
@@ -108,6 +201,20 @@ public class ProcessInfo {
 
 		public MemoryUsageInfo getNonHeap() {
 			return this.nonHeap;
+		}
+
+		/**
+		 * Garbage Collector information for the process. This list provides details about
+		 * the currently used GC algorithms selected by the user or JVM ergonomics. It
+		 * might not be trivial to know the used GC algorithms since that usually depends
+		 * on the {@link Runtime#availableProcessors()} (see:
+		 * {@link ProcessInfo#getCpus()}) and the available memory (see:
+		 * {@link MemoryUsageInfo}).
+		 * @return {@link List} of {@link GarbageCollectorInfo}.
+		 * @since 3.5.0
+		 */
+		public List<GarbageCollectorInfo> getGarbageCollectors() {
+			return this.garbageCollectors;
 		}
 
 		public static class MemoryUsageInfo {
@@ -126,12 +233,38 @@ public class ProcessInfo {
 				return this.memoryUsage.getUsed();
 			}
 
-			public long getCommited() {
+			public long getCommitted() {
 				return this.memoryUsage.getCommitted();
 			}
 
 			public long getMax() {
 				return this.memoryUsage.getMax();
+			}
+
+		}
+
+		/**
+		 * Garbage collection information.
+		 *
+		 * @since 3.5.0
+		 */
+		public static class GarbageCollectorInfo {
+
+			private final String name;
+
+			private final long collectionCount;
+
+			GarbageCollectorInfo(GarbageCollectorMXBean garbageCollectorMXBean) {
+				this.name = garbageCollectorMXBean.getName();
+				this.collectionCount = garbageCollectorMXBean.getCollectionCount();
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public long getCollectionCount() {
+				return this.collectionCount;
 			}
 
 		}

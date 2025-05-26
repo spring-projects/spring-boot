@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,13 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
+import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -73,7 +76,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
 					Collections.emptyList(), Collections.emptyList()))
-			.withMessageContaining("ApplicationContext must not be null");
+			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
@@ -81,7 +84,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null, Collections.emptyList(),
 					Collections.emptyList()))
-			.withMessageContaining("ParameterValueMapper must not be null");
+			.withMessageContaining("'parameterValueMapper' must not be null");
 	}
 
 	@Test
@@ -89,7 +92,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 					mock(ParameterValueMapper.class), null, Collections.emptyList()))
-			.withMessageContaining("InvokerAdvisors must not be null");
+			.withMessageContaining("'invokerAdvisors' must not be null");
 	}
 
 	@Test
@@ -97,7 +100,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 					mock(ParameterValueMapper.class), Collections.emptyList(), null))
-			.withMessageContaining("Filters must not be null");
+			.withMessageContaining("'endpointFilters' must not be null");
 	}
 
 	@Test
@@ -251,16 +254,30 @@ class EndpointDiscovererTests {
 	}
 
 	@Test
-	void getEndpointsShouldApplyFilters() {
+	void getEndpointsShouldApplyEndpointFilters() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
 				EndpointId id = endpoint.getEndpointId();
 				return !id.equals(EndpointId.of("specialized")) && !id.equals(EndpointId.of("specialized-superclass"));
 			};
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context,
-					Collections.singleton(filter));
+					Collections.singleton(filter), Collections.emptyList());
 			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
+		});
+	}
+
+	@Test
+	void getEndpointsShouldApplyOperationFilters() {
+		load(SpecializedEndpointsConfiguration.class, (context) -> {
+			OperationFilter<SpecializedOperation> operationFilter = (operation, endpointId,
+					defaultAccess) -> operation.getType() == OperationType.READ;
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context,
+					Collections.emptyList(), List.of(operationFilter));
+			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints.values())
+				.allSatisfy((endpoint) -> assertThat(endpoint.getOperations()).extracting(SpecializedOperation::getType)
+					.containsOnly(OperationType.READ));
 		});
 	}
 
@@ -536,10 +553,17 @@ class EndpointDiscovererTests {
 		TestEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 				Collection<OperationInvokerAdvisor> invokerAdvisors,
 				Collection<EndpointFilter<TestExposableEndpoint>> filters) {
-			super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
+			super(applicationContext, parameterValueMapper, invokerAdvisors, filters, Collections.emptyList());
 		}
 
 		@Override
+		protected TestExposableEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
+				Collection<TestOperation> operations) {
+			return new TestExposableEndpoint(this, endpointBean, id, defaultAccess, operations);
+		}
+
+		@Override
+		@SuppressWarnings("removal")
 		protected TestExposableEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 				Collection<TestOperation> operations) {
 			return new TestExposableEndpoint(this, endpointBean, id, enabledByDefault, operations);
@@ -563,15 +587,24 @@ class EndpointDiscovererTests {
 			extends EndpointDiscoverer<SpecializedExposableEndpoint, SpecializedOperation> {
 
 		SpecializedEndpointDiscoverer(ApplicationContext applicationContext) {
-			this(applicationContext, Collections.emptyList());
+			this(applicationContext, Collections.emptyList(), Collections.emptyList());
 		}
 
 		SpecializedEndpointDiscoverer(ApplicationContext applicationContext,
-				Collection<EndpointFilter<SpecializedExposableEndpoint>> filters) {
-			super(applicationContext, new ConversionServiceParameterValueMapper(), Collections.emptyList(), filters);
+				Collection<EndpointFilter<SpecializedExposableEndpoint>> filters,
+				Collection<OperationFilter<SpecializedOperation>> operationFilters) {
+			super(applicationContext, new ConversionServiceParameterValueMapper(), Collections.emptyList(), filters,
+					operationFilters);
 		}
 
 		@Override
+		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
+				Collection<SpecializedOperation> operations) {
+			return new SpecializedExposableEndpoint(this, endpointBean, id, defaultAccess, operations);
+		}
+
+		@Override
+		@SuppressWarnings("removal")
 		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean, EndpointId id,
 				boolean enabledByDefault, Collection<SpecializedOperation> operations) {
 			return new SpecializedExposableEndpoint(this, endpointBean, id, enabledByDefault, operations);
@@ -594,6 +627,12 @@ class EndpointDiscovererTests {
 	static class TestExposableEndpoint extends AbstractDiscoveredEndpoint<TestOperation> {
 
 		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
+				Access defaultAccess, Collection<? extends TestOperation> operations) {
+			super(discoverer, endpointBean, id, defaultAccess, operations);
+		}
+
+		@SuppressWarnings("removal")
+		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 				boolean enabledByDefault, Collection<? extends TestOperation> operations) {
 			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}
@@ -602,6 +641,13 @@ class EndpointDiscovererTests {
 
 	static class SpecializedExposableEndpoint extends AbstractDiscoveredEndpoint<SpecializedOperation> {
 
+		@SuppressWarnings("removal")
+		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
+				Access defaultAccess, Collection<? extends SpecializedOperation> operations) {
+			super(discoverer, endpointBean, id, defaultAccess, operations);
+		}
+
+		@SuppressWarnings("removal")
 		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 				boolean enabledByDefault, Collection<? extends SpecializedOperation> operations) {
 			super(discoverer, endpointBean, id, enabledByDefault, operations);

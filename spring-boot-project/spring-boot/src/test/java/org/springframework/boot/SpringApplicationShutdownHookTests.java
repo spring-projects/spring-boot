@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,6 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringApplicationShutdownHook}.
@@ -152,7 +155,7 @@ class SpringApplicationShutdownHookTests {
 	void addHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().add(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test
@@ -168,7 +171,7 @@ class SpringApplicationShutdownHookTests {
 	void removeHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().remove(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test
@@ -201,6 +204,23 @@ class SpringApplicationShutdownHookTests {
 		assertThat(shutdownHook.isApplicationContextRegistered(context)).isTrue();
 		shutdownHook.deregisterFailedApplicationContext(context);
 		assertThat(shutdownHook.isApplicationContextRegistered(context)).isFalse();
+	}
+
+	@Test
+	void handlersRunInDeterministicOrderFromLastRegisteredToFirst() {
+		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		Runnable r1 = mock(Runnable.class);
+		Runnable r2 = mock(Runnable.class);
+		Runnable r3 = mock(Runnable.class);
+		shutdownHook.getHandlers().add(r2);
+		shutdownHook.getHandlers().add(r1);
+		shutdownHook.getHandlers().add(r3);
+		shutdownHook.run();
+		InOrder ordered = inOrder(r1, r2, r3);
+		ordered.verify(r3).run();
+		ordered.verify(r1).run();
+		ordered.verify(r2).run();
+		ordered.verifyNoMoreInteractions();
 	}
 
 	static class TestSpringApplicationShutdownHook extends SpringApplicationShutdownHook {

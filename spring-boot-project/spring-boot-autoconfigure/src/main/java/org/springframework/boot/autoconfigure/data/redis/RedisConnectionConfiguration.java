@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +24,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
@@ -45,6 +44,7 @@ import org.springframework.util.ClassUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 abstract class RedisConnectionConfiguration {
 
@@ -63,6 +63,8 @@ abstract class RedisConnectionConfiguration {
 
 	private final SslBundles sslBundles;
 
+	protected final Mode mode;
+
 	protected RedisConnectionConfiguration(RedisProperties properties, RedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -74,6 +76,7 @@ abstract class RedisConnectionConfiguration {
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 		this.connectionDetails = connectionDetails;
 		this.sslBundles = sslBundles.getIfAvailable();
+		this.mode = determineMode();
 	}
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
@@ -150,12 +153,27 @@ abstract class RedisConnectionConfiguration {
 		return this.properties;
 	}
 
-	protected SslBundles getSslBundles() {
+	protected final SslBundles getSslBundles() {
 		return this.sslBundles;
 	}
 
-	protected boolean isSslEnabled() {
+	protected SslBundle getSslBundle() {
+		return switch (this.mode) {
+			case STANDALONE -> (this.connectionDetails.getStandalone() != null)
+					? this.connectionDetails.getStandalone().getSslBundle() : null;
+			case CLUSTER -> (this.connectionDetails.getCluster() != null)
+					? this.connectionDetails.getCluster().getSslBundle() : null;
+			case SENTINEL -> (this.connectionDetails.getSentinel() != null)
+					? this.connectionDetails.getSentinel().getSslBundle() : null;
+		};
+	}
+
+	protected final boolean isSslEnabled() {
 		return getProperties().getSsl().isEnabled();
+	}
+
+	protected final boolean urlUsesSsl() {
+		return RedisUrl.of(this.properties.getUrl()).useSsl();
 	}
 
 	protected boolean isPoolEnabled(Pool pool) {
@@ -171,74 +189,23 @@ abstract class RedisConnectionConfiguration {
 		return nodes;
 	}
 
-	protected final boolean urlUsesSsl() {
-		return parseUrl(this.properties.getUrl()).isUseSsl();
-	}
-
 	protected final RedisConnectionDetails getConnectionDetails() {
 		return this.connectionDetails;
 	}
 
-	static ConnectionInfo parseUrl(String url) {
-		try {
-			URI uri = new URI(url);
-			String scheme = uri.getScheme();
-			if (!"redis".equals(scheme) && !"rediss".equals(scheme)) {
-				throw new RedisUrlSyntaxException(url);
-			}
-			boolean useSsl = ("rediss".equals(scheme));
-			String username = null;
-			String password = null;
-			if (uri.getUserInfo() != null) {
-				String candidate = uri.getUserInfo();
-				int index = candidate.indexOf(':');
-				if (index >= 0) {
-					username = candidate.substring(0, index);
-					password = candidate.substring(index + 1);
-				}
-				else {
-					password = candidate;
-				}
-			}
-			return new ConnectionInfo(uri, useSsl, username, password);
+	private Mode determineMode() {
+		if (getSentinelConfig() != null) {
+			return Mode.SENTINEL;
 		}
-		catch (URISyntaxException ex) {
-			throw new RedisUrlSyntaxException(url, ex);
+		if (getClusterConfiguration() != null) {
+			return Mode.CLUSTER;
 		}
+		return Mode.STANDALONE;
 	}
 
-	static class ConnectionInfo {
+	enum Mode {
 
-		private final URI uri;
-
-		private final boolean useSsl;
-
-		private final String username;
-
-		private final String password;
-
-		ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
-			this.uri = uri;
-			this.useSsl = useSsl;
-			this.username = username;
-			this.password = password;
-		}
-
-		URI getUri() {
-			return this.uri;
-		}
-
-		boolean isUseSsl() {
-			return this.useSsl;
-		}
-
-		String getUsername() {
-			return this.username;
-		}
-
-		String getPassword() {
-			return this.password;
-		}
+		STANDALONE, CLUSTER, SENTINEL
 
 	}
 

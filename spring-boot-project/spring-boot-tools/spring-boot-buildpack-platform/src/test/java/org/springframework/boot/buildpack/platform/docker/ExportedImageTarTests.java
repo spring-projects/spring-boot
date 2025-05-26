@@ -16,6 +16,9 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -34,7 +37,8 @@ class ExportedImageTarTests {
 
 	@ParameterizedTest
 	@ValueSource(strings = { "export-docker-desktop.tar", "export-docker-desktop-containerd.tar",
-			"export-docker-desktop-containerd-manifest-list.tar", "export-docker-engine.tar", "export-podman.tar" })
+			"export-docker-desktop-containerd-manifest-list.tar", "export-docker-engine.tar", "export-podman.tar",
+			"export-docker-desktop-nested-index.tar", "export-docker-desktop-containerd-alt-mediatype.tar" })
 	void test(String tarFile) throws Exception {
 		ImageReference reference = ImageReference.of("test:latest");
 		try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference,
@@ -43,10 +47,12 @@ class ExportedImageTarTests {
 			String expectedName = (expectedCompression != Compression.GZIP)
 					? "5caae51697b248b905dca1a4160864b0e1a15c300981736555cdce6567e8d477"
 					: "f0f1fd1bdc71ac6a4dc99cea5f5e45c86c5ec26fe4d1daceeb78207303606429";
+			List<String> names = new ArrayList<>();
 			exportedImageTar.exportLayers((name, tarArchive) -> {
-				assertThat(name).contains(expectedName);
+				names.add(name);
 				assertThat(tarArchive.getCompression()).isEqualTo(expectedCompression);
 			});
+			assertThat(names).filteredOn((name) -> name.contains(expectedName)).isNotEmpty();
 		}
 	}
 

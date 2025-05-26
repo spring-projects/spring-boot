@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,9 +105,10 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 		@Bean
 		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
-				.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
+				.withLoader(new MustacheResourceTemplateLoader(
+						"classpath:/org/springframework/boot/autoconfigure/mustache/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
-			resolver.setPrefix("classpath:/mustache-templates/");
+			resolver.setPrefix("classpath:/org/springframework/boot/autoconfigure/mustache/");
 			resolver.setSuffix(".html");
 			return resolver;
 		}

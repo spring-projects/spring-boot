@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configuretwodatasources
 
-import org.apache.commons.dbcp2.BasicDataSource
+import com.zaxxer.hikari.HikariDataSource
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -30,8 +30,9 @@ class MyAdditionalDataSourceConfiguration {
 	@Qualifier("second")
 	@Bean(defaultCandidate = false)
 	@ConfigurationProperties("app.datasource")
-	fun secondDataSource(): BasicDataSource {
-		return DataSourceBuilder.create().type(BasicDataSource::class.java).build()
+	fun secondDataSource(): HikariDataSource {
+		return DataSourceBuilder.create().type(HikariDataSource::class.java).build()
 	}
 
 }
+

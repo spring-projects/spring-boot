@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,18 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
+import org.springframework.boot.buildpack.platform.docker.DockerLog;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
@@ -51,7 +55,7 @@ public class Builder {
 
 	private final DockerApi docker;
 
-	private final DockerConfiguration dockerConfiguration;
+	private final BuilderDockerConfiguration dockerConfiguration;
 
 	/**
 	 * Create a new builder instance.
@@ -64,8 +68,22 @@ public class Builder {
 	 * Create a new builder instance.
 	 * @param dockerConfiguration the docker configuration
 	 * @since 2.4.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #Builder(BuilderDockerConfiguration)}
 	 */
-	public Builder(DockerConfiguration dockerConfiguration) {
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public Builder(
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
+		this(BuildLog.toSystemOut(), dockerConfiguration);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param dockerConfiguration the docker configuration
+	 * @since 3.5.0
+	 */
+	public Builder(BuilderDockerConfiguration dockerConfiguration) {
 		this(BuildLog.toSystemOut(), dockerConfiguration);
 	}
 
@@ -74,7 +92,7 @@ public class Builder {
 	 * @param log a logger used to record output
 	 */
 	public Builder(BuildLog log) {
-		this(log, new DockerApi(), null);
+		this(log, new DockerApi(null, BuildLogAdapter.get(log)), null);
 	}
 
 	/**
@@ -82,26 +100,54 @@ public class Builder {
 	 * @param log a logger used to record output
 	 * @param dockerConfiguration the docker configuration
 	 * @since 2.4.0
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #Builder(BuildLog, BuilderDockerConfiguration)}
 	 */
-	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
-		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.getHost() : null),
-				dockerConfiguration);
+	@Deprecated(since = "3.5.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public Builder(BuildLog log,
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
+		this(log, adaptDeprecatedConfiguration(dockerConfiguration));
 	}
 
-	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
-		Assert.notNull(log, "Log must not be null");
+	@SuppressWarnings("removal")
+	private static BuilderDockerConfiguration adaptDeprecatedConfiguration(
+			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration configuration) {
+		if (configuration == null) {
+			return null;
+		}
+		DockerConnectionConfiguration connection = org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration
+			.asConnectionConfiguration(configuration.getHost());
+		return new BuilderDockerConfiguration(connection, configuration.isBindHostToBuilder(),
+				configuration.getBuilderRegistryAuthentication(), configuration.getPublishRegistryAuthentication());
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 * @param dockerConfiguration the docker configuration
+	 * @since 3.5.0
+	 */
+	public Builder(BuildLog log, BuilderDockerConfiguration dockerConfiguration) {
+		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.connection() : null,
+				BuildLogAdapter.get(log)), dockerConfiguration);
+	}
+
+	Builder(BuildLog log, DockerApi docker, BuilderDockerConfiguration dockerConfiguration) {
+		Assert.notNull(log, "'log' must not be null");
 		this.log = log;
 		this.docker = docker;
-		this.dockerConfiguration = dockerConfiguration;
+		this.dockerConfiguration = (dockerConfiguration != null) ? dockerConfiguration
+				: new BuilderDockerConfiguration();
 	}
 
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
-		Assert.notNull(request, "Request must not be null");
+		Assert.notNull(request, "'request' must not be null");
 		this.log.start(request);
-		String domain = request.getBuilder().getDomain();
+		validateBindings(request.getBindings());
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
-				request.getImagePlatform());
+		ImageFetcher imageFetcher = new ImageFetcher(this.dockerConfiguration.builderRegistryAuthentication(),
+				pullPolicy, request.getImagePlatform());
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
@@ -112,16 +158,18 @@ public class Builder {
 		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata, buildpackLayersMetadata);
 		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, request.getName(),
 				builderMetadata, request.getCreator(), request.getEnv(), buildpacks);
-		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
-		try {
-			executeLifecycle(request, ephemeralBuilder);
-			tagImage(request.getName(), request.getTags());
-			if (request.isPublish()) {
-				pushImages(request.getName(), request.getTags());
-			}
+		executeLifecycle(request, ephemeralBuilder);
+		tagImage(request.getName(), request.getTags());
+		if (request.isPublish()) {
+			pushImages(request.getName(), request.getTags());
 		}
-		finally {
-			this.docker.image().remove(ephemeralBuilder.getName(), true);
+	}
+
+	private void validateBindings(List<Binding> bindings) {
+		for (Binding binding : bindings) {
+			if (binding.usesSensitiveContainerPath()) {
+				this.log.sensitiveTargetBindingDetected(binding);
+			}
 		}
 	}
 
@@ -159,13 +207,25 @@ public class Builder {
 	}
 
 	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
-		ResolvedDockerHost dockerHost = null;
-		if (this.dockerConfiguration != null && this.dockerConfiguration.isBindHostToBuilder()) {
-			dockerHost = ResolvedDockerHost.from(this.dockerConfiguration.getHost());
+		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, getDockerHost(), request, builder)) {
+			executeLifecycle(builder, lifecycle);
 		}
-		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, dockerHost, request, builder)) {
+	}
+
+	private void executeLifecycle(EphemeralBuilder builder, Lifecycle lifecycle) throws IOException {
+		ImageArchive archive = builder.getArchive(lifecycle.getApplicationDirectory());
+		this.docker.image().load(archive, UpdateListener.none());
+		try {
 			lifecycle.execute();
 		}
+		finally {
+			this.docker.image().remove(builder.getName(), true);
+		}
+	}
+
+	private ResolvedDockerHost getDockerHost() {
+		boolean bindToBuilder = this.dockerConfiguration.bindHostToBuilder();
+		return (bindToBuilder) ? ResolvedDockerHost.from(this.dockerConfiguration.connection()) : null;
 	}
 
 	private void tagImage(ImageReference sourceReference, List<ImageReference> tags) throws IOException {
@@ -185,18 +245,13 @@ public class Builder {
 	private void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
-		this.docker.image().push(reference, listener, getPublishAuthHeader());
+		String authHeader = authHeader(this.dockerConfiguration.publishRegistryAuthentication(), reference);
+		this.docker.image().push(reference, listener, authHeader);
 		this.log.pushedImage(reference);
 	}
 
-	private String getBuilderAuthHeader() {
-		return (this.dockerConfiguration != null && this.dockerConfiguration.getBuilderRegistryAuthentication() != null)
-				? this.dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader() : null;
-	}
-
-	private String getPublishAuthHeader() {
-		return (this.dockerConfiguration != null && this.dockerConfiguration.getPublishRegistryAuthentication() != null)
-				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
+	private static String authHeader(DockerRegistryAuthentication authentication, ImageReference reference) {
+		return (authentication != null) ? authentication.getAuthHeader(reference) : null;
 	}
 
 	/**
@@ -204,36 +259,31 @@ public class Builder {
 	 */
 	private class ImageFetcher {
 
-		private final String domain;
-
-		private final String authHeader;
+		private final DockerRegistryAuthentication registryAuthentication;
 
 		private final PullPolicy pullPolicy;
 
 		private ImagePlatform defaultPlatform;
 
-		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy, ImagePlatform platform) {
-			this.domain = domain;
-			this.authHeader = authHeader;
+		ImageFetcher(DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
+				ImagePlatform platform) {
+			this.registryAuthentication = registryAuthentication;
 			this.pullPolicy = pullPolicy;
 			this.defaultPlatform = platform;
 		}
 
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
-			Assert.notNull(type, "Type must not be null");
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
-					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
-							StringUtils.capitalize(type.getDescription()), reference, this.domain));
+			Assert.notNull(type, "'type' must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
-				return pullImage(reference, type);
+				return checkPlatformMismatch(pullImage(reference, type), reference);
 			}
 			try {
-				return Builder.this.docker.image().inspect(reference);
+				return checkPlatformMismatch(Builder.this.docker.image().inspect(reference), reference);
 			}
 			catch (DockerEngineException ex) {
 				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
-					return pullImage(reference, type);
+					return checkPlatformMismatch(pullImage(reference, type), reference);
 				}
 				throw ex;
 			}
@@ -242,12 +292,67 @@ public class Builder {
 		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 			TotalProgressPullListener listener = new TotalProgressPullListener(
 					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
-			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, this.authHeader);
+			String authHeader = authHeader(this.registryAuthentication, reference);
+			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, authHeader);
 			Builder.this.log.pulledImage(image, imageType);
 			if (this.defaultPlatform == null) {
 				this.defaultPlatform = ImagePlatform.from(image);
 			}
 			return image;
+		}
+
+		private Image checkPlatformMismatch(Image image, ImageReference imageReference) {
+			if (this.defaultPlatform != null) {
+				ImagePlatform imagePlatform = ImagePlatform.from(image);
+				if (!imagePlatform.equals(this.defaultPlatform)) {
+					throw new PlatformMismatchException(imageReference, this.defaultPlatform, imagePlatform);
+				}
+			}
+			return image;
+		}
+
+	}
+
+	private static final class PlatformMismatchException extends RuntimeException {
+
+		private PlatformMismatchException(ImageReference imageReference, ImagePlatform requestedPlatform,
+				ImagePlatform actualPlatform) {
+			super("Image platform mismatch detected. The configured platform '%s' is not supported by the image '%s'. Requested platform '%s' but got '%s'"
+				.formatted(requestedPlatform, imageReference, requestedPlatform, actualPlatform));
+		}
+
+	}
+
+	/**
+	 * A {@link DockerLog} implementation that adapts to an {@link AbstractBuildLog}.
+	 */
+	static final class BuildLogAdapter implements DockerLog {
+
+		private final AbstractBuildLog log;
+
+		private BuildLogAdapter(AbstractBuildLog log) {
+			this.log = log;
+		}
+
+		@Override
+		public void log(String message) {
+			this.log.log(message);
+		}
+
+		/**
+		 * Creates {@link DockerLog} instance based on the provided {@link BuildLog}.
+		 * <p>
+		 * If the provided {@link BuildLog} instance is an {@link AbstractBuildLog}, the
+		 * method returns a {@link BuildLogAdapter}, otherwise it returns a default
+		 * {@link DockerLog#toSystemOut()}.
+		 * @param log the {@link BuildLog} instance to delegate
+		 * @return a {@link DockerLog} instance for logging
+		 */
+		static DockerLog get(BuildLog log) {
+			if (log instanceof AbstractBuildLog abstractBuildLog) {
+				return new BuildLogAdapter(abstractBuildLog);
+			}
+			return DockerLog.toSystemOut();
 		}
 
 	}

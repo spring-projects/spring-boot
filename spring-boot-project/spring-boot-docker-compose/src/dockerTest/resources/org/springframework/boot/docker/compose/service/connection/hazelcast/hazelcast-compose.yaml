@@ -1,0 +1,5 @@
+services:
+  hazelcast:
+    image: '{imageName}'
+    ports:
+      - '5701'

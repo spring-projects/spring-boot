@@ -126,7 +126,7 @@
     {
       "name": "logging.log4j2.config.override",
       "type": "java.util.List<java.lang.String>",
-      "description": "Overriding configuration files used to create a composite configuration."
+      "description": "Overriding configuration files used to create a composite configuration. Can be prefixed with 'optional:' to only load the override if it exists."
     },
     {
       "name": "logging.logback.rollingpolicy.clean-history-on-start",
@@ -175,16 +175,14 @@
     {
       "name": "logging.pattern.console",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to the console.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to the console. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.correlation",
       "type": "java.lang.String",
-      "description": "Appender pattern for log correlation.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for log correlation. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.dateformat",
@@ -196,9 +194,8 @@
     {
       "name": "logging.pattern.file",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to a file.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to a file. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.level",
@@ -242,7 +239,7 @@
     {
       "name": "logging.structured.ecs.service.version",
       "type": "java.lang.String",
-      "description": "Structured ECS service version."
+      "description": "Structured ECS service version (defaults to 'spring.application.version')."
     },
     {
       "name": "logging.structured.format.console",
@@ -253,6 +250,81 @@
       "name": "logging.structured.format.file",
       "type": "java.lang.String",
       "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.gelf.host",
+      "type": "java.lang.String",
+      "description": "Structured GELF host (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.gelf.service.version",
+      "type": "java.lang.String",
+      "description": "Structured GELF service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.json.add",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional members that should be added to structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.context.include",
+      "type": "java.lang.Boolean",
+      "description": "Whether context data should be included in the JSON."
+    },
+    {
+      "name": "logging.structured.json.context.prefix",
+      "type": "java.lang.String",
+      "description": "The prefix to use when inserting context data."
+    },
+    {
+      "name": "logging.structured.json.customizer",
+      "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
+      "description": "Fully qualified class names of StructuredLoggingJsonMembersCustomizer implementations"
+    },
+    {
+      "name": "logging.structured.json.exclude",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be excluded from structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.include",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be included in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.rename",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.stacktrace.include-common-frames",
+      "type": "java.lang.Boolean",
+      "description": "Whether common frames should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.include-hashes",
+      "type": "java.lang.Boolean",
+      "description": "Whether stack trace hashes should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-length",
+      "type": "java.lang.Integer",
+      "description": "Maximum length to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-throwable-depth",
+      "type": "java.lang.Integer",
+      "description": "Maximum throwable depth to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.printer",
+      "type": "java.lang.String",
+      "description": "Name of the printer to use. Can be 'standard', 'logging-system', or the fully-qualified class name of a StackTracePrinter. When not specified 'logging-system' or 'standard' will be used depending if other properties are set."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.root",
+      "type": "org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace.Root",
+      "description": "Root ordering (root first or root last)."
     },
     {
       "name": "logging.threshold.console",
@@ -269,7 +341,7 @@
     {
       "name": "spring.application.group",
       "type": "java.lang.String",
-      "description": "Application group."
+      "description": "Application group. Typically used with logging to help identify the application."
     },
     {
       "name": "spring.application.index",
@@ -284,7 +356,7 @@
       "name": "spring.application.name",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-      "description": "Application name."
+      "description": "Application name. Typically used with logging to help identify the application."
     },
     {
       "name": "spring.application.version",
@@ -629,6 +701,9 @@
           "value": "ecs"
         },
         {
+          "value": "gelf"
+        },
+        {
           "value": "logstash"
         }
       ],
@@ -648,6 +723,9 @@
           "value": "ecs"
         },
         {
+          "value": "gelf"
+        },
+        {
           "value": "logstash"
         }
       ],
@@ -656,6 +734,25 @@
           "name": "handle-as",
           "parameters": {
             "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+ 	{
+      "name": "logging.structured.json.stacktrace.printer",
+      "values": [
+        {
+          "value": "standard"
+        },
+        {
+          "value": "logging-system"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class<org.springframework.boot.logging.StackTracePrinter>"
           }
         }
       ]

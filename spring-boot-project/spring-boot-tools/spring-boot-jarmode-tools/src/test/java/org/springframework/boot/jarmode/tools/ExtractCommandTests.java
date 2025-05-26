@@ -32,7 +32,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -172,8 +175,8 @@ class ExtractCommandTests extends AbstractJarModeTests {
 			try (FileWriter writer = new FileWriter(file)) {
 				writer.write("text");
 			}
-			TestPrintStream out = run(file);
-			assertThat(out).contains("is not compatible; ensure jar file is valid and launch script is not enabled");
+			assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(file))
+				.withMessageContaining("is not compatible; ensure jar file is valid and launch script is not enabled");
 		}
 
 		@Test
@@ -181,8 +184,9 @@ class ExtractCommandTests extends AbstractJarModeTests {
 			File destination = file("out");
 			Files.createDirectories(destination.toPath());
 			Files.createFile(new File(destination, "file.txt").toPath());
-			TestPrintStream out = run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath());
-			assertThat(out).contains("already exists and is not empty");
+			assertThatExceptionOfType(JarModeErrorException.class)
+				.isThrownBy(() -> run(ExtractCommandTests.this.archive, "--destination", destination.getAbsolutePath()))
+				.withMessageContaining("already exists and is not empty");
 		}
 
 		@Test
@@ -266,10 +270,10 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		}
 
 		@Test
-		void printErrorIfLayersAreNotEnabled() throws IOException {
+		void failsIfLayersAreNotEnabled() throws IOException {
 			File archive = createArchive();
-			TestPrintStream out = run(archive, "--layers");
-			assertThat(out).hasSameContentAsResource("ExtractCommand-printErrorIfLayersAreNotEnabled.txt");
+			assertThatExceptionOfType(JarModeErrorException.class).isThrownBy(() -> run(archive, "--layers"))
+				.withMessage("Layers are not enabled");
 		}
 
 	}
@@ -318,10 +322,11 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		}
 
 		@Test
-		void printErrorIfLayersAreNotEnabled() throws IOException {
+		void failsIfLayersAreNotEnabled() throws IOException {
 			File archive = createArchive();
-			TestPrintStream out = run(archive, "--launcher", "--layers");
-			assertThat(out).hasSameContentAsResource("ExtractCommand-printErrorIfLayersAreNotEnabled.txt");
+			assertThatExceptionOfType(JarModeErrorException.class)
+				.isThrownBy(() -> run(archive, "--launcher", "--layers"))
+				.withMessage("Layers are not enabled");
 		}
 
 		@Test

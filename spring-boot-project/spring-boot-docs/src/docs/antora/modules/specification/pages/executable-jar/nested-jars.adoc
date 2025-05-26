@@ -123,6 +123,11 @@ The index file would look like this:
 - "BOOT-INF/lib/dependency1.jar"
 ----
 
+NOTE: Spring Boot only uses the classpath index file when the jar or war file is executed with `java -jar`.
+It is not used when running the application from the IDE or when using Maven's `spring-boot:run` or Gradle's `bootRun`.
+
+NOTE: When enabling reproducible builds, the entries in the classpath index file are sorted alphabetically.
+
 
 
 [[appendix.executable-jar.nested-jars.layer-index]]

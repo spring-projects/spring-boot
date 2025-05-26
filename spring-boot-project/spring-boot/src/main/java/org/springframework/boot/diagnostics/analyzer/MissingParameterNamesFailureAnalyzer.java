@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 	static final String ACTION = """
 			Ensure that your compiler is configured to use the '-parameters' flag.
 			You may need to update both your build tool settings as well as your IDE.
-			(See https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#parameter-name-retention)
+			(See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes#parameter-name-retention)
 							""";
 
 	@Override

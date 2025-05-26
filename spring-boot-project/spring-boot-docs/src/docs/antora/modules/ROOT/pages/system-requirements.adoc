@@ -1,7 +1,7 @@
 [[getting-started.system-requirements]]
 = System Requirements
 
-Spring Boot {version-spring-boot} requires https://www.java.com[Java 17] and is compatible up to and including Java 22.
+Spring Boot {version-spring-boot} requires at least https://www.java.com[Java 17] and is compatible with versions up to and including Java 24.
 {url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -13,7 +13,7 @@ Explicit build support is provided for the following build tools:
 | 3.6.3 or later
 
 | Gradle
-| Gradle 7.x (7.6.4 or later) or 8.x (8.3 or later)
+| Gradle 7.x (7.6.4 or later) or 8.x (8.4 or later)
 |===
 
 
@@ -26,7 +26,7 @@ Spring Boot supports the following embedded servlet containers:
 |===
 | Name | Servlet Version
 
-| Tomcat 10.1
+| Tomcat 10.1 (10.1.25 or later)
 | 6.0
 
 | Jetty 12.0

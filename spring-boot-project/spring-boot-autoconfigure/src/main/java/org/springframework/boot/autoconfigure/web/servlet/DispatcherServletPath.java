@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public interface DispatcherServletPath {
 	 * @return the path as a servlet URL mapping
 	 */
 	default String getServletUrlMapping() {
-		if (getPath().equals("") || getPath().equals("/")) {
+		if (getPath().isEmpty() || getPath().equals("/")) {
 			return "/";
 		}
 		if (getPath().contains("*")) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
@@ -59,6 +60,25 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link GraphQlAutoConfiguration}.
  */
+@WithResource(name = "graphql/types/book.graphqls", content = """
+		type Book {
+		    id: ID
+		    name: String
+		    pageCount: Int
+		    author: String
+		}
+		""")
+@WithResource(name = "graphql/schema.graphqls", content = """
+		type Query {
+		    greeting(name: String! = "Spring"): String!
+		    bookById(id: ID): Book
+		    books: BookConnection
+		}
+
+		type Subscription {
+		    booksOnSale(minPages: Int) : Book!
+		}
+		""")
 @ExtendWith(OutputCaptureExtension.class)
 class GraphQlAutoConfigurationTests {
 
@@ -99,6 +119,12 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "graphql/types/person.custom", content = """
+			type Person {
+			    id: ID
+			    name: String
+			}
+			""")
 	void shouldScanLocationsWithCustomExtension() {
 		this.contextRunner.withPropertyValues("spring.graphql.schema.file-extensions:.graphqls,.custom")
 			.run((context) -> {
@@ -111,10 +137,33 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffWithCustomGraphQlSource() {
+	@WithResource(name = "graphql/types/person.custom", content = """
+			type Person {
+			    id: ID
+			    name: String
+			}
+			""")
+	void shouldConfigureAdditionalSchemaFiles() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.schema.additional-files=classpath:graphql/types/person.custom")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlSource.class);
+				GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+				GraphQLSchema schema = graphQlSource.schema();
+				assertThat(schema.getObjectType("Book")).isNotNull();
+				assertThat(schema.getObjectType("Person")).isNotNull();
+			});
+	}
+
+	@Test
+	void shouldUseCustomGraphQlSource() {
 		this.contextRunner.withUserConfiguration(CustomGraphQlSourceConfiguration.class).run((context) -> {
 			assertThat(context).getBeanNames(GraphQlSource.class).containsOnly("customGraphQlSource");
-			assertThat(context).hasSingleBean(GraphQlProperties.class);
+			assertThat(context).hasSingleBean(GraphQlProperties.class)
+				.hasSingleBean(BatchLoaderRegistry.class)
+				.hasSingleBean(ExecutionGraphQlService.class)
+				.hasSingleBean(AnnotatedControllerConfigurer.class)
+				.hasSingleBean(EncodingCursorStrategy.class);
 		});
 	}
 

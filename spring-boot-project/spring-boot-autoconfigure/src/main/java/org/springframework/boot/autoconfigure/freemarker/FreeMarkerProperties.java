@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.freemarker")
+@ConfigurationProperties("spring.freemarker")
 public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_TEMPLATE_LOADER_PATH = "classpath:/templates/";
@@ -44,7 +44,7 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	private Map<String, String> settings = new HashMap<>();
 
 	/**
-	 * Comma-separated list of template paths.
+	 * List of template paths.
 	 */
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
@@ -72,16 +72,16 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 		return this.templateLoaderPath;
 	}
 
+	public void setTemplateLoaderPath(String... templateLoaderPaths) {
+		this.templateLoaderPath = templateLoaderPaths;
+	}
+
 	public boolean isPreferFileSystemAccess() {
 		return this.preferFileSystemAccess;
 	}
 
 	public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
 		this.preferFileSystemAccess = preferFileSystemAccess;
-	}
-
-	public void setTemplateLoaderPath(String... templateLoaderPaths) {
-		this.templateLoaderPath = templateLoaderPaths;
 	}
 
 }

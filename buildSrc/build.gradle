@@ -15,57 +15,45 @@ java {
 	targetCompatibility = 17
 }
 
-
-def versions = [:]
-new File(projectDir.parentFile, "gradle.properties").withInputStream {
-	def properties = new Properties()
-	properties.load(it)
-	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven", "snakeYaml"].each {
-		versions[it] = properties[it + "Version"]
-	}
-}
-versions["jackson"] = "2.15.3"
-versions["springFramework"] = "6.0.12"
-ext.set("versions", versions)
-if (versions.springFramework.contains("-")) {
-	repositories {
-		maven { url "https://repo.spring.io/milestone" }
-		maven { url "https://repo.spring.io/snapshot" }
-	}
+repositories {
+	spring.mavenRepositories("${springFrameworkVersion}".contains("-"))
 }
 
 checkstyle {
-	toolVersion = "10.12.4"
+	toolVersion = "${checkstyleToolVersion}"
 }
 
 dependencies {
 	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
 	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
-	implementation(platform("org.springframework:spring-framework-bom:${versions.springFramework}"))
-	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
-	implementation("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
+	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
+	implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
 	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
 	implementation("com.tngtech.archunit:archunit:1.3.0")
-	implementation("commons-codec:commons-codec:${versions.commonsCodec}")
+	implementation("commons-codec:commons-codec:${commonsCodecVersion}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
+	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
+	implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
 	implementation("io.spring.gradle.antora:spring-antora-plugin:0.0.1")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("io.spring.nohttp:nohttp-gradle:0.0.11")
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
-	implementation("org.apache.maven:maven-embedder:${versions.maven}")
+	implementation("org.apache.maven:maven-artifact:${mavenVersion}")
 	implementation("org.antora:gradle-antora-plugin:1.0.0")
-	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}")
-	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${versions.kotlin}")
+	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
 	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
-	implementation("org.yaml:snakeyaml:${versions.snakeYaml}")
+	implementation("org.yaml:snakeyaml:${snakeYamlVersion}")
 
-	testImplementation("org.assertj:assertj-core:${versions.assertj}")
-	testImplementation("org.hamcrest:hamcrest:${versions.hamcrest}")
-	testImplementation("org.junit.jupiter:junit-jupiter:${versions.junitJupiter}")
+	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
+	testImplementation("org.assertj:assertj-core:${assertjVersion}")
+	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core:${mockitoVersion}")
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -82,6 +70,14 @@ gradlePlugin {
 		annotationProcessorPlugin {
 			id = "org.springframework.boot.annotation-processor"
 			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
+		antoraAggregatedPlugin {
+			id = "org.springframework.boot.antora-contributor"
+			implementationClass = "org.springframework.boot.build.antora.AntoraContributorPlugin"
+		}
+		antoraAggregatorPlugin {
+			id = "org.springframework.boot.antora-dependencies"
+			implementationClass = "org.springframework.boot.build.antora.AntoraDependenciesPlugin"
 		}
 		architecturePlugin {
 			id = "org.springframework.boot.architecture"
@@ -155,3 +151,5 @@ eclipse {
 		}
 	}
 }
+
+jar.dependsOn check

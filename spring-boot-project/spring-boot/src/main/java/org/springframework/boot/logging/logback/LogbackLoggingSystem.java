@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,8 @@ import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
-import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
-import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import ch.qos.logback.core.util.StatusPrinter2;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -84,17 +82,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<>();
+	private static final LogLevels<Level> LEVELS = createLogLevels();
 
-	static {
-		LEVELS.map(LogLevel.TRACE, Level.TRACE);
-		LEVELS.map(LogLevel.TRACE, Level.ALL);
-		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
-		LEVELS.map(LogLevel.INFO, Level.INFO);
-		LEVELS.map(LogLevel.WARN, Level.WARN);
-		LEVELS.map(LogLevel.ERROR, Level.ERROR);
-		LEVELS.map(LogLevel.FATAL, Level.ERROR);
-		LEVELS.map(LogLevel.OFF, Level.OFF);
+	@SuppressWarnings("deprecation")
+	private static LogLevels<Level> createLogLevels() {
+		LogLevels<Level> levels = new LogLevels<>();
+		levels.map(LogLevel.TRACE, Level.TRACE);
+		levels.map(LogLevel.TRACE, Level.ALL);
+		levels.map(LogLevel.DEBUG, Level.DEBUG);
+		levels.map(LogLevel.INFO, Level.INFO);
+		levels.map(LogLevel.WARN, Level.WARN);
+		levels.map(LogLevel.ERROR, Level.ERROR);
+		levels.map(LogLevel.FATAL, Level.ERROR);
+		levels.map(LogLevel.OFF, Level.OFF);
+		return levels;
 	}
 
 	private static final TurboFilter SUPPRESS_ALL_FILTER = new TurboFilter() {
@@ -212,6 +213,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> putInitializationContextObjects(loggerContext, initializationContext));
+		SystemStatusListener.addTo(loggerContext);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -226,18 +228,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
-			putInitializationContextObjects(loggerContext, initializationContext);
 			boolean debug = Boolean.getBoolean("logback.debug");
-			if (debug) {
-				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
-			}
+			putInitializationContextObjects(loggerContext, initializationContext);
+			SystemStatusListener.addTo(loggerContext, debug);
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
 			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
 					loggerContext::putProperty)
 				.apply(logFile);
-			LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(loggerContext)
-					: new LogbackConfigurator(loggerContext);
+			LogbackConfigurator configurator = (!debug) ? new LogbackConfigurator(loggerContext)
+					: new DebugLogbackConfigurator(loggerContext);
 			new DefaultLogbackConfiguration(logFile).apply(configurator);
 			loggerContext.setPackagingDataEnabled(true);
 			loggerContext.start();
@@ -254,8 +254,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (initializationContext != null) {
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
 			}
+			SystemStatusListener.addTo(loggerContext);
 			try {
-				Resource resource = new ApplicationResourceLoader().getResource(location);
+				Resource resource = ApplicationResourceLoader.get().getResource(location);
 				configureByResourceUrl(initializationContext, loggerContext, resource.getURL());
 			}
 			catch (Exception ex) {
@@ -292,14 +293,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.getPath().endsWith(".xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
-			configurator.setContext(loggerContext);
-			configurator.doConfigure(url);
-		}
-		else {
-			throw new IllegalArgumentException("Unsupported file extension in '" + url + "'. Only .xml is supported");
-		}
+		JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
+		configurator.setContext(loggerContext);
+		configurator.doConfigure(url);
 	}
 
 	private void stopAndReset(LoggerContext loggerContext) {
@@ -411,7 +407,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory,
+		Assert.state(factory instanceof LoggerContext,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
@@ -496,7 +492,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link LogbackLoggingSystem} if possible.
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 1024)
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils.isPresent("ch.qos.logback.classic.LoggerContext",

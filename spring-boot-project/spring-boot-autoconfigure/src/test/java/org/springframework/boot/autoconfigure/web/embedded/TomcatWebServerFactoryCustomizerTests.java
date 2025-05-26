@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,6 +195,13 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count=100");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
+	}
+
+	@Test
 	void customMaxRequestHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-request-header-size=-1");
 		customizeAndRunServer((server) -> assertThat(
@@ -379,7 +386,10 @@ class TomcatWebServerFactoryCustomizerTests {
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "0:0:0:0:0:0:0:1|::1";
+				+ "0:0:0:0:0:0:0:1|" // 0:0:0:0:0:0:0:1
+				+ "::1|" // ::1
+				+ "fe[89ab]\\p{XDigit}:.*|" //
+				+ "f[cd]\\p{XDigit}{2}+:.*";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 

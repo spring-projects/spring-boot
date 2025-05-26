@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,21 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGINkey");
 		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
 		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
-		Map<String, Object> consumerProperties = properties.buildConsumerProperties(null);
+		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
+				"-----BEGINchain");
+	}
+
+	@Test
+	void sslPemConfigurationWithEmptyBundle() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setKeyStoreKey("-----BEGINkey");
+		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
+		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
+		properties.getSsl().setBundle("");
+		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
@@ -93,8 +107,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setBundle("myBundle");
 		Map<String, Object> consumerProperties = properties
 			.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle));
-		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG,
-				SslBundleSslEngineFactory.class.getName());
+		assertThat(consumerProperties).doesNotContainKey(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG);
 	}
 
 	@Test
@@ -103,7 +116,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties(null));
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -112,7 +125,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties(null));
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test

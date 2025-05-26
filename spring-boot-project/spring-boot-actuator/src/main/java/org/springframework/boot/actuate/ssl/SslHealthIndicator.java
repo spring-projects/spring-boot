@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@ import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
+import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} that checks the certificates the application uses and reports
  * {@link Status#OUT_OF_SERVICE} when a certificate is invalid.
  *
  * @author Jonatan Ivanov
+ * @author Young Jae You
  * @since 3.4.0
  */
 public class SslHealthIndicator extends AbstractHealthIndicator {
@@ -41,6 +43,8 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 	private final SslInfo sslInfo;
 
 	public SslHealthIndicator(SslInfo sslInfo) {
+		super("SSL health check failed");
+		Assert.notNull(sslInfo, "'sslInfo' must not be null");
 		this.sslInfo = sslInfo;
 	}
 

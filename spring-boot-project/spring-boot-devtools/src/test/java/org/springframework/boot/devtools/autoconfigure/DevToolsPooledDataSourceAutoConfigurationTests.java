@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,88 +61,99 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 
 	@Test
 	void autoConfiguredInMemoryDataSourceIsShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(
-				() -> createContext(DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should().execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(
+				() -> createContext(DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should().execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void autoConfiguredExternalDataSourceIsNotShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.postgresql.Driver",
-				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should(never()).execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(() -> createContext("org.postgresql.Driver",
+				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should(never()).execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void h2ServerIsNotShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.h2.Driver",
-				"jdbc:h2:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should(never()).execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(() -> createContext("org.h2.Driver",
+				"jdbc:h2:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should(never()).execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void inMemoryH2IsShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.h2.Driver", "jdbc:h2:mem:test",
-				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should().execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(() -> createContext("org.h2.Driver",
+				"jdbc:h2:mem:test", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should().execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void hsqlServerIsNotShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.hsqldb.jdbcDriver",
-				"jdbc:hsqldb:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should(never()).execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(() -> createContext("org.hsqldb.jdbcDriver",
+				"jdbc:hsqldb:hsql://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should(never()).execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void inMemoryHsqlIsShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.hsqldb.jdbcDriver",
-				"jdbc:hsqldb:mem:test", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should().execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(() -> createContext("org.hsqldb.jdbcDriver",
+				"jdbc:hsqldb:mem:test", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should().execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void derbyClientIsNotShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(() -> createContext("org.apache.derby.jdbc.ClientDriver",
-				"jdbc:derby://localhost", DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
-		context.close();
-		then(statement).should(never()).execute("SHUTDOWN");
+		try (ConfigurableApplicationContext context = getContext(
+				() -> createContext("org.apache.derby.jdbc.ClientDriver", "jdbc:derby://localhost",
+						DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
+			context.close();
+			then(statement).should(never()).execute("SHUTDOWN");
+		}
 	}
 
 	@Test
 	void inMemoryDerbyIsShutdown() throws Exception {
-		ConfigurableApplicationContext context = getContext(
+		try (ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:test;create=true",
-						DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		HikariDataSource dataSource = context.getBean(HikariDataSource.class);
-		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
-		HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
-		// Prevent a race between Hikari's initialization and Derby shutdown
-		Awaitility.await()
-			.atMost(Duration.ofSeconds(30))
-			.until(pool::getIdleConnections, (idle) -> idle == dataSource.getMinimumIdle());
-		context.close();
-		// Connect should fail as DB no longer exists
-		assertThatExceptionOfType(SQLException.class)
-			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
-			.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
-		// Shut Derby down fully so that it closes its log file
-		assertThatExceptionOfType(SQLException.class)
-			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
+						DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class))) {
+			HikariDataSource dataSource = context.getBean(HikariDataSource.class);
+			JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+			jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
+			HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
+			// Prevent a race between Hikari's initialization and Derby shutdown
+			Awaitility.await()
+				.atMost(Duration.ofSeconds(30))
+				.until(pool::getIdleConnections, (idle) -> idle == dataSource.getMinimumIdle());
+			context.close();
+			// Connect should fail as DB no longer exists
+			assertThatExceptionOfType(SQLException.class).isThrownBy(() -> connect("jdbc:derby:memory:test"))
+				.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
+			// Shut Derby down fully so that it closes its log file
+			assertThatExceptionOfType(SQLException.class).isThrownBy(() -> connect("jdbc:derby:;shutdown=true"));
+		}
+	}
+
+	private void connect(String jdbcUrl) throws SQLException {
+		new EmbeddedDriver().connect(jdbcUrl, new Properties()).close();
 	}
 
 }

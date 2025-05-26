@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -39,6 +42,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
@@ -87,6 +91,12 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				PropertyPlaceholderAutoConfiguration.class, MustacheAutoConfiguration.class))
 		.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0")
 		.withUserConfiguration(Application.class);
+
+	@BeforeEach
+	@AfterEach
+	void clearReactorSchedulers() {
+		Schedulers.shutdownNow();
+	}
 
 	@Test
 	void jsonError(CapturedOutput output) {
@@ -141,7 +151,18 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/error/error.mustache", content = """
+			<html>
+			<body>
+			<ul>
+				<li>status: {{status}}</li>
+				<li>message: {{message}}</li>
+			</ul>
+			</body>
+			</html>
+			""")
 	void htmlError() {
+		Schedulers.shutdownNow();
 		this.contextRunner.withPropertyValues("server.error.include-message=always").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			String body = client.get()

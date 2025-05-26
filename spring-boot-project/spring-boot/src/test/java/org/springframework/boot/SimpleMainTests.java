@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SpringApplication} main method.
@@ -45,7 +45,7 @@ class SimpleMainTests {
 
 	@Test
 	void emptyApplicationContext() {
-		assertThatIllegalArgumentException().isThrownBy(() -> SpringApplication.main(getArgs()));
+		assertThatIllegalStateException().isThrownBy(() -> SpringApplication.main(getArgs()));
 	}
 
 	@Test
@@ -61,12 +61,14 @@ class SimpleMainTests {
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
 	void xmlContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
 		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	@Test
+	@WithSampleBeansXmlResource
 	void mixedContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(), "org/springframework/boot/sample-beans.xml"));
 		assertThat(output).contains(SPRING_STARTUP);

@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.util.LambdaSafe;
 
 /**
  * Base class for {@link StructuredLogFormatter} implementations that generates JSON using
@@ -38,9 +39,22 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 	 * Create a new {@link JsonWriterStructuredLogFormatter} instance with the given
 	 * members.
 	 * @param members a consumer, which should configure the members
+	 * @param customizer an optional customizer to apply
 	 */
-	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members) {
-		this(JsonWriter.of(members).withNewLineAtEnd());
+	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members,
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		this(JsonWriter.of(customized(members, customizer)).withNewLineAtEnd());
+	}
+
+	private static <E> Consumer<Members<E>> customized(Consumer<Members<E>> members,
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		return (customizer != null) ? members.andThen(customizeWith(customizer)) : members;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <E> Consumer<Members<E>> customizeWith(StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		return (members) -> LambdaSafe.callback(StructuredLoggingJsonMembersCustomizer.class, customizer, members)
+			.invoke((instance) -> instance.customize(members));
 	}
 
 	/**

@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FlywayPropertiesTests {
 
 	@Test
+	@SuppressWarnings("removal")
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
@@ -126,7 +127,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
 				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory",
 				"cachedDataSources", "cachedResolvedEnvironments", "currentEnvironmentName", "allEnvironments",
-				"environmentProvisionMode");
+				"environmentProvisionMode", "provisionMode");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,6 +117,7 @@ class MustacheAutoConfigurationTests {
 			assertThat(viewResolver).extracting("allowSessionOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("cache", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("contentType").isEqualTo("text/html;charset=UTF-8");
 			assertThat(viewResolver).extracting("exposeRequestAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("exposeSessionAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("exposeSpringMacroHelpers", InstanceOfAssertFactories.BOOLEAN).isTrue();
@@ -158,9 +159,13 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", "UTF-16");
+		if (kind == ViewResolverKind.SERVLET) {
+			assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "contentType",
+					"text/html;charset=UTF-16");
+		}
 	}
 
 	@Test
@@ -182,21 +187,21 @@ class MustacheAutoConfigurationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void prefixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.prefix=classpath:/mustache-templates/", "prefix",
 				"classpath:/mustache-templates/");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void requestContextAttributeCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.request-context-attribute=test", "requestContextAttribute",
 				"test");
 	}
 
 	@ParameterizedTest
-	@EnumSource(ViewResolverKind.class)
+	@EnumSource
 	void suffixCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
 		assertViewResolverProperty(kind, "spring.mustache.suffix=.tache", "suffix", ".tache");
 	}

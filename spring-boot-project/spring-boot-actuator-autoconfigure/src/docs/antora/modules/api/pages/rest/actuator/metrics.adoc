@@ -1,7 +1,11 @@
 [[metrics]]
 = Metrics (`metrics`)
 
-The `metrics` endpoint provides access to application metrics.
+The `metrics` endpoint provides access to application metrics to diagnose the metrics the application has recorded.
+This endpoint should not be "scraped" or used as a metrics backend in production.
+Its purpose is to show the currently registered metrics so users can see what metrics are available, what their current values are, and if triggering certain operations causes any change in certain values.
+If you want to diagnose your applications through the metrics they collect, you should use an xref:reference:actuator/metrics.adoc[external metrics backend].
+In this case, the `metrics` endpoint can still be useful.
 
 
 

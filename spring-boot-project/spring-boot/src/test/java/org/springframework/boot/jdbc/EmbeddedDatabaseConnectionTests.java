@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,13 +63,13 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void getUrlWithNullDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
-			.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("'databaseName' must not be empty");
 	}
 
 	@Test
 	void getUrlWithEmptyDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
-			.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("'databaseName' must not be empty");
 	}
 
 	@ParameterizedTest(name = "{0} - {1}")

@@ -18,7 +18,14 @@ class ForwardMerge
 end
 
 def find_forward_merges(message_file)
+
   $log.debug "Searching for forward merge"
+  branch=`git rev-parse -q --abbrev-ref HEAD`.strip
+  $log.debug "Found #{branch} from git rev-parse --abbrev-ref"
+  if( branch == "docs-build") then
+    $log.debug "Skipping docs build"
+    return nil
+  end
   rev=`git rev-parse -q --verify MERGE_HEAD`.strip
   $log.debug "Found #{rev} from git rev-parse"
   return nil unless rev
@@ -65,7 +72,7 @@ def find_milestone(username, password, repository, title)
     prefix = title.delete_suffix('.x')
     $log.debug "Finding nearest milestone from candidates starting with #{prefix}"
     titles = milestones.map { |milestone| milestone['title'] }
-    titles = titles.select{ |title| title.start_with?(prefix) unless title.end_with?('.x')}
+    titles = titles.select{ |title| title.start_with?(prefix) unless title.end_with?('.x') || (title.count('.') > 2)}
     titles = titles.sort_by { |v| Gem::Version.new(v) }
     $log.debug "Considering candidates #{titles}"
     if(titles.empty?)
@@ -112,12 +119,16 @@ message_file=ARGV[0]
 forward_merges = find_forward_merges(message_file)
 exit 0 unless forward_merges
 
-$log.debug "Loading config from ~/.spring-boot/forward_merge.yml"
+$log.debug "Loading config from ~/.spring-boot/forward-merge.yml"
 config = YAML.load_file(File.join(Dir.home, '.spring-boot', 'forward-merge.yml'))
 username = config['github']['credentials']['username']
 password = config['github']['credentials']['password']
 dry_run = config['dry_run']
-repository = 'spring-projects/spring-boot'
+
+gradleProperties = IO.read('gradle.properties')
+springBuildType = gradleProperties.match(/^spring\.build-type\s?=\s?(.*)$/)
+repository = (springBuildType && springBuildType[1] != 'oss') ? "spring-projects/spring-boot-#{springBuildType[1]}" : "spring-projects/spring-boot";
+$log.debug "Targeting repository #{repository}"
 
 forward_merges.each do |forward_merge|
   existing_issue = get_issue(username, password, repository, forward_merge.issue)

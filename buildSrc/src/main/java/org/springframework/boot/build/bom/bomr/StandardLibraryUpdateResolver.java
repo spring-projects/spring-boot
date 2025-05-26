@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.function.BiPredicate;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -42,17 +43,16 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  */
 class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(StandardLibraryUpdateResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(StandardLibraryUpdateResolver.class);
 
 	private final VersionResolver versionResolver;
 
-	private final BiPredicate<Library, DependencyVersion> predicate;
+	private final BiFunction<Library, DependencyVersion, VersionOption> versionOptionResolver;
 
 	StandardLibraryUpdateResolver(VersionResolver versionResolver,
-			List<BiPredicate<Library, DependencyVersion>> predicates) {
+			BiFunction<Library, DependencyVersion, VersionOption> versionOptionResolver) {
 		this.versionResolver = versionResolver;
-		this.predicate = (library, dependencyVersion) -> predicates.stream()
-			.allMatch((predicate) -> predicate.test(library, dependencyVersion));
+		this.versionOptionResolver = versionOptionResolver;
 	}
 
 	@Override
@@ -63,11 +63,11 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			if (isLibraryExcluded(library)) {
 				continue;
 			}
-			LOGGER.info("Looking for updates for {}", library.getName());
+			logger.info("Looking for updates for {}", library.getName());
 			long start = System.nanoTime();
 			List<VersionOption> versionOptions = getVersionOptions(library);
 			result.add(new LibraryWithVersionOptions(library, versionOptions));
-			LOGGER.info("Found {} updates for {}, took {}", versionOptions.size(), library.getName(),
+			logger.info("Found {} updates for {}, took {}", versionOptions.size(), library.getName(),
 					Duration.ofNanos(System.nanoTime() - start));
 		}
 		return result;
@@ -78,8 +78,17 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 	}
 
 	protected List<VersionOption> getVersionOptions(Library library) {
-		VersionOption option = determineAlignedVersionOption(library);
-		return (option != null) ? List.of(option) : determineResolvedVersionOptions(library);
+		List<VersionOption> options = new ArrayList<>();
+		VersionOption alignedOption = determineAlignedVersionOption(library);
+		if (alignedOption != null) {
+			options.add(alignedOption);
+		}
+		for (VersionOption resolvedOption : determineResolvedVersionOptions(library)) {
+			if (alignedOption == null || !alignedOption.getVersion().equals(resolvedOption.getVersion())) {
+				options.add(resolvedOption);
+			}
+		}
+		return options;
 	}
 
 	private VersionOption determineAlignedVersionOption(Library library) {
@@ -103,22 +112,27 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 				moduleVersions.put(group.getId() + ":" + module.getName(),
 						getLaterVersionsForModule(group.getId(), module.getName(), library));
 			}
-			for (String bom : group.getBoms()) {
-				moduleVersions.put(group.getId() + ":" + bom, getLaterVersionsForModule(group.getId(), bom, library));
+			for (ImportedBom bom : group.getBoms()) {
+				moduleVersions.put(group.getId() + ":" + bom,
+						getLaterVersionsForModule(group.getId(), bom.name(), library));
 			}
 			for (String plugin : group.getPlugins()) {
 				moduleVersions.put(group.getId() + ":" + plugin,
 						getLaterVersionsForModule(group.getId(), plugin, library));
 			}
 		}
-		return moduleVersions.values()
-			.stream()
-			.flatMap(SortedSet::stream)
-			.distinct()
-			.filter((dependencyVersion) -> this.predicate.test(library, dependencyVersion))
-			.map((version) -> (VersionOption) new VersionOption.ResolvedVersionOption(version,
-					getMissingModules(moduleVersions, version)))
-			.toList();
+		List<VersionOption> versionOptions = new ArrayList<>();
+		moduleVersions.values().stream().flatMap(SortedSet::stream).distinct().forEach((dependencyVersion) -> {
+			VersionOption versionOption = this.versionOptionResolver.apply(library, dependencyVersion);
+			if (versionOption != null) {
+				List<String> missingModules = getMissingModules(moduleVersions, dependencyVersion);
+				if (!missingModules.isEmpty()) {
+					versionOption = new VersionOption.ResolvedVersionOption(versionOption.getVersion(), missingModules);
+				}
+				versionOptions.add(versionOption);
+			}
+		});
+		return versionOptions;
 	}
 
 	private List<String> getMissingModules(Map<String, SortedSet<DependencyVersion>> moduleVersions,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,14 @@
 package org.springframework.boot.context.config;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
@@ -43,13 +48,13 @@ class StandardConfigDataResourceTests {
 	@Test
 	void createWhenReferenceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(null, this.resource))
-			.withMessage("Reference must not be null");
+			.withMessage("'reference' must not be null");
 	}
 
 	@Test
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(this.reference, null))
-			.withMessage("Resource must not be null");
+			.withMessage("'resource' must not be null");
 	}
 
 	@Test
@@ -70,14 +75,24 @@ class StandardConfigDataResourceTests {
 	}
 
 	@Test // gh-34212
-	void equalsAndHashCodeWhenSameUnderlyingResource() throws IOException {
-		ClassPathResource classPathResource = new ClassPathResource("log4j2.springboot");
-		FileUrlResource fileUrlResource = new FileUrlResource(classPathResource.getURL());
-		ConfigDataResource classPathConfigDataResource = new StandardConfigDataResource(this.reference,
-				classPathResource);
-		ConfigDataResource fileUrlConfigDataResource = new StandardConfigDataResource(this.reference, fileUrlResource);
-		assertThat(classPathConfigDataResource.hashCode()).isEqualTo(fileUrlConfigDataResource.hashCode());
-		assertThat(classPathConfigDataResource).isEqualTo(fileUrlConfigDataResource);
+	@WithResource(name = "test.resource", content = "test")
+	void equalsAndHashCodeWhenSameUnderlyingResource(@ResourcePath("test.resource") Path path) throws IOException {
+		Path directory = path.getParent();
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { directory.toUri().toURL() },
+				getClass().getClassLoader());
+		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(classLoader);
+		try {
+			ClassPathResource classResource = new ClassPathResource("test.resource", classLoader);
+			FileUrlResource fileResource = new FileUrlResource(classResource.getURL());
+			ConfigDataResource classDataResource = new StandardConfigDataResource(this.reference, classResource);
+			ConfigDataResource fileDataResource = new StandardConfigDataResource(this.reference, fileResource);
+			assertThat(classDataResource).isEqualTo(fileDataResource);
+			assertThat(classDataResource).hasSameHashCodeAs(fileDataResource);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(contextClassLoader);
+		}
 	}
 
 }

@@ -58,9 +58,23 @@
       "defaultValue": true
     },
     {
+      "name": "management.endpoints.access.default",
+      "type": "org.springframework.boot.actuate.endpoint.Access",
+      "description": "Default access level for all endpoints."
+    },
+    {
+      "name": "management.endpoints.access.max-permitted",
+      "description": "Maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
+      "defaultValue": "unrestricted"
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable or disable all endpoints by default."
+      "description": "Whether to enable or disable all endpoints by default.",
+      "deprecation": {
+        "replacement": "management.endpoints.access.default",
+        "since": "3.4.0"
+      }
     },
     {
       "name": "management.endpoints.jackson.isolated-object-mapper",
@@ -294,6 +308,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable SSL certificate info.",
       "defaultValue": false
+    },
+    {
+      "name": "management.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export logs.",
+      "defaultValue": true
     },
     {
       "name": "management.metrics.binders.files.enabled",
@@ -1910,7 +1930,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -1918,7 +1938,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -1927,7 +1947,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
@@ -1953,7 +1973,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -1961,7 +1981,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -1970,7 +1990,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
@@ -2003,7 +2023,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -2011,7 +2031,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -2020,7 +2040,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
@@ -2054,9 +2074,22 @@
       "defaultValue": false
     },
     {
+      "name": "management.otlp.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export OTLP logs."
+    },
+    {
       "name": "management.otlp.tracing.export.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
+    },
+    {
+      "name": "management.promethus.metrics.export.pushgateway.base-url",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.prometheus.metrics.export.pushgateway.address"
+      }
     },
     {
       "name": "management.server.add-application-context-header",
@@ -2074,7 +2107,7 @@
     },
     {
       "name": "management.server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "management.server.ssl.certificate",
@@ -2214,14 +2247,6 @@
       "name": "management.zipkin.tracing.export.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export Zipkin traces."
-    },
-    {
-      "name": "micrometer.observations.annotations.enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.observations.annotations.enabled"
-      }
     }
   ],
   "hints": [

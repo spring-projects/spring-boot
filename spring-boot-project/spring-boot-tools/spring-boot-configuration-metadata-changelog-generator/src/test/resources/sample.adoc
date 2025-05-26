@@ -32,4 +32,8 @@ _None_.
 | `test.delete.deprecated`
 | `test.add`
 | it was just bad
+
+| `test.removed.directly`
+| `test.new.property`
+| removed in third-party library without deprecation
 |======================

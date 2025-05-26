@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,33 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
+
+import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
+import org.eclipse.jetty.server.CustomRequestLog;
+import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.RequestLogWriter;
+import org.eclipse.jetty.server.Server;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.embedded.JettyVirtualThreadsWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.NettyWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.TomcatVirtualThreadsWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.reactive.TomcatReactiveWebServerFactoryCustomizer;
-import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
@@ -50,6 +56,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @EnableWebFlux
@@ -58,9 +65,9 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 public class ReactiveManagementChildContextConfiguration {
 
 	@Bean
-	public ReactiveManagementWebServerFactoryCustomizer reactiveManagementWebServerFactoryCustomizer(
+	public ManagementWebServerFactoryCustomizer<ConfigurableWebServerFactory> reactiveManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
-		return new ReactiveManagementWebServerFactoryCustomizer(beanFactory);
+		return new ManagementWebServerFactoryCustomizer<>(beanFactory);
 	}
 
 	@Bean
@@ -73,15 +80,125 @@ public class ReactiveManagementChildContextConfiguration {
 		return httpHandler;
 	}
 
-	static class ReactiveManagementWebServerFactoryCustomizer
-			extends ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
+	@Bean
+	@ConditionalOnClass(name = "io.undertow.Undertow")
+	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new UndertowAccessLogCustomizer(properties);
+	}
 
-		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
-					TomcatReactiveWebServerFactoryCustomizer.class,
-					TomcatVirtualThreadsWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
-					JettyVirtualThreadsWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class,
-					NettyWebServerFactoryCustomizer.class);
+	@Bean
+	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new TomcatAccessLogCustomizer(properties);
+	}
+
+	@Bean
+	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new JettyAccessLogCustomizer(properties);
+	}
+
+	abstract static class AccessLogCustomizer implements Ordered {
+
+		private final String prefix;
+
+		AccessLogCustomizer(String prefix) {
+			this.prefix = prefix;
+		}
+
+		protected String customizePrefix(String existingPrefix) {
+			if (this.prefix == null) {
+				return existingPrefix;
+			}
+			if (existingPrefix == null) {
+				return this.prefix;
+			}
+			if (existingPrefix.startsWith(this.prefix)) {
+				return existingPrefix;
+			}
+			return this.prefix + existingPrefix;
+		}
+
+		@Override
+		public int getOrder() {
+			return 1;
+		}
+
+	}
+
+	static class TomcatAccessLogCustomizer extends AccessLogCustomizer
+			implements WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> {
+
+		TomcatAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties.getTomcat().getAccesslog().getPrefix());
+		}
+
+		@Override
+		public void customize(TomcatReactiveWebServerFactory factory) {
+			AccessLogValve accessLogValve = findAccessLogValve(factory);
+			if (accessLogValve == null) {
+				return;
+			}
+			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
+		}
+
+		private AccessLogValve findAccessLogValve(TomcatReactiveWebServerFactory factory) {
+			for (Valve engineValve : factory.getEngineValves()) {
+				if (engineValve instanceof AccessLogValve accessLogValve) {
+					return accessLogValve;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	static class UndertowAccessLogCustomizer extends AccessLogCustomizer
+			implements WebServerFactoryCustomizer<UndertowReactiveWebServerFactory> {
+
+		UndertowAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties.getUndertow().getAccesslog().getPrefix());
+		}
+
+		@Override
+		public void customize(UndertowReactiveWebServerFactory factory) {
+			factory.setAccessLogPrefix(customizePrefix(factory.getAccessLogPrefix()));
+		}
+
+	}
+
+	static class JettyAccessLogCustomizer extends AccessLogCustomizer
+			implements WebServerFactoryCustomizer<JettyReactiveWebServerFactory> {
+
+		JettyAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties.getJetty().getAccesslog().getPrefix());
+		}
+
+		@Override
+		public void customize(JettyReactiveWebServerFactory factory) {
+			factory.addServerCustomizers(this::customizeServer);
+		}
+
+		private void customizeServer(Server server) {
+			RequestLog requestLog = server.getRequestLog();
+			if (requestLog instanceof CustomRequestLog customRequestLog) {
+				customizeRequestLog(customRequestLog);
+			}
+		}
+
+		private void customizeRequestLog(CustomRequestLog requestLog) {
+			if (requestLog.getWriter() instanceof RequestLogWriter requestLogWriter) {
+				customizeRequestLogWriter(requestLogWriter);
+			}
+		}
+
+		private void customizeRequestLogWriter(RequestLogWriter writer) {
+			String filename = writer.getFileName();
+			if (StringUtils.hasLength(filename)) {
+				File file = new File(filename);
+				file = new File(file.getParentFile(), customizePrefix(file.getName()));
+				writer.setFilename(file.getPath());
+			}
 		}
 
 	}

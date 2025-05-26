@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,42 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
 /**
  * Configure {@link Builder RestClient.Builder} with sensible defaults.
+ * <p>
+ * Can be injected into application code and used to define a custom
+ * {@code RestClient.Builder} whose configuration is based upon that produced by
+ * auto-configuration.
  *
  * @author Moritz Halbritter
  * @since 3.2.0
  */
 public class RestClientBuilderConfigurer {
 
-	private List<RestClientCustomizer> customizers;
+	private final ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	void setRestClientCustomizers(List<RestClientCustomizer> customizers) {
+	private final ClientHttpRequestFactorySettings requestFactorySettings;
+
+	private final List<RestClientCustomizer> customizers;
+
+	public RestClientBuilderConfigurer() {
+		this(ClientHttpRequestFactoryBuilder.detect(), ClientHttpRequestFactorySettings.defaults(),
+				Collections.emptyList());
+	}
+
+	RestClientBuilderConfigurer(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
+			ClientHttpRequestFactorySettings requestFactorySettings, List<RestClientCustomizer> customizers) {
+		this.requestFactoryBuilder = requestFactoryBuilder;
+		this.requestFactorySettings = requestFactorySettings;
 		this.customizers = customizers;
 	}
 
@@ -43,15 +62,14 @@ public class RestClientBuilderConfigurer {
 	 * @return the configured builder
 	 */
 	public RestClient.Builder configure(RestClient.Builder builder) {
+		builder.requestFactory(this.requestFactoryBuilder.build(this.requestFactorySettings));
 		applyCustomizers(builder);
 		return builder;
 	}
 
 	private void applyCustomizers(Builder builder) {
-		if (this.customizers != null) {
-			for (RestClientCustomizer customizer : this.customizers) {
-				customizer.customize(builder);
-			}
+		for (RestClientCustomizer customizer : this.customizers) {
+			customizer.customize(builder);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,11 @@ import org.springframework.boot.info.SslInfo.CertificateInfo;
 import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SslInfoTests {
 
 	@Test
+	@WithPackageResources("test.p12")
 	void validCertificatesShouldProvideSslInfo() {
 		SslInfo sslInfo = createSslInfo("classpath:test.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
@@ -87,6 +90,7 @@ class SslInfoTests {
 	}
 
 	@Test
+	@WithPackageResources("test-not-yet-valid.p12")
 	void notYetValidCertificateShouldProvideSslInfo() {
 		SslInfo sslInfo = createSslInfo("classpath:test-not-yet-valid.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
@@ -111,6 +115,7 @@ class SslInfoTests {
 	}
 
 	@Test
+	@WithPackageResources("test-expired.p12")
 	void expiredCertificateShouldProvideSslInfo() {
 		SslInfo sslInfo = createSslInfo("classpath:test-expired.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
@@ -161,6 +166,7 @@ class SslInfoTests {
 	}
 
 	@Test
+	@WithPackageResources({ "test.p12", "test-not-yet-valid.p12", "test-expired.p12" })
 	void multipleBundlesShouldProvideSslInfo(@TempDir Path tempDir) throws IOException, InterruptedException {
 		Path keyStore = createKeyStore(tempDir);
 		SslInfo sslInfo = createSslInfo("classpath:test.p12", "classpath:test-not-yet-valid.p12",
@@ -209,6 +215,15 @@ class SslInfoTests {
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
 			assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
 		});
+	}
+
+	@Test
+	void nullKeyStore() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		sslBundleRegistry.registerBundle("test", SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		assertThat(sslInfo.getBundles()).hasSize(1);
+		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
 	}
 
 	private SslInfo createSslInfo(String... locations) {

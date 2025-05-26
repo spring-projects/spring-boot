@@ -1,0 +1,11 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot structured logging smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.docs.io.webservices.template
 
-import org.springframework.boot.webservices.client.HttpWebServiceMessageSenderBuilder
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings
+import org.springframework.boot.webservices.client.WebServiceMessageSenderFactory
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -28,11 +29,12 @@ class MyWebServiceTemplateConfiguration {
 
 	@Bean
 	fun webServiceTemplate(builder: WebServiceTemplateBuilder): WebServiceTemplate {
-		val sender = HttpWebServiceMessageSenderBuilder()
-			.setConnectTimeout(Duration.ofSeconds(5))
-			.setReadTimeout(Duration.ofSeconds(2))
-			.build()
-		return builder.messageSenders(sender).build()
+		val settings = ClientHttpRequestFactorySettings.defaults()
+				.withConnectTimeout(Duration.ofSeconds(2))
+				.withReadTimeout(Duration.ofSeconds(2))
+		builder.httpMessageSenderFactory(WebServiceMessageSenderFactory.http(settings))
+		return builder.build()
 	}
 
 }
+

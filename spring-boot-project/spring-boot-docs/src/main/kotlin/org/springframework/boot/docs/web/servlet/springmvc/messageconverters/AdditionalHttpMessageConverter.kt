@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,18 @@ import java.io.IOException
 
 open class AdditionalHttpMessageConverter : AbstractHttpMessageConverter<Any>() {
 
-	override fun supports(clazz: Class<*>): Boolean {
+	override fun supports(type: Class<*>): Boolean {
 		return false
 	}
 
 	@Throws(IOException::class, HttpMessageNotReadableException::class)
-	override fun readInternal(clazz: Class<*>, inputMessage: HttpInputMessage): Any {
+	override fun readInternal(type: Class<*>, inputMessage: HttpInputMessage): Any {
 		return Any()
 	}
 
 	@Throws(IOException::class, HttpMessageNotWritableException::class)
-	override fun writeInternal(t: Any, outputMessage: HttpOutputMessage) {
+	override fun writeInternal(instance: Any, outputMessage: HttpOutputMessage) {
 	}
 
 }
+

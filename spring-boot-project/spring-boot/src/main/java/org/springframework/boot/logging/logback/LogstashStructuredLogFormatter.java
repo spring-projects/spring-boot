@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,12 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ContextPairs;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
 /**
  * Logback {@link StructuredLogFormatter} for {@link CommonStructuredLogFormat#LOGSTASH}.
@@ -48,12 +51,14 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	LogstashStructuredLogFormatter(ThrowableProxyConverter throwableProxyConverter) {
-		super((members) -> jsonMembers(throwableProxyConverter, members));
+	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter, StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(stackTracePrinter, contextPairs, throwableProxyConverter, members), customizer);
 	}
 
-	private static void jsonMembers(ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+	private static void jsonMembers(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
 		members.add("message", ILoggingEvent::getFormattedMessage);
@@ -61,17 +66,17 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 		members.add("thread_name", ILoggingEvent::getThreadName);
 		members.add("level", ILoggingEvent::getLevel);
 		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
-		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
-		members.from(ILoggingEvent::getKeyValuePairs)
-			.whenNotEmpty()
-			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
+		members.add().usingPairs(contextPairs.flat("_", (pairs) -> {
+			pairs.addMapEntries(ILoggingEvent::getMDCPropertyMap);
+			pairs.add(ILoggingEvent::getKeyValuePairs, keyValuePairExtractor);
+		}));
 		members.add("tags", ILoggingEvent::getMarkerList)
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
 			.whenNotEmpty();
 		members.add("stack_trace", (event) -> event)
 			.whenNotNull(ILoggingEvent::getThrowableProxy)
-			.as(throwableProxyConverter::convert);
+			.as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {

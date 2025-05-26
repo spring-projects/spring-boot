@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
@@ -75,6 +76,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.ftlh", content = "home")
 	void defaultViewResolution() throws Exception {
 		load();
 		MockHttpServletResponse response = render("home");
@@ -84,6 +86,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/home.ftlh", content = "home")
 	void customContentType() throws Exception {
 		load("spring.freemarker.contentType:application/json");
 		MockHttpServletResponse response = render("home");
@@ -93,6 +96,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/prefix/prefixed.ftlh", content = "prefixed")
 	void customPrefix() throws Exception {
 		load("spring.freemarker.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
@@ -101,6 +105,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/suffixed.freemarker", content = "suffixed")
 	void customSuffix() throws Exception {
 		load("spring.freemarker.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
@@ -109,6 +114,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "custom-templates/custom.ftlh", content = "custom")
 	void customTemplateLoaderPath() throws Exception {
 		load("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
@@ -138,6 +144,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
+	@WithResource(name = "templates/message.ftlh", content = "Message: ${greeting}")
 	void renderTemplate() throws Exception {
 		load();
 		FreeMarkerConfigurer freemarker = this.context.getBean(FreeMarkerConfigurer.class);

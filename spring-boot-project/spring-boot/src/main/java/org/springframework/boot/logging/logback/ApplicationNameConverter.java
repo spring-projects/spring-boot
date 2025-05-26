@@ -31,7 +31,7 @@ import org.springframework.boot.logging.LoggingSystemProperty;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.2.4
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
  * {@link EnclosedInSquareBracketsConverter}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)

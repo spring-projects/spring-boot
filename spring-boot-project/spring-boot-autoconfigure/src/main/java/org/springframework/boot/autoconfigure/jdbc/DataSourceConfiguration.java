@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,10 +51,17 @@ abstract class DataSourceConfiguration {
 	@SuppressWarnings("unchecked")
 	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
 			ClassLoader classLoader) {
-		return (T) DataSourceBuilder.create(classLoader)
-			.type(type)
-			.driverClassName(connectionDetails.getDriverClassName())
-			.url(connectionDetails.getJdbcUrl())
+		return createDataSource(connectionDetails, type, classLoader, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
+			ClassLoader classLoader, boolean applyDriverClassName) {
+		DataSourceBuilder<? extends DataSource> builder = DataSourceBuilder.create(classLoader).type(type);
+		if (applyDriverClassName) {
+			builder.driverClassName(connectionDetails.getDriverClassName());
+		}
+		return (T) builder.url(connectionDetails.getJdbcUrl())
 			.username(connectionDetails.getUsername())
 			.password(connectionDetails.getPassword())
 			.build();
@@ -77,7 +85,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
+		@ConfigurationProperties("spring.datasource.tomcat")
 		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties,
 				JdbcConnectionDetails connectionDetails) {
 			Class<? extends DataSource> dataSourceType = org.apache.tomcat.jdbc.pool.DataSource.class;
@@ -112,10 +120,12 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
+		@ConfigurationProperties("spring.datasource.hikari")
+		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails,
+				Environment environment) {
+			String dataSourceClassName = environment.getProperty("spring.datasource.hikari.data-source-class-name");
 			HikariDataSource dataSource = createDataSource(connectionDetails, HikariDataSource.class,
-					properties.getClassLoader());
+					properties.getClassLoader(), dataSourceClassName == null);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
 			}
@@ -141,7 +151,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
+		@ConfigurationProperties("spring.datasource.dbcp2")
 		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties,
 				JdbcConnectionDetails connectionDetails) {
 			Class<? extends DataSource> dataSourceType = org.apache.commons.dbcp2.BasicDataSource.class;
@@ -167,7 +177,7 @@ abstract class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.oracleucp")
+		@ConfigurationProperties("spring.datasource.oracleucp")
 		PoolDataSourceImpl dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails)
 				throws SQLException {
 			PoolDataSourceImpl dataSource = createDataSource(connectionDetails, PoolDataSourceImpl.class,

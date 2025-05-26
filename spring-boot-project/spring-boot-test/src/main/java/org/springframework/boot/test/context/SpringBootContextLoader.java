@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
@@ -105,28 +107,33 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
-		return loadContext(mergedConfig, Mode.STANDARD, null);
+		return loadContext(mergedConfig, Mode.STANDARD, null, null);
 	}
 
 	@Override
-	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig) throws Exception {
-		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null);
+	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig,
+			RuntimeHints runtimeHints) throws Exception {
+		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null, runtimeHints);
 	}
 
 	@Override
 	public ApplicationContext loadContextForAotRuntime(MergedContextConfiguration mergedConfig,
 			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
-		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer);
+		return loadContext(mergedConfig, Mode.AOT_RUNTIME, initializer, null);
 	}
 
 	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
-			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer, RuntimeHints runtimeHints)
+			throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
 		UseMainMethod useMainMethod = annotation.getUseMainMethod();
 		Method mainMethod = getMainMethod(mergedConfig, useMainMethod);
 		if (mainMethod != null) {
+			if (runtimeHints != null) {
+				runtimeHints.reflection().registerMethod(mainMethod, ExecutableMode.INVOKE);
+			}
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
 			return hook.runMain(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
@@ -158,20 +165,23 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			.orElse(null);
 		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
 				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
-		Method mainMethod = (springBootConfiguration != null)
-				? ReflectionUtils.findMethod(springBootConfiguration, "main", String[].class) : null;
+		Method mainMethod = findMainMethod(springBootConfiguration);
+		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
+				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
+		return mainMethod;
+	}
+
+	private static Method findMainMethod(Class<?> type) {
+		Method mainMethod = (type != null) ? ReflectionUtils.findMethod(type, "main", String[].class) : null;
 		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
 			try {
-				Class<?> kotlinClass = ClassUtils.forName(springBootConfiguration.getName() + "Kt",
-						springBootConfiguration.getClassLoader());
+				Class<?> kotlinClass = ClassUtils.forName(type.getName() + "Kt", type.getClassLoader());
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
 			}
 			catch (ClassNotFoundException ex) {
 				// Ignore
 			}
 		}
-		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
-				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
 		return mainMethod;
 	}
 

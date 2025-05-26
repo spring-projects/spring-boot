@@ -1,33 +1,39 @@
 name: Send Notification
-description: Sends a Google Chat message as a notification of the job's outcome
+description: 'Sends a Google Chat message as a notification of the job''s outcome'
 inputs:
-  webhook-url:
-    description: 'Google Chat Webhook URL'
-    required: true
+  build-scan-url:
+    description: 'URL of the build scan to include in the notification'
+    required: false
+  run-name:
+    description: 'Name of the run to include in the notification'
+    required: false
+    default: ${{ format('{0} {1}', github.ref_name, github.job) }}
   status:
     description: 'Status of the job'
     required: true
-  build-scan-url:
-    description: 'URL of the build scan to include in the notification'
-  run-name:
-    description: 'Name of the run to include in the notification'
-    default: ${{ format('{0} {1}', github.ref_name, github.job) }}
+  webhook-url:
+    description: 'Google Chat Webhook URL'
+    required: true
 runs:
   using: composite
   steps:
-    - shell: bash
+    - name: Prepare Variables
+      shell: bash
       run: |
         echo "BUILD_SCAN=${{ inputs.build-scan-url == '' && ' [build scan unavailable]' || format(' [<{0}|Build Scan>]', inputs.build-scan-url) }}" >> "$GITHUB_ENV"
         echo "RUN_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_ENV"
-    - shell: bash
+    - name: Success Notification
       if: ${{ inputs.status == 'success' }}
+      shell: bash
       run: |
         curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was successful ${{ env.BUILD_SCAN }}"}' || true
-    - shell: bash
+    - name: Failure Notification
       if: ${{ inputs.status == 'failure' }}
+      shell: bash
       run: |
         curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<users/all> *<${{ env.RUN_URL }}|${{ inputs.run-name }}> failed* ${{ env.BUILD_SCAN }}"}' || true
-    - shell: bash
+    - name: Cancel Notification
       if: ${{ inputs.status == 'cancelled' }}
+      shell: bash
       run: |
         curl -X POST '${{ inputs.webhook-url }}' -H 'Content-Type: application/json' -d '{ text: "<${{ env.RUN_URL }}|${{ inputs.run-name }}> was cancelled"}' || true

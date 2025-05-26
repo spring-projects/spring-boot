@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 	 * @return the values with their placeholders resolved
 	 */
 	public List<String> resolveAll(DataSource dataSource, String... values) {
-		Assert.notNull(dataSource, "DataSource must not be null");
+		Assert.notNull(dataSource, "'dataSource' must not be null");
 		return resolveAll(() -> determinePlatform(dataSource), values);
 	}
 
@@ -106,7 +106,7 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 	 * @since 2.6.2
 	 */
 	public List<String> resolveAll(String platform, String... values) {
-		Assert.notNull(platform, "Platform must not be null");
+		Assert.notNull(platform, "'platform' must not be null");
 		return resolveAll(() -> platform, values);
 	}
 

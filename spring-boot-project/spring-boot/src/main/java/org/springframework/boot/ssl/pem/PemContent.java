@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.io.ApplicationResourceLoader;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * PEM encoded content that can provide {@link X509Certificate certificates} and
@@ -109,19 +109,19 @@ public final class PemContent {
 	 * Load {@link PemContent} from the given content (either the PEM content itself or a
 	 * reference to the resource to load).
 	 * @param content the content to load
-	 * @return a new {@link PemContent} instance
+	 * @param resourceLoader the resource loader used to load content
+	 * @return a new {@link PemContent} instance or {@code null}
 	 * @throws IOException on IO error
 	 */
-	static PemContent load(String content) throws IOException {
-		if (content == null) {
+	static PemContent load(String content, ResourceLoader resourceLoader) throws IOException {
+		if (!StringUtils.hasLength(content)) {
 			return null;
 		}
 		if (isPresentInText(content)) {
 			return new PemContent(content);
 		}
-		try {
-			Resource resource = new ApplicationResourceLoader().getResource(content);
-			return load(resource.getInputStream());
+		try (InputStream in = resourceLoader.getResource(content).getInputStream()) {
+			return load(in);
 		}
 		catch (IOException | UncheckedIOException ex) {
 			throw new IOException("Error reading certificate or key from file '%s'".formatted(content), ex);
@@ -135,7 +135,7 @@ public final class PemContent {
 	 * @throws IOException on IO error
 	 */
 	public static PemContent load(Path path) throws IOException {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
 			return load(in);
 		}
