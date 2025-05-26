@@ -12,7 +12,7 @@ This dependency management lets you omit `<version>` tags for those dependencies
 * An execution of the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[`repackage` goal] with a `repackage` execution id.
 * A `native` profile that configures the build to be able to generate a Native image.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
+* Sensible plugin configuration ({url-git-commit-id-maven-plugin}[`Git Commit Id Plugin`], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
 
 NOTE: Since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
