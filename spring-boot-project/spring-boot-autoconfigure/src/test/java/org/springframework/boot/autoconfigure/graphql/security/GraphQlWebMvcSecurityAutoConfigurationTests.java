@@ -158,8 +158,6 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	static class BookService {
 
 		@PreAuthorize("hasRole('USER')")
-		@org.springframework.lang.Nullable
-		@SuppressWarnings("deprecation")
 		Book getBookdById(String id) {
 			return GraphQlTestDataFetchers.getBookById(id);
 		}

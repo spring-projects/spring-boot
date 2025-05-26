@@ -169,8 +169,6 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	static class BookService {
 
 		@PreAuthorize("hasRole('USER')")
-		@org.springframework.lang.Nullable
-		@SuppressWarnings("deprecation")
 		Mono<Book> getBookdById(String id) {
 			return Mono.justOrEmpty(GraphQlTestDataFetchers.getBookById(id));
 		}

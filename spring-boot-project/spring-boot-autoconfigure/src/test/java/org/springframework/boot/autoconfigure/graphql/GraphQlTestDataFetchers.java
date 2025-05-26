@@ -46,8 +46,6 @@ public final class GraphQlTestDataFetchers {
 		return (environment) -> getBooksOnSale(environment.getArgument("minPages"));
 	}
 
-	@SuppressWarnings("deprecation")
-	@org.springframework.lang.Nullable
 	public static Book getBookById(String id) {
 		return books.stream().filter((book) -> book.getId().equals(id)).findFirst().orElse(null);
 	}
