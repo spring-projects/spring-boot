@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,10 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 	/**
 	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which graceful shutdown
 	 * of the web server is performed.
+	 * @deprecated as of 4.0.0 in favor of
+	 * {@link WebServerApplicationContext#GRACEFUL_SHUTDOWN_PHASE}
 	 */
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	public static final int SMART_LIFECYCLE_PHASE = SmartLifecycle.DEFAULT_PHASE - 1024;
 
 	private final WebServer webServer;
@@ -69,7 +72,7 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 
 	@Override
 	public int getPhase() {
-		return SMART_LIFECYCLE_PHASE;
+		return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE;
 	}
 
 }

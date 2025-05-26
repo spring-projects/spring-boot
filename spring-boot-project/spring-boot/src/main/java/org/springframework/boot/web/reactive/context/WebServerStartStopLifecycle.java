@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.springframework.boot.web.context.WebServerGracefulShutdownLifecycle;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.SmartLifecycle;
 
@@ -55,7 +55,7 @@ class WebServerStartStopLifecycle implements SmartLifecycle {
 
 	@Override
 	public int getPhase() {
-		return WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE - 1024;
+		return WebServerApplicationContext.START_STOP_LIFECYCLE_PHASE;
 	}
 
 }

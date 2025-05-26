@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.web.context;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -28,6 +29,20 @@ import org.springframework.util.ObjectUtils;
  * @since 2.0.0
  */
 public interface WebServerApplicationContext extends ApplicationContext {
+
+	/**
+	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which graceful shutdown
+	 * of the web server is performed.
+	 * @since 4.0.0
+	 */
+	int GRACEFUL_SHUTDOWN_PHASE = SmartLifecycle.DEFAULT_PHASE - 1024;
+
+	/**
+	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which starting and
+	 * stopping of the web server is performed.
+	 * @since 4.0.0
+	 */
+	int START_STOP_LIFECYCLE_PHASE = GRACEFUL_SHUTDOWN_PHASE - 1024;
 
 	/**
 	 * Returns the {@link WebServer} that was created by the context or {@code null} if
