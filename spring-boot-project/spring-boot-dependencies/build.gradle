@@ -974,9 +974,12 @@ bom {
 		}
 	}
 	library("Jedis", "6.0.0") {
-		prohibit {
-			contains "-beta"
-			because "we don't want beta dependencies"
+		alignWith {
+			property {
+				name "jedis"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
 		}
 		group("redis.clients") {
 			modules = [
@@ -1545,6 +1548,13 @@ bom {
 		}
 	}
 	library("MongoDB", "5.5.0") {
+		alignWith {
+			version {
+				of "org.mongodb:mongodb-driver-core"
+				from "org.springframework.data:spring-data-mongodb"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("org.mongodb") {
 			bom("mongodb-driver-bom")
 		}

@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -56,6 +57,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
+		Assumptions.assumeTrue(this.gradleBuild.gradleVersionIsLessThan("9.0-milestone-1"));
 		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.0").build("build");
 	}
 

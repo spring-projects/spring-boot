@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,18 +34,18 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_24)) {
-			return Arrays.asList(GradleVersion.current().getVersion());
+			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_23)) {
-			return Arrays.asList("8.10", GradleVersion.current().getVersion());
+			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_22)) {
-			return Arrays.asList("8.8", GradleVersion.current().getVersion());
+			return Arrays.asList("8.8", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_21)) {
-			return Arrays.asList("8.5", GradleVersion.current().getVersion());
+			return Arrays.asList("8.5", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 		}
-		return Arrays.asList("7.6.4", "8.4", GradleVersion.current().getVersion());
+		return Arrays.asList("7.6.4", "8.4", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 	}
 
 	public static String minimumCompatible() {

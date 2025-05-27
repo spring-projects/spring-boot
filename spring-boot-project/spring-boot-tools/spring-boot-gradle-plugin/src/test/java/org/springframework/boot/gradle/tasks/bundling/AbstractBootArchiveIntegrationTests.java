@@ -50,6 +50,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -597,6 +598,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void dirModeAndFileModeAreApplied() throws IOException {
+		Assumptions.assumeTrue(this.gradleBuild.gradleVersionIsLessThan("9.0-milestone-1"));
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.8-rc-1")
 			.expectDeprecationMessages("The CopyProcessingSpec.setDirMode(Integer) method has been deprecated",
 					"The CopyProcessingSpec.setFileMode(Integer) method has been deprecated",

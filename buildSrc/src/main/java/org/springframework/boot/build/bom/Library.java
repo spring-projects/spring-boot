@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.bom;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.Project;
@@ -38,6 +44,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.result.DependencyResult;
 import org.gradle.api.artifacts.result.ResolutionResult;
+import org.w3c.dom.Document;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
@@ -406,10 +413,18 @@ public class Library {
 
 	}
 
+	public interface VersionAlignment {
+
+		Set<String> resolve();
+
+	}
+
 	/**
-	 * Version alignment for a library.
+	 * Version alignment for a library based on a dependency of another module.
 	 */
-	public static class VersionAlignment {
+	public static class DependencyVersionAlignment implements VersionAlignment {
+
+		private final String dependency;
 
 		private final String from;
 
@@ -423,7 +438,9 @@ public class Library {
 
 		private Set<String> alignedVersions;
 
-		VersionAlignment(String from, String managedBy, Project project, List<Library> libraries, List<Group> groups) {
+		DependencyVersionAlignment(String dependency, String from, String managedBy, Project project,
+				List<Library> libraries, List<Group> groups) {
+			this.dependency = dependency;
 			this.from = from;
 			this.managedBy = managedBy;
 			this.project = project;
@@ -431,27 +448,34 @@ public class Library {
 			this.groups = groups;
 		}
 
+		@Override
 		public Set<String> resolve() {
 			if (this.alignedVersions != null) {
 				return this.alignedVersions;
 			}
 			Map<String, String> versions = resolveAligningDependencies();
-			Set<String> versionsInLibrary = new HashSet<>();
-			for (Group group : this.groups) {
-				for (Module module : group.getModules()) {
-					String version = versions.get(group.getId() + ":" + module.getName());
-					if (version != null) {
-						versionsInLibrary.add(version);
-					}
-				}
-				for (String plugin : group.getPlugins()) {
-					String version = versions.get(group.getId() + ":" + plugin);
-					if (version != null) {
-						versionsInLibrary.add(version);
-					}
-				}
+			if (this.dependency != null) {
+				String version = versions.get(this.dependency);
+				this.alignedVersions = (version != null) ? Set.of(version) : Collections.emptySet();
 			}
-			this.alignedVersions = versionsInLibrary;
+			else {
+				Set<String> versionsInLibrary = new HashSet<>();
+				for (Group group : this.groups) {
+					for (Module module : group.getModules()) {
+						String version = versions.get(group.getId() + ":" + module.getName());
+						if (version != null) {
+							versionsInLibrary.add(version);
+						}
+					}
+					for (String plugin : group.getPlugins()) {
+						String version = versions.get(group.getId() + ":" + plugin);
+						if (version != null) {
+							versionsInLibrary.add(version);
+						}
+					}
+				}
+				this.alignedVersions = versionsInLibrary;
+			}
 			return this.alignedVersions;
 		}
 
@@ -531,6 +555,100 @@ public class Library {
 		@Override
 		public String toString() {
 			String result = "version from dependencies of " + this.from;
+			if (this.managedBy != null) {
+				result += " that is managed by " + this.managedBy;
+			}
+			return result;
+		}
+
+	}
+
+	/**
+	 * Version alignment for a library based on a property in the pom of another module.
+	 */
+	public static class PomPropertyVersionAlignment implements VersionAlignment {
+
+		private final String name;
+
+		private final String from;
+
+		private final String managedBy;
+
+		private final Project project;
+
+		private final List<Library> libraries;
+
+		private Set<String> alignedVersions;
+
+		PomPropertyVersionAlignment(String name, String from, String managedBy, Project project,
+				List<Library> libraries) {
+			this.name = name;
+			this.from = from;
+			this.managedBy = managedBy;
+			this.project = project;
+			this.libraries = libraries;
+		}
+
+		@Override
+		public Set<String> resolve() {
+			if (this.alignedVersions != null) {
+				return this.alignedVersions;
+			}
+			Configuration alignmentConfiguration = this.project.getConfigurations()
+				.detachedConfiguration(getAligningDependencies().toArray(new Dependency[0]));
+			Set<File> files = alignmentConfiguration.resolve();
+			if (files.size() != 1) {
+				throw new IllegalStateException(
+						"Expected a single file when resolving the pom of " + this.from + " but found " + files.size());
+			}
+			File pomFile = files.iterator().next();
+			return Set.of(propertyFrom(pomFile));
+		}
+
+		private List<Dependency> getAligningDependencies() {
+			Library managingLibrary = findManagingLibrary();
+			List<Dependency> boms = getBomDependencies(managingLibrary);
+			List<Dependency> dependencies = new ArrayList<>();
+			dependencies.addAll(boms);
+			dependencies.add(this.project.getDependencies().create(this.from + "@pom"));
+			return dependencies;
+		}
+
+		private Library findManagingLibrary() {
+			if (this.managedBy == null) {
+				return null;
+			}
+			return this.libraries.stream()
+				.filter((candidate) -> this.managedBy.equals(candidate.getName()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Managing library '" + this.managedBy + "' not found."));
+		}
+
+		private List<Dependency> getBomDependencies(Library manager) {
+			return manager.getGroups()
+				.stream()
+				.flatMap((group) -> group.getBoms()
+					.stream()
+					.map((bom) -> this.project.getDependencies()
+						.platform(group.getId() + ":" + bom.name() + ":" + manager.getVersion().getVersion())))
+				.toList();
+		}
+
+		private String propertyFrom(File pomFile) {
+			try {
+				DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				Document document = documentBuilder.parse(pomFile);
+				XPath xpath = XPathFactory.newInstance().newXPath();
+				return xpath.evaluate("/project/properties/" + this.name + "/text()", document);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@Override
+		public String toString() {
+			String result = "version from properties of " + this.from;
 			if (this.managedBy != null) {
 				result += " that is managed by " + this.managedBy;
 			}
