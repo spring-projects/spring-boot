@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
+package org.springframework.boot.undertow.actuate.autoconfigure.web.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

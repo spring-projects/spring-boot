@@ -30,6 +30,7 @@ dependencies {
 	api("io.undertow:undertow-servlet")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("io.undertow:undertow-websockets-jsr")
 	optional("org.springframework:spring-webflux")
 

@@ -67,6 +67,4 @@ org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoCo
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.server.netty.NettyReactiveManagementContextAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.web.server.undertow.UndertowReactiveManagementContextAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.web.server.undertow.UndertowServletManagementContextAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration

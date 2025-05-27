@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Tests for {@link UndertowManagementServerProperties}.
- *
- * @author Andy Wilkinson
+ * Actuator Undertow web server support.
  */
-class UndertowManagementServerPropertiesTests {
-
-	@Test
-	void accessLogsArePrefixedByDefault() {
-		UndertowManagementServerProperties properties = new UndertowManagementServerProperties();
-		assertThat(properties.getAccesslog().getPrefix()).isEqualTo("management_");
-	}
-
-}
+package org.springframework.boot.undertow.actuate.autoconfigure.web.server;

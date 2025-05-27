@@ -1,2 +1,4 @@
+org.springframework.boot.undertow.actuate.autoconfigure.web.server.UndertowReactiveManagementContextAutoConfiguration
+org.springframework.boot.undertow.actuate.autoconfigure.web.server.UndertowServletManagementContextAutoConfiguration
 org.springframework.boot.undertow.autoconfigure.reactive.UndertowReactiveWebServerAutoConfiguration
 org.springframework.boot.undertow.autoconfigure.servlet.UndertowServletWebServerAutoConfiguration
