@@ -32,7 +32,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-netty"))
 
-	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

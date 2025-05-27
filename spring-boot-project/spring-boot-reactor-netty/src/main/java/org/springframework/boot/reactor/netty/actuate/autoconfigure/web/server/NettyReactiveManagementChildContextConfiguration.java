@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.netty;
+package org.springframework.boot.reactor.netty.actuate.autoconfigure.web.server;
 
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
-import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Netty-based reactive management context.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Netty-based
+ * reactive web endpoint infrastructure when a separate management context running on a
+ * different port is required.
  *
  * @author Andy Wilkinson
- * @since 4.0.0
  */
-@AutoConfiguration
 @ConditionalOnClass(HttpServer.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class NettyReactiveManagementContextAutoConfiguration {
+@EnableConfigurationProperties(ManagementServerProperties.class)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
+class NettyReactiveManagementChildContextConfiguration {
 
 	@Bean
 	static ManagementContextFactory reactiveWebChildContextFactory() {

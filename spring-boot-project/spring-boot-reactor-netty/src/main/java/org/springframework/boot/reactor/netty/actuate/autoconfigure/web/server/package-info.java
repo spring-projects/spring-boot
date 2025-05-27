@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes related to the auto-configuration of a reactive web server using Netty.
+ * Auto-configuration for a Reactor Netty based management server.
  */
-package org.springframework.boot.autoconfigure.web.server.reactive.netty;
+package org.springframework.boot.reactor.netty.actuate.autoconfigure.web.server;
