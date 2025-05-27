@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;
 
 import org.eclipse.jetty.server.Server;
 
@@ -28,16 +28,16 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jetty-based
- * servlet web endpoint infrastructure when a separate management context running on a
+ * reactive web endpoint infrastructure when a separate management context running on a
  * different port is required.
  *
  * @author Andy Wilkinson
  */
 @ConditionalOnClass(Server.class)
-@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(JettyManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
-class JettyServletManagementChildContextConfiguration {
+class JettyReactiveManagementChildContextConfiguration {
 
 	@Bean
 	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(JettyManagementServerProperties properties) {

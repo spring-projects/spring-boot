@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator Jetty web server support.
+ * Auto-configuration for a Jetty-based management server.
  */
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;

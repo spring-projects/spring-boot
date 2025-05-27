@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;
 
 import org.eclipse.jetty.server.Server;
 
@@ -26,26 +26,26 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.jetty.autoconfigure.servlet.JettyServletWebServerAutoConfiguration;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
+import org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration;
+import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Jetty-based servlet management context.
+ * Auto-configuration for a Jetty-based reactive management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(Server.class)
-@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnClass({ Server.class, ManagementContextFactory.class })
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class JettyServletManagementContextAutoConfiguration {
+public class JettyReactiveManagementContextAutoConfiguration {
 
 	@Bean
-	static ManagementContextFactory servletWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				JettyServletWebServerAutoConfiguration.class);
+	static ManagementContextFactory reactiveWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
+				JettyReactiveWebServerAutoConfiguration.class);
 	}
 
 }
