@@ -17,4 +17,4 @@
 /**
  * Actuator Undertow web server support.
  */
-package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
+package org.springframework.boot.undertow.actuate.autoconfigure.web.server;

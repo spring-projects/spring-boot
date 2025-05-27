@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
+package org.springframework.boot.undertow.actuate.autoconfigure.web.server;
 
 import io.undertow.Undertow;
 
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(Undertow.class)
+@ConditionalOnClass({ Undertow.class, ManagementContextFactory.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 public class UndertowServletManagementContextAutoConfiguration {
