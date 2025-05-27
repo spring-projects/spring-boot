@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Tests for {@link JettyManagementServerProperties}.
- *
- * @author Andy Wilkinson
+ * Auto-configuration for a Jetty-based management server.
  */
-class JettyManagementServerPropertiesTests {
-
-	@Test
-	void accessLogsArePrefixedByDefault() {
-		JettyManagementServerProperties properties = new JettyManagementServerProperties();
-		assertThat(properties.getAccesslog().getPrefix()).isEqualTo("management_");
-	}
-
-}
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;

@@ -53,7 +53,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-http-codec"))
 	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-jersey"))
-	optional(project(":spring-boot-project:spring-boot-jetty"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
