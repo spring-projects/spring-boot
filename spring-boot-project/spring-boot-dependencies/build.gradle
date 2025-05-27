@@ -939,6 +939,13 @@ bom {
 		}
 	}
 	library("Jedis", "5.0.2") {
+		alignWith {
+			property {
+				name "jedis"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("redis.clients") {
 			modules = [
 				"jedis"
@@ -1150,6 +1157,13 @@ bom {
 		}
 	}
 	library("Lettuce", "6.3.2.RELEASE") {
+		alignWith {
+			property {
+				name "lettuce"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
@@ -1452,6 +1466,12 @@ bom {
 		}
 	}
 	library("MongoDB", "5.0.1") {
+		alignWith {
+			version {
+				from "org.springframework.data:spring-data-mongodb"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("org.mongodb") {
 			modules = [
 				"bson",
