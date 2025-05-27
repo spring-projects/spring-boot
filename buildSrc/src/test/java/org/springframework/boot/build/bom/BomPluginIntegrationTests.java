@@ -55,6 +55,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('ActiveMQ', '5.15.10') {");
@@ -91,6 +92,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('Flyway', '6.0.8') {");
@@ -118,6 +120,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('Jackson Bom', '2.10.0') {");
@@ -144,6 +147,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('MySQL', '8.0.18') {");
@@ -177,6 +181,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('Elasticsearch', '7.15.2') {");
@@ -208,6 +213,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('Kafka', '2.7.2') {");
@@ -266,6 +272,7 @@ class BomPluginIntegrationTests {
 		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
 			out.println("plugins {");
 			out.println("    id 'org.springframework.boot.bom'");
+			out.println("    id 'org.springframework.boot.deployed'");
 			out.println("}");
 			out.println("bom {");
 			out.println("    library('Spring Boot', '1.2.3') {");

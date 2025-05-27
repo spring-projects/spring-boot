@@ -151,7 +151,3 @@ plugins.withType(EclipsePlugin) {
 		}
 	}
 }
-
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
-}

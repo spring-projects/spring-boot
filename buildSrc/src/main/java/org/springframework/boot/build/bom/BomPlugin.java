@@ -34,7 +34,6 @@ import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.tasks.TaskProvider;
 
-import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
@@ -55,7 +54,6 @@ public class BomPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
-		plugins.apply(DeployedPlugin.class);
 		plugins.apply(MavenRepositoryPlugin.class);
 		plugins.apply(JavaPlatformPlugin.class);
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
