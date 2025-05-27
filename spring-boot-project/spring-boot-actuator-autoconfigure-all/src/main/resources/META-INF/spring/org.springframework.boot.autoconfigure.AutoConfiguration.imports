@@ -66,5 +66,4 @@ org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoC
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.web.server.netty.NettyReactiveManagementContextAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration

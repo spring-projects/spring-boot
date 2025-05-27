@@ -57,7 +57,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-r2dbc"))
-	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional(project(":spring-boot-project:spring-boot-restclient"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
@@ -147,6 +146,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-data-rest"))
 	testImplementation(project(":spring-boot-project:spring-boot-hateoas"))
+	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-restclient-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
