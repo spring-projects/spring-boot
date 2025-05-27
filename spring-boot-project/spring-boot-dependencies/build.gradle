@@ -956,6 +956,13 @@ bom {
 		}
 	}
 	library("Jedis", "5.2.0") {
+		alignWith {
+			property {
+				name "jedis"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("redis.clients") {
 			modules = [
 				"jedis"
@@ -1478,6 +1485,12 @@ bom {
 		}
 	}
 	library("MongoDB", "5.2.1") {
+		alignWith {
+			version {
+				from "org.springframework.data:spring-data-mongodb"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("org.mongodb") {
 			modules = [
 				"bson",

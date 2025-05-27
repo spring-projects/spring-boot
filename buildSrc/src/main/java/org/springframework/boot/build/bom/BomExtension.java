@@ -38,6 +38,9 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 
+import org.springframework.boot.build.bom.BomExtension.LibraryHandler.AlignWithHandler.PropertyHandler;
+import org.springframework.boot.build.bom.BomExtension.LibraryHandler.AlignWithHandler.VersionHandler;
+import org.springframework.boot.build.bom.Library.DependencyVersionAlignment;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
@@ -45,6 +48,7 @@ import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.PermittedDependency;
+import org.springframework.boot.build.bom.Library.PomPropertyVersionAlignment;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -106,14 +110,24 @@ public class BomExtension {
 				(version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
-		VersionAlignment versionAlignment = (libraryHandler.alignWith.version != null)
-				? new VersionAlignment(libraryHandler.alignWith.version.from,
-						libraryHandler.alignWith.version.managedBy, this.project, this.libraries, libraryHandler.groups)
-				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment(libraryHandler),
 				libraryHandler.alignWith.dependencyManagementDeclaredIn, libraryHandler.linkRootName,
 				libraryHandler.links));
+	}
+
+	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
+		VersionHandler version = libraryHandler.alignWith.version;
+		if (version != null) {
+			return new DependencyVersionAlignment(version.from, version.managedBy, this.project, this.libraries,
+					libraryHandler.groups);
+		}
+		PropertyHandler property = libraryHandler.alignWith.property;
+		if (property != null) {
+			return new PomPropertyVersionAlignment(property.name, property.of, property.managedBy, this.project,
+					this.libraries);
+		}
+		return null;
 	}
 
 	private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
@@ -382,11 +396,18 @@ public class BomExtension {
 
 			private VersionHandler version;
 
+			private PropertyHandler property;
+
 			private String dependencyManagementDeclaredIn;
 
 			public void version(Action<VersionHandler> action) {
 				this.version = new VersionHandler();
 				action.execute(this.version);
+			}
+
+			public void property(Action<PropertyHandler> action) {
+				this.property = new PropertyHandler();
+				action.execute(this.property);
 			}
 
 			public void dependencyManagementDeclaredIn(String bomCoordinates) {
@@ -401,6 +422,28 @@ public class BomExtension {
 
 				public void from(String from) {
 					this.from = from;
+				}
+
+				public void managedBy(String managedBy) {
+					this.managedBy = managedBy;
+				}
+
+			}
+
+			public static class PropertyHandler {
+
+				private String name;
+
+				private String of;
+
+				private String managedBy;
+
+				public void name(String name) {
+					this.name = name;
+				}
+
+				public void of(String dependency) {
+					this.of = dependency;
 				}
 
 				public void managedBy(String managedBy) {
