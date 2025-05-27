@@ -28,8 +28,8 @@ import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsProperties.Meter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryResourceAttributes;
+import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetryResourceAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 

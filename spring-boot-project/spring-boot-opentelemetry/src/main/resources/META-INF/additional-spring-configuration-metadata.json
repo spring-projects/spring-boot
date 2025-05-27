@@ -1,0 +1,98 @@
+{
+	"groups": [],
+	"properties": [
+		{
+			"name": "management.logging.export.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Whether auto-configuration of logging is enabled to export logs.",
+			"defaultValue": true,
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.enabled",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging",
+			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.compression",
+			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties$Compression",
+			"description": "Method used to compress the payload.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"defaultValue": "none",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.compression",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.connect-timeout",
+			"type": "java.time.Duration",
+			"description": "Connect timeout for the OTel collector connection.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"defaultValue": "10s",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.connect-timeout",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.endpoint",
+			"type": "java.lang.String",
+			"description": "URL to the OTel collector's HTTP API.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.endpoint",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.export.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Whether auto-configuration of logging is enabled to export OTLP logs.",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.enabled",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.headers",
+			"type": "java.util.Map<java.lang.String,java.lang.String>",
+			"description": "Custom HTTP headers you want to pass to the collector, for example auth headers.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.headers",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.timeout",
+			"type": "java.time.Duration",
+			"description": "Call timeout for the OTel Collector to process an exported batch of data. This timeout spans the entire call: resolving DNS, connecting, writing the request body, server processing, and reading the response body. If the call requires redirects or retries all must complete within one timeout period.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"defaultValue": "10s",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.timeout",
+				"level": "error"
+			}
+		},
+		{
+			"name": "management.otlp.logging.transport",
+			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport",
+			"description": "Transport used to send the logs.",
+			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
+			"defaultValue": "http",
+			"deprecation": {
+				"replacement": "management.opentelemetry.logging.export.transport",
+				"level": "error"
+			}
+		}
+	],
+	"hints": []
+}

@@ -42,9 +42,10 @@ You have to provide the location of the OpenTelemetry logs endpoint to configure
 [configprops,yaml]
 ----
 management:
-  otlp:
+  opentelemetry:
     logging:
-      endpoint: "https://otlp.example.com:4318/v1/logs"
+      export:
+        endpoint: "https://otlp.example.com:4318/v1/logs"
 ----
 
 NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot.
