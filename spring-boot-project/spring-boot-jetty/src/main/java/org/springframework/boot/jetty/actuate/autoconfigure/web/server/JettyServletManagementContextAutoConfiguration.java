@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;
 
 import org.eclipse.jetty.server.Server;
 
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(Server.class)
+@ConditionalOnClass({ Server.class, ManagementContextFactory.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 public class JettyServletManagementContextAutoConfiguration {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.jetty;
+package org.springframework.boot.jetty.actuate.autoconfigure.web.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
