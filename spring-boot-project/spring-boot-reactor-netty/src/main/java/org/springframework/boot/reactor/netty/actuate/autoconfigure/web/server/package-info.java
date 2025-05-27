@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator Netty web server support.
+ * Auto-configuration for a Reactor Netty based management server.
  */
-package org.springframework.boot.actuate.autoconfigure.web.server.netty;
+package org.springframework.boot.reactor.netty.actuate.autoconfigure.web.server;
