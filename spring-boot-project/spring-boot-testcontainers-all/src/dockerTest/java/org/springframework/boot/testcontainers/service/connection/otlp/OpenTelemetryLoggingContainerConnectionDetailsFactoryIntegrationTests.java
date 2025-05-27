@@ -22,10 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +48,7 @@ class OpenTelemetryLoggingContainerConnectionDetailsFactoryIntegrationTests {
 		.withExposedPorts(4317, 4318);
 
 	@Autowired
-	private OtlpLoggingConnectionDetails connectionDetails;
+	private OpenTelemetryLoggingConnectionDetails connectionDetails;
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {

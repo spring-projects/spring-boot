@@ -22,10 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +47,7 @@ class GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactoryIntegrationTes
 	static final LgtmStackContainer container = TestImage.container(LgtmStackContainer.class);
 
 	@Autowired
-	private OtlpLoggingConnectionDetails connectionDetails;
+	private OpenTelemetryLoggingConnectionDetails connectionDetails;
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
@@ -58,7 +58,7 @@ class GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactoryIntegrationTes
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(OtlpLoggingAutoConfiguration.class)
+	@ImportAutoConfiguration(OpenTelemetryLoggingExportAutoConfiguration.class)
 	static class TestConfiguration {
 
 	}

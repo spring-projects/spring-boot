@@ -19,15 +19,15 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.logging.otlp.Transport;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create
- * {@link OtlpLoggingConnectionDetails} from a
+ * {@link OpenTelemetryLoggingConnectionDetails} from a
  * {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
  * the {@code "otel/opentelemetry-collector-contrib"} image.
  *
@@ -35,7 +35,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Moritz Halbritter
  */
 class OpenTelemetryLoggingContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Container<?>, OtlpLoggingConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<Container<?>, OpenTelemetryLoggingConnectionDetails> {
 
 	private static final int OTLP_GRPC_PORT = 4317;
 
@@ -43,17 +43,17 @@ class OpenTelemetryLoggingContainerConnectionDetailsFactory
 
 	OpenTelemetryLoggingContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
-				"org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration");
+				"org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration");
 	}
 
 	@Override
-	protected OtlpLoggingConnectionDetails getContainerConnectionDetails(
+	protected OpenTelemetryLoggingConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Container<?>> source) {
 		return new OpenTelemetryLoggingContainerConnectionDetails(source);
 	}
 
 	private static final class OpenTelemetryLoggingContainerConnectionDetails
-			extends ContainerConnectionDetails<Container<?>> implements OtlpLoggingConnectionDetails {
+			extends ContainerConnectionDetails<Container<?>> implements OpenTelemetryLoggingConnectionDetails {
 
 		private OpenTelemetryLoggingContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);

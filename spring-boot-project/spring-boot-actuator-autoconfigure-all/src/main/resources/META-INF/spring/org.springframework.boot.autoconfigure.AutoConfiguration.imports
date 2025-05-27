@@ -11,10 +11,6 @@ org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfi
 org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.logging.LoggersEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.data.RepositoryMetricsAutoConfiguration
@@ -44,7 +40,6 @@ org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfig
 org.springframework.boot.actuate.autoconfigure.observation.web.client.HttpClientObservationsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.web.reactive.WebFluxObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.web.servlet.WebMvcObservationAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.r2dbc.ConnectionFactoryHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.r2dbc.R2dbcObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.sbom.SbomEndpointAutoConfiguration
