@@ -30,8 +30,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.MDC;
 
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.context.ApplicationContext;
@@ -173,7 +173,7 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner().withInitializer(new OtelApplicationContextInitializer())
-					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class,
+					.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
 							org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class))
 					.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
 							"management.tracing.baggage.correlation.fields=country-code,bp");
@@ -199,7 +199,7 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner().withInitializer(new OtelApplicationContextInitializer())
-					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class,
+					.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
 							org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class))
 					.withPropertyValues("management.tracing.propagation.type=W3C",
 							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
@@ -239,7 +239,7 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner().withInitializer(new OtelApplicationContextInitializer())
-					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class,
+					.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
 							org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class))
 					.withPropertyValues("management.tracing.propagation.type=B3",
 							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
@@ -253,7 +253,7 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner().withInitializer(new OtelApplicationContextInitializer())
-					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class,
+					.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
 							org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class))
 					.withPropertyValues("management.tracing.propagation.type=B3_MULTI",
 							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",

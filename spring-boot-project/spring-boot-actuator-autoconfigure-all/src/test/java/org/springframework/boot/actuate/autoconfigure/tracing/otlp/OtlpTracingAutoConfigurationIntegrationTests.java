@@ -47,10 +47,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfigurationIntegrationTests.MockGrpcServer.RecordedGrpcRequest;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +65,7 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0")
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-				MicrometerTracingAutoConfiguration.class, OpenTelemetryAutoConfiguration.class,
+				MicrometerTracingAutoConfiguration.class, OpenTelemetrySdkAutoConfiguration.class,
 				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class,
 				OtlpTracingAutoConfiguration.class));
 

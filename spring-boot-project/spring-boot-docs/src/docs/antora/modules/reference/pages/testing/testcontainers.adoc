@@ -155,7 +155,7 @@ The following service connection factories are provided in the `spring-boot-test
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]
 
-| javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
+| javadoc:org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib" or of type javadoc:org.testcontainers.grafana.LgtmStackContainer[]
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails[]
