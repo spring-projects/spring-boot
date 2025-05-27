@@ -14,46 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
+package org.springframework.boot.undertow.actuate.autoconfigure.web.server;
 
 import io.undertow.Undertow;
 
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.undertow.autoconfigure.reactive.UndertowReactiveWebServerAutoConfiguration;
-import org.springframework.boot.undertow.reactive.UndertowReactiveWebServerFactory;
-import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for
- * Undertow-based reactive web endpoint infrastructure when a separate management context
+ * Undertow-based servlet web endpoint infrastructure when a separate management context
  * running on a different port is required.
  *
  * @author Andy Wilkinson
  */
 @ConditionalOnClass(Undertow.class)
-@ConditionalOnWebApplication(type = Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(UndertowManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
-class UndertowReactiveManagementChildContextConfiguration {
+class UndertowServletManagementChildContextConfiguration {
 
 	@Bean
-	static ManagementContextFactory reactiveWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
-				UndertowReactiveWebServerAutoConfiguration.class);
-	}
-
-	@Bean
-	UndertowAccessLogCustomizer<UndertowReactiveWebServerFactory> undertowManagementAccessLogCustomizer(
+	UndertowAccessLogCustomizer<UndertowServletWebServerFactory> undertowManagementAccessLogCustomizer(
 			UndertowManagementServerProperties properties) {
-		return new UndertowAccessLogCustomizer<>(properties, UndertowReactiveWebServerFactory::getAccessLogPrefix);
+		return new UndertowAccessLogCustomizer<>(properties, UndertowServletWebServerFactory::getAccessLogPrefix);
 	}
 
 }
