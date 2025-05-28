@@ -61,11 +61,9 @@ class ZipkinConfigurationsBraveConfigurationTests {
 
 	@Test
 	void shouldNotSupplyIfZipkinReporterBraveIsNotOnClasspath() {
-		// Note: Technically, Brave can work without zipkin-reporter. For example,
-		// WavefrontSpanHandler doesn't require this to operate. If we remove this
-		// dependency enforcement when WavefrontSpanHandler is in use, we can resolve
-		// micrometer-metrics/tracing#509. We also need this for any configuration that
-		// uses senders defined in the Spring Boot source tree, such as HttpSender.
+		// Note: Technically, Brave can work without zipkin-reporter. We also need this
+		// for any configuration that uses senders defined in the Spring Boot source tree,
+		// such as HttpSender.
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter.brave"))
 			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));

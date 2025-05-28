@@ -20,7 +20,6 @@ Spring Boot Actuator provides dependency management and auto-configuration for {
 - xref:actuator/metrics.adoc#actuator.metrics.export.simple[] (in-memory)
 - xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.statsd[]
-- xref:actuator/metrics.adoc#actuator.metrics.export.wavefront[]
 
 TIP: To learn more about Micrometer's capabilities, see its {url-micrometer-docs}[reference documentation], in particular the {url-micrometer-docs-concepts}[concepts section].
 
@@ -646,43 +645,6 @@ management:
     metrics:
       export:
         flavor: "etsy"
-----
-
-
-
-[[actuator.metrics.export.wavefront]]
-=== Wavefront
-
-The Wavefront registry periodically pushes metrics to {url-micrometer-docs-implementations}/wavefront[Wavefront].
-If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, you must provide your API token:
-
-[configprops,yaml]
-----
-management:
-  wavefront:
-    api-token: "YOUR_API_TOKEN"
-----
-
-Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
-
-[configprops,yaml]
-----
-management:
-  wavefront:
-    uri: "proxy://localhost:2878"
-----
-
-NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the Wavefront documentation]), the host must be in the `proxy://HOST:PORT` format.
-
-You can also change the interval at which metrics are sent to Wavefront:
-
-[configprops,yaml]
-----
-management:
-  wavefront:
-    metrics:
-      export:
-        step: "30s"
 ----
 
 

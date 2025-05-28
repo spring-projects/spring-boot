@@ -1824,107 +1824,6 @@
       }
     },
     {
-      "name": "management.metrics.export.wavefront.api-token",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.api-token"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.batch-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.sender.batch-size"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.connect-timeout",
-      "type": "java.time.Duration",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.metrics.export.enabled"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.global-prefix",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.metrics.export.global-prefix"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.num-threads",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.read-timeout",
-      "type": "java.time.Duration",
-      "deprecation": {
-        "level": "error"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.sender.flush-interval",
-      "type": "java.time.Duration",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.sender.flush-interval"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.sender.max-queue-size",
-      "type": "java.lang.Integer",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.sender.max-queue-size"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.sender.message-size",
-      "type": "org.springframework.util.unit.DataSize",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.sender.message-size"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.source",
-      "type": "java.lang.String",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.source"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.step",
-      "type": "java.time.Duration",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.metrics.export.step"
-      }
-    },
-    {
-      "name": "management.metrics.export.wavefront.uri",
-      "type": "java.net.URI",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.wavefront.uri"
-      }
-    },
-    {
       "name": "management.metrics.graphql.autotime.enabled",
       "description": "Whether to automatically time web client requests.",
       "defaultValue": true,
@@ -2145,11 +2044,6 @@
       "defaultValue": [
         "W3C"
       ]
-    },
-    {
-      "name": "management.wavefront.tracing.export.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether auto-configuration of tracing is enabled to export Wavefront traces."
     },
     {
       "name": "management.zipkin.tracing.encoding",

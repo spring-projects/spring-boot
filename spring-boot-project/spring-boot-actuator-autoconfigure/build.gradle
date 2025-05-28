@@ -33,7 +33,6 @@ dependencies {
 	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
-	optional("io.micrometer:micrometer-tracing-reporter-wavefront")
 	optional("io.micrometer:micrometer-registry-appoptics")
 	optional("io.micrometer:micrometer-registry-atlas") {
 		exclude group: "javax.inject", module: "javax.inject"
@@ -55,7 +54,6 @@ dependencies {
 	}
 	optional("io.micrometer:micrometer-registry-signalfx")
 	optional("io.micrometer:micrometer-registry-statsd")
-	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
 	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
 	optional("io.opentelemetry:opentelemetry-exporter-otlp")
