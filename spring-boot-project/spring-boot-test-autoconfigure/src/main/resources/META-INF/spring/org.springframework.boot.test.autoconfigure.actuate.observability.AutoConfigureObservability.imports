@@ -4,7 +4,7 @@
 org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration
 
 # Metrics
-org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
 

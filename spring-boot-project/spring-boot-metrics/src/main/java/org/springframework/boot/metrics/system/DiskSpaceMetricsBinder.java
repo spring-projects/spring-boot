@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * A {@link MeterBinder} that binds one or more {@link DiskSpaceMetrics}.
  *
  * @author Chris Bono
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class DiskSpaceMetricsBinder implements MeterBinder {
 

@@ -17,6 +17,7 @@
 
 plugins {
 	id "java-library"
+	id "java-test-fixtures"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -31,12 +32,35 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-opentelemetry"))
 	optional("ch.qos.logback:logback-classic")
 	optional("io.micrometer:micrometer-java21")
+	optional("io.micrometer:micrometer-registry-appoptics")
+	optional("io.micrometer:micrometer-registry-atlas") {
+		exclude group: "javax.inject", module: "javax.inject"
+	}
+	optional("io.micrometer:micrometer-registry-datadog")
+	optional("io.micrometer:micrometer-registry-dynatrace")
+	optional("io.micrometer:micrometer-registry-elastic")
+	optional("io.micrometer:micrometer-registry-ganglia")
+	optional("io.micrometer:micrometer-registry-graphite")
+	optional("io.micrometer:micrometer-registry-humio")
+	optional("io.micrometer:micrometer-registry-influx")
+	optional("io.micrometer:micrometer-registry-jmx")
+	optional("io.micrometer:micrometer-registry-kairos")
+	optional("io.micrometer:micrometer-registry-new-relic")
+	optional("io.micrometer:micrometer-registry-otlp")
+	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.micrometer:micrometer-registry-stackdriver") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("io.micrometer:micrometer-registry-statsd")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.aspectj:aspectjweaver")
 
+	testFixturesImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")

@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 
 import org.testcontainers.grafana.LgtmStackContainer;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
+import org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -36,7 +36,7 @@ class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory
 
 	GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME,
-				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
+				"org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
 	@Override

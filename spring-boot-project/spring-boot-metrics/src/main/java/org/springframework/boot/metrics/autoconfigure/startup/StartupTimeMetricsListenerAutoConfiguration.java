@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for startup time metrics.
  *
  * @author Chris Bono
- * @since 2.6.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)

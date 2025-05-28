@@ -42,7 +42,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@link EnableAutoConfiguration Auto-configuration} for Logback metrics.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
