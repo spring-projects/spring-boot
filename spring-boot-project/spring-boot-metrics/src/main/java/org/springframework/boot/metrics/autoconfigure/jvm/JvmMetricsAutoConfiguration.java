@@ -46,7 +46,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)

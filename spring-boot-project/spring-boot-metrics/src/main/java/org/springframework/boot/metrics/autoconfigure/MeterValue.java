@@ -97,7 +97,6 @@ public final class MeterValue {
 	 * Return a new {@link MeterValue} instance for the given double value.
 	 * @param value the source value
 	 * @return a {@link MeterValue} instance
-	 * @since 2.3.0
 	 */
 	public static MeterValue valueOf(double value) {
 		return new MeterValue(value);
