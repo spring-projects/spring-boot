@@ -21,7 +21,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;

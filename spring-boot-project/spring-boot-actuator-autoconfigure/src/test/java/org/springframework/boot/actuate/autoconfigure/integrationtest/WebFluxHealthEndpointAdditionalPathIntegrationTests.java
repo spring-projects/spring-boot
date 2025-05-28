@@ -29,9 +29,9 @@ import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 

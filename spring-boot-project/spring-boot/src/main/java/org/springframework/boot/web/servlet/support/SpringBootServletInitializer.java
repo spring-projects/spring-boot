@@ -30,15 +30,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
-import org.springframework.boot.web.server.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.context.servlet.ApplicationServletEnvironment;
+import org.springframework.boot.web.context.servlet.WebApplicationContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -155,7 +160,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			builder.initializers(new ParentContextApplicationContextInitializer(parent));
 		}
 		builder.initializers(new ServletContextApplicationContextInitializer(servletContext));
-		builder.contextFactory((webApplicationType) -> new AnnotationConfigServletWebServerApplicationContext());
+		builder.contextFactory(new WarDeploymentApplicationContextFactory(servletContext));
 		builder = configure(builder);
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
@@ -273,6 +278,40 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 					shutDownSharedReactorSchedulers(this.servletContext);
 				}
 			}
+		}
+
+	}
+
+	private static final class WarDeploymentApplicationContextFactory implements ApplicationContextFactory {
+
+		private final ServletContext servletContext;
+
+		private WarDeploymentApplicationContextFactory(ServletContext servletContext) {
+			this.servletContext = servletContext;
+		}
+
+		@Override
+		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+			return new AnnotationConfigServletWebApplicationContext() {
+
+				@Override
+				protected void onRefresh() {
+					super.onRefresh();
+					try {
+						new WebApplicationContextInitializer(this)
+							.initialize(WarDeploymentApplicationContextFactory.this.servletContext);
+					}
+					catch (ServletException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+
+			};
+		}
+
+		@Override
+		public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+			return new ApplicationServletEnvironment();
 		}
 
 	}

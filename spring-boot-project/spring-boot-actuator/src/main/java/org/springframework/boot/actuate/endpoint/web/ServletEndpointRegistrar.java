@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
-import org.springframework.boot.web.server.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

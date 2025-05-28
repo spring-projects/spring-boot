@@ -16,8 +16,8 @@
 
 package org.springframework.boot.security.autoconfigure.servlet;
 
-import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 /**

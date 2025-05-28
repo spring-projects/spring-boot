@@ -27,8 +27,8 @@ import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpo
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
+import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;

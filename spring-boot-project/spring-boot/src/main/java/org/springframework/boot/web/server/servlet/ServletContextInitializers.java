@@ -31,6 +31,7 @@ import jakarta.servlet.SessionCookieConfig;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
  * The {@link ServletContextInitializer ServletContextInitializers} to apply to a servlet
