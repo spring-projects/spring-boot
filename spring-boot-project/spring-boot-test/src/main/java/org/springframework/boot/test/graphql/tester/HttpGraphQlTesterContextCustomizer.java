@@ -124,7 +124,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
-		private static final String REACTIVE_APPLICATION_CONTEXT_CLASS = "org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext";
+		private static final String REACTIVE_APPLICATION_CONTEXT_CLASS = "org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext";
 
 		private ApplicationContext applicationContext;
 

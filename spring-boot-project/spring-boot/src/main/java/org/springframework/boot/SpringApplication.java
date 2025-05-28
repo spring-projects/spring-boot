@@ -61,14 +61,11 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
@@ -1222,11 +1219,9 @@ public class SpringApplication {
 
 	/**
 	 * Sets the factory that will be called to create the application context. If not set,
-	 * defaults to a factory that will create
-	 * {@link AnnotationConfigServletWebServerApplicationContext} for servlet web
-	 * applications, {@link AnnotationConfigReactiveWebServerApplicationContext} for
-	 * reactive web applications, and {@link AnnotationConfigApplicationContext} for
-	 * non-web applications.
+	 * defaults to a factory that will create a context that is appropriate for the
+	 * application's type (a reactive web application, a servlet web application, or a
+	 * non-web application).
 	 * @param applicationContextFactory the factory for the context
 	 * @since 2.4.0
 	 */

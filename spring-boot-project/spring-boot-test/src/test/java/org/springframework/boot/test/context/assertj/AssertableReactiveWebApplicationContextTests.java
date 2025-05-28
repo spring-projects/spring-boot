@@ -18,7 +18,7 @@ package org.springframework.boot.test.context.assertj;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

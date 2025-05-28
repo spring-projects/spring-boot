@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.security.autoconfigure.StaticResourceLocation;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
-import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;

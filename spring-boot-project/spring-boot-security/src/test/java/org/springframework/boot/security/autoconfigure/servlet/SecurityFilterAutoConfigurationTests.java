@@ -26,7 +26,7 @@ import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAut
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.DeserializerBean;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ExampleController;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;

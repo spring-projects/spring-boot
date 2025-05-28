@@ -20,6 +20,8 @@ import java.net.InetAddress;
 import java.util.Set;
 
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.error.ErrorPage;
+import org.springframework.boot.web.error.ErrorPageRegistry;
 
 /**
  * A configurable {@link WebServerFactory}.

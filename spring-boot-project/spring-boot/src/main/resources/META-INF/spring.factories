@@ -23,8 +23,8 @@ org.springframework.boot.context.config.SystemEnvironmentConfigDataLoader
 
 # Application Context Factories
 org.springframework.boot.ApplicationContextFactory=\
-org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContextFactory,\
-org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory
+org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContextFactory,\
+org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContextFactory
 
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
@@ -39,7 +39,7 @@ org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer,\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
 org.springframework.boot.io.ProtocolResolverApplicationContextInitializer,\
-org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer
+org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
@@ -78,7 +78,8 @@ org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnaly
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\
-org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer
+org.springframework.boot.web.server.PortInUseFailureAnalyzer,\
+org.springframework.boot.web.server.context.MissingWebServerFactoryBeanFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
@@ -91,5 +92,5 @@ org.springframework.boot.io.Base64ProtocolResolver
 # Resource File Path Resolvers
 org.springframework.boot.io.ApplicationResourceLoader$FilePathResolver=\
 org.springframework.boot.io.ClassPathResourceFilePathResolver,\
-org.springframework.boot.web.context.ServletContextResourceFilePathResolver,\
-org.springframework.boot.web.reactive.context.FilteredReactiveWebContextResourceFilePathResolver
+org.springframework.boot.web.context.reactive.FilteredReactiveWebContextResourceFilePathResolver,\
+org.springframework.boot.web.context.servlet.ServletContextResourceFilePathResolver

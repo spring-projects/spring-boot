@@ -18,8 +18,8 @@ package org.springframework.boot.test.context.assertj;
 
 import java.util.function.Supplier;
 
-import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 
 /**
  * A {@link ReactiveWebApplicationContext} that additionally supports AssertJ style
