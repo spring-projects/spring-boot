@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Stephane Nicoll
  * @author Chris Bono
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)

@@ -39,7 +39,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Auto-configuration for Log4J2 metrics.
  *
  * @author Andy Wilkinson
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(value = { Log4j2Metrics.class, LogManager.class },

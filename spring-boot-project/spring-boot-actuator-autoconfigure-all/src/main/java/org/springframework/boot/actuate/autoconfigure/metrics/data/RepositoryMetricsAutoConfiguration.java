@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.data.DataMetricsProperties.Repository;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
 import org.springframework.boot.actuate.metrics.data.RepositoryTagsProvider;
@@ -32,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.function.SingletonSupplier;
 

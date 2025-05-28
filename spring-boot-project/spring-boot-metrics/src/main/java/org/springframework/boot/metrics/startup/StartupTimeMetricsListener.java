@@ -37,7 +37,7 @@ import org.springframework.context.event.SmartApplicationListener;
  *
  * @author Chris Bono
  * @author Phillip Webb
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class StartupTimeMetricsListener implements SmartApplicationListener {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -37,7 +37,7 @@ class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 
 	OpenTelemetryMetricsDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
-				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
+				"org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
 	@Override
