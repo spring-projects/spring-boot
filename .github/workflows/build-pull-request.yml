@@ -13,6 +13,15 @@ jobs:
       - name: Build
         id: build
         uses: ./.github/actions/build
+      - name: Create CBOM
+        uses: PQCA/cbomkit-action@v2.0.0
+        id: cbom
+      - name: Commit changes to new branch
+        uses: actions/upload-artifact@v4
+        with:
+          name: "CBOM"
+          path: ${{ steps.cbom.outputs.pattern }}
+          if-no-files-found: warn
       - name: Print JVM Thread Dumps When Cancelled
         if: cancelled()
         uses: ./.github/actions/print-jvm-thread-dumps
