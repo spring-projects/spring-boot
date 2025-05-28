@@ -117,9 +117,9 @@ dependencies {
 	testImplementation("org.opensaml:opensaml-saml-impl:4.0.1")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-core-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
+	testImplementation("org.springframework.security:spring-security-oauth2-client")
 	testImplementation("org.springframework.security:spring-security-saml2-service-provider") {
 		exclude group: "org.opensaml", module: "opensaml-core"
 		exclude group: "org.opensaml", module: "opensaml-saml-api"
