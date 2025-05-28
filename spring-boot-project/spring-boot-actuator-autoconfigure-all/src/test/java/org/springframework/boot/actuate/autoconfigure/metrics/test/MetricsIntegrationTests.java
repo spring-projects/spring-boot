@@ -41,8 +41,8 @@ import org.springframework.boot.actuate.autoconfigure.observation.web.servlet.We
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.jdbc.actuate.metrics.autoconfigure.DataSourcePoolMetricsAutoConfiguration;
-import org.springframework.boot.jpa.hibernate.actuate.metrics.autoconfigure.HibernateMetricsAutoConfiguration;
+import org.springframework.boot.jdbc.metrics.autoconfigure.DataSourcePoolMetricsAutoConfiguration;
+import org.springframework.boot.jpa.hibernate.metrics.autoconfigure.HibernateMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration;
