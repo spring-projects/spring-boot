@@ -28,8 +28,8 @@ import org.springframework.boot.autoconfigure.web.server.servlet.AbstractServlet
 import org.springframework.boot.jetty.JettyServerCustomizer;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

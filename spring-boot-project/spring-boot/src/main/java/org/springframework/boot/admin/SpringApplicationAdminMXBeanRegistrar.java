@@ -29,7 +29,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
@@ -38,6 +37,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
@@ -63,8 +63,6 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	private boolean ready;
 
-	private boolean embeddedWebApplication;
-
 	public SpringApplicationAdminMXBeanRegistrar(String name) throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
 	}
@@ -87,8 +85,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		if (type == null) {
 			return false;
 		}
-		return ApplicationReadyEvent.class.isAssignableFrom(type)
-				|| WebServerInitializedEvent.class.isAssignableFrom(type);
+		return ApplicationReadyEvent.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -101,9 +98,6 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		if (event instanceof ApplicationReadyEvent readyEvent) {
 			onApplicationReadyEvent(readyEvent);
 		}
-		if (event instanceof WebServerInitializedEvent initializedEvent) {
-			onWebServerInitializedEvent(initializedEvent);
-		}
 	}
 
 	@Override
@@ -114,12 +108,6 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	void onApplicationReadyEvent(ApplicationReadyEvent event) {
 		if (this.applicationContext.equals(event.getApplicationContext())) {
 			this.ready = true;
-		}
-	}
-
-	void onWebServerInitializedEvent(WebServerInitializedEvent event) {
-		if (this.applicationContext.equals(event.getApplicationContext())) {
-			this.embeddedWebApplication = true;
 		}
 	}
 
@@ -146,7 +134,8 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 		@Override
 		public boolean isEmbeddedWebApplication() {
-			return SpringApplicationAdminMXBeanRegistrar.this.embeddedWebApplication;
+			return SpringApplicationAdminMXBeanRegistrar.this.environment instanceof ConfigurableEnvironment configurableEnvironment
+					&& configurableEnvironment.getPropertySources().get("server.ports") != null;
 		}
 
 		@Override

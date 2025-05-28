@@ -55,7 +55,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.codec.CodecCustomizer;
-import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration.WebFluxConfig;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfigurationTests.OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice;

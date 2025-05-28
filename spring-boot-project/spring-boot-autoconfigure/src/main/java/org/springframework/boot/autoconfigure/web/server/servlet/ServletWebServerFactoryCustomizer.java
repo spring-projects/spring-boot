@@ -25,7 +25,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
-import org.springframework.boot.web.servlet.WebListenerRegistrar;
+import org.springframework.boot.web.server.servlet.WebListenerRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 

@@ -21,8 +21,8 @@ import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
 import org.eclipse.jetty.ee10.webapp.Configuration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 
-import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.boot.web.server.servlet.ServletContextInitializers;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 
 /**

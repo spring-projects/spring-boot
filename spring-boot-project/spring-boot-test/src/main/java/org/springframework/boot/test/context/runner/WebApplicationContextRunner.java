@@ -19,7 +19,7 @@ package org.springframework.boot.test.context.runner;
 import java.util.function.Supplier;
 
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;

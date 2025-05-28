@@ -19,8 +19,8 @@ package org.springframework.boot.test.context.runner;
 import java.util.function.Supplier;
 
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
-import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.AnnotationConfigReactiveWebApplicationContext;
+import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;
 
 /**
  * An {@link AbstractApplicationContextRunner ApplicationContext runner} for a

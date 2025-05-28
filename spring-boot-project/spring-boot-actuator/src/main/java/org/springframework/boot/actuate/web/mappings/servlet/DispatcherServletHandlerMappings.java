@@ -29,7 +29,7 @@ import org.apache.catalina.core.StandardWrapper;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.undertow.servlet.UndertowServletWebServer;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
