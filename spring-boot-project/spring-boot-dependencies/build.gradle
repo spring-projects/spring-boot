@@ -1990,6 +1990,7 @@ bom {
 				"spring-boot-amqp",
 				"spring-boot-artemis",
 				"spring-boot-autoconfigure",
+				"spring-boot-autoconfigure-all",
 				"spring-boot-autoconfigure-processor",
 				"spring-boot-batch",
 				"spring-boot-buildpack-platform",
@@ -2023,9 +2024,11 @@ bom {
 				"spring-boot-h2console",
 				"spring-boot-hateoas",
 				"spring-boot-hazelcast",
+				"spring-boot-http",
 				"spring-boot-http-client",
-				"spring-boot-http-converter",
+				"spring-boot-http-client-reactive",
 				"spring-boot-http-codec",
+				"spring-boot-http-converter",
 				"spring-boot-integration",
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
@@ -2048,6 +2051,7 @@ bom {
 				"spring-boot-mustache",
 				"spring-boot-neo4j",
 				"spring-boot-netty",
+				"spring-boot-opentelemetry",
 				"spring-boot-properties-migrator",
 				"spring-boot-pulsar",
 				"spring-boot-quartz",
@@ -2061,6 +2065,7 @@ bom {
 				"spring-boot-security-oauth2-authorization-server",
 				"spring-boot-security-oauth2-client",
 				"spring-boot-security-oauth2-resource-server",
+				"spring-boot-security-saml2",
 				"spring-boot-sendgrid",
 				"spring-boot-session",
 				"spring-boot-session-data-mongodb",
@@ -2137,7 +2142,9 @@ bom {
 				"spring-boot-webclient",
 				"spring-boot-webflux",
 				"spring-boot-webmvc",
-				"spring-boot-websocket"
+				"spring-boot-webservices",
+				"spring-boot-websocket",
+				"spring-boot-zipkin"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"
