@@ -108,7 +108,6 @@ dependencies {
 	}
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
-	optional("org.glassfish.jersey.ext:jersey-micrometer")
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
