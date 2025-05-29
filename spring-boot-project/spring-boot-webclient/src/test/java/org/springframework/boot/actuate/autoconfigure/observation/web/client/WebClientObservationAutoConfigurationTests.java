@@ -29,15 +29,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.webclient.actuate.observation.ObservationWebClientCustomizer;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webclient.autoconfigure.observation.WebClientObservationAutoConfiguration;
+import org.springframework.boot.webclient.observation.ObservationWebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -53,18 +51,18 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientObservationConfiguration}
+ * Tests for {@link WebClientObservationAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-class WebClientObservationConfigurationTests {
+class WebClientObservationAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
-		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class, WebClientAutoConfiguration.class,
-				HttpClientObservationsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class, WebClientAutoConfiguration.class))
+		.withUserConfiguration(WebClientObservationAutoConfiguration.class);
 
 	@Test
 	void contributesCustomizerBean() {
@@ -96,49 +94,6 @@ class WebClientObservationConfigurationTests {
 				.that()
 				.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
-	}
-
-	@Test
-	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(MetricsConfiguration.class)
-			.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-			.run((context) -> {
-				TestObservationRegistry registry = getInitializedRegistry(context);
-				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(1);
-				// MeterFilter.maximumAllowableTags() works with prefix matching.
-				assertThat(meterRegistry.find("http.client.requests.active").longTaskTimers()).hasSize(1);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.contains("Are you using 'uriVariables'?");
-			});
-	}
-
-	@Test
-	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(MetricsConfiguration.class)
-			.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
-			.run((context) -> {
-				TestObservationRegistry registry = getInitializedRegistry(context);
-				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(3);
-				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.doesNotContain("Are you using 'uriVariables'?");
-			});
-	}
-
-	private TestObservationRegistry getInitializedRegistry(AssertableApplicationContext context) {
-		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
-		TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-		for (int i = 0; i < 3; i++) {
-			webClient.get()
-				.uri("https://example.org/projects/" + i)
-				.retrieve()
-				.toBodilessEntity()
-				.block(Duration.ofSeconds(30));
-		}
-		return registry;
 	}
 
 	private void validateWebClient(WebClient.Builder builder, TestObservationRegistry registry) {

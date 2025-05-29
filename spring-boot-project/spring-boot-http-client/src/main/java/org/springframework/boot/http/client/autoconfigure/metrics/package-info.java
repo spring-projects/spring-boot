@@ -15,6 +15,6 @@
  */
 
 /**
- * Observation integration for RestClient and RestTemplate.
+ * Auto-configuration for client-side HTTP metrics.
  */
-package org.springframework.boot.restclient.actuate.observation;
+package org.springframework.boot.http.client.autoconfigure.metrics;

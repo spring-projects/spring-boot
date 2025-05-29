@@ -14,40 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.restclient.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.restclient.actuate.observation.ObservationRestTemplateCustomizer;
+import org.springframework.boot.restclient.RestClientCustomizer;
+import org.springframework.boot.restclient.observation.ObservationRestClientCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
- * Configure the instrumentation of {@link RestTemplate}.
+ * Configure the instrumentation of {@link RestClient}.
  *
- * @author Brian Clozel
+ * @author Moritz Halbritter
+ * @since 4.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RestTemplate.class, ObservationRestTemplateCustomizer.class })
-@ConditionalOnBean(RestTemplateBuilder.class)
-class RestTemplateObservationConfiguration {
+@AutoConfiguration
+@ConditionalOnClass({ RestClient.class, ObservationRestClientCustomizer.class, ObservationRegistry.class,
+		ObservationProperties.class })
+@ConditionalOnBean({ RestClient.Builder.class, ObservationRegistry.class })
+@EnableConfigurationProperties(ObservationProperties.class)
+public class RestClientObservationAutoConfiguration {
 
 	@Bean
-	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
+	RestClientCustomizer observationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getClient().getRequests().getName();
 		ClientRequestObservationConvention observationConvention = customConvention
 			.getIfAvailable(() -> new DefaultClientRequestObservationConvention(name));
-		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
+		return new ObservationRestClientCustomizer(observationRegistry, observationConvention);
 	}
 
 }

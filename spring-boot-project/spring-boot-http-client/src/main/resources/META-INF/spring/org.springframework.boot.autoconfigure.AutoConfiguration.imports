@@ -1,2 +1,3 @@
 org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration
+org.springframework.boot.http.client.autoconfigure.metrics.HttpClientMetricsAutoConfiguration
 org.springframework.boot.http.client.reactive.autoconfigure.ClientHttpConnectorAutoConfiguration

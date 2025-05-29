@@ -15,6 +15,6 @@
  */
 
 /**
- * Observation integration for WebClient.
+ * Auto-configuration for WebClient observation support.
  */
-package org.springframework.boot.webclient.actuate.observation;
+package org.springframework.boot.webclient.autoconfigure.observation;

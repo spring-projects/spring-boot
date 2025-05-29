@@ -32,6 +32,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
@@ -42,6 +43,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.springframework:spring-webflux")
+	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
