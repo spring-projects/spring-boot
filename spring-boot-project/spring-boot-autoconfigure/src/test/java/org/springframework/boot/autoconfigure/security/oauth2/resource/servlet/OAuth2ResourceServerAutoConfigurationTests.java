@@ -510,7 +510,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JwtDecoder.class);
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 				validate(jwt(), jwtDecoder,
-						(validators) -> assertThat(validators).hasSize(2).noneSatisfy(audClaimValidator()));
+						(validators) -> assertThat(validators).hasSize(3).noneSatisfy(audClaimValidator()));
 			});
 	}
 

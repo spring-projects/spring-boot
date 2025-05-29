@@ -491,7 +491,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 				ReactiveJwtDecoder reactiveJwtDecoder = context.getBean(ReactiveJwtDecoder.class);
 				validate(jwt(), reactiveJwtDecoder,
-						(validators) -> assertThat(validators).hasSize(2).noneSatisfy(audClaimValidator()));
+						(validators) -> assertThat(validators).hasSize(3).noneSatisfy(audClaimValidator()));
 			});
 	}
 
