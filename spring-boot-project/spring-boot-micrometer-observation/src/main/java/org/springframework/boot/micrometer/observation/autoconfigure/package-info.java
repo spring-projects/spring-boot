@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for the Micrometer Observation API.
+ * Auto-configuration for Micrometer Observation.
  */
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;

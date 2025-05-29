@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;
 
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationFilter;

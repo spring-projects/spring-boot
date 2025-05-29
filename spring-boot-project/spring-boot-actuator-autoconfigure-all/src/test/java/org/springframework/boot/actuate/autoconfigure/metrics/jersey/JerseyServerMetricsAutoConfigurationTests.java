@@ -20,6 +20,9 @@ import java.net.URI;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.observation.Observation.Context;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -28,12 +31,12 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -80,7 +83,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	@Test
 	void httpRequestsAreTimed() {
-		this.webContextRunner.run((context) -> {
+		this.webContextRunner.withUserConfiguration(MetricsConfiguration.class).run((context) -> {
 			doRequest(context);
 			Thread.sleep(500);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -124,6 +127,16 @@ class JerseyServerMetricsAutoConfigurationTests {
 				return id;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MetricsConfiguration {
+
+		@Bean
+		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
+			return new DefaultMeterObservationHandler(registry);
 		}
 
 	}
