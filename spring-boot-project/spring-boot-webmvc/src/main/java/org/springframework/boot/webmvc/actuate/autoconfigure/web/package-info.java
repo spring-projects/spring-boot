@@ -17,4 +17,4 @@
 /**
  * Actuator Spring MVC support.
  */
-package org.springframework.boot.actuate.autoconfigure.web.servlet;
+package org.springframework.boot.webmvc.actuate.autoconfigure.web;

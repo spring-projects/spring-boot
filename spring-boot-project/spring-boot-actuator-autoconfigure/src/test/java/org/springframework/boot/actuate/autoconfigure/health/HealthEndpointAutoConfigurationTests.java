@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.WithTes
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointReactiveWebExtensionConfiguration.WebFluxAdditionalHealthEndpointPathsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration.MvcAdditionalHealthEndpointPathsConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -60,7 +59,6 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -340,24 +338,6 @@ class HealthEndpointAutoConfigurationTests {
 					Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
-	}
-
-	@Test
-	@WithTestEndpointOutcomeExposureContributor
-	void additionalHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
-		this.contextRunner
-			.withConfiguration(
-					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-			.withBean(DispatcherServlet.class)
-			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
-					"management.endpoints.test.exposure.include=*")
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).hasSingleBean(HealthEndpoint.class);
-				assertThat(context).hasSingleBean(HealthEndpointWebExtension.class);
-				assertThat(context.getBean(WebEndpointsSupplier.class).getEndpoints()).isEmpty();
-				assertThat(context).hasSingleBean(MvcAdditionalHealthEndpointPathsConfiguration.class);
-			});
 	}
 
 	@Test
