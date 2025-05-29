@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.graphql;
+package org.springframework.boot.graphql.autoconfigure.observation;
 
 import graphql.GraphQL;
 import io.micrometer.observation.Observation;
@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.observation.DataFetcherObservationConvention;
@@ -39,16 +38,17 @@ import org.springframework.graphql.observation.GraphQlObservationInstrumentation
  * GraphQL endpoints.
  *
  * @author Brian Clozel
- * @since 3.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = ObservationAutoConfiguration.class)
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, Observation.class })
 public class GraphQlObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlObservationInstrumentation graphQlObservationInstrumentation(ObservationRegistry observationRegistry,
+	GraphQlObservationInstrumentation graphQlObservationInstrumentation(ObservationRegistry observationRegistry,
 			ObjectProvider<ExecutionRequestObservationConvention> executionConvention,
 			ObjectProvider<DataFetcherObservationConvention> dataFetcherConvention,
 			ObjectProvider<DataLoaderObservationConvention> dataLoaderObservationConvention) {
