@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring GraphQL observations.
  */
-package org.springframework.boot.actuate.autoconfigure.observation.graphql;
+package org.springframework.boot.graphql.autoconfigure.observation;
