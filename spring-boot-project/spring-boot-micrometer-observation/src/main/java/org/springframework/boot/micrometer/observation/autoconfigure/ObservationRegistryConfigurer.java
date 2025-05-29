@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;
 
 import java.util.List;
 
@@ -74,8 +74,14 @@ class ObservationRegistryConfigurer {
 	}
 
 	private void registerHandlers(ObservationRegistry registry) {
-		this.observationHandlerGrouping.ifAvailable(
-				(grouping) -> grouping.apply(asOrderedList(this.observationHandlers), registry.observationConfig()));
+		ObservationHandlerGrouping grouping = this.observationHandlerGrouping.getIfAvailable();
+		List<ObservationHandler<?>> orderedHandlers = asOrderedList(this.observationHandlers);
+		if (grouping != null) {
+			grouping.apply(orderedHandlers, registry.observationConfig());
+		}
+		else {
+			orderedHandlers.forEach((handler) -> registry.observationConfig().observationHandler(handler));
+		}
 	}
 
 	private void registerObservationPredicates(ObservationRegistry registry) {

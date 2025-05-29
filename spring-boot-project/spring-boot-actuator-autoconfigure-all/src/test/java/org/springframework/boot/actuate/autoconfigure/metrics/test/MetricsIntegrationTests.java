@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.web.client.HttpClientObservationsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.web.reactive.WebFluxObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.web.servlet.WebMvcObservationAutoConfiguration;
@@ -47,6 +47,7 @@ import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.system.SystemMetricsAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -143,14 +144,14 @@ class MetricsIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
-			JvmMetricsAutoConfiguration.class, LogbackMetricsAutoConfiguration.class,
-			SystemMetricsAutoConfiguration.class, DataSourcePoolMetricsAutoConfiguration.class,
-			HibernateMetricsAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class,
-			WebFluxObservationAutoConfiguration.class, WebMvcObservationAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			RestTemplateAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
-			TomcatServletWebServerAutoConfiguration.class })
+			ObservabilityAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
+			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
+			DataSourcePoolMetricsAutoConfiguration.class, HibernateMetricsAutoConfiguration.class,
+			HttpClientObservationsAutoConfiguration.class, WebFluxObservationAutoConfiguration.class,
+			WebMvcObservationAutoConfiguration.class, JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, RestTemplateAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			TomcatServletWebServerAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class })
 	@Import(PersonController.class)
 	static class MetricsApp {
 

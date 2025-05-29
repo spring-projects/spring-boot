@@ -1,0 +1,21 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot New Project"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("org.aspectj:aspectjweaver")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

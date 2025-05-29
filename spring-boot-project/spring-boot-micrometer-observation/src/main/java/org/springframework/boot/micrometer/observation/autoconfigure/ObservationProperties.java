@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Brian Clozel
  * @author Moritz Halbritter
- * @since 3.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("management.observations")
 public class ObservationProperties {
