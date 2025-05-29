@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.actuate.health.autoconfigure;
 
 import io.r2dbc.spi.ConnectionFactory;
 
@@ -36,10 +36,10 @@ import org.springframework.context.annotation.Bean;
  * {@link ConnectionFactoryHealthIndicator}.
  *
  * @author Mark Paluch
- * @since 2.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = R2dbcAutoConfiguration.class)
-@ConditionalOnClass({ ConnectionFactory.class, ConnectionFactoryHealthIndicator.class })
+@ConditionalOnClass({ ConnectionFactory.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("r2dbc")
 public class ConnectionFactoryHealthContributorAutoConfiguration
@@ -51,7 +51,7 @@ public class ConnectionFactoryHealthContributorAutoConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "r2dbcHealthIndicator", "r2dbcHealthContributor" })
-	public ReactiveHealthContributor r2dbcHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	ReactiveHealthContributor r2dbcHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, ConnectionFactory.class);
 	}
 

@@ -36,11 +36,12 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
+	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.micrometer:micrometer-core")
 	optional("io.r2dbc:r2dbc-pool")

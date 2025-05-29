@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.actuate.health.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 

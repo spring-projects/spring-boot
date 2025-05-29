@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.autoconfigure.observation;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,9 +28,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.boot.r2dbc.ConnectionFactoryDecorator;
 import org.springframework.boot.r2dbc.autoconfigure.ProxyConnectionFactoryCustomizer;
@@ -54,12 +52,6 @@ class R2dbcObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = this.runnerWithoutObservationRegistry
 		.withBean(ObservationRegistry.class, ObservationRegistry::create);
-
-	@Test
-	void shouldBeRegisteredInAutoConfigurationImports() {
-		assertThat(ImportCandidates.load(AutoConfiguration.class, null).getCandidates())
-			.contains(R2dbcObservationAutoConfiguration.class.getName());
-	}
 
 	@Test
 	void shouldNotSupplyBeansIfObservationRegistryIsNotPresent() {

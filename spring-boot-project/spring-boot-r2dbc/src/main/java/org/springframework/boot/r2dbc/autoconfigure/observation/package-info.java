@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator R2DBC.
+ * Auto-configuration for R2DBC observation.
  */
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.autoconfigure.observation;

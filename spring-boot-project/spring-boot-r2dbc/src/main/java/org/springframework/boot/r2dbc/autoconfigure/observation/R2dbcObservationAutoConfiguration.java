@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.r2dbc.proxy.ProxyConnectionFactory;
@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.r2dbc.OptionsCapableConnectionFactory;
 import org.springframework.boot.r2dbc.autoconfigure.ProxyConnectionFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -41,16 +40,17 @@ import org.springframework.core.annotation.Order;
  *
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
- * @since 3.2.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = ObservationAutoConfiguration.class)
-@ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class })
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
+@ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class, ObservationRegistry.class })
+@ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties(R2dbcObservationProperties.class)
 public class R2dbcObservationAutoConfiguration {
 
 	/**
 	 * {@code @Order} value of the observation customizer.
-	 * @since 3.4.0
 	 */
 	public static final int R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER = 0;
 
