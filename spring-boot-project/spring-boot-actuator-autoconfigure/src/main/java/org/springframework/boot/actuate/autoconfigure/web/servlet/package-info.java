@@ -15,6 +15,6 @@
  */
 
 /**
- * Spring MVC support for actuator endpoints.
+ * Actuator Servlet support.
  */
-package org.springframework.boot.actuate.endpoint.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.web.servlet;

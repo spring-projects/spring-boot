@@ -122,14 +122,14 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 	@Override
 	protected WebApplicationContextRunner createContextRunner() {
 		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-			.withUserConfiguration(WebMvcEndpointConfiguration.class)
+			.withUserConfiguration(InfrastructureTestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebEndpointProperties.class)
-	static class WebMvcEndpointConfiguration {
+	static class InfrastructureTestConfiguration {
 
 		@Bean
 		TomcatServletWebServerFactory tomcat() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.servlet;
+package org.springframework.boot.webmvc.actuate.endpoint.web;
 
 import java.util.Collection;
 import java.util.Collections;

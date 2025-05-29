@@ -16,14 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Collection;
-
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
-import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.endpoint.web.servlet.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
@@ -34,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * Configuration for {@link HealthEndpoint} web extensions.
@@ -55,27 +48,6 @@ class HealthEndpointWebExtensionConfiguration {
 			HealthEndpointGroups groups, HealthEndpointProperties properties) {
 		return new HealthEndpointWebExtension(healthContributorRegistry, groups,
 				properties.getLogging().getSlowIndicatorThreshold());
-	}
-
-	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		return webEndpoints.stream()
-			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-			.findFirst()
-			.orElse(null);
-	}
-
-	@ConditionalOnBean(DispatcherServlet.class)
-	static class MvcAdditionalHealthEndpointPathsConfiguration {
-
-		@Bean
-		AdditionalHealthEndpointPathsWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
-				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
-			ExposableWebEndpoint health = getHealthEndpoint(webEndpointsSupplier);
-			return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
-					groups.getAllWithAdditionalPath(WebServerNamespace.SERVER));
-		}
-
 	}
 
 }
