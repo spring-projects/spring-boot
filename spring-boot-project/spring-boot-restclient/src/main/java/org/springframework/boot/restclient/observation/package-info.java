@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for web client observation support.
+ * Observation integration for RestClient and RestTemplate.
  */
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.restclient.observation;

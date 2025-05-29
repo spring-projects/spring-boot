@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.restclient.autoconfigure.observation;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -26,15 +26,13 @@ import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
-import org.springframework.boot.restclient.actuate.observation.ObservationRestClientCustomizer;
-import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
-import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
+import org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,59 +40,57 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.observation.ClientRequestObservationContext;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.Builder;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 /**
- * Tests for {@link RestClientObservationConfiguration}.
+ * Tests for {@link RestTemplateObservationAutoConfiguration}.
  *
  * @author Brian Clozel
- * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
-class RestClientObservationConfigurationTests {
+class RestTemplateObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
-		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class, RestClientAutoConfiguration.class,
-				HttpClientObservationsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, RestTemplateObservationAutoConfiguration.class));
 
 	@Test
 	void contributesCustomizerBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationRestClientCustomizer.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationRestTemplateCustomizer.class));
 	}
 
 	@Test
-	void restClientCreatedWithBuilderIsInstrumented() {
+	void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
-			RestClient restClient = buildRestClient(context);
-			restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
+			RestTemplate restTemplate = buildRestTemplate(context);
+			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			assertThat(registry).hasObservationWithNameEqualToIgnoringCase("http.client.requests");
 		});
 	}
 
 	@Test
-	void restClientCreatedWithBuilderUsesCustomConventionName() {
+	void restTemplateCreatedWithBuilderUsesCustomConventionName() {
 		final String observationName = "test.metric.name";
 		this.contextRunner.withPropertyValues("management.observations.http.client.requests.name=" + observationName)
 			.run((context) -> {
-				RestClient restClient = buildRestClient(context);
-				restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
+				RestTemplate restTemplate = buildRestTemplate(context);
+				restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 				assertThat(registry).hasObservationWithNameEqualToIgnoringCase(observationName);
 			});
 	}
 
 	@Test
-	void restClientCreatedWithBuilderUsesCustomConvention() {
+	void restTemplateCreatedWithBuilderUsesCustomConvention() {
 		this.contextRunner.withUserConfiguration(CustomConvention.class).run((context) -> {
-			RestClient restClient = buildRestClient(context);
-			restClient.get().uri("/projects/{project}", "spring-boot").retrieve().toBodilessEntity();
+			RestTemplate restTemplate = buildRestTemplate(context);
+			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
 				.that()
@@ -103,53 +99,18 @@ class RestClientObservationConfigurationTests {
 	}
 
 	@Test
-	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.with(MetricsRun.simple())
-			.withUserConfiguration(MetricsConfiguration.class)
-			.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-			.run((context) -> {
-				RestClientWithMockServer restClientWithMockServer = buildRestClientAndMockServer(context);
-				MockRestServiceServer server = restClientWithMockServer.mockServer();
-				RestClient restClient = restClientWithMockServer.restClient();
-				for (int i = 0; i < 3; i++) {
-					server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
-				}
-				for (int i = 0; i < 3; i++) {
-					restClient.get().uri("/test/" + i, String.class).retrieve().toBodilessEntity();
-				}
-				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.contains("Are you using 'uriVariables'?");
-			});
-	}
-
-	@Test
-	void backsOffWhenRestClientBuilderIsMissing() {
-		new ApplicationContextRunner().with(MetricsRun.simple())
+	void backsOffWhenRestTemplateBuilderIsMissing() {
+		new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					HttpClientObservationsAutoConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(ObservationRestClientCustomizer.class));
+					RestTemplateObservationAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ObservationRestTemplateCustomizer.class));
 	}
 
-	private RestClient buildRestClient(AssertableApplicationContext context) {
-		RestClientWithMockServer restClientWithMockServer = buildRestClientAndMockServer(context);
-		restClientWithMockServer.mockServer()
-			.expect(requestTo("/projects/spring-boot"))
-			.andRespond(withStatus(HttpStatus.OK));
-		return restClientWithMockServer.restClient();
-	}
-
-	private RestClientWithMockServer buildRestClientAndMockServer(AssertableApplicationContext context) {
-		Builder builder = context.getBean(Builder.class);
-		MockServerRestClientCustomizer customizer = new MockServerRestClientCustomizer();
-		customizer.customize(builder);
-		return new RestClientWithMockServer(builder.build(), customizer.getServer());
-	}
-
-	private record RestClientWithMockServer(RestClient restClient, MockRestServiceServer mockServer) {
+	private RestTemplate buildRestTemplate(AssertableApplicationContext context) {
+		RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+		server.expect(requestTo("/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
+		return restTemplate;
 	}
 
 	@Configuration(proxyBeanMethods = false)

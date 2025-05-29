@@ -31,10 +31,12 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-http-converter"))
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.eclipse.jetty:jetty-client")
 
+	testImplementation(project(":spring-boot-project:spring-boot-metrics"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

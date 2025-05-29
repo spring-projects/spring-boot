@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.restclient.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
@@ -38,19 +38,19 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 /**
- * Tests for {@link RestTemplateObservationConfiguration} without Micrometer Metrics.
+ * Tests for {@link RestTemplateObservationAutoConfiguration} without Micrometer Metrics.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("micrometer-core-*.jar")
-class RestTemplateObservationConfigurationWithoutMetricsTests {
+class RestTemplateObservationAutoConfigurationWithoutMetricsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-				RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
+				RestTemplateAutoConfiguration.class, RestTemplateObservationAutoConfiguration.class));
 
 	@Test
 	void restTemplateCreatedWithBuilderIsInstrumented() {

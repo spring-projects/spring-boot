@@ -14,40 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.webclient.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
-import org.springframework.boot.restclient.RestClientCustomizer;
-import org.springframework.boot.restclient.actuate.observation.ObservationRestClientCustomizer;
+import org.springframework.boot.webclient.observation.ObservationWebClientCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.observation.ClientRequestObservationConvention;
-import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
+import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Configure the instrumentation of {@link RestClient}.
+ * Configure the instrumentation of {@link WebClient}.
  *
- * @author Moritz Halbritter
+ * @author Brian Clozel
+ * @since 4.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RestClient.class, ObservationRestClientCustomizer.class })
-@ConditionalOnBean(RestClient.Builder.class)
-class RestClientObservationConfiguration {
+@AutoConfiguration(
+		beforeName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
+@ConditionalOnClass({ WebClient.class, ObservationWebClientCustomizer.class, ObservationRegistry.class,
+		ObservationProperties.class })
+@EnableConfigurationProperties(ObservationProperties.class)
+public class WebClientObservationAutoConfiguration {
 
 	@Bean
-	RestClientCustomizer observationRestClientCustomizer(ObservationRegistry observationRegistry,
+	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getClient().getRequests().getName();
 		ClientRequestObservationConvention observationConvention = customConvention
 			.getIfAvailable(() -> new DefaultClientRequestObservationConvention(name));
-		return new ObservationRestClientCustomizer(observationRegistry, observationConvention);
+		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
 	}
 
 }
