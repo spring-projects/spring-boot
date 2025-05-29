@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.observation.web.client.HttpClientObservationsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.web.reactive.WebFluxObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.web.servlet.WebMvcObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -50,6 +49,7 @@ import org.springframework.boot.metrics.autoconfigure.system.SystemMetricsAutoCo
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
+import org.springframework.boot.restclient.autoconfigure.observation.RestTemplateObservationAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -147,7 +147,7 @@ class MetricsIntegrationTests {
 			ObservabilityAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
 			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
 			DataSourcePoolMetricsAutoConfiguration.class, HibernateMetricsAutoConfiguration.class,
-			HttpClientObservationsAutoConfiguration.class, WebFluxObservationAutoConfiguration.class,
+			RestTemplateObservationAutoConfiguration.class, WebFluxObservationAutoConfiguration.class,
 			WebMvcObservationAutoConfiguration.class, JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, RestTemplateAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,

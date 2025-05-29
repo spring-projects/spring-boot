@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webclient.actuate.observation;
+package org.springframework.boot.webclient.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 

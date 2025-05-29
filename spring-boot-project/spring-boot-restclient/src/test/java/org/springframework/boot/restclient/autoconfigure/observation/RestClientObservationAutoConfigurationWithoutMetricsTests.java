@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.client;
+package org.springframework.boot.restclient.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
@@ -24,12 +24,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
-import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -38,7 +38,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 /**
- * Tests for {@link RestClientObservationConfiguration} without Micrometer Metrics.
+ * Tests for {@link RestClientObservationAutoConfiguration} without Micrometer Metrics.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
@@ -46,12 +46,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("micrometer-core-*.jar")
-class RestClientObservationConfigurationWithoutMetricsTests {
+class RestClientObservationAutoConfigurationWithoutMetricsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class, RestClientAutoConfiguration.class,
-				HttpClientObservationsAutoConfiguration.class));
+				RestClientObservationAutoConfiguration.class));
 
 	@Test
 	void restClientCreatedWithBuilderIsInstrumented() {
@@ -65,9 +65,8 @@ class RestClientObservationConfigurationWithoutMetricsTests {
 
 	private RestClient buildRestClient(AssertableApplicationContext context) {
 		Builder builder = context.getBean(Builder.class);
-		MockServerRestClientCustomizer customizer = new MockServerRestClientCustomizer();
-		customizer.customize(builder);
-		customizer.getServer().expect(requestTo("/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
+		MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+		server.expect(requestTo("/projects/spring-boot")).andRespond(withStatus(HttpStatus.OK));
 		return builder.build();
 	}
 

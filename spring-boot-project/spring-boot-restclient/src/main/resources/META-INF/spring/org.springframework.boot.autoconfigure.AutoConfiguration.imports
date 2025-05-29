@@ -1,3 +1,5 @@
 org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration
 org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration
+org.springframework.boot.restclient.autoconfigure.observation.RestClientObservationAutoConfiguration
+org.springframework.boot.restclient.autoconfigure.observation.RestTemplateObservationAutoConfiguration
 org.springframework.boot.restclient.service.autoconfigure.HttpServiceClientAutoConfiguration
