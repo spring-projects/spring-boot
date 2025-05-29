@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
+package org.springframework.boot.jersey.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.ObservationRegistry;
@@ -32,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -44,9 +43,10 @@ import org.springframework.core.annotation.Order;
  * @author Michael Simons
  * @author Andy Wilkinson
  * @author Moritz Halbritter
- * @since 2.1.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { ObservationAutoConfiguration.class })
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, ObservationApplicationEventListener.class })
 @ConditionalOnBean({ ResourceConfig.class, ObservationRegistry.class })

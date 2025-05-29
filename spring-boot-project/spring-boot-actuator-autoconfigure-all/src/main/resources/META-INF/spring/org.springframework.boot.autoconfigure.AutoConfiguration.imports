@@ -14,7 +14,6 @@ org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfig
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.data.RepositoryMetricsAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.task.TaskExecutorMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.batch.BatchObservationAutoConfiguration
