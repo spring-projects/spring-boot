@@ -3,6 +3,7 @@ org.springframework.boot.graphql.autoconfigure.data.GraphQlQueryByExampleAutoCon
 org.springframework.boot.graphql.autoconfigure.data.GraphQlQuerydslAutoConfiguration
 org.springframework.boot.graphql.autoconfigure.data.GraphQlReactiveQueryByExampleAutoConfiguration
 org.springframework.boot.graphql.autoconfigure.data.GraphQlReactiveQuerydslAutoConfiguration
+org.springframework.boot.graphql.autoconfigure.observation.GraphQlObservationAutoConfiguration
 org.springframework.boot.graphql.autoconfigure.reactive.GraphQlWebFluxAutoConfiguration
 org.springframework.boot.graphql.autoconfigure.rsocket.GraphQlRSocketAutoConfiguration
 org.springframework.boot.graphql.autoconfigure.rsocket.RSocketGraphQlClientAutoConfiguration

@@ -33,6 +33,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
+	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional(project(":spring-boot-project:spring-boot-security"))
 	optional(project(":spring-boot-project:spring-boot-webflux"))
@@ -50,6 +51,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
 	testImplementation("org.springframework.security:spring-security-test")
 
