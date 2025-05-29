@@ -34,12 +34,14 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
+	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")

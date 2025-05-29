@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.batch;
+package org.springframework.boot.batch.autoconfigure.observation;
 
 import io.micrometer.observation.ObservationRegistry;
 
@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -32,16 +31,17 @@ import org.springframework.context.annotation.Bean;
  * Jobs.
  *
  * @author Mark Bonnekessel
- * @since 3.0.6
+ * @since 4.0.0
  */
-@AutoConfiguration(after = ObservationAutoConfiguration.class)
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass({ ObservationRegistry.class, BatchObservabilityBeanPostProcessor.class })
 public class BatchObservationAutoConfiguration {
 
-	@ConditionalOnMissingBean
 	@Bean
-	public static BatchObservabilityBeanPostProcessor batchObservabilityBeanPostProcessor() {
+	@ConditionalOnMissingBean
+	static BatchObservabilityBeanPostProcessor batchObservabilityBeanPostProcessor() {
 		return new BatchObservabilityBeanPostProcessor();
 	}
 
