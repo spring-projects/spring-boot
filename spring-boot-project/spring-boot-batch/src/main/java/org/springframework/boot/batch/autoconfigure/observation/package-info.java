@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring Batch observations.
  */
-package org.springframework.boot.actuate.autoconfigure.observation.batch;
+package org.springframework.boot.batch.autoconfigure.observation;
