@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc.autoconfigure.observation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
