@@ -14,36 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.actuate.autoconfigure.observability;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.micrometer.common.KeyValue;
-import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
-import io.micrometer.core.instrument.search.MeterNotFoundException;
-import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
-import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
-import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.aop.ObservedAspect;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
-import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGrouping;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -53,52 +48,29 @@ import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ObservationAutoConfiguration}.
+ * Tests for {@link ObservabilityAutoConfiguration}.
  *
  * @author Moritz Halbritter
  * @author Jonatan Ivanov
  * @author Vedran Pavic
  */
-class ObservationAutoConfigurationTests {
+class ObservabilityAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
-		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(ObservationAutoConfiguration.class, ObservabilityAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingContextRunner = new ApplicationContextRunner()
 		.with(MetricsRun.simple())
 		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withUserConfiguration(TracerConfiguration.class)
-		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
-
-	@Test
-	void beansShouldNotBeSuppliedWhenMicrometerObservationIsNotOnClassPath() {
-		this.tracingContextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.observation"))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(MeterRegistry.class);
-				assertThat(context).doesNotHaveBean(ObservationRegistry.class);
-				assertThat(context).doesNotHaveBean(ObservationHandler.class);
-				assertThat(context).doesNotHaveBean(ObservedAspect.class);
-				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
-			});
-	}
-
-	@Test
-	void supplyObservationRegistryWhenMicrometerCoreAndTracingAreNotOnClassPath() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.core", "io.micrometer.tracing"))
-			.run((context) -> {
-				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-				Observation.start("test-observation", observationRegistry).stop();
-				assertThat(context).doesNotHaveBean(ObservationHandler.class);
-				assertThat(context).hasSingleBean(ObservedAspect.class);
-				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
-			});
-	}
+		.withConfiguration(
+				AutoConfigurations.of(ObservationAutoConfiguration.class, ObservabilityAutoConfiguration.class));
 
 	@Test
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreIsOnClassPathButTracingIsNot() {
@@ -144,7 +116,8 @@ class ObservationAutoConfigurationTests {
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreAndTracingAreOnClassPathButThereIsNoTracer() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
 			.withPropertyValues("management.observations.annotations.enabled=true")
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(ObservationAutoConfiguration.class, ObservabilityAutoConfiguration.class))
 			.run((context) -> {
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 				Observation.start("test-observation", observationRegistry).stop();
@@ -176,77 +149,6 @@ class ObservationAutoConfigurationTests {
 	void allowsDefaultMeterObservationHandlerToBeDisabled() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MeterRegistry.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(ObservationHandler.class));
-	}
-
-	@Test
-	void allowsObservedAspectToBeDisabled() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
-	}
-
-	@Test
-	void allowsObservedAspectToBeDisabledWithProperty() {
-		this.contextRunner.withPropertyValues("management.observations.annotations.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
-	}
-
-	@Test
-	void allowsObservedAspectToBeCustomized() {
-		this.contextRunner.withUserConfiguration(CustomObservedAspectConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(ObservedAspect.class)
-				.getBean(ObservedAspect.class)
-				.isSameAs(context.getBean("customObservedAspect")));
-	}
-
-	@Test
-	void autoConfiguresObservationPredicates() {
-		this.contextRunner.withUserConfiguration(ObservationPredicates.class).run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			// This is allowed by ObservationPredicates.customPredicate
-			Observation.start("observation1", observationRegistry).stop();
-			// This isn't allowed by ObservationPredicates.customPredicate
-			Observation.start("observation2", observationRegistry).stop();
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("observation1").timer().count()).isOne();
-			assertThatExceptionOfType(MeterNotFoundException.class)
-				.isThrownBy(() -> meterRegistry.get("observation2").timer());
-		});
-	}
-
-	@Test
-	void autoConfiguresObservationFilters() {
-		this.contextRunner.withUserConfiguration(ObservationFilters.class).run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			Observation.start("filtered", observationRegistry).stop();
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("filtered").tag("filter", "one").timer().count()).isOne();
-		});
-	}
-
-	@Test
-	void shouldSupplyPropertiesObservationFilterBean() {
-		this.contextRunner
-			.run((context) -> assertThat(context).hasSingleBean(PropertiesObservationFilterPredicate.class));
-	}
-
-	@Test
-	void shouldApplyCommonKeyValuesToObservations() {
-		this.contextRunner.withPropertyValues("management.observations.key-values.a=alpha").run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			Observation.start("keyvalues", observationRegistry).stop();
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("keyvalues").tag("a", "alpha").timer().count()).isOne();
-		});
-	}
-
-	@Test
-	void autoConfiguresGlobalObservationConventions() {
-		this.contextRunner.withUserConfiguration(CustomGlobalObservationConvention.class).run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			Context micrometerContext = new Context();
-			Observation.start("test-observation", () -> micrometerContext, observationRegistry).stop();
-			assertThat(micrometerContext.getAllKeyValues()).containsExactly(KeyValue.of("key1", "value1"));
-		});
 	}
 
 	@Test
@@ -324,27 +226,6 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotDisableSpringSecurityObservationsByDefault() {
-		this.contextRunner.run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			Observation.start("spring.security.filterchains", observationRegistry).stop();
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("spring.security.filterchains").timer().count()).isOne();
-		});
-	}
-
-	@Test
-	void shouldDisableSpringSecurityObservationsIfPropertyIsSet() {
-		this.contextRunner.withPropertyValues("management.observations.enable.spring.security=false").run((context) -> {
-			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-			Observation.start("spring.security.filterchains", observationRegistry).stop();
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThatExceptionOfType(MeterNotFoundException.class)
-				.isThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer());
-		});
-	}
-
-	@Test
 	void shouldEnableLongTaskTimersByDefault() {
 		this.contextRunner.run((context) -> {
 			DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
@@ -382,63 +263,6 @@ class ObservationAutoConfigurationTests {
 				Object delegate = ReflectionTestUtils.getField(tracingHandler, "delegate");
 				assertThat(delegate).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", false);
 			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ObservationPredicates {
-
-		@Bean
-		ObservationPredicate customPredicate() {
-			return (s, context) -> s.equals("observation1");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ObservationFilters {
-
-		@Bean
-		@Order(1)
-		ObservationFilter observationFilterOne() {
-			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "one"));
-		}
-
-		@Bean
-		@Order(0)
-		ObservationFilter observationFilterTwo() {
-			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "two"));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomObservedAspectConfiguration {
-
-		@Bean
-		ObservedAspect customObservedAspect(ObservationRegistry observationRegistry) {
-			return new ObservedAspect(observationRegistry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomGlobalObservationConvention {
-
-		@Bean
-		GlobalObservationConvention<?> customConvention() {
-			return new GlobalObservationConvention<>() {
-				@Override
-				public boolean supportsContext(Context context) {
-					return true;
-				}
-
-				@Override
-				public KeyValues getLowCardinalityKeyValues(Context context) {
-					return KeyValues.of("key1", "value1");
-				}
-			};
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

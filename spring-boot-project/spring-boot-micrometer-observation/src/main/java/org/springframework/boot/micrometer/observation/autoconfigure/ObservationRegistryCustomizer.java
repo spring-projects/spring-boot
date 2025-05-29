@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
 
@@ -24,7 +24,7 @@ import io.micrometer.observation.ObservationRegistry;
  *
  * @param <T> the registry type to customize
  * @author Moritz Halbritter
- * @since 3.0.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ObservationRegistryCustomizer<T extends ObservationRegistry> {

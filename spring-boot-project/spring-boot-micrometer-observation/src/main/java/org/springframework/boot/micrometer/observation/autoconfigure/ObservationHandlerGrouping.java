@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.micrometer.observation.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +32,18 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @since 4.0.0
  */
 @SuppressWarnings("rawtypes")
-class ObservationHandlerGrouping {
+public class ObservationHandlerGrouping {
 
 	private final List<Class<? extends ObservationHandler>> categories;
 
-	ObservationHandlerGrouping(Class<? extends ObservationHandler> category) {
+	public ObservationHandlerGrouping(Class<? extends ObservationHandler> category) {
 		this(List.of(category));
 	}
 
-	ObservationHandlerGrouping(List<Class<? extends ObservationHandler>> categories) {
+	public ObservationHandlerGrouping(List<Class<? extends ObservationHandler>> categories) {
 		this.categories = categories;
 	}
 

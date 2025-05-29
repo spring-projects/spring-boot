@@ -19,6 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
 import java.util.EnumSet;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
@@ -27,9 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -64,7 +68,7 @@ class WebMvcObservationAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(WebMvcObservationAutoConfiguration.class));
 
 	@Test
-	void backsOffWhenMeterRegistryIsMissing() {
+	void backsOffWhenObservationRegistryIsMissing() {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebMvcObservationAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
@@ -128,7 +132,7 @@ class WebMvcObservationAutoConfigurationTests {
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(TestController.class)
+		this.contextRunner.withUserConfiguration(TestController.class, MetricsConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
 					WebMvcAutoConfiguration.class))
 			.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
@@ -141,7 +145,7 @@ class WebMvcObservationAutoConfigurationTests {
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomObservationName(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(TestController.class)
+		this.contextRunner.withUserConfiguration(TestController.class, MetricsConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
 					WebMvcAutoConfiguration.class))
 			.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
@@ -155,7 +159,7 @@ class WebMvcObservationAutoConfigurationTests {
 
 	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(TestController.class)
+		this.contextRunner.withUserConfiguration(TestController.class, MetricsConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
 					WebMvcAutoConfiguration.class))
 			.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
@@ -234,6 +238,16 @@ class WebMvcObservationAutoConfigurationTests {
 	}
 
 	static class CustomConvention extends DefaultServerRequestObservationConvention {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MetricsConfiguration {
+
+		@Bean
+		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
+			return new DefaultMeterObservationHandler(registry, IgnoredMeters.LONG_TASK_TIMER);
+		}
 
 	}
 

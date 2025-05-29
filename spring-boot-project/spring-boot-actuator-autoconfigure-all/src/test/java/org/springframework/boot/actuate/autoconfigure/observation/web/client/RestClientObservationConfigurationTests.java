@@ -18,14 +18,17 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.actuate.observation.ObservationRestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
@@ -102,6 +105,7 @@ class RestClientObservationConfigurationTests {
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.with(MetricsRun.simple())
+			.withUserConfiguration(MetricsConfiguration.class)
 			.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
 			.run((context) -> {
 				RestClientWithMockServer restClientWithMockServer = buildRestClientAndMockServer(context);
@@ -163,6 +167,16 @@ class RestClientObservationConfigurationTests {
 		@Override
 		public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 			return super.getLowCardinalityKeyValues(context).and("project", "spring-boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MetricsConfiguration {
+
+		@Bean
+		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
+			return new DefaultMeterObservationHandler(registry);
 		}
 
 	}

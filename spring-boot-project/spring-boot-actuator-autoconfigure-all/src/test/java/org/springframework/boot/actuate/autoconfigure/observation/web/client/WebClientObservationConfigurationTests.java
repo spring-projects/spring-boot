@@ -20,6 +20,9 @@ import java.time.Duration;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.Test;
@@ -27,8 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -97,28 +100,32 @@ class WebClientObservationConfigurationTests {
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
-			TestObservationRegistry registry = getInitializedRegistry(context);
-			assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(1);
-			// MeterFilter.maximumAllowableTags() works with prefix matching.
-			assertThat(meterRegistry.find("http.client.requests.active").longTaskTimers()).hasSize(1);
-			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-				.contains("Are you using 'uriVariables'?");
-		});
+		this.contextRunner.withUserConfiguration(MetricsConfiguration.class)
+			.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
+			.run((context) -> {
+				TestObservationRegistry registry = getInitializedRegistry(context);
+				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(1);
+				// MeterFilter.maximumAllowableTags() works with prefix matching.
+				assertThat(meterRegistry.find("http.client.requests.active").longTaskTimers()).hasSize(1);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+					.contains("Are you using 'uriVariables'?");
+			});
 	}
 
 	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
-			TestObservationRegistry registry = getInitializedRegistry(context);
-			assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(3);
-			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
-				.doesNotContain("Are you using 'uriVariables'?");
-		});
+		this.contextRunner.withUserConfiguration(MetricsConfiguration.class)
+			.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
+			.run((context) -> {
+				TestObservationRegistry registry = getInitializedRegistry(context);
+				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(3);
+				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
+					.doesNotContain("Are you using 'uriVariables'?");
+			});
 	}
 
 	private TestObservationRegistry getInitializedRegistry(AssertableApplicationContext context) {
@@ -168,6 +175,16 @@ class WebClientObservationConfigurationTests {
 		@Override
 		public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 			return super.getLowCardinalityKeyValues(context).and("project", "spring-boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MetricsConfiguration {
+
+		@Bean
+		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
+			return new DefaultMeterObservationHandler(registry);
 		}
 
 	}

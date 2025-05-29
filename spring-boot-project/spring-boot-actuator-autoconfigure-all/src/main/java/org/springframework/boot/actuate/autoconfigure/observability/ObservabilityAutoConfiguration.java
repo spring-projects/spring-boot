@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation;
+package org.springframework.boot.actuate.autoconfigure.observability;
 
 import java.util.List;
 
@@ -22,32 +22,24 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
-import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
-import io.micrometer.observation.ObservationFilter;
-import io.micrometer.observation.ObservationHandler;
-import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
-import io.micrometer.observation.aop.ObservedAspect;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
-import org.aspectj.weaver.Advice;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGrouping;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Observation API.
@@ -58,34 +50,12 @@ import org.springframework.core.annotation.Order;
  * @author Vedran Pavic
  * @since 3.0.0
  */
-@AutoConfiguration(after = { CompositeMeterRegistryAutoConfiguration.class, MicrometerTracingAutoConfiguration.class })
+@AutoConfiguration(
+		beforeName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration",
+		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass(ObservationRegistry.class)
-@EnableConfigurationProperties(ObservationProperties.class)
-public class ObservationAutoConfiguration {
-
-	@Bean
-	static ObservationRegistryPostProcessor observationRegistryPostProcessor(
-			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
-			ObjectProvider<ObservationPredicate> observationPredicates,
-			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
-			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
-			ObjectProvider<ObservationFilter> observationFilters) {
-		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
-				observationConventions, observationHandlers, observationHandlerGrouping, observationFilters);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	ObservationRegistry observationRegistry() {
-		return ObservationRegistry.create();
-	}
-
-	@Bean
-	@Order(0)
-	PropertiesObservationFilterPredicate propertiesObservationFilter(ObservationProperties properties) {
-		return new PropertiesObservationFilterPredicate(properties);
-	}
+public class ObservabilityAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
@@ -126,6 +96,7 @@ public class ObservationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean(MeterObservationHandler.class)
+	@EnableConfigurationProperties(ObservationProperties.class)
 	static class MeterObservationHandlerConfiguration {
 
 		@ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
@@ -154,19 +125,6 @@ public class ObservationAutoConfiguration {
 				return new TracingAwareMeterObservationHandler<>(delegate, tracer);
 			}
 
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Advice.class)
-	@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
-	static class ObservedAspectConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		ObservedAspect observedAspect(ObservationRegistry observationRegistry) {
-			return new ObservedAspect(observationRegistry);
 		}
 
 	}

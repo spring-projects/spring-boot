@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.actuate.observation.ObservationRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
