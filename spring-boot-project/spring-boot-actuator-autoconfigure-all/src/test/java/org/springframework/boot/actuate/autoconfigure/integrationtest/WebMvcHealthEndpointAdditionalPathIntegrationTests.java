@@ -31,6 +31,7 @@ import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletMa
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.webmvc.actuate.autoconfigure.health.WebMvcHealthEndpointExtensionAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -51,7 +52,8 @@ class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
 					TomcatServletManagementContextAutoConfiguration.class, WebMvcAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
+					HealthEndpointAutoConfiguration.class, WebMvcHealthEndpointExtensionAutoConfiguration.class,
+					DiskSpaceHealthContributorAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
 			.withPropertyValues("server.port=0"));
 	}
