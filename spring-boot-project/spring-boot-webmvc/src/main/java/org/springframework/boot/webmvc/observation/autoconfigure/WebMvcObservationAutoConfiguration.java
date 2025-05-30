@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
+package org.springframework.boot.webmvc.observation.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -31,11 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilt
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -54,10 +50,13 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Brian Clozel
  * @author Jon Schneider
  * @author Dmytro Nosan
- * @since 3.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
+@AutoConfiguration(
+		afterName = { "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+				"org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
+				"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
+				"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ DispatcherServlet.class, Observation.class })
 @ConditionalOnBean(ObservationRegistry.class)
