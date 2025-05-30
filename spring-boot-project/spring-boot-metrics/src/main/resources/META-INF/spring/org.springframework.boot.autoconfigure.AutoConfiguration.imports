@@ -24,3 +24,4 @@ org.springframework.boot.metrics.autoconfigure.logging.log4j2.Log4J2MetricsAutoC
 org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.startup.StartupTimeMetricsListenerAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.system.SystemMetricsAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.task.TaskExecutorMetricsAutoConfiguration

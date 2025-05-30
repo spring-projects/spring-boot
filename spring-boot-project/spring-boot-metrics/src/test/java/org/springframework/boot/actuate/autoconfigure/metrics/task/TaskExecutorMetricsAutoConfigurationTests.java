@@ -21,13 +21,15 @@ import java.util.Collection;
 import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.MeterNotFoundException;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.task.TaskExecutorMetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +50,11 @@ import static org.mockito.Mockito.mock;
  */
 class TaskExecutorMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-		.withConfiguration(AutoConfigurations.of(TaskExecutorMetricsAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withBean(SimpleMeterRegistry.class)
+		.withConfiguration(
+				AutoConfigurations.of(TaskExecutorMetricsAutoConfiguration.class, MetricsAutoConfiguration.class))
+		.withPropertyValues("management.metrics.use-global-registry=false");
 
 	@Test
 	void taskExecutorUsingAutoConfigurationIsInstrumented() {
