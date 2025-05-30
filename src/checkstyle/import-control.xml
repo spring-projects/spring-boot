@@ -61,6 +61,10 @@
 		<allow pkg="io.micrometer" />
 	</subpackage>
 
+	<subpackage name=".*\.observation" regex="true">
+		<allow pkg="io.micrometer" />
+	</subpackage>
+
 	<subpackage name="[^.]+\.actuate" regex="true">
 		<subpackage name="endpoint">
 			<file name=".*Endpoint(WebExtension)?" regex="true">

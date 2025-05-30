@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
+package org.springframework.boot.webflux.observation.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -30,8 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -46,9 +44,11 @@ import org.springframework.http.server.reactive.observation.ServerRequestObserva
  * @author Jon Schneider
  * @author Dmytro Nosan
  * @author Moritz Halbritter
- * @since 3.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = { SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
+@AutoConfiguration(afterName = {
+		"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
+		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnClass({ Observation.class, MeterRegistry.class })
 @ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

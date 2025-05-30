@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for WebFlux actuator observations.
  */
-package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
+package org.springframework.boot.webflux.observation.autoconfigure;
