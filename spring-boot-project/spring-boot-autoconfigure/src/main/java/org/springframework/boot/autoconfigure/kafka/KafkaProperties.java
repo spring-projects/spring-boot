@@ -187,21 +187,8 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildConsumerProperties() {
-		return buildConsumerProperties(null);
-	}
-
-	/**
-	 * Create an initial map of consumer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaConsumerFactory} bean.
-	 * @param sslBundles bundles providing SSL trust material
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
-	 */
-	public Map<String, Object> buildConsumerProperties(SslBundles sslBundles) {
-		Map<String, Object> properties = buildCommonProperties(sslBundles);
-		properties.putAll(this.consumer.buildProperties(sslBundles));
+		Map<String, Object> properties = buildCommonProperties(null);
+		properties.putAll(this.consumer.buildProperties(null));
 		return properties;
 	}
 
