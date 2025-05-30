@@ -26,8 +26,9 @@ plugins {
 description = "Spring Boot Data REST"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-webmvc"))
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api(project(":spring-boot-project:spring-boot-jackson"))
+	api(project(":spring-boot-project:spring-boot-webmvc"))
 	api("org.springframework.data:spring-data-rest-webmvc")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))

@@ -45,7 +45,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Yanming Zhou
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration")
+@AutoConfiguration
 @EnableSpringDataWebSupport
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurer.class })

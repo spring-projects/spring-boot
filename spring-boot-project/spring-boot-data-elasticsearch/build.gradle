@@ -27,6 +27,7 @@ plugins {
 description = "Spring Boot Data Elasticsearch"
 
 dependencies {
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api(project(":spring-boot-project:spring-boot-elasticsearch"))
 	api("org.springframework.data:spring-data-elasticsearch")
 

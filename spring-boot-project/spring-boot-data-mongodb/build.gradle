@@ -27,6 +27,7 @@ description = "Spring Boot Data MongoDB"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api(project(":spring-boot-project:spring-boot-mongodb"))
 	api("org.springframework.data:spring-data-mongodb")
 

@@ -30,13 +30,13 @@ dependencies {
 	api("org.springframework.data:spring-data-commons")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional(project(":spring-boot-project:spring-boot-data-rest"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-data-jpa"))
+	testImplementation(project(":spring-boot-project:spring-boot-jdbc"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
+	testImplementation("org.springframework.data:spring-data-jdbc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")

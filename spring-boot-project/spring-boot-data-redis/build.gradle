@@ -28,6 +28,7 @@ description = "Spring Boot Data Redis"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api("io.lettuce:lettuce-core")
 	api("org.springframework.data:spring-data-redis")
 
