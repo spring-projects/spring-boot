@@ -269,7 +269,7 @@ When it does so, the orders shown in the following table will be used:
 | javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (Spring Security)
 | `-100`
 
-| javadoc:org.springframework.boot.actuate.web.exchanges.reactive.HttpExchangesWebFilter[]
+| javadoc:org.springframework.boot.webflux.actuate.web.exchanges.HttpExchangesWebFilter[]
 | `Ordered.LOWEST_PRECEDENCE - 10`
 |===
 
