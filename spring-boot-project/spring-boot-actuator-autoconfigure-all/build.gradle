@@ -56,7 +56,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-kafka"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
-	optional(project(":spring-boot-project:spring-boot-observation"))
 	optional(project(":spring-boot-project:spring-boot-opentelemetry"))
 	optional(project(":spring-boot-project:spring-boot-restclient"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
