@@ -27,6 +27,7 @@ plugins {
 description = "Spring Boot Data Neo4j"
 
 dependencies {
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api(project(":spring-boot-project:spring-boot-neo4j"))
 	api(project(":spring-boot-project:spring-boot-tx"))
 	api("org.springframework.data:spring-data-neo4j")

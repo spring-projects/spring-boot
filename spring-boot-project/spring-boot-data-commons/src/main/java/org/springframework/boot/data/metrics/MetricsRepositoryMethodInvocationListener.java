@@ -50,7 +50,7 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 	 * @param tagsProvider provider for metrics tags
 	 * @param metricName name of the metric to record
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
-	 * @since 2.5.4
+	 * @since 4.0.0
 	 */
 	public MetricsRepositoryMethodInvocationListener(Supplier<MeterRegistry> registrySupplier,
 			RepositoryTagsProvider tagsProvider, String metricName, AutoTimer autoTimer) {

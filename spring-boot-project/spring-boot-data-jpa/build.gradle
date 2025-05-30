@@ -26,6 +26,7 @@ plugins {
 description = "Spring Boot Data JPA"
 
 dependencies {
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api(project(":spring-boot-project:spring-boot-jpa"))
 	api("org.springframework.data:spring-data-jpa")
 	api("org.springframework:spring-aspects")
@@ -46,4 +47,5 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
+	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 }

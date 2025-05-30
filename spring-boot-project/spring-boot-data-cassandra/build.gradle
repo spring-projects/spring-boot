@@ -28,6 +28,7 @@ description = "Spring Boot Data Cassandra"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-cassandra"))
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}

@@ -27,6 +27,7 @@ description = "Spring Boot Data Couchbase"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-couchbase"))
+	api(project(":spring-boot-project:spring-boot-data-commons"))
 	api("org.springframework.data:spring-data-couchbase")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
