@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for task execution and scheduling metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.task;
+package org.springframework.boot.metrics.autoconfigure.task;
