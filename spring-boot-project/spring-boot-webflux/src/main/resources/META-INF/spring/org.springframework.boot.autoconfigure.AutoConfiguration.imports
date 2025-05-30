@@ -3,3 +3,4 @@ org.springframework.boot.webflux.autoconfigure.ReactiveMultipartAutoConfiguratio
 org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration
 org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration
 org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration
+org.springframework.boot.webflux.observation.autoconfigure.WebFluxObservationAutoConfiguration
