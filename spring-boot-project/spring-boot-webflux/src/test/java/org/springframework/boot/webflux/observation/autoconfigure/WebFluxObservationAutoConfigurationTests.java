@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
+package org.springframework.boot.webflux.observation.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
@@ -35,6 +34,8 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.mock;
 class WebFluxObservationAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.with(MetricsRun.simple())
+		.withBean(SimpleMeterRegistry.class)
 		.withConfiguration(
 				AutoConfigurations.of(ObservationAutoConfiguration.class, WebFluxObservationAutoConfiguration.class));
 
@@ -128,6 +129,26 @@ class WebFluxObservationAutoConfigurationTests {
 		meterRegistry.timer(metricName, "uri", "/test1").record(Duration.of(500, ChronoUnit.SECONDS));
 		meterRegistry.timer(metricName, "uri", "/test2").record(Duration.of(500, ChronoUnit.SECONDS));
 		return meterRegistry;
+	}
+
+	@RestController
+	static class TestController {
+
+		@GetMapping("test0")
+		String test0() {
+			return "test0";
+		}
+
+		@GetMapping("test1")
+		String test1() {
+			return "test1";
+		}
+
+		@GetMapping("test2")
+		String test2() {
+			return "test2";
+		}
+
 	}
 
 }
