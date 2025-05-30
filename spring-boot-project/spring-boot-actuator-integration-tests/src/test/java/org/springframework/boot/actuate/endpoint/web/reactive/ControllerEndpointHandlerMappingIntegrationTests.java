@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.webflux.actuate.endpoint.web.ControllerEndpointHandlerMapping;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

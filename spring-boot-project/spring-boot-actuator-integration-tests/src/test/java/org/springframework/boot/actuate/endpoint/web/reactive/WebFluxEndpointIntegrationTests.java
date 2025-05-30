@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.reactive.context.ReactiveWebServerInitializedEvent;
+import org.springframework.boot.webflux.actuate.endpoint.web.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.webflux.autoconfigure.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;

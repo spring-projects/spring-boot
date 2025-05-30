@@ -16,15 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Collection;
-
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
-import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
-import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.endpoint.web.reactive.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
@@ -56,23 +49,6 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 			HealthEndpointProperties properties) {
 		return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, groups,
 				properties.getLogging().getSlowIndicatorThreshold());
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class WebFluxAdditionalHealthEndpointPathsConfiguration {
-
-		@Bean
-		AdditionalHealthEndpointPathsWebFluxHandlerMapping healthEndpointWebFluxHandlerMapping(
-				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
-			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-			ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-				.findFirst()
-				.orElse(null);
-			return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
-					groups.getAllWithAdditionalPath(WebServerNamespace.SERVER));
-		}
-
 	}
 
 }
