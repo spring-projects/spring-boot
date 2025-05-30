@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.data;
+package org.springframework.boot.data.metrics.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
+import org.springframework.boot.data.metrics.MetricsRepositoryMethodInvocationListener;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactoryCustomizer;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;

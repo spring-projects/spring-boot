@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.data;
+package org.springframework.boot.data.metrics;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -33,7 +33,7 @@ import org.springframework.util.CollectionUtils;
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 2.2.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface AutoTimer {

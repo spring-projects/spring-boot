@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.data;
+package org.springframework.boot.data.metrics;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,7 @@ import org.springframework.util.function.SingletonSupplier;
  * execution time and results.
  *
  * @author Phillip Webb
- * @since 2.5.0
+ * @since 4.0.0
  */
 public class MetricsRepositoryMethodInvocationListener implements RepositoryMethodInvocationListener {
 

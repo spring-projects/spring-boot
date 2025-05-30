@@ -111,8 +111,6 @@ dependencies {
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
-	optional("org.springframework.data:spring-data-couchbase")
-	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.kafka:spring-kafka")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
@@ -143,7 +141,6 @@ dependencies {
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.springframework:spring-orm")
-	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")
 

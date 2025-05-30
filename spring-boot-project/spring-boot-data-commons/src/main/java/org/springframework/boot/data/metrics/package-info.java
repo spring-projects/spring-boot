@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Spring Data actuator metrics.
+ * Spring Data repository metrics.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.data;
+package org.springframework.boot.data.metrics;
