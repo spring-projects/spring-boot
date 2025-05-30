@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
-import org.springframework.boot.actuate.web.exchanges.reactive.HttpExchangesWebFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -57,7 +56,7 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 	private final Set<Include> includes;
 
 	/**
-	 * Create a new {@link HttpExchangesWebFilter} instance.
+	 * Create a new instance.
 	 * @param repository the repository used to record events
 	 * @param includes the include options
 	 */
