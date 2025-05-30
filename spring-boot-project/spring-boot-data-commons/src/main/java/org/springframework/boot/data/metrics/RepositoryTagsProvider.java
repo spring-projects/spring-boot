@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.data;
+package org.springframework.boot.data.metrics;
 
 import io.micrometer.core.instrument.Tag;
 
@@ -25,7 +25,7 @@ import org.springframework.data.repository.core.support.RepositoryMethodInvocati
  * invocations}.
  *
  * @author Phillip Webb
- * @since 2.5.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface RepositoryTagsProvider {

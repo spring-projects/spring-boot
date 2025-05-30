@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.data;
+package org.springframework.boot.data.metrics.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.data.city;
+package org.springframework.boot.data.metrics.autoconfigure.city;
 
 import java.io.Serializable;
 
