@@ -1,4 +1,5 @@
 # AutoConfigureWebMvc auto-configuration imports
+optional:org.springframework.boot.data.web.autoconfigure.SpringDataWebAutoConfiguration
 optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 optional:org.springframework.boot.groovy.template.autoconfigure.GroovyTemplateAutoConfiguration
 optional:org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration
@@ -7,7 +8,6 @@ optional:org.springframework.boot.mustache.autoconfigure.MustacheAutoConfigurati
 optional:org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration
 optional:org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
-optional:org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration
 org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
