@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.data;
+package org.springframework.boot.data.metrics.autoconfigure;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,15 +27,16 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.metrics.data.AutoTimer;
-import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
-import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
-import org.springframework.boot.actuate.metrics.data.RepositoryTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.data.metrics.AutoTimer;
+import org.springframework.boot.data.metrics.DefaultRepositoryTagsProvider;
+import org.springframework.boot.data.metrics.MetricsRepositoryMethodInvocationListener;
+import org.springframework.boot.data.metrics.RepositoryTagsProvider;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -57,8 +58,11 @@ import static org.mockito.Mockito.mock;
  */
 class RepositoryMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-		.withConfiguration(AutoConfigurations.of(RepositoryMetricsAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withBean(SimpleMeterRegistry.class)
+		.withConfiguration(
+				AutoConfigurations.of(MetricsAutoConfiguration.class, RepositoryMetricsAutoConfiguration.class))
+		.withPropertyValues("management.metrics.use-global-registry=false");
 
 	@Test
 	void backsOffWhenMeterRegistryIsMissing() {

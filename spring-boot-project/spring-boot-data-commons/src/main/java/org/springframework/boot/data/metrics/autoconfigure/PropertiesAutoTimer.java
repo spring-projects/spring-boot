@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.data;
+package org.springframework.boot.data.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.Timer.Builder;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.data.DataMetricsProperties.Repository.Autotime;
-import org.springframework.boot.actuate.metrics.data.AutoTimer;
+import org.springframework.boot.data.metrics.AutoTimer;
+import org.springframework.boot.data.metrics.autoconfigure.DataMetricsProperties.Repository.Autotime;
 
 /**
  * {@link AutoTimer} whose behavior is configured by {@link Autotime} properties.

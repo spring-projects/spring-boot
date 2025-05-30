@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.data;
+package org.springframework.boot.data.metrics;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
