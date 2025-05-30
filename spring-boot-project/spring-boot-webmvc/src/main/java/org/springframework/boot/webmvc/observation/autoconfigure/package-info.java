@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Spring MVC observation support.
  */
-package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
+package org.springframework.boot.webmvc.observation.autoconfigure;
