@@ -2,3 +2,4 @@ org.springframework.boot.webmvc.actuate.autoconfigure.health.WebMvcHealthEndpoin
 org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration
 org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration
 org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration
+org.springframework.boot.webmvc.observation.autoconfigure.WebMvcObservationAutoConfiguration

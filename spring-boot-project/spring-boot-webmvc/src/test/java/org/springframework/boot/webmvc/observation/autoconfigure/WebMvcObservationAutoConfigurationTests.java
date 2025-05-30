@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
+package org.springframework.boot.webmvc.observation.autoconfigure;
 
 import java.util.EnumSet;
 
@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import jakarta.servlet.DispatcherType;
@@ -29,8 +30,6 @@ import jakarta.servlet.Filter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
@@ -45,6 +44,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,9 +64,9 @@ import static org.mockito.Mockito.mock;
 class WebMvcObservationAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.with(MetricsRun.simple())
-		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
-		.withConfiguration(AutoConfigurations.of(WebMvcObservationAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(ObservationAutoConfiguration.class, WebMvcObservationAutoConfiguration.class))
+		.withBean(SimpleMeterRegistry.class);
 
 	@Test
 	void backsOffWhenObservationRegistryIsMissing() {
@@ -247,6 +248,26 @@ class WebMvcObservationAutoConfigurationTests {
 		@Bean
 		MeterObservationHandler<Context> meterObservationHandler(MeterRegistry registry) {
 			return new DefaultMeterObservationHandler(registry, IgnoredMeters.LONG_TASK_TIMER);
+		}
+
+	}
+
+	@RestController
+	static class TestController {
+
+		@GetMapping("test0")
+		String test0() {
+			return "test0";
+		}
+
+		@GetMapping("test1")
+		String test1() {
+			return "test1";
+		}
+
+		@GetMapping("test2")
+		String test2() {
+			return "test2";
 		}
 
 	}
