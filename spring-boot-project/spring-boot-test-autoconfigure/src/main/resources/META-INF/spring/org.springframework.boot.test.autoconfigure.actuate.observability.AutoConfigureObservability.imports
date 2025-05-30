@@ -1,7 +1,7 @@
 # AutoConfigureObservability auto-configuration imports
 
 # Observation
-org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration
+org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration
 
 # Metrics
 org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration

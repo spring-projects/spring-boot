@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
@@ -48,7 +48,7 @@ import org.springframework.http.server.reactive.observation.ServerRequestObserva
  */
 @AutoConfiguration(afterName = {
 		"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
-		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
+		"org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnClass({ Observation.class, MeterRegistry.class })
 @ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

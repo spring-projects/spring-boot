@@ -44,7 +44,7 @@ import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.system.SystemMetricsAutoConfiguration;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
+import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.observation.RestTemplateObservationAutoConfiguration;
