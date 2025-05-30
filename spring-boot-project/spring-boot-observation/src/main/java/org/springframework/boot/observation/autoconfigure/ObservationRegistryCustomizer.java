@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.observation.autoconfigure;
+
+import io.micrometer.observation.ObservationRegistry;
+
 /**
- * Auto-configuration for Micrometer Observation.
+ * Callback interface that can be used to customize auto-configured
+ * {@link ObservationRegistry observation registries}.
+ *
+ * @param <T> the registry type to customize
+ * @author Moritz Halbritter
+ * @since 4.0.0
  */
-package org.springframework.boot.micrometer.observation.autoconfigure;
+@FunctionalInterface
+public interface ObservationRegistryCustomizer<T extends ObservationRegistry> {
+
+	/**
+	 * Customize the given {@code registry}.
+	 * @param registry the registry to customize
+	 */
+	void customize(T registry);
+
+}

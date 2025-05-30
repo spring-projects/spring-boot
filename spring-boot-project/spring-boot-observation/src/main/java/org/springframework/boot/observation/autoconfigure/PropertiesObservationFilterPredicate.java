@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.micrometer.observation.autoconfigure;
+package org.springframework.boot.observation.autoconfigure;
 
 import java.util.Map;
 import java.util.Map.Entry;

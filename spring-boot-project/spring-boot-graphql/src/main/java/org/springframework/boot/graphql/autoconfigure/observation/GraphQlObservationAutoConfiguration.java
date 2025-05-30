@@ -40,8 +40,7 @@ import org.springframework.graphql.observation.GraphQlObservationInstrumentation
  * @author Brian Clozel
  * @since 4.0.0
  */
-@AutoConfiguration(
-		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, Observation.class })
 public class GraphQlObservationAutoConfiguration {

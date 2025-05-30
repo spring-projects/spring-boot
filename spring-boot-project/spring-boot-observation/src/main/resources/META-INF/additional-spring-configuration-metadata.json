@@ -1,4 +1,11 @@
 {
   "groups": [],
-  "properties": []
+  "properties": [
+    {
+      "name": "management.observations.annotations.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of Micrometer annotations is enabled.",
+      "defaultValue": false
+    }
+  ]
 }

@@ -36,7 +36,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
-	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
+	optional(project(":spring-boot-project:spring-boot-observation"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
 
 	testFixturesApi(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
