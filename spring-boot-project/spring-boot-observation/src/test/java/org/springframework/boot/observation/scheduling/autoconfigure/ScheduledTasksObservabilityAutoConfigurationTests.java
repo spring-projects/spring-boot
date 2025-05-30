@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.scheduling;
-
-import java.util.List;
+package org.springframework.boot.observation.scheduling.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksObservabilityAutoConfiguration.ObservabilitySchedulingConfigurer;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
+import org.springframework.boot.observation.scheduling.autoconfigure.ScheduledTasksObservabilityAutoConfiguration.ObservabilitySchedulingConfigurer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
@@ -53,12 +49,6 @@ class ScheduledTasksObservabilityAutoConfigurationTests {
 		ScheduledTaskRegistrar registrar = new ScheduledTaskRegistrar();
 		configurer.configureTasks(registrar);
 		assertThat(registrar.getObservationRegistry()).isEqualTo(observationRegistry);
-	}
-
-	@Test
-	void isRegisteredInAutoConfigurationsFile() {
-		List<String> configurations = ImportCandidates.load(AutoConfiguration.class, null).getCandidates();
-		assertThat(configurations).contains(ScheduledTasksObservabilityAutoConfiguration.class.getName());
 	}
 
 }

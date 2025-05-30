@@ -1,1 +1,2 @@
 org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration
+org.springframework.boot.observation.scheduling.autoconfigure.ScheduledTasksObservabilityAutoConfiguration
