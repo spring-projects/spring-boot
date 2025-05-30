@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.task;
+package org.springframework.boot.metrics.autoconfigure.task;
 
 import java.util.Collections;
 import java.util.concurrent.Executor;
@@ -47,7 +47,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
- * @since 2.6.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
 		TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class })
