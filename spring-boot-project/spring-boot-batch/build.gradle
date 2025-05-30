@@ -34,7 +34,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-jpa"))
-	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
+	optional(project(":spring-boot-project:spring-boot-observation"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
 	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))

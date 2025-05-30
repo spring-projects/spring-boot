@@ -28,7 +28,7 @@ description = "Spring Boot Metrics"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	api(project(":spring-boot-project:spring-boot-micrometer-observation"))
+	api(project(":spring-boot-project:spring-boot-observation"))
 	api("io.micrometer:micrometer-core")
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))

@@ -30,6 +30,7 @@ dependencies {
 	api("io.micrometer:micrometer-observation")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional("org.aspectj:aspectjweaver")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

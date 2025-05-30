@@ -36,8 +36,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGrouping;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.observation.autoconfigure.ObservationHandlerGrouping;
+import org.springframework.boot.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,8 +50,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 3.0.0
  */
-@AutoConfiguration(
-		beforeName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration",
+@AutoConfiguration(beforeName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration",
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass(ObservationRegistry.class)

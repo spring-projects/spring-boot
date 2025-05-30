@@ -41,7 +41,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
-	optional(project(":spring-boot-project:spring-boot-micrometer-observation"))
+	optional(project(":spring-boot-project:spring-boot-observation"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.micrometer:micrometer-core")
 	optional("io.r2dbc:r2dbc-pool")

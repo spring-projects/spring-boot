@@ -22,7 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.webclient.observation.ObservationWebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
@@ -35,8 +35,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 4.0.0
  */
-@AutoConfiguration(
-		beforeName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
+@AutoConfiguration(beforeName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnClass({ WebClient.class, ObservationWebClientCustomizer.class, ObservationRegistry.class,
 		ObservationProperties.class })
 @EnableConfigurationProperties(ObservationProperties.class)

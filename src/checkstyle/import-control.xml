@@ -57,7 +57,7 @@
 		<allow pkg="io.micrometer" />
 	</subpackage>
 
-	<subpackage name="micrometer">
+	<subpackage name="observation">
 		<allow pkg="io.micrometer" />
 	</subpackage>
 
