@@ -62,7 +62,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
 			KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = this.properties.buildStreamsProperties(null);
+		Map<String, Object> properties = this.properties.buildStreamsProperties();
 		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
