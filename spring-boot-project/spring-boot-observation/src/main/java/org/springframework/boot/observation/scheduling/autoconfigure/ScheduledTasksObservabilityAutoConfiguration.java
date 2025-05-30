@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.scheduling;
+package org.springframework.boot.observation.scheduling.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
 
@@ -33,7 +33,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  * scheduled tasks.
  *
  * @author Moritz Halbritter
- * @since 3.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = ObservationAutoConfiguration.class)
 @ConditionalOnBean(ObservationRegistry.class)
