@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.webflux.actuate.autoconfigure.health.WebFluxHealthEndpointExtensionAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 
@@ -47,9 +48,9 @@ class WebFluxHealthEndpointAdditionalPathIntegrationTests extends
 		super(new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 					WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, EndpointAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					NettyReactiveWebServerAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, WebFluxHealthEndpointExtensionAutoConfiguration.class,
+					DiskSpaceHealthContributorAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					ManagementContextAutoConfiguration.class, NettyReactiveWebServerAutoConfiguration.class,
 					NettyReactiveManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
 			.withPropertyValues("server.port=0"));

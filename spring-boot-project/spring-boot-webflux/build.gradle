@@ -33,11 +33,13 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-http-codec"))
 	implementation(project(":spring-boot-project:spring-boot-web-server"))
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-observation"))
 	optional(project(":spring-boot-project:spring-boot-validation"))
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("org.springframework.security:spring-security-core")
 
 	testFixturesApi(testFixtures(project(":spring-boot-project:spring-boot-actuator")))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
@@ -46,8 +48,11 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-autoconfigure")))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
+	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.aspectj:aspectjweaver")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

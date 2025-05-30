@@ -53,7 +53,6 @@ dependencies {
 	optional("org.springframework:spring-context-support")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-messaging")
-	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.security:spring-security-core")
 	optional("org.springframework.security:spring-security-web")
@@ -61,6 +60,7 @@ dependencies {
 	testFixturesApi("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
 	testFixturesImplementation("org.springframework:spring-test")
+	testFixturesImplementation("org.springframework:spring-webflux")
 
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
