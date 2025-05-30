@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.web.autoconfigure;
+package org.springframework.boot.data.jpa.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.data.web.autoconfigure.domain.city.City;
-import org.springframework.boot.data.web.autoconfigure.domain.city.CityRepository;
+import org.springframework.boot.data.jpa.autoconfigure.domain.city.City;
+import org.springframework.boot.data.jpa.autoconfigure.domain.city.CityRepository;
+import org.springframework.boot.data.web.autoconfigure.SpringDataWebAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-class SpringDataWebAutoConfigurationJpaTests {
+class JpaRepositoriesSpringDataWebAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,

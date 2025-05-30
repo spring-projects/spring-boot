@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.web.autoconfigure.SpringDataWebAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -46,7 +47,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author Andy Wilkinson
  * @since 4.0.0
  */
-@AutoConfiguration(after = JacksonAutoConfiguration.class)
+@AutoConfiguration(before = SpringDataWebAutoConfiguration.class, after = JacksonAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
