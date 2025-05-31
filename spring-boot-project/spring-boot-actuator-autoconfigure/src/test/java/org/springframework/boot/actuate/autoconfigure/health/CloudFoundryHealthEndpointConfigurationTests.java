@@ -39,7 +39,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HealthEndpointAutoConfiguration} when running in a Cloud Foundry environment.
+ * Tests for {@link HealthEndpointAutoConfiguration} when running in a Cloud Foundry
+ * environment.
  *
  * This class isolates Cloud Foundry-specific behavior to avoid coupling such concerns
  * with general auto-configuration tests.
@@ -49,55 +50,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CloudFoundryHealthEndpointConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(HealthIndicatorsConfiguration.class)
-			.withConfiguration(
-					AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
+		.withUserConfiguration(HealthIndicatorsConfiguration.class)
+		.withConfiguration(
+				AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-			.withUserConfiguration(HealthIndicatorsConfiguration.class)
-			.withConfiguration(
-					AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-							WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
-
+		.withUserConfiguration(HealthIndicatorsConfiguration.class)
+		.withConfiguration(
+				AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
 
 	@Test
 	void additionalHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-				.withPropertyValues("management.endpoints.web.exposure.exclude=*",
-						"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(MvcAdditionalHealthEndpointPathsConfiguration.class);
-					assertThat(context).hasNotFailed();
-				});
+			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MvcAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
 	}
 
 	@Test
 	void additionalJerseyHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
 		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
-				.withPropertyValues("management.endpoints.web.exposure.exclude=*",
-						"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JerseyAdditionalHealthEndpointPathsConfiguration.class);
-					assertThat(context).hasNotFailed();
-				});
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JerseyAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
 	}
 
 	@Test
 	void additionalReactiveHealthEndpointsPathsTolerateHealthEndpointThatIsNotWebExposed() {
 		this.reactiveContextRunner
-				.withConfiguration(
-						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-				.withPropertyValues("management.endpoints.web.exposure.exclude=*",
-						"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WebFluxAdditionalHealthEndpointPathsConfiguration.class);
-					assertThat(context).hasNotFailed();
-				});
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.cloudfoundry.exposure.include=*", "spring.main.cloud-platform=cloud_foundry")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(WebFluxAdditionalHealthEndpointPathsConfiguration.class);
+				assertThat(context).hasNotFailed();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -119,4 +119,5 @@ class CloudFoundryHealthEndpointConfigurationTests {
 		}
 
 	}
+
 }
