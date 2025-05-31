@@ -128,7 +128,7 @@ class WebMvcEndpointChildContextConfiguration {
 
 		@Override
 		public int getOrder() {
-			return 0;
+			return Ordered.HIGHEST_PRECEDENCE + 11;
 		}
 
 	}
