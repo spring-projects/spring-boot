@@ -68,7 +68,7 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return Ordered.HIGHEST_PRECEDENCE + 10;
 	}
 
 	@Override
