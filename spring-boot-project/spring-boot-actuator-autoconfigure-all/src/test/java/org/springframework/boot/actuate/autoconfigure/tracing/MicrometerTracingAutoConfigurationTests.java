@@ -20,6 +20,8 @@ import java.util.List;
 
 import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.common.annotation.ValueResolver;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.observation.ObservationHandler;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.annotation.DefaultNewSpanParser;
 import io.micrometer.tracing.annotation.ImperativeMethodInvocationProcessor;
@@ -36,6 +38,7 @@ import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -176,6 +179,31 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(SpanAspect.class);
 				assertThat(context.getBean(ImperativeMethodInvocationProcessor.class)).hasFieldOrPropertyWithValue(
 						"spanTagAnnotationHandler", context.getBean(SpanTagAnnotationHandler.class));
+			});
+	}
+
+	@Test
+	void shouldCreateTracingAndMeterObservationHandlerGroupWhenHasTracing() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ObservationHandlerGroup.class);
+			ObservationHandlerGroup group = context.getBean(ObservationHandlerGroup.class);
+			assertThat(group).isInstanceOf(TracingAndMeterObservationHandlerGroup.class);
+			assertThat(group.isMember(mock(ObservationHandler.class))).isFalse();
+			assertThat(group.isMember(mock(TracingObservationHandler.class))).isTrue();
+			assertThat(group.isMember(mock(MeterObservationHandler.class))).isTrue();
+		});
+	}
+
+	@Test
+	void shouldCreateTracingObservationHandlerGroupWhenMetricsIsNotOnClassPath() {
+		this.contextRunner.withUserConfiguration(TracerConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("io.micrometer.core"))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ObservationHandlerGroup.class);
+				ObservationHandlerGroup group = context.getBean(ObservationHandlerGroup.class);
+				assertThat(group).isNotInstanceOf(TracingAndMeterObservationHandlerGroup.class);
+				assertThat(group.isMember(mock(ObservationHandler.class))).isFalse();
+				assertThat(group.isMember(mock(TracingObservationHandler.class))).isTrue();
 			});
 	}
 

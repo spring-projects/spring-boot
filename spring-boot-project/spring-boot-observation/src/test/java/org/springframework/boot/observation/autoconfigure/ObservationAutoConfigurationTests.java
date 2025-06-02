@@ -68,7 +68,6 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).hasSingleBean(ObservedAspect.class);
-			assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
 		});
 	}
 
