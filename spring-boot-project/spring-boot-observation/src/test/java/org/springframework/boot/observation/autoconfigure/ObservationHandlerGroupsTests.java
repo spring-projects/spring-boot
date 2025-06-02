@@ -31,22 +31,25 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ObservationHandlerGrouping}.
+ * Tests for {@link ObservationHandlerGroups}.
  *
  * @author Moritz Halbritter
  */
-class ObservationHandlerGroupingTests {
+class ObservationHandlerGroupsTests {
+
+	private static final ObservationHandlerGroup GROUP_A = ObservationHandlerGroup.of(ObservationHandlerA.class);
+
+	private static final ObservationHandlerGroup GROUP_B = ObservationHandlerGroup.of(ObservationHandlerB.class);
 
 	@Test
 	void shouldGroupCategoriesIntoFirstMatchingHandlerAndRespectCategoryOrder() {
-		ObservationHandlerGrouping grouping = new ObservationHandlerGrouping(
-				List.of(ObservationHandlerA.class, ObservationHandlerB.class));
+		ObservationHandlerGroups grouping = new ObservationHandlerGroups(List.of(GROUP_A, GROUP_B));
 		ObservationConfig config = new ObservationConfig();
 		ObservationHandlerA handlerA1 = new ObservationHandlerA("a1");
 		ObservationHandlerA handlerA2 = new ObservationHandlerA("a2");
 		ObservationHandlerB handlerB1 = new ObservationHandlerB("b1");
 		ObservationHandlerB handlerB2 = new ObservationHandlerB("b2");
-		grouping.apply(List.of(handlerB1, handlerB2, handlerA1, handlerA2), config);
+		grouping.register(config, List.of(handlerB1, handlerB2, handlerA1, handlerA2));
 		List<ObservationHandler<?>> handlers = getObservationHandlers(config);
 		assertThat(handlers).hasSize(2);
 		// Category A is first
@@ -63,12 +66,12 @@ class ObservationHandlerGroupingTests {
 
 	@Test
 	void uncategorizedHandlersShouldBeOrderedAfterCategories() {
-		ObservationHandlerGrouping grouping = new ObservationHandlerGrouping(ObservationHandlerA.class);
+		ObservationHandlerGroups grouping = new ObservationHandlerGroups(List.of(GROUP_A));
 		ObservationConfig config = new ObservationConfig();
 		ObservationHandlerA handlerA1 = new ObservationHandlerA("a1");
 		ObservationHandlerA handlerA2 = new ObservationHandlerA("a2");
 		ObservationHandlerB handlerB1 = new ObservationHandlerB("b1");
-		grouping.apply(List.of(handlerB1, handlerA1, handlerA2), config);
+		grouping.register(config, List.of(handlerB1, handlerA1, handlerA2));
 		List<ObservationHandler<?>> handlers = getObservationHandlers(config);
 		assertThat(handlers).hasSize(2);
 		// Category A is first

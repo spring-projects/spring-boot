@@ -27,6 +27,7 @@ import io.micrometer.tracing.annotation.SpanTagAnnotationHandler;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
+import io.micrometer.tracing.handler.TracingObservationHandler;
 import io.micrometer.tracing.propagation.Propagator;
 import org.aspectj.weaver.Advice;
 
@@ -37,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -45,6 +47,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Tracing API.
@@ -54,7 +57,6 @@ import org.springframework.expression.spel.support.SimpleEvaluationContext;
  * @since 3.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(Tracer.class)
 @ConditionalOnBean(Tracer.class)
 public class MicrometerTracingAutoConfiguration {
 
@@ -74,6 +76,13 @@ public class MicrometerTracingAutoConfiguration {
 	 * {@link #propagatingSenderTracingObservationHandler(Tracer, Propagator)}.
 	 */
 	public static final int SENDER_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
+
+	@Bean
+	public ObservationHandlerGroup tracingObservationHandlerGroup(Tracer tracer) {
+		return ClassUtils.isPresent("io.micrometer.core.instrument.MeterRegistry", null)
+				? new TracingAndMeterObservationHandlerGroup(tracer)
+				: ObservationHandlerGroup.of(TracingObservationHandler.class);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

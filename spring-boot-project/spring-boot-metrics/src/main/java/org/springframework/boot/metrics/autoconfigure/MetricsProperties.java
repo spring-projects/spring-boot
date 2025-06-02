@@ -21,8 +21,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -63,6 +67,8 @@ public class MetricsProperties {
 
 	private final Distribution distribution = new Distribution();
 
+	private final Observations observations = new Observations();
+
 	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
 	}
@@ -89,6 +95,10 @@ public class MetricsProperties {
 
 	public Distribution getDistribution() {
 		return this.distribution;
+	}
+
+	public Observations getObservations() {
+		return this.observations;
 	}
 
 	public static class Web {
@@ -253,6 +263,23 @@ public class MetricsProperties {
 
 		public Map<String, Integer> getBufferLength() {
 			return this.bufferLength;
+		}
+
+	}
+
+	public static class Observations {
+
+		/**
+		 * Meters that should be ignored when recoding observations.
+		 */
+		private Set<IgnoredMeters> ignoredMeters = new LinkedHashSet<>();
+
+		public Set<IgnoredMeters> getIgnoredMeters() {
+			return this.ignoredMeters;
+		}
+
+		public void setIgnoredMeters(Set<IgnoredMeters> ignoredMeters) {
+			this.ignoredMeters = ignoredMeters;
 		}
 
 	}
