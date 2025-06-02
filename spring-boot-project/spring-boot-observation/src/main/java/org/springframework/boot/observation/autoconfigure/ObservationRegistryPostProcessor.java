@@ -43,7 +43,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
-	private final ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping;
+	private final ObjectProvider<ObservationHandlerGroup> observationHandlerGroups;
 
 	private final ObjectProvider<ObservationFilter> observationFilters;
 
@@ -53,13 +53,13 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
+			ObjectProvider<ObservationHandlerGroup> observationHandlerGroups,
 			ObjectProvider<ObservationFilter> observationFilters) {
 		this.observationRegistryCustomizers = observationRegistryCustomizers;
 		this.observationPredicates = observationPredicates;
 		this.observationConventions = observationConventions;
 		this.observationHandlers = observationHandlers;
-		this.observationHandlerGrouping = observationHandlerGrouping;
+		this.observationHandlerGroups = observationHandlerGroups;
 		this.observationFilters = observationFilters;
 	}
 
@@ -75,7 +75,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 		if (this.configurer == null) {
 			this.configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
 					this.observationPredicates, this.observationConventions, this.observationHandlers,
-					this.observationHandlerGrouping, this.observationFilters);
+					this.observationHandlerGroups, this.observationFilters);
 		}
 		return this.configurer;
 	}

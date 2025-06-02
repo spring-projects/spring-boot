@@ -32,7 +32,7 @@ import org.springframework.boot.util.LambdaSafe;
  * {@link ObservationRegistry observation registries}. Installs
  * {@link ObservationPredicate observation predicates} and
  * {@link GlobalObservationConvention global observation conventions} into the
- * {@link ObservationRegistry}. Also uses a {@link ObservationHandlerGrouping} to group
+ * {@link ObservationRegistry}. Also uses a {@link ObservationHandlerGroups} to group
  * handlers, which are then added to the {@link ObservationRegistry}.
  *
  * @author Moritz Halbritter
@@ -47,7 +47,7 @@ class ObservationRegistryConfigurer {
 
 	private final ObjectProvider<ObservationHandler<?>> observationHandlers;
 
-	private final ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping;
+	private final ObjectProvider<ObservationHandlerGroup> observationHandlerGroups;
 
 	private final ObjectProvider<ObservationFilter> observationFilters;
 
@@ -55,13 +55,13 @@ class ObservationRegistryConfigurer {
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
+			ObjectProvider<ObservationHandlerGroup> observationHandlerGroups,
 			ObjectProvider<ObservationFilter> observationFilters) {
 		this.customizers = customizers;
 		this.observationPredicates = observationPredicates;
 		this.observationConventions = observationConventions;
 		this.observationHandlers = observationHandlers;
-		this.observationHandlerGrouping = observationHandlerGrouping;
+		this.observationHandlerGroups = observationHandlerGroups;
 		this.observationFilters = observationFilters;
 	}
 
@@ -74,14 +74,9 @@ class ObservationRegistryConfigurer {
 	}
 
 	private void registerHandlers(ObservationRegistry registry) {
-		ObservationHandlerGrouping grouping = this.observationHandlerGrouping.getIfAvailable();
-		List<ObservationHandler<?>> orderedHandlers = asOrderedList(this.observationHandlers);
-		if (grouping != null) {
-			grouping.apply(orderedHandlers, registry.observationConfig());
-		}
-		else {
-			orderedHandlers.forEach((handler) -> registry.observationConfig().observationHandler(handler));
-		}
+		ObservationHandlerGroups groups = new ObservationHandlerGroups(this.observationHandlerGroups.stream().toList());
+		List<ObservationHandler<?>> orderedHandlers = this.observationHandlers.orderedStream().toList();
+		groups.register(registry.observationConfig(), orderedHandlers);
 	}
 
 	private void registerObservationPredicates(ObservationRegistry registry) {
@@ -98,13 +93,9 @@ class ObservationRegistryConfigurer {
 
 	@SuppressWarnings("unchecked")
 	private void customize(ObservationRegistry registry) {
-		LambdaSafe.callbacks(ObservationRegistryCustomizer.class, asOrderedList(this.customizers), registry)
+		LambdaSafe.callbacks(ObservationRegistryCustomizer.class, this.customizers.orderedStream().toList(), registry)
 			.withLogger(ObservationRegistryConfigurer.class)
 			.invoke((customizer) -> customizer.customize(registry));
-	}
-
-	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {
-		return provider.orderedStream().toList();
 	}
 
 }

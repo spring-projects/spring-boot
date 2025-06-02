@@ -1,6 +1,5 @@
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.ReactiveCloudFoundryActuatorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryActuatorAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration

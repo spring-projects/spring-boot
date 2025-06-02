@@ -55,10 +55,10 @@ public class ObservationAutoConfiguration {
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
+			ObjectProvider<ObservationHandlerGroup> observationHandlerGroups,
 			ObjectProvider<ObservationFilter> observationFilters) {
 		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
-				observationConventions, observationHandlers, observationHandlerGrouping, observationFilters);
+				observationConventions, observationHandlers, observationHandlerGroups, observationFilters);
 	}
 
 	@Bean

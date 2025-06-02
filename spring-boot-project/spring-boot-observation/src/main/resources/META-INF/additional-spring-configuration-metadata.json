@@ -6,6 +6,16 @@
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of Micrometer annotations is enabled.",
       "defaultValue": false
+    },
+    {
+      "name": "management.observations.annotations.long-lask-timer.enabled",
+      "type": "java.lang.boolean",
+      "description": "Whether to create a LongTaskTimer for every observation.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.observations.ignored-meters"
+      }
     }
   ]
 }

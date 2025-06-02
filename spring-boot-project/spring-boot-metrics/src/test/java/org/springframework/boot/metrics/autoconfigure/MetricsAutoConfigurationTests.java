@@ -22,11 +22,15 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.ObservationHandler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration.MeterRegistryCloser;
+import org.springframework.boot.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +46,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class MetricsAutoConfigurationTests {
 
@@ -87,6 +92,34 @@ class MetricsAutoConfigurationTests {
 			context.close();
 			assertThat(meterRegistry.isClosed()).isTrue();
 		});
+	}
+
+	@Test
+	void supplyHandlerAndGroup() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ObservationHandlerGroup.class);
+			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
+			ObservationHandlerGroup group = context.getBean(ObservationHandlerGroup.class);
+			assertThat(group.isMember(mock(ObservationHandler.class))).isFalse();
+			assertThat(group.isMember(mock(MeterObservationHandler.class))).isTrue();
+		});
+	}
+
+	@Test
+	void shouldEnableLongTaskTimerByDefault() {
+		this.contextRunner.run((context) -> {
+			DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", true);
+		});
+	}
+
+	@Test
+	void shouldDisableLongTaskTimerIfPropertyIsSet() {
+		this.contextRunner.withPropertyValues("management.metrics.observations.ignored-meters=long-task-timer")
+			.run((context) -> {
+				DefaultMeterObservationHandler handler = context.getBean(DefaultMeterObservationHandler.class);
+				assertThat(handler).hasFieldOrPropertyWithValue("shouldCreateLongTaskTimer", false);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
