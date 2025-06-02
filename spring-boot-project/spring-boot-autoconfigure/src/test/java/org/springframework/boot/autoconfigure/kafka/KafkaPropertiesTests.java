@@ -115,6 +115,42 @@ class KafkaPropertiesTests {
 	}
 
 	@Test
+	void sslPropertiesWhenKeyStoreLocationAndBundleSetShouldThrowException() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setBundle("myBundle");
+		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
+	}
+
+	@Test
+	void sslPropertiesWhenKeyStoreKeyAndBundleSetShouldThrowException() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setBundle("myBundle");
+		properties.getSsl().setKeyStoreKey("-----BEGIN");
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
+	}
+
+	@Test
+	void sslPropertiesWhenTrustStoreLocationAndBundleSetShouldThrowException() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setBundle("myBundle");
+		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
+	}
+
+	@Test
+	void sslPropertiesWhenTrustStoreCertificatesAndBundleSetShouldThrowException() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setBundle("myBundle");
+		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
+	}
+
+	@Test
 	void cleanupConfigDefaultValuesAreConsistent() {
 		CleanupConfig cleanupConfig = new CleanupConfig();
 		Cleanup cleanup = new KafkaProperties().getStreams().getCleanup();
