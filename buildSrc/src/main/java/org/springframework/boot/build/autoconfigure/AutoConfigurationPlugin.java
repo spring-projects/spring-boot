@@ -16,31 +16,20 @@
 
 package org.springframework.boot.build.autoconfigure;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.lang.ArchCondition;
-import com.tngtech.archunit.lang.ArchRule;
-import com.tngtech.archunit.lang.ConditionEvents;
-import com.tngtech.archunit.lang.SimpleConditionEvent;
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
-import org.springframework.boot.build.architecture.ArchitectureCheck;
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 
 /**
  * {@link Plugin} for projects that define auto-configuration. When applied, the plugin
@@ -70,14 +59,16 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	 */
 	public static final String AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME = "autoConfigurationMetadata";
 
-	private static final String AUTO_CONFIGURATION_IMPORTS_PATH = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
-
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			Configuration annotationProcessors = project.getConfigurations()
 				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
+			SourceSet main = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			annotationProcessors.getDependencies()
 				.add(project.getDependencies()
 					.project(Collections.singletonMap("path",
@@ -87,10 +78,6 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 			project.getTasks().register("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				SourceSet main = project.getExtensions()
-					.getByType(JavaPluginExtension.class)
-					.getSourceSets()
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
 				task.getOutputFile()
@@ -99,74 +86,37 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME, task.getOutputFile(),
 							(artifact) -> artifact.builtBy(task));
 			});
+			project.getTasks()
+				.register("checkAutoConfigurationImports", CheckAutoConfigurationImports.class, (task) -> {
+					task.setSource(main.getResources());
+					task.setClasspath(main.getOutput().getClassesDirs());
+					task.setDescription("Checks the %s file of the main source set."
+						.formatted(AutoConfigurationImportsTask.IMPORTS_FILE));
+				});
+			Configuration requiredClasspath = project.getConfigurations()
+				.create("autoConfigurationRequiredClasspath")
+				.extendsFrom(project.getConfigurations().getByName(main.getImplementationConfigurationName()),
+						project.getConfigurations().getByName(main.getRuntimeOnlyConfigurationName()));
+			requiredClasspath.getDependencies()
+				.add(project.getDependencies()
+					.project(Map.of("path", ":spring-boot-project:spring-boot-autoconfigure")));
+			TaskProvider<CheckAutoConfigurationClasses> checkAutoConfigurationClasses = project.getTasks()
+				.register("checkAutoConfigurationClasses", CheckAutoConfigurationClasses.class, (task) -> {
+					task.setSource(main.getResources());
+					task.setClasspath(main.getOutput().getClassesDirs());
+					task.setRequiredDependencies(requiredClasspath);
+					task.setDescription("Checks the auto-configuration classes of the main source set.");
+				});
 			project.getPlugins()
-				.withType(ArchitecturePlugin.class, (plugin) -> configureArchitecturePluginTasks(project));
+				.withType(OptionalDependenciesPlugin.class,
+						(plugin) -> checkAutoConfigurationClasses.configure((check) -> {
+							Configuration optionalClasspath = project.getConfigurations()
+								.create("autoConfigurationOptionalClassPath")
+								.extendsFrom(project.getConfigurations()
+									.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME));
+							check.setOptionalDependencies(optionalClasspath);
+						}));
 		});
-	}
-
-	private void configureArchitecturePluginTasks(Project project) {
-		project.getTasks().configureEach((task) -> {
-			if ("checkArchitectureMain".equals(task.getName()) && task instanceof ArchitectureCheck architectureCheck) {
-				configureCheckArchitectureMain(project, architectureCheck);
-			}
-		});
-	}
-
-	private void configureCheckArchitectureMain(Project project, ArchitectureCheck architectureCheck) {
-		SourceSet main = project.getExtensions()
-			.getByType(JavaPluginExtension.class)
-			.getSourceSets()
-			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		File resourcesDirectory = main.getOutput().getResourcesDir();
-		architectureCheck.dependsOn(main.getProcessResourcesTaskName());
-		architectureCheck.getInputs()
-			.files(resourcesDirectory)
-			.optional()
-			.withPathSensitivity(PathSensitivity.RELATIVE);
-		architectureCheck.getRules()
-			.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
-					autoConfigurationImports(project, resourcesDirectory)));
-	}
-
-	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
-			Provider<AutoConfigurationImports> imports) {
-		return ArchRuleDefinition.classes()
-			.that()
-			.areAnnotatedWith("org.springframework.boot.autoconfigure.AutoConfiguration")
-			.should(beListedInAutoConfigurationImports(imports))
-			.allowEmptyShould(true);
-	}
-
-	private ArchCondition<JavaClass> beListedInAutoConfigurationImports(Provider<AutoConfigurationImports> imports) {
-		return new ArchCondition<>("be listed in " + AUTO_CONFIGURATION_IMPORTS_PATH) {
-
-			@Override
-			public void check(JavaClass item, ConditionEvents events) {
-				AutoConfigurationImports autoConfigurationImports = imports.get();
-				if (!autoConfigurationImports.imports.contains(item.getName())) {
-					events.add(SimpleConditionEvent.violated(item,
-							item.getName() + " was not listed in " + autoConfigurationImports.importsFile));
-				}
-			}
-
-		};
-	}
-
-	private Provider<AutoConfigurationImports> autoConfigurationImports(Project project, File resourcesDirectory) {
-		Path importsFile = new File(resourcesDirectory, AUTO_CONFIGURATION_IMPORTS_PATH).toPath();
-		return project.provider(() -> {
-			try {
-				return new AutoConfigurationImports(project.getProjectDir().toPath().relativize(importsFile),
-						Files.readAllLines(importsFile));
-			}
-			catch (IOException ex) {
-				throw new RuntimeException("Failed to read AutoConfiguration.imports", ex);
-			}
-		});
-	}
-
-	private record AutoConfigurationImports(Path importsFile, List<String> imports) {
-
 	}
 
 }
