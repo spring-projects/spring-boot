@@ -56,7 +56,7 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 	private final Set<Include> includes;
 
 	/**
-	 * Create a new instance.
+	 * Create a new {@link HttpExchangesFilter} instance.
 	 * @param repository the repository used to record events
 	 * @param includes the include options
 	 */
