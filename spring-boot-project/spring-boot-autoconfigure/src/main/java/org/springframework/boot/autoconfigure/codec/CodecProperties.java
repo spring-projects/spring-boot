@@ -45,7 +45,7 @@ public class CodecProperties {
 	 */
 	private DataSize maxInMemorySize;
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codec.log-request-details")
+	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codecs.log-request-details")
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
 	}
@@ -54,7 +54,7 @@ public class CodecProperties {
 		this.logRequestDetails = logRequestDetails;
 	}
 
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codec.max-in-memory-size")
+	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.codecs.max-in-memory-size")
 	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;
 	}
