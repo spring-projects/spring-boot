@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -38,7 +37,8 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Jonatan Ivanov
  * @since 3.0.0
  */
-@AutoConfiguration(before = PrometheusMetricsExportAutoConfiguration.class,
+@AutoConfiguration(
+		beforeName = "org.springframework.boot.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration",
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, SpanContext.class })
