@@ -37,10 +37,6 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
-	implementation(project(":spring-boot-project:spring-boot-metrics"))
-	implementation(project(":spring-boot-project:spring-boot-security")) {
-		exclude(group: "org.springframework.security")
-	}
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
@@ -58,6 +54,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-opentelemetry"))
 	optional(project(":spring-boot-project:spring-boot-restclient"))
+	optional(project(":spring-boot-project:spring-boot-security"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-client"))
 	optional(project(":spring-boot-project:spring-boot-security-oauth2-resource-server"))
 	optional(project(":spring-boot-project:spring-boot-security-saml2"))
@@ -162,12 +159,4 @@ dependencies {
 
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-}
-
-tasks.getByName("checkAutoConfigurationImports") {
-	enabled = false
-}
-
-tasks.getByName("checkAutoConfigurationClasses") {
-	enabled = false
 }

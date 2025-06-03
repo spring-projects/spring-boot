@@ -49,14 +49,6 @@ dependencies {
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }
 
-tasks.getByName("checkAutoConfigurationImports") {
-	enabled = false
-}
-
-tasks.getByName("checkAutoConfigurationClasses") {
-	enabled = false
-}
-
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

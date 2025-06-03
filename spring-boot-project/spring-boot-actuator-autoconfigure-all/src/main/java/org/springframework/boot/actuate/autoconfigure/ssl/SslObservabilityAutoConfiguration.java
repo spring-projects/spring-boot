@@ -26,8 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.SslInfo;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 
@@ -37,8 +35,9 @@ import org.springframework.context.annotation.Bean;
  * @author Moritz Halbritter
  * @since 3.5.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		SslAutoConfiguration.class })
+@AutoConfiguration(after = SslAutoConfiguration.class,
+		afterName = { "org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
+				"org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration" })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean({ MeterRegistry.class, SslBundles.class })
 @EnableConfigurationProperties(SslHealthIndicatorProperties.class)
