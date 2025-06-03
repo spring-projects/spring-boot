@@ -47,7 +47,6 @@ class ObservationRegistryConfigurerIntegrationTests {
 			CalledCustomizers calledCustomizers = context.getBean(CalledCustomizers.class);
 			Customizer1 customizer1 = context.getBean(Customizer1.class);
 			Customizer2 customizer2 = context.getBean(Customizer2.class);
-
 			assertThat(calledCustomizers.getCustomizers()).containsExactly(customizer1, customizer2);
 		});
 	}

@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.reactor;
 
 import reactor.core.publisher.Hooks;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  * @since 3.2.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(Hooks.class)
 @EnableConfigurationProperties(ReactorProperties.class)
 public class ReactorAutoConfiguration {
