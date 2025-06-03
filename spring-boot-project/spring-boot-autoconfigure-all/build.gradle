@@ -28,7 +28,7 @@ description = "Spring Boot AutoConfigure All"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
-	
+
 	optional(project(":spring-boot-project:spring-boot-web-server"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-webmvc")
@@ -37,6 +37,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-http-converter"))
 	testImplementation(project(":spring-boot-project:spring-boot-jetty"))
 	testImplementation(project(":spring-boot-project:spring-boot-security"))
+	testImplementation(project(":spring-boot-project:spring-boot-servlet"))
 	testImplementation(project(":spring-boot-project:spring-boot-session-data-redis"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
@@ -44,12 +45,8 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-undertow"))
 	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-web-server")))
-	
-	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
-}
 
-test {
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }
 
 tasks.getByName("checkAutoConfigurationImports") {
@@ -58,4 +55,8 @@ tasks.getByName("checkAutoConfigurationImports") {
 
 tasks.getByName("checkAutoConfigurationClasses") {
 	enabled = false
+}
+
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

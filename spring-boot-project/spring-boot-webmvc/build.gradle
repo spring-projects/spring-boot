@@ -27,7 +27,7 @@ plugins {
 description = "Spring Boot Web MVC"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-servlet"))
 	api("org.springframework:spring-web")
 	api("org.springframework:spring-webmvc")
 
