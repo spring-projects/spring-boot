@@ -80,14 +80,12 @@ public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 			writer.println("[cols=\"4,1\"]");
 			writer.println("|===");
 			writer.println("| Configuration Class | Links");
-
 			for (AutoConfigurationClass autoConfigurationClass : autoConfigurationClasses.classes) {
 				writer.println();
 				writer.printf("| {code-spring-boot}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
 						autoConfigurationClasses.module, autoConfigurationClass.path, autoConfigurationClass.name);
 				writer.printf("| xref:api:java/%s.html[javadoc]%n", autoConfigurationClass.path);
 			}
-
 			writer.println("|===");
 		}
 	}
