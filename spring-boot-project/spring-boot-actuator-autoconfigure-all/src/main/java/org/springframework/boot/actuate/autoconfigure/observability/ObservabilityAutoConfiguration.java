@@ -53,7 +53,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfiguration(beforeName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration",
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
 		after = MicrometerTracingAutoConfiguration.class)
-@ConditionalOnClass(ObservationRegistry.class)
+@ConditionalOnClass({ ObservationRegistry.class, ObservationHandlerGrouping.class })
 public class ObservabilityAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
