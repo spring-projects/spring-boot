@@ -20,10 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
@@ -82,7 +82,11 @@ public abstract class CheckAutoConfigurationImports extends AutoConfigurationImp
 		List<String> sortedValues = new ArrayList<>(imports);
 		Collections.sort(sortedValues);
 		if (!sortedValues.equals(imports)) {
-			problems.add("Entries should be sorted alphabetically");
+			File sortedOutputFile = getOutputDirectory().file("sorted-" + importsFile.getName()).get().getAsFile();
+			writeString(sortedOutputFile,
+					sortedValues.stream().collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator());
+			problems.add("Entries should be sorted alphabetically (expect content written to "
+					+ sortedOutputFile.getAbsolutePath() + ")");
 		}
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
 		writeReport(importsFile, problems, outputFile);
@@ -114,9 +118,12 @@ public abstract class CheckAutoConfigurationImports extends AutoConfigurationImp
 			report.append("Found problems in '%s':%n".formatted(importsFile));
 			problems.forEach((problem) -> report.append("  - %s%n".formatted(problem)));
 		}
+		writeString(outputFile, report.toString());
+	}
+
+	private void writeString(File file, String content) {
 		try {
-			Files.writeString(outputFile.toPath(), report.toString(), StandardOpenOption.CREATE,
-					StandardOpenOption.TRUNCATE_EXISTING);
+			Files.writeString(file.toPath(), content);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
