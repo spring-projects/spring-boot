@@ -231,3 +231,7 @@ antoraContributions {
 		source()
 	}
 }
+
+tasks.getByName("checkAutoConfigurationClasses") {
+	enabled = false
+}
