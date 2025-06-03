@@ -1,0 +1,24 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Servlet"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework:spring-web")
+
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-web-server"))
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("org.springframework.security:spring-security-config")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
