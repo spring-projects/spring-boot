@@ -27,7 +27,7 @@ plugins {
 description = "Spring Boot Jersey"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-servlet"))
 	api("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	api("org.glassfish.jersey.containers:jersey-container-servlet")
 	api("org.glassfish.jersey.core:jersey-server")

@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappingsDescriptor;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappingsDescriptor;
-import org.springframework.boot.actuate.web.mappings.servlet.FilterRegistrationMappingDescription;
-import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.mappings.servlet.ServletRegistrationMappingDescription;
-import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
+import org.springframework.boot.servlet.actuate.mappings.FilterRegistrationMappingDescription;
+import org.springframework.boot.servlet.actuate.mappings.FiltersMappingDescriptionProvider;
+import org.springframework.boot.servlet.actuate.mappings.ServletRegistrationMappingDescription;
+import org.springframework.boot.servlet.actuate.mappings.ServletsMappingDescriptionProvider;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;

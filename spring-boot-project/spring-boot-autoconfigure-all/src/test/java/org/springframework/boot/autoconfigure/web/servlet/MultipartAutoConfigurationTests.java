@@ -28,6 +28,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
+import org.springframework.boot.servlet.autoconfigure.MultipartAutoConfiguration;
+import org.springframework.boot.servlet.autoconfigure.MultipartProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;

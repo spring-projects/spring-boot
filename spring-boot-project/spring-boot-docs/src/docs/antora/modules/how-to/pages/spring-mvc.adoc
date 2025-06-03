@@ -154,7 +154,7 @@ See the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration
 
 Spring Boot embraces the servlet 5 javadoc:jakarta.servlet.http.Part[] API to support uploading files.
 By default, Spring Boot configures Spring MVC with a maximum size of 1MB per file and a maximum of 10MB of file data in a single request.
-You may override these values, the location to which intermediate data is stored (for example, to the `/tmp` directory), and the threshold past which data is flushed to disk by using the properties exposed in the javadoc:org.springframework.boot.autoconfigure.web.servlet.MultipartProperties[] class.
+You may override these values, the location to which intermediate data is stored (for example, to the `/tmp` directory), and the threshold past which data is flushed to disk by using the properties exposed in the javadoc:org.springframework.boot.servlet.autoconfigure.MultipartProperties[] class.
 For example, if you want to specify that files be unlimited, set the configprop:spring.servlet.multipart.max-file-size[] property to `-1`.
 
 The multipart support is helpful when you want to receive multipart encoded file data as a javadoc:org.springframework.web.bind.annotation.RequestParam[format=annotation]-annotated parameter of type javadoc:org.springframework.web.multipart.MultipartFile[] in a Spring MVC controller handler method.

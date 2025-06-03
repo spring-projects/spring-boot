@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -178,10 +177,8 @@ class DispatcherServletAutoConfigurationTests {
 
 		@Bean
 		MultipartConfigElement multipartConfig() {
-			MultipartConfigFactory factory = new MultipartConfigFactory();
-			factory.setMaxFileSize(DataSize.ofKilobytes(128));
-			factory.setMaxRequestSize(DataSize.ofKilobytes(128));
-			return factory.createMultipartConfig();
+			return new MultipartConfigElement(null, DataSize.ofKilobytes(128).toBytes(),
+					DataSize.ofKilobytes(128).toBytes(), 0);
 		}
 
 	}

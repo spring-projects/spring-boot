@@ -2065,6 +2065,7 @@ bom {
 				"spring-boot-security-oauth2-resource-server",
 				"spring-boot-security-saml2",
 				"spring-boot-sendgrid",
+				"spring-boot-servlet",
 				"spring-boot-session",
 				"spring-boot-session-data-mongodb",
 				"spring-boot-session-data-redis",
