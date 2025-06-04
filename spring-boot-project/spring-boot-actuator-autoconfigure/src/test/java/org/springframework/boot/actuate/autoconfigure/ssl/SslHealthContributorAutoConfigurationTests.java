@@ -110,7 +110,7 @@ class SslHealthContributorAutoConfigurationTests {
 	}
 
 	private static void assertDetailsKeys(Health health) {
-		assertThat(health.getDetails()).containsOnlyKeys("validChains", "invalidChains");
+		assertThat(health.getDetails()).containsOnlyKeys("expiringChains", "validChains", "invalidChains");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,13 +128,13 @@ class SslHealthContributorAutoConfigurationTests {
 
 		@Bean
 		SslInfo customSslInfo(SslBundles sslBundles) {
-			return new SslInfo(sslBundles, Duration.ofDays(7));
+			return new SslInfo(sslBundles);
 		}
 
 		static class CustomSslHealthIndicator extends SslHealthIndicator {
 
 			CustomSslHealthIndicator(SslInfo sslInfo) {
-				super(sslInfo);
+				super(sslInfo, Duration.ofDays(7));
 			}
 
 		}

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,32 +139,6 @@ class SslInfoTests {
 	}
 
 	@Test
-	void soonToBeExpiredCertificateShouldProvideSslInfo(@TempDir Path tempDir)
-			throws IOException, InterruptedException {
-		Path keyStore = createKeyStore(tempDir);
-		SslInfo sslInfo = createSslInfo(keyStore.toString());
-		assertThat(sslInfo.getBundles()).hasSize(1);
-		BundleInfo bundle = sslInfo.getBundles().get(0);
-		assertThat(bundle.getName()).isEqualTo("test-0");
-		assertThat(bundle.getCertificateChains()).hasSize(1);
-		CertificateChainInfo certificateChain = bundle.getCertificateChains().get(0);
-		assertThat(certificateChain.getAlias()).isEqualTo("spring-boot");
-		List<CertificateInfo> certs = certificateChain.getCertificates();
-		assertThat(certs).hasSize(1);
-		CertificateInfo cert = certs.get(0);
-		assertThat(cert.getSubject()).isEqualTo("CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US");
-		assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
-		assertThat(cert.getSerialNumber()).isNotEmpty();
-		assertThat(cert.getVersion()).isEqualTo("V3");
-		assertThat(cert.getSignatureAlgorithmName()).isNotEmpty();
-		assertThat(cert.getValidityStarts()).isInThePast();
-		assertThat(cert.getValidityEnds()).isInTheFuture();
-		assertThat(cert.getValidity()).isNotNull();
-		assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
-		assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
-	}
-
-	@Test
 	@WithPackageResources({ "test.p12", "test-not-yet-valid.p12", "test-expired.p12" })
 	void multipleBundlesShouldProvideSslInfo(@TempDir Path tempDir) throws IOException, InterruptedException {
 		Path keyStore = createKeyStore(tempDir);
@@ -208,20 +181,13 @@ class SslInfoTests {
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.EXPIRED);
 			assertThat(cert.getValidity().getMessage()).startsWith("Not valid after");
 		});
-		assertThat(certs).satisfiesOnlyOnce((cert) -> {
-			assertThat(cert.getValidityStarts()).isInThePast();
-			assertThat(cert.getValidityEnds()).isInTheFuture();
-			assertThat(cert.getValidity()).isNotNull();
-			assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
-			assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
-		});
 	}
 
 	@Test
 	void nullKeyStore() {
 		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
 		sslBundleRegistry.registerBundle("test", SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE));
-		SslInfo sslInfo = new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry);
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
 	}
@@ -233,7 +199,7 @@ class SslInfoTests {
 			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
 			sslBundleRegistry.registerBundle("test-%d".formatted(i), SslBundle.of(sslStoreBundle));
 		}
-		return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		return new SslInfo(sslBundleRegistry);
 	}
 
 	private Path createKeyStore(Path directory) throws IOException, InterruptedException {

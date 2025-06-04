@@ -40,14 +40,14 @@ public class SslHealthContributorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "sslHealthIndicator")
-	SslHealthIndicator sslHealthIndicator(SslInfo sslInfo) {
-		return new SslHealthIndicator(sslInfo);
+	SslHealthIndicator sslHealthIndicator(SslInfo sslInfo, SslHealthIndicatorProperties properties) {
+		return new SslHealthIndicator(sslInfo, properties.getCertificateValidityWarningThreshold());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	SslInfo sslInfo(SslBundles sslBundles, SslHealthIndicatorProperties sslHealthIndicatorProperties) {
-		return new SslInfo(sslBundles, sslHealthIndicatorProperties.getCertificateValidityWarningThreshold());
+	SslInfo sslInfo(SslBundles sslBundles) {
+		return new SslInfo(sslBundles);
 	}
 
 }

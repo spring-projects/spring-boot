@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.ssl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
@@ -41,26 +42,27 @@ import static org.mockito.Mockito.mock;
  */
 class SslHealthIndicatorTests {
 
-	private HealthIndicator healthIndicator;
+	private final CertificateInfo certificateInfo = mock(CertificateInfo.class);
 
-	private CertificateValidityInfo validity;
+	private final CertificateValidityInfo validity = mock(CertificateValidityInfo.class);
+
+	private SslHealthIndicator healthIndicator;
 
 	@BeforeEach
 	void setUp() {
 		SslInfo sslInfo = mock(SslInfo.class);
 		BundleInfo bundle = mock(BundleInfo.class);
 		CertificateChainInfo certificateChain = mock(CertificateChainInfo.class);
-		CertificateInfo certificateInfo = mock(CertificateInfo.class);
-		this.healthIndicator = new SslHealthIndicator(sslInfo);
-		this.validity = mock(CertificateValidityInfo.class);
+		this.healthIndicator = new SslHealthIndicator(sslInfo, Duration.ofDays(7));
 		given(sslInfo.getBundles()).willReturn(List.of(bundle));
 		given(bundle.getCertificateChains()).willReturn(List.of(certificateChain));
-		given(certificateChain.getCertificates()).willReturn(List.of(certificateInfo));
-		given(certificateInfo.getValidity()).willReturn(this.validity);
+		given(certificateChain.getCertificates()).willReturn(List.of(this.certificateInfo));
+		given(this.certificateInfo.getValidity()).willReturn(this.validity);
 	}
 
 	@Test
 	void shouldBeUpIfNoSslIssuesDetected() {
+		given(this.certificateInfo.getValidityEnds()).willReturn(Instant.now().plus(Duration.ofDays(365)));
 		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.VALID);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -101,10 +103,14 @@ class SslHealthIndicatorTests {
 
 	@Test
 	void shouldReportWarningIfACertificateWillExpireSoon() {
-		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.WILL_EXPIRE_SOON);
+		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.VALID);
+		given(this.certificateInfo.getValidityEnds()).willReturn(Instant.now().plus(Duration.ofDays(3)));
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertDetailsKeys(health);
+		List<CertificateChainInfo> expiring = getExpiringChains(health);
+		assertThat(expiring).hasSize(1);
+		assertThat(expiring.get(0)).isInstanceOf(CertificateChainInfo.class);
 		List<CertificateChainInfo> validChains = getValidChains(health);
 		assertThat(validChains).hasSize(1);
 		assertThat(validChains.get(0)).isInstanceOf(CertificateChainInfo.class);
@@ -113,17 +119,24 @@ class SslHealthIndicatorTests {
 	}
 
 	private static void assertDetailsKeys(Health health) {
-		assertThat(health.getDetails()).containsOnlyKeys("validChains", "invalidChains");
+		assertThat(health.getDetails()).containsOnlyKeys("expiringChains", "validChains", "invalidChains");
 	}
 
-	@SuppressWarnings("unchecked")
+	private static List<CertificateChainInfo> getExpiringChains(Health health) {
+		return getChains(health, "expiringChains");
+	}
+
 	private static List<CertificateChainInfo> getInvalidChains(Health health) {
-		return (List<CertificateChainInfo>) health.getDetails().get("invalidChains");
+		return getChains(health, "invalidChains");
+	}
+
+	private static List<CertificateChainInfo> getValidChains(Health health) {
+		return getChains(health, "validChains");
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<CertificateChainInfo> getValidChains(Health health) {
-		return (List<CertificateChainInfo>) health.getDetails().get("validChains");
+	private static List<CertificateChainInfo> getChains(Health health, String name) {
+		return (List<CertificateChainInfo>) health.getDetails().get(name);
 	}
 
 }

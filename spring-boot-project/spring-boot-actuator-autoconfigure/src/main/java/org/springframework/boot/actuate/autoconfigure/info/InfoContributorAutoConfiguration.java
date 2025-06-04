@@ -114,8 +114,8 @@ public class InfoContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledInfoContributor(value = "ssl", fallback = InfoContributorFallback.DISABLE)
-	SslInfo sslInfo(SslBundles sslBundles, SslHealthIndicatorProperties sslHealthIndicatorProperties) {
-		return new SslInfo(sslBundles, sslHealthIndicatorProperties.getCertificateValidityWarningThreshold());
+	SslInfo sslInfo(SslBundles sslBundles) {
+		return new SslInfo(sslBundles);
 	}
 
 }

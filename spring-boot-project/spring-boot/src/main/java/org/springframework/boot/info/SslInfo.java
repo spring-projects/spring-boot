@@ -22,8 +22,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,32 +48,13 @@ public class SslInfo {
 
 	private final SslBundles sslBundles;
 
-	private final Duration certificateValidityWarningThreshold;
-
-	private final Clock clock;
-
 	/**
 	 * Creates a new instance.
-	 * @param sslBundles the {@link SslBundles} to extract the info from
-	 * @param certificateValidityWarningThreshold the certificate validity warning
-	 * threshold
+	 * @param sslBundles the {@link SslBundles} to extract the info from threshold
+	 * @since 4.0.0
 	 */
-	public SslInfo(SslBundles sslBundles, Duration certificateValidityWarningThreshold) {
-		this(sslBundles, certificateValidityWarningThreshold, Clock.systemDefaultZone());
-	}
-
-	/**
-	 * Creates a new instance.
-	 * @param sslBundles the {@link SslBundles} to extract the info from
-	 * @param certificateValidityWarningThreshold the certificate validity warning
-	 * threshold
-	 * @param clock the {@link Clock} to use
-	 * @since 3.5.0
-	 */
-	public SslInfo(SslBundles sslBundles, Duration certificateValidityWarningThreshold, Clock clock) {
+	public SslInfo(SslBundles sslBundles) {
 		this.sslBundles = sslBundles;
-		this.certificateValidityWarningThreshold = certificateValidityWarningThreshold;
-		this.clock = clock;
 	}
 
 	/**
@@ -218,12 +197,9 @@ public class SslInfo {
 			return extract((certificate) -> {
 				Instant starts = getValidityStarts();
 				Instant ends = getValidityEnds();
-				Duration threshold = SslInfo.this.certificateValidityWarningThreshold;
 				try {
 					certificate.checkValidity();
-					return (!isExpiringSoon(certificate, threshold)) ? CertificateValidityInfo.VALID
-							: new CertificateValidityInfo(Status.WILL_EXPIRE_SOON,
-									"Certificate will expire within threshold (%s) at %s", threshold, ends);
+					return CertificateValidityInfo.VALID;
 				}
 				catch (CertificateNotYetValidException ex) {
 					return new CertificateValidityInfo(Status.NOT_YET_VALID, "Not valid before %s", starts);
@@ -232,12 +208,6 @@ public class SslInfo {
 					return new CertificateValidityInfo(Status.EXPIRED, "Not valid after %s", ends);
 				}
 			});
-		}
-
-		private boolean isExpiringSoon(X509Certificate certificate, Duration threshold) {
-			Instant shouldBeValidAt = Instant.now(SslInfo.this.clock).plus(threshold);
-			Instant expiresAt = certificate.getNotAfter().toInstant();
-			return shouldBeValidAt.isAfter(expiresAt);
 		}
 
 		private <V, R> R extract(Function<X509Certificate, V> valueExtractor, Function<V, R> resultExtractor) {
@@ -292,13 +262,7 @@ public class SslInfo {
 			/**
 			 * The certificate's validity date range is in the past.
 			 */
-			EXPIRED(false),
-
-			/**
-			 * The certificate is still valid, but the end of its validity date range is
-			 * within the defined threshold.
-			 */
-			WILL_EXPIRE_SOON(true);
+			EXPIRED(false);
 
 			private final boolean valid;
 

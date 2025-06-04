@@ -92,7 +92,7 @@ class SslMeterBinderTests {
 	}
 
 	private SslInfo createSslInfo(SslBundles sslBundles) {
-		return new SslInfo(sslBundles, Duration.ofDays(7), CLOCK);
+		return new SslInfo(sslBundles);
 	}
 
 }

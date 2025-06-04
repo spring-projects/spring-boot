@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.ssl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -42,20 +44,27 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 
 	private final SslInfo sslInfo;
 
-	public SslHealthIndicator(SslInfo sslInfo) {
+	private final Duration expiryThreshold;
+
+	public SslHealthIndicator(SslInfo sslInfo, Duration expiryThreshold) {
 		super("SSL health check failed");
 		Assert.notNull(sslInfo, "'sslInfo' must not be null");
 		this.sslInfo = sslInfo;
+		this.expiryThreshold = expiryThreshold;
 	}
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		List<CertificateChainInfo> validCertificateChains = new ArrayList<>();
 		List<CertificateChainInfo> invalidCertificateChains = new ArrayList<>();
+		List<CertificateChainInfo> expiringCerificateChains = new ArrayList<>();
 		for (BundleInfo bundle : this.sslInfo.getBundles()) {
 			for (CertificateChainInfo certificateChain : bundle.getCertificateChains()) {
 				if (containsOnlyValidCertificates(certificateChain)) {
 					validCertificateChains.add(certificateChain);
+					if (containsExpiringCertificate(certificateChain)) {
+						expiringCerificateChains.add(certificateChain);
+					}
 				}
 				else if (containsInvalidCertificate(certificateChain)) {
 					invalidCertificateChains.add(certificateChain);
@@ -63,8 +72,9 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 			}
 		}
 		builder.status((invalidCertificateChains.isEmpty()) ? Status.UP : Status.OUT_OF_SERVICE);
-		builder.withDetail("validChains", validCertificateChains);
+		builder.withDetail("expiringChains", expiringCerificateChains);
 		builder.withDetail("invalidChains", invalidCertificateChains);
+		builder.withDetail("validChains", validCertificateChains);
 	}
 
 	private boolean containsOnlyValidCertificates(CertificateChainInfo certificateChain) {
@@ -73,6 +83,10 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 
 	private boolean containsInvalidCertificate(CertificateChainInfo certificateChain) {
 		return validatableCertificates(certificateChain).anyMatch(this::isNotValidCertificate);
+	}
+
+	private boolean containsExpiringCertificate(CertificateChainInfo certificateChain) {
+		return validatableCertificates(certificateChain).anyMatch(this::isExpiringCertificate);
 	}
 
 	private Stream<CertificateInfo> validatableCertificates(CertificateChainInfo certificateChain) {
@@ -85,6 +99,10 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 
 	private boolean isNotValidCertificate(CertificateInfo certificate) {
 		return !isValidCertificate(certificate);
+	}
+
+	private boolean isExpiringCertificate(CertificateInfo certificate) {
+		return Instant.now().plus(this.expiryThreshold).isAfter(certificate.getValidityEnds());
 	}
 
 }

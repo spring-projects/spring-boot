@@ -52,7 +52,7 @@ public class SslObservabilityAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SslInfo sslInfoProvider(SslBundles sslBundles, SslHealthIndicatorProperties properties) {
-		return new SslInfo(sslBundles, properties.getCertificateValidityWarningThreshold());
+		return new SslInfo(sslBundles);
 	}
 
 }

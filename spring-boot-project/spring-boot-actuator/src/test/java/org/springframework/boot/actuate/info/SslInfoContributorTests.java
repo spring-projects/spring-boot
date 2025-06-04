@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -42,7 +40,7 @@ class SslInfoContributorTests {
 	@Test
 	void sslInfoShouldBeAdded() {
 		SslBundles sslBundles = new DefaultSslBundleRegistry("test", mock(SslBundle.class));
-		SslInfo sslInfo = new SslInfo(sslBundles, Duration.ofDays(14));
+		SslInfo sslInfo = new SslInfo(sslBundles);
 		SslInfoContributor sslInfoContributor = new SslInfoContributor(sslInfo);
 		Info.Builder builder = new Info.Builder();
 		sslInfoContributor.contribute(builder);

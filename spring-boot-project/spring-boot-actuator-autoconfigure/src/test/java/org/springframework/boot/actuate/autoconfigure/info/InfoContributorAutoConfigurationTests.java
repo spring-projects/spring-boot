@@ -301,7 +301,7 @@ class InfoContributorAutoConfigurationTests {
 
 		@Bean
 		SslInfo customSslInfo(SslBundles sslBundles) {
-			return new SslInfo(sslBundles, Duration.ofDays(7));
+			return new SslInfo(sslBundles);
 		}
 
 	}
