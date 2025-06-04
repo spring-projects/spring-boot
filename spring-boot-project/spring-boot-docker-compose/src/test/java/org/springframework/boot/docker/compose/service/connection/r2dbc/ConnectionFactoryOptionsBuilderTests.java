@@ -45,7 +45,7 @@ class ConnectionFactoryOptionsBuilderTests {
 	@Test
 	void createWhenDriverProtocolIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConnectionFactoryOptionsBuilder(null, 123))
-			.withMessage("DriverProtocol must not be null");
+			.withMessage("Driver must not be null");
 	}
 
 	@Test
