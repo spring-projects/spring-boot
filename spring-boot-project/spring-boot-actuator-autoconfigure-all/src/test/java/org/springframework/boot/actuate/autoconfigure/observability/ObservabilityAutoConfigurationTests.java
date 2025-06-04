@@ -22,6 +22,7 @@ import java.util.List;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationHandler;
@@ -35,7 +36,6 @@ import io.micrometer.tracing.handler.TracingObservationHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.observation.autoconfigure.ObservationHandlerGrouping;
@@ -59,14 +59,15 @@ import static org.mockito.Mockito.mock;
  */
 class ObservabilityAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withBean(SimpleMeterRegistry.class)
 		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
 		.withConfiguration(
 				AutoConfigurations.of(ObservationAutoConfiguration.class, ObservabilityAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingContextRunner = new ApplicationContextRunner()
-		.with(MetricsRun.simple())
+		.withBean(SimpleMeterRegistry.class)
 		.withPropertyValues("management.observations.annotations.enabled=true")
 		.withUserConfiguration(TracerConfiguration.class)
 		.withConfiguration(
@@ -114,7 +115,7 @@ class ObservabilityAutoConfigurationTests {
 
 	@Test
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreAndTracingAreOnClassPathButThereIsNoTracer() {
-		new ApplicationContextRunner().with(MetricsRun.simple())
+		new ApplicationContextRunner().withBean(SimpleMeterRegistry.class)
 			.withPropertyValues("management.observations.annotations.enabled=true")
 			.withConfiguration(
 					AutoConfigurations.of(ObservationAutoConfiguration.class, ObservabilityAutoConfiguration.class))

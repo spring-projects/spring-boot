@@ -31,10 +31,10 @@ import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
 import io.prometheus.metrics.tracer.common.SpanContext;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -61,10 +61,11 @@ class PrometheusExemplarsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0",
-				"management.metrics.distribution.percentiles-histogram.all=true")
-		.with(MetricsRun.limitedTo(PrometheusMetricsExportAutoConfiguration.class))
+				"management.metrics.distribution.percentiles-histogram.all=true",
+				"management.metrics.use-global-registry=false")
 		.withConfiguration(
-				AutoConfigurations.of(PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
+				AutoConfigurations.of(MetricsAutoConfiguration.class, PrometheusMetricsExportAutoConfiguration.class,
+						PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
 						BraveAutoConfiguration.class, MicrometerTracingAutoConfiguration.class));
 
 	@Test
