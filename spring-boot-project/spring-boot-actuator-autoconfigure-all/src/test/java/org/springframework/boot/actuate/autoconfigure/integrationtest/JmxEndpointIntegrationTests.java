@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -52,8 +51,7 @@ class JmxEndpointIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
-				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-				HttpExchangesAutoConfiguration.class))
+				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 		.withUserConfiguration(HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
 		.withPropertyValues("spring.jmx.enabled=true")
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));

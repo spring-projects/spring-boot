@@ -15,8 +15,7 @@
  */
 
 /**
- * Actuator HTTP exchanges support for reactive servers.
- *
- * @see org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository
+ * Auto-configuration for WebFlux-based integration with Actuator's HTTP exchanges
+ * support.
  */
-package org.springframework.boot.webflux.actuate.web.exchanges;
+package org.springframework.boot.webflux.actuate.autoconfigure.exchanges;

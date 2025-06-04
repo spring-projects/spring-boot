@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 /**
- * Actuator HTTP exchanges support for servlet servers.
+ * Actuator HTTP exchanges support for Servlet servers.
  *
  * @see org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository
  */
-package org.springframework.boot.actuate.web.exchanges.servlet;
+package org.springframework.boot.servlet.actuate.exchanges;
