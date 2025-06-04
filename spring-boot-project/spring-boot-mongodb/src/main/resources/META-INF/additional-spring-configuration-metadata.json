@@ -2,6 +2,16 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.metrics.mongo.command.enabled",
+      "description": "Whether to enable Mongo client command metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.mongo.connectionpool.enabled",
+      "description": "Whether to enable Mongo connection pool metrics.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.data.mongodb.grid-fs-database",
       "type": "java.lang.String",
       "deprecation": {

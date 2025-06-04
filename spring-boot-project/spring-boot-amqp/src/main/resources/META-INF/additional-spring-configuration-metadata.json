@@ -2,6 +2,12 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.health.rabbit.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable RabbitMQ health check.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.rabbitmq.dynamic",
       "type": "java.lang.Boolean",
       "description": "Whether to create an AmqpAdmin bean.",

@@ -2,6 +2,12 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.defaults.metrics.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable default metrics exporters.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
@@ -1515,6 +1521,106 @@
       "defaultValue": [
         "."
       ]
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.enabled",
+      "description": "Whether to automatically time web client requests.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Requests are timed automatically."
+      }
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+      }
+    },
+    {
+      "name": "management.metrics.web.client.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+      }
+    },
+    {
+      "name": "management.metrics.web.client.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.client.requests.name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.web.client.requests-metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.client.requests.name",
+        "level": "error"
+      }
+    },
+        {
+      "name": "management.metrics.web.server.auto-time-requests",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "management.metrics.web.server.request.autotime.enabled",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.enabled",
+      "description": "Whether to automatically time web server requests.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Requests are timed automatically."
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles",
+      "description": "Computed non-aggregable percentiles to publish.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
+      "description": "Whether percentile histograms should be published.",
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.ignore-trailing-slash",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Not needed anymore, direct instrumentation in Spring MVC."
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.server.requests.name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.metrics.web.server.requests-metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.server.requests.name",
+        "level": "error"
+      }
     }
   ]
 }

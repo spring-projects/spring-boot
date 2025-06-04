@@ -1,4 +1,12 @@
 {
+  "properties": [
+    {
+      "name": "management.health.mongo.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable MongoDB health check.",
+      "defaultValue": true
+    }
+  ],
   "hints": [
     {
       "name": "spring.data.mongodb.field-naming-strategy",
