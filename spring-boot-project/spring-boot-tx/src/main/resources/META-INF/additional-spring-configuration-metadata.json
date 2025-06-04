@@ -5,6 +5,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the PersistenceExceptionTranslationPostProcessor.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.jta.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable JTA support.",
+      "defaultValue": true
     }
   ]
 }
