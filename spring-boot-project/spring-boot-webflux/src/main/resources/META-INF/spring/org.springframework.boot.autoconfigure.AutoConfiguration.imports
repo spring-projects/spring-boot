@@ -1,4 +1,5 @@
 org.springframework.boot.webflux.actuate.autoconfigure.health.WebFluxHealthEndpointExtensionAutoConfiguration
+org.springframework.boot.webflux.actuate.autoconfigure.mappings.WebFluxMappingsAutoConfiguration
 org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration
 org.springframework.boot.webflux.autoconfigure.ReactiveMultipartAutoConfiguration
 org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration
