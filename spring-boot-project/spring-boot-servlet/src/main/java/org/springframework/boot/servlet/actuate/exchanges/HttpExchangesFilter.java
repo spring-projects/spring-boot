@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.exchanges.servlet;
+package org.springframework.boot.servlet.actuate.exchanges;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +43,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Andy Wilkinson
  * @author Venil Noronha
  * @author Madhura Bhave
- * @since 3.0.0
+ * @since 4.0.0
  */
 public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered {
 

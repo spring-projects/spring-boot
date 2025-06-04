@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HttpExchangesEndpointAutoConfigurationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(HttpExchangesAutoConfiguration.class, HttpExchangesEndpointAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(HttpExchangesEndpointAutoConfiguration.class));
 
 	@Test
 	void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {

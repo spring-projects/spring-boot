@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webflux.actuate.web.exchanges;
+package org.springframework.boot.webflux.actuate.exchanges;
 
 import java.security.Principal;
 import java.time.Duration;

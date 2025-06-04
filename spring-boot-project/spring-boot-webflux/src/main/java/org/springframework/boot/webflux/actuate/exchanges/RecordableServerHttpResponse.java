@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.exchanges.servlet;
+package org.springframework.boot.webflux.actuate.exchanges;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 
 /**
- * An adapter that exposes an {@link HttpServletResponse} as a
+ * An adapter that exposes a {@link ServerHttpResponse} as a
  * {@link RecordableHttpResponse}.
  *
  * @author Andy Wilkinson
  */
-final class RecordableServletHttpResponse implements RecordableHttpResponse {
-
-	private final HttpServletResponse delegate;
+class RecordableServerHttpResponse implements RecordableHttpResponse {
 
 	private final int status;
 
-	RecordableServletHttpResponse(HttpServletResponse response, int status) {
-		this.delegate = response;
-		this.status = status;
+	private final Map<String, List<String>> headers;
+
+	RecordableServerHttpResponse(ServerHttpResponse response) {
+		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
+		Map<String, List<String>> headers = new LinkedHashMap<>();
+		response.getHeaders().forEach(headers::put);
+		this.headers = Collections.unmodifiableMap(headers);
 	}
 
 	@Override
@@ -49,11 +51,7 @@ final class RecordableServletHttpResponse implements RecordableHttpResponse {
 
 	@Override
 	public Map<String, List<String>> getHeaders() {
-		Map<String, List<String>> headers = new LinkedHashMap<>();
-		for (String name : this.delegate.getHeaderNames()) {
-			headers.put(name, new ArrayList<>(this.delegate.getHeaders(name)));
-		}
-		return headers;
+		return this.headers;
 	}
 
 }

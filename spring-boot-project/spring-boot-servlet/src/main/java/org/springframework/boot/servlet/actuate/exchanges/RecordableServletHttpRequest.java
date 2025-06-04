@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.exchanges.servlet;
+package org.springframework.boot.servlet.actuate.exchanges;
 
 import java.net.URI;
 import java.net.URISyntaxException;

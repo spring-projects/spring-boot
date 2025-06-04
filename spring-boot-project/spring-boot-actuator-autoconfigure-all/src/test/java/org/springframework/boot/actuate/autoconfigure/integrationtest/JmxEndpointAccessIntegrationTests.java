@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -47,8 +46,7 @@ class JmxEndpointAccessIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
-				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-				HttpExchangesAutoConfiguration.class))
+				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 		.withUserConfiguration(CustomJmxEndpoint.class)
 		.withPropertyValues("spring.jmx.enabled=true")
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));

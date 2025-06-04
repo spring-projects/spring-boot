@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.exchanges;
+package org.springframework.boot.webflux.actuate.autoconfigure.exchanges;
 
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesProperties;
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
-import org.springframework.boot.actuate.web.exchanges.servlet.HttpExchangesFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -27,47 +27,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.webflux.actuate.web.exchanges.HttpExchangesWebFilter;
+import org.springframework.boot.webflux.actuate.exchanges.HttpExchangesWebFilter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to record {@link HttpExchange HTTP
  * exchanges}.
  *
  * @author Dave Syer
- * @since 3.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnBooleanProperty(name = "management.httpexchanges.recording.enabled", matchIfMissing = true)
 @ConditionalOnBean(HttpExchangeRepository.class)
 @EnableConfigurationProperties(HttpExchangesProperties.class)
-public class HttpExchangesAutoConfiguration {
+public class WebFluxHttpExchangesAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.SERVLET)
-	static class ServletHttpExchangesConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository, HttpExchangesProperties properties) {
-			return new HttpExchangesFilter(repository, properties.getRecording().getInclude());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	static class ReactiveHttpExchangesConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
-				HttpExchangesProperties properties) {
-			return new HttpExchangesWebFilter(repository, properties.getRecording().getInclude());
-		}
-
+	@Bean
+	@ConditionalOnMissingBean
+	HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
+			HttpExchangesProperties properties) {
+		return new HttpExchangesWebFilter(repository, properties.getRecording().getInclude());
 	}
 
 }
