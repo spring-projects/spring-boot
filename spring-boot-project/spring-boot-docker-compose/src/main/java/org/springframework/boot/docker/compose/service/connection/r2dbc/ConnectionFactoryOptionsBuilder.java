@@ -24,7 +24,6 @@ import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
 
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -46,7 +45,7 @@ public class ConnectionFactoryOptionsBuilder {
 	private final int sourcePort;
 
 	/**
-	 * Create a new {@link JdbcUrlBuilder} instance.
+	 * Create a new {@link ConnectionFactoryOptionsBuilder} instance.
 	 * @param driver the driver protocol
 	 * @param containerPort the source container port
 	 */
