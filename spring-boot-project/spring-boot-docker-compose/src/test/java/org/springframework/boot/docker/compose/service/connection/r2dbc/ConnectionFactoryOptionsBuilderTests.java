@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -45,7 +44,7 @@ class ConnectionFactoryOptionsBuilderTests {
 
 	@Test
 	void createWhenDriverProtocolIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new JdbcUrlBuilder(null, 123))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConnectionFactoryOptionsBuilder(null, 123))
 			.withMessage("DriverProtocol must not be null");
 	}
 
