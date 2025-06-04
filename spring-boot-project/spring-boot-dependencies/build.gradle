@@ -90,7 +90,11 @@ bom {
 			releaseNotes("https://github.com/assertj/assertj/releases/tag/assertj-build-{version}")
 		}
 	}
-	library("Awaitility", "4.3.0") {
+	library("Awaitility", "4.2.2") {
+		prohibit {
+			versionRange "[4.3.0,)"
+			because "it requires Kotlin 2"
+		}
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
