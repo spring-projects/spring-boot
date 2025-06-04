@@ -28,6 +28,9 @@ description = "Spring Boot Actuator AutoConfigure"
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	optional(project(":spring-boot-project:spring-boot-web-server"))
 
