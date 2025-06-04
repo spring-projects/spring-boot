@@ -23,4 +23,5 @@ org.springframework.boot.actuate.autoconfigure.sbom.SbomEndpointAutoConfiguratio
 org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.startup.StartupEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration

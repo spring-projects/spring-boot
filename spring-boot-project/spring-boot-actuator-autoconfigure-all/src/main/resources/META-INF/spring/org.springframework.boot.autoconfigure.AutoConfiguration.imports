@@ -14,4 +14,3 @@ org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExem
 org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration
