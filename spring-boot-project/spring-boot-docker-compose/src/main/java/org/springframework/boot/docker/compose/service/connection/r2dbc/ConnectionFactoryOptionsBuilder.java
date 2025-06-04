@@ -46,7 +46,7 @@ public class ConnectionFactoryOptionsBuilder {
 
 	/**
 	 * Create a new {@link ConnectionFactoryOptionsBuilder} instance.
-	 * @param driver the driver protocol
+	 * @param driver the driver
 	 * @param containerPort the source container port
 	 */
 	public ConnectionFactoryOptionsBuilder(String driver, int containerPort) {
