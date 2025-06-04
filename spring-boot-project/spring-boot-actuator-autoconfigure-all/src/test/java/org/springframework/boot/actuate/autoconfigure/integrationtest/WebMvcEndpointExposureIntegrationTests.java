@@ -30,13 +30,13 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.servlet.actuate.autoconfigure.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.servlet.actuate.autoconfigure.exchanges.ServletHttpExchangesAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -70,7 +70,7 @@ class WebMvcEndpointExposureIntegrationTests {
 				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-				ServletManagementContextAutoConfiguration.class, HttpExchangesAutoConfiguration.class,
+				ServletManagementContextAutoConfiguration.class, ServletHttpExchangesAutoConfiguration.class,
 				HealthContributorAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
  * @author Phillip Webb
  * @since 3.0.0
  */
-@AutoConfiguration(after = HttpExchangesAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnAvailableEndpoint(HttpExchangesEndpoint.class)
 public class HttpExchangesEndpointAutoConfiguration {
 

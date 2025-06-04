@@ -19,4 +19,4 @@
  *
  * @see org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository
  */
-package org.springframework.boot.webflux.actuate.web.exchanges;
+package org.springframework.boot.webflux.actuate.exchanges;
