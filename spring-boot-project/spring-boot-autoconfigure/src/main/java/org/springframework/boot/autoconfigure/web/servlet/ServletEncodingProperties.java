@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.server;
+package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for server HTTP encoding.
+ * {@link ConfigurationProperties @ConfigurationProperties} for Servlet encoding.
  *
- * @author Phillip Webb
- * @author Stephane Nicoll
- * @author Brian Clozel
- * @since 2.3.0
+ * @author Andy Wilkinson
+ * @since 4.0.0
  */
-@ConfigurationPropertiesSource
-public class Encoding {
+@ConfigurationProperties("spring.servlet.encoding")
+public class ServletEncodingProperties {
 
 	/**
 	 * Default HTTP encoding for Servlet applications.
@@ -61,11 +57,6 @@ public class Encoding {
 	 * Whether to force the encoding to the configured charset on HTTP responses.
 	 */
 	private Boolean forceResponse;
-
-	/**
-	 * Mapping of locale to charset for response encoding.
-	 */
-	private Map<Locale, Charset> mapping;
 
 	public Charset getCharset() {
 		return this.charset;
@@ -99,21 +90,13 @@ public class Encoding {
 		this.forceResponse = forceResponse;
 	}
 
-	public Map<Locale, Charset> getMapping() {
-		return this.mapping;
-	}
-
-	public void setMapping(Map<Locale, Charset> mapping) {
-		this.mapping = mapping;
-	}
-
-	public boolean shouldForce(Type type) {
-		Boolean force = (type != Type.REQUEST) ? this.forceResponse : this.forceRequest;
+	public boolean shouldForce(HttpMessageType type) {
+		Boolean force = (type != HttpMessageType.REQUEST) ? this.forceResponse : this.forceRequest;
 		if (force == null) {
 			force = this.force;
 		}
 		if (force == null) {
-			force = (type == Type.REQUEST);
+			force = (type == HttpMessageType.REQUEST);
 		}
 		return force;
 	}
@@ -121,7 +104,7 @@ public class Encoding {
 	/**
 	 * Type of HTTP message to consider for encoding configuration.
 	 */
-	public enum Type {
+	public enum HttpMessageType {
 
 		/**
 		 * HTTP request message.

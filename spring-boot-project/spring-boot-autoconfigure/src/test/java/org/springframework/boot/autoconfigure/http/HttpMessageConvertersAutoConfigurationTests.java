@@ -23,12 +23,9 @@ import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
@@ -39,7 +36,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -313,7 +309,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	void whenEncodingCharsetIsConfiguredThenStringMessageConverterUsesSpecificCharset() {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withPropertyValues("server.servlet.encoding.charset=UTF-16")
+			.withPropertyValues("spring.http.converters.string-encoding-charset=UTF-16")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
 				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
@@ -329,19 +325,6 @@ class HttpMessageConvertersAutoConfigurationTests {
 				assertThat(context).hasSingleBean(HttpMessageConverters.class);
 				assertThat(context).doesNotHaveBean(ServerProperties.class);
 			});
-	}
-
-	@Test
-	void shouldRegisterHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "getCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "setCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "isForce")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "setForce")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(Encoding.class, "shouldForce"))
-			.rejects(hints);
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {

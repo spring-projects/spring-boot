@@ -96,6 +96,7 @@ public class ServletWebServerFactoryCustomizer
 			.whenNot(CollectionUtils::isEmpty)
 			.to(factory::setCookieSameSiteSuppliers);
 		map.from(this.serverProperties::getMimeMappings).to(factory::addMimeMappings);
+		map.from(this.serverProperties.getServlet().getEncoding()::getMapping).to(factory::setLocaleCharsetMappings);
 		this.webListenerRegistrars.forEach((registrar) -> registrar.register(factory));
 	}
 

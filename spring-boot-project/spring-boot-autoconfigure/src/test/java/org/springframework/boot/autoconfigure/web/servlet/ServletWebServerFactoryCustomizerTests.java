@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,9 +40,11 @@ import org.springframework.boot.web.servlet.server.Jsp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link ServletWebServerFactoryCustomizer}.
@@ -191,6 +195,26 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.IMMEDIATE)));
+	}
+
+	@Test
+	void noLocaleCharsetMapping() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should(never()).setLocaleCharsetMappings(anyMap());
+	}
+
+	@Test
+	void customLocaleCharsetMappings() {
+		Map<String, String> map = Map.of("server.servlet.encoding.mapping.en", "UTF-8",
+				"server.servlet.encoding.mapping.fr_FR", "UTF-8");
+		bindProperties(map);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should()
+			.setLocaleCharsetMappings((assertArg((mappings) -> assertThat(mappings).hasSize(2)
+				.containsEntry(Locale.ENGLISH, StandardCharsets.UTF_8)
+				.containsEntry(Locale.FRANCE, StandardCharsets.UTF_8))));
 	}
 
 	private void bindProperties(Map<String, String> map) {

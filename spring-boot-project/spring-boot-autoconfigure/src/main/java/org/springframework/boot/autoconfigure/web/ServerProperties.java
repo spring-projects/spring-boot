@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.undertow.UndertowOptions;
@@ -40,7 +41,6 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.StringUtils;
@@ -266,7 +266,6 @@ public class ServerProperties {
 		 */
 		private boolean registerDefaultServlet = false;
 
-		@NestedConfigurationProperty
 		private final Encoding encoding = new Encoding();
 
 		@NestedConfigurationProperty
@@ -1967,6 +1966,23 @@ public class ServerProperties {
 		 * Ignore X-Forwarded-* headers.
 		 */
 		NONE
+
+	}
+
+	public static class Encoding {
+
+		/**
+		 * Mapping of locale to charset for response encoding.
+		 */
+		private Map<Locale, Charset> mapping;
+
+		public Map<Locale, Charset> getMapping() {
+			return this.mapping;
+		}
+
+		public void setMapping(Map<Locale, Charset> mapping) {
+			this.mapping = mapping;
+		}
 
 	}
 

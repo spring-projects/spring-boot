@@ -16,11 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
@@ -69,53 +65,53 @@ class HttpEncodingAutoConfigurationTests {
 
 	@Test
 	void disableConfiguration() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.enabled:false");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 			.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test
 	void customConfiguration() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.charset:ISO-8859-15",
-				"server.servlet.encoding.force:false");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.charset:ISO-8859-15",
+				"spring.servlet.encoding.force:false");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "ISO-8859-15", false, false);
 	}
 
 	@Test
 	void customFilterConfiguration() {
-		load(FilterConfiguration.class, "server.servlet.encoding.charset:ISO-8859-15",
-				"server.servlet.encoding.force:false");
+		load(FilterConfiguration.class, "spring.servlet.encoding.charset:ISO-8859-15",
+				"spring.servlet.encoding.force:false");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "US-ASCII", false, false);
 	}
 
 	@Test
 	void forceRequest() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.force-request:false");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "UTF-8", false, false);
 	}
 
 	@Test
 	void forceResponse() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.force-response:true");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.force-response:true");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "UTF-8", true, true);
 	}
 
 	@Test
 	void forceRequestOverridesForce() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.force:true",
-				"server.servlet.encoding.force-request:false");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.force:true",
+				"spring.servlet.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "UTF-8", false, true);
 	}
 
 	@Test
 	void forceResponseOverridesForce() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.force:true",
-				"server.servlet.encoding.force-response:false");
+		load(EmptyConfiguration.class, "spring.servlet.encoding.force:true",
+				"spring.servlet.encoding.force-response:false");
 		CharacterEncodingFilter filter = this.context.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "UTF-8", true, false);
 	}
@@ -127,30 +123,6 @@ class HttpEncodingAutoConfigurationTests {
 		AnnotationAwareOrderComparator.sort(beans);
 		assertThat(beans.get(0)).isInstanceOf(CharacterEncodingFilter.class);
 		assertThat(beans.get(1)).isInstanceOf(HiddenHttpMethodFilter.class);
-	}
-
-	@Test
-	void noLocaleCharsetMapping() {
-		load(EmptyConfiguration.class);
-		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
-		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings()).isEmpty();
-	}
-
-	@Test
-	void customLocaleCharsetMappings() {
-		load(EmptyConfiguration.class, "server.servlet.encoding.mapping.en:UTF-8",
-				"server.servlet.encoding.mapping.fr_FR:UTF-8");
-		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
-		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings()).hasSize(2)
-			.containsEntry(Locale.ENGLISH, StandardCharsets.UTF_8)
-			.containsEntry(Locale.FRANCE, StandardCharsets.UTF_8);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Map<String, WebServerFactoryCustomizer<?>> getWebServerFactoryCustomizerBeans() {
-		return (Map) this.context.getBeansOfType(WebServerFactoryCustomizer.class);
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual, String encoding,
