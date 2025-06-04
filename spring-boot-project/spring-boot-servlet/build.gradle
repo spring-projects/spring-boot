@@ -18,6 +18,7 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-config")
 
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
