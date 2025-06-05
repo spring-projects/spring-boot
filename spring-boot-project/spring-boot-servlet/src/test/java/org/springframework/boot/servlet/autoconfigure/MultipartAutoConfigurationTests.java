@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.servlet.autoconfigure;
 
 import java.net.URI;
 import java.util.stream.Stream;
@@ -28,8 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
-import org.springframework.boot.servlet.autoconfigure.MultipartAutoConfiguration;
-import org.springframework.boot.servlet.autoconfigure.MultipartProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
@@ -38,7 +36,6 @@ import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -267,8 +264,7 @@ class MultipartAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-			MultipartAutoConfiguration.class })
+	@Import({ TomcatServletWebServerAutoConfiguration.class, MultipartAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
 	static class BaseConfiguration {
 
@@ -277,6 +273,11 @@ class MultipartAutoConfigurationTests {
 			ServerProperties properties = new ServerProperties();
 			properties.setPort(0);
 			return properties;
+		}
+
+		@Bean
+		DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
 		}
 
 	}
