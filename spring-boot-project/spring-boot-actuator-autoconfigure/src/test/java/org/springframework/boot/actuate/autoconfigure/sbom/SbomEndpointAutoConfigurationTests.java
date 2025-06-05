@@ -43,15 +43,6 @@ class SbomEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void runWhenCloudFoundryExposedShouldHaveEndpointBeanAndWebExtension() {
-		this.contextRunner
-			.withPropertyValues("management.endpoints.cloud-foundry.exposure.include=sbom",
-					"spring.main.cloud-platform=cloud_foundry")
-			.run((context) -> assertThat(context).hasSingleBean(SbomEndpoint.class)
-				.hasSingleBean(SbomEndpointWebExtension.class));
-	}
-
-	@Test
 	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SbomEndpoint.class));
 	}

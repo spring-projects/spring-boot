@@ -1995,6 +1995,7 @@ bom {
 				"spring-boot-buildpack-platform",
 				"spring-boot-cache",
 				"spring-boot-cassandra",
+				"spring-boot-cloudfoundry",
 				"spring-boot-configuration-metadata",
 				"spring-boot-configuration-processor",
 				"spring-boot-couchbase",
