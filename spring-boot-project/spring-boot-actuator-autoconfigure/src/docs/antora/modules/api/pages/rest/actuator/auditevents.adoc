@@ -12,7 +12,7 @@ To retrieve the audit events, make a `GET` request to `/actuator/auditevents`, a
 
 include::partial$rest/actuator/auditevents/filtered/curl-request.adoc[]
 
-The preceding example retrieves `logout` events for the principal, `alice`, that occurred after 09:37 on 7 November 2017 in the UTC timezone.
+The preceding example retrieves `logout` events for the principal, `alice`, that occurred after 20:03 on 22 May 2025 in the UTC timezone.
 The resulting response is similar to the following:
 
 include::partial$rest/actuator/auditevents/filtered/http-response.adoc[]
