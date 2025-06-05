@@ -1,0 +1,3 @@
+# Endpoint Exposure Outcome Contributors
+org.springframework.boot.actuate.autoconfigure.endpoint.condition.EndpointExposureOutcomeContributor=\
+org.springframework.boot.cloudfoundry.actuate.autoconfigure.CloudFoundryEndpointExposureOutcomeContributor

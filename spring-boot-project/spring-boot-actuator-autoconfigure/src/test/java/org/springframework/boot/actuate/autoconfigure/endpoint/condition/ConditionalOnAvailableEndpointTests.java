@@ -229,12 +229,6 @@ class ConditionalOnAvailableEndpointTests {
 			});
 	}
 
-	@Test
-	void outcomeOnCloudFoundryShouldMatchAll() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---")
-			.run((context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("spring").hasBean("test"));
-	}
-
 	@Test // gh-21044
 	void outcomeWhenIncludeAllShouldMatchDashedEndpoint() {
 		this.contextRunner.withUserConfiguration(DashedEndpointConfiguration.class)
