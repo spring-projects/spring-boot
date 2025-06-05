@@ -19,7 +19,10 @@ package org.springframework.boot.session.autoconfigure;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -32,22 +35,28 @@ import static org.mockito.Mockito.mock;
  */
 class SessionPropertiesTests {
 
+	private final SessionProperties properties = new SessionProperties();
+
 	@Test
 	@SuppressWarnings("unchecked")
 	void determineTimeoutWithTimeoutIgnoreFallback() {
-		SessionProperties properties = new SessionProperties();
-		properties.setTimeout(Duration.ofMinutes(1));
+		this.properties.setTimeout(Duration.ofMinutes(1));
 		Supplier<Duration> fallback = mock(Supplier.class);
-		assertThat(properties.determineTimeout(fallback)).isEqualTo(Duration.ofMinutes(1));
+		assertThat(this.properties.determineTimeout(fallback)).isEqualTo(Duration.ofMinutes(1));
 		then(fallback).shouldHaveNoInteractions();
 	}
 
 	@Test
 	void determineTimeoutWithNoTimeoutUseFallback() {
-		SessionProperties properties = new SessionProperties();
-		properties.setTimeout(null);
+		this.properties.setTimeout(null);
 		Duration fallback = Duration.ofMinutes(2);
-		assertThat(properties.determineTimeout(() -> fallback)).isSameAs(fallback);
+		assertThat(this.properties.determineTimeout(() -> fallback)).isSameAs(fallback);
+	}
+
+	@Test
+	void defaultFilterOrderIsCloseToHighestPrecedence() {
+		assertThat(this.properties.getServlet().getFilterOrder()).isCloseTo(Ordered.HIGHEST_PRECEDENCE,
+				Assertions.within(50));
 	}
 
 }
