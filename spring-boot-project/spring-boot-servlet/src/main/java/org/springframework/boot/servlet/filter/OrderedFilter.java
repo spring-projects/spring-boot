@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.servlet.filter;
 
 import jakarta.servlet.Filter;
 
@@ -24,7 +24,7 @@ import org.springframework.core.Ordered;
  * An {@link Ordered} {@link jakarta.servlet.Filter}.
  *
  * @author Phillip Webb
- * @since 2.1.0
+ * @since 4.0.0
  */
 public interface OrderedFilter extends Filter, Ordered {
 

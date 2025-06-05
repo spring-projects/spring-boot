@@ -35,6 +35,7 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("jakarta.servlet:jakarta.servlet-api")
 
+	testImplementation(project(":spring-boot-project:spring-boot-servlet"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
