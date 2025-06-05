@@ -14,32 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
-
-import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
-
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
- *
- * @author Phillip Webb
- * @since 2.0.0
+ * Spring Boot specific {@link jakarta.servlet.Filter} implementations.
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter implements OrderedFilter {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-}
+package org.springframework.boot.servlet.filter;

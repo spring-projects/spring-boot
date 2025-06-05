@@ -27,14 +27,14 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.HttpEncodingAutoConfiguration;
+import org.springframework.boot.servlet.filter.OrderedCharacterEncodingFilter;
+import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.server.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
-import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

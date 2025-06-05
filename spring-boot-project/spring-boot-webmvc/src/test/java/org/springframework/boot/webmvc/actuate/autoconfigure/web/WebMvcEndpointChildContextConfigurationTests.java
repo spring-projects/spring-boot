@@ -18,8 +18,8 @@ package org.springframework.boot.webmvc.actuate.autoconfigure.web;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

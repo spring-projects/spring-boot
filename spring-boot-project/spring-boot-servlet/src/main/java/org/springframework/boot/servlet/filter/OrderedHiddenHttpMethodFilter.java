@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.servlet.filter;
 
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -23,7 +23,7 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
  * {@link HiddenHttpMethodFilter} that also implements {@link Ordered}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter implements OrderedFilter {
 

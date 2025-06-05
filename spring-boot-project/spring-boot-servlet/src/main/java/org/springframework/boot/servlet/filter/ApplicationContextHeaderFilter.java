@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.servlet.filter;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Phillip Webb
  * @author Venil Noronha
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class ApplicationContextHeaderFilter extends OncePerRequestFilter {
 
