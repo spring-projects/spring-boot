@@ -57,7 +57,6 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-activemq"))
 	optional(project(":spring-boot-project:spring-boot-amqp"))
 	optional(project(":spring-boot-project:spring-boot-artemis"))
-	optional(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-cassandra"))
 	optional(project(":spring-boot-project:spring-boot-data-redis"))
