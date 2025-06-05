@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.servlet.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
-import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
@@ -140,7 +138,7 @@ class HttpEncodingAutoConfigurationTests {
 		AnnotationConfigServletWebApplicationContext applicationContext = new AnnotationConfigServletWebApplicationContext();
 		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.register(configs);
-		applicationContext.register(MinimalWebAutoConfiguration.class, HttpEncodingAutoConfiguration.class);
+		applicationContext.register(HttpEncodingAutoConfiguration.class);
 		applicationContext.setServletContext(new MockServletContext());
 		applicationContext.refresh();
 		return applicationContext;
@@ -175,21 +173,6 @@ class HttpEncodingAutoConfigurationTests {
 		@Bean
 		OrderedFormContentFilter formContentFilter() {
 			return new OrderedFormContentFilter();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class MinimalWebAutoConfiguration {
-
-		@Bean
-		MockServletWebServerFactory mockServletWebServerFactory() {
-			return new MockServletWebServerFactory();
-		}
-
-		@Bean
-		static WebServerFactoryCustomizerBeanPostProcessor servletWebServerCustomizerBeanPostProcessor() {
-			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}
