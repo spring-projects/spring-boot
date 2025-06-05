@@ -16,6 +16,7 @@
 
 package org.springframework.boot.security.autoconfigure.servlet;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -26,12 +27,16 @@ import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAut
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.DeserializerBean;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.ExampleController;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
+import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SecurityFilterAutoConfiguration}.
@@ -46,6 +51,20 @@ class SecurityFilterAutoConfigurationTests {
 			context.setServletContext(new MockServletContext());
 			context.register(Config.class);
 			context.refresh();
+		}
+	}
+
+	@Test
+	void filterIsOrderedShortlyAfterRequestContextFilter() {
+		try (AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext()) {
+			context.setServletContext(new MockServletContext());
+			context.register(SecurityAutoConfiguration.class);
+			context.register(Config.class);
+			context.refresh();
+			int securityFilterOrder = context.getBean(DelegatingFilterProxyRegistrationBean.class).getOrder();
+			int requestContextFilterOrder = new OrderedRequestContextFilter().getOrder();
+			assertThat(securityFilterOrder).isGreaterThan(requestContextFilterOrder)
+				.isCloseTo(requestContextFilterOrder, Assertions.within(5));
 		}
 	}
 

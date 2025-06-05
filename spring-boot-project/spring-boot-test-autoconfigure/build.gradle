@@ -33,8 +33,8 @@ configurations.all {
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-test"))
-	api(project(":spring-boot-project:spring-boot-autoconfigure-all"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-data-mongodb"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
