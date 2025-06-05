@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.ssl;
+package org.springframework.boot.metrics.autoconfigure.ssl;
 
 import java.time.Clock;
 import java.time.Duration;
