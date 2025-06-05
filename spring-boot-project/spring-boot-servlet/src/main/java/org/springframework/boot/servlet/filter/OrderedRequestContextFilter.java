@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.servlet.filter;
 
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.FormContentFilter;
+import org.springframework.web.filter.RequestContextFilter;
 
 /**
- * {@link FormContentFilter} that also implements {@link Ordered}.
+ * {@link RequestContextFilter} that also implements {@link Ordered}.
  *
- * @author Joao Pedro Evangelista
- * @author Brian Clozel
- * @since 2.1.0
+ * @author Phillip Webb
+ * @since 4.0.0
  */
-public class OrderedFormContentFilter extends FormContentFilter implements OrderedFilter {
+public class OrderedRequestContextFilter extends RequestContextFilter implements OrderedFilter {
 
-	/**
-	 * Higher order to ensure the filter is applied before Spring Security.
-	 */
-	public static final int DEFAULT_ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 9900;
-
-	private int order = DEFAULT_ORDER;
+	// Order defaults to after Spring Session filter
+	private int order = REQUEST_WRAPPER_FILTER_MAX_ORDER - 105;
 
 	@Override
 	public int getOrder() {

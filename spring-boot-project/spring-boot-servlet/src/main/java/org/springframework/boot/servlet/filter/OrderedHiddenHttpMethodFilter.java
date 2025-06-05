@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.servlet.filter;
+package org.springframework.boot.servlet.filter;
 
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 /**
- * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
+ * {@link HiddenHttpMethodFilter} that also implements {@link Ordered}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter implements OrderedFilter {
+public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter implements OrderedFilter {
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
+	/**
+	 * The default order is high to ensure the filter is applied before Spring Security.
+	 */
+	public static final int DEFAULT_ORDER = REQUEST_WRAPPER_FILTER_MAX_ORDER - 10000;
+
+	private int order = DEFAULT_ORDER;
 
 	@Override
 	public int getOrder() {
