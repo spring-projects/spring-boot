@@ -46,7 +46,3 @@ dependencies {
 
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }
-
-test {
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-}

@@ -35,8 +35,17 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-config")
 
+	testImplementation(project(":spring-boot-project:spring-boot-jetty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tomcat"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-undertow"))
+	testImplementation("org.springframework:spring-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
+}
+
+tasks.named("test") {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
