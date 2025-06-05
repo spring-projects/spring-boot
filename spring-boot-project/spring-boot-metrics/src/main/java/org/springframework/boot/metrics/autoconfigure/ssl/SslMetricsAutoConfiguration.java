@@ -14,44 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.ssl;
+package org.springframework.boot.metrics.autoconfigure.ssl;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.SslInfo;
+import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for SSL observability.
+ * {@link EnableAutoConfiguration Auto-configuration} for SSL metrics.
  *
  * @author Moritz Halbritter
- * @since 3.5.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = SslAutoConfiguration.class,
-		afterName = { "org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
-				"org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration" })
+@AutoConfiguration(after = { CompositeMeterRegistryAutoConfiguration.class, MetricsAutoConfiguration.class,
+		SslAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean({ MeterRegistry.class, SslBundles.class })
-@EnableConfigurationProperties(SslHealthIndicatorProperties.class)
-public class SslObservabilityAutoConfiguration {
+public class SslMetricsAutoConfiguration {
 
 	@Bean
-	SslMeterBinder sslMeterBinder(SslInfo sslInfo, SslBundles sslBundles) {
-		return new SslMeterBinder(sslInfo, sslBundles);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	SslInfo sslInfoProvider(SslBundles sslBundles, SslHealthIndicatorProperties properties) {
-		return new SslInfo(sslBundles);
+	SslMeterBinder sslMeterBinder(SslBundles sslBundles, ObjectProvider<SslInfo> sslInfo) {
+		return new SslMeterBinder(sslInfo.getIfAvailable(() -> new SslInfo(sslBundles)), sslBundles);
 	}
 
 }

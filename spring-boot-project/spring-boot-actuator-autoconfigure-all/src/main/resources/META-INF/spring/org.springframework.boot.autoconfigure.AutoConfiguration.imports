@@ -3,8 +3,6 @@ org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundry
 org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.ssl.SslHealthContributorAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.ssl.SslObservabilityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfiguration
