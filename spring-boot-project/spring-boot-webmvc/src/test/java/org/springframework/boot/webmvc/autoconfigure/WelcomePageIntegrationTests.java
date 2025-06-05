@@ -20,16 +20,15 @@ import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.http.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.thymeleaf.autoconfigure.ThymeleafAutoConfiguration;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -41,47 +40,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the welcome page.
  *
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"spring.web.resources.chain.strategy.content.enabled=true",
-		"spring.thymeleaf.prefix=classpath:/org/springframework/boot/webmvc/autoconfigure/",
-		"spring.web.resources.static-locations=classpath:/org/springframework/boot/webmvc/autoconfigure/static" })
+@WithResource(name = "static/index.html", content = "custom welcome page")
 class WelcomePageIntegrationTests {
 
-	@LocalServerPort
-	private int port;
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+			AnnotationConfigServletWebServerApplicationContext::new)
+		.withPropertyValues("spring.web.resources.chain.strategy.content.enabled=true", "server.port=0")
+		.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
 
 	private final TestRestTemplate template = new TestRestTemplate();
 
 	@Test
-	void contentStrategyWithWelcomePage() throws Exception {
-		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
-			.header("Accept", MediaType.ALL.toString())
-			.build();
-		ResponseEntity<String> content = this.template.exchange(entity, String.class);
-		assertThat(content.getBody()).contains("/custom-");
-		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.OK);
+	void contentStrategyWithWelcomePage() {
+		this.contextRunner.run((context) -> {
+			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
+				.header("Accept", MediaType.ALL.toString())
+				.build();
+			ResponseEntity<String> content = this.template.exchange(entity, String.class);
+			assertThat(content.getBody()).contains("custom welcome page");
+			assertThat(content.getStatusCode()).isEqualTo(HttpStatus.OK);
+		});
 	}
 
 	@Test
-	void notAcceptableWelcomePage() throws Exception {
-		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
-			.header("Accept", "spring/boot")
-			.build();
-		ResponseEntity<String> content = this.template.exchange(entity, String.class);
-		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
-	}
-
-	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	static class TestConfiguration {
-
-		static void main(String[] args) {
-			new SpringApplicationBuilder(TestConfiguration.class).run(args);
-		}
-
+	void notAcceptableWelcomePage() {
+		this.contextRunner.run((context) -> {
+			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
+				.header("Accept", "spring/boot")
+				.build();
+			ResponseEntity<String> content = this.template.exchange(entity, String.class);
+			assertThat(content.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
+		});
 	}
 
 }
