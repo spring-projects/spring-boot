@@ -294,6 +294,13 @@ class ConditionalOnAvailableEndpointTests {
 			.run((context) -> assertThat(context).hasSingleBean(DisabledButAccessibleEndpoint.class));
 	}
 
+	@Test
+	@WithTestEndpointOutcomeExposureContributor
+	void exposureOutcomeContributorCanMakeEndpointAvailable() {
+		this.contextRunner.withPropertyValues("management.endpoints.test.exposure.include=test")
+			.run((context) -> assertThat(context).hasSingleBean(TestEndpoint.class));
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
