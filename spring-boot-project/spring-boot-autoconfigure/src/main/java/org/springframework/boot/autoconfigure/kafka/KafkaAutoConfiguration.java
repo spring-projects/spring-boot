@@ -170,7 +170,7 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	KafkaAdmin kafkaAdmin(KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = this.properties.buildAdminProperties(null);
+		Map<String, Object> properties = this.properties.buildAdminProperties();
 		applyKafkaConnectionDetailsForAdmin(properties, connectionDetails);
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
 		KafkaProperties.Admin admin = this.properties.getAdmin();
