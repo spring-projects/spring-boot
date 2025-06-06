@@ -1,0 +1,7 @@
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.tracing.autoconfigure.LogCorrelationEnvironmentPostProcessor
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.tracing.autoconfigure.OpenTelemetryEventPublisherBeansApplicationListener

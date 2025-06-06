@@ -16,11 +16,11 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.tracing.autoconfigure.otlp.Transport;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -41,7 +41,7 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
-				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration");
+				"org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingAutoConfiguration");
 	}
 
 	@Override

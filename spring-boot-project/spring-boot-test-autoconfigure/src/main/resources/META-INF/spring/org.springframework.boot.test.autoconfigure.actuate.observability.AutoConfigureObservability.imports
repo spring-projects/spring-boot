@@ -4,10 +4,10 @@
 org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration
 
 # Metrics
-org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration
-org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
-org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
+optional:org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration
+optional:org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
+optional:org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
 
 # Tracing
-org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
+optional:org.springframework.boot.tracing.autoconfigure.NoopTracerAutoConfiguration
+optional:org.springframework.boot.tracing.autoconfigure.MicrometerTracingAutoConfiguration

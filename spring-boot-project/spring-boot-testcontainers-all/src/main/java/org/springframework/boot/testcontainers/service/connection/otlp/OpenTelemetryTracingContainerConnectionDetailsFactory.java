@@ -19,11 +19,11 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.tracing.autoconfigure.otlp.Transport;
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create
@@ -42,7 +42,7 @@ class OpenTelemetryTracingContainerConnectionDetailsFactory
 
 	OpenTelemetryTracingContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
-				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration");
+				"org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingAutoConfiguration");
 	}
 
 	@Override

@@ -22,12 +22,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 

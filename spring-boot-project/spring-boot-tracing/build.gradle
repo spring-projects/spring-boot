@@ -1,0 +1,61 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Tracing"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-observation"))
+	api("io.micrometer:micrometer-tracing") {
+		exclude(group: "aopalliance", module: "aopalliance")
+	}
+
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-metrics"))
+	optional("io.micrometer:micrometer-core")
+	optional("io.micrometer:micrometer-tracing-bridge-brave")
+	optional("io.micrometer:micrometer-tracing-bridge-otel")
+	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
+	optional("io.opentelemetry:opentelemetry-exporter-otlp")
+	optional("io.prometheus:prometheus-metrics-tracer-common")
+	optional("io.zipkin.reporter2:zipkin-reporter-brave")
+	optional("org.aspectj:aspectjweaver")
+	optional("org.junit.platform:junit-platform-launcher")
+
+	testImplementation(project(":spring-boot-project:spring-boot-opentelemetry"))
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-zipkin"))
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("io.micrometer:micrometer-registry-prometheus")
+	testImplementation("io.opentelemetry:opentelemetry-exporter-common")
+	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
+	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("io.grpc:grpc-api:1.72.0")
+}

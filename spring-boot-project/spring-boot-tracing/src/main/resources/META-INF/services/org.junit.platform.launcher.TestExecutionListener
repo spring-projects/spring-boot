@@ -1,0 +1,1 @@
+org.springframework.boot.tracing.autoconfigure.OpenTelemetryEventPublisherBeansTestExecutionListener
