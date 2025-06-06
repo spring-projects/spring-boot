@@ -126,7 +126,7 @@ bom {
 			releaseNotes("https://github.com/openzipkin/brave/releases/tag/{version}")
 		}
 	}
-	library("Build Helper Maven Plugin", "3.6.0") {
+	library("Build Helper Maven Plugin", "3.6.1") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"build-helper-maven-plugin"
