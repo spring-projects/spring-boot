@@ -139,6 +139,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.health.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL certificate health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.httpexchanges.recording.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response exchange recording.",
