@@ -1621,6 +1621,14 @@
         "replacement": "management.observations.http.server.requests.name",
         "level": "error"
       }
+    },
+    {
+      "name": "management.promethus.metrics.export.pushgateway.base-url",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.prometheus.metrics.export.pushgateway.address"
+      }
     }
   ]
 }

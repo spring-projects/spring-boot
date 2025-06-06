@@ -165,7 +165,6 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-artemis", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
