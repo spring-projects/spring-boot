@@ -2409,9 +2409,31 @@ bom {
 			bom("testcontainers-bom")
 		}
 		links {
-			site("https://java.testcontainers.org")
-			javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers/{version}", "org.testcontainers")
+			docs("https://java.testcontainers.org")
+			javadoc("testcontainers", version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
+			javadoc("testcontainers-activemq", version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
+			javadoc("testcontainers-cassandra", version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
+			javadoc("testcontainers-clickhouse", version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
+			javadoc("testcontainers-couchbase", version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
+			javadoc("testcontainers-elasticsearch", version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
+			javadoc("testcontainers-grafana", version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
+			javadoc("testcontainers-jdbc", version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
+			javadoc("testcontainers-junit-jupiter", version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
+			javadoc("testcontainers-kafka", version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
+			javadoc("testcontainers-mariadb", version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
+			javadoc("testcontainers-mongodb", version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
+			javadoc("testcontainers-mssqlserver", version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
+			javadoc("testcontainers-mysql", version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
+			javadoc("testcontainers-neo4j", version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
+			javadoc("testcontainers-oracle-xe", version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
+			javadoc("testcontainers-oracle-free", version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
+			javadoc("testcontainers-postgresql", version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
+			javadoc("testcontainers-pulsar", version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
+			javadoc("testcontainers-rabbitmq", version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
+			javadoc("testcontainers-redpanda", version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
+			javadoc("testcontainers-r2dbc", version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
+			site("https://java.testcontainers.org")
 		}
 	}
 	library("Testcontainers Redis Module", "2.2.4") {
