@@ -49,7 +49,7 @@ NOTE: In most cases, you will additionally need to configure the application to 
 
 A common pattern with Testcontainers is to declare the container instances as static fields in an interface.
 
-For example, the following interface declares two containers, one named `mongo` of type javadoc:org.testcontainers.containers.MongoDBContainer[] and another named `neo4j` of type javadoc:org.testcontainers.containers.Neo4jContainer.Neo4jContainer[]:
+For example, the following interface declares two containers, one named `mongo` of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[] and another named `neo4j` of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]:
 
 include-code::MyContainers[]
 
@@ -141,7 +141,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-kafka-javadoc}/org.testcontainers.containers.KafkaContainer[] or javadoc:org.testcontainers.redpanda.RedpandaContainer[]
+| Containers of type javadoc:org.testcontainers.kafka.KafkaContainer[] or javadoc:org.testcontainers.redpanda.RedpandaContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
@@ -162,7 +162,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type javadoc:{url-testcontainers-pulsar-javadoc}/org.testcontainers.containers.PulsarContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.containers.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.containers.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.containers.MySQLContainer[], javadoc:{url-testcontainers-oracle-free-javadoc}/org.testcontainers.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.oracle.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[]
+| Containers of type javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.containers.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.containers.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.containers.MySQLContainer[], javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.containers.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[]
