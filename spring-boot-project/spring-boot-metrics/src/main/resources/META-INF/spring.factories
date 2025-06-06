@@ -1,3 +1,8 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.metrics.testcontainers.otlp.GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory,\
+org.springframework.boot.metrics.testcontainers.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory
+
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.metrics.ValidationFailureAnalyzer

@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -35,6 +36,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
+	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.micrometer:micrometer-core")
 	optional("io.micrometer:micrometer-tracing-bridge-brave")
 	optional("io.micrometer:micrometer-tracing-bridge-otel")
@@ -44,6 +46,10 @@ dependencies {
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.junit.platform:junit-platform-launcher")
+	optional("org.testcontainers:grafana")
+	
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":spring-boot-project:spring-boot-opentelemetry"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
