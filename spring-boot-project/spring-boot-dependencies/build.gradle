@@ -108,7 +108,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 		}
 	}
-	library("Zipkin Reporter", "3.5.0") {
+	library("Zipkin Reporter", "3.5.1") {
 		group("io.zipkin.reporter2") {
 			bom("zipkin-reporter-bom")
 		}
