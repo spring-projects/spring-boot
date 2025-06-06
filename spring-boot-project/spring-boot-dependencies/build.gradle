@@ -973,7 +973,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "12.0.21") {
+	library("Jetty", "12.0.22") {
 		group("org.eclipse.jetty.ee10") {
 			bom("jetty-ee10-bom")
 		}
