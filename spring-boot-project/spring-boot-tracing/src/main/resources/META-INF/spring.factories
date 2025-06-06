@@ -1,5 +1,6 @@
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.tracing.docker.compose.otlp.OpenTelemetryTracingDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.tracing.testcontainers.otlp.GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory,\
 org.springframework.boot.tracing.testcontainers.otlp.OpenTelemetryTracingContainerConnectionDetailsFactory
 
@@ -10,4 +11,5 @@ org.springframework.boot.tracing.autoconfigure.OpenTelemetryEventPublisherBeansA
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.tracing.autoconfigure.LogCorrelationEnvironmentPostProcessor
+
 

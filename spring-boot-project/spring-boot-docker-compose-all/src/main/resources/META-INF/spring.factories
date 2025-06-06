@@ -1,5 +1,0 @@
-# Connection Details Factories
-org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryLoggingDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryMetricsDockerComposeConnectionDetailsFactory,\
-org.springframework.boot.docker.compose.service.connection.otlp.OpenTelemetryTracingDockerComposeConnectionDetailsFactory
