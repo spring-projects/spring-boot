@@ -903,7 +903,7 @@ bom {
 			releaseNotes("https://github.com/jaxen-xpath/jaxen/releases/tag/v{version}")
 		}
 	}
-	library("Jaybird", "5.0.7.java11") {
+	library("Jaybird", "5.0.8.java11") {
 		prohibit {
 			endsWith ".java8"
 			because "we use the .java11 version"
