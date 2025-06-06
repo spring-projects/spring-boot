@@ -116,7 +116,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails[]
+| javadoc:org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
@@ -131,7 +131,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
 | Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
-| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
+| javadoc:org.springframework.boot.tracing.autoconfigure.zipkin.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin".
 |===
 

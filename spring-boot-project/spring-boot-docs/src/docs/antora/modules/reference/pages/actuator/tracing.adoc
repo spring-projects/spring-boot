@@ -138,7 +138,7 @@ Tracing with OpenTelemetry and reporting using OTLP requires the following depen
 
 Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
 
-NOTE: If you need to apply advanced customizations to OTLP span exporters, consider registering javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpHttpSpanExporterBuilderCustomizer[] or javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpGrpcSpanExporterBuilderCustomizer[] beans.
+NOTE: If you need to apply advanced customizations to OTLP span exporters, consider registering javadoc:org.springframework.boot.tracing.autoconfigure.otlp.OtlpHttpSpanExporterBuilderCustomizer[] or javadoc:org.springframework.boot.tracing.autoconfigure.otlp.OtlpGrpcSpanExporterBuilderCustomizer[] beans.
 These will be invoked before the creation of the `OtlpHttpSpanExporter` or `OtlpGrpcSpanExporter`.
 The customizers take precedence over anything applied by the auto-configuration.
 

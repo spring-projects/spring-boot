@@ -2136,6 +2136,7 @@ bom {
 				"spring-boot-testcontainers-all",
 				"spring-boot-thymeleaf",
 				"spring-boot-tomcat",
+				"spring-boot-tracing",
 				"spring-boot-tx",
 				"spring-boot-undertow",
 				"spring-boot-validation",

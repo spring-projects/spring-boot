@@ -1,0 +1,7 @@
+org.springframework.boot.tracing.autoconfigure.BraveAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.MicrometerTracingAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.NoopTracerAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.OpenTelemetryTracingAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.prometheus.PrometheusExemplarsAutoConfiguration
+org.springframework.boot.tracing.autoconfigure.zipkin.ZipkinTracingAutoConfiguration

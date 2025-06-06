@@ -233,7 +233,7 @@ Regardless of your classpath, tracing components which are reporting data are no
 
 If you need those components as part of an integration test, annotate the test with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation].
 
-If you have created your own reporting components (e.g. a custom javadoc:io.opentelemetry.sdk.trace.export.SpanExporter[] or `brave.handler.SpanHandler`) and you don't want them to be active in tests, you can use the javadoc:org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing[format=annotation] annotation to disable them.
+If you have created your own reporting components (e.g. a custom javadoc:io.opentelemetry.sdk.trace.export.SpanExporter[] or `brave.handler.SpanHandler`) and you don't want them to be active in tests, you can use the javadoc:org.springframework.boot.tracing.autoconfigure.ConditionalOnEnabledTracing[format=annotation] annotation to disable them.
 
 If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation], it auto-configures a no-op javadoc:io.micrometer.tracing.Tracer[].
 Data exporting in sliced tests is not supported with the javadoc:org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability[format=annotation] annotation.

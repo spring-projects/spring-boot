@@ -46,6 +46,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-opentelemetry"))
+	optional(project(":spring-boot-project:spring-boot-tracing"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional(project(":spring-boot-project:spring-boot-zipkin"))
 	optional("org.springframework:spring-test")

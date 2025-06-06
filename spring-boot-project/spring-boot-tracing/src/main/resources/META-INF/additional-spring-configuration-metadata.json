@@ -1,0 +1,35 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "management.otlp.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
+    },
+    {
+      "name": "management.tracing.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export and propagate traces.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.tracing.propagation.consume",
+      "defaultValue": [
+        "W3C",
+        "B3",
+        "B3_MULTI"
+      ]
+    },
+    {
+      "name": "management.tracing.propagation.produce",
+      "defaultValue": [
+        "W3C"
+      ]
+    },
+    {
+      "name": "management.zipkin.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export Zipkin traces."
+    }  
+  ]
+}

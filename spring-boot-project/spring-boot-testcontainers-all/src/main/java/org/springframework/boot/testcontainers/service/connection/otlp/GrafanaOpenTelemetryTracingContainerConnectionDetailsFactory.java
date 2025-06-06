@@ -18,11 +18,11 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 
 import org.testcontainers.grafana.LgtmStackContainer;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.tracing.autoconfigure.otlp.Transport;
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create
@@ -36,8 +36,7 @@ class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<LgtmStackContainer, OtlpTracingConnectionDetails> {
 
 	GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory() {
-		super(ANY_CONNECTION_NAME,
-				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration");
+		super(ANY_CONNECTION_NAME, "org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingAutoConfiguration");
 	}
 
 	@Override
