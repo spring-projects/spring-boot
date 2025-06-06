@@ -30,8 +30,10 @@ import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
 import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.actuate.info.ProcessInfoContributor;
+import org.springframework.boot.actuate.info.SslInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.info.SslInfo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
@@ -54,8 +56,8 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	@Test
 	void info() {
 		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
-			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo(),
-					javaInfo()));
+				.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo(),
+						javaInfo(), sslInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
@@ -71,12 +73,12 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("artifact").description("Artifact ID of the application, if any.").optional(),
 				fieldWithPath("group").description("Group ID of the application, if any.").optional(),
 				fieldWithPath("name").description("Name of the application, if any.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("version").description("Version of the application, if any.").optional(),
 				fieldWithPath("time").description("Timestamp of when the application was built, if any.")
-					.type(JsonFieldType.VARIES)
-					.optional());
+						.type(JsonFieldType.VARIES)
+						.optional());
 	}
 
 	private ResponseFieldsSnippet osInfo() {
@@ -87,8 +89,8 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private FieldDescriptor osInfoField(String field, String desc) {
 		return fieldWithPath(field).description(desc + " (as obtained from the 'os." + field + "' system property).")
-			.type(JsonFieldType.STRING)
-			.optional();
+				.type(JsonFieldType.STRING)
+				.optional();
 	}
 
 	private ResponseFieldsSnippet processInfo() {
@@ -97,49 +99,68 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				fieldWithPath("parentPid").description("Parent Process ID (or -1).").type(JsonFieldType.NUMBER),
 				fieldWithPath("owner").description("Process owner.").type(JsonFieldType.STRING),
 				fieldWithPath("cpus").description("Number of CPUs available to the process.")
-					.type(JsonFieldType.NUMBER),
+						.type(JsonFieldType.NUMBER),
 				fieldWithPath("memory").description("Memory information."),
 				fieldWithPath("memory.heap").description("Heap memory."),
 				fieldWithPath("memory.heap.init").description("Number of bytes initially requested by the JVM."),
 				fieldWithPath("memory.heap.used").description("Number of bytes currently being used."),
 				fieldWithPath("memory.heap.committed").description("Number of bytes committed for JVM use."),
 				fieldWithPath("memory.heap.max")
-					.description("Maximum number of bytes that can be used by the JVM (or -1)."),
+						.description("Maximum number of bytes that can be used by the JVM (or -1)."),
 				fieldWithPath("memory.nonHeap").description("Non-heap memory."),
 				fieldWithPath("memory.nonHeap.init").description("Number of bytes initially requested by the JVM."),
 				fieldWithPath("memory.nonHeap.used").description("Number of bytes currently being used."),
 				fieldWithPath("memory.nonHeap.committed").description("Number of bytes committed for JVM use."),
 				fieldWithPath("memory.nonHeap.max")
-					.description("Maximum number of bytes that can be used by the JVM (or -1)."));
+						.description("Maximum number of bytes that can be used by the JVM (or -1)."));
 	}
 
 	private ResponseFieldsSnippet javaInfo() {
 		return responseFields(beneathPath("java"),
 				fieldWithPath("version").description("Java version, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("vendor").description("Vendor details."),
 				fieldWithPath("vendor.name").description("Vendor name, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("vendor.version").description("Vendor version, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("runtime").description("Runtime details."),
 				fieldWithPath("runtime.name").description("Runtime name, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("runtime.version").description("Runtime version, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("jvm").description("JVM details."),
 				fieldWithPath("jvm.name").description("JVM name, if available.").type(JsonFieldType.STRING).optional(),
 				fieldWithPath("jvm.vendor").description("JVM vendor, if available.")
-					.type(JsonFieldType.STRING)
-					.optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath("jvm.version").description("JVM version, if available.")
-					.type(JsonFieldType.STRING)
-					.optional());
+						.type(JsonFieldType.STRING)
+						.optional());
+	}
+
+	private ResponseFieldsSnippet sslInfo() {
+		return responseFields(beneathPath("ssl"),
+				fieldWithPath("enabled").description("Whether SSL is enabled.").type(JsonFieldType.BOOLEAN),
+				fieldWithPath("protocol").description("Protocol being used for SSL communication, if available.")
+						.type(JsonFieldType.STRING).optional(),
+				fieldWithPath("ciphers").description("Ciphers used for SSL connections, if available.")
+						.type(JsonFieldType.ARRAY).optional(),
+				fieldWithPath("trustStore").description("Trust store information.").optional(),
+				fieldWithPath("trustStore.provider").description("Provider of the trust store, if available.")
+						.type(JsonFieldType.STRING).optional(),
+				fieldWithPath("trustStore.type").description("Type of the trust store, if available.")
+						.type(JsonFieldType.STRING).optional(),
+				fieldWithPath("keyStore").description("Key store information.").optional(),
+				fieldWithPath("keyStore.provider").description("Provider of the key store, if available.")
+						.type(JsonFieldType.STRING).optional(),
+				fieldWithPath("keyStore.type").description("Type of the key store, if available.")
+						.type(JsonFieldType.STRING).optional());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -184,6 +205,17 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		JavaInfoContributor javaInfoContributor() {
 			return new JavaInfoContributor();
+		}
+
+		@Bean
+		SslInfo sslInfo() {
+			// Create a mock SslInfo that will provide the SSL information
+			return new SslInfo(null, null);
+		}
+
+		@Bean
+		SslInfoContributor sslInfoContributor(SslInfo sslInfo) {
+			return new SslInfoContributor(sslInfo);
 		}
 
 	}
