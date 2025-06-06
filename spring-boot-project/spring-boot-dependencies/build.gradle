@@ -2133,7 +2133,6 @@ bom {
 				"spring-boot-test",
 				"spring-boot-test-autoconfigure",
 				"spring-boot-testcontainers",
-				"spring-boot-testcontainers-all",
 				"spring-boot-thymeleaf",
 				"spring-boot-tomcat",
 				"spring-boot-tracing",
