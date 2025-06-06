@@ -38,7 +38,6 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-data-mongodb"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose-all"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tx"))

@@ -34,6 +34,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-opentelemetry"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("ch.qos.logback:logback-classic")
@@ -65,6 +66,7 @@ dependencies {
 	optional("org.testcontainers:grafana")
 	
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(testFixtures(project(":spring-boot-project:spring-boot-docker-compose")))
 	dockerTestImplementation("io.rest-assured:rest-assured")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 

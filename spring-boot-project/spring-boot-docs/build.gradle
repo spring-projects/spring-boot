@@ -257,7 +257,6 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-data-neo4j"))
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
-	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-http-converter"))
 	implementation(project(path: ":spring-boot-project:spring-boot-http-codec"))
 	implementation(project(path: ":spring-boot-project:spring-boot-integration"))
