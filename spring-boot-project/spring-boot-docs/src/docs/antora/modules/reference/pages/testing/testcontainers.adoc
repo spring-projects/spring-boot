@@ -29,11 +29,11 @@ TIP: This method of managing containers is often used in combination with xref:#
 == Using the JUnit Extension
 
 Testcontainers provides a JUnit extension which can be used to manage containers in your tests.
-The extension is activated by applying the javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation from Testcontainers to your test class.
+The extension is activated by applying the javadoc:{url-testcontainers-junit-jupiter}/org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation from Testcontainers to your test class.
 
-You can then use the javadoc:org.testcontainers.junit.jupiter.Container[format=annotation] annotation on static container fields.
+You can then use the javadoc:{url-testcontainers-junit-jupiter}/org.testcontainers.junit.jupiter.Container[format=annotation] annotation on static container fields.
 
-The javadoc:org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation can be used on vanilla JUnit tests, or in combination with javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]:
+The javadoc:{url-testcontainers-junit-jupiter}/org.testcontainers.junit.jupiter.Testcontainers[format=annotation] annotation can be used on vanilla JUnit tests, or in combination with javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]:
 
 include-code::MyIntegrationTests[]
 
