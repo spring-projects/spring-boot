@@ -1879,7 +1879,7 @@ bom {
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
 		}
 	}
-	library("REST Assured", "5.5.2") {
+	library("REST Assured", "5.5.5") {
 		group("io.rest-assured") {
 			bom("rest-assured-bom")
 		}
