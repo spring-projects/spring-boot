@@ -178,26 +178,6 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
-		addTestcontainersDependencyVersion(attributes, internal, "activemq");
-		addTestcontainersDependencyVersion(attributes, internal, "cassandra");
-		addTestcontainersDependencyVersion(attributes, internal, "clickhouse");
-		addTestcontainersDependencyVersion(attributes, internal, "couchbase");
-		addTestcontainersDependencyVersion(attributes, internal, "elasticsearch");
-		addTestcontainersDependencyVersion(attributes, internal, "grafana");
-		addTestcontainersDependencyVersion(attributes, internal, "jdbc");
-		addTestcontainersDependencyVersion(attributes, internal, "kafka");
-		addTestcontainersDependencyVersion(attributes, internal, "mariadb");
-		addTestcontainersDependencyVersion(attributes, internal, "mongodb");
-		addTestcontainersDependencyVersion(attributes, internal, "mssqlserver");
-		addTestcontainersDependencyVersion(attributes, internal, "mysql");
-		addTestcontainersDependencyVersion(attributes, internal, "neo4j");
-		addTestcontainersDependencyVersion(attributes, internal, "oracle-xe");
-		addTestcontainersDependencyVersion(attributes, internal, "oracle-free");
-		addTestcontainersDependencyVersion(attributes, internal, "postgresql");
-		addTestcontainersDependencyVersion(attributes, internal, "pulsar");
-		addTestcontainersDependencyVersion(attributes, internal, "rabbitmq");
-		addTestcontainersDependencyVersion(attributes, internal, "redpanda");
-		addTestcontainersDependencyVersion(attributes, internal, "r2dbc");
 		addDependencyVersion(attributes, "pulsar-client-reactive-api", "org.apache.pulsar:pulsar-client-reactive-api");
 		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
@@ -216,11 +196,6 @@ public class AntoraAsciidocAttributes {
 		String antoraVersion = version.endsWith(DASH_SNAPSHOT) ? majorMinor + DASH_SNAPSHOT : majorMinor;
 		internal.put("antoraversion-" + name, antoraVersion);
 		internal.put("dotxversion-" + name, majorMinor + ".x");
-	}
-
-	private void addTestcontainersDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
-			String artifactId) {
-		addDependencyVersion(attributes, "testcontainers-" + artifactId, "org.testcontainers:" + artifactId);
 	}
 
 	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
