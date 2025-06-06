@@ -16,10 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.tracing.autoconfigure.otlp.Transport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

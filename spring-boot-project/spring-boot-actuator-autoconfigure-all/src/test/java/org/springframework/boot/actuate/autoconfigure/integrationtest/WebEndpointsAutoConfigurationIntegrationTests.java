@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -57,18 +55,17 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	private WebApplicationContextRunner servletWebRunner() {
 		return new WebApplicationContextRunner()
 			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
-			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withPropertyValues("management.defaults.metrics.export.enabled=false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
 		return new ReactiveWebApplicationContextRunner()
 			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
-			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withPropertyValues("management.defaults.metrics.export.enabled=false");
 	}
 
 	@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, BraveAutoConfiguration.class,
-			OpenTelemetryTracingAutoConfiguration.class })
+			RepositoryRestMvcAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 
