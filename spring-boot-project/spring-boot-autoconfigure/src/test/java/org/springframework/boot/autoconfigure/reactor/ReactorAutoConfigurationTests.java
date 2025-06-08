@@ -28,6 +28,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -88,6 +89,21 @@ class ReactorAutoConfigurationTests {
 				.block();
 			assertThat(threadLocalValue.get()).isEqualTo("updated");
 		});
+	}
+
+	@Test
+	void shouldConfigurePropagationIfSetToAutoAndLazyInitializationIsEnabled() {
+		AtomicReference<String> threadLocalValue = new AtomicReference<>();
+		this.contextRunner.withPropertyValues("spring.reactor.context-propagation=AUTO")
+			.withInitializer((applicationContext) -> applicationContext
+				.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
+			.run((applicationContext) -> {
+				Mono.just("test")
+					.doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
+					.contextWrite(Context.of(THREADLOCAL_KEY, "updated"))
+					.block();
+				assertThat(threadLocalValue.get()).isEqualTo("updated");
+			});
 	}
 
 }
