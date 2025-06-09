@@ -72,7 +72,9 @@ public final class ManagementContextFactory {
 
 	public void registerWebServerFactoryBeans(ApplicationContext parentContext,
 			ConfigurableApplicationContext managementContext, AnnotationConfigRegistry registry) {
-		registry.register(this.autoConfigurationClasses);
+		if (this.autoConfigurationClasses != null && this.autoConfigurationClasses.length > 0) {
+			registry.register(this.autoConfigurationClasses);
+		}
 		registerWebServerFactoryFromParent(parentContext, managementContext);
 	}
 

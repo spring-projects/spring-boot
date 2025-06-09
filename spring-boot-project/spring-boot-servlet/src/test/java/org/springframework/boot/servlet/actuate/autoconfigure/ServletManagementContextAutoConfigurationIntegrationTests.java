@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.server;
+package org.springframework.boot.servlet.actuate.autoconfigure;
 
 import java.util.function.Consumer;
 
@@ -23,27 +23,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.servlet.actuate.autoconfigure.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ManagementContextAutoConfiguration}.
+ * Integration tests for {@link ServletManagementContextAutoConfiguration}.
  *
  * @author Madhura Bhave
  * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
-class ManagementContextAutoConfigurationTests {
+class ServletManagementContextAutoConfigurationIntegrationTests {
 
 	@Test
 	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput output) {
@@ -95,8 +94,7 @@ class ManagementContextAutoConfigurationTests {
 				AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
 					TomcatServletWebServerAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-					DispatcherServletAutoConfiguration.class));
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.address=127.0.0.1")
 			.run((context) -> assertThat(context).getFailure()
 				.hasMessageStartingWith("Management-specific server address cannot be configured"));
