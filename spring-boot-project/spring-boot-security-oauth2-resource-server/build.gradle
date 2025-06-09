@@ -36,9 +36,11 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))
+	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 

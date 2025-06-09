@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.security.actuate.autoconfigure.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration;
@@ -43,7 +44,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author Andy Wilkinson
  * @since 3.5.0
  */
-@AutoConfiguration(before = SecurityAutoConfiguration.class, after = OAuth2ClientAutoConfiguration.class)
+@AutoConfiguration(before = { ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class },
+		after = OAuth2ClientAutoConfiguration.class)
 @ConditionalOnClass({ EnableWebSecurity.class, OAuth2AuthorizedClientRepository.class })
 @ConditionalOnBean(OAuth2AuthorizedClientService.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

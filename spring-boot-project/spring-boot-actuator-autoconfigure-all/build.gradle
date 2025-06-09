@@ -17,7 +17,6 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -58,7 +57,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webflux"))
 	testImplementation("org.springframework.security:spring-security-test")
-	
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
 

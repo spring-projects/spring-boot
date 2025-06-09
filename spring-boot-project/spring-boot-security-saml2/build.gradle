@@ -41,6 +41,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
+    testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-webmvc"))

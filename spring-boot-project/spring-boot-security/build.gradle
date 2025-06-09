@@ -38,11 +38,14 @@ dependencies {
 	api("org.springframework.security:spring-security-config")
 	api("org.springframework.security:spring-security-web")
 
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-h2console"))
+	optional(project(":spring-boot-project:spring-boot-jersey"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional(project(":spring-boot-project:spring-boot-rsocket"))
 	optional(project(":spring-boot-project:spring-boot-webmvc"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
 	optional(project(":spring-boot-project:spring-boot-web-server"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-messaging")
@@ -70,4 +73,8 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("org.hsqldb:hsqldb")
+}
+
+tasks.named("test") {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
