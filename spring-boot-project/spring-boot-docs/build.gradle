@@ -77,7 +77,6 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-artemis", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
@@ -248,7 +247,6 @@ dependencies {
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-amqp"))
 	implementation(project(path: ":spring-boot-project:spring-boot-cache"))
 	implementation(project(path: ":spring-boot-project:spring-boot-data-cassandra"))

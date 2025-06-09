@@ -26,6 +26,7 @@ import okio.Buffer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.security.actuate.autoconfigure.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -64,6 +65,8 @@ import static org.mockito.Mockito.mock;
 class Saml2RelyingPartyAutoConfigurationTests {
 
 	private static final String PREFIX = "spring.security.saml2.relyingparty.registration";
+
+	private static final String MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN = "managementSecurityFilterChain";
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class, SecurityAutoConfiguration.class));
@@ -323,6 +326,22 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				.getFailure()
 				.rootCause()
 				.hasMessageContaining("Missing certificates or unrecognized format"));
+	}
+
+	@Test
+	@WithPackageResources("certificate-location")
+	void causesManagementWebSecurityAutoConfigurationToBackOff() {
+		WebApplicationContextRunner contextRunner = this.contextRunner.withConfiguration(
+				AutoConfigurations.of(ManagementWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class));
+		assertThat(contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(ManagementWebSecurityAutoConfiguration.class)));
+		contextRunner.withPropertyValues(PREFIX
+				+ ".simplesamlphp.assertingparty.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
+				PREFIX + ".simplesamlphp.assertingparty.single-sign-on.sign-request=false",
+				PREFIX + ".simplesamlphp.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".simplesamlphp.assertingparty.verification.credentials[0].certificate-location=classpath:certificate-location")
+			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
+				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
 	private void testMultipleProviders(String specifiedEntityId, String expected) throws Exception {

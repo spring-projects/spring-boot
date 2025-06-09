@@ -35,6 +35,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.server.test.client.TestRestTemplate;
@@ -58,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
+@DirtiesUrlFactories
 class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	private static final Pattern PASSWORD_PATTERN = Pattern.compile("^Using generated security password: (.*)$",

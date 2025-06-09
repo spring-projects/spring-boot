@@ -49,11 +49,14 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.security.actuate.autoconfigure.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -703,6 +706,19 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(NimbusReactiveJwtDecoder.class);
 				assertFilterConfiguredWithJwtAuthenticationManager(context);
 			});
+	}
+
+	@Test
+	void causesReactiveManagementWebSecurityAutoConfigurationToBackOff() {
+		ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveManagementWebSecurityAutoConfiguration.class,
+					ReactiveOAuth2ResourceServerAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class,
+					WebFluxAutoConfiguration.class));
+		contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveManagementWebSecurityAutoConfiguration.class));
+		contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
 	private void assertFilterConfiguredWithJwtAuthenticationManager(AssertableReactiveWebApplicationContext context) {
