@@ -174,6 +174,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 		SecurityFilterChain cloudFoundrySecurityFilterChain(HttpSecurity http,
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) throws Exception {
 			RequestMatcher cloudFoundryRequest = getRequestMatcher(handlerMapping);
+			http.csrf((csrf) -> csrf.ignoringRequestMatchers(cloudFoundryRequest));
 			http.securityMatchers((matches) -> matches.requestMatchers(cloudFoundryRequest))
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll());
 			return http.build();
