@@ -152,10 +152,12 @@ class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	@Test
-	void containsDescendantOfWhenSystemEnvironmentPropertySourceShouldLegacyProperty() {
+	void containsDescendantOfWhenSystemEnvironmentPropertySourceShouldSupportLegacyProperty() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("FOO_BAR_BAZ_BONG", "bing");
 		source.put("FOO_ALPHABRAVO_GAMMA", "delta");
+		source.put("loo_bar_baz_bong", "bing");
+		source.put("loo_alphabravo_gamma", "delta");
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
@@ -166,6 +168,27 @@ class SpringIterableConfigurationPropertySourceTests {
 			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.blah")))
 			.isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("loo.bar-baz")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("loo.alpha-bravo")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("loo.blah")))
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
+	@Test
+	void getConfigurationPropertyWhenSystemEnvironmentPropertySourceShouldSupportLegacyProperty() {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("TEST_VALUE_UPPER", "upper");
+		source.put("test_value_lower", "lower");
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				propertySource, true, SystemEnvironmentPropertyMapper.INSTANCE, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.getConfigurationProperty(ConfigurationPropertyName.of("test.value-upper")).getValue())
+			.isEqualTo("upper");
+		assertThat(adapter.getConfigurationProperty(ConfigurationPropertyName.of("test.value-lower")).getValue())
+			.isEqualTo("lower");
 	}
 
 	@Test

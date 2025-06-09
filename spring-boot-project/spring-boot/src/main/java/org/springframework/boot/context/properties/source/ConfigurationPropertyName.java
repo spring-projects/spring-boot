@@ -543,25 +543,24 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	@Override
 	public String toString() {
-		return toString(ToStringFormat.DEFAULT);
+		return toString(ToStringFormat.DEFAULT, false);
 	}
 
-	String toString(ToStringFormat format) {
+	String toString(ToStringFormat format, boolean upperCase) {
 		String string = this.string[format.ordinal()];
 		if (string == null) {
 			string = buildToString(format);
 			this.string[format.ordinal()] = string;
 		}
-		return string;
+		return (!upperCase) ? string : string.toUpperCase(Locale.ENGLISH);
 	}
 
 	private String buildToString(ToStringFormat format) {
 		return switch (format) {
 			case DEFAULT -> buildDefaultToString();
-			case SYSTEM_ENVIRONMENT ->
-				buildSimpleToString('_', (i) -> getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
-			case LEGACY_SYSTEM_ENVIRONMENT -> buildSimpleToString('_',
-					(i) -> getElement(i, Form.ORIGINAL).replace('-', '_').toUpperCase(Locale.ENGLISH));
+			case SYSTEM_ENVIRONMENT -> buildSimpleToString('_', (i) -> getElement(i, Form.UNIFORM));
+			case LEGACY_SYSTEM_ENVIRONMENT ->
+				buildSimpleToString('_', (i) -> getElement(i, Form.ORIGINAL).replace('-', '_'));
 		};
 	}
 
