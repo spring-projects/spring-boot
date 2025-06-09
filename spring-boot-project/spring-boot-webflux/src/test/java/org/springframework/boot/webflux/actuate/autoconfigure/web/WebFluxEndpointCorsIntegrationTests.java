@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webflux.actuate.autoconfigure.web;
 
 import java.util.function.Consumer;
 

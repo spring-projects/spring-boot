@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
@@ -28,9 +28,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -54,14 +56,14 @@ class JmxEndpointIntegrationTests {
 				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 		.withUserConfiguration(HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
 		.withPropertyValues("spring.jmx.enabled=true")
-		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+		.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class,
+				BeansEndpointAutoConfiguration.class, ShutdownEndpointAutoConfiguration.class));
 
 	@Test
 	void jmxEndpointsExposeHealthByDefault() {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer, new String[] { "health" }, new String[] { "beans", "conditions",
-					"configprops", "env", "info", "mappings", "threaddump", "httpexchanges", "shutdown" });
+			checkEndpointMBeans(mBeanServer, new String[] { "health" }, new String[] { "beans", "shutdown" });
 		});
 	}
 
@@ -71,8 +73,7 @@ class JmxEndpointIntegrationTests {
 			.withBean(LazyInitializationBeanFactoryPostProcessor.class, LazyInitializationBeanFactoryPostProcessor::new)
 			.run((context) -> {
 				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-				checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
-						"info", "mappings", "threaddump", "httpexchanges" }, new String[] { "shutdown" });
+				checkEndpointMBeans(mBeanServer, new String[] { "beans", "health" }, new String[] { "shutdown" });
 			});
 	}
 
@@ -80,8 +81,7 @@ class JmxEndpointIntegrationTests {
 	void jmxEndpointsCanBeExcluded() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.exclude:*").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer, new String[0], new String[] { "beans", "conditions", "configprops", "env",
-					"health", "mappings", "shutdown", "threaddump", "httpexchanges" });
+			checkEndpointMBeans(mBeanServer, new String[0], new String[] { "beans", "health", "shutdown" });
 
 		});
 	}
@@ -90,8 +90,7 @@ class JmxEndpointIntegrationTests {
 	void singleJmxEndpointCanBeExposed() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=beans").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer, new String[] { "beans" }, new String[] { "conditions", "configprops",
-					"env", "health", "mappings", "shutdown", "threaddump", "httpexchanges" });
+			checkEndpointMBeans(mBeanServer, new String[] { "beans" }, new String[] { "health", "shutdown" });
 		});
 	}
 

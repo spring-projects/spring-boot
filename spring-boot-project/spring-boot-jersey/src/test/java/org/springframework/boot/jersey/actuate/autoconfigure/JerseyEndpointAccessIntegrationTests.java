@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.jersey.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementConte
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
@@ -44,7 +43,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,7 +59,6 @@ class JerseyEndpointAccessIntegrationTests {
 				EndpointAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class))
-		.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
 		.withUserConfiguration(CustomServletEndpoint.class)
 		.withPropertyValues("server.port:0");
 

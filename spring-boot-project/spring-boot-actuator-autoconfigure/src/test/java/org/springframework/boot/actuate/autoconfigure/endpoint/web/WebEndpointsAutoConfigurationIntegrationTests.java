@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +22,9 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.data.cassandra.autoconfigure.CassandraDataAutoConfiguration;
-import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +42,6 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	@ClassPathExclusions({ "spring-security-oauth2-client-*.jar", "spring-security-oauth2-resource-server-*.jar" })
 	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
@@ -64,8 +59,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			.withPropertyValues("management.defaults.metrics.export.enabled=false");
 	}
 
-	@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class })
+	@EnableAutoConfiguration
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 

@@ -37,11 +37,11 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * @param <A> the assertions
  * @author Madhura Bhave
  */
-abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+public abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final T runner;
 
-	AbstractHealthEndpointAdditionalPathIntegrationTests(T runner) {
+	protected AbstractHealthEndpointAdditionalPathIntegrationTests(T runner) {
 		this.runner = runner;
 	}
 

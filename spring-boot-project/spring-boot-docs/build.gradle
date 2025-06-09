@@ -374,7 +374,7 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))

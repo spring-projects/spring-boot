@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServer;
@@ -23,8 +23,8 @@ import javax.management.ObjectName;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -49,7 +49,7 @@ class JmxEndpointAccessIntegrationTests {
 				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 		.withUserConfiguration(CustomJmxEndpoint.class)
 		.withPropertyValues("spring.jmx.enabled=true")
-		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+		.withConfiguration(AutoConfigurations.of(BeansEndpointAutoConfiguration.class));
 
 	@Test
 	void accessIsUnrestrictedByDefault() {

@@ -45,6 +45,7 @@ dependencies {
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testFixturesImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 
+	testImplementation(project(":spring-boot-project:spring-boot-jackson"))
 	testImplementation(project(":spring-boot-project:spring-boot-mustache"))
 	testImplementation(project(":spring-boot-project:spring-boot-reactor-netty"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

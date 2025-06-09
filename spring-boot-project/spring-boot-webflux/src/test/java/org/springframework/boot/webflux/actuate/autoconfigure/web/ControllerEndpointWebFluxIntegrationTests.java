@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webflux.actuate.autoconfigure.web;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,13 +28,10 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.reactive.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -51,14 +48,11 @@ class ControllerEndpointWebFluxIntegrationTests {
 
 	@AfterEach
 	void close() {
-		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
 	void endpointsCanBeAccessed() {
-		TestSecurityContextHolder.getContext()
-			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, ExampleController.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
@@ -67,8 +61,8 @@ class ControllerEndpointWebFluxIntegrationTests {
 		webClient.get().uri("/actuator/example").exchange().expectStatus().isOk();
 	}
 
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class, AuditAutoConfiguration.class,
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+			WebEndpointAutoConfiguration.class, AuditAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
 			ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
