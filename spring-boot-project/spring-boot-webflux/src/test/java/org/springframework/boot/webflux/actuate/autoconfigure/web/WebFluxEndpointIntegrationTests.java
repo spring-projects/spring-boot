@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webflux.actuate.autoconfigure.web;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
@@ -127,6 +135,51 @@ class WebFluxEndpointIntegrationTests {
 		@Bean
 		TestRestControllerEndpoint testRestControllerEndpoint() {
 			return new TestRestControllerEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class EndpointObjectMapperConfiguration {
+
+		@Bean
+		EndpointObjectMapper endpointObjectMapper() {
+			SimpleModule module = new SimpleModule();
+			module.addSerializer(String.class, new ReverseStringSerializer());
+			ObjectMapper objectMapper = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
+				.modules(module)
+				.build();
+			return () -> objectMapper;
+		}
+
+		static class ReverseStringSerializer extends StdScalarSerializer<Object> {
+
+			ReverseStringSerializer() {
+				super(String.class, false);
+			}
+
+			@Override
+			public boolean isEmpty(SerializerProvider prov, Object value) {
+				return ((String) value).isEmpty();
+			}
+
+			@Override
+			public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+				serialize(value, gen);
+			}
+
+			@Override
+			public final void serializeWithType(Object value, JsonGenerator gen, SerializerProvider provider,
+					TypeSerializer typeSer) throws IOException {
+				serialize(value, gen);
+			}
+
+			private void serialize(Object value, JsonGenerator gen) throws IOException {
+				StringBuilder builder = new StringBuilder((String) value);
+				gen.writeString(builder.reverse().toString());
+			}
+
 		}
 
 	}

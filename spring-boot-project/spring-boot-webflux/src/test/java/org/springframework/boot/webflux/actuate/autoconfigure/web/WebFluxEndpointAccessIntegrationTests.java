@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webflux.actuate.autoconfigure.web;
 
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
@@ -56,7 +57,7 @@ class WebFluxEndpointAccessIntegrationTests {
 				HttpHandlerAutoConfiguration.class, JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class))
-		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
+		.withConfiguration(AutoConfigurations.of(BeansEndpointAutoConfiguration.class))
 		.withUserConfiguration(CustomWebFluxEndpoint.class)
 		.withPropertyValues("server.port:0");
 

@@ -55,6 +55,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-web-server-test"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-actuator-autoconfigure")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("org.springframework:spring-webflux")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

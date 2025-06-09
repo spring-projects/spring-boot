@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webmvc.actuate.autoconfigure.endpoint.web;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import jakarta.servlet.http.HttpServlet;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
@@ -27,13 +33,11 @@ import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoCon
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.data.rest.autoconfigure.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.servlet.actuate.autoconfigure.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
@@ -42,18 +46,12 @@ import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfig
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 /**
  * Integration tests for the Actuator's MVC endpoints.
@@ -64,12 +62,6 @@ class WebMvcEndpointIntegrationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
-	@AfterEach
-	void close() {
-		TestSecurityContextHolder.clearContext();
-		this.context.close();
-	}
-
 	@Test
 	void webMvcEndpointHandlerMappingIsConfiguredWithPathPatternParser() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
@@ -78,38 +70,6 @@ class WebMvcEndpointIntegrationTests {
 		this.context.refresh();
 		WebMvcEndpointHandlerMapping handlerMapping = this.context.getBean(WebMvcEndpointHandlerMapping.class);
 		assertThat(handlerMapping.getPatternParser()).isInstanceOf(PathPatternParser.class);
-	}
-
-	@Test
-	void endpointsAreSecureByDefault() {
-		this.context = new AnnotationConfigServletWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		MockMvcTester mvc = createSecureMockMvcTester();
-		assertThat(mvc.get().uri("/actuator/beans").accept(MediaType.APPLICATION_JSON))
-			.hasStatus(HttpStatus.UNAUTHORIZED);
-	}
-
-	@Test
-	void endpointsAreSecureByDefaultWithCustomBasePath() {
-		this.context = new AnnotationConfigServletWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues.of("management.endpoints.web.base-path:/management").applyTo(this.context);
-		MockMvcTester mvc = createSecureMockMvcTester();
-		assertThat(mvc.get().uri("/management/beans").accept(MediaType.APPLICATION_JSON))
-			.hasStatus(HttpStatus.UNAUTHORIZED);
-	}
-
-	@Test
-	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() {
-		TestSecurityContextHolder.getContext()
-			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
-		this.context = new AnnotationConfigServletWebApplicationContext();
-		this.context.register(SecureConfiguration.class);
-		TestPropertyValues
-			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
-			.applyTo(this.context);
-		MockMvcTester mvc = createSecureMockMvcTester();
-		assertThat(mvc.get().uri("/management/beans")).hasStatusOk();
 	}
 
 	@Test
@@ -143,19 +103,10 @@ class WebMvcEndpointIntegrationTests {
 		assertThat(mvc.get().uri("/actuator/beans")).hasStatusOk().bodyText().contains("\"scope\":\"notelgnis\"");
 	}
 
-	private MockMvcTester createSecureMockMvcTester() {
-		return doCreateMockMvcTester(springSecurity());
-	}
-
-	private MockMvcTester doCreateMockMvcTester(MockMvcConfigurer... configurers) {
+	private MockMvcTester doCreateMockMvcTester() {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		return MockMvcTester.from(this.context, (builder) -> {
-			for (MockMvcConfigurer configurer : configurers) {
-				builder.apply(configurer);
-			}
-			return builder.build();
-		});
+		return MockMvcTester.from(this.context);
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
@@ -165,24 +116,6 @@ class WebMvcEndpointIntegrationTests {
 			ManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
-
-	}
-
-	@Import(SecureConfiguration.class)
-	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class })
-	static class SpringHateoasConfiguration {
-
-	}
-
-	@Import(SecureConfiguration.class)
-	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
-	static class SpringDataRestConfiguration {
-
-	}
-
-	@Import(DefaultConfiguration.class)
-	@ImportAutoConfiguration({ SecurityAutoConfiguration.class })
-	static class SecureConfiguration {
 
 	}
 
@@ -227,6 +160,51 @@ class WebMvcEndpointIntegrationTests {
 		@Bean
 		TestRestControllerEndpoint testRestControllerEndpoint() {
 			return new TestRestControllerEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class EndpointObjectMapperConfiguration {
+
+		@Bean
+		EndpointObjectMapper endpointObjectMapper() {
+			SimpleModule module = new SimpleModule();
+			module.addSerializer(String.class, new ReverseStringSerializer());
+			ObjectMapper objectMapper = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
+				.modules(module)
+				.build();
+			return () -> objectMapper;
+		}
+
+		static class ReverseStringSerializer extends StdScalarSerializer<Object> {
+
+			ReverseStringSerializer() {
+				super(String.class, false);
+			}
+
+			@Override
+			public boolean isEmpty(SerializerProvider prov, Object value) {
+				return ((String) value).isEmpty();
+			}
+
+			@Override
+			public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+				serialize(value, gen);
+			}
+
+			@Override
+			public final void serializeWithType(Object value, JsonGenerator gen, SerializerProvider provider,
+					TypeSerializer typeSer) throws IOException {
+				serialize(value, gen);
+			}
+
+			private void serialize(Object value, JsonGenerator gen) throws IOException {
+				StringBuilder builder = new StringBuilder((String) value);
+				gen.writeString(builder.reverse().toString());
+			}
+
 		}
 
 	}

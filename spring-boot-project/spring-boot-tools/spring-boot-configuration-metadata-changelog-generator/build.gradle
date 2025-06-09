@@ -39,7 +39,6 @@ if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
 		["spring-boot",
 		 "spring-boot-actuator",
 		 "spring-boot-actuator-autoconfigure",
-		 "spring-boot-actuator-autoconfigure-all",
 		 "spring-boot-autoconfigure",
 		 "spring-boot-devtools",
 		 "spring-boot-test-autoconfigure"].each {
