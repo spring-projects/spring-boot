@@ -151,13 +151,6 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Context Propagation", "1.0.5") {
-		group("io.micrometer") {
-			modules = [
-				"context-propagation"
-			]
-		}
-	}
 	library("MockK", "1.13.5") {
 		group("io.mockk") {
 			modules = [
