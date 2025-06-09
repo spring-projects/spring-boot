@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -109,7 +110,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
-		return systemEnvironment.get(name);
+		Object value = systemEnvironment.get(name);
+		return (value != null) ? value : systemEnvironment.get(name.toLowerCase(Locale.ROOT));
 	}
 
 	@Override

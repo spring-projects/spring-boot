@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiPredicate;
@@ -42,12 +40,10 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	@Override
 	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
-		String name = configurationPropertyName.toString(ToStringFormat.SYSTEM_ENVIRONMENT);
-		String legacyName = configurationPropertyName.toString(ToStringFormat.LEGACY_SYSTEM_ENVIRONMENT);
-		if (name.equals(legacyName)) {
-			return Collections.singletonList(name);
-		}
-		return Arrays.asList(name, legacyName);
+		return List.of(configurationPropertyName.toString(ToStringFormat.SYSTEM_ENVIRONMENT, true),
+				configurationPropertyName.toString(ToStringFormat.LEGACY_SYSTEM_ENVIRONMENT, true),
+				configurationPropertyName.toString(ToStringFormat.SYSTEM_ENVIRONMENT, false),
+				configurationPropertyName.toString(ToStringFormat.LEGACY_SYSTEM_ENVIRONMENT, false));
 	}
 
 	@Override
