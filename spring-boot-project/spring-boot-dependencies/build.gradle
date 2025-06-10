@@ -158,7 +158,7 @@ bom {
 			releaseNotes("https://github.com/cache2k/cache2k/releases/tag/v{version}")
 		}
 	}
-	library("Caffeine", "3.2.0") {
+	library("Caffeine", "3.2.1") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
@@ -1547,7 +1547,7 @@ bom {
 			releaseNotes("https://github.com/mockito/mockito/releases/tag/v{version}")
 		}
 	}
-	library("MongoDB", "5.5.0") {
+	library("MongoDB", "5.5.1") {
 		alignWith {
 			version {
 				of "org.mongodb:mongodb-driver-core"
