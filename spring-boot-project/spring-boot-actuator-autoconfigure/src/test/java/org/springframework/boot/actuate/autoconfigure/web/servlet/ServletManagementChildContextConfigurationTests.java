@@ -51,21 +51,18 @@ class ServletManagementChildContextConfigurationTests {
 	@Test
 	// gh-45857
 	void failsWithoutManagementServerPropertiesBeanFromParent() {
-		new WebApplicationContextRunner().run((parent) -> {
-			new WebApplicationContextRunner().withParent(parent)
-				.withUserConfiguration(ServletManagementChildContextConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
-		});
+		new WebApplicationContextRunner().run((parent) -> new WebApplicationContextRunner().withParent(parent)
+			.withUserConfiguration(ServletManagementChildContextConfiguration.class)
+			.run((context) -> assertThat(context).hasFailed()));
 	}
 
 	@Test
 	// gh-45857
 	void succeedsWithManagementServerPropertiesBeanFromParent() {
-		new WebApplicationContextRunner().withBean(ManagementServerProperties.class).run((parent) -> {
-			new WebApplicationContextRunner().withParent(parent)
+		new WebApplicationContextRunner().withBean(ManagementServerProperties.class)
+			.run((parent) -> new WebApplicationContextRunner().withParent(parent)
 				.withUserConfiguration(ServletManagementChildContextConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed());
-		});
+				.run((context) -> assertThat(context).hasNotFailed()));
 	}
 
 }
