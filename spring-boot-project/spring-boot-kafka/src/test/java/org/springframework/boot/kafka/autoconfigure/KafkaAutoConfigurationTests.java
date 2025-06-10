@@ -567,22 +567,6 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void retryTopicConfigurationWithExponentialBackOffUsingDeprecatedProperties() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
-				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms")
-			.run((context) -> {
-				RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
-				assertThat(configuration.getDestinationTopicProperties()).hasSize(5)
-					.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
-					.containsExactly(tuple(0L, ""), tuple(100L, "-retry-0"), tuple(200L, "-retry-1"),
-							tuple(300L, "-retry-2"), tuple(0L, "-dlt"));
-			});
-	}
-
-	@Test
 	void retryTopicConfigurationWithDefaultProperties() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true")
@@ -608,34 +592,10 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void retryTopicConfigurationWithFixedBackOffUsingDeprecatedProperties() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=2s")
-			.run(assertRetryTopicConfiguration(
-					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
-						.extracting(DestinationTopic.Properties::delay)
-						.containsExactly(0L, 2000L, 0L)));
-	}
-
-	@Test
 	void retryTopicConfigurationWithNoBackOff() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
 				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.backoff.delay=0")
-			.run(assertRetryTopicConfiguration(
-					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
-						.extracting(DestinationTopic.Properties::delay)
-						.containsExactly(0L, 0L, 0L)));
-	}
-
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void retryTopicConfigurationWithNoBackOffUsingDeprecatedProperties() {
-		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=0")
 			.run(assertRetryTopicConfiguration(
 					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
 						.extracting(DestinationTopic.Properties::delay)

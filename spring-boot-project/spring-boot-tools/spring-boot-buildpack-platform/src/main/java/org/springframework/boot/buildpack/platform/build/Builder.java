@@ -26,7 +26,6 @@ import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
@@ -67,20 +66,6 @@ public class Builder {
 	/**
 	 * Create a new builder instance.
 	 * @param dockerConfiguration the docker configuration
-	 * @since 2.4.0
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #Builder(BuilderDockerConfiguration)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public Builder(
-			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
-		this(BuildLog.toSystemOut(), dockerConfiguration);
-	}
-
-	/**
-	 * Create a new builder instance.
-	 * @param dockerConfiguration the docker configuration
 	 * @since 3.5.0
 	 */
 	public Builder(BuilderDockerConfiguration dockerConfiguration) {
@@ -93,33 +78,6 @@ public class Builder {
 	 */
 	public Builder(BuildLog log) {
 		this(log, new DockerApi(null, BuildLogAdapter.get(log)), null);
-	}
-
-	/**
-	 * Create a new builder instance.
-	 * @param log a logger used to record output
-	 * @param dockerConfiguration the docker configuration
-	 * @since 2.4.0
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #Builder(BuildLog, BuilderDockerConfiguration)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public Builder(BuildLog log,
-			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration dockerConfiguration) {
-		this(log, adaptDeprecatedConfiguration(dockerConfiguration));
-	}
-
-	@SuppressWarnings("removal")
-	private static BuilderDockerConfiguration adaptDeprecatedConfiguration(
-			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration configuration) {
-		if (configuration == null) {
-			return null;
-		}
-		DockerConnectionConfiguration connection = org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration
-			.asConnectionConfiguration(configuration.getHost());
-		return new BuilderDockerConfiguration(connection, configuration.isBindHostToBuilder(),
-				configuration.getBuilderRegistryAuthentication(), configuration.getPublishRegistryAuthentication());
 	}
 
 	/**

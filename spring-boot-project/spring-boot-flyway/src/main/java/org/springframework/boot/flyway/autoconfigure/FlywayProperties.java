@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -210,11 +209,6 @@ public class FlywayProperties {
 	 * Whether to disable cleaning of the database.
 	 */
 	private boolean cleanDisabled = true;
-
-	/**
-	 * Whether to automatically call clean when a validation error occurs.
-	 */
-	private boolean cleanOnValidationError;
 
 	/**
 	 * Whether to group all pending migrations together in the same transaction when
@@ -595,17 +589,6 @@ public class FlywayProperties {
 		this.cleanDisabled = cleanDisabled;
 	}
 
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18 and removed in Flyway 11.0")
-	public boolean isCleanOnValidationError() {
-		return this.cleanOnValidationError;
-	}
-
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public void setCleanOnValidationError(boolean cleanOnValidationError) {
-		this.cleanOnValidationError = cleanOnValidationError;
-	}
-
 	public boolean isGroup() {
 		return this.group;
 	}
@@ -718,39 +701,6 @@ public class FlywayProperties {
 		this.errorOverrides = errorOverrides;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.sqlplus", since = "3.2.0")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Boolean getOracleSqlplus() {
-		return getOracle().getSqlplus();
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setOracleSqlplus(Boolean oracleSqlplus) {
-		getOracle().setSqlplus(oracleSqlplus);
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.sqlplus-warn", since = "3.2.0")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Boolean getOracleSqlplusWarn() {
-		return getOracle().getSqlplusWarn();
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setOracleSqlplusWarn(Boolean oracleSqlplusWarn) {
-		getOracle().setSqlplusWarn(oracleSqlplusWarn);
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.wallet-location", since = "3.2.0")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public String getOracleWalletLocation() {
-		return getOracle().getWalletLocation();
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setOracleWalletLocation(String oracleWalletLocation) {
-		getOracle().setWalletLocation(oracleWalletLocation);
-	}
-
 	public Boolean getStream() {
 		return this.stream;
 	}
@@ -775,34 +725,12 @@ public class FlywayProperties {
 		this.kerberosConfigFile = kerberosConfigFile;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.kerberos-cache-file", since = "3.2.0")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public String getOracleKerberosCacheFile() {
-		return getOracle().getKerberosCacheFile();
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setOracleKerberosCacheFile(String oracleKerberosCacheFile) {
-		getOracle().setKerberosCacheFile(oracleKerberosCacheFile);
-	}
-
 	public Boolean getOutputQueryResults() {
 		return this.outputQueryResults;
 	}
 
 	public void setOutputQueryResults(Boolean outputQueryResults) {
 		this.outputQueryResults = outputQueryResults;
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "spring.flyway.sqlserver.kerberos-login-file")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public String getSqlServerKerberosLoginFile() {
-		return getSqlserver().getKerberosLoginFile();
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setSqlServerKerberosLoginFile(String sqlServerKerberosLoginFile) {
-		getSqlserver().setKerberosLoginFile(sqlServerKerberosLoginFile);
 	}
 
 	public Boolean getSkipExecutingMigrations() {

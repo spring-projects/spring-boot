@@ -19,7 +19,6 @@ package org.springframework.boot.jms.autoconfigure;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for JMS.
@@ -201,28 +200,6 @@ public class JmsProperties {
 
 		public void setAutoStartup(boolean autoStartup) {
 			this.autoStartup = autoStartup;
-		}
-
-		@Deprecated(since = "3.2.0", forRemoval = true)
-		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.session.acknowledge-mode", since = "3.2.0")
-		public AcknowledgeMode getAcknowledgeMode() {
-			return this.session.getAcknowledgeMode();
-		}
-
-		@Deprecated(since = "3.2.0", forRemoval = true)
-		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
-			this.session.setAcknowledgeMode(acknowledgeMode);
-		}
-
-		@DeprecatedConfigurationProperty(replacement = "spring.jms.listener.min-concurrency", since = "3.2.0")
-		@Deprecated(since = "3.2.0", forRemoval = true)
-		public Integer getConcurrency() {
-			return this.minConcurrency;
-		}
-
-		@Deprecated(since = "3.2.0", forRemoval = true)
-		public void setConcurrency(Integer concurrency) {
-			this.minConcurrency = concurrency;
 		}
 
 		public Integer getMinConcurrency() {

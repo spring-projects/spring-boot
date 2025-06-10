@@ -159,11 +159,10 @@ class OpenTelemetryResourceAttributesTests {
 	}
 
 	@Test
-	void springApplicationGroupNameShouldBeUsedAsDefaultServiceGroup() {
+	void springApplicationGroupNameShouldBeUsedAsDefaultServiceNamespace() {
 		this.environment.setProperty("spring.application.group", "spring-boot");
-		assertThat(getAttributes()).hasSize(3)
+		assertThat(getAttributes()).hasSize(2)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "spring-boot")
 			.containsEntry("service.namespace", "spring-boot");
 	}
 
@@ -212,28 +211,26 @@ class OpenTelemetryResourceAttributesTests {
 	void resourceAttributesShouldTakePrecedenceOverApplicationGroupNameForPopulatingServiceNamespace() {
 		this.resourceAttributes.put("service.namespace", "spring-boot-app");
 		this.environment.setProperty("spring.application.group", "overridden");
-		assertThat(getAttributes()).hasSize(3)
+		assertThat(getAttributes()).hasSize(2)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "overridden")
 			.containsEntry("service.namespace", "spring-boot-app");
 	}
 
 	@Test
 	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupName() {
-		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.group=spring-boot");
+		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.namespace=spring-boot");
 		this.environment.setProperty("spring.application.group", "spring-boot-app");
-		assertThat(getAttributes()).hasSize(3)
+		assertThat(getAttributes()).hasSize(2)
 			.containsEntry("service.name", "unknown_service")
-			.containsEntry("service.group", "spring-boot")
-			.containsEntry("service.namespace", "spring-boot-app");
+			.containsEntry("service.namespace", "spring-boot");
 	}
 
 	@Test
 	void otelResourceAttributesShouldTakePrecedenceOverSpringApplicationGroupNameForServiceNamespace() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "service.namespace=spring-boot");
 		this.environment.setProperty("spring.application.group", "overridden");
-		assertThat(getAttributes()).hasSize(3)
-			.containsEntry("service.group", "overridden")
+		assertThat(getAttributes()).hasSize(2)
+			.containsEntry("service.name", "unknown_service")
 			.containsEntry("service.namespace", "spring-boot");
 	}
 

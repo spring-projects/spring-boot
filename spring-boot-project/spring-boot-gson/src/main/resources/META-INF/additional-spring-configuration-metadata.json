@@ -1,0 +1,13 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.gson.lenient",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.gson.strictness",
+        "since": "3.4.0"
+      }
+    }
+  ]
+}

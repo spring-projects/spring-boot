@@ -46,23 +46,6 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	 * @param discoverer the discoverer that discovered the endpoint
 	 * @param endpointBean the primary source bean
 	 * @param id the ID of the endpoint
-	 * @param enabledByDefault if the endpoint is enabled by default
-	 * @param operations the endpoint operations
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #AbstractDiscoveredEndpoint(EndpointDiscoverer, Object, EndpointId, Access, Collection)}
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
-			boolean enabledByDefault, Collection<? extends O> operations) {
-		this(discoverer, endpointBean, id, (enabledByDefault) ? Access.UNRESTRICTED : Access.READ_ONLY, operations);
-	}
-
-	/**
-	 * Create a new {@link AbstractDiscoveredEndpoint} instance.
-	 * @param discoverer the discoverer that discovered the endpoint
-	 * @param endpointBean the primary source bean
-	 * @param id the ID of the endpoint
 	 * @param defaultAccess access to the endpoint that is permitted by default
 	 * @param operations the endpoint operations
 	 * @since 3.4.0

@@ -302,18 +302,6 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.3.5", forRemoval = true)
-	void getLoggerConfigurationForALL() {
-		this.loggingSystem.beforeInitialize();
-		initialize(this.initializationContext, null, null);
-		Logger logger = (Logger) LoggerFactory.getILoggerFactory().getLogger(getClass().getName());
-		logger.setLevel(Level.ALL);
-		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
-		assertThat(configuration)
-			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.TRACE, LogLevel.TRACE));
-	}
-
-	@Test
 	void systemLevelTraceShouldReturnNativeLevelTraceNotAll() {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);

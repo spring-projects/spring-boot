@@ -35,6 +35,8 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api(project(":spring-boot-project:spring-boot-test"))
+	
+	compileOnly("org.mockito:mockito-core")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-data-mongodb"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))

@@ -34,7 +34,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -1583,51 +1582,6 @@ public class KafkaProperties {
 
 			public void setAttempts(int attempts) {
 				this.attempts = attempts;
-			}
-
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.delay", since = "3.4.0")
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public Duration getDelay() {
-				return getBackoff().getDelay();
-			}
-
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public void setDelay(Duration delay) {
-				getBackoff().setDelay(delay);
-			}
-
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.multiplier",
-					since = "3.4.0")
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public double getMultiplier() {
-				return getBackoff().getMultiplier();
-			}
-
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public void setMultiplier(double multiplier) {
-				getBackoff().setMultiplier(multiplier);
-			}
-
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.maxDelay", since = "3.4.0")
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public Duration getMaxDelay() {
-				return getBackoff().getMaxDelay();
-			}
-
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public void setMaxDelay(Duration maxDelay) {
-				getBackoff().setMaxDelay(maxDelay);
-			}
-
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.random", since = "3.4.0")
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public boolean isRandomBackOff() {
-				return getBackoff().isRandom();
-			}
-
-			@Deprecated(since = "3.4.0", forRemoval = true)
-			public void setRandomBackOff(boolean randomBackOff) {
-				getBackoff().setRandom(randomBackOff);
 			}
 
 			private final Backoff backoff = new Backoff();

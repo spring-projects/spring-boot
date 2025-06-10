@@ -32,16 +32,7 @@ public enum EndpointExposure {
 	/**
 	 * Exposed over a web endpoint.
 	 */
-	WEB("health"),
-
-	/**
-	 * Exposed on Cloud Foundry over `/cloudfoundryapplication`.
-	 * @since 2.6.4
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of using
-	 * {@link EndpointExposure#WEB}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	CLOUD_FOUNDRY("*");
+	WEB("health");
 
 	private final String[] defaultIncludes;
 

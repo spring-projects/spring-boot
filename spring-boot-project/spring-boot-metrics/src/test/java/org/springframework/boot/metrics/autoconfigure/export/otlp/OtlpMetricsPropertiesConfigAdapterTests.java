@@ -190,21 +190,21 @@ class OtlpMetricsPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void serviceGroupOverridesApplicationGroup() {
+	void serviceNamespaceOverridesApplicationGroup() {
 		this.environment.setProperty("spring.application.group", "alpha");
-		this.openTelemetryProperties.setResourceAttributes(Map.of("service.group", "beta"));
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.namespace", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.namespace", "beta");
 	}
 
 	@Test
-	void shouldUseApplicationGroupIfServiceGroupIsNotSet() {
+	void shouldUseApplicationGroupIfServiceNamspaceIsNotSet() {
 		this.environment.setProperty("spring.application.group", "alpha");
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "alpha");
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.namespace", "alpha");
 	}
 
 	@Test
 	void shouldUseDefaultApplicationGroupIfApplicationGroupIsNotSet() {
-		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.group");
+		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.namespace");
 	}
 
 	private OtlpMetricsPropertiesConfigAdapter createAdapter() {

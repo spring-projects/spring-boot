@@ -66,13 +66,6 @@ public @interface ControllerEndpoint {
 	String id();
 
 	/**
-	 * If the endpoint should be enabled or disabled by default.
-	 * @return {@code true} if the endpoint is enabled by default
-	 */
-	@AliasFor(annotation = Endpoint.class)
-	boolean enableByDefault() default true;
-
-	/**
 	 * Level of access to the endpoint that is permitted by default.
 	 * @return the default level of access
 	 * @since 3.4.0

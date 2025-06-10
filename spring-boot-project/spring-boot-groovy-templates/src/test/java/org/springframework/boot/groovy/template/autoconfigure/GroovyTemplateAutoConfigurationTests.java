@@ -188,13 +188,6 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	void customConfiguration() {
-		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
-		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent()).isTrue();
-	}
-
-	@Test
 	void enableAutoEscape() {
 		registerAndRefreshContext("spring.groovy.template.auto-escape:true");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoEscape()).isTrue();

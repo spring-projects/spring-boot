@@ -29,16 +29,6 @@ public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Address to where tracing will be published.
-	 * @return the address to where tracing will be published
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #getUrl(Transport)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	default String getUrl() {
-		return getUrl(Transport.HTTP);
-	}
-
-	/**
-	 * Address to where tracing will be published.
 	 * @param transport the transport to use
 	 * @return the address to where tracing will be published
 	 * @since 3.4.0

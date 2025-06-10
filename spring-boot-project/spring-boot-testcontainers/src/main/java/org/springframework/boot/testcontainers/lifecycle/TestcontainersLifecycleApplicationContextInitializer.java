@@ -51,7 +51,6 @@ public class TestcontainersLifecycleApplicationContextInitializer
 		TestcontainersLifecycleBeanPostProcessor beanPostProcessor = new TestcontainersLifecycleBeanPostProcessor(
 				beanFactory, startup);
 		beanFactory.addBeanPostProcessor(beanPostProcessor);
-		applicationContext.addApplicationListener(beanPostProcessor);
 	}
 
 }

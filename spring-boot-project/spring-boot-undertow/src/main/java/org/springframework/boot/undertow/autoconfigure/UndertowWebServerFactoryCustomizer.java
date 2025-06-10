@@ -106,7 +106,7 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(this.undertowProperties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
 		map.from(this.undertowProperties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
 		map.from(this.undertowProperties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
-		mapSlashProperties(this.undertowProperties, serverOptions);
+		mapSlashProperty(this.undertowProperties, serverOptions);
 		map.from(this.undertowProperties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
 		map.from(this.undertowProperties::getUrlCharset)
 			.as(Charset::name)
@@ -121,10 +121,8 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(this.undertowProperties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
 	}
 
-	@SuppressWarnings({ "deprecation", "removal" })
-	private void mapSlashProperties(UndertowServerProperties properties, ServerOptions serverOptions) {
+	private void mapSlashProperty(UndertowServerProperties properties, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
 		map.from(properties::getDecodeSlash).to(serverOptions.option(UndertowOptions.DECODE_SLASH));
 
 	}

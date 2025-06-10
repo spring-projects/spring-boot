@@ -124,15 +124,6 @@ class OpenTelemetrySdkAutoConfigurationTests {
 	}
 
 	@Test
-	void whenHasApplicationGroupPropertyProvidesServiceGroupResourceAttribute() {
-		this.contextRunner.withPropertyValues("spring.application.group=my-group").run((context) -> {
-			Resource resource = context.getBean(Resource.class);
-			assertThat(resource.getAttributes().asMap())
-				.contains(entry(AttributeKey.stringKey("service.group"), "my-group"));
-		});
-	}
-
-	@Test
 	void whenHasApplicationGroupPropertyProvidesServiceNamespaceResourceAttribute() {
 		this.contextRunner.withPropertyValues("spring.application.group=my-group").run((context) -> {
 			Resource resource = context.getBean(Resource.class);

@@ -151,13 +151,6 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@Deprecated(forRemoval = true, since = "3.0.3")
-	void allowEncodedSlashes() {
-		bind("server.undertow.allow-encoded-slash=true");
-		assertThat(boundServerOption(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();
-	}
-
-	@Test
 	void enableSlashDecoding() {
 		bind("server.undertow.decode-slash=true");
 		assertThat(boundServerOption(UndertowOptions.DECODE_SLASH)).isTrue();

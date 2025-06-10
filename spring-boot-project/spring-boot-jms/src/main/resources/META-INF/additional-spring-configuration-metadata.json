@@ -6,6 +6,21 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable JMS health check.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.jms.listener.acknowledge-mode",
+      "deprecation": {
+        "replacement": "spring.jms.listener.session.acknowledge-mode",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.jms.listener.concurrency",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "spring.jms.listener.min-concurrency",
+        "since": "3.2.0"
+      }
     }
   ],
   "hints": [

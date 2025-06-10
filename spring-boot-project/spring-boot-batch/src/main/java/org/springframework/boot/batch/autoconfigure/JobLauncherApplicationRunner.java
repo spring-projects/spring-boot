@@ -120,11 +120,6 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	@Deprecated(since = "3.0.10", forRemoval = true)
-	public void validate() {
-		afterPropertiesSet();
-	}
-
 	public void setOrder(int order) {
 		this.order = order;
 	}

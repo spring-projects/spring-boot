@@ -100,41 +100,6 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-	 * Create a new instance passing in the common pieces that will be shared if multiple
-	 * EntityManagerFactory instances are created.
-	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties the JPA properties to be passed to the persistence provider
-	 * @param persistenceUnitManager optional source of persistence unit information (can
-	 * be null)
-	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
-	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager)}
-	 */
-	@Deprecated(since = "3.4.4", forRemoval = true)
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
-			PersistenceUnitManager persistenceUnitManager) {
-		this(jpaVendorAdapter, (datasource) -> jpaProperties, persistenceUnitManager, null);
-	}
-
-	/**
-	 * Create a new instance passing in the common pieces that will be shared if multiple
-	 * EntityManagerFactory instances are created.
-	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties the JPA properties to be passed to the persistence provider
-	 * @param persistenceUnitManager optional source of persistence unit information (can
-	 * be null)
-	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
-	 * fallback or {@code null}
-	 * @since 1.4.1
-	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
-	 * {@link #EntityManagerFactoryBuilder(JpaVendorAdapter, Function, PersistenceUnitManager, URL)}
-	 */
-	@Deprecated(since = "3.4.4", forRemoval = true)
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
-			PersistenceUnitManager persistenceUnitManager, URL persistenceUnitRootLocation) {
-		this(jpaVendorAdapter, (datasource) -> jpaProperties, persistenceUnitManager, persistenceUnitRootLocation);
-	}
-
-	/**
 	 * Create a new {@link Builder} for a {@code EntityManagerFactory} using the settings
 	 * of the given instance, and the given {@link DataSource}.
 	 * @param dataSource the data source to use

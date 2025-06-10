@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.Ordered;
@@ -43,13 +42,6 @@ import org.springframework.test.context.support.DynamicPropertyRegistrarBeanInit
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnClass(DynamicPropertyRegistry.class)
 public class TestcontainersPropertySourceAutoConfiguration {
-
-	@Bean
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	static DynamicPropertyRegistry dynamicPropertyRegistry(ConfigurableApplicationContext applicationContext) {
-		return TestcontainersPropertySource.attach(applicationContext);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

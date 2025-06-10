@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -48,27 +47,6 @@ class ConfigurationsTests {
 	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations((Collection<Class<?>>) null))
 			.withMessageContaining("'classes' must not be null");
-	}
-
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void createShouldSortClassesUsingSortMethod() {
-		TestDeprecatedSortedConfigurations configurations = new TestDeprecatedSortedConfigurations(
-				Arrays.asList(OutputStream.class, InputStream.class));
-		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
-	}
-
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void getClassesShouldMergeByClassAndSortUsingSortMethod() {
-		Configurations c1 = new TestDeprecatedSortedConfigurations(
-				Arrays.asList(OutputStream.class, InputStream.class));
-		Configurations c2 = new TestConfigurations(Collections.singletonList(Short.class));
-		Configurations c3 = new TestDeprecatedSortedConfigurations(Arrays.asList(String.class, Integer.class));
-		Configurations c4 = new TestConfigurations(Arrays.asList(Long.class, Byte.class));
-		Class<?>[] classes = Configurations.getClasses(c1, c2, c3, c4);
-		assertThat(classes).containsExactly(Short.class, Long.class, Byte.class, InputStream.class, Integer.class,
-				OutputStream.class, String.class);
 	}
 
 	@Test
@@ -142,26 +120,6 @@ class ConfigurationsTests {
 		@Override
 		protected Configurations merge(Set<Class<?>> mergedClasses) {
 			return new TestSortedConfigurations(mergedClasses);
-		}
-
-	}
-
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	@SuppressWarnings("removal")
-	static class TestDeprecatedSortedConfigurations extends Configurations {
-
-		protected TestDeprecatedSortedConfigurations(Collection<Class<?>> classes) {
-			super(classes);
-		}
-
-		@Override
-		protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
-			return Sorter.instance.apply(classes);
-		}
-
-		@Override
-		protected Configurations merge(Set<Class<?>> mergedClasses) {
-			return new TestDeprecatedSortedConfigurations(mergedClasses);
 		}
 
 	}

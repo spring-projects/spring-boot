@@ -138,10 +138,7 @@ public class ResourceBanner implements Banner {
 	}
 
 	private Map<String, Object> getVersionsMap(Class<?> sourceClass, Environment environment, String defaultValue) {
-		String appVersion = getApplicationVersion(sourceClass);
-		if (appVersion == null) {
-			appVersion = getApplicationVersion(environment);
-		}
+		String appVersion = getApplicationVersion(environment);
 		String bootVersion = getBootVersion();
 		Map<String, Object> versions = new HashMap<>();
 		versions.put("application.version", getVersionString(appVersion, false, defaultValue));
@@ -149,17 +146,6 @@ public class ResourceBanner implements Banner {
 		versions.put("application.formatted-version", getVersionString(appVersion, true, defaultValue));
 		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true, defaultValue));
 		return versions;
-	}
-
-	/**
-	 * Returns the application version.
-	 * @param sourceClass the source class
-	 * @return the application version or {@code null} if unknown
-	 * @deprecated since 3.4.0 for removal in 4.0.0
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	protected String getApplicationVersion(Class<?> sourceClass) {
-		return null;
 	}
 
 	private String getApplicationVersion(Environment environment) {

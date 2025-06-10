@@ -49,15 +49,6 @@ public @interface WebEndpoint {
 	String id();
 
 	/**
-	 * If the endpoint should be enabled or disabled by default.
-	 * @return {@code true} if the endpoint is enabled by default
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #defaultAccess()}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	@AliasFor(annotation = Endpoint.class)
-	boolean enableByDefault() default true;
-
-	/**
 	 * Level of access to the endpoint that is permitted by default.
 	 * @return the default level of access
 	 * @since 3.4.0

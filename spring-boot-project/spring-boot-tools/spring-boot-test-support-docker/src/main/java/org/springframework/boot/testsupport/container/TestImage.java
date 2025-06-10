@@ -85,17 +85,6 @@ public enum TestImage {
 			(container) -> ((CassandraContainer) container).withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
-	 * A container image suitable for testing Cassandra using the deprecated
-	 * {@link org.testcontainers.containers.CassandraContainer}.
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CASSANDRA}
-	 */
-	@SuppressWarnings("deprecation")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	CASSANDRA_DEPRECATED("cassandra", "3.11.10", () -> org.testcontainers.containers.CassandraContainer.class,
-			(container) -> ((org.testcontainers.containers.CassandraContainer<?>) container)
-				.withStartupTimeout(Duration.ofMinutes(10))),
-
-	/**
 	 * A container image suitable for testing ClickHouse.
 	 */
 	CLICKHOUSE("clickhouse/clickhouse-server", "24.3"),
@@ -140,16 +129,6 @@ public enum TestImage {
 	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
 	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> ConfluentKafkaContainer.class),
-
-	/**
-	 * A container image suitable for testing Confluent's distribution of Kafka using the
-	 * deprecated {@link org.testcontainers.containers.KafkaContainer}.
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of {@link #CONFLUENT_KAFKA}
-	 */
-	@SuppressWarnings("deprecation")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	CONFLUENT_KAFKA_DEPRECATED("confluentinc/cp-kafka", "7.4.0",
-			() -> org.testcontainers.containers.KafkaContainer.class),
 
 	/**
 	 * A container image suitable for testing LLDAP.

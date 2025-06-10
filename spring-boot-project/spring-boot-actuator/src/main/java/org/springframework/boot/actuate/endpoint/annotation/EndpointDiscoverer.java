@@ -90,21 +90,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param parameterValueMapper the parameter value mapper
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param endpointFilters endpoint filters to apply
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #EndpointDiscoverer(ApplicationContext, ParameterValueMapper, Collection, Collection, Collection)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public EndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
-			Collection<OperationInvokerAdvisor> invokerAdvisors, Collection<EndpointFilter<E>> endpointFilters) {
-		this(applicationContext, parameterValueMapper, invokerAdvisors, endpointFilters, Collections.emptyList());
-	}
-
-	/**
-	 * Create a new {@link EndpointDiscoverer} instance.
-	 * @param applicationContext the source application context
-	 * @param parameterValueMapper the parameter value mapper
-	 * @param invokerAdvisors invoker advisors to apply
-	 * @param endpointFilters endpoint filters to apply
 	 * @param operationFilters operation filters to apply
 	 * @since 3.4.0
 	 */
@@ -385,21 +370,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * Factory method called to create the {@link ExposableEndpoint endpoint}.
 	 * @param endpointBean the source endpoint bean
 	 * @param id the ID of the endpoint
-	 * @param enabledByDefault if the endpoint is enabled by default
-	 * @param operations the endpoint operations
-	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #createEndpoint(Object, EndpointId, Access, Collection)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	protected E createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault, Collection<O> operations) {
-		return createEndpoint(endpointBean, id, (enabledByDefault) ? Access.UNRESTRICTED : Access.NONE, operations);
-	}
-
-	/**
-	 * Factory method called to create the {@link ExposableEndpoint endpoint}.
-	 * @param endpointBean the source endpoint bean
-	 * @param id the ID of the endpoint
 	 * @param defaultAccess access to the endpoint that is permitted by default
 	 * @param operations the endpoint operations
 	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
@@ -498,8 +468,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.beanType = beanType;
 			this.beanSupplier = beanSupplier;
 			this.id = EndpointId.of(environment, id);
-			boolean enabledByDefault = annotation.getBoolean("enableByDefault");
-			this.defaultAccess = enabledByDefault ? annotation.getEnum("defaultAccess", Access.class) : Access.NONE;
+			this.defaultAccess = annotation.getEnum("defaultAccess", Access.class);
 			this.filter = getFilter(beanType);
 		}
 

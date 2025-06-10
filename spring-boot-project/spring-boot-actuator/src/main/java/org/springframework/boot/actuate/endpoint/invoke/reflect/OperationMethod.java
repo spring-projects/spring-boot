@@ -49,7 +49,7 @@ public class OperationMethod {
 	 * @param method the source method
 	 * @param operationType the operation type
 	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
-	 * {@link #OperationMethod(Method, OperationType, Predicate)}p
+	 * {@link #OperationMethod(Method, OperationType, Predicate)}
 	 */
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	public OperationMethod(Method method, OperationType operationType) {

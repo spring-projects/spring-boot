@@ -122,14 +122,11 @@ public class LoggingSystemProperties {
 	}
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
-		Charset defaultCharset = getDefaultCharset();
-		Charset consoleCharset = (defaultCharset != null) ? defaultCharset : getDefaultConsoleCharset();
-		Charset fileCharset = (defaultCharset != null) ? defaultCharset : getDefaultFileCharset();
 		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
 		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
-		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, consoleCharset.name());
-		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, fileCharset.name());
+		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, getDefaultConsoleCharset().name());
+		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, getDefaultFileCharset().name());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
@@ -143,17 +140,6 @@ public class LoggingSystemProperties {
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
-	}
-
-	/**
-	 * Returns the default charset.
-	 * @return the default charset
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #getDefaultConsoleCharset()} and {@link #getDefaultFileCharset()}.
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	protected Charset getDefaultCharset() {
-		return null;
 	}
 
 	/**

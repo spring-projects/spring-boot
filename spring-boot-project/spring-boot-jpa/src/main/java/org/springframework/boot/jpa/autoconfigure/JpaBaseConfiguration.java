@@ -157,17 +157,6 @@ public abstract class JpaBaseConfiguration {
 	protected abstract Map<String, Object> getVendorProperties(DataSource dataSource);
 
 	/**
-	 * Return the vendor-specific properties.
-	 * @return the vendor properties
-	 * @deprecated since 3.4.4 for removal in 4.0.0 in favor of
-	 * {@link #getVendorProperties(DataSource)}
-	 */
-	@Deprecated(since = "3.4.4", forRemoval = true)
-	protected Map<String, Object> getVendorProperties() {
-		return getVendorProperties(getDataSource());
-	}
-
-	/**
 	 * Customize vendor properties before they are used. Allows for post-processing (for
 	 * example to configure JTA specific settings).
 	 * @param vendorProperties the vendor properties to customize

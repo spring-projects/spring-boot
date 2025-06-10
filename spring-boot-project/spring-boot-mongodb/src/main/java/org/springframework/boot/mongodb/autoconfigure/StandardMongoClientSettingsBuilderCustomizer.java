@@ -49,25 +49,6 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 
 	private int order = 0;
 
-	/**
-	 * Create a new instance.
-	 * @param connectionString the connection string
-	 * @param uuidRepresentation the uuid representation
-	 * @param ssl the ssl properties
-	 * @param sslBundles the ssl bundles
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails, UuidRepresentation)}
-	 */
-	@Deprecated(forRemoval = true, since = "3.5.0")
-	public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
-			UuidRepresentation uuidRepresentation, MongoProperties.Ssl ssl, SslBundles sslBundles) {
-		this.connectionDetails = null;
-		this.connectionString = connectionString;
-		this.uuidRepresentation = uuidRepresentation;
-		this.ssl = ssl;
-		this.sslBundles = sslBundles;
-	}
-
 	public StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails connectionDetails,
 			UuidRepresentation uuidRepresentation) {
 		this.connectionString = null;

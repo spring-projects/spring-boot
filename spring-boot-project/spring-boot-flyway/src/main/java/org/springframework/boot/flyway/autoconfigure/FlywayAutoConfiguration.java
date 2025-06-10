@@ -278,8 +278,6 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isBaselineOnMigrate())
 				.to((baselineOnMigrate) -> configuration.baselineOnMigrate(baselineOnMigrate));
 			map.from(properties.isCleanDisabled()).to((cleanDisabled) -> configuration.cleanDisabled(cleanDisabled));
-			map.from(properties.isCleanOnValidationError())
-				.to((cleanOnValidationError) -> configuration.cleanOnValidationError(cleanOnValidationError));
 			map.from(properties.isGroup()).to((group) -> configuration.group(group));
 			map.from(properties.isMixed()).to((mixed) -> configuration.mixed(mixed));
 			map.from(properties.isOutOfOrder()).to((outOfOrder) -> configuration.outOfOrder(outOfOrder));

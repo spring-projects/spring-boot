@@ -35,15 +35,6 @@ public interface ExposableEndpoint<O extends Operation> {
 	EndpointId getEndpointId();
 
 	/**
-	 * Returns if the endpoint is enabled by default.
-	 * @return if the endpoint is enabled by default
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #getDefaultAccess()}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	boolean isEnableByDefault();
-
-	/**
 	 * Returns the access to the endpoint that is permitted by default.
 	 * @return access that is permitted by default
 	 * @since 3.4.0

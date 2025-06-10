@@ -39,19 +39,6 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 	/**
 	 * Create a new {@link AbstractExposableEndpoint} instance.
 	 * @param id the endpoint id
-	 * @param enabledByDefault if the endpoint is enabled by default
-	 * @param operations the endpoint operations
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #AbstractExposableEndpoint(EndpointId, Access, Collection)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public AbstractExposableEndpoint(EndpointId id, boolean enabledByDefault, Collection<? extends O> operations) {
-		this(id, (enabledByDefault) ? Access.UNRESTRICTED : Access.READ_ONLY, operations);
-	}
-
-	/**
-	 * Create a new {@link AbstractExposableEndpoint} instance.
-	 * @param id the endpoint id
 	 * @param defaultAccess access to the endpoint that is permitted by default
 	 * @param operations the endpoint operations
 	 * @since 3.4.0
@@ -67,13 +54,6 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 	@Override
 	public EndpointId getEndpointId() {
 		return this.id;
-	}
-
-	@Override
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public boolean isEnableByDefault() {
-		return this.defaultAccess != Access.NONE;
 	}
 
 	@Override

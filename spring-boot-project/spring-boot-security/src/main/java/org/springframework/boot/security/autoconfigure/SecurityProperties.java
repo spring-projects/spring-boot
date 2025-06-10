@@ -48,15 +48,6 @@ public class SecurityProperties {
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
 
 	/**
-	 * Order applied to the {@code WebSecurityCustomizer} that ignores standard static
-	 * resource paths.
-	 * @deprecated since 3.5.0 for removal in 4.0.0 since Spring Security no longer
-	 * recommends using the {@code .ignoring()} method
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
-
-	/**
 	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
 	 * other filters registered with the container). There is no connection between this
 	 * and the {@code @Order} on a {@code SecurityFilterChain}.

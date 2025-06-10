@@ -46,33 +46,6 @@ class Gson210AutoConfigurationTests {
 		});
 	}
 
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void withoutLenient() {
-		this.contextRunner.run((context) -> {
-			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", false);
-		});
-	}
-
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void withLenientTrue() {
-		this.contextRunner.withPropertyValues("spring.gson.lenient:true").run((context) -> {
-			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", true);
-		});
-	}
-
-	@Test
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void withLenientFalse() {
-		this.contextRunner.withPropertyValues("spring.gson.lenient:false").run((context) -> {
-			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", false);
-		});
-	}
-
 	public class DataObject {
 
 		@SuppressWarnings("unused")

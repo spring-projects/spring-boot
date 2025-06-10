@@ -563,13 +563,6 @@ class EndpointDiscovererTests {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
-		protected TestExposableEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
-				Collection<TestOperation> operations) {
-			return new TestExposableEndpoint(this, endpointBean, id, enabledByDefault, operations);
-		}
-
-		@Override
 		protected TestOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 				OperationInvoker invoker) {
 			return new TestOperation(operationMethod, invoker);
@@ -604,13 +597,6 @@ class EndpointDiscovererTests {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
-		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean, EndpointId id,
-				boolean enabledByDefault, Collection<SpecializedOperation> operations) {
-			return new SpecializedExposableEndpoint(this, endpointBean, id, enabledByDefault, operations);
-		}
-
-		@Override
 		protected SpecializedOperation createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
 				OperationInvoker invoker) {
 			return new SpecializedOperation(operationMethod, invoker);
@@ -631,12 +617,6 @@ class EndpointDiscovererTests {
 			super(discoverer, endpointBean, id, defaultAccess, operations);
 		}
 
-		@SuppressWarnings("removal")
-		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
-				boolean enabledByDefault, Collection<? extends TestOperation> operations) {
-			super(discoverer, endpointBean, id, enabledByDefault, operations);
-		}
-
 	}
 
 	static class SpecializedExposableEndpoint extends AbstractDiscoveredEndpoint<SpecializedOperation> {
@@ -645,12 +625,6 @@ class EndpointDiscovererTests {
 		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 				Access defaultAccess, Collection<? extends SpecializedOperation> operations) {
 			super(discoverer, endpointBean, id, defaultAccess, operations);
-		}
-
-		@SuppressWarnings("removal")
-		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
-				boolean enabledByDefault, Collection<? extends SpecializedOperation> operations) {
-			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}
 
 	}
