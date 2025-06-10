@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration.AccessLogCustomizer;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +46,26 @@ class ServletManagementChildContextConfigurationTests {
 		};
 		assertThat(customizer.customizePrefix(null)).isEqualTo(null);
 		assertThat(customizer.customizePrefix("existing")).isEqualTo("existing");
+	}
+
+	@Test
+	// gh-45857
+	void failsWithoutManagementServerPropertiesBeanFromParent() {
+		new WebApplicationContextRunner().run((parent) -> {
+			new WebApplicationContextRunner().withParent(parent)
+				.withUserConfiguration(ServletManagementChildContextConfiguration.class)
+				.run((context) -> assertThat(context).hasFailed());
+		});
+	}
+
+	@Test
+	// gh-45857
+	void succeedsWithManagementServerPropertiesBeanFromParent() {
+		new WebApplicationContextRunner().withBean(ManagementServerProperties.class).run((parent) -> {
+			new WebApplicationContextRunner().withParent(parent)
+				.withUserConfiguration(ServletManagementChildContextConfiguration.class)
+				.run((context) -> assertThat(context).hasNotFailed());
+		});
 	}
 
 }
