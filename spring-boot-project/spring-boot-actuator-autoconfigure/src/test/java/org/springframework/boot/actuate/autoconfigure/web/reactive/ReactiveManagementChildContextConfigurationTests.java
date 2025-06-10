@@ -51,21 +51,19 @@ class ReactiveManagementChildContextConfigurationTests {
 	@Test
 	// gh-45857
 	void failsWithoutManagementServerPropertiesBeanFromParent() {
-		new ReactiveWebApplicationContextRunner().run((parent) -> {
-			new ReactiveWebApplicationContextRunner().withParent(parent)
+		new ReactiveWebApplicationContextRunner()
+			.run((parent) -> new ReactiveWebApplicationContextRunner().withParent(parent)
 				.withUserConfiguration(ReactiveManagementChildContextConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
-		});
+				.run((context) -> assertThat(context).hasFailed()));
 	}
 
 	@Test
 	// gh-45857
 	void succeedsWithManagementServerPropertiesBeanFromParent() {
-		new ReactiveWebApplicationContextRunner().withBean(ManagementServerProperties.class).run((parent) -> {
-			new ReactiveWebApplicationContextRunner().withParent(parent)
+		new ReactiveWebApplicationContextRunner().withBean(ManagementServerProperties.class)
+			.run((parent) -> new ReactiveWebApplicationContextRunner().withParent(parent)
 				.withUserConfiguration(ReactiveManagementChildContextConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed());
-		});
+				.run((context) -> assertThat(context).hasNotFailed()));
 	}
 
 }
