@@ -100,7 +100,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 		}
 	}
-	library("Zipkin Reporter", "3.5.0") {
+	library("Zipkin Reporter", "3.5.1") {
 		group("io.zipkin.reporter2") {
 			bom("zipkin-reporter-bom")
 		}
@@ -118,7 +118,7 @@ bom {
 			releaseNotes("https://github.com/openzipkin/brave/releases/tag/{version}")
 		}
 	}
-	library("Build Helper Maven Plugin", "3.6.0") {
+	library("Build Helper Maven Plugin", "3.6.1") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"build-helper-maven-plugin"
@@ -415,7 +415,7 @@ bom {
 				.formatted(version.toString("_")))
 		}
 	}
-	library("Git Commit ID Maven Plugin", "9.0.1") {
+	library("Git Commit ID Maven Plugin", "9.0.2") {
 		group("io.github.git-commit-id") {
 			plugins = [
 				"git-commit-id-maven-plugin"
@@ -474,7 +474,7 @@ bom {
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
-	library("Groovy", "4.0.26") {
+	library("Groovy", "4.0.27") {
 		prohibit {
 			contains "-alpha-"
 			because "we don't want alpha dependencies"
@@ -653,7 +653,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "15.2.1.Final") {
+	library("Infinispan", "15.2.3.Final") {
 		group("org.infinispan") {
 			bom("infinispan-bom")
 		}
@@ -938,7 +938,7 @@ bom {
 			releaseNotes("https://github.com/jaxen-xpath/jaxen/releases/tag/v{version}")
 		}
 	}
-	library("Jaybird", "6.0.1") {
+	library("Jaybird", "6.0.2") {
 		prohibit {
 			endsWith ".java8"
 			because "we use the .java11 version"
@@ -1001,14 +1001,14 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
 		}
 	}
-	library("Jetty Reactive HTTPClient", "4.0.9") {
+	library("Jetty Reactive HTTPClient", "4.0.10") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
 			]
 		}
 	}
-	library("Jetty", "12.0.21") {
+	library("Jetty", "12.0.22") {
 		prohibit {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
@@ -1503,7 +1503,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.15.0") {
+	library("Micrometer", "1.15.1") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1525,7 +1525,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.5.0") {
+	library("Micrometer Tracing", "1.5.1") {
 		considerSnapshots()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
@@ -1635,7 +1635,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.1.121.Final") {
+	library("Netty", "4.1.122.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
@@ -1730,7 +1730,7 @@ bom {
 			javadoc("https://javadoc.io/doc/org.messaginghub/pooled-jms/{version}", "org.messaginghub.pooled.jms")
 		}
 	}
-	library("Postgresql", "42.7.5") {
+	library("Postgresql", "42.7.6") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1742,7 +1742,7 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "1.3.6") {
+	library("Prometheus Client", "1.3.8") {
 		group("io.prometheus") {
 			bom("prometheus-metrics-bom")
 		}
@@ -1762,7 +1762,7 @@ bom {
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
-	library("Pulsar", "4.0.4") {
+	library("Pulsar", "4.0.5") {
 		group("org.apache.pulsar") {
 			bom("pulsar-bom") {
 				permit("org.apache.maven.plugin-tools:maven-plugin-annotations")
@@ -1929,7 +1929,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2024.0.6-SNAPSHOT") {
+	library("Reactor Bom", "2024.0.7") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
@@ -1942,7 +1942,7 @@ bom {
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
 		}
 	}
-	library("REST Assured", "5.5.1") {
+	library("REST Assured", "5.5.5") {
 		group("io.rest-assured") {
 			bom("rest-assured-bom")
 		}
@@ -2209,7 +2209,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "1.4.0-SNAPSHOT") {
+	library("Spring GraphQL", "1.4.0") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
@@ -2244,7 +2244,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "6.5.0-SNAPSHOT") {
+	library("Spring Integration", "6.5.0") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
@@ -2277,7 +2277,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "3.3.0-SNAPSHOT") {
+	library("Spring LDAP", "3.3.0") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
@@ -2297,7 +2297,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "1.2.6-SNAPSHOT") {
+	library("Spring Pulsar", "1.2.6") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
@@ -2355,7 +2355,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "3.5.0-RC1") {
+	library("Spring Session", "3.5.0") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -2404,7 +2404,7 @@ bom {
 			releaseNotes("https://github.com/xerial/sqlite-jdbc/releases/tag/{version}")
 		}
 	}
-	library("Testcontainers", "1.21.0") {
+	library("Testcontainers", "1.21.1") {
 		group("org.testcontainers") {
 			bom("testcontainers-bom")
 		}
@@ -2579,7 +2579,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/xml-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("XmlUnit2", "2.10.0") {
+	library("XmlUnit2", "2.10.2") {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
