@@ -368,6 +368,11 @@ antoraContributions {
 			}
 			from(documentAutoConfigurationClasses) {
 				into "modules/appendix/partials/auto-configuration-classes"
+				include "nav.adoc"
+			}
+			from(documentAutoConfigurationClasses) {
+				into "modules/appendix/pages/auto-configuration-classes"
+				exclude "nav.adoc"
 			}
 			from(documentConfigurationProperties) {
 				into "modules/appendix/partials/configuration-properties"
