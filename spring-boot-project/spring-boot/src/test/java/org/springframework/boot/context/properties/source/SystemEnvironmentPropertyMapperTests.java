@@ -48,13 +48,14 @@ class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapperTests {
 
 	@Test
 	void mapFromConfigurationShouldReturnBestGuess() {
-		assertThat(mapConfigurationPropertyName("server")).containsExactly("SERVER");
-		assertThat(mapConfigurationPropertyName("server.port")).containsExactly("SERVER_PORT");
-		assertThat(mapConfigurationPropertyName("host[0]")).containsExactly("HOST_0");
-		assertThat(mapConfigurationPropertyName("host[0][1]")).containsExactly("HOST_0_1");
-		assertThat(mapConfigurationPropertyName("host[0].name")).containsExactly("HOST_0_NAME");
-		assertThat(mapConfigurationPropertyName("host.f00.name")).containsExactly("HOST_F00_NAME");
-		assertThat(mapConfigurationPropertyName("foo.the-bar")).containsExactly("FOO_THEBAR", "FOO_THE_BAR");
+		assertThat(mapConfigurationPropertyName("server")).containsExactly("SERVER", "server");
+		assertThat(mapConfigurationPropertyName("server.port")).containsExactly("SERVER_PORT", "server_port");
+		assertThat(mapConfigurationPropertyName("host[0]")).containsExactly("HOST_0", "host_0");
+		assertThat(mapConfigurationPropertyName("host[0][1]")).containsExactly("HOST_0_1", "host_0_1");
+		assertThat(mapConfigurationPropertyName("host[0].name")).containsExactly("HOST_0_NAME", "host_0_name");
+		assertThat(mapConfigurationPropertyName("host.f00.name")).containsExactly("HOST_F00_NAME", "host_f00_name");
+		assertThat(mapConfigurationPropertyName("foo.the-bar")).containsExactly("FOO_THEBAR", "FOO_THE_BAR",
+				"foo_thebar", "foo_the_bar");
 	}
 
 	@Test
