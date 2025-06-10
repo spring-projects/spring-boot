@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,7 @@ import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -183,11 +185,16 @@ public class WebFluxEndpointManagementContextConfiguration {
 		@SuppressWarnings({ "removal", "deprecation" })
 		private void process(Encoder<?> encoder) {
 			if (encoder instanceof org.springframework.http.codec.json.Jackson2JsonEncoder jackson2JsonEncoder) {
-				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
-					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
-					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
-				});
+				this.endpointObjectMapper.get()
+					.getSupportedTypes()
+					.forEach((type) -> jackson2JsonEncoder.registerObjectMappersForType(type,
+							this::registerForAllMimeTypes));
 			}
+		}
+
+		private void registerForAllMimeTypes(Map<MimeType, ObjectMapper> registrar) {
+			ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
+			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, objectMapper));
 		}
 
 	}

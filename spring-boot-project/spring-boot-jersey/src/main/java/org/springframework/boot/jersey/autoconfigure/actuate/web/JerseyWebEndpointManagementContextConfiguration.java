@@ -229,7 +229,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		@Override
 		public ObjectMapper getContext(Class<?> type) {
-			return OperationResponseBody.class.isAssignableFrom(type) ? this.endpointObjectMapper.get() : null;
+			for (Class<?> supportedType : this.endpointObjectMapper.getSupportedTypes()) {
+				if (supportedType.isAssignableFrom(type)) {
+					return this.endpointObjectMapper.get();
+				}
+			}
+			return null;
 		}
 
 	}
