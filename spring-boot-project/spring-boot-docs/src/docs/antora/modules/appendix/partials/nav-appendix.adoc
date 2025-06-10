@@ -1,9 +1,9 @@
 * Appendix
 
 ** xref:appendix:application-properties/index.adoc[]
+
 ** xref:appendix:auto-configuration-classes/index.adoc[]
-*** xref:appendix:auto-configuration-classes/core.adoc[]
-*** xref:appendix:auto-configuration-classes/actuator.adoc[]
+include::appendix:partial$auto-configuration-classes/nav.adoc[]
 
 ** xref:appendix:test-auto-configuration/index.adoc[]
 *** xref:appendix:test-auto-configuration/slices.adoc[]
