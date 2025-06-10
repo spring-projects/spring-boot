@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -185,10 +186,13 @@ public class WebMvcEndpointManagementContextConfiguration {
 
 		@SuppressWarnings("removal")
 		private void configure(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter) {
-			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
-				ObjectMapper objectMapper = this.endpointObjectMapper.get();
-				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
-			});
+			this.endpointObjectMapper.getSupportedTypes()
+				.forEach((type) -> converter.registerObjectMappersForType(type, this::registerForAllMimeTypes));
+		}
+
+		private void registerForAllMimeTypes(Map<MediaType, ObjectMapper> registrar) {
+			ObjectMapper objectMapper = this.endpointObjectMapper.get();
+			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, objectMapper));
 		}
 
 	}
