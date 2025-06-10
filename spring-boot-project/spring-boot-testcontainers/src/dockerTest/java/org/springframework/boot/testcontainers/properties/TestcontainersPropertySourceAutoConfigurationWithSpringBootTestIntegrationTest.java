@@ -27,7 +27,6 @@ import org.springframework.boot.testcontainers.properties.TestcontainersProperty
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.springframework.test.context.DynamicPropertyRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,11 +45,6 @@ class TestcontainersPropertySourceAutoConfigurationWithSpringBootTestIntegration
 	private Environment environment;
 
 	@Test
-	void injectsRegistryIntoBeanMethod() {
-		assertThat(this.environment.getProperty("from.bean.method")).isEqualTo("one");
-	}
-
-	@Test
 	void callsRegistrars() {
 		assertThat(this.environment.getProperty("from.registrar")).isEqualTo("two");
 	}
@@ -59,12 +53,6 @@ class TestcontainersPropertySourceAutoConfigurationWithSpringBootTestIntegration
 	@ImportAutoConfiguration(TestcontainersPropertySourceAutoConfiguration.class)
 	@SpringBootConfiguration
 	static class TestConfig {
-
-		@Bean
-		String example(DynamicPropertyRegistry registry) {
-			registry.add("from.bean.method", () -> "one");
-			return "Hello";
-		}
 
 		@Bean
 		DynamicPropertyRegistrar propertyRegistrar() {

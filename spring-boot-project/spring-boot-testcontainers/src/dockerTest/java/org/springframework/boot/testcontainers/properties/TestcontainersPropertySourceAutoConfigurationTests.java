@@ -16,9 +16,6 @@
 
 package org.springframework.boot.testcontainers.properties;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +29,6 @@ import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailabl
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -54,59 +50,6 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withInitializer(new TestcontainersLifecycleApplicationContextInitializer())
 		.withConfiguration(AutoConfigurations.of(TestcontainersPropertySourceAutoConfiguration.class));
-
-	@Test
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void registeringADynamicPropertyFailsByDefault() {
-		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
-			.run((context) -> assertThat(context).getFailure()
-				.rootCause()
-				.isInstanceOf(
-						org.springframework.boot.testcontainers.properties.TestcontainersPropertySource.DynamicPropertyRegistryInjectionException.class)
-				.hasMessageStartingWith(
-						"Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void registeringADynamicPropertyCanLogAWarningAndContributeProperty(CapturedOutput output) {
-		List<ApplicationEvent> events = new ArrayList<>();
-		this.contextRunner.withPropertyValues("spring.testcontainers.dynamic-property-registry-injection=warn")
-			.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
-			.withInitializer((context) -> context.addApplicationListener(events::add))
-			.run((context) -> {
-				TestBean testBean = context.getBean(TestBean.class);
-				RedisContainer redisContainer = context.getBean(RedisContainer.class);
-				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
-				assertThat(events.stream()
-					.filter(org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent.class::isInstance))
-					.hasSize(1);
-				assertThat(output)
-					.contains("Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated");
-			});
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	void registeringADynamicPropertyCanBePermittedAndContributeProperty(CapturedOutput output) {
-		List<ApplicationEvent> events = new ArrayList<>();
-		this.contextRunner.withPropertyValues("spring.testcontainers.dynamic-property-registry-injection=allow")
-			.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
-			.withInitializer((context) -> context.addApplicationListener(events::add))
-			.run((context) -> {
-				TestBean testBean = context.getBean(TestBean.class);
-				RedisContainer redisContainer = context.getBean(RedisContainer.class);
-				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
-				assertThat(events.stream()
-					.filter(org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent.class::isInstance))
-					.hasSize(1);
-				assertThat(output)
-					.doesNotContain("Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated");
-			});
-	}
 
 	@Test
 	void dynamicPropertyRegistrarBeanContributesProperties(CapturedOutput output) {

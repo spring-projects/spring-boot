@@ -103,8 +103,8 @@ class KafkaAutoConfigurationIntegrationTests {
 	void testEndToEndWithRetryTopics() throws Exception {
 		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup", "spring.kafka.retry.topic.enabled=true",
-				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
-				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms",
+				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.backoff.delay=100ms",
+				"spring.kafka.retry.topic.backoff.multiplier=2", "spring.kafka.retry.topic.backoff.max-delay=300ms",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
 		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)

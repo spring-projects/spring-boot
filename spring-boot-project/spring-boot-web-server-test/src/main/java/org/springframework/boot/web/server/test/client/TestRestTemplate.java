@@ -21,28 +21,18 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
-import org.apache.hc.core5.http.io.SocketConfig;
-import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
@@ -61,7 +51,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.NoOpResponseErrorHandler;
@@ -162,9 +151,6 @@ public class TestRestTemplate {
 		if (requestFactoryBuilder instanceof HttpComponentsClientHttpRequestFactoryBuilder) {
 			builder = builder.requestFactoryBuilder(applyHttpClientOptions(
 					(HttpComponentsClientHttpRequestFactoryBuilder) requestFactoryBuilder, httpClientOptions));
-			if (HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)) {
-				builder = builder.redirects(HttpRedirects.FOLLOW);
-			}
 		}
 		if (username != null || password != null) {
 			builder = builder.basicAuthentication(username, password);
@@ -1057,103 +1043,12 @@ public class TestRestTemplate {
 		ENABLE_COOKIES,
 
 		/**
-		 * Enable redirects.
-		 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-		 * {@link TestRestTemplate#withRedirects(HttpRedirects)}
-		 */
-		@Deprecated(since = "3.5.0", forRemoval = true)
-		ENABLE_REDIRECTS,
-
-		/**
 		 * Use a {@link TlsSocketStrategy} that trusts self-signed certificates.
 		 */
 		SSL;
 
 		boolean isPresent(HttpClientOption[] options) {
 			return ObjectUtils.containsElement(options, this);
-		}
-
-	}
-
-	/**
-	 * {@link HttpComponentsClientHttpRequestFactory} to apply customizations.
-	 *
-	 * @deprecated since 3.5.0 for removal in 4.0.0
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	protected static class CustomHttpComponentsClientHttpRequestFactory extends HttpComponentsClientHttpRequestFactory {
-
-		private final String cookieSpec;
-
-		private final boolean enableRedirects;
-
-		/**
-		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
-		 * @param httpClientOptions the {@link HttpClient} options
-		 * @param settings the settings to apply
-		 */
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
-				ClientHttpRequestFactorySettings settings) {
-			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
-					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = settings.redirects() != HttpRedirects.DONT_FOLLOW;
-			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
-			if (settings.readTimeout() != null || ssl) {
-				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
-			}
-			if (settings.connectTimeout() != null) {
-				setConnectTimeout((int) settings.connectTimeout().toMillis());
-			}
-		}
-
-		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
-			try {
-				HttpClientBuilder builder = HttpClients.custom();
-				builder.setConnectionManager(createConnectionManager(readTimeout, ssl));
-				builder.setDefaultRequestConfig(createRequestConfig());
-				return builder.build();
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Unable to create customized HttpClient", ex);
-			}
-		}
-
-		private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
-				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
-			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
-			if (ssl) {
-				builder.setTlsSocketStrategy(createTlsSocketStrategy());
-			}
-			if (readTimeout != null) {
-				SocketConfig socketConfig = SocketConfig.custom()
-					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
-					.build();
-				builder.setDefaultSocketConfig(socketConfig);
-			}
-			return builder.build();
-		}
-
-		private TlsSocketStrategy createTlsSocketStrategy()
-				throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
-				.build();
-			return new DefaultClientTlsStrategy(sslContext, new String[] { TLS.V_1_3.getId(), TLS.V_1_2.getId() }, null,
-					null, null);
-		}
-
-		@Override
-		protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-			HttpClientContext context = HttpClientContext.create();
-			context.setRequestConfig(createRequestConfig());
-			return context;
-		}
-
-		protected RequestConfig createRequestConfig() {
-			RequestConfig.Builder builder = RequestConfig.custom();
-			builder.setCookieSpec(this.cookieSpec);
-			builder.setAuthenticationEnabled(false);
-			builder.setRedirectsEnabled(this.enableRedirects);
-			return builder.build();
 		}
 
 	}

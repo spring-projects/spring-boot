@@ -92,21 +92,6 @@ public class DockerApi {
 
 	/**
 	 * Create a new {@link DockerApi} instance.
-	 * @param dockerHost the Docker daemon host information
-	 * @since 2.4.0
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #DockerApi(DockerConnectionConfiguration, DockerLog)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public DockerApi(
-			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration dockerHost) {
-		this(org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration
-			.asConnectionConfiguration(dockerHost), DockerLog.toSystemOut());
-	}
-
-	/**
-	 * Create a new {@link DockerApi} instance.
 	 * @param connectionConfiguration the connection configuration to use
 	 * @param log a logger used to record output
 	 * @since 3.5.0

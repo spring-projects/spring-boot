@@ -644,34 +644,9 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void oracleSqlplusIsCorrectlyMappedWithDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-sqlplus=true")
-			.run((context) -> assertThat(context.getBean(Flyway.class)
-				.getConfiguration()
-				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
-				.getSqlplus()).isTrue());
-
-	}
-
-	@Test
 	void oracleSqlplusWarnIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle.sqlplus-warn=true")
-			.run((context) -> assertThat(context.getBean(Flyway.class)
-				.getConfiguration()
-				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
-				.getSqlplusWarn()).isTrue());
-	}
-
-	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void oracleSqlplusWarnIsCorrectlyMappedWithDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-sqlplus-warn=true")
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
@@ -691,33 +666,9 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void oracleWallerLocationIsCorrectlyMappedWithDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-wallet-location=/tmp/my.wallet")
-			.run((context) -> assertThat(context.getBean(Flyway.class)
-				.getConfiguration()
-				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
-				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
-	}
-
-	@Test
 	void oracleKerberosCacheFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.oracle.kerberos-cache-file=/tmp/cache")
-			.run((context) -> assertThat(context.getBean(Flyway.class)
-				.getConfiguration()
-				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
-				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
-	}
-
-	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void oracleKerberosCacheFileIsCorrectlyMappedWithDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache")
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
@@ -826,20 +777,6 @@ class FlywayAutoConfigurationTests {
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.sqlserver.kerberos-login-file=/tmp/config")
-			.run((context) -> assertThat(context.getBean(Flyway.class)
-				.getConfiguration()
-				.getPluginRegister()
-				.getPlugin(SQLServerConfigurationExtension.class)
-				.getKerberos()
-				.getLogin()
-				.getFile()).isEqualTo("/tmp/config"));
-	}
-
-	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void sqlServerKerberosLoginFileIsCorrectlyMappedWithDeprecatedProperty() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()

@@ -73,9 +73,8 @@ public abstract class Configurations {
 	 */
 	protected Configurations(Collection<Class<?>> classes) {
 		Assert.notNull(classes, "'classes' must not be null");
-		Collection<Class<?>> sorted = sort(classes);
 		this.sorter = null;
-		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
+		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(classes));
 		this.beanNameGenerator = null;
 	}
 
@@ -97,18 +96,6 @@ public abstract class Configurations {
 
 	protected final Set<Class<?>> getClasses() {
 		return this.classes;
-	}
-
-	/**
-	 * Sort configuration classes into the order that they should be applied.
-	 * @param classes the classes to sort
-	 * @return a sorted set of classes
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #Configurations(UnaryOperator, Collection, Function)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
-		return classes;
 	}
 
 	/**

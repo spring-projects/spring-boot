@@ -44,7 +44,6 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		registerHintsForLogbackLoggingSystemTypeChecks(reflection, classLoader);
 		registerHintsForBuiltInLogbackConverters(reflection);
 		registerHintsForSpringBootConverters(reflection);
-		registerHintsForDeprecateSpringBootConverters(reflection);
 	}
 
 	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
@@ -62,11 +61,6 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		registerForPublicConstructorInvocation(reflection, ColorConverter.class,
 				EnclosedInSquareBracketsConverter.class, ExtendedWhitespaceThrowableProxyConverter.class,
 				WhitespaceThrowableProxyConverter.class, CorrelationIdConverter.class);
-	}
-
-	@SuppressWarnings("removal")
-	private void registerHintsForDeprecateSpringBootConverters(ReflectionHints reflection) {
-		registerForPublicConstructorInvocation(reflection, ApplicationNameConverter.class);
 	}
 
 	private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {

@@ -50,16 +50,6 @@ public class ConnectionDetailsFactories {
 
 	/**
 	 * Create a new {@link ConnectionDetailsFactories} instance.
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #ConnectionDetailsFactories(ClassLoader)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public ConnectionDetailsFactories() {
-		this((ClassLoader) null);
-	}
-
-	/**
-	 * Create a new {@link ConnectionDetailsFactories} instance.
 	 * @param classLoader the class loader used to load factories
 	 * @since 3.5.0
 	 */

@@ -57,25 +57,6 @@ public class ThreadPoolTaskSchedulerBuilder {
 		this(null, null, null, null, null, null);
 	}
 
-	/**
-	 * Constructs a new {@code ThreadPoolTaskSchedulerBuilder} instance with the specified
-	 * configuration.
-	 * @param poolSize the maximum allowed number of threads
-	 * @param awaitTermination whether the executor should wait for scheduled tasks to
-	 * complete on shutdown
-	 * @param awaitTerminationPeriod the maximum time the executor is supposed to block on
-	 * shutdown
-	 * @param threadNamePrefix the prefix to use for the names of newly created threads
-	 * @param taskSchedulerCustomizers the customizers to apply to the
-	 * {@link ThreadPoolTaskScheduler}
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of the default constructor
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
-			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
-		this(poolSize, awaitTermination, awaitTerminationPeriod, threadNamePrefix, null, taskSchedulerCustomizers);
-	}
-
 	private ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
 			String threadNamePrefix, TaskDecorator taskDecorator,
 			Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {

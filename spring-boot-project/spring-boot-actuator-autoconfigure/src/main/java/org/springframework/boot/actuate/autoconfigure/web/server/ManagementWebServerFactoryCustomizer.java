@@ -46,15 +46,6 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 
 	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
-	@SafeVarargs
-	@SuppressWarnings("varargs")
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
-			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
-		this.beanFactory = beanFactory;
-		this.customizerClasses = customizerClasses;
-	}
-
 	/**
 	 * Creates a new customizer that will retrieve beans using the given
 	 * {@code beanFactory}.

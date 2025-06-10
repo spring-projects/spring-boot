@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.LongSerializationPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure {@link Gson}.
@@ -161,12 +160,6 @@ public class GsonProperties {
 
 	public void setStrictness(Strictness strictness) {
 		this.strictness = strictness;
-	}
-
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(replacement = "spring.gson.strictness", since = "3.4.0")
-	public Boolean getLenient() {
-		return (this.strictness != null) && (this.strictness == Strictness.LENIENT);
 	}
 
 	public void setLenient(Boolean lenient) {

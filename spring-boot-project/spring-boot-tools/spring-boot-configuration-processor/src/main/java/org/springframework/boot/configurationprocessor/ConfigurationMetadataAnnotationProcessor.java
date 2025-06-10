@@ -47,7 +47,6 @@ import javax.tools.Diagnostic.Kind;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
-import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
@@ -346,19 +345,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			return; // Can't process that endpoint
 		}
 		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.", endpointId);
-		boolean enabledByDefaultAttribute = (boolean) elementValues.getOrDefault("enableByDefault", true);
-		String defaultAccess = (!enabledByDefaultAttribute) ? "none"
-				: (elementValues.getOrDefault("defaultAccess", "unrestricted").toString()).toLowerCase(Locale.ENGLISH);
-		boolean enabledByDefault = !"none".equals(defaultAccess) && enabledByDefaultAttribute;
+		String defaultAccess = elementValues.getOrDefault("defaultAccess", "unrestricted")
+			.toString()
+			.toLowerCase(Locale.ENGLISH);
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
 		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
 		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
 				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
-		this.metadataCollector.add(
-				ItemMetadata.newProperty(endpointKey, "enabled", Boolean.class.getName(), type, null,
-						"Whether to enable the %s endpoint.".formatted(endpointId), enabledByDefault,
-						new ItemDeprecation(null, accessProperty.getName(), "3.4.0")),
-				(existing) -> checkEnabledValueMatchesExisting(existing, enabledByDefault, type));
 		this.metadataCollector.add(accessProperty,
 				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
 		if (hasMainReadOperation(element)) {
@@ -367,22 +360,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void checkEnabledValueMatchesExisting(ItemMetadata existing, boolean enabledByDefault, String sourceType) {
-		boolean existingDefaultValue = (boolean) existing.getDefaultValue();
-		if (enabledByDefault != existingDefaultValue) {
-			throw new IllegalStateException(
-					"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
-						.formatted(existing.getName(), existing.getSourceType(), existingDefaultValue, sourceType,
-								enabledByDefault));
-		}
-	}
-
 	private void checkDefaultAccessValueMatchesExisting(ItemMetadata existing, String defaultAccess,
 			String sourceType) {
 		String existingDefaultAccess = (String) existing.getDefaultValue();
 		if (!Objects.equals(defaultAccess, existingDefaultAccess)) {
 			throw new IllegalStateException(
-					"Existing property '%s' from type %s has a conflicting value. Existing value: %b, new value from type %s: %b"
+					"Existing property '%s' from type %s has a conflicting value. Existing value: %s, new value from type %s: %s"
 						.formatted(existing.getName(), existing.getSourceType(), existingDefaultAccess, sourceType,
 								defaultAccess));
 		}

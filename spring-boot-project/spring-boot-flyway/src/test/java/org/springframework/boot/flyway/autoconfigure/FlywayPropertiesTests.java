@@ -81,7 +81,6 @@ class FlywayPropertiesTests {
 		assertThat(properties.getInitSqls()).isEmpty();
 		assertThat(properties.isBaselineOnMigrate()).isEqualTo(configuration.isBaselineOnMigrate());
 		assertThat(properties.isCleanDisabled()).isEqualTo(configuration.isCleanDisabled());
-		assertThat(properties.isCleanOnValidationError()).isEqualTo(configuration.isCleanOnValidationError());
 		assertThat(properties.isGroup()).isEqualTo(configuration.isGroup());
 		assertThat(properties.isMixed()).isEqualTo(configuration.isMixed());
 		assertThat(properties.isOutOfOrder()).isEqualTo(configuration.isOutOfOrder());
@@ -111,9 +110,6 @@ class FlywayPropertiesTests {
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
 		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled");
-		// Deprecated properties
-		ignoreProperties(properties, "oracleKerberosCacheFile", "oracleSqlplus", "oracleSqlplusWarn",
-				"oracleWalletLocation", "sqlServerKerberosLoginFile");
 		// Properties that are managed by specific extensions
 		ignoreProperties(properties, "oracle", "postgresql", "sqlserver");
 		// Properties that are only used on the command line
@@ -127,7 +123,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
 				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory",
 				"cachedDataSources", "cachedResolvedEnvironments", "currentEnvironmentName", "allEnvironments",
-				"environmentProvisionMode", "provisionMode");
+				"environmentProvisionMode", "provisionMode", "cleanOnValidationError");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

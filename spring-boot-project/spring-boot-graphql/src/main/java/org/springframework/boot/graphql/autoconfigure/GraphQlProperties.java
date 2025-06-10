@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 
 /**
@@ -40,8 +39,6 @@ public class GraphQlProperties {
 
 	private final Schema schema = new Schema();
 
-	private final DeprecatedSse sse = new DeprecatedSse(this.http.getSse());
-
 	private final Websocket websocket = new Websocket();
 
 	public Http getHttp() {
@@ -50,17 +47,6 @@ public class GraphQlProperties {
 
 	public Graphiql getGraphiql() {
 		return this.graphiql;
-	}
-
-	@DeprecatedConfigurationProperty(replacement = "spring.graphql.http.path", since = "3.5.0")
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public String getPath() {
-		return getHttp().getPath();
-	}
-
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public void setPath(String path) {
-		getHttp().setPath(path);
 	}
 
 	public Schema getSchema() {
@@ -73,10 +59,6 @@ public class GraphQlProperties {
 
 	public Rsocket getRsocket() {
 		return this.rsocket;
-	}
-
-	public DeprecatedSse getSse() {
-		return this.sse;
 	}
 
 	public static class Http {
@@ -339,28 +321,6 @@ public class GraphQlProperties {
 
 		public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
-		}
-
-	}
-
-	@Deprecated(since = "3.5.1", forRemoval = true)
-	public static final class DeprecatedSse {
-
-		private final Sse sse;
-
-		private DeprecatedSse(Sse sse) {
-			this.sse = sse;
-		}
-
-		@DeprecatedConfigurationProperty(replacement = "spring.graphql.http.sse.timeout", since = "3.5.0")
-		@Deprecated(since = "3.5.0", forRemoval = true)
-		public Duration getTimeout() {
-			return this.sse.getTimeout();
-		}
-
-		@Deprecated(since = "3.5.0", forRemoval = true)
-		public void setTimeout(Duration timeout) {
-			this.sse.setTimeout(timeout);
 		}
 
 	}

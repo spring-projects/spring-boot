@@ -24,7 +24,18 @@
         "level": "error",
         "reason": "Removed in Flyway 10"
       }
-    },{
+    },
+    {
+      "name": "spring.flyway.clean-on-validation-error",
+      "type": "java.lang.Boolean",
+      "description": "Whether to automatically call clean when a validation error occurs.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Deprecated in Flyway 10.18 and removed in Flyway 11.0",
+        "since": "3.4.0"
+      }
+    },
+    {
       "name": "spring.flyway.community-db-support-enabled",
       "defaultValue": false
     },
@@ -94,10 +105,19 @@
     },
     {
       "name": "spring.flyway.locations",
-      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "sourceType": "org.springframework.boot.flyway.autoconfigure.FlywayProperties",
       "defaultValue": [
         "classpath:db/migration"
       ]
+    },
+    {
+      "name": "spring.flyway.oracle-kerberos-cache-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.kerberos-cache-file",
+        "level": "error",
+        "since": "3.2.0"
+      }
     },
     {
       "name": "spring.flyway.oracle-kerberos-config-file",
@@ -105,6 +125,33 @@
       "deprecation": {
         "replacement": "spring.flyway.kerberos-config-file",
         "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-sqlplus",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.sqlplus",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-sqlplus-warn",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.sqlplus-warn",
+        "level": "error",
+        "since": "3.2.0"
+      }
+    },
+    {
+      "name": "spring.flyway.oracle-wallet-location",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.oracle.wallet-location",
+        "level": "error",
+        "since": "3.2.0"
       }
     },
     {
@@ -117,10 +164,18 @@
     },
     {
       "name": "spring.flyway.sql-migration-suffixes",
-      "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
+      "sourceType": "org.springframework.boot.flyway.autoconfigure.FlywayProperties",
       "defaultValue": [
         ".sql"
       ]
+    },
+    {
+      "name": "spring.flyway.sql-server-kerberos-login-file",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.flyway.sqlserver.kerberos-login-file",
+        "level": "error"
+      }
     },
     {
       "name": "spring.flyway.undo-sql-migration-prefix",

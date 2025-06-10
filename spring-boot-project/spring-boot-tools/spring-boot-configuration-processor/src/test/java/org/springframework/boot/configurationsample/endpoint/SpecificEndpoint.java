@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
+import org.springframework.boot.configurationsample.Access;
 import org.springframework.boot.configurationsample.OptionalParameter;
 import org.springframework.boot.configurationsample.ReadOperation;
 import org.springframework.boot.configurationsample.WebEndpoint;
@@ -26,8 +27,7 @@ import org.springframework.boot.configurationsample.WebEndpoint;
  *
  * @author Stephane Nicoll
  */
-@SuppressWarnings({ "deprecation", "removal" })
-@WebEndpoint(id = "specific", enableByDefault = true)
+@WebEndpoint(id = "specific", defaultAccess = Access.READ_ONLY)
 public class SpecificEndpoint {
 
 	@ReadOperation

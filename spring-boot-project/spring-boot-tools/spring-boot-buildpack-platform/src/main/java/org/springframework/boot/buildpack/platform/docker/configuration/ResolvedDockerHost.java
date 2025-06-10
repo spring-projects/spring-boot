@@ -78,20 +78,6 @@ public class ResolvedDockerHost extends DockerHost {
 
 	/**
 	 * Create a new {@link ResolvedDockerHost} from the given host configuration.
-	 * @param dockerHostConfiguration the host configuration or {@code null}
-	 * @return the resolved docker host
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #from(DockerConnectionConfiguration)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public static ResolvedDockerHost from(DockerConfiguration.DockerHostConfiguration dockerHostConfiguration) {
-		return from(Environment.SYSTEM,
-				DockerConfiguration.DockerHostConfiguration.asConnectionConfiguration(dockerHostConfiguration));
-	}
-
-	/**
-	 * Create a new {@link ResolvedDockerHost} from the given host configuration.
 	 * @param connectionConfiguration the host configuration or {@code null}
 	 * @return the resolved docker host
 	 */

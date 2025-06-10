@@ -45,12 +45,6 @@ public class TestExposableJmxEndpoint implements ExposableJmxEndpoint {
 	}
 
 	@Override
-	@SuppressWarnings("removal")
-	public boolean isEnableByDefault() {
-		return true;
-	}
-
-	@Override
 	public Collection<JmxOperation> getOperations() {
 		return this.operations;
 	}

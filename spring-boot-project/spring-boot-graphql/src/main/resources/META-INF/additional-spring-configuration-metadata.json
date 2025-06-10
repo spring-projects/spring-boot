@@ -28,12 +28,32 @@
       }
     },
     {
+      "name": "spring.graphql.path",
+      "type": "java.lang.String",
+      "deprecated": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.graphql.http.path",
+        "since": "3.5.0"
+      }
+    },
+    {
       "name": "spring.graphql.schema.file-extensions",
       "defaultValue": ".graphqls,.gqls"
     },
     {
       "name": "spring.graphql.schema.locations",
       "defaultValue": "classpath:graphql/**/"
+    },
+    {
+      "name": "spring.graphql.sse.timeout",
+      "type": "java.time.Duration",
+      "deprecated": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.graphql.http.sse.timeout",
+        "since": "3.5.0"
+      }
     }
   ],
   "hints": [

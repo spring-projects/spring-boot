@@ -140,11 +140,8 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void options() {
-		RequestConfig config = getRequestConfig(
-				new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS, HttpClientOption.ENABLE_COOKIES));
-		assertThat(config.isRedirectsEnabled()).isTrue();
+		RequestConfig config = getRequestConfig(new TestRestTemplate(HttpClientOption.ENABLE_COOKIES));
 		assertThat(config.getCookieSpec()).isEqualTo("strict");
 	}
 
@@ -164,13 +161,9 @@ class TestRestTemplateTests {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
 		assertThat(getRedirectStrategy((RestTemplateBuilder) null)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(null, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder)).matches(this::isFollowStrategy);
-		assertThat(getRedirectStrategy(builder, HttpClientOption.ENABLE_REDIRECTS)).matches(this::isFollowStrategy);
 		assertThat(getRedirectStrategy(builder.redirects(HttpRedirects.DONT_FOLLOW)))
 			.matches(this::isDontFollowStrategy);
-		assertThat(getRedirectStrategy(builder.redirects(HttpRedirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS))
-			.matches(this::isFollowStrategy);
 	}
 
 	@Test

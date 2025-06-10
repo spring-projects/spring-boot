@@ -148,17 +148,4 @@ public class ConditionOutcome {
 		return (this.message != null) ? this.message.toString() : "";
 	}
 
-	/**
-	 * Return the inverse of the specified condition outcome.
-	 * @param outcome the outcome to inverse
-	 * @return the inverse of the condition outcome
-	 * @since 1.3.0
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #ConditionOutcome(boolean, ConditionMessage)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	public static ConditionOutcome inverse(ConditionOutcome outcome) {
-		return new ConditionOutcome(!outcome.isMatch(), outcome.getConditionMessage());
-	}
-
 }

@@ -119,6 +119,38 @@
       }
     },
     {
+      "name": "spring.kafka.retry.topic.delay",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.kafka.retry.topic.backoff.delay",
+        "since": "3.4.0"
+      }
+    },
+    {
+      "name": "spring.kafka.retry.topic.max-delay",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "replacement": "spring.kafka.retry.topic.backoff.maxDelay",
+        "since": "3.4.0"
+      }
+    },
+    {
+      "name": "spring.kafka.retry.topic.multiplier",
+      "type": "java.lang.Double",
+      "deprecation": {
+        "replacement": "spring.kafka.retry.topic.backoff.multiplier",
+        "since": "3.4.0"
+      }
+    },
+    {
+      "name": "spring.kafka.retry.topic.random-back-off",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.kafka.retry.topic.backoff.random",
+        "since": "3.4.0"
+      }
+    },
+    {
       "name": "spring.kafka.ssl.keystore-location",
       "type": "org.springframework.core.io.Resource",
       "description": "Location of the key store file.",

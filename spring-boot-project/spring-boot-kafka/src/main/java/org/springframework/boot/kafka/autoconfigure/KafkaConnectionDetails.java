@@ -86,46 +86,6 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Returns the list of bootstrap servers used for consumers.
-	 * @return the list of bootstrap servers used for consumers
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getConsumer()}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	default List<String> getConsumerBootstrapServers() {
-		return getConsumer().getBootstrapServers();
-	}
-
-	/**
-	 * Returns the list of bootstrap servers used for producers.
-	 * @return the list of bootstrap servers used for producers
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getProducer()}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	default List<String> getProducerBootstrapServers() {
-		return getProducer().getBootstrapServers();
-	}
-
-	/**
-	 * Returns the list of bootstrap servers used for the admin.
-	 * @return the list of bootstrap servers used for the admin
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getAdmin()}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	default List<String> getAdminBootstrapServers() {
-		return getAdmin().getBootstrapServers();
-	}
-
-	/**
-	 * Returns the list of bootstrap servers used for Kafka Streams.
-	 * @return the list of bootstrap servers used for Kafka Streams
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #getStreams()}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	default List<String> getStreamsBootstrapServers() {
-		return getStreams().getBootstrapServers();
-	}
-
-	/**
 	 * Kafka connection details configuration.
 	 */
 	interface Configuration {

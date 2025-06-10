@@ -16,17 +16,17 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
+import org.springframework.boot.configurationsample.Access;
 import org.springframework.boot.configurationsample.Endpoint;
 import org.springframework.boot.configurationsample.ReadOperation;
 
 /**
  * A simple endpoint with no default override, with the same id as {@link SimpleEndpoint},
- * but not enabled by default.
+ * but with no access by default.
  *
  * @author Moritz Halbritter
  */
-@SuppressWarnings({ "deprecation", "removal" })
-@Endpoint(id = "simple", enableByDefault = false)
+@Endpoint(id = "simple", defaultAccess = Access.NONE)
 public class SimpleEndpoint3 {
 
 	@ReadOperation

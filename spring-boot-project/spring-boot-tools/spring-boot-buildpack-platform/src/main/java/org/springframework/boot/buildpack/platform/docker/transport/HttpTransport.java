@@ -101,22 +101,6 @@ public interface HttpTransport {
 
 	/**
 	 * Create the most suitable {@link HttpTransport} based on the {@link DockerHost}.
-	 * @param dockerHost the Docker host information
-	 * @return a {@link HttpTransport} instance
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #create(DockerConnectionConfiguration)}
-	 */
-	@Deprecated(since = "3.5.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	static HttpTransport create(
-			org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration dockerHost) {
-		ResolvedDockerHost host = ResolvedDockerHost.from(dockerHost);
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(host);
-		return (remote != null) ? remote : LocalHttpClientTransport.create(host);
-	}
-
-	/**
-	 * Create the most suitable {@link HttpTransport} based on the {@link DockerHost}.
 	 * @param connectionConfiguration the Docker host information
 	 * @return a {@link HttpTransport} instance
 	 */

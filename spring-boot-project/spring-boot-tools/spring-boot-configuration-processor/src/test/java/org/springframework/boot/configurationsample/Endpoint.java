@@ -35,9 +35,6 @@ public @interface Endpoint {
 
 	String id() default "";
 
-	@Deprecated
-	boolean enableByDefault() default true;
-
 	Access defaultAccess() default Access.UNRESTRICTED;
 
 }

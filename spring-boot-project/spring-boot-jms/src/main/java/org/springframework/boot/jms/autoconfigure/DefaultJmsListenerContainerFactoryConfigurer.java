@@ -105,12 +105,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	/**
 	 * Set the {@link ObservationRegistry} to use.
 	 * @param observationRegistry the {@link ObservationRegistry}
-	 * @since 3.2.1
-	 * @deprecated since 3.3.10 for removal in 4.0.0 as this should have been package
-	 * private
 	 */
-	@Deprecated(since = "3.3.10", forRemoval = true)
-	public void setObservationRegistry(ObservationRegistry observationRegistry) {
+	void setObservationRegistry(ObservationRegistry observationRegistry) {
 		this.observationRegistry = observationRegistry;
 	}
 

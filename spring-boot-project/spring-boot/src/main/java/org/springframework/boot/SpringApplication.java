@@ -381,7 +381,6 @@ public class SpringApplication {
 		listeners.contextPrepared(context);
 		bootstrapContext.close(context);
 		if (this.properties.isLogStartupInfo()) {
-			logStartupInfo(context.getParent() == null);
 			logStartupInfo(context);
 			logStartupProfileInfo(context);
 		}
@@ -621,17 +620,6 @@ public class SpringApplication {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass, context.getEnvironment()).logStarting(getApplicationLog());
 		}
-	}
-
-	/**
-	 * Called to log startup information, subclasses may override to add additional
-	 * logging.
-	 * @param isRoot true if this application is the root of a context hierarchy
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #logStartupInfo(ConfigurableApplicationContext)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	protected void logStartupInfo(boolean isRoot) {
 	}
 
 	/**

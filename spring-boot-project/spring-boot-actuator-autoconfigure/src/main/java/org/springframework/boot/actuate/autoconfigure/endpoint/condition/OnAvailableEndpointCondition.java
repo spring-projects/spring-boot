@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -126,8 +125,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	private ConditionOutcome getAccessOutcome(Environment environment, MergedAnnotation<Endpoint> endpointAnnotation,
 			EndpointId endpointId, ConditionMessage.Builder message) {
 		Access defaultAccess = endpointAnnotation.getEnum("defaultAccess", Access.class);
-		boolean enableByDefault = endpointAnnotation.getBoolean("enableByDefault");
-		Access access = getAccess(environment, endpointId, (enableByDefault) ? defaultAccess : Access.NONE);
+		Access access = getAccess(environment, endpointId, defaultAccess);
 		return new ConditionOutcome(access != Access.NONE,
 				message.because("the configured access for endpoint '%s' is %s".formatted(endpointId, access)));
 	}
@@ -153,17 +151,8 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 
 	private Set<EndpointExposure> getExposures(MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
 		EndpointExposure[] exposures = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
-		return replaceCloudFoundryExposure(
-				(exposures.length == 0) ? EnumSet.allOf(EndpointExposure.class) : Arrays.asList(exposures));
-	}
-
-	@SuppressWarnings("removal")
-	private Set<EndpointExposure> replaceCloudFoundryExposure(Collection<EndpointExposure> exposures) {
-		Set<EndpointExposure> result = EnumSet.copyOf(exposures);
-		if (result.remove(EndpointExposure.CLOUD_FOUNDRY)) {
-			result.add(EndpointExposure.WEB);
-		}
-		return result;
+		return (exposures.length == 0) ? EnumSet.allOf(EndpointExposure.class)
+				: EnumSet.copyOf(Arrays.asList(exposures));
 	}
 
 	private Set<EndpointExposureOutcomeContributor> getExposureOutcomeContributors(ConditionContext context) {
