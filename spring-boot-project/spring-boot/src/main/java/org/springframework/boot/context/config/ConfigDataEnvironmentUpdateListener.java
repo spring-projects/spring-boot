@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.util.EventListener;
 
+import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
@@ -51,6 +52,20 @@ public interface ConfigDataEnvironmentUpdateListener extends EventListener {
 	 * @param profiles the profiles being set
 	 */
 	default void onSetProfiles(Profiles profiles) {
+	}
+
+	/**
+	 * Called when config data options are obtained for a particular property source.
+	 * @param configData the config data
+	 * @param propertySource the property source
+	 * @param options the options as provided by
+	 * {@link ConfigData#getOptions(PropertySource)}
+	 * @return the actual options that should be used
+	 * @since 3.5.1
+	 */
+	default ConfigData.Options onConfigDataOptions(ConfigData configData, PropertySource<?> propertySource,
+			Options options) {
+		return options;
 	}
 
 }

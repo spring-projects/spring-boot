@@ -239,7 +239,8 @@ public final class ConfigData {
 		}
 
 		private Options copy(Consumer<EnumSet<Option>> processor) {
-			EnumSet<Option> options = EnumSet.copyOf(this.options);
+			EnumSet<Option> options = (!this.options.isEmpty()) ? EnumSet.copyOf(this.options)
+					: EnumSet.noneOf(Option.class);
 			processor.accept(options);
 			return new Options(options);
 		}

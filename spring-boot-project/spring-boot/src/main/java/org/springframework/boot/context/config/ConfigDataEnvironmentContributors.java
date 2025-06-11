@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,27 +62,34 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 
 	private final ConversionService conversionService;
 
+	private final ConfigDataEnvironmentUpdateListener environmentUpdateListener;
+
 	/**
 	 * Create a new {@link ConfigDataEnvironmentContributors} instance.
 	 * @param logFactory the log factory
 	 * @param bootstrapContext the bootstrap context
 	 * @param contributors the initial set of contributors
 	 * @param conversionService the conversion service to use
+	 * @param environmentUpdateListener the environment update listener
 	 */
 	ConfigDataEnvironmentContributors(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
-			List<ConfigDataEnvironmentContributor> contributors, ConversionService conversionService) {
+			List<ConfigDataEnvironmentContributor> contributors, ConversionService conversionService,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		this.logger = logFactory.getLog(getClass());
 		this.bootstrapContext = bootstrapContext;
 		this.root = ConfigDataEnvironmentContributor.of(contributors, conversionService);
 		this.conversionService = conversionService;
+		this.environmentUpdateListener = environmentUpdateListener;
 	}
 
 	private ConfigDataEnvironmentContributors(Log logger, ConfigurableBootstrapContext bootstrapContext,
-			ConfigDataEnvironmentContributor root, ConversionService conversionService) {
+			ConfigDataEnvironmentContributor root, ConversionService conversionService,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		this.logger = logger;
 		this.bootstrapContext = bootstrapContext;
 		this.root = root;
 		this.conversionService = conversionService;
+		this.environmentUpdateListener = environmentUpdateListener;
 	}
 
 	/**
@@ -110,7 +117,8 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			if (contributor.getKind() == Kind.UNBOUND_IMPORT) {
 				ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(result, activationContext);
 				result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
-						result.getRoot().withReplacement(contributor, bound), this.conversionService);
+						result.getRoot().withReplacement(contributor, bound), this.conversionService,
+						this.environmentUpdateListener);
 				continue;
 			}
 			ConfigDataLocationResolverContext locationResolverContext = new ContributorConfigDataLocationResolverContext(
@@ -124,7 +132,8 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
 					asContributors(imported));
 			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
-					result.getRoot().withReplacement(contributor, contributorAndChildren), this.conversionService);
+					result.getRoot().withReplacement(contributor, contributorAndChildren), this.conversionService,
+					this.environmentUpdateListener);
 			processed++;
 		}
 	}
@@ -173,7 +182,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			else {
 				for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
 					contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource,
-							profileSpecific, data, i, this.conversionService));
+							profileSpecific, data, i, this.conversionService, this.environmentUpdateListener));
 				}
 			}
 		});
