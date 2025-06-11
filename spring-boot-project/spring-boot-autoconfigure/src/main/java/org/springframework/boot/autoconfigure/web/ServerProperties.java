@@ -517,7 +517,7 @@ public class ServerProperties {
 		 * Maximum number of parameters (GET plus POST) that will be automatically parsed
 		 * by the container. A value of less than 0 means no limit.
 		 */
-		private int maxParameterCount = 10000;
+		private int maxParameterCount = 1000;
 
 		/**
 		 * Whether to use APR.
