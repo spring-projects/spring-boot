@@ -71,6 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Parviz Rozikov
  * @author Lasse Wulff
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  */
 @DirtiesUrlFactories
 class ServerPropertiesTests {
@@ -255,6 +256,18 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void testCustomizeTomcatMaxPartCount() {
+		bind("server.tomcat.max-part-count", "20");
+		assertThat(this.properties.getTomcat().getMaxPartCount()).isEqualTo(20);
+	}
+
+	@Test
+	void testCustomizeTomcatMaxPartHeaderSize() {
+		bind("server.tomcat.max-part-header-size", "1024");
+		assertThat(this.properties.getTomcat().getMaxPartHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
+	}
+
+	@Test
 	void testCustomizeTomcatMinSpareThreads() {
 		bind("server.tomcat.threads.min-spare", "10");
 		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
@@ -391,6 +404,17 @@ class ServerPropertiesTests {
 	void tomcatMaxParameterCountMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxParameterCount())
 			.isEqualTo(getDefaultConnector().getMaxParameterCount());
+	}
+
+	@Test
+	void tomcatMaxPartCountMatchesConnectorDefault() {
+		assertThat(this.properties.getTomcat().getMaxPartCount()).isEqualTo(getDefaultConnector().getMaxPartCount());
+	}
+
+	@Test
+	void tomcatMaxPartHeaderSizeMatchesConnectorDefault() {
+		assertThat(this.properties.getTomcat().getMaxPartHeaderSize().toBytes())
+			.isEqualTo(getDefaultConnector().getMaxPartHeaderSize());
 	}
 
 	@Test

@@ -73,6 +73,7 @@ import org.springframework.util.unit.DataSize;
  * @author Florian Storz
  * @author Michael Weidmann
  * @author Lasse Wulff
+ * @author Daeho Kwon
  * @since 1.0.0
  */
 @ConfigurationProperties("server")
@@ -520,6 +521,21 @@ public class ServerProperties {
 		private int maxParameterCount = 10000;
 
 		/**
+		 * The maximum total number of parts permitted in a request where the content type
+		 * is multipart/form-data. This limit is in addition to maxParameterCount.
+		 * Requests that exceed this limit will be rejected. A value of less than 0 means
+		 * no limit.
+		 */
+		private int maxPartCount = 10;
+
+		/**
+		 * The maximum number of header bytes permitted per part in a request where the
+		 * content type is multipart/form-data. Requests that exceed this limit will be
+		 * rejected. A value of less than 0 means no limit.
+		 */
+		private DataSize maxPartHeaderSize = DataSize.ofBytes(512);
+
+		/**
 		 * Whether to use APR.
 		 */
 		private UseApr useApr = UseApr.NEVER;
@@ -686,6 +702,22 @@ public class ServerProperties {
 
 		public void setMaxParameterCount(int maxParameterCount) {
 			this.maxParameterCount = maxParameterCount;
+		}
+
+		public int getMaxPartCount() {
+			return this.maxPartCount;
+		}
+
+		public void setMaxPartCount(int maxPartCount) {
+			this.maxPartCount = maxPartCount;
+		}
+
+		public DataSize getMaxPartHeaderSize() {
+			return this.maxPartHeaderSize;
+		}
+
+		public void setMaxPartHeaderSize(DataSize maxPartHeaderSize) {
+			this.maxPartHeaderSize = maxPartHeaderSize;
 		}
 
 		public UseApr getUseApr() {
