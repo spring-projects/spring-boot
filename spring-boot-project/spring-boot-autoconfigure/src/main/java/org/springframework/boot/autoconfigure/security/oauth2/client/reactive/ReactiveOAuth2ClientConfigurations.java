@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
@@ -80,7 +81,7 @@ class ReactiveOAuth2ClientConfigurations {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		static class SecurityWebFilterChainConfiguration {
 
 			@Bean
