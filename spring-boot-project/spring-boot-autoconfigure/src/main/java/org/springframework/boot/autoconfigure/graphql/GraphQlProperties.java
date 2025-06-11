@@ -343,6 +343,7 @@ public class GraphQlProperties {
 
 	}
 
+	@Deprecated(since = "3.5.1", forRemoval = true)
 	public static final class DeprecatedSse {
 
 		private final Sse sse;
