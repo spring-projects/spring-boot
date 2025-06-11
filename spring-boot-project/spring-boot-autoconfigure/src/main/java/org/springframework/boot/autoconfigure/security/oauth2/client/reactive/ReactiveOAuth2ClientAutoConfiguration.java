@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
@@ -47,7 +48,7 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+		@ConditionalOnWebApplication(type = Type.SERVLET)
 		static class ServletApplicationCondition {
 
 		}
