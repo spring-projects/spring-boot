@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import com.gradle.develocity.agent.gradle.test.DevelocityTestConfiguration;
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionConfiguration;
 import com.gradle.develocity.agent.gradle.test.TestRetryConfiguration;
+import io.spring.gradle.nullability.NullabilityPlugin;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -68,8 +69,8 @@ import org.springframework.util.StringUtils;
  * <ul>
  * <li>The project is configured with source and target compatibility of 17
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
- * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link ArchitecturePlugin
- * Architecture} plugins are applied
+ * Checkstyle}, {@link TestFailuresPlugin Test Failures}, {@link ArchitecturePlugin
+ * Architecture} and {@link NullabilityPlugin} plugins are applied
  * <li>{@link Test} tasks are configured:
  * <ul>
  * <li>to use JUnit Platform
@@ -140,6 +141,7 @@ class JavaConventions {
 			configureToolchain(project);
 			configureProhibitedDependencyChecks(project);
 			configureFactoriesFilesChecks(project);
+			configureNullability(project);
 		});
 	}
 
@@ -333,6 +335,10 @@ class JavaConventions {
 					});
 				check.configure((task) -> task.dependsOn(checkSpringFactories));
 			});
+	}
+
+	private void configureNullability(Project project) {
+		project.getPlugins().apply(NullabilityPlugin.class);
 	}
 
 }

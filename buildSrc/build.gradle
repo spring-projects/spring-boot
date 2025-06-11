@@ -64,6 +64,7 @@ dependencies {
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
 	implementation("org.yaml:snakeyaml:${snakeYamlVersion}")
+	implementation("io.spring.gradle.nullability:nullability-plugin:${nullabilityPluginVersion}")
 
 	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
