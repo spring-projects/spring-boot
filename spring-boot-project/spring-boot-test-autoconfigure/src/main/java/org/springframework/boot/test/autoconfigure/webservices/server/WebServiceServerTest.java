@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * </ul>
  * <p>
  * Typically {@code WebServiceServerTest} is used in combination with
- * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
- * {@link org.springframework.context.annotation.Import @Import} to create any
+ * {@link org.springframework.test.context.bean.override.mockito.MockitoBean @MockitoBean}
+ * or {@link org.springframework.context.annotation.Import @Import} to create any
  * collaborators required by your {@code Endpoint} beans.
  * <p>
  * If you are looking to load your full application configuration and use
