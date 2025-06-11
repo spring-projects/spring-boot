@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -43,7 +44,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.1.0
  */
 @AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ JettyServerThreadPoolMetrics.class, Server.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class JettyMetricsAutoConfiguration {
