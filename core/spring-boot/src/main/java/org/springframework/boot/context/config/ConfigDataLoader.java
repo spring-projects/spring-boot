@@ -18,6 +18,8 @@ package org.springframework.boot.context.config;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
@@ -61,7 +63,7 @@ public interface ConfigDataLoader<R extends ConfigDataResource> {
 	 * @throws IOException on IO error
 	 * @throws ConfigDataResourceNotFoundException if the resource cannot be found
 	 */
-	ConfigData load(ConfigDataLoaderContext context, R resource)
+	@Nullable ConfigData load(ConfigDataLoaderContext context, R resource)
 			throws IOException, ConfigDataResourceNotFoundException;
 
 }

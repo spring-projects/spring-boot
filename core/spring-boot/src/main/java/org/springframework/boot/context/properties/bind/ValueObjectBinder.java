@@ -37,6 +37,7 @@ import kotlin.reflect.KParameter;
 import kotlin.reflect.jvm.ReflectJvmMapping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.Binder.Context;
@@ -72,13 +73,15 @@ class ValueObjectBinder implements DataObjectBinder {
 	}
 
 	@Override
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
+	public <T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
 			DataObjectPropertyBinder propertyBinder) {
 		ValueObject<T> valueObject = ValueObject.get(target, context, this.constructorProvider, Discoverer.LENIENT);
 		if (valueObject == null) {
 			return null;
 		}
-		context.pushConstructorBoundTypes(target.getType().resolve());
+		Class<?> targetType = target.getType().resolve();
+		Assert.state(targetType != null, "'targetType' must not be null");
+		context.pushConstructorBoundTypes(targetType);
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<Object> args = new ArrayList<>(parameters.size());
 		boolean bound = false;
@@ -94,7 +97,7 @@ class ValueObjectBinder implements DataObjectBinder {
 	}
 
 	@Override
-	public <T> T create(Bindable<T> target, Binder.Context context) {
+	public <T> @Nullable T create(Bindable<T> target, Binder.Context context) {
 		ValueObject<T> valueObject = ValueObject.get(target, context, this.constructorProvider, Discoverer.LENIENT);
 		if (valueObject == null) {
 			return null;
@@ -117,7 +120,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 	}
 
-	private <T> T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
+	private <T> @Nullable T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
 		ResolvableType type = parameter.getType();
 		Annotation[] annotations = parameter.getAnnotations();
 		for (Annotation annotation : annotations) {
@@ -132,7 +135,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		return null;
 	}
 
-	private <T> T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
+	private <T> @Nullable T convertDefaultValue(BindConverter converter, String[] defaultValue, ResolvableType type,
 			Annotation[] annotations) {
 		try {
 			return converter.convert(defaultValue, type, annotations);
@@ -147,7 +150,7 @@ class ValueObjectBinder implements DataObjectBinder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getNewDefaultValueInstanceIfPossible(Binder.Context context, ResolvableType type) {
+	private <T> @Nullable T getNewDefaultValueInstanceIfPossible(Binder.Context context, ResolvableType type) {
 		Class<T> resolved = (Class<T>) type.resolve();
 		Assert.state(resolved == null || isEmptyDefaultValueAllowed(resolved),
 				() -> "Parameter of type " + type + " must have a non-empty default value.");
@@ -207,7 +210,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		abstract List<ConstructorParameter> getConstructorParameters();
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Bindable<T> bindable, Binder.Context context,
+		static <T> @Nullable ValueObject<T> get(Bindable<T> bindable, Binder.Context context,
 				BindConstructorProvider constructorProvider, ParameterNameDiscoverer parameterNameDiscoverer) {
 			Class<T> resolvedType = (Class<T>) bindable.getType().resolve();
 			if (resolvedType == null || resolvedType.isEnum() || Modifier.isAbstract(resolvedType.getModifiers())) {
@@ -224,7 +227,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		private static <T> ValueObject<T> get(Bindable<T> bindable, Binder.Context context,
+		private static <T> @Nullable ValueObject<T> get(Bindable<T> bindable, Binder.Context context,
 				BindConstructorProvider constructorProvider, ParameterNameDiscoverer parameterNameDiscoverer,
 				Class<T> resolvedType) {
 			Constructor<?> bindConstructor = constructorProvider.getBindConstructor(bindable,
@@ -297,7 +300,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			return this.constructorParameters;
 		}
 
-		static <T> ValueObject<T> get(Constructor<T> bindConstructor, ResolvableType type,
+		static <T> @Nullable ValueObject<T> get(Constructor<T> bindConstructor, ResolvableType type,
 				ParameterNameDiscoverer parameterNameDiscoverer) {
 			KFunction<T> kotlinConstructor = ReflectJvmMapping.getKotlinFunction(bindConstructor);
 			if (kotlinConstructor != null) {
@@ -327,9 +330,9 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type,
+		static <T> @Nullable ValueObject<T> get(Constructor<?> bindConstructor, ResolvableType type,
 				ParameterNameDiscoverer parameterNameDiscoverer) {
-			String[] names = parameterNameDiscoverer.getParameterNames(bindConstructor);
+			@Nullable String @Nullable [] names = parameterNameDiscoverer.getParameterNames(bindConstructor);
 			if (names == null) {
 				return null;
 			}
@@ -338,7 +341,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		private static List<ConstructorParameter> parseConstructorParameters(Constructor<?> constructor,
-				ResolvableType type, String[] names) {
+				ResolvableType type, @Nullable String[] names) {
 			Parameter[] parameters = constructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.length);
 			for (int i = 0; i < parameters.length; i++) {
@@ -349,6 +352,7 @@ class ValueObjectBinder implements DataObjectBinder {
 				ResolvableType parameterType = ResolvableType.forMethodParameter(new MethodParameter(constructor, i),
 						type);
 				Annotation[] annotations = parameters[i].getDeclaredAnnotations();
+				Assert.state(name != null, "'name' must not be null");
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
@@ -373,7 +377,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.annotations = annotations;
 		}
 
-		Object bind(DataObjectPropertyBinder propertyBinder) {
+		@Nullable Object bind(DataObjectPropertyBinder propertyBinder) {
 			return propertyBinder.bindProperty(this.name, Bindable.of(this.type).withAnnotations(this.annotations));
 		}
 
@@ -416,8 +420,8 @@ class ValueObjectBinder implements DataObjectBinder {
 		}
 
 		@Override
-		public String[] getParameterNames(Constructor<?> constructor) {
-			String[] names = this.delegate.getParameterNames(constructor);
+		public @Nullable String @Nullable [] getParameterNames(Constructor<?> constructor) {
+			@Nullable String @Nullable [] names = this.delegate.getParameterNames(constructor);
 			if (names != null) {
 				return names;
 			}

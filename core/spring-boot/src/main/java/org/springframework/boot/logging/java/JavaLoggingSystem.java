@@ -28,6 +28,8 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
@@ -85,7 +87,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, @Nullable LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
 		}
@@ -96,11 +98,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
-			LogFile logFile) {
+			@Nullable LogFile logFile) {
 		loadConfiguration(location, logFile);
 	}
 
-	protected void loadConfiguration(String location, LogFile logFile) {
+	protected void loadConfiguration(String location, @Nullable LogFile logFile) {
 		Assert.notNull(location, "'location' must not be null");
 		try {
 			Resource resource = ApplicationResourceLoader.get().getResource(location);
@@ -121,7 +123,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void setLogLevel(String loggerName, LogLevel level) {
+	public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
 		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
 			loggerName = "";
 		}
@@ -144,7 +146,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		Logger logger = Logger.getLogger(loggerName);
 		if (logger == null) {
 			return null;
@@ -152,6 +154,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
 		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(getEffectiveLevel(logger));
 		String name = (StringUtils.hasLength(logger.getName()) ? logger.getName() : ROOT_LOGGER_NAME);
+		Assert.state(effectiveLevel != null, "effectiveLevel must not be null");
 		return new LoggerConfiguration(name, level, effectiveLevel);
 	}
 
@@ -183,7 +186,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 				Factory.class.getClassLoader());
 
 		@Override
-		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
+		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new JavaLoggingSystem(classLoader);
 			}

@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.PropertySourceOrigin;
@@ -38,6 +40,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
@@ -58,9 +61,9 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private final SoftReferenceConfigurationPropertyCache<Cache> cache;
 
-	private volatile ConfigurationPropertyName[] configurationPropertyNames;
+	private volatile @Nullable ConfigurationPropertyName @Nullable [] configurationPropertyNames;
 
-	private final Map<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfCache;
+	private final @Nullable Map<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfCache;
 
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
 			boolean systemEnvironmentSource, PropertyMapper... mappers) {
@@ -99,7 +102,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(@Nullable ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
 		}
@@ -118,13 +121,13 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	@Override
-	protected Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
+	protected @Nullable Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
 		return getCache().getSystemEnvironmentProperty(name);
 	}
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		ConfigurationPropertyName[] names = getConfigurationPropertyNames();
+		@Nullable ConfigurationPropertyName[] names = getConfigurationPropertyNames();
 		return Arrays.stream(names).filter(Objects::nonNull);
 	}
 
@@ -160,7 +163,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private boolean ancestorOfCheck(ConfigurationPropertyName name) {
-		ConfigurationPropertyName[] candidates = getConfigurationPropertyNames();
+		@Nullable ConfigurationPropertyName[] candidates = getConfigurationPropertyNames();
 		for (ConfigurationPropertyName candidate : candidates) {
 			if (candidate != null && this.ancestorOfCheck.test(name, candidate)) {
 				return true;
@@ -169,11 +172,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return false;
 	}
 
-	ConfigurationPropertyName[] getConfigurationPropertyNames() {
+	@Nullable ConfigurationPropertyName[] getConfigurationPropertyNames() {
 		if (!isImmutablePropertySource()) {
 			return getCache().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
-		ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
+		@Nullable ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
 		if (configurationPropertyNames == null) {
 			configurationPropertyNames = getCache()
 				.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
@@ -225,7 +228,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final boolean systemEnvironmentSource;
 
-		private volatile Data data;
+		private volatile @Nullable Data data;
 
 		Cache(PropertyMapper[] mappers, boolean immutable, boolean captureDescendants,
 				boolean systemEnvironmentSource) {
@@ -293,11 +296,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return new HashMap<>((Map<String, Object>) propertySource.getSource());
 		}
 
-		private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
+		private <K, V> Map<K, V> cloneOrCreate(@Nullable Map<K, V> source, int size) {
 			return (source != null) ? new LinkedHashMap<>(source) : new LinkedHashMap<>(size);
 		}
 
-		private void addParents(Set<ConfigurationPropertyName> descendants, ConfigurationPropertyName name) {
+		private void addParents(@Nullable Set<ConfigurationPropertyName> descendants,
+				@Nullable ConfigurationPropertyName name) {
 			if (descendants == null || name == null || name.isEmpty()) {
 				return;
 			}
@@ -315,12 +319,15 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		Set<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
-			return this.data.mappings().getOrDefault(configurationPropertyName, Collections.emptySet());
+			Data data = this.data;
+			Assert.state(data != null, "'data' must not be null");
+			return data.mappings().getOrDefault(configurationPropertyName, Collections.emptySet());
 		}
 
-		ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
+		@Nullable ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {
 			Data data = this.data;
-			ConfigurationPropertyName[] names = data.configurationPropertyNames();
+			Assert.state(data != null, "'data' must not be null");
+			@Nullable ConfigurationPropertyName[] names = data.configurationPropertyNames();
 			if (names != null) {
 				return names;
 			}
@@ -335,18 +342,25 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return names;
 		}
 
-		Set<ConfigurationPropertyName> getDescendants() {
-			return this.data.descendants();
+		@Nullable Set<ConfigurationPropertyName> getDescendants() {
+			Data data = this.data;
+			Assert.state(data != null, "'data' must not be null");
+			return data.descendants();
 		}
 
-		Object getSystemEnvironmentProperty(String name) {
-			return this.data.systemEnvironmentCopy().get(name);
+		@Nullable Object getSystemEnvironmentProperty(String name) {
+			Data data = this.data;
+			Assert.state(data != null, "'data' must not be null");
+			Map<String, Object> systemEnvironmentCopy = data.systemEnvironmentCopy();
+			Assert.state(systemEnvironmentCopy != null, "'systemEnvironmentCopy' must not be null");
+			return systemEnvironmentCopy.get(name);
 		}
 
 		private record Data(Map<ConfigurationPropertyName, Set<String>> mappings,
-				Map<String, ConfigurationPropertyName> reverseMappings, Set<ConfigurationPropertyName> descendants,
-				ConfigurationPropertyName[] configurationPropertyNames, Map<String, Object> systemEnvironmentCopy,
-				String[] lastUpdated) {
+				Map<String, ConfigurationPropertyName> reverseMappings,
+				@Nullable Set<ConfigurationPropertyName> descendants,
+				ConfigurationPropertyName @Nullable [] configurationPropertyNames,
+				@Nullable Map<String, Object> systemEnvironmentCopy, String @Nullable [] lastUpdated) {
 
 		}
 
@@ -357,11 +371,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	 */
 	private static class ConfigurationPropertyNamesIterator implements Iterator<ConfigurationPropertyName> {
 
-		private final ConfigurationPropertyName[] names;
+		private final @Nullable ConfigurationPropertyName[] names;
 
 		private int index = 0;
 
-		ConfigurationPropertyNamesIterator(ConfigurationPropertyName[] names) {
+		ConfigurationPropertyNamesIterator(@Nullable ConfigurationPropertyName[] names) {
 			this.names = names;
 		}
 
@@ -372,7 +386,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		@Override
-		public ConfigurationPropertyName next() {
+		public @Nullable ConfigurationPropertyName next() {
 			skipNulls();
 			if (this.index >= this.names.length) {
 				throw new NoSuchElementException();

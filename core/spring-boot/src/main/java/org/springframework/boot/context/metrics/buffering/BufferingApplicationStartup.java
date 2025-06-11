@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.metrics.buffering.StartupTimeline.TimelineEvent;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
@@ -133,7 +135,7 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 		}
 	}
 
-	private BufferedStartupStep getLatestActive(BufferedStartupStep step) {
+	private @Nullable BufferedStartupStep getLatestActive(@Nullable BufferedStartupStep step) {
 		while (step != null && step.isEnded()) {
 			step = step.getParent();
 		}

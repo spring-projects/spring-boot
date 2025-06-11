@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -29,9 +31,9 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 
 	private final String name;
 
-	private final Object value;
+	private final @Nullable Object value;
 
-	private final String reason;
+	private final @Nullable String reason;
 
 	/**
 	 * Creates a new instance for the specified property {@code name} and {@code value},
@@ -42,11 +44,12 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 	 * Starts with an upper-case and ends with a dot. Several sentences and carriage
 	 * returns are allowed.
 	 */
-	public InvalidConfigurationPropertyValueException(String name, Object value, String reason) {
+	public InvalidConfigurationPropertyValueException(String name, @Nullable Object value, @Nullable String reason) {
 		this(name, value, reason, null);
 	}
 
-	InvalidConfigurationPropertyValueException(String name, Object value, String reason, Throwable cause) {
+	InvalidConfigurationPropertyValueException(String name, @Nullable Object value, @Nullable String reason,
+			@Nullable Throwable cause) {
 		super("Property " + name + " with value '" + value + "' is invalid: " + reason, cause);
 		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
@@ -66,7 +69,7 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 	 * Return the invalid value, can be {@code null}.
 	 * @return the invalid value
 	 */
-	public Object getValue() {
+	public @Nullable Object getValue() {
 		return this.value;
 	}
 
@@ -74,7 +77,7 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 	 * Return the reason why the value is invalid.
 	 * @return the reason
 	 */
-	public String getReason() {
+	public @Nullable String getReason() {
 		return this.reason;
 	}
 

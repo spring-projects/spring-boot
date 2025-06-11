@@ -50,6 +50,7 @@ import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.ContextAwareBase;
 import ch.qos.logback.core.util.AggregationType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.generate.GeneratedFiles.FileHandler;
 import org.springframework.aot.generate.GeneratedFiles.Kind;
@@ -65,7 +66,9 @@ import org.springframework.core.CollectionFactory;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.function.SingletonSupplier;
@@ -241,14 +244,14 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			if (componentType != null) {
 				processComponent(componentType, reflectionTypes);
 			}
-			Supplier<Object> componentSupplier = SingletonSupplier.ofNullable(() -> instantiate(componentType));
+			Supplier<Object> componentSupplier = SingletonSupplier.of(() -> instantiate(componentType));
 			for (Model submodel : model.getSubModels()) {
 				reflectionTypes.addAll(reflectionTypes(submodel, componentSupplier));
 			}
 			return reflectionTypes;
 		}
 
-		private Class<?> determineType(Model model, Supplier<Object> parentSupplier) {
+		private @Nullable Class<?> determineType(Model model, Supplier<Object> parentSupplier) {
 			String className = (model instanceof ComponentModel componentModel) ? componentModel.getClassName() : null;
 			if (className != null) {
 				return loadImportType(className);
@@ -269,7 +272,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			return loadComponentType(this.modelInterpretationContext.getImport(className));
 		}
 
-		private Class<?> inferTypeFromParent(Supplier<Object> parentSupplier, String tag) {
+		private @Nullable Class<?> inferTypeFromParent(Supplier<Object> parentSupplier, String tag) {
 			Object parent = parentSupplier.get();
 			if (parent != null) {
 				try {
@@ -297,7 +300,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			}
 		}
 
-		private Object instantiate(Class<?> type) {
+		private @Nullable Object instantiate(@Nullable Class<?> type) {
+			if (type == null) {
+				return null;
+			}
 			try {
 				return type.getConstructor().newInstance();
 			}
@@ -434,7 +440,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		@Override
 		public void acceptWithException(FileHandler file) throws Exception {
 			if (file.exists()) {
-				byte[] existingContent = file.getContent().getInputStream().readAllBytes();
+				InputStreamSource content = file.getContent();
+				Assert.state(content != null, "Unable to get file content");
+				byte[] existingContent = content.getInputStream().readAllBytes();
 				if (!Arrays.equals(this.newContent, existingContent)) {
 					throw new IllegalStateException(
 							"Logging configuration differs from the configuration that has already been written. "

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -43,9 +45,9 @@ import org.springframework.util.StringUtils;
 class InvalidConfigurationPropertyValueFailureAnalyzer
 		extends AbstractFailureAnalyzer<InvalidConfigurationPropertyValueException> {
 
-	private final ConfigurableEnvironment environment;
+	private final @Nullable ConfigurableEnvironment environment;
 
-	InvalidConfigurationPropertyValueFailureAnalyzer(Environment environment) {
+	InvalidConfigurationPropertyValueFailureAnalyzer(@Nullable Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 	}
 
@@ -70,7 +72,10 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			.toList();
 	}
 
-	private Origin getOrigin(Descriptor descriptor) {
+	private @Nullable Origin getOrigin(@Nullable Descriptor descriptor) {
+		if (descriptor == null) {
+			return null;
+		}
 		Origin origin = descriptor.origin;
 		if (origin instanceof PropertySourceOrigin propertySourceOrigin) {
 			origin = propertySourceOrigin.getOrigin();
@@ -128,23 +133,23 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 
 	private static final class Descriptor {
 
-		private final String propertySource;
+		private final @Nullable String propertySource;
 
-		private final Object value;
+		private final @Nullable Object value;
 
-		private final Origin origin;
+		private final @Nullable Origin origin;
 
-		private Descriptor(String propertySource, Object value, Origin origin) {
+		private Descriptor(@Nullable String propertySource, @Nullable Object value, @Nullable Origin origin) {
 			this.propertySource = propertySource;
 			this.value = value;
 			this.origin = origin;
 		}
 
-		String getPropertySource() {
+		@Nullable String getPropertySource() {
 			return this.propertySource;
 		}
 
-		Object getValue() {
+		@Nullable Object getValue() {
 			return this.value;
 		}
 

@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -53,7 +55,7 @@ public class BoundConfigurationProperties {
 	 * @param name the property name
 	 * @return the bound property or {@code null}
 	 */
-	public ConfigurationProperty get(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty get(ConfigurationPropertyName name) {
 		return this.properties.get(name);
 	}
 
@@ -71,7 +73,7 @@ public class BoundConfigurationProperties {
 	 * @param context the context to search
 	 * @return a {@link BoundConfigurationProperties} or {@code null}
 	 */
-	public static BoundConfigurationProperties get(ApplicationContext context) {
+	public static @Nullable BoundConfigurationProperties get(ApplicationContext context) {
 		return (!context.containsBeanDefinition(BEAN_NAME)) ? null
 				: context.getBean(BEAN_NAME, BoundConfigurationProperties.class);
 	}

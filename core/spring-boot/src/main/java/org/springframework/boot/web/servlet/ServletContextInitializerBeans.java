@@ -38,6 +38,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.annotation.WebInitParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -135,7 +136,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	private void addServletContextInitializerBean(Class<?> type, String beanName, ServletContextInitializer initializer,
-			ListableBeanFactory beanFactory, Object source) {
+			ListableBeanFactory beanFactory, @Nullable Object source) {
 		this.initializers.add(type, initializer);
 		if (source != null) {
 			// Mark the underlying source as seen in case it wraps an existing bean
@@ -149,7 +150,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		}
 	}
 
-	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
+	private @Nullable String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			return registry.getBeanDefinition(beanName).getResourceDescription();
 		}
@@ -168,7 +169,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		}
 	}
 
-	private MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
+	private @Nullable MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
 		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(beanFactory,
 				MultipartConfigElement.class);
 		return beans.isEmpty() ? null : beans.get(0).getValue();
@@ -206,11 +207,11 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 		return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 	}
 
-	private Integer findOrder(Object value) {
+	private @Nullable Integer findOrder(Object value) {
 		return new AnnotationAwareOrderComparator() {
 
 			@Override
-			public Integer findOrder(Object obj) {
+			public @Nullable Integer findOrder(Object obj) {
 				return super.findOrder(obj);
 			}
 
@@ -282,11 +283,12 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	 */
 	private static class ServletRegistrationBeanAdapter implements RegistrationBeanAdapter<Servlet> {
 
-		private final MultipartConfigElement multipartConfig;
+		private final @Nullable MultipartConfigElement multipartConfig;
 
 		private final ListableBeanFactory beanFactory;
 
-		ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig, ListableBeanFactory beanFactory) {
+		ServletRegistrationBeanAdapter(@Nullable MultipartConfigElement multipartConfig,
+				ListableBeanFactory beanFactory) {
 			this.multipartConfig = multipartConfig;
 			this.beanFactory = beanFactory;
 		}

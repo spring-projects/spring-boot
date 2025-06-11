@@ -24,6 +24,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.util.Assert;
@@ -43,14 +45,14 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 
 	private final Resource resource;
 
-	private final Origin origin;
+	private final @Nullable Origin origin;
 
 	/**
 	 * Create a new {@link OriginTrackedResource} instance.
 	 * @param resource the resource to track
 	 * @param origin the origin of the resource
 	 */
-	OriginTrackedResource(Resource resource, Origin origin) {
+	OriginTrackedResource(Resource resource, @Nullable Origin origin) {
 		Assert.notNull(resource, "'resource' must not be null");
 		this.resource = resource;
 		this.origin = origin;
@@ -117,7 +119,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	}
 
 	@Override
-	public String getFilename() {
+	public @Nullable String getFilename() {
 		return getResource().getFilename();
 	}
 
@@ -131,7 +133,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	}
 
 	@Override
-	public Origin getOrigin() {
+	public @Nullable Origin getOrigin() {
 		return this.origin;
 	}
 
@@ -178,7 +180,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	 * @param origin the origin of the resource
 	 * @return an {@link OriginTrackedResource} instance
 	 */
-	public static OriginTrackedResource of(Resource resource, Origin origin) {
+	public static OriginTrackedResource of(Resource resource, @Nullable Origin origin) {
 		if (resource instanceof WritableResource writableResource) {
 			return new OriginTrackedWritableResource(writableResource, origin);
 		}
@@ -195,7 +197,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 		 * @param resource the resource to track
 		 * @param origin the origin of the resource
 		 */
-		OriginTrackedWritableResource(WritableResource resource, Origin origin) {
+		OriginTrackedWritableResource(WritableResource resource, @Nullable Origin origin) {
 			super(resource, origin);
 		}
 

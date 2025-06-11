@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
@@ -78,7 +79,7 @@ class ConfigDataLoaders {
 		return Collections.unmodifiableList(resourceTypes);
 	}
 
-	private Class<?> getResourceType(ConfigDataLoader<?> loader) {
+	private @Nullable Class<?> getResourceType(ConfigDataLoader<?> loader) {
 		return ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
 	}
 
@@ -90,7 +91,8 @@ class ConfigDataLoaders {
 	 * @return the loaded {@link ConfigData}
 	 * @throws IOException on IO error
 	 */
-	<R extends ConfigDataResource> ConfigData load(ConfigDataLoaderContext context, R resource) throws IOException {
+	<R extends ConfigDataResource> @Nullable ConfigData load(ConfigDataLoaderContext context, R resource)
+			throws IOException {
 		ConfigDataLoader<R> loader = getLoader(context, resource);
 		this.logger.trace(LogMessage.of(() -> "Loading " + resource + " using loader " + loader.getClass().getName()));
 		return loader.load(context, resource);

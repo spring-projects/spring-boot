@@ -27,6 +27,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.StringUtils;
 
@@ -93,7 +95,7 @@ public interface SslBundle {
 	 * @param stores the stores or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
-	static SslBundle of(SslStoreBundle stores) {
+	static SslBundle of(@Nullable SslStoreBundle stores) {
 		return of(stores, null, null);
 	}
 
@@ -103,7 +105,7 @@ public interface SslBundle {
 	 * @param key the key or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
-	static SslBundle of(SslStoreBundle stores, SslBundleKey key) {
+	static SslBundle of(@Nullable SslStoreBundle stores, @Nullable SslBundleKey key) {
 		return of(stores, key, null);
 	}
 
@@ -114,7 +116,7 @@ public interface SslBundle {
 	 * @param options the options or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
-	static SslBundle of(SslStoreBundle stores, SslBundleKey key, SslOptions options) {
+	static SslBundle of(@Nullable SslStoreBundle stores, @Nullable SslBundleKey key, @Nullable SslOptions options) {
 		return of(stores, key, options, null);
 	}
 
@@ -126,7 +128,8 @@ public interface SslBundle {
 	 * @param protocol the protocol or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
-	static SslBundle of(SslStoreBundle stores, SslBundleKey key, SslOptions options, String protocol) {
+	static SslBundle of(@Nullable SslStoreBundle stores, @Nullable SslBundleKey key, @Nullable SslOptions options,
+			@Nullable String protocol) {
 		return of(stores, key, options, protocol, null);
 	}
 
@@ -139,8 +142,8 @@ public interface SslBundle {
 	 * @param managers the managers or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
-	static SslBundle of(SslStoreBundle stores, SslBundleKey key, SslOptions options, String protocol,
-			SslManagerBundle managers) {
+	static SslBundle of(@Nullable SslStoreBundle stores, @Nullable SslBundleKey key, @Nullable SslOptions options,
+			@Nullable String protocol, @Nullable SslManagerBundle managers) {
 		SslManagerBundle managersToUse = (managers != null) ? managers : SslManagerBundle.from(stores, key);
 		return new SslBundle() {
 

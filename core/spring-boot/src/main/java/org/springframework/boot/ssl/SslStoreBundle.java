@@ -18,6 +18,8 @@ package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -38,19 +40,19 @@ public interface SslStoreBundle {
 	 * Return a key store generated from the trust material or {@code null}.
 	 * @return the key store
 	 */
-	KeyStore getKeyStore();
+	@Nullable KeyStore getKeyStore();
 
 	/**
 	 * Return the password for the key in the key store or {@code null}.
 	 * @return the key password
 	 */
-	String getKeyStorePassword();
+	@Nullable String getKeyStorePassword();
 
 	/**
 	 * Return a trust store generated from the trust material or {@code null}.
 	 * @return the trust store
 	 */
-	KeyStore getTrustStore();
+	@Nullable KeyStore getTrustStore();
 
 	/**
 	 * Factory method to create a new {@link SslStoreBundle} instance.
@@ -59,21 +61,22 @@ public interface SslStoreBundle {
 	 * @param trustStore the trust store or {@code null}
 	 * @return a new {@link SslStoreBundle} instance
 	 */
-	static SslStoreBundle of(KeyStore keyStore, String keyStorePassword, KeyStore trustStore) {
+	static SslStoreBundle of(@Nullable KeyStore keyStore, @Nullable String keyStorePassword,
+			@Nullable KeyStore trustStore) {
 		return new SslStoreBundle() {
 
 			@Override
-			public KeyStore getKeyStore() {
+			public @Nullable KeyStore getKeyStore() {
 				return keyStore;
 			}
 
 			@Override
-			public KeyStore getTrustStore() {
+			public @Nullable KeyStore getTrustStore() {
 				return trustStore;
 			}
 
 			@Override
-			public String getKeyStorePassword() {
+			public @Nullable String getKeyStorePassword() {
 				return keyStorePassword;
 			}
 

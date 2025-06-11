@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Logging system properties that can later be used by log configuration files.
  *
@@ -115,19 +117,20 @@ public enum LoggingSystemProperty {
 
 	private final String environmentVariableName;
 
-	private final String applicationPropertyName;
+	private final @Nullable String applicationPropertyName;
 
-	private final String includePropertyName;
+	private final @Nullable String includePropertyName;
 
 	LoggingSystemProperty(String environmentVariableName) {
 		this(environmentVariableName, null);
 	}
 
-	LoggingSystemProperty(String environmentVariableName, String applicationPropertyName) {
+	LoggingSystemProperty(String environmentVariableName, @Nullable String applicationPropertyName) {
 		this(environmentVariableName, applicationPropertyName, null);
 	}
 
-	LoggingSystemProperty(String environmentVariableName, String applicationPropertyName, String includePropertyName) {
+	LoggingSystemProperty(String environmentVariableName, @Nullable String applicationPropertyName,
+			@Nullable String includePropertyName) {
 		this.environmentVariableName = environmentVariableName;
 		this.applicationPropertyName = applicationPropertyName;
 		this.includePropertyName = includePropertyName;
@@ -146,11 +149,11 @@ public enum LoggingSystemProperty {
 	 * @return the application property name
 	 * @since 3.4.0
 	 */
-	public String getApplicationPropertyName() {
+	public @Nullable String getApplicationPropertyName() {
 		return this.applicationPropertyName;
 	}
 
-	String getIncludePropertyName() {
+	@Nullable String getIncludePropertyName() {
 		return this.includePropertyName;
 	}
 

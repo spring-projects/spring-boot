@@ -24,6 +24,7 @@ import org.apache.logging.log4j.core.pattern.MdcPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.util.PerformanceSensitive;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.CorrelationIdFormatter;
 import org.springframework.util.ObjectUtils;
@@ -61,7 +62,7 @@ public final class CorrelationIdConverter extends LogEventPatternConverter {
 	 * format.
 	 * @return instance of PropertiesPatternConverter.
 	 */
-	public static CorrelationIdConverter newInstance(String[] options) {
+	public static CorrelationIdConverter newInstance(String @Nullable [] options) {
 		String pattern = (!ObjectUtils.isEmpty(options)) ? options[0] : null;
 		return new CorrelationIdConverter(CorrelationIdFormatter.of(pattern));
 	}

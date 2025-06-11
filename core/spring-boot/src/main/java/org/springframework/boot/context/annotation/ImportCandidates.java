@@ -27,6 +27,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
 
@@ -76,7 +78,7 @@ public final class ImportCandidates implements Iterable<String> {
 	 * @param classLoader class loader to use for loading
 	 * @return list of names of annotated classes
 	 */
-	public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
+	public static ImportCandidates load(Class<?> annotation, @Nullable ClassLoader classLoader) {
 		Assert.notNull(annotation, "'annotation' must not be null");
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
 		String location = String.format(LOCATION, annotation.getName());
@@ -89,7 +91,7 @@ public final class ImportCandidates implements Iterable<String> {
 		return new ImportCandidates(importCandidates);
 	}
 
-	private static ClassLoader decideClassloader(ClassLoader classLoader) {
+	private static ClassLoader decideClassloader(@Nullable ClassLoader classLoader) {
 		if (classLoader == null) {
 			return ImportCandidates.class.getClassLoader();
 		}

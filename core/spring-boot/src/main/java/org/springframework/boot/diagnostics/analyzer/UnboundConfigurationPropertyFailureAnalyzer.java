@@ -16,11 +16,14 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.UnboundConfigurationPropertiesException;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.util.Assert;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by any
@@ -34,6 +37,7 @@ class UnboundConfigurationPropertyFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, UnboundConfigurationPropertiesException cause) {
 		BindException exception = findCause(rootFailure, BindException.class);
+		Assert.state(exception != null, "BindException not found");
 		return analyzeUnboundConfigurationPropertiesException(exception, cause);
 	}
 
@@ -48,7 +52,7 @@ class UnboundConfigurationPropertyFailureAnalyzer
 		return getFailureAnalysis(description, cause);
 	}
 
-	private void buildDescription(StringBuilder description, ConfigurationProperty property) {
+	private void buildDescription(StringBuilder description, @Nullable ConfigurationProperty property) {
 		if (property != null) {
 			description.append(String.format("%n    Property: %s", property.getName()));
 			description.append(String.format("%n    Value: \"%s\"", property.getValue()));

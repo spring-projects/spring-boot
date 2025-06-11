@@ -27,6 +27,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -120,7 +122,7 @@ public interface SslManagerBundle {
 	 * @param key the key reference
 	 * @return a new {@link SslManagerBundle} instance
 	 */
-	static SslManagerBundle from(SslStoreBundle storeBundle, SslBundleKey key) {
+	static SslManagerBundle from(@Nullable SslStoreBundle storeBundle, @Nullable SslBundleKey key) {
 		return new DefaultSslManagerBundle(storeBundle, key);
 	}
 

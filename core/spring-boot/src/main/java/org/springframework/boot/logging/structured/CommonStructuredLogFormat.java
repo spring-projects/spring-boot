@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Common structured log formats supported by Spring Boot.
  *
@@ -63,7 +65,7 @@ public enum CommonStructuredLogFormat {
 	 * @param id the format identifier
 	 * @return the associated {@link CommonStructuredLogFormat} or {@code null}
 	 */
-	static CommonStructuredLogFormat forId(String id) {
+	static @Nullable CommonStructuredLogFormat forId(String id) {
 		for (CommonStructuredLogFormat candidate : values()) {
 			if (candidate.getId().equalsIgnoreCase(id)) {
 				return candidate;

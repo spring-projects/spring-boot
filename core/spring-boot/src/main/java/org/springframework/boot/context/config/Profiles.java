@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -77,7 +79,7 @@ public class Profiles implements Iterable<String> {
 	 * @param binder the binder for profile properties
 	 * @param additionalProfiles any additional active profiles
 	 */
-	Profiles(Environment environment, Binder binder, Collection<String> additionalProfiles) {
+	Profiles(Environment environment, Binder binder, @Nullable Collection<String> additionalProfiles) {
 		ProfilesValidator validator = ProfilesValidator.get(binder);
 		if (additionalProfiles != null) {
 			validator.validate(additionalProfiles, () -> "Invalid profile property value found in additional profiles");
@@ -89,7 +91,7 @@ public class Profiles implements Iterable<String> {
 	}
 
 	private List<String> getActivatedProfiles(Environment environment, Binder binder, ProfilesValidator validator,
-			Collection<String> additionalProfiles) {
+			@Nullable Collection<String> additionalProfiles) {
 		return asUniqueItemList(getProfiles(environment, binder, validator, Type.ACTIVE), additionalProfiles);
 	}
 
@@ -117,7 +119,7 @@ public class Profiles implements Iterable<String> {
 		return boundProfiles.orElse(type.getDefaultValue());
 	}
 
-	private boolean hasProgrammaticallySetProfiles(Type type, String environmentPropertyValue,
+	private boolean hasProgrammaticallySetProfiles(Type type, @Nullable String environmentPropertyValue,
 			Set<String> environmentPropertyProfiles, Set<String> environmentProfiles) {
 		if (!StringUtils.hasLength(environmentPropertyValue)) {
 			return !type.getDefaultValue().equals(environmentProfiles);
@@ -134,7 +136,7 @@ public class Profiles implements Iterable<String> {
 		return result;
 	}
 
-	private List<String> expandProfiles(List<String> profiles) {
+	private List<String> expandProfiles(@Nullable List<String> profiles) {
 		Deque<String> stack = new ArrayDeque<>();
 		asReversedList(profiles).forEach(stack::push);
 		Set<String> expandedProfiles = new LinkedHashSet<>();
@@ -147,7 +149,7 @@ public class Profiles implements Iterable<String> {
 		return asUniqueItemList(expandedProfiles);
 	}
 
-	private List<String> asReversedList(List<String> list) {
+	private List<String> asReversedList(@Nullable List<String> list) {
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
@@ -160,7 +162,7 @@ public class Profiles implements Iterable<String> {
 		return asUniqueItemList(profiles, null);
 	}
 
-	private List<String> asUniqueItemList(Collection<String> profiles, Collection<String> additional) {
+	private List<String> asUniqueItemList(Collection<String> profiles, @Nullable Collection<String> additional) {
 		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>();
 		if (!CollectionUtils.isEmpty(additional)) {
 			uniqueItems.addAll(additional);

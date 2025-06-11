@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
@@ -27,13 +29,13 @@ import org.springframework.core.env.Environment;
  */
 public class LoggingInitializationContext {
 
-	private final ConfigurableEnvironment environment;
+	private final @Nullable ConfigurableEnvironment environment;
 
 	/**
 	 * Create a new {@link LoggingInitializationContext} instance.
 	 * @param environment the Spring environment.
 	 */
-	public LoggingInitializationContext(ConfigurableEnvironment environment) {
+	public LoggingInitializationContext(@Nullable ConfigurableEnvironment environment) {
 		this.environment = environment;
 	}
 
@@ -41,7 +43,7 @@ public class LoggingInitializationContext {
 	 * Return the Spring environment if available.
 	 * @return the {@link Environment} or {@code null}
 	 */
-	public Environment getEnvironment() {
+	public @Nullable Environment getEnvironment() {
 		return this.environment;
 	}
 

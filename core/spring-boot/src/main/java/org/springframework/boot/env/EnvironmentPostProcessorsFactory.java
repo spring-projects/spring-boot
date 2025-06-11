@@ -18,6 +18,8 @@ package org.springframework.boot.env;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -47,7 +49,7 @@ public interface EnvironmentPostProcessorsFactory {
 	 * @param classLoader the source class loader
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
 	 */
-	static EnvironmentPostProcessorsFactory fromSpringFactories(ClassLoader classLoader) {
+	static EnvironmentPostProcessorsFactory fromSpringFactories(@Nullable ClassLoader classLoader) {
 		return new SpringFactoriesEnvironmentPostProcessorsFactory(
 				SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
@@ -80,7 +82,7 @@ public interface EnvironmentPostProcessorsFactory {
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
 	 * @since 2.4.8
 	 */
-	static EnvironmentPostProcessorsFactory of(ClassLoader classLoader, String... classNames) {
+	static EnvironmentPostProcessorsFactory of(@Nullable ClassLoader classLoader, String... classNames) {
 		return new ReflectionEnvironmentPostProcessorsFactory(classLoader, classNames);
 	}
 

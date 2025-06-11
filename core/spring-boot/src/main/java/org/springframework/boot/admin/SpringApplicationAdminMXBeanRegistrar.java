@@ -24,6 +24,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -55,6 +56,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurableApplicationContext applicationContext;
 
 	private Environment environment = new StandardEnvironment();
@@ -89,7 +91,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	}
 
 	@Override
-	public boolean supportsSourceType(Class<?> sourceType) {
+	public boolean supportsSourceType(@Nullable Class<?> sourceType) {
 		return true;
 	}
 
@@ -139,7 +141,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		}
 
 		@Override
-		public String getProperty(String key) {
+		public @Nullable String getProperty(String key) {
 			return SpringApplicationAdminMXBeanRegistrar.this.environment.getProperty(key);
 		}
 

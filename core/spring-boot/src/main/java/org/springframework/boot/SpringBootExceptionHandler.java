@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link UncaughtExceptionHandler} to suppress handling already logged exceptions and
  * dealing with system exit.
@@ -42,13 +44,13 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
 	private static final LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
 
-	private final UncaughtExceptionHandler parent;
+	private final @Nullable UncaughtExceptionHandler parent;
 
 	private final List<Throwable> loggedExceptions = new ArrayList<>();
 
 	private int exitCode = 0;
 
-	SpringBootExceptionHandler(UncaughtExceptionHandler parent) {
+	SpringBootExceptionHandler(@Nullable UncaughtExceptionHandler parent) {
 		this.parent = parent;
 	}
 
@@ -85,7 +87,10 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	 * @param ex the source exception
 	 * @return {@code true} if the exception contains a log configuration message
 	 */
-	private boolean isLogConfigurationMessage(Throwable ex) {
+	private boolean isLogConfigurationMessage(@Nullable Throwable ex) {
+		if (ex == null) {
+			return false;
+		}
 		if (ex instanceof InvocationTargetException) {
 			return isLogConfigurationMessage(ex.getCause());
 		}
@@ -100,7 +105,10 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 		return false;
 	}
 
-	private boolean isRegistered(Throwable ex) {
+	private boolean isRegistered(@Nullable Throwable ex) {
+		if (ex == null) {
+			return false;
+		}
 		if (this.loggedExceptions.contains(ex)) {
 			return true;
 		}

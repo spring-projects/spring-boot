@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.Environment;
@@ -28,6 +30,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -95,12 +98,13 @@ public final class ConfigurationPropertySources {
 		sources.addFirst(attached);
 	}
 
-	private static boolean isUsingSources(PropertySource<?> attached, MutablePropertySources sources) {
+	@Contract("null, _ -> false")
+	private static boolean isUsingSources(@Nullable PropertySource<?> attached, MutablePropertySources sources) {
 		return attached instanceof ConfigurationPropertySourcesPropertySource
 				&& ((SpringConfigurationPropertySources) attached.getSource()).isUsingSources(sources);
 	}
 
-	static PropertySource<?> getAttached(MutablePropertySources sources) {
+	static @Nullable PropertySource<?> getAttached(@Nullable MutablePropertySources sources) {
 		return (sources != null) ? sources.get(ATTACHED_PROPERTY_SOURCE_NAME) : null;
 	}
 

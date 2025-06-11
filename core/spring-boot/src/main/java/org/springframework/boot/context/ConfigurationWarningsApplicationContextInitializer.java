@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -118,7 +119,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		 * @param registry the {@link BeanDefinitionRegistry}
 		 * @return a warning message or {@code null}
 		 */
-		String getWarning(BeanDefinitionRegistry registry);
+		@Nullable String getWarning(BeanDefinitionRegistry registry);
 
 	}
 
@@ -137,7 +138,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		@Override
-		public String getWarning(BeanDefinitionRegistry registry) {
+		public @Nullable String getWarning(BeanDefinitionRegistry registry) {
 			Set<String> scannedPackages = getComponentScanningPackages(registry);
 			List<String> problematicPackages = getProblematicPackages(scannedPackages);
 			if (problematicPackages.isEmpty()) {
@@ -172,13 +173,13 @@ public class ConfigurationWarningsApplicationContextInitializer
 			}
 		}
 
-		private void addPackages(Set<String> packages, String[] values) {
+		private void addPackages(Set<String> packages, String @Nullable [] values) {
 			if (values != null) {
 				Collections.addAll(packages, values);
 			}
 		}
 
-		private void addClasses(Set<String> packages, String[] values) {
+		private void addClasses(Set<String> packages, String @Nullable [] values) {
 			if (values != null) {
 				for (String value : values) {
 					packages.add(ClassUtils.getPackageName(value));
@@ -196,14 +197,14 @@ public class ConfigurationWarningsApplicationContextInitializer
 			return problematicPackages;
 		}
 
-		private boolean isProblematicPackage(String scannedPackage) {
+		private boolean isProblematicPackage(@Nullable String scannedPackage) {
 			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return true;
 			}
 			return PROBLEM_PACKAGES.contains(scannedPackage);
 		}
 
-		private String getDisplayName(String scannedPackage) {
+		private String getDisplayName(@Nullable String scannedPackage) {
 			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return "the default package";
 			}

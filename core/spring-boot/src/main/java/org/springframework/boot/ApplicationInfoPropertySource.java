@@ -19,6 +19,8 @@ package org.springframework.boot;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.system.ApplicationPid;
@@ -38,7 +40,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 
 	static final String NAME = "applicationInfo";
 
-	ApplicationInfoPropertySource(Class<?> mainClass) {
+	ApplicationInfoPropertySource(@Nullable Class<?> mainClass) {
 		super(NAME, getProperties(readVersion(mainClass)));
 	}
 
@@ -47,7 +49,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 	}
 
 	@Override
-	public Origin getOrigin(String key) {
+	public @Nullable Origin getOrigin(String key) {
 		return null;
 	}
 
@@ -56,7 +58,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 		return true;
 	}
 
-	private static Map<String, Object> getProperties(String applicationVersion) {
+	private static Map<String, Object> getProperties(@Nullable String applicationVersion) {
 		Map<String, Object> result = new HashMap<>();
 		if (StringUtils.hasText(applicationVersion)) {
 			result.put("spring.application.version", applicationVersion);
@@ -68,7 +70,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 		return result;
 	}
 
-	private static String readVersion(Class<?> applicationClass) {
+	private static @Nullable String readVersion(@Nullable Class<?> applicationClass) {
 		Package sourcePackage = (applicationClass != null) ? applicationClass.getPackage() : null;
 		return (sourcePackage != null) ? sourcePackage.getImplementationVersion() : null;
 	}

@@ -20,4 +20,7 @@
  * @see org.springframework.boot.context.properties.ConfigurationProperties
  * @see org.springframework.boot.context.properties.EnableConfigurationProperties
  */
+@NullMarked
 package org.springframework.boot.context.properties;
+
+import org.jspecify.annotations.NullMarked;

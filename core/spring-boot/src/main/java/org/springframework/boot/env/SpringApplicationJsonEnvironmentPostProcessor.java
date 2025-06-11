@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -119,7 +121,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 		return result;
 	}
 
-	private void flatten(String prefix, Map<String, Object> result, Map<String, Object> map) {
+	private void flatten(@Nullable String prefix, Map<String, Object> result, Map<String, Object> map) {
 		String namePrefix = (prefix != null) ? prefix + "." : "";
 		map.forEach((key, value) -> extract(namePrefix + key, result, value));
 	}
@@ -214,7 +216,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 			return PropertySourceOrigin.get(this.propertySource, this.propertyName);
 		}
 
-		static JsonPropertyValue get(PropertySource<?> propertySource) {
+		static @Nullable JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
 				if (value instanceof String string && StringUtils.hasLength(string)) {

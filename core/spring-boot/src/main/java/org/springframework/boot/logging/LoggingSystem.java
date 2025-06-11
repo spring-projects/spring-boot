@@ -22,6 +22,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -91,7 +93,8 @@ public abstract class LoggingSystem {
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, @Nullable String configLocation,
+			@Nullable LogFile logFile) {
 	}
 
 	/**
@@ -107,7 +110,7 @@ public abstract class LoggingSystem {
 	 * shutdown is required.
 	 * @return the shutdown handler, or {@code null}
 	 */
-	public Runnable getShutdownHandler() {
+	public @Nullable Runnable getShutdownHandler() {
 		return null;
 	}
 
@@ -127,7 +130,7 @@ public abstract class LoggingSystem {
 	 * @param level the log level ({@code null} can be used to remove any custom level for
 	 * the logger and use the default configuration instead)
 	 */
-	public void setLogLevel(String loggerName, LogLevel level) {
+	public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
 		throw new UnsupportedOperationException("Unable to set log level");
 	}
 
@@ -147,7 +150,7 @@ public abstract class LoggingSystem {
 	 * @return the current configuration
 	 * @since 1.5.0
 	 */
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		throw new UnsupportedOperationException("Unable to get logger configuration");
 	}
 
@@ -192,7 +195,7 @@ public abstract class LoggingSystem {
 		}
 
 		@Override
-		public void setLogLevel(String loggerName, LogLevel level) {
+		public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
 
 		}
 
@@ -202,7 +205,7 @@ public abstract class LoggingSystem {
 		}
 
 		@Override
-		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
 		}
 

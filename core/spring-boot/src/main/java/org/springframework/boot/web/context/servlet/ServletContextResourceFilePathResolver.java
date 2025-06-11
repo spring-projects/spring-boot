@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.context.servlet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.Resource;
@@ -31,7 +33,7 @@ class ServletContextResourceFilePathResolver implements ApplicationResourceLoade
 
 	private static final String RESOURCE_CLASS_NAME = "org.springframework.web.context.support.ServletContextResource";
 
-	private final Class<?> resourceClass;
+	private final @Nullable Class<?> resourceClass;
 
 	ServletContextResourceFilePathResolver() {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -40,7 +42,7 @@ class ServletContextResourceFilePathResolver implements ApplicationResourceLoade
 	}
 
 	@Override
-	public String resolveFilePath(String location, Resource resource) {
+	public @Nullable String resolveFilePath(String location, Resource resource) {
 		return (this.resourceClass != null && this.resourceClass.isInstance(resource)) ? location : null;
 	}
 

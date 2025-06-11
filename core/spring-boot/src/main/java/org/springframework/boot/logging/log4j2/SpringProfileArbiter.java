@@ -27,6 +27,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
@@ -42,11 +43,11 @@ import org.springframework.util.StringUtils;
 		printObject = true)
 final class SpringProfileArbiter implements Arbiter {
 
-	private final Environment environment;
+	private final @Nullable Environment environment;
 
 	private final Profiles profiles;
 
-	private SpringProfileArbiter(Environment environment, String[] profiles) {
+	private SpringProfileArbiter(@Nullable Environment environment, String[] profiles) {
 		this.environment = environment;
 		this.profiles = Profiles.of(profiles);
 	}
@@ -69,12 +70,15 @@ final class SpringProfileArbiter implements Arbiter {
 		private static final Logger statusLogger = StatusLogger.getLogger();
 
 		@PluginBuilderAttribute
+		@SuppressWarnings("NullAway.Init")
 		private String name;
 
 		@PluginConfiguration
+		@SuppressWarnings("NullAway.Init")
 		private Configuration configuration;
 
 		@PluginLoggerContext
+		@SuppressWarnings("NullAway.Init")
 		private LoggerContext loggerContext;
 
 		private Builder() {
@@ -98,8 +102,15 @@ final class SpringProfileArbiter implements Arbiter {
 				statusLogger.debug("Creating Arbiter without a Spring Environment");
 			}
 			String name = this.configuration.getStrSubstitutor().replace(this.name);
-			String[] profiles = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
+			String[] profiles = trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 			return new SpringProfileArbiter(environment, profiles);
+		}
+
+		// The array has no nulls in it, but StringUtils.trimArrayElements return
+		// @Nullable String[]
+		@SuppressWarnings("NullAway")
+		private String[] trimArrayElements(String[] array) {
+			return StringUtils.trimArrayElements(array);
 		}
 
 	}

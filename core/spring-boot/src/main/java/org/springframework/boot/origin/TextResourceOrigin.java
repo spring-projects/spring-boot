@@ -18,6 +18,8 @@ package org.springframework.boot.origin;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
@@ -35,11 +37,11 @@ import org.springframework.util.ObjectUtils;
  */
 public class TextResourceOrigin implements Origin {
 
-	private final Resource resource;
+	private final @Nullable Resource resource;
 
-	private final Location location;
+	private final @Nullable Location location;
 
-	public TextResourceOrigin(Resource resource, Location location) {
+	public TextResourceOrigin(@Nullable Resource resource, @Nullable Location location) {
 		this.resource = resource;
 		this.location = location;
 	}
@@ -48,7 +50,7 @@ public class TextResourceOrigin implements Origin {
 	 * Return the resource where the property originated.
 	 * @return the text resource or {@code null}
 	 */
-	public Resource getResource() {
+	public @Nullable Resource getResource() {
 		return this.resource;
 	}
 
@@ -56,12 +58,12 @@ public class TextResourceOrigin implements Origin {
 	 * Return the location of the property within the source (if known).
 	 * @return the location or {@code null}
 	 */
-	public Location getLocation() {
+	public @Nullable Location getLocation() {
 		return this.location;
 	}
 
 	@Override
-	public Origin getParent() {
+	public @Nullable Origin getParent() {
 		return Origin.from(this.resource);
 	}
 
@@ -100,7 +102,7 @@ public class TextResourceOrigin implements Origin {
 		return result.toString();
 	}
 
-	private String getResourceDescription(Resource resource) {
+	private String getResourceDescription(@Nullable Resource resource) {
 		if (resource instanceof OriginTrackedResource originTrackedResource) {
 			return getResourceDescription(originTrackedResource.getResource());
 		}

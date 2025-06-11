@@ -20,4 +20,7 @@
  *
  * @see org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor
  */
+@NullMarked
 package org.springframework.boot.context.config;
+
+import org.jspecify.annotations.NullMarked;

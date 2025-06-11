@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
@@ -80,7 +82,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(@Nullable ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
 		}
@@ -101,7 +103,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return null;
 	}
 
-	protected final Object getPropertySourceProperty(String name) {
+	protected final @Nullable Object getPropertySourceProperty(String name) {
 		// Save calls to SystemEnvironmentPropertySource.resolvePropertyName(...)
 		// since we've already done the mapping
 		PropertySource<?> propertySource = getPropertySource();
@@ -109,7 +111,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 				: getSystemEnvironmentProperty(((SystemEnvironmentPropertySource) propertySource).getSource(), name);
 	}
 
-	Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
+	@Nullable Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
 		Object value = systemEnvironment.get(name);
 		return (value != null) ? value : systemEnvironment.get(name.toLowerCase(Locale.ROOT));
 	}

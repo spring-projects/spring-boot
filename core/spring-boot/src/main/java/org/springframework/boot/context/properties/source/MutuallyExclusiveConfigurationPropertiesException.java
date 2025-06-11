@@ -26,6 +26,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -78,7 +81,8 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 		return this.mutuallyExclusiveNames;
 	}
 
-	private static Set<String> asSet(Collection<String> collection) {
+	@Contract("null -> null; !null -> !null")
+	private static @Nullable Set<String> asSet(@Nullable Collection<String> collection) {
 		return (collection != null) ? new LinkedHashSet<>(collection) : null;
 	}
 

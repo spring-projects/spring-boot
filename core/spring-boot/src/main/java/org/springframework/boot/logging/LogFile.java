@@ -19,6 +19,8 @@ package org.springframework.boot.logging;
 import java.io.File;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.Assert;
@@ -51,9 +53,9 @@ public class LogFile {
 	 */
 	public static final String FILE_PATH_PROPERTY = "logging.file.path";
 
-	private final String file;
+	private final @Nullable String file;
 
-	private final String path;
+	private final @Nullable String path;
 
 	/**
 	 * Create a new {@link LogFile} instance.
@@ -68,7 +70,7 @@ public class LogFile {
 	 * @param file a reference to the file to write
 	 * @param path a reference to the logging path to use if {@code file} is not specified
 	 */
-	LogFile(String file, String path) {
+	LogFile(@Nullable String file, @Nullable String path) {
 		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path), "'file' or 'path' must not be empty");
 		this.file = file;
 		this.path = path;
@@ -90,7 +92,7 @@ public class LogFile {
 		put(properties, LoggingSystemProperty.LOG_FILE, toString());
 	}
 
-	private void put(Properties properties, LoggingSystemProperty property, String value) {
+	private void put(Properties properties, LoggingSystemProperty property, @Nullable String value) {
 		if (StringUtils.hasLength(value)) {
 			properties.put(property.getEnvironmentVariableName(), value);
 		}
@@ -111,7 +113,7 @@ public class LogFile {
 	 * @return a {@link LogFile} or {@code null} if the environment didn't contain any
 	 * suitable properties
 	 */
-	public static LogFile get(PropertyResolver propertyResolver) {
+	public static @Nullable LogFile get(PropertyResolver propertyResolver) {
 		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
 		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {

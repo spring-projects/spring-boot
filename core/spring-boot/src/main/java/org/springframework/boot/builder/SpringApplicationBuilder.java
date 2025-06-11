@@ -27,6 +27,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
@@ -44,6 +46,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.metrics.ApplicationStartup;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,9 +79,9 @@ public class SpringApplicationBuilder {
 
 	private final SpringApplication application;
 
-	private volatile ConfigurableApplicationContext context;
+	private volatile @Nullable ConfigurableApplicationContext context;
 
-	private SpringApplicationBuilder parent;
+	private @Nullable SpringApplicationBuilder parent;
 
 	private final AtomicBoolean running = new AtomicBoolean();
 
@@ -86,7 +89,7 @@ public class SpringApplicationBuilder {
 
 	private final Map<String, Object> defaultProperties = new LinkedHashMap<>();
 
-	private ConfigurableEnvironment environment;
+	private @Nullable ConfigurableEnvironment environment;
 
 	private Set<String> additionalProfiles = new LinkedHashSet<>();
 
@@ -98,7 +101,7 @@ public class SpringApplicationBuilder {
 		this(null, sources);
 	}
 
-	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
+	public SpringApplicationBuilder(@Nullable ResourceLoader resourceLoader, Class<?>... sources) {
 		this.application = createSpringApplication(resourceLoader, sources);
 	}
 
@@ -111,15 +114,15 @@ public class SpringApplicationBuilder {
 	 * @return the {@link SpringApplication} instance
 	 * @since 2.6.0
 	 */
-	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
+	protected SpringApplication createSpringApplication(@Nullable ResourceLoader resourceLoader, Class<?>... sources) {
 		return new SpringApplication(resourceLoader, sources);
 	}
 
 	/**
 	 * Accessor for the current application context.
-	 * @return the current application context (or null if not yet running)
+	 * @return the current application context (or {@code null} if not yet running)
 	 */
-	public ConfigurableApplicationContext context() {
+	public @Nullable ConfigurableApplicationContext context() {
 		return this.context;
 	}
 
@@ -140,15 +143,19 @@ public class SpringApplicationBuilder {
 	 */
 	public ConfigurableApplicationContext run(String... args) {
 		if (this.running.get()) {
+			ConfigurableApplicationContext context = this.context;
+			Assert.state(context != null, "No context set");
 			// If already created we just return the existing context
-			return this.context;
+			return context;
 		}
 		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
 			// If not already running copy the sources over and then run.
 			this.context = build().run(args);
 		}
-		return this.context;
+		ConfigurableApplicationContext context = this.context;
+		Assert.state(context != null, "No context set");
+		return context;
 	}
 
 	private void configureAsChildIfNecessary(String... args) {
@@ -519,10 +526,10 @@ public class SpringApplicationBuilder {
 
 	/**
 	 * Environment for the application context.
-	 * @param environment the environment to set.
+	 * @param environment the environment to set
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder environment(ConfigurableEnvironment environment) {
+	public SpringApplicationBuilder environment(@Nullable ConfigurableEnvironment environment) {
 		this.application.setEnvironment(environment);
 		this.environment = environment;
 		return this;

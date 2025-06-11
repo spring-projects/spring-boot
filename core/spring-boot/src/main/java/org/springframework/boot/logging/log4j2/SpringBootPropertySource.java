@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.util.BiConsumer;
 import org.apache.logging.log4j.util.PropertySource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Spring Boot {@link PropertySource} that disables Log4j2's shutdown hook.
@@ -53,7 +54,7 @@ public class SpringBootPropertySource implements PropertySource {
 	}
 
 	@Override
-	public String getProperty(String key) {
+	public @Nullable String getProperty(String key) {
 		return this.properties.get(key);
 	}
 

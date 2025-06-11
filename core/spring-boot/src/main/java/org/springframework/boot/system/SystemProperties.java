@@ -16,6 +16,8 @@
 
 package org.springframework.boot.system;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Access to system properties.
  *
@@ -27,7 +29,7 @@ public final class SystemProperties {
 	private SystemProperties() {
 	}
 
-	public static String get(String... properties) {
+	public static @Nullable String get(String... properties) {
 		for (String property : properties) {
 			try {
 				String override = System.getProperty(property);

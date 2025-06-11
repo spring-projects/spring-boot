@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
@@ -51,14 +52,14 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
 			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
 			StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
 		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
 				customizerBuilder.nested().build());
 	}
 
-	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
 			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
 			JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);

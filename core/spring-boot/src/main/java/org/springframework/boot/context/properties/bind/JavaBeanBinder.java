@@ -33,6 +33,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -41,6 +43,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 /**
  * {@link DataObjectBinder} for mutable Java Beans.
@@ -57,7 +60,7 @@ class JavaBeanBinder implements DataObjectBinder {
 	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
 
 	@Override
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
+	public <T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder) {
 		boolean hasKnownBindableProperties = target.getValue() != null && hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, context, hasKnownBindableProperties);
@@ -71,7 +74,7 @@ class JavaBeanBinder implements DataObjectBinder {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T create(Bindable<T> target, Context context) {
+	public <T> @Nullable T create(Bindable<T> target, Context context) {
 		Class<T> type = (Class<T>) target.getType().resolve();
 		return (type != null) ? BeanUtils.instantiateClass(type) : null;
 	}
@@ -186,18 +189,17 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		protected void addProperties(Method[] declaredMethods, Field[] declaredFields) {
+			@Nullable Method[] methods = new Method[declaredMethods.length];
 			for (int i = 0; i < declaredMethods.length; i++) {
-				if (!isCandidate(declaredMethods[i])) {
-					declaredMethods[i] = null;
-				}
+				methods[i] = isCandidate(declaredMethods[i]) ? declaredMethods[i] : null;
 			}
-			for (Method method : declaredMethods) {
+			for (Method method : methods) {
 				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
 			}
-			for (Method method : declaredMethods) {
+			for (Method method : methods) {
 				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
 			}
-			for (Method method : declaredMethods) {
+			for (Method method : methods) {
 				addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
 			}
 			for (Field field : declaredFields) {
@@ -213,7 +215,7 @@ class JavaBeanBinder implements DataObjectBinder {
 					&& !Class.class.equals(method.getDeclaringClass()) && method.getName().indexOf('$') == -1;
 		}
 
-		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
+		private void addMethodIfPossible(@Nullable Method method, String prefix, int parameterCount,
 				BiConsumer<BeanProperty, Method> consumer) {
 			if (method != null && method.getParameterCount() == parameterCount && method.getName().startsWith(prefix)
 					&& method.getName().length() > prefix.length()) {
@@ -279,7 +281,7 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		@SuppressWarnings("unchecked")
-		static <T> Bean<T> get(Bindable<T> bindable, Context context, boolean canCallGetValue) {
+		static <T> @Nullable Bean<T> get(Bindable<T> bindable, Context context, boolean canCallGetValue) {
 			ResolvableType type = bindable.getType();
 			Class<?> resolvedType = type.resolve(Object.class);
 			Supplier<T> value = bindable.getValue();
@@ -334,7 +336,7 @@ class JavaBeanBinder implements DataObjectBinder {
 
 		private final Supplier<T> factory;
 
-		private T instance;
+		private @Nullable T instance;
 
 		BeanSupplier(Supplier<T> factory) {
 			this.factory = factory;
@@ -359,11 +361,11 @@ class JavaBeanBinder implements DataObjectBinder {
 
 		private final ResolvableType declaringClassType;
 
-		private Method getter;
+		private @Nullable Method getter;
 
-		private Method setter;
+		private @Nullable Method setter;
 
-		private Field field;
+		private @Nullable Field field;
 
 		BeanProperty(String name, ResolvableType declaringClassType) {
 			this.name = DataObjectPropertyName.toDashedForm(name);
@@ -401,11 +403,12 @@ class JavaBeanBinder implements DataObjectBinder {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
 				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 			}
+			Assert.state(this.getter != null, "'getter' must not be null");
 			MethodParameter methodParameter = new MethodParameter(this.getter, -1);
 			return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
 		}
 
-		Annotation[] getAnnotations() {
+		Annotation @Nullable [] getAnnotations() {
 			try {
 				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
@@ -414,11 +417,12 @@ class JavaBeanBinder implements DataObjectBinder {
 			}
 		}
 
-		Supplier<Object> getValue(Supplier<?> instance) {
+		@Nullable Supplier<Object> getValue(Supplier<?> instance) {
 			if (this.getter == null) {
 				return null;
 			}
 			return () -> {
+				Assert.state(this.getter != null, "'getter' must not be null");
 				try {
 					this.getter.setAccessible(true);
 					return this.getter.invoke(instance.get());
@@ -443,6 +447,7 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		void setValue(Supplier<?> instance, Object value) {
+			Assert.state(this.setter != null, "'setter' must not be null");
 			try {
 				this.setter.setAccessible(true);
 				this.setter.invoke(instance.get(), value);
@@ -452,15 +457,15 @@ class JavaBeanBinder implements DataObjectBinder {
 			}
 		}
 
-		Method getGetter() {
+		@Nullable Method getGetter() {
 			return this.getter;
 		}
 
-		Method getSetter() {
+		@Nullable Method getSetter() {
 			return this.setter;
 		}
 
-		Field getField() {
+		@Nullable Field getField() {
 			return this.field;
 		}
 

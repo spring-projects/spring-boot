@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.CollectionFactory;
@@ -38,7 +40,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
+	protected @Nullable Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
 				target.getType().asCollection().getGenerics());
@@ -68,7 +70,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		}
 	}
 
-	private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
+	private @Nullable Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
 		try {
 			return existing.get();
 		}

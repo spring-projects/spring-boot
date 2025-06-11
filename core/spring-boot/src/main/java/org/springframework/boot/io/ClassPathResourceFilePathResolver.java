@@ -16,6 +16,8 @@
 
 package org.springframework.boot.io;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -29,7 +31,7 @@ import org.springframework.core.io.ResourceLoader;
 class ClassPathResourceFilePathResolver implements ApplicationResourceLoader.FilePathResolver {
 
 	@Override
-	public String resolveFilePath(String location, Resource resource) {
+	public @Nullable String resolveFilePath(String location, Resource resource) {
 		return (resource instanceof ClassPathResource && !isClassPathUrl(location)) ? location : null;
 	}
 

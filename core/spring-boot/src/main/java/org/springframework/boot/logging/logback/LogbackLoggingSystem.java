@@ -38,6 +38,7 @@ import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
 import ch.qos.logback.core.util.StatusPrinter2;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,7 +186,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	@Override
-	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, @Nullable String configLocation,
+			@Nullable LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		putInitializationContextObjects(loggerContext, initializationContext);
 		if (isAlreadyInitialized(loggerContext)) {
@@ -203,12 +205,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
-			LogFile logFile) {
+			@Nullable LogFile logFile) {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return false;
 		}
 		if (initializationContext != null) {
-			applySystemProperties(initializationContext.getEnvironment(), logFile);
+			Environment environment = initializationContext.getEnvironment();
+			Assert.state(environment != null, "'environment' must not be null");
+			applySystemProperties(environment, logFile);
 		}
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
@@ -224,7 +228,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	@Override
-	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, @Nullable LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
@@ -232,6 +236,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			putInitializationContextObjects(loggerContext, initializationContext);
 			SystemStatusListener.addTo(loggerContext, debug);
 			Environment environment = initializationContext.getEnvironment();
+			Assert.state(environment != null, "'environment' must not be null");
 			// Apply system properties directly in case the same JVM runs multiple apps
 			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
 					loggerContext::putProperty)
@@ -246,13 +251,15 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
-			LogFile logFile) {
+			@Nullable LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
 			putInitializationContextObjects(loggerContext, initializationContext);
 			if (initializationContext != null) {
-				applySystemProperties(initializationContext.getEnvironment(), logFile);
+				Environment environment = initializationContext.getEnvironment();
+				Assert.state(environment != null, "'environment' must not be null");
+				applySystemProperties(environment, logFile);
 			}
 			SystemStatusListener.addTo(loggerContext);
 			try {
@@ -339,7 +346,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		loggerContext.reset();
 		loggerContext.getStatusManager().clear();
-		loadConfiguration(initializationContext, getSelfInitializationConfig(), null);
+		String location = getSelfInitializationConfig();
+		Assert.state(location != null, "location must not be null");
+		loadConfiguration(initializationContext, location, null);
 	}
 
 	private void putInitializationContextObjects(LoggerContext loggerContext,
@@ -359,26 +368,27 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		String name = getLoggerName(loggerName);
 		LoggerContext loggerContext = getLoggerContext();
 		return getLoggerConfiguration(loggerContext.exists(name));
 	}
 
-	private String getLoggerName(String name) {
+	private String getLoggerName(@Nullable String name) {
 		if (!StringUtils.hasLength(name) || Logger.ROOT_LOGGER_NAME.equals(name)) {
 			return ROOT_LOGGER_NAME;
 		}
 		return name;
 	}
 
-	private LoggerConfiguration getLoggerConfiguration(ch.qos.logback.classic.Logger logger) {
+	private @Nullable LoggerConfiguration getLoggerConfiguration(ch.qos.logback.classic.@Nullable Logger logger) {
 		if (logger == null) {
 			return null;
 		}
 		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
 		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(logger.getEffectiveLevel());
 		String name = getLoggerName(logger.getName());
+		Assert.state(effectiveLevel != null, "effectiveLevel must not be null");
 		return new LoggerConfiguration(name, level, effectiveLevel);
 	}
 
@@ -388,7 +398,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	@Override
-	public void setLogLevel(String loggerName, LogLevel level) {
+	public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel level) {
 		ch.qos.logback.classic.Logger logger = getLogger(loggerName);
 		if (logger != null) {
 			logger.setLevel(LEVELS.convertSystemToNative(level));
@@ -400,7 +410,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		return () -> getLoggerContext().stop();
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	private ch.qos.logback.classic.Logger getLogger(@Nullable String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory.getLogger(getLoggerName(name));
 	}
@@ -499,7 +509,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				Factory.class.getClassLoader());
 
 		@Override
-		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
+		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new LogbackLoggingSystem(classLoader);
 			}

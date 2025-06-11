@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -41,7 +42,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	private static final Log logger = LogFactory.getLog(ConfigDataLocationRuntimeHints.class);
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		List<String> fileNames = getFileNames(classLoader);
 		List<String> locations = getLocations(classLoader);
 		List<String> extensions = getExtensions(classLoader);
@@ -60,7 +61,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	 * @param classLoader the classloader to use
 	 * @return the configuration file names
 	 */
-	protected List<String> getFileNames(ClassLoader classLoader) {
+	protected List<String> getFileNames(@Nullable ClassLoader classLoader) {
 		return Arrays.asList(StandardConfigDataLocationResolver.DEFAULT_CONFIG_NAMES);
 	}
 
@@ -70,7 +71,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	 * @param classLoader the classloader to use
 	 * @return the configuration file locations
 	 */
-	protected List<String> getLocations(ClassLoader classLoader) {
+	protected List<String> getLocations(@Nullable ClassLoader classLoader) {
 		List<String> classpathLocations = new ArrayList<>();
 		for (ConfigDataLocation candidate : ConfigDataEnvironment.DEFAULT_SEARCH_LOCATIONS) {
 			for (ConfigDataLocation configDataLocation : candidate.split()) {
@@ -89,7 +90,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	 * @param classLoader the classloader to use
 	 * @return the configuration file extensions
 	 */
-	protected List<String> getExtensions(ClassLoader classLoader) {
+	protected List<String> getExtensions(@Nullable ClassLoader classLoader) {
 		List<String> extensions = new ArrayList<>();
 		List<PropertySourceLoader> propertySourceLoaders = getSpringFactoriesLoader(classLoader)
 			.load(PropertySourceLoader.class);
@@ -104,7 +105,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 		return extensions;
 	}
 
-	protected SpringFactoriesLoader getSpringFactoriesLoader(ClassLoader classLoader) {
+	protected SpringFactoriesLoader getSpringFactoriesLoader(@Nullable ClassLoader classLoader) {
 		return SpringFactoriesLoader.forDefaultResourceLocation(classLoader);
 	}
 

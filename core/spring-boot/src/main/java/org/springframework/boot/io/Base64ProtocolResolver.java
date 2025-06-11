@@ -18,6 +18,8 @@ package org.springframework.boot.io;
 
 import java.util.Base64;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
@@ -33,7 +35,7 @@ class Base64ProtocolResolver implements ProtocolResolver {
 	private static final String BASE64_PREFIX = "base64:";
 
 	@Override
-	public Resource resolve(String location, ResourceLoader resourceLoader) {
+	public @Nullable Resource resolve(String location, ResourceLoader resourceLoader) {
 		if (location.startsWith(BASE64_PREFIX)) {
 			String value = location.substring(BASE64_PREFIX.length());
 			return new ByteArrayResource(decode(value));

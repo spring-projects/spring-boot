@@ -18,6 +18,8 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -41,7 +43,7 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		boolean filtered = getFilter().test(name);
 		return filtered ? getSource().getConfigurationProperty(name) : null;
 	}
@@ -57,7 +59,7 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public Object getUnderlyingSource() {
+	public @Nullable Object getUnderlyingSource() {
 		return this.source.getUnderlyingSource();
 	}
 

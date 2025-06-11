@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -43,7 +44,7 @@ import org.springframework.util.Assert;
  */
 public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegistrationBean<T> {
 
-	private T filter;
+	private @Nullable T filter;
 
 	/**
 	 * Create a new {@link FilterRegistrationBean} instance.
@@ -64,7 +65,7 @@ public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegi
 	}
 
 	@Override
-	public T getFilter() {
+	public @Nullable T getFilter() {
 		return this.filter;
 	}
 

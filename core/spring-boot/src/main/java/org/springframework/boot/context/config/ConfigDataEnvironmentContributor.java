@@ -26,6 +26,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -33,6 +35,7 @@ import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.lang.Contract;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -58,17 +61,17 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	private static final ConfigData.Options EMPTY_LOCATION_OPTIONS = ConfigData.Options
 		.of(ConfigData.Option.IGNORE_IMPORTS);
 
-	private final ConfigDataLocation location;
+	private final @Nullable ConfigDataLocation location;
 
-	private final ConfigDataResource resource;
+	private final @Nullable ConfigDataResource resource;
 
 	private final boolean fromProfileSpecificImport;
 
-	private final PropertySource<?> propertySource;
+	private final @Nullable PropertySource<?> propertySource;
 
-	private final ConfigurationPropertySource configurationPropertySource;
+	private final @Nullable ConfigurationPropertySource configurationPropertySource;
 
-	private final ConfigDataProperties properties;
+	private final @Nullable ConfigDataProperties properties;
 
 	private final ConfigData.Options configDataOptions;
 
@@ -93,10 +96,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @param children the children of this contributor at each {@link ImportPhase}
 	 * @param conversionService the conversion service to use
 	 */
-	ConfigDataEnvironmentContributor(Kind kind, ConfigDataLocation location, ConfigDataResource resource,
-			boolean fromProfileSpecificImport, PropertySource<?> propertySource,
-			ConfigurationPropertySource configurationPropertySource, ConfigDataProperties properties,
-			ConfigData.Options configDataOptions, Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children,
+	ConfigDataEnvironmentContributor(Kind kind, @Nullable ConfigDataLocation location,
+			@Nullable ConfigDataResource resource, boolean fromProfileSpecificImport,
+			@Nullable PropertySource<?> propertySource,
+			@Nullable ConfigurationPropertySource configurationPropertySource,
+			@Nullable ConfigDataProperties properties, ConfigData.@Nullable Options configDataOptions,
+			@Nullable Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children,
 			ConversionService conversionService) {
 		this.kind = kind;
 		this.location = location;
@@ -118,7 +123,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return this.kind;
 	}
 
-	ConfigDataLocation getLocation() {
+	@Nullable ConfigDataLocation getLocation() {
 		return this.location;
 	}
 
@@ -127,7 +132,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @param activationContext the activation context
 	 * @return if the contributor is active
 	 */
-	boolean isActive(ConfigDataActivationContext activationContext) {
+	boolean isActive(@Nullable ConfigDataActivationContext activationContext) {
 		if (this.kind == Kind.UNBOUND_IMPORT) {
 			return false;
 		}
@@ -138,7 +143,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * Return the resource that contributed this instance.
 	 * @return the resource or {@code null}
 	 */
-	ConfigDataResource getResource() {
+	@Nullable ConfigDataResource getResource() {
 		return this.resource;
 	}
 
@@ -154,7 +159,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * Return the property source for this contributor.
 	 * @return the property source or {@code null}
 	 */
-	PropertySource<?> getPropertySource() {
+	@Nullable PropertySource<?> getPropertySource() {
 		return this.propertySource;
 	}
 
@@ -162,7 +167,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * Return the configuration property source for this contributor.
 	 * @return the configuration property source or {@code null}
 	 */
-	ConfigurationPropertySource getConfigurationPropertySource() {
+	@Nullable ConfigurationPropertySource getConfigurationPropertySource() {
 		return this.configurationPropertySource;
 	}
 
@@ -239,7 +244,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @return a new contributor instance
 	 */
 	ConfigDataEnvironmentContributor withBoundProperties(Iterable<ConfigDataEnvironmentContributor> contributors,
-			ConfigDataActivationContext activationContext) {
+			@Nullable ConfigDataActivationContext activationContext) {
 		Iterable<ConfigurationPropertySource> sources = Collections.singleton(getConfigurationPropertySource());
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, activationContext, this, true, this.conversionService);
@@ -305,7 +310,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return contributor;
 	}
 
-	private boolean hasAnyProfileSpecificChildren(List<ConfigDataEnvironmentContributor> contributors) {
+	@Contract("null -> false")
+	private boolean hasAnyProfileSpecificChildren(@Nullable List<ConfigDataEnvironmentContributor> contributors) {
 		if (CollectionUtils.isEmpty(contributors)) {
 			return false;
 		}
@@ -441,7 +447,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 				propertySource, asConfigurationPropertySource(propertySource), null, options, null, conversionService);
 	}
 
-	private static ConfigurationPropertySource asConfigurationPropertySource(PropertySource<?> propertySource) {
+	private static @Nullable ConfigurationPropertySource asConfigurationPropertySource(
+			PropertySource<?> propertySource) {
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
 		if (configurationPropertySource != null && propertySource instanceof OriginLookup<?> originLookup) {
 			configurationPropertySource = configurationPropertySource.withPrefix(originLookup.getPrefix());
@@ -521,7 +528,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		 * @param activationContext the activation context
 		 * @return the import phase
 		 */
-		static ImportPhase get(ConfigDataActivationContext activationContext) {
+		static ImportPhase get(@Nullable ConfigDataActivationContext activationContext) {
 			if (activationContext != null && activationContext.getProfiles() != null) {
 				return AFTER_PROFILE_ACTIVATION;
 			}
@@ -535,13 +542,13 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	private final class ContributorIterator implements Iterator<ConfigDataEnvironmentContributor> {
 
-		private ImportPhase phase;
+		private @Nullable ImportPhase phase;
 
 		private Iterator<ConfigDataEnvironmentContributor> children;
 
 		private Iterator<ConfigDataEnvironmentContributor> current;
 
-		private ConfigDataEnvironmentContributor next;
+		private @Nullable ConfigDataEnvironmentContributor next;
 
 		private ContributorIterator() {
 			this.phase = ImportPhase.AFTER_PROFILE_ACTIVATION;
@@ -564,7 +571,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			return next;
 		}
 
-		private ConfigDataEnvironmentContributor fetchIfNecessary() {
+		private @Nullable ConfigDataEnvironmentContributor fetchIfNecessary() {
 			if (this.next != null) {
 				return this.next;
 			}

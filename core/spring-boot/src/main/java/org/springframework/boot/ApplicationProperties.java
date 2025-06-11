@@ -19,12 +19,15 @@ package org.springframework.boot;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Spring application properties.
@@ -48,7 +51,7 @@ class ApplicationProperties {
 	/**
 	 * Mode used to display the banner when the application runs.
 	 */
-	private Banner.Mode bannerMode;
+	private Banner.@Nullable Mode bannerMode;
 
 	/**
 	 * Whether to keep the application alive even if there are no more non-daemon threads.
@@ -80,7 +83,7 @@ class ApplicationProperties {
 	 * Flag to explicitly request a specific type of web application. If not set,
 	 * auto-detected based on the classpath.
 	 */
-	private WebApplicationType webApplicationType;
+	private @Nullable WebApplicationType webApplicationType;
 
 	boolean isAllowBeanDefinitionOverriding() {
 		return this.allowBeanDefinitionOverriding;
@@ -102,12 +105,13 @@ class ApplicationProperties {
 		if (this.bannerMode != null) {
 			return this.bannerMode;
 		}
-		boolean structuredLoggingEnabled = environment
-			.containsProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getApplicationPropertyName());
+		String applicationPropertyName = LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getApplicationPropertyName();
+		Assert.state(applicationPropertyName != null, "applicationPropertyName must not be null");
+		boolean structuredLoggingEnabled = environment.containsProperty(applicationPropertyName);
 		return (structuredLoggingEnabled) ? Mode.OFF : Banner.Mode.CONSOLE;
 	}
 
-	void setBannerMode(Mode bannerMode) {
+	void setBannerMode(@Nullable Mode bannerMode) {
 		this.bannerMode = bannerMode;
 	}
 
@@ -151,18 +155,18 @@ class ApplicationProperties {
 		this.sources = new LinkedHashSet<>(sources);
 	}
 
-	WebApplicationType getWebApplicationType() {
+	@Nullable WebApplicationType getWebApplicationType() {
 		return this.webApplicationType;
 	}
 
-	void setWebApplicationType(WebApplicationType webApplicationType) {
+	void setWebApplicationType(@Nullable WebApplicationType webApplicationType) {
 		this.webApplicationType = webApplicationType;
 	}
 
 	static class ApplicationPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			BindableRuntimeHintsRegistrar.forTypes(ApplicationProperties.class).registerHints(hints, classLoader);
 		}
 

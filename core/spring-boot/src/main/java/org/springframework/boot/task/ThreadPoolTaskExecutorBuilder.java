@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.task.TaskDecorator;
@@ -45,27 +47,27 @@ import org.springframework.util.CollectionUtils;
  */
 public class ThreadPoolTaskExecutorBuilder {
 
-	private final Integer queueCapacity;
+	private final @Nullable Integer queueCapacity;
 
-	private final Integer corePoolSize;
+	private final @Nullable Integer corePoolSize;
 
-	private final Integer maxPoolSize;
+	private final @Nullable Integer maxPoolSize;
 
-	private final Boolean allowCoreThreadTimeOut;
+	private final @Nullable Boolean allowCoreThreadTimeOut;
 
-	private final Duration keepAlive;
+	private final @Nullable Duration keepAlive;
 
-	private final Boolean acceptTasksAfterContextClose;
+	private final @Nullable Boolean acceptTasksAfterContextClose;
 
-	private final Boolean awaitTermination;
+	private final @Nullable Boolean awaitTermination;
 
-	private final Duration awaitTerminationPeriod;
+	private final @Nullable Duration awaitTerminationPeriod;
 
-	private final String threadNamePrefix;
+	private final @Nullable String threadNamePrefix;
 
-	private final TaskDecorator taskDecorator;
+	private final @Nullable TaskDecorator taskDecorator;
 
-	private final Set<ThreadPoolTaskExecutorCustomizer> customizers;
+	private final @Nullable Set<ThreadPoolTaskExecutorCustomizer> customizers;
 
 	public ThreadPoolTaskExecutorBuilder() {
 		this.queueCapacity = null;
@@ -81,10 +83,11 @@ public class ThreadPoolTaskExecutorBuilder {
 		this.customizers = null;
 	}
 
-	private ThreadPoolTaskExecutorBuilder(Integer queueCapacity, Integer corePoolSize, Integer maxPoolSize,
-			Boolean allowCoreThreadTimeOut, Duration keepAlive, Boolean acceptTasksAfterContextClose,
-			Boolean awaitTermination, Duration awaitTerminationPeriod, String threadNamePrefix,
-			TaskDecorator taskDecorator, Set<ThreadPoolTaskExecutorCustomizer> customizers) {
+	private ThreadPoolTaskExecutorBuilder(@Nullable Integer queueCapacity, @Nullable Integer corePoolSize,
+			@Nullable Integer maxPoolSize, @Nullable Boolean allowCoreThreadTimeOut, @Nullable Duration keepAlive,
+			@Nullable Boolean acceptTasksAfterContextClose, @Nullable Boolean awaitTermination,
+			@Nullable Duration awaitTerminationPeriod, @Nullable String threadNamePrefix,
+			@Nullable TaskDecorator taskDecorator, @Nullable Set<ThreadPoolTaskExecutorCustomizer> customizers) {
 		this.queueCapacity = queueCapacity;
 		this.corePoolSize = corePoolSize;
 		this.maxPoolSize = maxPoolSize;
@@ -157,7 +160,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @param keepAlive the keep alive to set
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskExecutorBuilder keepAlive(Duration keepAlive) {
+	public ThreadPoolTaskExecutorBuilder keepAlive(@Nullable Duration keepAlive) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				this.awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
@@ -200,7 +203,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @param awaitTerminationPeriod the await termination period to set
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskExecutorBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+	public ThreadPoolTaskExecutorBuilder awaitTerminationPeriod(@Nullable Duration awaitTerminationPeriod) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				awaitTerminationPeriod, this.threadNamePrefix, this.taskDecorator, this.customizers);
@@ -211,7 +214,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @param threadNamePrefix the thread name prefix to set
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskExecutorBuilder threadNamePrefix(String threadNamePrefix) {
+	public ThreadPoolTaskExecutorBuilder threadNamePrefix(@Nullable String threadNamePrefix) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				this.awaitTerminationPeriod, threadNamePrefix, this.taskDecorator, this.customizers);
@@ -222,7 +225,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @param taskDecorator the task decorator to use
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskExecutorBuilder taskDecorator(TaskDecorator taskDecorator) {
+	public ThreadPoolTaskExecutorBuilder taskDecorator(@Nullable TaskDecorator taskDecorator) {
 		return new ThreadPoolTaskExecutorBuilder(this.queueCapacity, this.corePoolSize, this.maxPoolSize,
 				this.allowCoreThreadTimeOut, this.keepAlive, this.acceptTasksAfterContextClose, this.awaitTermination,
 				this.awaitTerminationPeriod, this.threadNamePrefix, taskDecorator, this.customizers);
@@ -338,7 +341,7 @@ public class ThreadPoolTaskExecutorBuilder {
 		return taskExecutor;
 	}
 
-	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	private <T> Set<T> append(@Nullable Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Low-level hook that can be used to attach a {@link SpringApplicationRunListener} to a
  * {@link SpringApplication} in order to observe or modify its behavior. Hooks are managed
@@ -34,8 +36,8 @@ public interface SpringApplicationHook {
 	 * Return the {@link SpringApplicationRunListener} that should be hooked into the
 	 * given {@link SpringApplication}.
 	 * @param springApplication the source {@link SpringApplication} instance
-	 * @return the {@link SpringApplicationRunListener} to attach
+	 * @return the {@link SpringApplicationRunListener} to attach or {@code null}
 	 */
-	SpringApplicationRunListener getRunListener(SpringApplication springApplication);
+	@Nullable SpringApplicationRunListener getRunListener(SpringApplication springApplication);
 
 }

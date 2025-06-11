@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A single logger group.
  *
@@ -34,7 +36,7 @@ public final class LoggerGroup {
 
 	private final List<String> members;
 
-	private LogLevel configuredLevel;
+	private @Nullable LogLevel configuredLevel;
 
 	LoggerGroup(String name, List<String> members) {
 		this.name = name;
@@ -53,7 +55,7 @@ public final class LoggerGroup {
 		return !this.members.isEmpty();
 	}
 
-	public LogLevel getConfiguredLevel() {
+	public @Nullable LogLevel getConfiguredLevel() {
 		return this.configuredLevel;
 	}
 

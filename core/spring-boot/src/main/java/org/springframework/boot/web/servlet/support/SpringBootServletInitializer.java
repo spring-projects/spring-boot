@@ -28,6 +28,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.ApplicationContextFactory;
@@ -85,7 +86,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent("reactor.core.scheduler.Schedulers",
 			SpringBootServletInitializer.class.getClassLoader());
 
-	protected Log logger; // Don't initialize early
+	protected @Nullable Log logger; // Don't initialize early
 
 	private boolean registerErrorPageFilter = true;
 
@@ -155,7 +156,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
-			this.logger.info("Root context already created (using as parent).");
+			getLogger().info("Root context already created (using as parent).");
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 			builder.initializers(new ParentContextApplicationContextInitializer(parent));
 		}
@@ -179,6 +180,11 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		return run(application);
 	}
 
+	private Log getLogger() {
+		Assert.state(this.logger != null, "Logger not set");
+		return this.logger;
+	}
+
 	/**
 	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
 	 * the {@link SpringApplication}. The default implementation returns a new
@@ -199,7 +205,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		return (WebApplicationContext) application.run();
 	}
 
-	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
+	private @Nullable ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
 		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (context instanceof ApplicationContext applicationContext) {
 			return applicationContext;
@@ -291,7 +297,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 
 		@Override
-		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+		public ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType) {
 			return new AnnotationConfigServletWebApplicationContext() {
 
 				@Override
@@ -310,7 +316,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 
 		@Override
-		public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+		public ConfigurableEnvironment createEnvironment(@Nullable WebApplicationType webApplicationType) {
 			return new ApplicationServletEnvironment();
 		}
 

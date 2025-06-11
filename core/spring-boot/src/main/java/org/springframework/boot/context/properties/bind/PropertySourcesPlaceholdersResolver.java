@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -33,7 +35,7 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver {
 
-	private final Iterable<PropertySource<?>> sources;
+	private final @Nullable Iterable<PropertySource<?>> sources;
 
 	private final PropertyPlaceholderHelper helper;
 
@@ -41,11 +43,12 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 		this(getSources(environment), null);
 	}
 
-	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources) {
+	public PropertySourcesPlaceholdersResolver(@Nullable Iterable<PropertySource<?>> sources) {
 		this(sources, null);
 	}
 
-	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources, PropertyPlaceholderHelper helper) {
+	public PropertySourcesPlaceholdersResolver(@Nullable Iterable<PropertySource<?>> sources,
+			@Nullable PropertyPlaceholderHelper helper) {
 		this.sources = sources;
 		this.helper = (helper != null) ? helper
 				: new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
@@ -54,14 +57,14 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	}
 
 	@Override
-	public Object resolvePlaceholders(Object value) {
+	public @Nullable Object resolvePlaceholders(@Nullable Object value) {
 		if (value instanceof String string) {
 			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
 		}
 		return value;
 	}
 
-	protected String resolvePlaceholder(String placeholder) {
+	protected @Nullable String resolvePlaceholder(String placeholder) {
 		if (this.sources != null) {
 			for (PropertySource<?> source : this.sources) {
 				Object value = source.getProperty(placeholder);

@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
@@ -120,7 +122,7 @@ public final class ConfigData {
 		 * @param propertySource the property source
 		 * @return the options to apply
 		 */
-		Options get(PropertySource<?> propertySource);
+		@Nullable Options get(PropertySource<?> propertySource);
 
 		/**
 		 * Create a new {@link PropertySourceOptions} instance that always returns the

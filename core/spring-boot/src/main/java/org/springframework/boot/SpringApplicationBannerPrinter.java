@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -45,14 +46,14 @@ class SpringApplicationBannerPrinter {
 
 	private final ResourceLoader resourceLoader;
 
-	private final Banner fallbackBanner;
+	private final @Nullable Banner fallbackBanner;
 
-	SpringApplicationBannerPrinter(ResourceLoader resourceLoader, Banner fallbackBanner) {
+	SpringApplicationBannerPrinter(ResourceLoader resourceLoader, @Nullable Banner fallbackBanner) {
 		this.resourceLoader = resourceLoader;
 		this.fallbackBanner = fallbackBanner;
 	}
 
-	Banner print(Environment environment, Class<?> sourceClass, Log logger) {
+	Banner print(Environment environment, @Nullable Class<?> sourceClass, Log logger) {
 		Banner banner = getBanner(environment);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
@@ -63,7 +64,7 @@ class SpringApplicationBannerPrinter {
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
+	Banner print(Environment environment, @Nullable Class<?> sourceClass, PrintStream out) {
 		Banner banner = getBanner(environment);
 		banner.printBanner(environment, sourceClass, out);
 		return new PrintedBanner(banner, sourceClass);
@@ -80,7 +81,7 @@ class SpringApplicationBannerPrinter {
 		return DEFAULT_BANNER;
 	}
 
-	private Banner getTextBanner(Environment environment) {
+	private @Nullable Banner getTextBanner(Environment environment) {
 		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, DEFAULT_BANNER_LOCATION);
 		Resource resource = this.resourceLoader.getResource(location);
 		try {
@@ -94,8 +95,8 @@ class SpringApplicationBannerPrinter {
 		return null;
 	}
 
-	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
-			throws UnsupportedEncodingException {
+	private String createStringFromBanner(Banner banner, Environment environment,
+			@Nullable Class<?> mainApplicationClass) throws UnsupportedEncodingException {
 		String charset = environment.getProperty("spring.banner.charset", StandardCharsets.UTF_8.name());
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try (PrintStream out = new PrintStream(byteArrayOutputStream, false, charset)) {
@@ -112,15 +113,15 @@ class SpringApplicationBannerPrinter {
 
 		private final Banner banner;
 
-		private final Class<?> sourceClass;
+		private final @Nullable Class<?> sourceClass;
 
-		PrintedBanner(Banner banner, Class<?> sourceClass) {
+		PrintedBanner(Banner banner, @Nullable Class<?> sourceClass) {
 			this.banner = banner;
 			this.sourceClass = sourceClass;
 		}
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+		public void printBanner(Environment environment, @Nullable Class<?> sourceClass, PrintStream out) {
 			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
 		}
@@ -130,7 +131,7 @@ class SpringApplicationBannerPrinter {
 	static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern(DEFAULT_BANNER_LOCATION);
 		}
 

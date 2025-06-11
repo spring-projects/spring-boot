@@ -21,12 +21,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.util.Instantiator;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnvironmentPostProcessorsFactory} implementation that uses reflection to create
@@ -36,22 +38,22 @@ import org.springframework.boot.util.Instantiator;
  */
 class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProcessorsFactory {
 
-	private final List<Class<?>> classes;
+	private final @Nullable List<Class<?>> classes;
 
-	private ClassLoader classLoader;
+	private @Nullable ClassLoader classLoader;
 
-	private final List<String> classNames;
+	private @Nullable final List<String> classNames;
 
 	ReflectionEnvironmentPostProcessorsFactory(Class<?>... classes) {
 		this.classes = new ArrayList<>(Arrays.asList(classes));
 		this.classNames = null;
 	}
 
-	ReflectionEnvironmentPostProcessorsFactory(ClassLoader classLoader, String... classNames) {
+	ReflectionEnvironmentPostProcessorsFactory(@Nullable ClassLoader classLoader, String... classNames) {
 		this(classLoader, Arrays.asList(classNames));
 	}
 
-	ReflectionEnvironmentPostProcessorsFactory(ClassLoader classLoader, List<String> classNames) {
+	ReflectionEnvironmentPostProcessorsFactory(@Nullable ClassLoader classLoader, List<String> classNames) {
 		this.classes = null;
 		this.classLoader = classLoader;
 		this.classNames = classNames;
@@ -68,8 +70,11 @@ class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProce
 					parameters.add(BootstrapContext.class, bootstrapContext);
 					parameters.add(BootstrapRegistry.class, bootstrapContext);
 				});
-		return (this.classes != null) ? instantiator.instantiateTypes(this.classes)
-				: instantiator.instantiate(this.classLoader, this.classNames);
+		if (this.classes != null) {
+			return instantiator.instantiateTypes(this.classes);
+		}
+		Assert.state(this.classNames != null, "'classNames' must not be null");
+		return instantiator.instantiate(this.classLoader, this.classNames);
 	}
 
 }

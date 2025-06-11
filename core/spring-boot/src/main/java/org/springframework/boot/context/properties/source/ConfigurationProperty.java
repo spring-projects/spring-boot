@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -38,16 +40,16 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 
 	private final Object value;
 
-	private final ConfigurationPropertySource source;
+	private final @Nullable ConfigurationPropertySource source;
 
-	private final Origin origin;
+	private final @Nullable Origin origin;
 
-	public ConfigurationProperty(ConfigurationPropertyName name, Object value, Origin origin) {
+	public ConfigurationProperty(ConfigurationPropertyName name, Object value, @Nullable Origin origin) {
 		this(null, name, value, origin);
 	}
 
-	private ConfigurationProperty(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
-			Origin origin) {
+	private ConfigurationProperty(@Nullable ConfigurationPropertySource source, ConfigurationPropertyName name,
+			Object value, @Nullable Origin origin) {
 		Assert.notNull(name, "'name' must not be null");
 		Assert.notNull(value, "'value' must not be null");
 		this.source = source;
@@ -62,7 +64,7 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	 * @return the configuration property source
 	 * @since 2.6.0
 	 */
-	public ConfigurationPropertySource getSource() {
+	public @Nullable ConfigurationPropertySource getSource() {
 		return this.source;
 	}
 
@@ -83,7 +85,7 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 	}
 
 	@Override
-	public Origin getOrigin() {
+	public @Nullable Origin getOrigin() {
 		return this.origin;
 	}
 
@@ -122,15 +124,15 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 		return this.name.compareTo(other.name);
 	}
 
-	static ConfigurationProperty of(ConfigurationPropertyName name, OriginTrackedValue value) {
+	static @Nullable ConfigurationProperty of(ConfigurationPropertyName name, @Nullable OriginTrackedValue value) {
 		if (value == null) {
 			return null;
 		}
 		return new ConfigurationProperty(name, value.getValue(), value.getOrigin());
 	}
 
-	static ConfigurationProperty of(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
-			Origin origin) {
+	static @Nullable ConfigurationProperty of(@Nullable ConfigurationPropertySource source,
+			ConfigurationPropertyName name, @Nullable Object value, @Nullable Origin origin) {
 		if (value == null) {
 			return null;
 		}

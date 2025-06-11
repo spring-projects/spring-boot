@@ -28,10 +28,13 @@ import ch.qos.logback.core.model.NamedModel;
  */
 class SpringPropertyModel extends NamedModel {
 
+	@SuppressWarnings("NullAway.Init")
 	private String scope;
 
+	@SuppressWarnings("NullAway.Init")
 	private String defaultValue;
 
+	@SuppressWarnings("NullAway.Init")
 	private String source;
 
 	String getScope() {

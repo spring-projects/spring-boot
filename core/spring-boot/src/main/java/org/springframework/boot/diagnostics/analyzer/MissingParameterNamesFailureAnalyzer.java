@@ -19,6 +19,8 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.core.Ordered;
@@ -46,7 +48,7 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 							""";
 
 	@Override
-	public FailureAnalysis analyze(Throwable failure) {
+	public @Nullable FailureAnalysis analyze(Throwable failure) {
 		return analyzeForMissingParameters(failure);
 	}
 
@@ -55,12 +57,12 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 	 * @param failure the failure to analyze
 	 * @return a failure analysis or {@code null}
 	 */
-	static FailureAnalysis analyzeForMissingParameters(Throwable failure) {
+	static @Nullable FailureAnalysis analyzeForMissingParameters(Throwable failure) {
 		return analyzeForMissingParameters(failure, failure, new HashSet<>());
 	}
 
-	private static FailureAnalysis analyzeForMissingParameters(Throwable rootFailure, Throwable cause,
-			Set<Throwable> seen) {
+	private static @Nullable FailureAnalysis analyzeForMissingParameters(Throwable rootFailure,
+			@Nullable Throwable cause, Set<Throwable> seen) {
 		if (cause != null && seen.add(cause)) {
 			if (isSpringParametersException(cause)) {
 				return getAnalysis(rootFailure, cause);
@@ -89,7 +91,7 @@ class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
 		return elements.length > 0 && isSpringClass(elements[0].getClassName());
 	}
 
-	private static boolean isSpringClass(String className) {
+	private static boolean isSpringClass(@Nullable String className) {
 		return className != null && className.startsWith("org.springframework.");
 	}
 

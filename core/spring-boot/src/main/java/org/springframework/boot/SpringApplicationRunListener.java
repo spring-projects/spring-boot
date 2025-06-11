@@ -18,6 +18,8 @@ package org.springframework.boot;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -80,7 +82,7 @@ public interface SpringApplicationRunListener {
 	 * @param timeTaken the time taken to start the application or {@code null} if unknown
 	 * @since 2.6.0
 	 */
-	default void started(ConfigurableApplicationContext context, Duration timeTaken) {
+	default void started(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
 	}
 
 	/**
@@ -92,7 +94,7 @@ public interface SpringApplicationRunListener {
 	 * unknown
 	 * @since 2.6.0
 	 */
-	default void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+	default void ready(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
 	}
 
 	/**
@@ -102,7 +104,7 @@ public interface SpringApplicationRunListener {
 	 * @param exception the failure
 	 * @since 2.0.0
 	 */
-	default void failed(ConfigurableApplicationContext context, Throwable exception) {
+	default void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 	}
 
 }

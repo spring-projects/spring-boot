@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -55,7 +57,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	@Override
-	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
+	protected boolean isAllowRecursiveBinding(@Nullable ConfigurationPropertySource source) {
 		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
 
@@ -93,7 +95,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
-			ResolvableType elementType, Object value) {
+			ResolvableType elementType, @Nullable Object value) {
 		if (value == null || (value instanceof CharSequence charSequence && charSequence.isEmpty())) {
 			return;
 		}
@@ -157,7 +159,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return root.append((i < INDEXES.length) ? INDEXES[i] : "[" + i + "]");
 	}
 
-	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
+	private <C> @Nullable C convert(@Nullable Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		return getContext().getConverter().convert(value, type, annotations);
 	}

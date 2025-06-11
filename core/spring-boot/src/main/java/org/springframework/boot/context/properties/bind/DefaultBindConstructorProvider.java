@@ -21,6 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.KotlinDetector;
@@ -38,7 +40,7 @@ import org.springframework.util.ClassUtils;
 class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 	@Override
-	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
+	public @Nullable Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
 		Constructors constructors = Constructors.getConstructors(bindable.getType().resolve(),
 				isNestedConstructorBinding);
 		if (constructors.getBind() != null && constructors.isDeducedBindConstructor()
@@ -51,7 +53,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 	}
 
 	@Override
-	public Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
+	public @Nullable Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
 		Constructors constructors = Constructors.getConstructors(type, isNestedConstructorBinding);
 		return constructors.getBind();
 	}
@@ -65,13 +67,13 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		private final boolean hasAutowired;
 
-		private final Constructor<?> bind;
+		private final @Nullable Constructor<?> bind;
 
 		private final boolean deducedBindConstructor;
 
 		private final boolean immutableType;
 
-		private Constructors(boolean hasAutowired, Constructor<?> bind, boolean deducedBindConstructor,
+		private Constructors(boolean hasAutowired, @Nullable Constructor<?> bind, boolean deducedBindConstructor,
 				boolean immutableType) {
 			this.hasAutowired = hasAutowired;
 			this.bind = bind;
@@ -83,7 +85,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return this.hasAutowired;
 		}
 
-		Constructor<?> getBind() {
+		@Nullable Constructor<?> getBind() {
 			return this.bind;
 		}
 
@@ -95,7 +97,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return this.immutableType;
 		}
 
-		static Constructors getConstructors(Class<?> type, boolean isNestedConstructorBinding) {
+		static Constructors getConstructors(@Nullable Class<?> type, boolean isNestedConstructorBinding) {
 			if (type == null) {
 				return NONE;
 			}
@@ -160,8 +162,8 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return candidateAnnotations;
 		}
 
-		private static Constructor<?> getConstructorBindingAnnotated(Class<?> type, Constructor<?>[] candidates,
-				MergedAnnotations[] mergedAnnotations) {
+		private static @Nullable Constructor<?> getConstructorBindingAnnotated(Class<?> type,
+				Constructor<?>[] candidates, MergedAnnotations[] mergedAnnotations) {
 			Constructor<?> result = null;
 			for (int i = 0; i < candidates.length; i++) {
 				if (mergedAnnotations[i].isPresent(ConstructorBinding.class)) {
@@ -176,7 +178,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		}
 
-		private static Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
+		private static @Nullable Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
 			if (candidates.length == 1 && candidates[0].getParameterCount() > 0) {
 				if (type.isMemberClass() && Modifier.isPrivate(candidates[0].getModifiers())) {
 					return null;
@@ -199,7 +201,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
 		}
 
-		private static Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
+		private static @Nullable Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
 			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
 			if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
 				return primaryConstructor;

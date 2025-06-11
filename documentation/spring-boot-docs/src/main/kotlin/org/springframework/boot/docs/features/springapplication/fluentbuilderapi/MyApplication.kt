@@ -20,7 +20,7 @@ import org.springframework.boot.Banner
 import org.springframework.boot.builder.SpringApplicationBuilder
 
 class MyApplication {
-	fun hierarchyWithDisabledBanner(args: Array<String?>) {
+	fun hierarchyWithDisabledBanner(args: Array<String>) {
 		// tag::code[]
 		SpringApplicationBuilder()
 			.sources(Parent::class.java)

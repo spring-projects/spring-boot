@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Simple cache that uses a {@link SoftReference} to cache a value for as long as
  * possible.
@@ -39,11 +41,11 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	private final boolean neverExpire;
 
-	private volatile Duration timeToLive;
+	private volatile @Nullable Duration timeToLive;
 
 	private volatile SoftReference<T> value = new SoftReference<>(null);
 
-	private volatile Instant lastAccessed = now();
+	private volatile @Nullable Instant lastAccessed = now();
 
 	SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
 		this.neverExpire = neverExpire;
@@ -60,7 +62,7 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	}
 
 	@Override
-	public void setTimeToLive(Duration timeToLive) {
+	public void setTimeToLive(@Nullable Duration timeToLive) {
 		this.timeToLive = (timeToLive == null || timeToLive.isZero()) ? null : timeToLive;
 	}
 
@@ -126,7 +128,7 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 		return Instant.now();
 	}
 
-	protected T getValue() {
+	protected @Nullable T getValue() {
 		return this.value.get();
 	}
 
@@ -137,8 +139,8 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	/**
 	 * An active {@link CacheOverride} with a stored time-to-live.
 	 */
-	private record ActiveCacheOverride(SoftReferenceConfigurationPropertyCache<?> cache, Duration timeToLive,
-			Instant lastAccessed, AtomicBoolean active) implements CacheOverride {
+	private record ActiveCacheOverride(SoftReferenceConfigurationPropertyCache<?> cache, @Nullable Duration timeToLive,
+			@Nullable Instant lastAccessed, AtomicBoolean active) implements CacheOverride {
 
 		ActiveCacheOverride(SoftReferenceConfigurationPropertyCache<?> cache) {
 			this(cache, cache.timeToLive, cache.lastAccessed, new AtomicBoolean());

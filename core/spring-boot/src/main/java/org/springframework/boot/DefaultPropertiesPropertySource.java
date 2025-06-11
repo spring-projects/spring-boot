@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -56,7 +58,7 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 	 * @param propertySource the property source to check
 	 * @return {@code true} if the name matches
 	 */
-	public static boolean hasMatchingName(PropertySource<?> propertySource) {
+	public static boolean hasMatchingName(@Nullable PropertySource<?> propertySource) {
 		return (propertySource != null) && propertySource.getName().equals(NAME);
 	}
 
@@ -67,7 +69,8 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 	 * @param action the action used to consume the
 	 * {@link DefaultPropertiesPropertySource}
 	 */
-	public static void ifNotEmpty(Map<String, Object> source, Consumer<DefaultPropertiesPropertySource> action) {
+	public static void ifNotEmpty(Map<String, Object> source,
+			@Nullable Consumer<DefaultPropertiesPropertySource> action) {
 		if (!CollectionUtils.isEmpty(source) && action != null) {
 			action.accept(new DefaultPropertiesPropertySource(source));
 		}

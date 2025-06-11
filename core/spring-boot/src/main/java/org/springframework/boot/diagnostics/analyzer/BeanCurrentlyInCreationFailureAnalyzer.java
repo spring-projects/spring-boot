@@ -18,6 +18,9 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
@@ -38,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
-	private final AbstractAutowireCapableBeanFactory beanFactory;
+	private final @Nullable AbstractAutowireCapableBeanFactory beanFactory;
 
 	BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
 		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
@@ -50,7 +53,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, BeanCurrentlyInCreationException cause) {
 		DependencyCycle dependencyCycle = findCycle(rootFailure);
 		if (dependencyCycle == null) {
 			return null;
@@ -69,7 +72,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 				+ "spring.main.allow-circular-references to true.";
 	}
 
-	private DependencyCycle findCycle(Throwable rootFailure) {
+	private @Nullable DependencyCycle findCycle(Throwable rootFailure) {
 		List<BeanInCycle> beansInCycle = new ArrayList<>();
 		Throwable candidate = rootFailure;
 		int cycleStart = -1;
@@ -136,7 +139,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 
 	private static final class BeanInCycle {
 
-		private final String name;
+		private final @Nullable String name;
 
 		private final String description;
 
@@ -156,7 +159,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return "";
 		}
 
-		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
+		private @Nullable InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
 			if (ex instanceof UnsatisfiedDependencyException unsatisfiedDependencyException) {
 				return unsatisfiedDependencyException.getInjectionPoint();
 			}
@@ -171,12 +174,12 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			if (obj == null || getClass() != obj.getClass()) {
 				return false;
 			}
-			return this.name.equals(((BeanInCycle) obj).name);
+			return Objects.equals(this.name, ((BeanInCycle) obj).name);
 		}
 
 		@Override
 		public int hashCode() {
-			return this.name.hashCode();
+			return Objects.hashCode(this.name);
 		}
 
 		@Override
@@ -184,14 +187,14 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			return this.name + this.description;
 		}
 
-		static BeanInCycle get(Throwable ex) {
+		static @Nullable BeanInCycle get(Throwable ex) {
 			if (ex instanceof BeanCreationException beanCreationException) {
 				return get(beanCreationException);
 			}
 			return null;
 		}
 
-		private static BeanInCycle get(BeanCreationException ex) {
+		private static @Nullable BeanInCycle get(BeanCreationException ex) {
 			if (StringUtils.hasText(ex.getBeanName())) {
 				return new BeanInCycle(ex);
 			}

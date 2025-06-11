@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -72,7 +74,7 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> InstanceSupplier<T> getRegisteredInstanceSupplier(Class<T> type) {
+	public <T> @Nullable InstanceSupplier<T> getRegisteredInstanceSupplier(Class<T> type) {
 		synchronized (this.instanceSuppliers) {
 			return (InstanceSupplier<T>) this.instanceSuppliers.get(type);
 		}
@@ -84,17 +86,18 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	@Override
-	public <T> T get(Class<T> type) throws IllegalStateException {
+	public <T> @Nullable T get(Class<T> type) throws IllegalStateException {
 		return getOrElseThrow(type, () -> new IllegalStateException(type.getName() + " has not been registered"));
 	}
 
 	@Override
-	public <T> T getOrElse(Class<T> type, T other) {
+	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
+	public <T> @Nullable T getOrElse(Class<T> type, @Nullable T other) {
 		return getOrElseSupply(type, () -> other);
 	}
 
 	@Override
-	public <T> T getOrElseSupply(Class<T> type, Supplier<T> other) {
+	public <T> @Nullable T getOrElseSupply(Class<T> type, Supplier<@Nullable T> other) {
 		synchronized (this.instanceSuppliers) {
 			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
 			return (instanceSupplier != null) ? getInstance(type, instanceSupplier) : other.get();
@@ -102,7 +105,8 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	@Override
-	public <T, X extends Throwable> T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier) throws X {
+	public <T, X extends Throwable> @Nullable T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier)
+			throws X {
 		synchronized (this.instanceSuppliers) {
 			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
 			if (instanceSupplier == null) {
@@ -113,10 +117,13 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getInstance(Class<T> type, InstanceSupplier<?> instanceSupplier) {
+	private <T> @Nullable T getInstance(Class<T> type, InstanceSupplier<?> instanceSupplier) {
 		T instance = (T) this.instances.get(type);
 		if (instance == null) {
 			instance = (T) instanceSupplier.get(this);
+			if (instance == null) {
+				return null;
+			}
 			if (instanceSupplier.getScope() == Scope.SINGLETON) {
 				this.instances.put(type, instance);
 			}

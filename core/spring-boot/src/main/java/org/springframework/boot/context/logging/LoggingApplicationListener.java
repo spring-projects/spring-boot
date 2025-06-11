@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -54,6 +55,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -181,17 +183,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private LoggingSystem loggingSystem;
+	private @Nullable LoggingSystem loggingSystem;
 
-	private LogFile logFile;
+	private @Nullable LogFile logFile;
 
-	private LoggerGroups loggerGroups;
+	private @Nullable LoggerGroups loggerGroups;
 
 	private int order = DEFAULT_ORDER;
 
 	private boolean parseArgs = true;
 
-	private LogLevel springBootLogging = null;
+	private @Nullable LogLevel springBootLogging = null;
 
 	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {
@@ -199,11 +201,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	@Override
-	public boolean supportsSourceType(Class<?> sourceType) {
+	public boolean supportsSourceType(@Nullable Class<?> sourceType) {
 		return isAssignableFrom(sourceType, SOURCE_TYPES);
 	}
 
-	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
+	private boolean isAssignableFrom(@Nullable Class<?> type, Class<?>... supportedTypes) {
 		if (type != null) {
 			for (Class<?> supportedType : supportedTypes) {
 				if (supportedType.isAssignableFrom(type)) {
@@ -250,6 +252,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
+			Assert.state(this.loggingSystem != null, "loggingSystem is not set");
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
 		if (this.logFile != null && !beanFactory.containsBean(LOG_FILE_BEAN_NAME)) {
@@ -295,6 +298,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		this.loggerGroups = new LoggerGroups(DEFAULT_GROUP_LOGGERS);
 		initializeEarlyLoggingLevel(environment);
+		Assert.state(this.loggingSystem != null, "loggingSystem is not set");
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
@@ -321,7 +325,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return (value != null && !value.equals("false"));
 	}
 
-	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
+	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system,
+			@Nullable LogFile logFile) {
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (StringUtils.hasLength(logConfig)) {
 			logConfig = logConfig.strip();
@@ -348,7 +353,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 	}
 
-	private boolean ignoreLogConfig(String logConfig) {
+	private boolean ignoreLogConfig(@Nullable String logConfig) {
 		return !StringUtils.hasLength(logConfig) || logConfig.startsWith("-D");
 	}
 

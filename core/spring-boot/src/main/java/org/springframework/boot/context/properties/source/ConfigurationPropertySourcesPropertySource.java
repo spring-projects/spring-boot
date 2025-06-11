@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.Environment;
@@ -43,17 +45,17 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 	}
 
 	@Override
-	public Object getProperty(String name) {
+	public @Nullable Object getProperty(String name) {
 		ConfigurationProperty configurationProperty = findConfigurationProperty(name);
 		return (configurationProperty != null) ? configurationProperty.getValue() : null;
 	}
 
 	@Override
-	public Origin getOrigin(String name) {
+	public @Nullable Origin getOrigin(String name) {
 		return Origin.from(findConfigurationProperty(name));
 	}
 
-	private ConfigurationProperty findConfigurationProperty(String name) {
+	private @Nullable ConfigurationProperty findConfigurationProperty(String name) {
 		try {
 			return findConfigurationProperty(ConfigurationPropertyName.of(name, true));
 		}
@@ -62,7 +64,7 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 		}
 	}
 
-	ConfigurationProperty findConfigurationProperty(ConfigurationPropertyName name) {
+	@Nullable ConfigurationProperty findConfigurationProperty(@Nullable ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
 		}

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Logger groups configured through the Spring Environment.
  *
@@ -52,7 +54,7 @@ public final class LoggerGroups implements Iterable<LoggerGroup> {
 		this.groups.put(loggerGroup.getName(), loggerGroup);
 	}
 
-	public LoggerGroup get(String name) {
+	public @Nullable LoggerGroup get(String name) {
 		return this.groups.get(name);
 	}
 

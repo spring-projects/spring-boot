@@ -29,6 +29,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
@@ -94,7 +96,7 @@ class JsonValueWriter {
 	 * written
 	 * @param value the value
 	 */
-	<N, V> void write(N name, V value) {
+	<N, V> void write(@Nullable N name, @Nullable V value) {
 		if (name != null) {
 			writePair(name, value);
 		}
@@ -117,7 +119,7 @@ class JsonValueWriter {
 	 * @param <V> the value type
 	 * @param value the value to write
 	 */
-	<V> void write(V value) {
+	<V> void write(@Nullable V value) {
 		value = processValue(value);
 		if (value == null) {
 			append("null");
@@ -158,7 +160,7 @@ class JsonValueWriter {
 	 * @see #writePairs(Consumer)
 	 * @see #writeElements(Consumer)
 	 */
-	void start(Series series) {
+	void start(@Nullable Series series) {
 		if (series != null) {
 			int nestingDepth = this.activeSeries.size();
 			Assert.state(nestingDepth <= this.maxNestingDepth,
@@ -174,7 +176,7 @@ class JsonValueWriter {
 	 * @param series the series type being ended (must match {@link #start(Series)})
 	 * @see #start(Series)
 	 */
-	void end(Series series) {
+	void end(@Nullable Series series) {
 		if (series != null) {
 			this.activeSeries.pop();
 			append(series.closeChar);
@@ -242,7 +244,7 @@ class JsonValueWriter {
 		pairs.accept(this::writePair);
 	}
 
-	private <N, V> void writePair(N name, V value) {
+	private <N, V> void writePair(N name, @Nullable V value) {
 		this.path = this.path.child(name.toString());
 		if (!isFilteredPath()) {
 			String processedName = processName(name.toString());
@@ -335,7 +337,7 @@ class JsonValueWriter {
 		return name;
 	}
 
-	private <V> V processValue(V value) {
+	private <V> @Nullable V processValue(@Nullable V value) {
 		for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
 			for (ValueProcessor<?> valueProcessor : filtersAndProcessors.valueProcessors()) {
 				value = processValue(value, valueProcessor);
@@ -344,9 +346,9 @@ class JsonValueWriter {
 		return value;
 	}
 
-	@SuppressWarnings({ "unchecked", "unchecked" })
-	private <V> V processValue(V value, ValueProcessor<?> valueProcessor) {
-		return (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, this.path, value)
+	@SuppressWarnings({ "unchecked" })
+	private <V> @Nullable V processValue(@Nullable V value, ValueProcessor<?> valueProcessor) {
+		return (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, this.path, new Object[] { value })
 			.invokeAnd((call) -> call.processValue(this.path, value))
 			.get(value);
 	}

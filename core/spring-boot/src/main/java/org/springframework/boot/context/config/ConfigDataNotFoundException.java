@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.config;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.OriginProvider;
 
 /**
@@ -31,7 +33,7 @@ public abstract class ConfigDataNotFoundException extends ConfigDataException im
 	 * @param message the exception message
 	 * @param cause the exception cause
 	 */
-	ConfigDataNotFoundException(String message, Throwable cause) {
+	ConfigDataNotFoundException(String message, @Nullable Throwable cause) {
 		super(message, cause);
 	}
 

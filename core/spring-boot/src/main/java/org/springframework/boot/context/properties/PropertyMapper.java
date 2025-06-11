@@ -24,6 +24,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
@@ -62,11 +64,11 @@ public final class PropertyMapper {
 
 	private static final PropertyMapper INSTANCE = new PropertyMapper(null, null);
 
-	private final PropertyMapper parent;
+	private final @Nullable PropertyMapper parent;
 
-	private final SourceOperator sourceOperator;
+	private final @Nullable SourceOperator sourceOperator;
 
-	private PropertyMapper(PropertyMapper parent, SourceOperator sourceOperator) {
+	private PropertyMapper(@Nullable PropertyMapper parent, @Nullable SourceOperator sourceOperator) {
 		this.parent = parent;
 		this.sourceOperator = sourceOperator;
 	}
@@ -119,7 +121,7 @@ public final class PropertyMapper {
 	 * @param value the value
 	 * @return a {@link Source} that can be used to complete the mapping
 	 */
-	public <T> Source<T> from(T value) {
+	public <T> Source<T> from(@Nullable T value) {
 		return from(() -> value);
 	}
 
@@ -356,7 +358,7 @@ public final class PropertyMapper {
 		}
 
 		@Override
-		public T get() {
+		public @Nullable T get() {
 			try {
 				return this.supplier.get();
 			}

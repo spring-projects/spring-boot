@@ -25,6 +25,8 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
@@ -53,7 +55,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, MutuallyExclusiveConfigurationPropertiesException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure,
+			MutuallyExclusiveConfigurationPropertiesException cause) {
 		List<Descriptor> descriptors = new ArrayList<>();
 		for (String name : cause.getConfiguredNames()) {
 			List<Descriptor> descriptorsForName = getDescriptors(name);
@@ -115,9 +118,9 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 		private final String propertyName;
 
-		private final Origin origin;
+		private final @Nullable Origin origin;
 
-		private Descriptor(String propertyName, Origin origin) {
+		private Descriptor(String propertyName, @Nullable Origin origin) {
 			this.propertyName = propertyName;
 			this.origin = origin;
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
@@ -33,7 +35,7 @@ public interface LoggingSystemFactory {
 	 * @param classLoader the class loader to use
 	 * @return a logging system
 	 */
-	LoggingSystem getLoggingSystem(ClassLoader classLoader);
+	@Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader);
 
 	/**
 	 * Return a {@link LoggingSystemFactory} backed by {@code spring.factories}.

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.Context;
@@ -73,13 +75,15 @@ public class StructuredLogFormatterFactory<E> {
 	 * @param commonFormatters callback used to define supported common formatters
 	 */
 	public StructuredLogFormatterFactory(Class<E> logEventType, Environment environment,
-			Consumer<AvailableParameters> availableParameters, Consumer<CommonFormatters<E>> commonFormatters) {
+			@Nullable Consumer<AvailableParameters> availableParameters,
+			Consumer<CommonFormatters<E>> commonFormatters) {
 		this(SpringFactoriesLoader.forDefaultResourceLocation(), logEventType, environment, availableParameters,
 				commonFormatters);
 	}
 
 	StructuredLogFormatterFactory(SpringFactoriesLoader factoriesLoader, Class<E> logEventType, Environment environment,
-			Consumer<AvailableParameters> availableParameters, Consumer<CommonFormatters<E>> commonFormatters) {
+			@Nullable Consumer<AvailableParameters> availableParameters,
+			Consumer<CommonFormatters<E>> commonFormatters) {
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		this.factoriesLoader = factoriesLoader;
 		this.logEventType = logEventType;
@@ -99,11 +103,11 @@ public class StructuredLogFormatterFactory<E> {
 		commonFormatters.accept(this.commonFormatters);
 	}
 
-	private StackTracePrinter getStackTracePrinter(StructuredLoggingJsonProperties properties) {
+	private @Nullable StackTracePrinter getStackTracePrinter(@Nullable StructuredLoggingJsonProperties properties) {
 		return (properties != null && properties.stackTrace() != null) ? properties.stackTrace().createPrinter() : null;
 	}
 
-	private ContextPairs getContextPairs(StructuredLoggingJsonProperties properties) {
+	private ContextPairs getContextPairs(@Nullable StructuredLoggingJsonProperties properties) {
 		Context contextProperties = (properties != null) ? properties.context() : null;
 		contextProperties = (contextProperties != null) ? contextProperties : new Context(true, null);
 		return new ContextPairs(contextProperties.include(), contextProperties.prefix());
@@ -128,7 +132,7 @@ public class StructuredLogFormatterFactory<E> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private StructuredLogFormatter<E> getUsingClassName(String className) {
+	private @Nullable StructuredLogFormatter<E> getUsingClassName(String className) {
 		Object formatter = this.instantiator.instantiate(className);
 		if (formatter != null) {
 			Assert.state(formatter instanceof StructuredLogFormatter,
@@ -171,7 +175,7 @@ public class StructuredLogFormatterFactory<E> {
 			return this.factories.keySet().stream().map(CommonStructuredLogFormat::getId).toList();
 		}
 
-		StructuredLogFormatter<E> get(Instantiator<?> instantiator, String format) {
+		@Nullable StructuredLogFormatter<E> get(Instantiator<?> instantiator, String format) {
 			CommonStructuredLogFormat commonFormat = CommonStructuredLogFormat.forId(format);
 			CommonFormatterFactory<E> factory = (commonFormat != null) ? this.factories.get(commonFormat) : null;
 			return (factory != null) ? factory.createFormatter(instantiator) : null;
@@ -202,11 +206,11 @@ public class StructuredLogFormatterFactory<E> {
 	 */
 	class JsonMembersCustomizerBuilder implements StructuredLoggingJsonMembersCustomizer.Builder<E> {
 
-		private final StructuredLoggingJsonProperties properties;
+		private final @Nullable StructuredLoggingJsonProperties properties;
 
 		private boolean nested;
 
-		JsonMembersCustomizerBuilder(StructuredLoggingJsonProperties properties) {
+		JsonMembersCustomizerBuilder(@Nullable StructuredLoggingJsonProperties properties) {
 			this.properties = properties;
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ssl;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Exception indicating that an {@link SslBundle} was referenced with a name that does not
  * match any registered bundle.
@@ -42,7 +44,7 @@ public class NoSuchSslBundleException extends RuntimeException {
 	 * @param message the exception message
 	 * @param cause the exception cause
 	 */
-	public NoSuchSslBundleException(String bundleName, String message, Throwable cause) {
+	public NoSuchSslBundleException(String bundleName, String message, @Nullable Throwable cause) {
 		super(message, cause);
 		this.bundleName = bundleName;
 	}

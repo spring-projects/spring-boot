@@ -16,7 +16,10 @@
 
 package org.springframework.boot.diagnostics;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 /**
  * Abstract base class for most {@code FailureAnalyzer} implementations.
@@ -29,7 +32,7 @@ import org.springframework.core.ResolvableType;
 public abstract class AbstractFailureAnalyzer<T extends Throwable> implements FailureAnalyzer {
 
 	@Override
-	public FailureAnalysis analyze(Throwable failure) {
+	public @Nullable FailureAnalysis analyze(Throwable failure) {
 		T cause = findCause(failure, getCauseType());
 		return (cause != null) ? analyze(failure, cause) : null;
 	}
@@ -41,7 +44,7 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable> implements Fa
 	 * @param cause the actual found cause
 	 * @return the analysis or {@code null}
 	 */
-	protected abstract FailureAnalysis analyze(Throwable rootFailure, T cause);
+	protected abstract @Nullable FailureAnalysis analyze(Throwable rootFailure, T cause);
 
 	/**
 	 * Return the cause type being handled by the analyzer. By default the class generic
@@ -50,11 +53,15 @@ public abstract class AbstractFailureAnalyzer<T extends Throwable> implements Fa
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<? extends T> getCauseType() {
-		return (Class<? extends T>) ResolvableType.forClass(AbstractFailureAnalyzer.class, getClass()).resolveGeneric();
+		Class<? extends T> type = (Class<? extends T>) ResolvableType
+			.forClass(AbstractFailureAnalyzer.class, getClass())
+			.resolveGeneric();
+		Assert.state(type != null, "Unable to resolve generic");
+		return type;
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final <E extends Throwable> E findCause(Throwable failure, Class<E> type) {
+	protected final <E extends Throwable> @Nullable E findCause(Throwable failure, Class<E> type) {
 		while (failure != null) {
 			if (type.isInstance(failure)) {
 				return (E) failure;

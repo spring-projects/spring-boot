@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
@@ -72,13 +74,13 @@ class ConfigurationPropertiesBinder {
 
 	private final PropertySources propertySources;
 
-	private final Validator configurationPropertiesValidator;
+	private final @Nullable Validator configurationPropertiesValidator;
 
 	private final boolean jsr303Present;
 
-	private volatile List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors;
+	private volatile @Nullable List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors;
 
-	private volatile Binder binder;
+	private volatile @Nullable Binder binder;
 
 	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
@@ -101,7 +103,7 @@ class ConfigurationPropertiesBinder {
 		return getBinder().bindOrCreate(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
+	private @Nullable Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
 		if (applicationContext.containsBean(VALIDATOR_BEAN_NAME)) {
 			return applicationContext.getBean(VALIDATOR_BEAN_NAME, Validator.class);
 		}
@@ -153,7 +155,9 @@ class ConfigurationPropertiesBinder {
 			validators.add(this.configurationPropertiesValidator);
 		}
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
-			validators.add(getJsr303Validator(target.getType().resolve()));
+			Class<?> resolved = target.getType().resolve();
+			Assert.state(resolved != null, "'resolved' must not be null");
+			validators.add(getJsr303Validator(resolved));
 		}
 		Validator selfValidator = getSelfValidator(target);
 		if (selfValidator != null) {
@@ -162,7 +166,7 @@ class ConfigurationPropertiesBinder {
 		return validators;
 	}
 
-	private Validator getSelfValidator(Bindable<?> target) {
+	private @Nullable Validator getSelfValidator(Bindable<?> target) {
 		if (target.getValue() != null) {
 			Object value = target.getValue().get();
 			return (value instanceof Validator validator) ? validator : null;
@@ -194,11 +198,11 @@ class ConfigurationPropertiesBinder {
 		return new PropertySourcesPlaceholdersResolver(this.propertySources);
 	}
 
-	private List<ConversionService> getConversionServices() {
+	private @Nullable List<ConversionService> getConversionServices() {
 		return new ConversionServiceDeducer(this.applicationContext).getConversionServices();
 	}
 
-	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
+	private @Nullable Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
 		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
 			return configurableContext.getBeanFactory()::copyRegisteredEditorsTo;
 		}
@@ -235,7 +239,7 @@ class ConfigurationPropertiesBinder {
 					? target.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY) : target;
 		}
 
-		private boolean isConfigurationProperties(Class<?> target) {
+		private boolean isConfigurationProperties(@Nullable Class<?> target) {
 			return target != null && MergedAnnotations.from(target).isPresent(ConfigurationProperties.class);
 		}
 
@@ -247,7 +251,7 @@ class ConfigurationPropertiesBinder {
 	static class ConfigurationPropertiesBinderFactory
 			implements FactoryBean<ConfigurationPropertiesBinder>, ApplicationContextAware {
 
-		private ConfigurationPropertiesBinder binder;
+		private @Nullable ConfigurationPropertiesBinder binder;
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -20,6 +20,8 @@ import java.util.function.Predicate;
 
 import javax.lang.model.element.Modifier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.generate.GeneratedMethod;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.beans.factory.BeanFactory;
@@ -45,7 +47,7 @@ import org.springframework.javapoet.CodeBlock;
 class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
 	@Override
-	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
+	public @Nullable BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (!isImmutableConfigurationPropertiesBeanDefinition(registeredBean.getMergedBeanDefinition())) {
 			return null;
 		}

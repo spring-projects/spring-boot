@@ -18,6 +18,8 @@ package org.springframework.boot.env;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -58,7 +60,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 
 	@SuppressWarnings("unchecked")
 	private void replacePropertySource(ConfigurableEnvironment environment, String sourceName,
-			PropertySource<?> propertySource, String environmentPrefix) {
+			PropertySource<?> propertySource, @Nullable String environmentPrefix) {
 		Map<String, Object> originalSource = (Map<String, Object>) propertySource.getSource();
 		SystemEnvironmentPropertySource source = new OriginAwareSystemEnvironmentPropertySource(sourceName,
 				originalSource, environmentPrefix);
@@ -80,14 +82,15 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	protected static class OriginAwareSystemEnvironmentPropertySource extends SystemEnvironmentPropertySource
 			implements OriginLookup<String> {
 
-		private final String prefix;
+		private final @Nullable String prefix;
 
-		OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source, String environmentPrefix) {
+		OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source,
+				@Nullable String environmentPrefix) {
 			super(name, source);
 			this.prefix = determinePrefix(environmentPrefix);
 		}
 
-		private String determinePrefix(String environmentPrefix) {
+		private @Nullable String determinePrefix(@Nullable String environmentPrefix) {
 			if (!StringUtils.hasText(environmentPrefix)) {
 				return null;
 			}
@@ -103,12 +106,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			return super.getProperty(name);
 		}
 
 		@Override
-		public Origin getOrigin(String key) {
+		public @Nullable Origin getOrigin(String key) {
 			String property = resolvePropertyName(key);
 			if (super.containsProperty(property)) {
 				return new SystemEnvironmentOrigin(property);
@@ -117,7 +120,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		}
 
 		@Override
-		public String getPrefix() {
+		public @Nullable String getPrefix() {
 			return this.prefix;
 		}
 

@@ -29,6 +29,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.NullUnmarked;
+
 import org.springframework.boot.json.JsonValueWriter.Series;
 import org.springframework.boot.json.JsonWriter.Member.Extractor;
 import org.springframework.util.Assert;
@@ -73,6 +75,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
+@NullUnmarked
 @FunctionalInterface
 public interface JsonWriter<T> {
 

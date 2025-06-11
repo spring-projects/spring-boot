@@ -22,6 +22,7 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link ThrowablePatternConverter} that adds some additional whitespace around the stack
@@ -34,7 +35,7 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
 public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
-	private WhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
+	private WhitespaceThrowablePatternConverter(Configuration configuration, String @Nullable [] options) {
 		super("WhitespaceThrowable", "throwable", options, configuration);
 	}
 
@@ -54,7 +55,8 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration, String[] options) {
+	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration,
+			String @Nullable [] options) {
 		return new WhitespaceThrowablePatternConverter(configuration, options);
 	}
 

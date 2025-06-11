@@ -18,6 +18,8 @@ package org.springframework.boot.context.event;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -37,7 +39,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
-	private final Duration timeTaken;
+	private final @Nullable Duration timeTaken;
 
 	/**
 	 * Create a new {@link ApplicationReadyEvent} instance.
@@ -48,7 +50,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @since 2.6.0
 	 */
 	public ApplicationReadyEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
-			Duration timeTaken) {
+			@Nullable Duration timeTaken) {
 		super(application, args);
 		this.context = context;
 		this.timeTaken = timeTaken;
@@ -68,7 +70,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * @return the time taken to be ready to service requests
 	 * @since 2.6.0
 	 */
-	public Duration getTimeTaken() {
+	public @Nullable Duration getTimeTaken() {
 		return this.timeTaken;
 	}
 

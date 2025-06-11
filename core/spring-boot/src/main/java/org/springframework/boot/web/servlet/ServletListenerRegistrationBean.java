@@ -29,6 +29,7 @@ import jakarta.servlet.ServletRequestListener;
 import jakarta.servlet.http.HttpSessionAttributeListener;
 import jakarta.servlet.http.HttpSessionIdListener;
 import jakarta.servlet.http.HttpSessionListener;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -71,7 +72,7 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 		SUPPORTED_TYPES = Collections.unmodifiableSet(types);
 	}
 
-	private T listener;
+	private @Nullable T listener;
 
 	/**
 	 * Create a new {@link ServletListenerRegistrationBean} instance.
@@ -103,7 +104,7 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 	 * Return the listener to be registered.
 	 * @return the listener to be registered
 	 */
-	public T getListener() {
+	public @Nullable T getListener() {
 		return this.listener;
 	}
 

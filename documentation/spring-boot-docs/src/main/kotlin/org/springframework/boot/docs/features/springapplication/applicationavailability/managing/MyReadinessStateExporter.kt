@@ -25,16 +25,13 @@ import org.springframework.stereotype.Component
 class MyReadinessStateExporter {
 
 	@EventListener
-	fun onStateChange(event: AvailabilityChangeEvent<ReadinessState?>) {
+	fun onStateChange(event: AvailabilityChangeEvent<ReadinessState>) {
 		when (event.state) {
 			ReadinessState.ACCEPTING_TRAFFIC -> {
 				// create file /tmp/healthy
 			}
 			ReadinessState.REFUSING_TRAFFIC -> {
 				// remove file /tmp/healthy
-			}
-			else -> {
-				// ...
 			}
 		}
 	}

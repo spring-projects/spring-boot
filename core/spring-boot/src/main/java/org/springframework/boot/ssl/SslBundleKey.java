@@ -19,6 +19,8 @@ package org.springframework.boot.ssl;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -41,19 +43,19 @@ public interface SslBundleKey {
 	 * password is required.
 	 * @return the key password
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 	/**
 	 * Return the alias of the key or {@code null} if the key has no alias.
 	 * @return the key alias
 	 */
-	String getAlias();
+	@Nullable String getAlias();
 
 	/**
 	 * Assert that the alias is contained in the given keystore.
 	 * @param keyStore the keystore to check
 	 */
-	default void assertContainsAlias(KeyStore keyStore) {
+	default void assertContainsAlias(@Nullable KeyStore keyStore) {
 		String alias = getAlias();
 		if (StringUtils.hasLength(alias) && keyStore != null) {
 			try {
@@ -82,16 +84,16 @@ public interface SslBundleKey {
 	 * @param alias the alias of the key
 	 * @return a new {@link SslBundleKey} instance
 	 */
-	static SslBundleKey of(String password, String alias) {
+	static SslBundleKey of(@Nullable String password, @Nullable String alias) {
 		return new SslBundleKey() {
 
 			@Override
-			public String getPassword() {
+			public @Nullable String getPassword() {
 				return password;
 			}
 
 			@Override
-			public String getAlias() {
+			public @Nullable String getAlias() {
 				return alias;
 			}
 

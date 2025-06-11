@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
@@ -78,7 +80,7 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 
 		private final Deque<Iterator<PropertySource<?>>> iterators;
 
-		private ConfigurationPropertySource next;
+		private @Nullable ConfigurationPropertySource next;
 
 		private final Function<PropertySource<?>, ConfigurationPropertySource> adapter;
 
@@ -104,7 +106,7 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			return next;
 		}
 
-		private ConfigurationPropertySource fetchNext() {
+		private @Nullable ConfigurationPropertySource fetchNext() {
 			if (this.next == null) {
 				if (this.iterators.isEmpty()) {
 					return null;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -41,7 +43,7 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		ConfigurationProperty configurationProperty = this.source.getConfigurationProperty(getPrefixedName(name));
 		if (configurationProperty == null) {
 			return null;
@@ -60,7 +62,7 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	@Override
-	public Object getUnderlyingSource() {
+	public @Nullable Object getUnderlyingSource() {
 		return this.source.getUnderlyingSource();
 	}
 

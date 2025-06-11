@@ -25,6 +25,7 @@ import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -53,7 +54,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
-	private T servlet;
+	private @Nullable T servlet;
 
 	private Set<String> urlMappings = new LinkedHashSet<>();
 
@@ -61,7 +62,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 
 	private int loadOnStartup = -1;
 
-	private MultipartConfigElement multipartConfig;
+	private @Nullable MultipartConfigElement multipartConfig;
 
 	/**
 	 * Create a new {@link ServletRegistrationBean} instance.
@@ -107,7 +108,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * Return the servlet being registered.
 	 * @return the servlet
 	 */
-	public T getServlet() {
+	public @Nullable T getServlet() {
 		return this.servlet;
 	}
 
@@ -154,7 +155,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * Set the {@link MultipartConfigElement multi-part configuration}.
 	 * @param multipartConfig the multipart configuration to set or {@code null}
 	 */
-	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
+	public void setMultipartConfig(@Nullable MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;
 	}
 
@@ -163,7 +164,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * or {@code null}.
 	 * @return the multipart config
 	 */
-	public MultipartConfigElement getMultipartConfig() {
+	public @Nullable MultipartConfigElement getMultipartConfig() {
 		return this.multipartConfig;
 	}
 

@@ -21,6 +21,7 @@ import java.util.Map;
 import ch.qos.logback.classic.pattern.MDCConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.DynamicConverter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.CorrelationIdFormatter;
 import org.springframework.core.env.Environment;
@@ -36,7 +37,7 @@ import org.springframework.core.env.Environment;
  */
 public class CorrelationIdConverter extends DynamicConverter<ILoggingEvent> {
 
-	private CorrelationIdFormatter formatter;
+	private @Nullable CorrelationIdFormatter formatter;
 
 	@Override
 	public void start() {

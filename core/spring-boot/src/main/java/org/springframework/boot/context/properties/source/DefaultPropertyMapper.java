@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -35,9 +37,9 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
 
-	private LastMapping<ConfigurationPropertyName, List<String>> lastMappedConfigurationPropertyName;
+	private @Nullable LastMapping<ConfigurationPropertyName, List<String>> lastMappedConfigurationPropertyName;
 
-	private LastMapping<String, ConfigurationPropertyName> lastMappedPropertyName;
+	private @Nullable LastMapping<String, ConfigurationPropertyName> lastMappedPropertyName;
 
 	private DefaultPropertyMapper() {
 	}

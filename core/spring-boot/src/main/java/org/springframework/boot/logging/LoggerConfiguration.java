@@ -18,6 +18,8 @@ package org.springframework.boot.logging;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -32,7 +34,7 @@ public final class LoggerConfiguration {
 
 	private final String name;
 
-	private final LevelConfiguration levelConfiguration;
+	private final @Nullable LevelConfiguration levelConfiguration;
 
 	private final LevelConfiguration inheritedLevelConfiguration;
 
@@ -42,7 +44,7 @@ public final class LoggerConfiguration {
 	 * @param configuredLevel the configured level of the logger
 	 * @param effectiveLevel the effective level of the logger
 	 */
-	public LoggerConfiguration(String name, LogLevel configuredLevel, LogLevel effectiveLevel) {
+	public LoggerConfiguration(String name, @Nullable LogLevel configuredLevel, LogLevel effectiveLevel) {
 		Assert.notNull(name, "'name' must not be null");
 		Assert.notNull(effectiveLevel, "'effectiveLevel' must not be null");
 		this.name = name;
@@ -57,7 +59,7 @@ public final class LoggerConfiguration {
 	 * @param inheritedLevelConfiguration the inherited level configuration
 	 * @since 2.7.13
 	 */
-	public LoggerConfiguration(String name, LevelConfiguration levelConfiguration,
+	public LoggerConfiguration(String name, @Nullable LevelConfiguration levelConfiguration,
 			LevelConfiguration inheritedLevelConfiguration) {
 		Assert.notNull(name, "'name' must not be null");
 		Assert.notNull(inheritedLevelConfiguration, "'inheritedLevelConfiguration' must not be null");
@@ -79,7 +81,7 @@ public final class LoggerConfiguration {
 	 * @return the configured level of the logger
 	 * @see #getLevelConfiguration(ConfigurationScope)
 	 */
-	public LogLevel getConfiguredLevel() {
+	public @Nullable LogLevel getConfiguredLevel() {
 		LevelConfiguration configuration = getLevelConfiguration(ConfigurationScope.DIRECT);
 		return (configuration != null) ? configuration.getLevel() : null;
 	}
@@ -99,7 +101,9 @@ public final class LoggerConfiguration {
 	 * @since 2.7.13
 	 */
 	public LevelConfiguration getLevelConfiguration() {
-		return getLevelConfiguration(ConfigurationScope.INHERITED);
+		LevelConfiguration result = getLevelConfiguration(ConfigurationScope.INHERITED);
+		Assert.state(result != null, "Inherited level configuration must not be null");
+		return result;
 	}
 
 	/**
@@ -110,7 +114,7 @@ public final class LoggerConfiguration {
 	 * configuration
 	 * @since 2.7.13
 	 */
-	public LevelConfiguration getLevelConfiguration(ConfigurationScope scope) {
+	public @Nullable LevelConfiguration getLevelConfiguration(ConfigurationScope scope) {
 		return (scope != ConfigurationScope.DIRECT) ? this.inheritedLevelConfiguration : this.levelConfiguration;
 	}
 
@@ -169,9 +173,9 @@ public final class LoggerConfiguration {
 
 		private final String name;
 
-		private final LogLevel logLevel;
+		private final @Nullable LogLevel logLevel;
 
-		private LevelConfiguration(String name, LogLevel logLevel) {
+		private LevelConfiguration(String name, @Nullable LogLevel logLevel) {
 			this.name = name;
 			this.logLevel = logLevel;
 		}

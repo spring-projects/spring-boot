@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -80,11 +82,17 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimEdges(json, '{', '}').trim();
 		for (String pair : tokenize(json)) {
-			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
-			Assert.state(values[0].startsWith("\"") && values[0].endsWith("\""),
+			String[] split = StringUtils.split(pair, ":");
+			@Nullable String[] values = (split != null) ? StringUtils.trimArrayElements(split) : null;
+			Assert.state(values != null, () -> "Unable to parse '%s'".formatted(pair));
+			String rawKey = values[0];
+			String rawValue = values[1];
+			Assert.state(rawKey != null, () -> "rawKew is null in '%s'".formatted(pair));
+			Assert.state(rawKey.startsWith("\"") && rawKey.endsWith("\""),
 					"Expecting double-quotes around field names");
-			String key = trimEdges(values[0], '"', '"');
-			Object value = parseInternal(nesting, values[1]);
+			String key = trimEdges(rawKey, '"', '"');
+			Assert.state(rawValue != null, () -> "rawValue is null in '%s'".formatted(pair));
+			Object value = parseInternal(nesting, rawValue);
 			map.put(key, value);
 		}
 		return map;

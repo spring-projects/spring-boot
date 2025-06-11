@@ -19,6 +19,7 @@ package org.springframework.boot;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplication.Startup;
@@ -39,11 +40,11 @@ import org.springframework.util.StringUtils;
  */
 class StartupInfoLogger {
 
-	private final Class<?> sourceClass;
+	private final @Nullable Class<?> sourceClass;
 
 	private final Environment environment;
 
-	StartupInfoLogger(Class<?> sourceClass, Environment environment) {
+	StartupInfoLogger(@Nullable Class<?> sourceClass, Environment environment) {
 		this.sourceClass = sourceClass;
 		this.environment = environment;
 	}
@@ -153,7 +154,7 @@ class StartupInfoLogger {
 		}
 	}
 
-	private Object callIfPossible(Callable<Object> call) {
+	private @Nullable Object callIfPossible(Callable<Object> call) {
 		try {
 			return call.call();
 		}

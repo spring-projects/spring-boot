@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -47,12 +49,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
+	protected boolean isAllowRecursiveBinding(@Nullable ConfigurationPropertySource source) {
 		return true;
 	}
 
 	@Override
-	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
+	protected @Nullable Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = hasDescendants(name);
@@ -119,7 +121,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 	}
 
-	private Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
+	private @Nullable Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
 		try {
 			return existing.get();
 		}

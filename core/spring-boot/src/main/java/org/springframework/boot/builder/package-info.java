@@ -20,4 +20,7 @@
  *
  * @see org.springframework.boot.builder.SpringApplicationBuilder
  */
+@NullMarked
 package org.springframework.boot.builder;
+
+import org.jspecify.annotations.NullMarked;

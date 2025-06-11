@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.util.Assert;
@@ -68,7 +70,7 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 		}
 
 		@Override
-		public E convert(T source) {
+		public @Nullable E convert(T source) {
 			String value = source.toString().trim();
 			if (value.isEmpty()) {
 				return null;

@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
@@ -59,14 +60,14 @@ public class ApplicationAvailabilityBean
 	}
 
 	@Override
-	public <S extends AvailabilityState> S getState(Class<S> stateType) {
+	public <S extends AvailabilityState> @Nullable S getState(Class<S> stateType) {
 		AvailabilityChangeEvent<S> event = getLastChangeEvent(stateType);
 		return (event != null) ? event.getState() : null;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends AvailabilityState> AvailabilityChangeEvent<S> getLastChangeEvent(Class<S> stateType) {
+	public <S extends AvailabilityState> @Nullable AvailabilityChangeEvent<S> getLastChangeEvent(Class<S> stateType) {
 		return (AvailabilityChangeEvent<S>) this.events.get(stateType);
 	}
 
@@ -89,7 +90,7 @@ public class ApplicationAvailabilityBean
 		return message;
 	}
 
-	private String getSourceDescription(Object source) {
+	private String getSourceDescription(@Nullable Object source) {
 		if (source == null || source instanceof ApplicationEventPublisher) {
 			return "";
 		}

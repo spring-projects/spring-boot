@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
@@ -165,13 +166,13 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 		return properties;
 	}
 
-	private void extractPropertiesFromApplication(Properties properties, Map<String, Object> map) {
+	private void extractPropertiesFromApplication(Properties properties, @Nullable Map<String, Object> map) {
 		if (map != null) {
 			flatten(properties, map, "");
 		}
 	}
 
-	private void extractPropertiesFromServices(Properties properties, Map<String, Object> map) {
+	private void extractPropertiesFromServices(Properties properties, @Nullable Map<String, Object> map) {
 		if (map != null) {
 			for (Object services : map.values()) {
 				@SuppressWarnings("unchecked")
@@ -190,7 +191,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	}
 
 	@SuppressWarnings("unchecked")
-	private void flatten(Properties properties, Map<String, Object> input, String path) {
+	private void flatten(Properties properties, Map<String, Object> input, @Nullable String path) {
 		input.forEach((key, value) -> {
 			String name = getPropertyName(path, key);
 			if (value instanceof Map) {
@@ -218,7 +219,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 		});
 	}
 
-	private String getPropertyName(String path, String key) {
+	private String getPropertyName(@Nullable String path, String key) {
 		if (!StringUtils.hasText(path)) {
 			return key;
 		}

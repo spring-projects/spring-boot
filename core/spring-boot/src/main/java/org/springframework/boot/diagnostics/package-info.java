@@ -20,4 +20,7 @@
  * @see org.springframework.boot.diagnostics.FailureAnalyzer
  * @see org.springframework.boot.diagnostics.FailureAnalysisReporter
  */
+@NullMarked
 package org.springframework.boot.diagnostics;
+
+import org.jspecify.annotations.NullMarked;

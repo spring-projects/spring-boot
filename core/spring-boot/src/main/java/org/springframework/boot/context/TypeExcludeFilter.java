@@ -19,6 +19,8 @@ package org.springframework.boot.context;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -49,9 +51,10 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private BeanFactory beanFactory;
 
-	private Collection<TypeExcludeFilter> delegates;
+	private @Nullable Collection<TypeExcludeFilter> delegates;
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -81,7 +84,7 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		throw new IllegalStateException("TypeExcludeFilter " + getClass() + " has not implemented equals");
 	}
 

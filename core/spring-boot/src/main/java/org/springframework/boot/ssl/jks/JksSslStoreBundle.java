@@ -25,6 +25,8 @@ import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.core.io.ResourceLoader;
@@ -43,7 +45,7 @@ import org.springframework.util.function.SingletonSupplier;
  */
 public class JksSslStoreBundle implements SslStoreBundle {
 
-	private final JksSslStoreDetails keyStoreDetails;
+	private final @Nullable JksSslStoreDetails keyStoreDetails;
 
 	private final ResourceLoader resourceLoader;
 
@@ -56,7 +58,8 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
+	public JksSslStoreBundle(@Nullable JksSslStoreDetails keyStoreDetails,
+			@Nullable JksSslStoreDetails trustStoreDetails) {
 		this(keyStoreDetails, trustStoreDetails, ApplicationResourceLoader.get());
 	}
 
@@ -67,8 +70,8 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param resourceLoader the resource loader used to load content
 	 * @since 3.3.5
 	 */
-	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails,
-			ResourceLoader resourceLoader) {
+	public JksSslStoreBundle(@Nullable JksSslStoreDetails keyStoreDetails,
+			@Nullable JksSslStoreDetails trustStoreDetails, ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		this.keyStoreDetails = keyStoreDetails;
 		this.resourceLoader = resourceLoader;
@@ -82,7 +85,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	@Override
-	public String getKeyStorePassword() {
+	public @Nullable String getKeyStorePassword() {
 		return (this.keyStoreDetails != null) ? this.keyStoreDetails.password() : null;
 	}
 
@@ -91,7 +94,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		return this.trustStore.get();
 	}
 
-	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
+	private @Nullable KeyStore createKeyStore(String name, @Nullable JksSslStoreDetails details) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
@@ -113,7 +116,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		}
 	}
 
-	private KeyStore getKeyStoreInstance(String type, String provider)
+	private KeyStore getKeyStoreInstance(String type, @Nullable String provider)
 			throws KeyStoreException, NoSuchProviderException {
 		return (!StringUtils.hasText(provider)) ? KeyStore.getInstance(type) : KeyStore.getInstance(type, provider);
 	}
@@ -122,14 +125,14 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		return type.equalsIgnoreCase("PKCS11");
 	}
 
-	private void loadHardwareKeyStore(KeyStore store, String location, char[] password)
+	private void loadHardwareKeyStore(KeyStore store, @Nullable String location, char @Nullable [] password)
 			throws IOException, NoSuchAlgorithmException, CertificateException {
 		Assert.state(!StringUtils.hasText(location),
 				() -> "Location is '%s', but must be empty or null for PKCS11 hardware key stores".formatted(location));
 		store.load(null, password);
 	}
 
-	private void loadKeyStore(KeyStore store, String location, char[] password) {
+	private void loadKeyStore(KeyStore store, @Nullable String location, char @Nullable [] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
 			try (InputStream stream = this.resourceLoader.getResource(location).getInputStream()) {

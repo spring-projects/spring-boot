@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.net.ssl.SSLEngine;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -54,7 +56,7 @@ public interface SslOptions {
 	 * {@link SSLEngine#getSupportedCipherSuites()}.
 	 * @return the ciphers that can be used or {@code null}
 	 */
-	String[] getCiphers();
+	String @Nullable [] getCiphers();
 
 	/**
 	 * Return the protocols that should be enabled or an empty set. The protocols names in
@@ -62,7 +64,7 @@ public interface SslOptions {
 	 * {@link SSLEngine#getSupportedProtocols()}.
 	 * @return the protocols to enable or {@code null}
 	 */
-	String[] getEnabledProtocols();
+	String @Nullable [] getEnabledProtocols();
 
 	/**
 	 * Factory method to create a new {@link SslOptions} instance.
@@ -70,16 +72,16 @@ public interface SslOptions {
 	 * @param enabledProtocols the enabled protocols
 	 * @return a new {@link SslOptions} instance
 	 */
-	static SslOptions of(String[] ciphers, String[] enabledProtocols) {
+	static SslOptions of(String @Nullable [] ciphers, String @Nullable [] enabledProtocols) {
 		return new SslOptions() {
 
 			@Override
-			public String[] getCiphers() {
+			public String @Nullable [] getCiphers() {
 				return ciphers;
 			}
 
 			@Override
-			public String[] getEnabledProtocols() {
+			public String @Nullable [] getEnabledProtocols() {
 				return enabledProtocols;
 			}
 
@@ -100,7 +102,7 @@ public interface SslOptions {
 	 * @param enabledProtocols the enabled protocols
 	 * @return a new {@link SslOptions} instance
 	 */
-	static SslOptions of(Set<String> ciphers, Set<String> enabledProtocols) {
+	static SslOptions of(@Nullable Set<String> ciphers, @Nullable Set<String> enabledProtocols) {
 		return of(toArray(ciphers), toArray(enabledProtocols));
 	}
 
@@ -110,11 +112,11 @@ public interface SslOptions {
 	 * @param array the array to convert
 	 * @return a collection or {@code null}
 	 */
-	static Set<String> asSet(String[] array) {
+	static @Nullable Set<String> asSet(String @Nullable [] array) {
 		return (array != null) ? Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(array))) : null;
 	}
 
-	private static String[] toArray(Collection<String> collection) {
+	private static String @Nullable [] toArray(@Nullable Collection<String> collection) {
 		return (collection != null) ? collection.toArray(String[]::new) : null;
 	}
 

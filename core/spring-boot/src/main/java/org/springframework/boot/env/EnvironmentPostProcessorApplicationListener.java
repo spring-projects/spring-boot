@@ -22,6 +22,8 @@ import java.util.function.Function;
 
 import javax.lang.model.element.Modifier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.aot.generate.GeneratedClass;
 import org.springframework.aot.generate.GenerationContext;
@@ -70,7 +72,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	private int order = DEFAULT_ORDER;
 
-	private final Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory;
+	private final Function<@Nullable ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory;
 
 	/**
 	 * Create a new {@link EnvironmentPostProcessorApplicationListener} with
@@ -86,7 +88,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * @param postProcessorsFactory the post processors factory
 	 */
 	private EnvironmentPostProcessorApplicationListener(
-			Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory) {
+			Function<@Nullable ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory) {
 		this.postProcessorsFactory = postProcessorsFactory;
 		this.deferredLogs = new DeferredLogs();
 	}
@@ -145,7 +147,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 		this.deferredLogs.switchOverAll();
 	}
 
-	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(ResourceLoader resourceLoader,
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(@Nullable ResourceLoader resourceLoader,
 			ConfigurableBootstrapContext bootstrapContext) {
 		ClassLoader classLoader = (resourceLoader != null) ? resourceLoader.getClassLoader() : null;
 		EnvironmentPostProcessorsFactory postProcessorsFactory = this.postProcessorsFactory.apply(classLoader);
@@ -157,8 +159,9 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 		if (AotDetector.useGeneratedArtifacts()) {
 			ClassLoader classLoader = (springApplication.getResourceLoader() != null)
 					? springApplication.getResourceLoader().getClassLoader() : null;
-			String postProcessorClassName = springApplication.getMainApplicationClass().getName() + "__"
-					+ AOT_FEATURE_NAME;
+			Class<?> mainApplicationClass = springApplication.getMainApplicationClass();
+			Assert.state(mainApplicationClass != null, "mainApplicationClass not found");
+			String postProcessorClassName = mainApplicationClass.getName() + "__" + AOT_FEATURE_NAME;
 			if (ClassUtils.isPresent(postProcessorClassName, classLoader)) {
 				postProcessors.add(0, instantiateEnvironmentPostProcessor(postProcessorClassName, classLoader));
 			}
@@ -166,7 +169,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	private EnvironmentPostProcessor instantiateEnvironmentPostProcessor(String postProcessorClassName,
-			ClassLoader classLoader) {
+			@Nullable ClassLoader classLoader) {
 		try {
 			Class<?> initializerClass = ClassUtils.resolveClassName(postProcessorClassName, classLoader);
 			Assert.isAssignable(EnvironmentPostProcessor.class, initializerClass);
@@ -194,7 +197,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	static class EnvironmentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
 		@Override
-		public BeanFactoryInitializationAotContribution processAheadOfTime(
+		public @Nullable BeanFactoryInitializationAotContribution processAheadOfTime(
 				ConfigurableListableBeanFactory beanFactory) {
 			Environment environment = beanFactory.getBean(ConfigurableApplicationContext.ENVIRONMENT_BEAN_NAME,
 					Environment.class);

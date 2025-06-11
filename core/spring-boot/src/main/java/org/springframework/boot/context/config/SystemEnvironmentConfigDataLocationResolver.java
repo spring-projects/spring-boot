@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -38,7 +40,7 @@ class SystemEnvironmentConfigDataLocationResolver
 
 	private final List<PropertySourceLoader> loaders;
 
-	private final Function<String, String> environment;
+	private final Function<String, @Nullable String> environment;
 
 	SystemEnvironmentConfigDataLocationResolver() {
 		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader());
@@ -46,7 +48,7 @@ class SystemEnvironmentConfigDataLocationResolver
 	}
 
 	SystemEnvironmentConfigDataLocationResolver(List<PropertySourceLoader> loaders,
-			Function<String, String> environment) {
+			Function<String, @Nullable String> environment) {
 		this.loaders = loaders;
 		this.environment = environment;
 	}

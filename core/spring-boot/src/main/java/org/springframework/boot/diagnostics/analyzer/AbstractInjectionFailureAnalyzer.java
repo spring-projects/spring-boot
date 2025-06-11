@@ -16,12 +16,17 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.lang.reflect.Method;
+
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -36,11 +41,11 @@ import org.springframework.util.ClassUtils;
 public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> extends AbstractFailureAnalyzer<T> {
 
 	@Override
-	protected final FailureAnalysis analyze(Throwable rootFailure, T cause) {
+	protected final @Nullable FailureAnalysis analyze(Throwable rootFailure, T cause) {
 		return analyze(rootFailure, cause, getDescription(rootFailure));
 	}
 
-	private String getDescription(Throwable rootFailure) {
+	private @Nullable String getDescription(Throwable rootFailure) {
 		UnsatisfiedDependencyException unsatisfiedDependency = findMostNestedCause(rootFailure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependency != null) {
@@ -55,7 +60,7 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 	}
 
 	@SuppressWarnings("unchecked")
-	private <C extends Exception> C findMostNestedCause(Throwable root, Class<C> type) {
+	private <C extends Exception> @Nullable C findMostNestedCause(Throwable root, Class<C> type) {
 		Throwable candidate = root;
 		C result = null;
 		while (candidate != null) {
@@ -67,7 +72,7 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 		return result;
 	}
 
-	private String getDescription(UnsatisfiedDependencyException ex) {
+	private @Nullable String getDescription(UnsatisfiedDependencyException ex) {
 		InjectionPoint injectionPoint = ex.getInjectionPoint();
 		if (injectionPoint != null) {
 			if (injectionPoint.getField() != null) {
@@ -80,9 +85,10 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 							injectionPoint.getMethodParameter().getParameterIndex(),
 							injectionPoint.getMethodParameter().getDeclaringClass().getName());
 				}
+				Method method = injectionPoint.getMethodParameter().getMethod();
+				Assert.state(method != null, "Neither constructor nor method is available");
 				return String.format("Parameter %d of method %s in %s",
-						injectionPoint.getMethodParameter().getParameterIndex(),
-						injectionPoint.getMethodParameter().getMethod().getName(),
+						injectionPoint.getMethodParameter().getParameterIndex(), method.getName(),
 						injectionPoint.getMethodParameter().getDeclaringClass().getName());
 			}
 		}
@@ -109,6 +115,6 @@ public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> exte
 	 * @param description the description of the injection point or {@code null}
 	 * @return the analysis or {@code null}
 	 */
-	protected abstract FailureAnalysis analyze(Throwable rootFailure, T cause, String description);
+	protected abstract @Nullable FailureAnalysis analyze(Throwable rootFailure, T cause, @Nullable String description);
 
 }

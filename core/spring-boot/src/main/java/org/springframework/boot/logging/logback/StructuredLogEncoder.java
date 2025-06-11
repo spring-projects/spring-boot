@@ -23,6 +23,7 @@ import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
@@ -48,17 +49,17 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
 
-	private String format;
+	private @Nullable String format;
 
-	private StructuredLogFormatter<ILoggingEvent> formatter;
+	private @Nullable StructuredLogFormatter<ILoggingEvent> formatter;
 
-	private Charset charset = StandardCharsets.UTF_8;
+	private @Nullable Charset charset = StandardCharsets.UTF_8;
 
 	public void setFormat(String format) {
 		this.format = format;
 	}
 
-	public void setCharset(Charset charset) {
+	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
 	}
 
@@ -91,32 +92,41 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 	private StructuredLogFormatter<ILoggingEvent> createEcsFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
-		ContextPairs contextParis = instantiator.getArg(ContextPairs.class);
+		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer.Builder<?> jsonMembersCustomizerBuilder = instantiator
 			.getArg(StructuredLoggingJsonMembersCustomizer.Builder.class);
-		return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextParis,
+		Assert.state(environment != null, "'environment' must not be null");
+		Assert.state(contextPairs != null, "'contextPairs' must not be null");
+		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
+		Assert.state(jsonMembersCustomizerBuilder != null, "'jsonMembersCustomizerBuilder' must not be null");
+		return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
 				throwableProxyConverter, jsonMembersCustomizerBuilder);
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createGraylogFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
-		ContextPairs contextParis = instantiator.getArg(ContextPairs.class);
+		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 			.getArg(StructuredLoggingJsonMembersCustomizer.class);
-		return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextParis,
+		Assert.state(environment != null, "'environment' must not be null");
+		Assert.state(contextPairs != null, "'contextPairs' must not be null");
+		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
+		return new GraylogExtendedLogFormatStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
 				throwableProxyConverter, jsonMembersCustomizer);
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createLogstashFormatter(Instantiator<?> instantiator) {
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
-		ContextPairs contextParis = instantiator.getArg(ContextPairs.class);
+		ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 			.getArg(StructuredLoggingJsonMembersCustomizer.class);
-		return new LogstashStructuredLogFormatter(stackTracePrinter, contextParis, throwableProxyConverter,
+		Assert.state(contextPairs != null, "'contextPairs' must not be null");
+		Assert.state(throwableProxyConverter != null, "'throwableProxyConverter' must not be null");
+		return new LogstashStructuredLogFormatter(stackTracePrinter, contextPairs, throwableProxyConverter,
 				jsonMembersCustomizer);
 	}
 
@@ -127,17 +137,19 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 	}
 
 	@Override
-	public byte[] headerBytes() {
+	public byte @Nullable [] headerBytes() {
 		return null;
 	}
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
+		Assert.state(this.formatter != null,
+				"formatter must not be null. Make sure to call start() before this method");
 		return this.formatter.formatAsBytes(event, (this.charset != null) ? this.charset : StandardCharsets.UTF_8);
 	}
 
 	@Override
-	public byte[] footerBytes() {
+	public byte @Nullable [] footerBytes() {
 		return null;
 	}
 

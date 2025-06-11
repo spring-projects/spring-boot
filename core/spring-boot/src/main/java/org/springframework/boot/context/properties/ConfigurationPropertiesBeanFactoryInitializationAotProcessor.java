@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
@@ -41,7 +43,7 @@ import org.springframework.util.ClassUtils;
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
 	@Override
-	public ConfigurationPropertiesReflectionHintsContribution processAheadOfTime(
+	public @Nullable ConfigurationPropertiesReflectionHintsContribution processAheadOfTime(
 			ConfigurableListableBeanFactory beanFactory) {
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
 		List<Bindable<?>> bindables = new ArrayList<>();

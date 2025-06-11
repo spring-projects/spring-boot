@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.Assert;
 
@@ -60,7 +62,7 @@ public class DefaultApplicationArguments implements ApplicationArguments {
 	}
 
 	@Override
-	public List<String> getOptionValues(String name) {
+	public @Nullable List<String> getOptionValues(String name) {
 		List<String> values = this.source.getOptionValues(name);
 		return (values != null) ? Collections.unmodifiableList(values) : null;
 	}
@@ -82,7 +84,7 @@ public class DefaultApplicationArguments implements ApplicationArguments {
 		}
 
 		@Override
-		public List<String> getOptionValues(String name) {
+		public @Nullable List<String> getOptionValues(String name) {
 			return super.getOptionValues(name);
 		}
 

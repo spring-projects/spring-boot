@@ -20,6 +20,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -35,7 +37,7 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 
 	private final ConfigDataResource resource;
 
-	private final ConfigDataLocation location;
+	private final @Nullable ConfigDataLocation location;
 
 	/**
 	 * Create a new {@link ConfigDataResourceNotFoundException} instance.
@@ -50,12 +52,12 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 	 * @param resource the resource that could not be found
 	 * @param cause the exception cause
 	 */
-	public ConfigDataResourceNotFoundException(ConfigDataResource resource, Throwable cause) {
+	public ConfigDataResourceNotFoundException(ConfigDataResource resource, @Nullable Throwable cause) {
 		this(resource, null, cause);
 	}
 
-	private ConfigDataResourceNotFoundException(ConfigDataResource resource, ConfigDataLocation location,
-			Throwable cause) {
+	private ConfigDataResourceNotFoundException(ConfigDataResource resource, @Nullable ConfigDataLocation location,
+			@Nullable Throwable cause) {
 		super(getMessage(resource, location), cause);
 		Assert.notNull(resource, "'resource' must not be null");
 		this.resource = resource;
@@ -74,12 +76,12 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 	 * Return the original location that was resolved to determine the resource.
 	 * @return the location or {@code null} if no location is available
 	 */
-	public ConfigDataLocation getLocation() {
+	public @Nullable ConfigDataLocation getLocation() {
 		return this.location;
 	}
 
 	@Override
-	public Origin getOrigin() {
+	public @Nullable Origin getOrigin() {
 		return Origin.from(this.location);
 	}
 
@@ -97,11 +99,11 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 		return new ConfigDataResourceNotFoundException(this.resource, location, getCause());
 	}
 
-	private static String getMessage(ConfigDataResource resource, ConfigDataLocation location) {
+	private static String getMessage(ConfigDataResource resource, @Nullable ConfigDataLocation location) {
 		return String.format("Config data %s cannot be found", getReferenceDescription(resource, location));
 	}
 
-	private static String getReferenceDescription(ConfigDataResource resource, ConfigDataLocation location) {
+	private static String getReferenceDescription(ConfigDataResource resource, @Nullable ConfigDataLocation location) {
 		String description = String.format("resource '%s'", resource);
 		if (location != null) {
 			description += String.format(" via location '%s'", location);

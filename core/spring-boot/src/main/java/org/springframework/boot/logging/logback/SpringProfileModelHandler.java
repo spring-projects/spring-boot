@@ -23,6 +23,7 @@ import ch.qos.logback.core.model.processor.ModelHandlerException;
 import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.OptionHelper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
@@ -39,9 +40,9 @@ import org.springframework.util.StringUtils;
  */
 class SpringProfileModelHandler extends ModelHandlerBase {
 
-	private final Environment environment;
+	private final @Nullable Environment environment;
 
-	SpringProfileModelHandler(Context context, Environment environment) {
+	SpringProfileModelHandler(Context context, @Nullable Environment environment) {
 		super(context);
 		this.environment = environment;
 	}
@@ -58,8 +59,7 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 		if (this.environment == null) {
 			return false;
 		}
-		String[] profileNames = StringUtils
-			.trimArrayElements(StringUtils.commaDelimitedListToStringArray(model.getName()));
+		String[] profileNames = trimArrayElements(StringUtils.commaDelimitedListToStringArray(model.getName()));
 		if (profileNames.length == 0) {
 			return false;
 		}
@@ -72,6 +72,13 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 			}
 		}
 		return this.environment.acceptsProfiles(Profiles.of(profileNames));
+	}
+
+	// The array has no nulls in it, but StringUtils.trimArrayElements return
+	// @Nullable String[]
+	@SuppressWarnings("NullAway")
+	private String[] trimArrayElements(String[] array) {
+		return StringUtils.trimArrayElements(array);
 	}
 
 }

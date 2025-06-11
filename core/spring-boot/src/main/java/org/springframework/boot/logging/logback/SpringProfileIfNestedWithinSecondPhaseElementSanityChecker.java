@@ -27,6 +27,7 @@ import ch.qos.logback.core.joran.sanity.SanityChecker;
 import ch.qos.logback.core.model.AppenderModel;
 import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.spi.ContextAwareBase;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link SanityChecker} to ensure that {@code springProfile} elements are not nested
@@ -41,7 +42,7 @@ class SpringProfileIfNestedWithinSecondPhaseElementSanityChecker extends Context
 			LoggerModel.class, RootLoggerModel.class);
 
 	@Override
-	public void check(Model model) {
+	public void check(@Nullable Model model) {
 		if (model == null) {
 			return;
 		}

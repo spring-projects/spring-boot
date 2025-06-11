@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.properties.bind.BindMethod;
@@ -36,21 +38,21 @@ final class BindMethodAttribute {
 	private BindMethodAttribute() {
 	}
 
-	static BindMethod get(ApplicationContext applicationContext, String beanName) {
+	static @Nullable BindMethod get(ApplicationContext applicationContext, String beanName) {
 		return (applicationContext instanceof ConfigurableApplicationContext configurableApplicationContext)
 				? get(configurableApplicationContext.getBeanFactory(), beanName) : null;
 	}
 
-	static BindMethod get(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	static @Nullable BindMethod get(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		return (!beanFactory.containsBeanDefinition(beanName)) ? null : get(beanFactory.getBeanDefinition(beanName));
 	}
 
-	static BindMethod get(BeanDefinitionRegistry beanDefinitionRegistry, String beanName) {
+	static @Nullable BindMethod get(BeanDefinitionRegistry beanDefinitionRegistry, String beanName) {
 		return (!beanDefinitionRegistry.containsBeanDefinition(beanName)) ? null
 				: get(beanDefinitionRegistry.getBeanDefinition(beanName));
 	}
 
-	static BindMethod get(AttributeAccessor attributes) {
+	static @Nullable BindMethod get(AttributeAccessor attributes) {
 		return (BindMethod) attributes.getAttribute(NAME);
 	}
 

@@ -30,10 +30,13 @@ import java.util.function.Function;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -106,7 +109,7 @@ public class SslInfo {
 			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
 		}
 
-		private List<CertificateChainInfo> extractCertificateChains(KeyStore keyStore) {
+		private List<CertificateChainInfo> extractCertificateChains(@Nullable KeyStore keyStore) {
 			if (keyStore == null) {
 				return Collections.emptyList();
 			}
@@ -171,44 +174,46 @@ public class SslInfo {
 	 */
 	public final class CertificateInfo {
 
-		private final X509Certificate certificate;
+		private final @Nullable X509Certificate certificate;
 
 		private CertificateInfo(Certificate certificate) {
 			this.certificate = (certificate instanceof X509Certificate x509Certificate) ? x509Certificate : null;
 		}
 
-		public String getSubject() {
+		public @Nullable String getSubject() {
 			return extract(X509Certificate::getSubjectX500Principal, X500Principal::getName);
 		}
 
-		public String getIssuer() {
+		public @Nullable String getIssuer() {
 			return extract(X509Certificate::getIssuerX500Principal, X500Principal::getName);
 		}
 
-		public String getSerialNumber() {
+		public @Nullable String getSerialNumber() {
 			return extract(X509Certificate::getSerialNumber, (serial) -> serial.toString(16));
 		}
 
-		public String getVersion() {
+		public @Nullable String getVersion() {
 			return extract((certificate) -> "V" + certificate.getVersion());
 		}
 
-		public String getSignatureAlgorithmName() {
+		public @Nullable String getSignatureAlgorithmName() {
 			return extract(X509Certificate::getSigAlgName);
 		}
 
-		public Instant getValidityStarts() {
+		public @Nullable Instant getValidityStarts() {
 			return extract(X509Certificate::getNotBefore, Date::toInstant);
 		}
 
-		public Instant getValidityEnds() {
+		public @Nullable Instant getValidityEnds() {
 			return extract(X509Certificate::getNotAfter, Date::toInstant);
 		}
 
-		public CertificateValidityInfo getValidity() {
+		public @Nullable CertificateValidityInfo getValidity() {
 			return extract((certificate) -> {
 				Instant starts = getValidityStarts();
 				Instant ends = getValidityEnds();
+				Assert.state(starts != null, "Validity start not found");
+				Assert.state(ends != null, "Validity end not found");
 				CertificateValidityInfo.Status validity = checkValidity(starts, ends);
 				return switch (validity) {
 					case VALID -> CertificateValidityInfo.VALID;
@@ -230,11 +235,12 @@ public class SslInfo {
 			return CertificateValidityInfo.Status.VALID;
 		}
 
-		private <V, R> R extract(Function<X509Certificate, V> valueExtractor, Function<V, R> resultExtractor) {
+		private <V, R> @Nullable R extract(Function<X509Certificate, V> valueExtractor,
+				Function<V, R> resultExtractor) {
 			return extract(valueExtractor.andThen(resultExtractor));
 		}
 
-		private <R> R extract(Function<X509Certificate, R> extractor) {
+		private <R> @Nullable R extract(Function<X509Certificate, R> extractor) {
 			return (this.certificate != null) ? extractor.apply(this.certificate) : null;
 		}
 
@@ -249,9 +255,9 @@ public class SslInfo {
 
 		private final Status status;
 
-		private final String message;
+		private final @Nullable String message;
 
-		CertificateValidityInfo(Status status, String message, Object... messageArgs) {
+		CertificateValidityInfo(Status status, @Nullable String message, Object... messageArgs) {
 			this.status = status;
 			this.message = (message != null) ? message.formatted(messageArgs) : null;
 		}
@@ -260,7 +266,7 @@ public class SslInfo {
 			return this.status;
 		}
 
-		public String getMessage() {
+		public @Nullable String getMessage() {
 			return this.message;
 		}
 

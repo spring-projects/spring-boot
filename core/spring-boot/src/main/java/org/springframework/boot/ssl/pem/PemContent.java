@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -61,7 +63,7 @@ public final class PemContent {
 	 * @return the certificates
 	 * @throws IllegalStateException if no certificates could be loaded
 	 */
-	public List<X509Certificate> getCertificates() {
+	public @Nullable List<X509Certificate> getCertificates() {
 		return PemCertificateParser.parse(this.text);
 	}
 
@@ -70,7 +72,7 @@ public final class PemContent {
 	 * @return the private keys
 	 * @throws IllegalStateException if no private key could be loaded
 	 */
-	public PrivateKey getPrivateKey() {
+	public @Nullable PrivateKey getPrivateKey() {
 		return getPrivateKey(null);
 	}
 
@@ -80,7 +82,7 @@ public final class PemContent {
 	 * @param password the password to decrypt the private keys or {@code null}
 	 * @return the private keys
 	 */
-	public PrivateKey getPrivateKey(String password) {
+	public @Nullable PrivateKey getPrivateKey(@Nullable String password) {
 		return PemPrivateKeyParser.parse(this.text, password);
 	}
 
@@ -113,7 +115,7 @@ public final class PemContent {
 	 * @return a new {@link PemContent} instance or {@code null}
 	 * @throws IOException on IO error
 	 */
-	static PemContent load(String content, ResourceLoader resourceLoader) throws IOException {
+	static @Nullable PemContent load(@Nullable String content, ResourceLoader resourceLoader) throws IOException {
 		if (!StringUtils.hasLength(content)) {
 			return null;
 		}
@@ -134,7 +136,7 @@ public final class PemContent {
 	 * @return the loaded PEM content
 	 * @throws IOException on IO error
 	 */
-	public static PemContent load(Path path) throws IOException {
+	public static @Nullable PemContent load(Path path) throws IOException {
 		Assert.notNull(path, "'path' must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
 			return load(in);
@@ -147,7 +149,7 @@ public final class PemContent {
 	 * @return the loaded PEM content
 	 * @throws IOException on IO error
 	 */
-	public static PemContent load(InputStream in) throws IOException {
+	public static @Nullable PemContent load(InputStream in) throws IOException {
 		return of(StreamUtils.copyToString(in, StandardCharsets.UTF_8));
 	}
 
@@ -156,7 +158,7 @@ public final class PemContent {
 	 * @param text the text containing PEM encoded content
 	 * @return a new {@link PemContent} instance
 	 */
-	public static PemContent of(String text) {
+	public static @Nullable PemContent of(@Nullable String text) {
 		return (text != null) ? new PemContent(text) : null;
 	}
 
@@ -165,7 +167,7 @@ public final class PemContent {
 	 * @param text the text to check
 	 * @return if the text includes PEM encoded content.
 	 */
-	public static boolean isPresentInText(String text) {
+	public static boolean isPresentInText(@Nullable String text) {
 		return text != null && PEM_HEADER.matcher(text).find() && PEM_FOOTER.matcher(text).find();
 	}
 

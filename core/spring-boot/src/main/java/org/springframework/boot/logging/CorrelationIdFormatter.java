@@ -28,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -84,7 +86,7 @@ public final class CorrelationIdFormatter {
 	 * @param resolver the resolver used to resolve named values
 	 * @return a formatted correlation id
 	 */
-	public String format(UnaryOperator<String> resolver) {
+	public String format(UnaryOperator<@Nullable String> resolver) {
 		StringBuilder result = new StringBuilder();
 		formatTo(resolver, result);
 		return result.toString();
@@ -96,7 +98,7 @@ public final class CorrelationIdFormatter {
 	 * @param resolver the resolver used to resolve named values
 	 * @param appendable the appendable for the formatted correlation id
 	 */
-	public void formatTo(UnaryOperator<String> resolver, Appendable appendable) {
+	public void formatTo(UnaryOperator<@Nullable String> resolver, Appendable appendable) {
 		Predicate<Part> canResolve = (part) -> StringUtils.hasLength(resolver.apply(part.name()));
 		try {
 			if (this.parts.stream().anyMatch(canResolve)) {
@@ -128,7 +130,7 @@ public final class CorrelationIdFormatter {
 	 * @param spec a comma-separated specification
 	 * @return a new {@link CorrelationIdFormatter} instance
 	 */
-	public static CorrelationIdFormatter of(String spec) {
+	public static CorrelationIdFormatter of(@Nullable String spec) {
 		try {
 			return (!StringUtils.hasText(spec)) ? DEFAULT : of(List.of(spec.split(",")));
 		}
@@ -142,7 +144,7 @@ public final class CorrelationIdFormatter {
 	 * @param spec a pre-separated specification
 	 * @return a new {@link CorrelationIdFormatter} instance
 	 */
-	public static CorrelationIdFormatter of(String[] spec) {
+	public static CorrelationIdFormatter of(String @Nullable [] spec) {
 		return of((spec != null) ? List.of(spec) : Collections.emptyList());
 	}
 
@@ -169,7 +171,7 @@ public final class CorrelationIdFormatter {
 
 		private static final Pattern pattern = Pattern.compile("^(.+?)\\((\\d+)\\)$");
 
-		String resolve(UnaryOperator<String> resolver) {
+		String resolve(UnaryOperator<@Nullable String> resolver) {
 			String resolved = resolver.apply(name());
 			if (resolved == null) {
 				return blank();

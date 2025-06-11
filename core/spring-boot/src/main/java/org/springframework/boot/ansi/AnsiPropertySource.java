@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.IntFunction;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
@@ -73,7 +75,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 	}
 
 	@Override
-	public Object getProperty(String name) {
+	public @Nullable Object getProperty(String name) {
 		if (StringUtils.hasLength(name)) {
 			for (Mapping mapping : MAPPINGS) {
 				String prefix = mapping.getPrefix();
@@ -104,7 +106,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 			return this.prefix;
 		}
 
-		abstract AnsiElement getElement(String postfix);
+		abstract @Nullable AnsiElement getElement(String postfix);
 
 	}
 
@@ -121,7 +123,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		}
 
 		@Override
-		AnsiElement getElement(String postfix) {
+		@Nullable AnsiElement getElement(String postfix) {
 			for (Enum<?> candidate : this.enums) {
 				if (candidate.name().equals(postfix)) {
 					return (AnsiElement) candidate;
@@ -145,7 +147,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 		}
 
 		@Override
-		AnsiElement getElement(String postfix) {
+		@Nullable AnsiElement getElement(String postfix) {
 			if (containsOnlyDigits(postfix)) {
 				try {
 					return this.factory.apply(Integer.parseInt(postfix));

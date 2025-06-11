@@ -22,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Default implementation of {@link SslManagerBundle}.
  *
@@ -34,7 +36,7 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 
 	private final SslBundleKey key;
 
-	DefaultSslManagerBundle(SslStoreBundle storeBundle, SslBundleKey key) {
+	DefaultSslManagerBundle(@Nullable SslStoreBundle storeBundle, @Nullable SslBundleKey key) {
 		this.storeBundle = (storeBundle != null) ? storeBundle : SslStoreBundle.NONE;
 		this.key = (key != null) ? key : SslBundleKey.NONE;
 	}

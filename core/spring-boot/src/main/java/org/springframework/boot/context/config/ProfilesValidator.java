@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -61,7 +63,7 @@ final class ProfilesValidator implements BindHandler {
 		}
 	}
 
-	private void validate(Object value) {
+	private void validate(@Nullable Object value) {
 		if (!this.validate) {
 			return;
 		}

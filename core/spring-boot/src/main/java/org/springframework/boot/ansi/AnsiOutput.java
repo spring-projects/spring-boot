@@ -20,6 +20,8 @@ import java.io.Console;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -37,9 +39,9 @@ public abstract class AnsiOutput {
 
 	private static Enabled enabled = Enabled.DETECT;
 
-	private static Boolean consoleAvailable;
+	private static @Nullable Boolean consoleAvailable;
 
-	private static Boolean ansiCapable;
+	private static @Nullable Boolean ansiCapable;
 
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
@@ -71,7 +73,7 @@ public abstract class AnsiOutput {
 	 * @param consoleAvailable if the console is known to be available or {@code null} to
 	 * use standard detection logic.
 	 */
-	public static void setConsoleAvailable(Boolean consoleAvailable) {
+	public static void setConsoleAvailable(@Nullable Boolean consoleAvailable) {
 		AnsiOutput.consoleAvailable = consoleAvailable;
 	}
 
@@ -133,7 +135,7 @@ public abstract class AnsiOutput {
 		}
 	}
 
-	private static void buildDisabled(StringBuilder sb, Object[] elements) {
+	private static void buildDisabled(StringBuilder sb, @Nullable Object[] elements) {
 		for (Object element : elements) {
 			if (!(element instanceof AnsiElement) && element != null) {
 				sb.append(element);

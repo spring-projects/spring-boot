@@ -29,6 +29,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -62,12 +64,13 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private final Function<StackTraceElement, String> frameFormatter;
 
-	private final ToIntFunction<StackTraceElement> frameHasher;
+	private final @Nullable ToIntFunction<StackTraceElement> frameHasher;
 
-	private StandardStackTracePrinter(EnumSet<Option> options, int maximumLength, String lineSeparator,
-			Predicate<Throwable> filter, BiPredicate<Integer, StackTraceElement> frameFilter,
-			Function<Throwable, String> formatter, Function<StackTraceElement, String> frameFormatter,
-			ToIntFunction<StackTraceElement> frameHasher) {
+	private StandardStackTracePrinter(EnumSet<Option> options, int maximumLength, @Nullable String lineSeparator,
+			@Nullable Predicate<Throwable> filter, @Nullable BiPredicate<Integer, StackTraceElement> frameFilter,
+			@Nullable Function<Throwable, String> formatter,
+			@Nullable Function<StackTraceElement, String> frameFormatter,
+			@Nullable ToIntFunction<StackTraceElement> frameHasher) {
 		this.options = options;
 		this.maximumLength = maximumLength;
 		this.lineSeparator = (lineSeparator != null) ? lineSeparator : DEFAULT_LINE_SEPARATOR;
@@ -88,8 +91,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 	}
 
-	private void printFullStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
-			throws IOException {
+	private void printFullStackTrace(Set<Throwable> seen, Print print, @Nullable StackTrace stackTrace,
+			@Nullable StackTrace enclosing) throws IOException {
 		if (stackTrace == null) {
 			return;
 		}
@@ -110,31 +113,37 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 	}
 
-	private void printSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
-			throws IOException {
+	private void printSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace,
+			@Nullable StackTrace enclosing) throws IOException {
 		String hashPrefix = stackTrace.hashPrefix(this.frameHasher);
 		String throwable = this.formatter.apply(stackTrace.throwable());
 		print.thrown(hashPrefix, throwable);
 		printFrames(print, stackTrace, enclosing);
 		if (!hasOption(Option.HIDE_SUPPRESSED)) {
-			for (StackTrace suppressed : stackTrace.suppressed()) {
-				printFullStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
+			StackTrace[] suppressed = stackTrace.suppressed();
+			if (suppressed != null) {
+				for (StackTrace suppressedStackTrace : suppressed) {
+					printFullStackTrace(seen, print.withSuppressedCaption(), suppressedStackTrace, stackTrace);
+				}
 			}
 		}
 	}
 
-	private void printFrames(Print print, StackTrace stackTrace, StackTrace enclosing) throws IOException {
+	private void printFrames(Print print, StackTrace stackTrace, @Nullable StackTrace enclosing) throws IOException {
 		int commonFrames = (!hasOption(Option.SHOW_COMMON_FRAMES)) ? stackTrace.commonFramesCount(enclosing) : 0;
 		int filteredFrames = 0;
-		for (int i = 0; i < stackTrace.frames().length - commonFrames; i++) {
-			StackTraceElement element = stackTrace.frames()[i];
-			if (!this.frameFilter.test(i, element)) {
-				filteredFrames++;
-				continue;
+		StackTraceElement[] frames = stackTrace.frames();
+		if (frames != null) {
+			for (int i = 0; i < frames.length - commonFrames; i++) {
+				StackTraceElement element = frames[i];
+				if (!this.frameFilter.test(i, element)) {
+					filteredFrames++;
+					continue;
+				}
+				print.omittedFilteredFrames(filteredFrames);
+				filteredFrames = 0;
+				print.at(this.frameFormatter.apply(element));
 			}
-			print.omittedFilteredFrames(filteredFrames);
-			filteredFrames = 0;
-			print.at(this.frameFormatter.apply(element));
 		}
 		print.omittedFilteredFrames(filteredFrames);
 		if (commonFrames != 0) {
@@ -264,7 +273,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		return withHashes((!hashes) ? null : DEFAULT_FRAME_HASHER);
 	}
 
-	public StandardStackTracePrinter withHashes(ToIntFunction<StackTraceElement> frameHasher) {
+	public StandardStackTracePrinter withHashes(@Nullable ToIntFunction<StackTraceElement> frameHasher) {
 		return new StandardStackTracePrinter(this.options, this.maximumLength, this.lineSeparator, this.filter,
 				this.frameFilter, this.formatter, this.frameFormatter, frameHasher);
 	}
@@ -336,11 +345,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			this.output.println(this.indent, "\t... " + commonFrameCount + " more");
 		}
 
-		Print withCausedByCaption(StackTrace causedBy) {
+		Print withCausedByCaption(@Nullable StackTrace causedBy) {
 			return withCaption(causedBy != null, "", "Caused by: ");
 		}
 
-		Print withWrappedByCaption(StackTrace wrappedBy) {
+		Print withWrappedByCaption(@Nullable StackTrace wrappedBy) {
 			return withCaption(wrappedBy != null, "", "Wrapped by: ");
 		}
 
@@ -391,15 +400,15 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 		private final Throwable throwable;
 
-		private final StackTraceElement[] frames;
+		private final StackTraceElement @Nullable [] frames;
 
-		private StackTrace[] suppressed;
+		private StackTrace @Nullable [] suppressed;
 
-		private StackTrace cause;
+		private @Nullable StackTrace cause;
 
-		private Integer hash;
+		private @Nullable Integer hash;
 
-		private String hashPrefix;
+		private @Nullable String hashPrefix;
 
 		private StackTrace(Throwable throwable) {
 			this.throwable = throwable;
@@ -410,12 +419,12 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return this.throwable;
 		}
 
-		StackTraceElement[] frames() {
+		StackTraceElement @Nullable [] frames() {
 			return this.frames;
 		}
 
-		int commonFramesCount(StackTrace other) {
-			if (other == null) {
+		int commonFramesCount(@Nullable StackTrace other) {
+			if (other == null || this.frames == null || other.frames == null) {
 				return 0;
 			}
 			int index = this.frames.length - 1;
@@ -427,7 +436,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return this.frames.length - 1 - index;
 		}
 
-		StackTrace[] suppressed() {
+		StackTrace @Nullable [] suppressed() {
 			if (this.suppressed == null && this.throwable != null) {
 				this.suppressed = Arrays.stream(this.throwable.getSuppressed())
 					.map(StackTrace::new)
@@ -436,7 +445,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return this.suppressed;
 		}
 
-		StackTrace cause() {
+		@Nullable StackTrace cause() {
 			if (this.cause == null && this.throwable != null) {
 				Throwable cause = this.throwable.getCause();
 				this.cause = (cause != null) ? new StackTrace(cause) : null;
@@ -444,7 +453,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return this.cause;
 		}
 
-		String hashPrefix(ToIntFunction<StackTraceElement> frameHasher) {
+		String hashPrefix(@Nullable ToIntFunction<StackTraceElement> frameHasher) {
 			if (frameHasher == null || throwable() == null) {
 				return "";
 			}
@@ -462,8 +471,10 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				hash = cause().hash(seen, frameHasher);
 			}
 			hash = 31 * hash + throwable().getClass().getName().hashCode();
-			for (StackTraceElement frame : frames()) {
-				hash = 31 * hash + frameHasher.applyAsInt(frame);
+			if (frames() != null) {
+				for (StackTraceElement frame : frames()) {
+					hash = 31 * hash + frameHasher.applyAsInt(frame);
+				}
 			}
 			this.hash = hash;
 			return hash;

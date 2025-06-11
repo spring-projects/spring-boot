@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import groovy.lang.Closure;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -68,11 +69,11 @@ class BeanDefinitionLoader {
 
 	private final AbstractBeanDefinitionReader xmlReader;
 
-	private final BeanDefinitionReader groovyReader;
+	private final @Nullable BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
-	private ResourceLoader resourceLoader;
+	private @Nullable ResourceLoader resourceLoader;
 
 	/**
 	 * Create a new {@link BeanDefinitionLoader} that will load beans into the specified
@@ -86,7 +87,7 @@ class BeanDefinitionLoader {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
-		this.groovyReader = (isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null);
+		this.groovyReader = isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null;
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
 	}
@@ -152,7 +153,7 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(Class<?> source) {
-		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+		if (this.groovyReader != null && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			((GroovyBeanDefinitionReader) this.groovyReader).beans(loader.getBeans());
@@ -163,7 +164,9 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(Resource source) {
-		if (source.getFilename().endsWith(".groovy")) {
+		String filename = source.getFilename();
+		Assert.state(filename != null, "Source has no filename");
+		if (filename.endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
@@ -231,7 +234,7 @@ class BeanDefinitionLoader {
 		}
 	}
 
-	private boolean isLoadCandidate(Resource resource) {
+	private boolean isLoadCandidate(@Nullable Resource resource) {
 		if (resource == null || !resource.exists()) {
 			return false;
 		}
@@ -253,7 +256,7 @@ class BeanDefinitionLoader {
 		return true;
 	}
 
-	private Package findPackage(CharSequence source) {
+	private @Nullable Package findPackage(CharSequence source) {
 		Package pkg = getClass().getClassLoader().getDefinedPackage(source.toString());
 		if (pkg != null) {
 			return pkg;
@@ -264,7 +267,9 @@ class BeanDefinitionLoader {
 			Resource[] resources = resolver
 				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils.stripFilenameExtension(resource.getFilename());
+				String filename = resource.getFilename();
+				Assert.state(filename != null, "No filename available");
+				String className = StringUtils.stripFilenameExtension(filename);
 				load(Class.forName(source + "." + className));
 				break;
 			}

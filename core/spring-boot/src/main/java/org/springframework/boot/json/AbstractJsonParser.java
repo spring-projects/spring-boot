@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -40,7 +42,7 @@ public abstract class AbstractJsonParser implements JsonParser {
 		return trimParse(json, "[", parser);
 	}
 
-	protected final <T> T trimParse(String json, String prefix, Function<String, T> parser) {
+	protected final <T> T trimParse(@Nullable String json, String prefix, Function<String, T> parser) {
 		String trimmed = (json != null) ? json.trim() : "";
 		if (trimmed.startsWith(prefix)) {
 			return parser.apply(trimmed);

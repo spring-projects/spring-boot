@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
@@ -35,7 +36,7 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	private static final ListTypeReference LIST_TYPE = new ListTypeReference();
 
-	private ObjectMapper objectMapper; // Late binding
+	private @Nullable ObjectMapper objectMapper; // Late binding
 
 	/**
 	 * Creates an instance with the specified {@link ObjectMapper}.

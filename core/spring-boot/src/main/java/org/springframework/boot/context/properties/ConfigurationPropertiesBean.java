@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -40,6 +42,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
@@ -66,11 +69,11 @@ public final class ConfigurationPropertiesBean {
 
 	private final String name;
 
-	private final Object instance;
+	private final @Nullable Object instance;
 
 	private final Bindable<?> bindTarget;
 
-	private ConfigurationPropertiesBean(String name, Object instance, Bindable<?> bindTarget) {
+	private ConfigurationPropertiesBean(String name, @Nullable Object instance, Bindable<?> bindTarget) {
 		this.name = name;
 		this.instance = instance;
 		this.bindTarget = bindTarget;
@@ -88,7 +91,7 @@ public final class ConfigurationPropertiesBean {
 	 * Return the actual Spring bean instance.
 	 * @return the bean instance
 	 */
-	public Object getInstance() {
+	public @Nullable Object getInstance() {
 		return this.instance;
 	}
 
@@ -97,7 +100,9 @@ public final class ConfigurationPropertiesBean {
 	 * @return the bean type
 	 */
 	Class<?> getType() {
-		return this.bindTarget.getType().resolve();
+		Class<?> resolved = this.bindTarget.getType().resolve();
+		Assert.state(resolved != null, "'resolved' must not be null");
+		return resolved;
 	}
 
 	/**
@@ -107,7 +112,9 @@ public final class ConfigurationPropertiesBean {
 	 * @return the configuration properties annotation
 	 */
 	public ConfigurationProperties getAnnotation() {
-		return this.bindTarget.getAnnotation(ConfigurationProperties.class);
+		ConfigurationProperties annotation = this.bindTarget.getAnnotation(ConfigurationProperties.class);
+		Assert.state(annotation != null, "'annotation' must not be null");
+		return annotation;
 	}
 
 	/**
@@ -193,7 +200,8 @@ public final class ConfigurationPropertiesBean {
 	 * factory method are annotated with
 	 * {@link ConfigurationProperties @ConfigurationProperties}
 	 */
-	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
+	public static @Nullable ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean,
+			String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
 		Bindable<Object> bindTarget = createBindTarget(bean, bean.getClass(), factoryMethod);
 		if (bindTarget == null) {
@@ -209,18 +217,19 @@ public final class ConfigurationPropertiesBean {
 		return create(beanName, bean, bindTarget);
 	}
 
-	private static Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
+	private static @Nullable Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
 		if (applicationContext instanceof ConfigurableApplicationContext configurableContext) {
 			return findFactoryMethod(configurableContext, beanName);
 		}
 		return null;
 	}
 
-	private static Method findFactoryMethod(ConfigurableApplicationContext applicationContext, String beanName) {
+	private static @Nullable Method findFactoryMethod(ConfigurableApplicationContext applicationContext,
+			String beanName) {
 		return findFactoryMethod(applicationContext.getBeanFactory(), beanName);
 	}
 
-	private static Method findFactoryMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	private static @Nullable Method findFactoryMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
@@ -237,14 +246,16 @@ public final class ConfigurationPropertiesBean {
 		return create(beanName, null, bindTarget.withBindMethod(VALUE_OBJECT_BIND_METHOD));
 	}
 
-	private static Bindable<Object> createBindTarget(Object bean, Class<?> beanType, Method factoryMethod) {
+	private static @Nullable Bindable<Object> createBindTarget(@Nullable Object bean, Class<?> beanType,
+			@Nullable Method factoryMethod) {
 		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
 				: ResolvableType.forClass(beanType);
 		Annotation[] annotations = findAnnotations(bean, beanType, factoryMethod);
 		return (annotations != null) ? Bindable.of(type).withAnnotations(annotations) : null;
 	}
 
-	private static Annotation[] findAnnotations(Object instance, Class<?> type, Method factory) {
+	private static Annotation @Nullable [] findAnnotations(@Nullable Object instance, Class<?> type,
+			@Nullable Method factory) {
 		ConfigurationProperties annotation = findAnnotation(instance, type, factory, ConfigurationProperties.class);
 		if (annotation == null) {
 			return null;
@@ -253,8 +264,8 @@ public final class ConfigurationPropertiesBean {
 		return (validated != null) ? new Annotation[] { annotation, validated } : new Annotation[] { annotation };
 	}
 
-	private static <A extends Annotation> A findAnnotation(Object instance, Class<?> type, Method factory,
-			Class<A> annotationType) {
+	private static <A extends Annotation> @Nullable A findAnnotation(@Nullable Object instance, Class<?> type,
+			@Nullable Method factory, Class<A> annotationType) {
 		MergedAnnotation<A> annotation = MergedAnnotation.missing();
 		if (factory != null) {
 			annotation = findMergedAnnotation(factory, annotationType);
@@ -269,13 +280,15 @@ public final class ConfigurationPropertiesBean {
 		return annotation.isPresent() ? annotation.synthesize() : null;
 	}
 
-	private static <A extends Annotation> MergedAnnotation<A> findMergedAnnotation(AnnotatedElement element,
+	private static <A extends Annotation> MergedAnnotation<A> findMergedAnnotation(@Nullable AnnotatedElement element,
 			Class<A> annotationType) {
 		return (element != null) ? MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY).get(annotationType)
 				: MergedAnnotation.missing();
 	}
 
-	private static ConfigurationPropertiesBean create(String name, Object instance, Bindable<Object> bindTarget) {
+	@Contract("_, _, !null -> !null")
+	private static @Nullable ConfigurationPropertiesBean create(String name, @Nullable Object instance,
+			@Nullable Bindable<Object> bindTarget) {
 		return (bindTarget != null) ? new ConfigurationPropertiesBean(name, instance, bindTarget) : null;
 	}
 
@@ -298,7 +311,7 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	private static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(
-			Constructor<?> bindConstructor) {
+			@Nullable Constructor<?> bindConstructor) {
 		return (bindConstructor != null) ? VALUE_OBJECT_BIND_METHOD : JAVA_BEAN_BIND_METHOD;
 	}
 

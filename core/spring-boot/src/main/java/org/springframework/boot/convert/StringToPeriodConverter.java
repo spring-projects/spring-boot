@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
@@ -43,24 +45,24 @@ final class StringToPeriodConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
 		return convert(source.toString(), getStyle(targetType), getPeriodUnit(targetType));
 	}
 
-	private PeriodStyle getStyle(TypeDescriptor targetType) {
+	private @Nullable PeriodStyle getStyle(TypeDescriptor targetType) {
 		PeriodFormat annotation = targetType.getAnnotation(PeriodFormat.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
-	private ChronoUnit getPeriodUnit(TypeDescriptor targetType) {
+	private @Nullable ChronoUnit getPeriodUnit(TypeDescriptor targetType) {
 		PeriodUnit annotation = targetType.getAnnotation(PeriodUnit.class);
 		return (annotation != null) ? annotation.value() : null;
 	}
 
-	private Period convert(String source, PeriodStyle style, ChronoUnit unit) {
+	private Period convert(String source, @Nullable PeriodStyle style, @Nullable ChronoUnit unit) {
 		style = (style != null) ? style : PeriodStyle.detect(source);
 		return style.parse(source, unit);
 	}

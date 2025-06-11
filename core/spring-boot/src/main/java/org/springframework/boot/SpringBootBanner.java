@@ -18,6 +18,8 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
@@ -44,7 +46,7 @@ class SpringBootBanner implements Banner {
 	private static final int STRAP_LINE_SIZE = 42;
 
 	@Override
-	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
+	public void printBanner(Environment environment, @Nullable Class<?> sourceClass, PrintStream printStream) {
 		printStream.println();
 		printStream.println(BANNER);
 		String version = String.format(" (v%s)", SpringBootVersion.getVersion());

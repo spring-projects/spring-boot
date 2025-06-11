@@ -21,6 +21,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -65,7 +67,7 @@ public class AnnotationConfigServletWebApplicationContext extends GenericWebAppl
 
 	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
-	private String[] basePackages;
+	private String @Nullable [] basePackages;
 
 	/**
 	 * Create a new {@link AnnotationConfigServletWebApplicationContext} that needs to be
@@ -209,7 +211,7 @@ public class AnnotationConfigServletWebApplicationContext extends GenericWebAppl
 	}
 
 	@Override
-	public <T> void registerBean(String beanName, Class<T> beanClass, Supplier<T> supplier,
+	public <T> void registerBean(@Nullable String beanName, Class<T> beanClass, @Nullable Supplier<T> supplier,
 			BeanDefinitionCustomizer... customizers) {
 		this.reader.registerBean(beanClass, beanName, supplier, customizers);
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 
 /**
@@ -43,7 +45,7 @@ public interface BindHandler {
 	 * @param context the bind context
 	 * @return the actual item that should be used for binding (may be {@code null})
 	 */
-	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+	default <T> @Nullable Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		return target;
 	}
 
@@ -56,7 +58,8 @@ public interface BindHandler {
 	 * @param result the bound result (never {@code null})
 	 * @return the actual result that should be used (may be {@code null})
 	 */
-	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+	default @Nullable Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			Object result) {
 		return result;
 	}
 
@@ -86,8 +89,8 @@ public interface BindHandler {
 	 * @return the actual result that should be used (may be {@code null}).
 	 * @throws Exception if the binding isn't valid
 	 */
-	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
-			throws Exception {
+	default @Nullable Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			Exception error) throws Exception {
 		throw error;
 	}
 
@@ -101,8 +104,8 @@ public interface BindHandler {
 	 * @param result the bound result (may be {@code null})
 	 * @throws Exception if the binding isn't valid
 	 */
-	default void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
-			throws Exception {
+	default void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			@Nullable Object result) throws Exception {
 	}
 
 }

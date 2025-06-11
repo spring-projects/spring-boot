@@ -44,6 +44,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.pem.PemPrivateKeyParser.DerElement.TagType;
 import org.springframework.boot.ssl.pem.PemPrivateKeyParser.DerElement.ValueType;
 import org.springframework.util.Assert;
@@ -119,6 +121,7 @@ final class PemPrivateKeyParser {
 
 	private static PKCS8EncodedKeySpec createKeySpecForSec1Ec(byte[] bytes, String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
+		Assert.state(ecPrivateKey != null, "Unable to find private key");
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
 		DerElement version = DerElement.of(ecPrivateKey.getContents());
@@ -133,7 +136,7 @@ final class PemPrivateKeyParser {
 		return createKeySpecForAlgorithm(bytes, ELLIPTIC_CURVE_ALGORITHM, getEcParameters(parameters));
 	}
 
-	private static EncodedOid getEcParameters(DerElement parameters) {
+	private static EncodedOid getEcParameters(@Nullable DerElement parameters) {
 		if (parameters == null) {
 			return ELLIPTIC_CURVE_384_BIT;
 		}
@@ -145,7 +148,7 @@ final class PemPrivateKeyParser {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForAlgorithm(byte[] bytes, EncodedOid algorithm,
-			EncodedOid parameters) {
+			@Nullable EncodedOid parameters) {
 		try {
 			DerEncoder encoder = new DerEncoder();
 			encoder.integer(0x00); // Version 0
@@ -163,6 +166,7 @@ final class PemPrivateKeyParser {
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs8(byte[] bytes, String password) {
 		DerElement ecPrivateKey = DerElement.of(bytes);
+		Assert.state(ecPrivateKey != null, "Unable to find private key");
 		Assert.state(ecPrivateKey.isType(ValueType.ENCODED, TagType.SEQUENCE),
 				"Key spec should be an ASN.1 encoded sequence");
 		DerElement version = DerElement.of(ecPrivateKey.getContents());
@@ -187,7 +191,7 @@ final class PemPrivateKeyParser {
 	 * @param text the text to parse
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String text) {
+	static @Nullable PrivateKey parse(String text) {
 		return parse(text, null);
 	}
 
@@ -198,7 +202,7 @@ final class PemPrivateKeyParser {
 	 * @param password the password used to decrypt an encrypted private key
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String text, String password) {
+	static @Nullable PrivateKey parse(@Nullable String text, @Nullable String password) {
 		if (text == null) {
 			return null;
 		}
@@ -223,18 +227,18 @@ final class PemPrivateKeyParser {
 
 		private final Pattern pattern;
 
-		private final BiFunction<byte[], String, PKCS8EncodedKeySpec> keySpecFactory;
+		private final BiFunction<byte[], @Nullable String, PKCS8EncodedKeySpec> keySpecFactory;
 
 		private final String[] algorithms;
 
-		PemParser(String header, String footer, BiFunction<byte[], String, PKCS8EncodedKeySpec> keySpecFactory,
-				String... algorithms) {
+		PemParser(String header, String footer,
+				BiFunction<byte[], @Nullable String, PKCS8EncodedKeySpec> keySpecFactory, String... algorithms) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
 			this.keySpecFactory = keySpecFactory;
 			this.algorithms = algorithms;
 		}
 
-		PrivateKey parse(String text, String password) {
+		@Nullable PrivateKey parse(String text, @Nullable String password) {
 			Matcher matcher = this.pattern.matcher(text);
 			return (!matcher.find()) ? null : parse(decodeBase64(matcher.group(BASE64_TEXT_GROUP)), password);
 		}
@@ -244,7 +248,7 @@ final class PemPrivateKeyParser {
 			return Base64.getDecoder().decode(contentBytes);
 		}
 
-		private PrivateKey parse(byte[] bytes, String password) {
+		private @Nullable PrivateKey parse(byte[] bytes, @Nullable String password) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
 			if (keySpec.getAlgorithm() != null) {
 				try {
@@ -276,7 +280,7 @@ final class PemPrivateKeyParser {
 
 		private final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		void objectIdentifier(EncodedOid encodedOid) throws IOException {
+		void objectIdentifier(@Nullable EncodedOid encodedOid) throws IOException {
 			int code = (encodedOid != null) ? 0x06 : 0x05;
 			codeLengthBytes(code, (encodedOid != null) ? encodedOid.toByteArray() : null);
 		}
@@ -293,7 +297,7 @@ final class PemPrivateKeyParser {
 			codeLengthBytes(0x30, bytes);
 		}
 
-		void codeLengthBytes(int code, byte[] bytes) throws IOException {
+		void codeLengthBytes(int code, byte @Nullable [] bytes) throws IOException {
 			this.stream.write(code);
 			int length = (bytes != null) ? bytes.length : 0;
 			if (length <= 127) {
@@ -316,7 +320,7 @@ final class PemPrivateKeyParser {
 			}
 		}
 
-		private static byte[] bytes(int... elements) {
+		private static byte @Nullable [] bytes(int @Nullable ... elements) {
 			if (elements == null) {
 				return null;
 			}
@@ -405,11 +409,11 @@ final class PemPrivateKeyParser {
 			return this.contents;
 		}
 
-		static DerElement of(byte[] bytes) {
+		static @Nullable DerElement of(byte[] bytes) {
 			return of(ByteBuffer.wrap(bytes));
 		}
 
-		static DerElement of(ByteBuffer bytes) {
+		static @Nullable DerElement of(ByteBuffer bytes) {
 			return (bytes.remaining() > 0) ? new DerElement(bytes) : null;
 		}
 
@@ -444,7 +448,7 @@ final class PemPrivateKeyParser {
 
 		public static final String PBES2_ALGORITHM = "PBES2";
 
-		static PKCS8EncodedKeySpec decrypt(byte[] bytes, String password) {
+		static PKCS8EncodedKeySpec decrypt(byte[] bytes, @Nullable String password) {
 			Assert.state(password != null, "Password is required for an encrypted private key");
 			try {
 				EncryptedPrivateKeyInfo keyInfo = new EncryptedPrivateKeyInfo(bytes);
@@ -461,7 +465,7 @@ final class PemPrivateKeyParser {
 			}
 		}
 
-		private static String getEncryptionAlgorithm(AlgorithmParameters algParameters, String algName) {
+		private static String getEncryptionAlgorithm(@Nullable AlgorithmParameters algParameters, String algName) {
 			if (algParameters != null && PBES2_ALGORITHM.equals(algName)) {
 				return algParameters.toString();
 			}

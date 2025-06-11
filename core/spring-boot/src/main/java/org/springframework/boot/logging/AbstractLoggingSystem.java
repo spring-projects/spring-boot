@@ -24,8 +24,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -53,7 +56,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	@Override
-	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, @Nullable String configLocation,
+			@Nullable LogFile logFile) {
 		if (StringUtils.hasLength(configLocation)) {
 			initializeWithSpecificConfig(initializationContext, configLocation, logFile);
 			return;
@@ -62,12 +66,13 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	private void initializeWithSpecificConfig(LoggingInitializationContext initializationContext, String configLocation,
-			LogFile logFile) {
+			@Nullable LogFile logFile) {
 		configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		loadConfiguration(initializationContext, configLocation, logFile);
 	}
 
-	private void initializeWithConventions(LoggingInitializationContext initializationContext, LogFile logFile) {
+	private void initializeWithConventions(LoggingInitializationContext initializationContext,
+			@Nullable LogFile logFile) {
 		String config = getSelfInitializationConfig();
 		if (config != null && logFile == null) {
 			// self initialization has occurred, reinitialize in case of property changes
@@ -90,7 +95,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * will have been applied.
 	 * @return the self initialization config or {@code null}
 	 */
-	protected String getSelfInitializationConfig() {
+	protected @Nullable String getSelfInitializationConfig() {
 		return findConfig(getStandardConfigLocations());
 	}
 
@@ -99,11 +104,11 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * this method checks {@link #getSpringConfigLocations()}.
 	 * @return the spring initialization config or {@code null}
 	 */
-	protected String getSpringInitializationConfig() {
+	protected @Nullable String getSpringInitializationConfig() {
 		return findConfig(getSpringConfigLocations());
 	}
 
-	private String findConfig(String[] locations) {
+	private @Nullable String findConfig(String[] locations) {
 		for (String location : locations) {
 			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
 			if (resource.exists()) {
@@ -130,8 +135,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		String[] locations = getStandardConfigLocations();
 		for (int i = 0; i < locations.length; i++) {
 			String extension = StringUtils.getFilenameExtension(locations[i]);
-			locations[i] = locations[i].substring(0, locations[i].length() - extension.length() - 1) + "-spring."
-					+ extension;
+			int extensionLength = (extension != null) ? (extension.length() + 1) : 0;
+			locations[i] = locations[i].substring(0, locations[i].length() - extensionLength) + "-spring." + extension;
 		}
 		return locations;
 	}
@@ -141,7 +146,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @param initializationContext the logging initialization context
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
-	protected abstract void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile);
+	protected abstract void loadDefaults(LoggingInitializationContext initializationContext, @Nullable LogFile logFile);
 
 	/**
 	 * Load a specific configuration.
@@ -150,7 +155,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
 	protected abstract void loadConfiguration(LoggingInitializationContext initializationContext, String location,
-			LogFile logFile);
+			@Nullable LogFile logFile);
 
 	/**
 	 * Reinitialize the logging system if required. Called when
@@ -174,7 +179,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		return defaultPath;
 	}
 
-	protected final void applySystemProperties(Environment environment, LogFile logFile) {
+	protected final void applySystemProperties(Environment environment, @Nullable LogFile logFile) {
 		new LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
 	}
 
@@ -184,11 +189,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @return the default value resolver
 	 * @since 3.2.0
 	 */
-	protected Function<String, String> getDefaultValueResolver(Environment environment) {
+	protected Function<@Nullable String, @Nullable String> getDefaultValueResolver(Environment environment) {
 		String defaultLogCorrelationPattern = getDefaultLogCorrelationPattern();
 		return (name) -> {
-			if (StringUtils.hasLength(defaultLogCorrelationPattern)
-					&& LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName().equals(name)
+			String applicationPropertyName = LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName();
+			Assert.state(applicationPropertyName != null, "applicationPropertyName must not be null");
+			if (StringUtils.hasLength(defaultLogCorrelationPattern) && applicationPropertyName.equals(name)
 					&& environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false)) {
 				return defaultLogCorrelationPattern;
 			}
@@ -202,7 +208,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @return the default log correlation pattern
 	 * @since 3.2.0
 	 */
-	protected String getDefaultLogCorrelationPattern() {
+	protected @Nullable String getDefaultLogCorrelationPattern() {
 		return null;
 	}
 
@@ -227,11 +233,11 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 			this.nativeToSystem.putIfAbsent(nativeLevel, system);
 		}
 
-		public LogLevel convertNativeToSystem(T level) {
+		public @Nullable LogLevel convertNativeToSystem(T level) {
 			return this.nativeToSystem.get(level);
 		}
 
-		public T convertSystemToNative(LogLevel level) {
+		public @Nullable T convertSystemToNative(@Nullable LogLevel level) {
 			return this.systemToNative.get(level);
 		}
 

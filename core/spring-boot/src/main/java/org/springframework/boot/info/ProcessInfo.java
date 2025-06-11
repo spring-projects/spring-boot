@@ -24,6 +24,8 @@ import java.lang.management.PlatformManagedObject;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ClassUtils;
 
 /**
@@ -46,7 +48,7 @@ public class ProcessInfo {
 
 	private final long parentPid;
 
-	private final String owner;
+	private final @Nullable String owner;
 
 	public ProcessInfo() {
 		ProcessHandle process = ProcessHandle.current();
@@ -94,7 +96,7 @@ public class ProcessInfo {
 	 * @since 3.5.0
 	 */
 	@SuppressWarnings("unchecked")
-	public VirtualThreadsInfo getVirtualThreads() {
+	public @Nullable VirtualThreadsInfo getVirtualThreads() {
 		if (!VIRTUAL_THREAD_SCHEDULER_CLASS_PRESENT) {
 			return null;
 		}
@@ -127,7 +129,7 @@ public class ProcessInfo {
 		return this.parentPid;
 	}
 
-	public String getOwner() {
+	public @Nullable String getOwner() {
 		return this.owner;
 	}
 

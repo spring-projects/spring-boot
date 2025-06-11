@@ -52,6 +52,7 @@ import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusConsoleListener;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -217,7 +218,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, @Nullable String configLocation,
+			@Nullable LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
@@ -237,25 +239,29 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, @Nullable LogFile logFile) {
 		String location = getPackagedConfigFile((logFile != null) ? "log4j2-file.xml" : "log4j2.xml");
 		load(initializationContext, location, logFile);
 	}
 
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
-			LogFile logFile) {
+			@Nullable LogFile logFile) {
 		load(initializationContext, location, logFile);
 	}
 
-	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
+	private void load(LoggingInitializationContext initializationContext, String location, @Nullable LogFile logFile) {
 		List<String> overrides = getOverrides(initializationContext);
-		applySystemProperties(initializationContext.getEnvironment(), logFile);
+		Environment environment = initializationContext.getEnvironment();
+		Assert.state(environment != null, "'environment' must not be null");
+		applySystemProperties(environment, logFile);
 		loadConfiguration(location, logFile, overrides);
 	}
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
-		BindResult<List<String>> overrides = Binder.get(initializationContext.getEnvironment())
+		Environment environment = initializationContext.getEnvironment();
+		Assert.state(environment != null, "'environment' must not be null");
+		BindResult<List<String>> overrides = Binder.get(environment)
 			.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
 		return overrides.orElse(Collections.emptyList());
 	}
@@ -268,7 +274,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * @param overrides the overriding locations
 	 * @since 2.6.0
 	 */
-	protected void loadConfiguration(String location, LogFile logFile, List<String> overrides) {
+	protected void loadConfiguration(String location, @Nullable LogFile logFile, List<String> overrides) {
 		Assert.notNull(location, "'location' must not be null");
 		try {
 			List<Configuration> configurations = new ArrayList<>();
@@ -308,7 +314,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private Configuration loadOverride(ResourceLoader resourceLoader, String location, LoggerContext context)
+	private @Nullable Configuration loadOverride(ResourceLoader resourceLoader, String location, LoggerContext context)
 			throws IOException {
 		if (location.startsWith(OPTIONAL_PREFIX)) {
 			Resource resource = resourceLoader.getResource(location.substring(OPTIONAL_PREFIX.length()));
@@ -366,11 +372,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void setLogLevel(String loggerName, LogLevel logLevel) {
+	public void setLogLevel(@Nullable String loggerName, @Nullable LogLevel logLevel) {
 		setLogLevel(loggerName, LEVELS.convertSystemToNative(logLevel));
 	}
 
-	private void setLogLevel(String loggerName, Level level) {
+	private void setLogLevel(@Nullable String loggerName, @Nullable Level level) {
 		LoggerConfig logger = getLogger(loggerName);
 		if (level == null) {
 			clearLogLevel(loggerName, logger);
@@ -381,7 +387,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		getLoggerContext().updateLoggers();
 	}
 
-	private void clearLogLevel(String loggerName, LoggerConfig logger) {
+	private void clearLogLevel(@Nullable String loggerName, @Nullable LoggerConfig logger) {
+		if (logger == null) {
+			return;
+		}
 		if (logger instanceof LevelSetLoggerConfig) {
 			getLoggerContext().getConfiguration().removeLogger(loggerName);
 		}
@@ -390,7 +399,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
+	private void setLogLevel(@Nullable String loggerName, @Nullable LoggerConfig logger, Level level) {
 		if (logger == null) {
 			getLoggerContext().getConfiguration()
 				.addLogger(loggerName, new LevelSetLoggerConfig(loggerName, level, true));
@@ -409,7 +418,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+	public @Nullable LoggerConfiguration getLoggerConfiguration(String loggerName) {
 		LoggerConfig loggerConfig = getAllLoggers().get(loggerName);
 		return (loggerConfig != null) ? convertLoggerConfig(loggerName, loggerConfig) : null;
 	}
@@ -431,7 +440,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private String getSubName(String name) {
+	private @Nullable String getSubName(String name) {
 		if (!StringUtils.hasLength(name)) {
 			return null;
 		}
@@ -439,7 +448,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		return (nested != -1) ? name.substring(0, nested) : NameUtil.getSubName(name);
 	}
 
-	private LoggerConfiguration convertLoggerConfig(String name, LoggerConfig loggerConfig) {
+	private @Nullable LoggerConfiguration convertLoggerConfig(String name, @Nullable LoggerConfig loggerConfig) {
 		if (loggerConfig == null) {
 			return null;
 		}
@@ -480,12 +489,14 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		loggerContext.removeObject(ENVIRONMENT_KEY);
 	}
 
-	private LoggerConfig getLogger(String name) {
-		boolean isRootLogger = !StringUtils.hasLength(name) || ROOT_LOGGER_NAME.equals(name);
-		return findLogger(isRootLogger ? LogManager.ROOT_LOGGER_NAME : name);
+	private @Nullable LoggerConfig getLogger(@Nullable String name) {
+		if (!StringUtils.hasLength(name) || ROOT_LOGGER_NAME.equals(name)) {
+			return findLogger(LogManager.ROOT_LOGGER_NAME);
+		}
+		return findLogger(name);
 	}
 
-	private LoggerConfig findLogger(String name) {
+	private @Nullable LoggerConfig findLogger(String name) {
 		Configuration configuration = getLoggerContext().getConfiguration();
 		if (configuration instanceof AbstractConfiguration abstractConfiguration) {
 			return abstractConfiguration.getLogger(name);
@@ -521,7 +532,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * @return the Spring {@link Environment} or {@code null}
 	 * @since 3.0.0
 	 */
-	public static Environment getEnvironment(LoggerContext loggerContext) {
+	public static @Nullable Environment getEnvironment(@Nullable LoggerContext loggerContext) {
 		return (Environment) ((loggerContext != null) ? loggerContext.getObject(ENVIRONMENT_KEY) : null);
 	}
 
@@ -535,7 +546,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
 
 		@Override
-		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
+		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
 				return new Log4J2LoggingSystem(classLoader);
 			}
@@ -549,7 +560,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 */
 	private static class LevelSetLoggerConfig extends LoggerConfig {
 
-		LevelSetLoggerConfig(String name, Level level, boolean additive) {
+		LevelSetLoggerConfig(@Nullable String name, Level level, boolean additive) {
 			super(name, level, additive);
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.context.reactive;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.io.ApplicationResourceLoader.FilePathResolver;
 import org.springframework.core.io.Resource;
@@ -28,7 +30,7 @@ import org.springframework.core.io.Resource;
 class FilteredReactiveWebContextResourceFilePathResolver implements ApplicationResourceLoader.FilePathResolver {
 
 	@Override
-	public String resolveFilePath(String location, Resource resource) {
+	public @Nullable String resolveFilePath(String location, Resource resource) {
 		return (resource instanceof FilteredReactiveWebContextResource) ? location : null;
 	}
 

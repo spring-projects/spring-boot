@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.Assert;
 
@@ -41,7 +43,7 @@ class BufferedStartupStep implements StartupStep {
 
 	private final long id;
 
-	private final BufferedStartupStep parent;
+	private final @Nullable BufferedStartupStep parent;
 
 	private final List<Tag> tags = new ArrayList<>();
 
@@ -51,7 +53,7 @@ class BufferedStartupStep implements StartupStep {
 
 	private final AtomicBoolean ended = new AtomicBoolean();
 
-	BufferedStartupStep(BufferedStartupStep parent, String name, long id, Instant startTime,
+	BufferedStartupStep(@Nullable BufferedStartupStep parent, String name, long id, Instant startTime,
 			Consumer<BufferedStartupStep> recorder) {
 		this.parent = parent;
 		this.name = name;
@@ -60,7 +62,7 @@ class BufferedStartupStep implements StartupStep {
 		this.recorder = recorder;
 	}
 
-	BufferedStartupStep getParent() {
+	@Nullable BufferedStartupStep getParent() {
 		return this.parent;
 	}
 
@@ -79,7 +81,7 @@ class BufferedStartupStep implements StartupStep {
 	}
 
 	@Override
-	public Long getParentId() {
+	public @Nullable Long getParentId() {
 		return (this.parent != null) ? this.parent.getId() : null;
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import jakarta.validation.NoProviderFoundException;
 import jakarta.validation.ValidationException;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -38,10 +39,13 @@ class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<Validat
 			+ "Configuration, because no Jakarta Bean Validation provider could be found";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
-		if (cause instanceof NoProviderFoundException
-				|| cause.getMessage().startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
-				|| cause.getMessage().startsWith(JAKARTA_MISSING_IMPLEMENTATION_MESSAGE)) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
+		String message = cause.getMessage();
+		if (message == null) {
+			message = "";
+		}
+		if (cause instanceof NoProviderFoundException || message.startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
+				|| message.startsWith(JAKARTA_MISSING_IMPLEMENTATION_MESSAGE)) {
 			return new FailureAnalysis(
 					"The Bean Validation API is on the classpath but no implementation could be found",
 					"Add an implementation, such as Hibernate Validator, to the classpath", cause);

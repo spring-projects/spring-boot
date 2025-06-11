@@ -23,6 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Interface that uniquely represents the origin of an item. For example, an item loaded
  * from a {@link File} may have an origin made up of the file name along with line/column
@@ -46,7 +48,7 @@ public interface Origin {
 	 * @since 2.4.0
 	 * @see Origin#parentsFrom(Object)
 	 */
-	default Origin getParent() {
+	default @Nullable Origin getParent() {
 		return null;
 	}
 
@@ -54,9 +56,9 @@ public interface Origin {
 	 * Find the {@link Origin} that an object originated from. Checks if the source object
 	 * is an {@link Origin} or {@link OriginProvider} and also searches exception stacks.
 	 * @param source the source object or {@code null}
-	 * @return an optional {@link Origin}
+	 * @return an {@link Origin} or {@code null}
 	 */
-	static Origin from(Object source) {
+	static @Nullable Origin from(@Nullable Object source) {
 		if (source instanceof Origin origin) {
 			return origin;
 		}
@@ -80,7 +82,7 @@ public interface Origin {
 	 * origin, or no parent
 	 * @since 2.4.0
 	 */
-	static List<Origin> parentsFrom(Object source) {
+	static List<Origin> parentsFrom(@Nullable Object source) {
 		Origin origin = from(source);
 		if (origin == null) {
 			return Collections.emptyList();

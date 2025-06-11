@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.env.AbstractPropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
@@ -58,21 +60,21 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 	}
 
 	@Override
-	public String getProperty(String key) {
+	public @Nullable String getProperty(String key) {
 		return getProperty(key, String.class, true);
 	}
 
 	@Override
-	public <T> T getProperty(String key, Class<T> targetValueType) {
+	public <T> @Nullable T getProperty(String key, Class<T> targetValueType) {
 		return getProperty(key, targetValueType, true);
 	}
 
 	@Override
-	protected String getPropertyAsRawString(String key) {
+	protected @Nullable String getPropertyAsRawString(String key) {
 		return getProperty(key, String.class, false);
 	}
 
-	private <T> T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
+	private <T> @Nullable T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
 		Object value = findPropertyValue(key);
 		if (value == null) {
 			return null;
@@ -90,7 +92,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		}
 	}
 
-	private Object findPropertyValue(String key) {
+	private @Nullable Object findPropertyValue(String key) {
 		ConfigurationPropertySourcesPropertySource attached = getAttached();
 		if (attached != null) {
 			ConfigurationPropertyName name = ConfigurationPropertyName.of(key, true);
@@ -107,7 +109,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		return this.defaultResolver.getProperty(key, Object.class, false);
 	}
 
-	private ConfigurationPropertySourcesPropertySource getAttached() {
+	private @Nullable ConfigurationPropertySourcesPropertySource getAttached() {
 		ConfigurationPropertySourcesPropertySource attached = (ConfigurationPropertySourcesPropertySource) ConfigurationPropertySources
 			.getAttached(this.propertySources);
 		Iterable<ConfigurationPropertySource> attachedSource = (attached != null) ? attached.getSource() : null;
@@ -129,7 +131,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		}
 
 		@Override
-		public <T> T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
+		public <T> @Nullable T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
 			return super.getProperty(key, targetValueType, resolveNestedPlaceholders);
 		}
 

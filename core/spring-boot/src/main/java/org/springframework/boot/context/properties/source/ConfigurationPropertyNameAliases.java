@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -66,7 +68,7 @@ public final class ConfigurationPropertyNameAliases implements Iterable<Configur
 		return this.aliases.getOrDefault(name, Collections.emptyList());
 	}
 
-	public ConfigurationPropertyName getNameForAlias(ConfigurationPropertyName alias) {
+	public @Nullable ConfigurationPropertyName getNameForAlias(ConfigurationPropertyName alias) {
 		return this.aliases.entrySet()
 			.stream()
 			.filter((e) -> e.getValue().contains(alias))

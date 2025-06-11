@@ -17,4 +17,7 @@
 /**
  * SSL trust material provider for PEM-encoded certificates.
  */
+@NullMarked
 package org.springframework.boot.ssl.pem;
+
+import org.jspecify.annotations.NullMarked;

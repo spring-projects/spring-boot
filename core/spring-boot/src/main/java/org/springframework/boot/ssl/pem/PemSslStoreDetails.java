@@ -18,6 +18,8 @@ package org.springframework.boot.ssl.pem;
 
 import java.security.KeyStore;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,8 +43,8 @@ import org.springframework.util.StringUtils;
  * @since 3.1.0
  * @see PemSslStore#load(PemSslStoreDetails)
  */
-public record PemSslStoreDetails(String type, String alias, String password, String certificates, String privateKey,
-		String privateKeyPassword) {
+public record PemSslStoreDetails(@Nullable String type, @Nullable String alias, @Nullable String password,
+		@Nullable String certificates, @Nullable String privateKey, @Nullable String privateKeyPassword) {
 
 	/**
 	 * Create a new {@link PemSslStoreDetails} instance.
@@ -72,7 +74,8 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * reference to the resource to load)
 	 * @param privateKeyPassword a password used to decrypt an encrypted private key
 	 */
-	public PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword) {
+	public PemSslStoreDetails(@Nullable String type, @Nullable String certificate, @Nullable String privateKey,
+			@Nullable String privateKeyPassword) {
 		this(type, null, null, certificate, privateKey, privateKeyPassword);
 	}
 
@@ -85,7 +88,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param privateKey the private key content (either the PEM content itself or a
 	 * reference to the resource to load)
 	 */
-	public PemSslStoreDetails(String type, String certificate, String privateKey) {
+	public PemSslStoreDetails(@Nullable String type, @Nullable String certificate, @Nullable String privateKey) {
 		this(type, certificate, privateKey, null);
 	}
 
@@ -95,7 +98,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @return a new {@link PemSslStoreDetails} instance
 	 * @since 3.2.0
 	 */
-	public PemSslStoreDetails withAlias(String alias) {
+	public PemSslStoreDetails withAlias(@Nullable String alias) {
 		return new PemSslStoreDetails(this.type, alias, this.password, this.certificates, this.privateKey,
 				this.privateKeyPassword);
 	}
@@ -106,7 +109,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @return a new {@link PemSslStoreDetails} instance
 	 * @since 3.2.0
 	 */
-	public PemSslStoreDetails withPassword(String password) {
+	public PemSslStoreDetails withPassword(@Nullable String password) {
 		return new PemSslStoreDetails(this.type, this.alias, password, this.certificates, this.privateKey,
 				this.privateKeyPassword);
 	}
@@ -116,7 +119,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param privateKey the new private key
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */
-	public PemSslStoreDetails withPrivateKey(String privateKey) {
+	public PemSslStoreDetails withPrivateKey(@Nullable String privateKey) {
 		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, privateKey,
 				this.privateKeyPassword);
 	}
@@ -126,7 +129,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param privateKeyPassword the new private key password
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */
-	public PemSslStoreDetails withPrivateKeyPassword(String privateKeyPassword) {
+	public PemSslStoreDetails withPrivateKeyPassword(@Nullable String privateKeyPassword) {
 		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, this.privateKey,
 				privateKeyPassword);
 	}
@@ -135,7 +138,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 		return isEmpty(this.type) && isEmpty(this.certificates) && isEmpty(this.privateKey);
 	}
 
-	private boolean isEmpty(String value) {
+	private boolean isEmpty(@Nullable String value) {
 		return !StringUtils.hasText(value);
 	}
 

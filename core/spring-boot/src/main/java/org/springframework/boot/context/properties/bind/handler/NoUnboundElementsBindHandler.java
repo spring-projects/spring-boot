@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -61,20 +63,21 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+	public <T> @Nullable Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		this.attemptedNames.add(name);
 		return super.onStart(name, target, context);
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+	public @Nullable Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			Object result) {
 		this.boundNames.add(name);
 		return super.onSuccess(name, target, context, result);
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
-			throws Exception {
+	public @Nullable Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			Exception error) throws Exception {
 		if (error instanceof UnboundConfigurationPropertiesException) {
 			throw error;
 		}
@@ -82,8 +85,8 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
-			throws Exception {
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			@Nullable Object result) throws Exception {
 		if (context.getDepth() == 0) {
 			checkNoUnboundElements(name, context);
 		}
@@ -143,7 +146,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 		return this.attemptedNames.contains(ConfigurationPropertyName.of(nestedZeroethProperty));
 	}
 
-	private Indexed getIndexed(ConfigurationPropertyName candidate) {
+	private @Nullable Indexed getIndexed(ConfigurationPropertyName candidate) {
 		for (int i = 0; i < candidate.getNumberOfElements(); i++) {
 			if (candidate.isNumericIndex(i)) {
 				return new Indexed(candidate.chop(i).toString(),

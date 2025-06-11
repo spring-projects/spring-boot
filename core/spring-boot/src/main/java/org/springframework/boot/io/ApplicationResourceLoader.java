@@ -24,6 +24,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ContextResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
@@ -76,7 +78,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.4.0
 	 */
-	public static ResourceLoader get(ClassLoader classLoader) {
+	public static ResourceLoader get(@Nullable ClassLoader classLoader) {
 		return get(classLoader, SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
 
@@ -90,7 +92,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.4.0
 	 */
-	public static ResourceLoader get(ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader) {
+	public static ResourceLoader get(@Nullable ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader) {
 		return get(classLoader, springFactoriesLoader, null);
 	}
 
@@ -105,8 +107,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @return a {@link ResourceLoader} instance
 	 * @since 3.5.0
 	 */
-	public static ResourceLoader get(ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader,
-			Path workingDirectory) {
+	public static ResourceLoader get(@Nullable ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader,
+			@Nullable Path workingDirectory) {
 		return get(ApplicationFileSystemResourceLoader.get(classLoader, workingDirectory), springFactoriesLoader);
 	}
 
@@ -171,9 +173,10 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 
 		private static final ResourceLoader shared = new ApplicationFileSystemResourceLoader(null, null);
 
-		private final Path workingDirectory;
+		private final @Nullable Path workingDirectory;
 
-		private ApplicationFileSystemResourceLoader(ClassLoader classLoader, Path workingDirectory) {
+		private ApplicationFileSystemResourceLoader(@Nullable ClassLoader classLoader,
+				@Nullable Path workingDirectory) {
 			super(classLoader);
 			this.workingDirectory = workingDirectory;
 		}
@@ -187,13 +190,13 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 			if (!resource.isFile()) {
 				return resource;
 			}
-			return resolveFile(resource);
+			return resolveFile(resource, this.workingDirectory);
 		}
 
-		private Resource resolveFile(Resource resource) {
+		private Resource resolveFile(Resource resource, Path workingDirectory) {
 			try {
 				File file = resource.getFile();
-				return new ApplicationResource(this.workingDirectory.resolve(file.toPath()));
+				return new ApplicationResource(workingDirectory.resolve(file.toPath()));
 			}
 			catch (FileNotFoundException ex) {
 				return resource;
@@ -208,7 +211,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 			return new ApplicationResource(path);
 		}
 
-		static ResourceLoader get(ClassLoader classLoader, Path workingDirectory) {
+		static ResourceLoader get(@Nullable ClassLoader classLoader, @Nullable Path workingDirectory) {
 			if (classLoader == null && workingDirectory != null) {
 				throw new IllegalArgumentException(
 						"It's not possible to use null as 'classLoader' but specify a 'workingDirectory'");
@@ -237,7 +240,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 		 * @return the file path of the resource or {@code null} if the it is not possible
 		 * to represent the resource as a {@link FileSystemResource}.
 		 */
-		String resolveFilePath(String location, Resource resource);
+		@Nullable String resolveFilePath(String location, Resource resource);
 
 	}
 
@@ -281,7 +284,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 		}
 
 		@Override
-		public ClassLoader getClassLoader() {
+		public @Nullable ClassLoader getClassLoader() {
 			return this.resourceLoader.getClassLoader();
 		}
 
@@ -300,7 +303,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 			return (filePath != null) ? new ApplicationResource(filePath) : resource;
 		}
 
-		private String getFilePath(String location, Resource resource) {
+		private @Nullable String getFilePath(String location, Resource resource) {
 			for (FilePathResolver filePathResolver : this.filePathResolvers) {
 				String filePath = filePathResolver.resolveFilePath(location, resource);
 				if (filePath != null) {

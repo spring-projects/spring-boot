@@ -22,6 +22,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.UnboundConfigurationPropertiesException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
@@ -43,7 +45,7 @@ import org.springframework.util.StringUtils;
 class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
 		Throwable rootCause = cause.getCause();
 		if (rootCause instanceof BindValidationException
 				|| rootCause instanceof UnboundConfigurationPropertiesException) {
@@ -65,7 +67,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 		return getFailureAnalysis(description.toString(), cause, missingParametersAnalysis);
 	}
 
-	private void buildDescription(StringBuilder description, ConfigurationProperty property) {
+	private void buildDescription(StringBuilder description, @Nullable ConfigurationProperty property) {
 		if (property != null) {
 			description.append(String.format("%n    Property: %s", property.getName()));
 			description.append(String.format("%n    Value: \"%s\"", property.getValue()));
@@ -90,7 +92,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 		return getExceptionTypeAndMessage(cause);
 	}
 
-	private Throwable getRootCause(Throwable cause) {
+	private @Nullable Throwable getRootCause(@Nullable Throwable cause) {
 		Throwable rootCause = cause;
 		while (rootCause != null && rootCause.getCause() != null) {
 			rootCause = rootCause.getCause();
@@ -104,7 +106,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	}
 
 	private FailureAnalysis getFailureAnalysis(String description, BindException cause,
-			FailureAnalysis missingParametersAnalysis) {
+			@Nullable FailureAnalysis missingParametersAnalysis) {
 		StringBuilder action = new StringBuilder("Update your application's configuration");
 		Collection<String> validValues = findValidValues(cause);
 		if (!validValues.isEmpty()) {

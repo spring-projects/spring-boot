@@ -20,6 +20,7 @@ import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.util.Assert;
@@ -31,11 +32,11 @@ import org.springframework.util.Assert;
  */
 class Extractor {
 
-	private final StackTracePrinter stackTracePrinter;
+	private final @Nullable StackTracePrinter stackTracePrinter;
 
 	private final ThrowableProxyConverter throwableProxyConverter;
 
-	Extractor(StackTracePrinter stackTracePrinter, ThrowableProxyConverter throwableProxyConverter) {
+	Extractor(@Nullable StackTracePrinter stackTracePrinter, ThrowableProxyConverter throwableProxyConverter) {
 		this.stackTracePrinter = stackTracePrinter;
 		this.throwableProxyConverter = throwableProxyConverter;
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
@@ -42,7 +44,7 @@ public record ElasticCommonSchemaProperties(Service service) {
 		return new ElasticCommonSchemaProperties(service);
 	}
 
-	static String withFallbackProperty(Environment environment, String value, String property) {
+	static @Nullable String withFallbackProperty(Environment environment, @Nullable String value, String property) {
 		return (!StringUtils.hasLength(value)) ? environment.getProperty(property) : value;
 	}
 
@@ -75,7 +77,8 @@ public record ElasticCommonSchemaProperties(Service service) {
 	 * @param environment the name of the environment the application is running in
 	 * @param nodeName the name of the node the application is running on
 	 */
-	public record Service(String name, String version, String environment, String nodeName) {
+	public record Service(@Nullable String name, @Nullable String version, @Nullable String environment,
+			@Nullable String nodeName) {
 
 		static final Service NONE = new Service(null, null, null, null);
 
@@ -99,7 +102,7 @@ public record ElasticCommonSchemaProperties(Service service) {
 	static class ElasticCommonSchemaPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			BindableRuntimeHintsRegistrar.forTypes(ElasticCommonSchemaProperties.class)
 				.registerHints(hints, classLoader);
 		}

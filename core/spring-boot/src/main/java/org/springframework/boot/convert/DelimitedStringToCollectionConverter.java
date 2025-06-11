@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -55,7 +57,7 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -75,7 +77,7 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 		return target;
 	}
 
-	private Collection<Object> createCollection(TypeDescriptor targetType, TypeDescriptor elementDescriptor,
+	private Collection<Object> createCollection(TypeDescriptor targetType, @Nullable TypeDescriptor elementDescriptor,
 			int length) {
 		return CollectionFactory.createCollection(targetType.getType(),
 				(elementDescriptor != null) ? elementDescriptor.getType() : null, length);

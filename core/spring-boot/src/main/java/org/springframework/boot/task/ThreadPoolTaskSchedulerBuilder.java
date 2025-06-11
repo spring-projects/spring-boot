@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -41,25 +43,26 @@ import org.springframework.util.CollectionUtils;
  */
 public class ThreadPoolTaskSchedulerBuilder {
 
-	private final Integer poolSize;
+	private final @Nullable Integer poolSize;
 
-	private final Boolean awaitTermination;
+	private final @Nullable Boolean awaitTermination;
 
-	private final Duration awaitTerminationPeriod;
+	private final @Nullable Duration awaitTerminationPeriod;
 
-	private final String threadNamePrefix;
+	private final @Nullable String threadNamePrefix;
 
-	private final TaskDecorator taskDecorator;
+	private final @Nullable TaskDecorator taskDecorator;
 
-	private final Set<ThreadPoolTaskSchedulerCustomizer> customizers;
+	private final @Nullable Set<ThreadPoolTaskSchedulerCustomizer> customizers;
 
 	public ThreadPoolTaskSchedulerBuilder() {
 		this(null, null, null, null, null, null);
 	}
 
-	private ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
-			String threadNamePrefix, TaskDecorator taskDecorator,
-			Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
+	private ThreadPoolTaskSchedulerBuilder(@Nullable Integer poolSize, @Nullable Boolean awaitTermination,
+			@Nullable Duration awaitTerminationPeriod, @Nullable String threadNamePrefix,
+			@Nullable TaskDecorator taskDecorator,
+			@Nullable Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
@@ -100,7 +103,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @param awaitTerminationPeriod the await termination period to set
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
+	public ThreadPoolTaskSchedulerBuilder awaitTerminationPeriod(@Nullable Duration awaitTerminationPeriod) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
 				this.threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -110,7 +113,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @param threadNamePrefix the thread name prefix to set
 	 * @return a new builder instance
 	 */
-	public ThreadPoolTaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
+	public ThreadPoolTaskSchedulerBuilder threadNamePrefix(@Nullable String threadNamePrefix) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				threadNamePrefix, this.taskDecorator, this.customizers);
 	}
@@ -121,7 +124,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @return a new builder instance
 	 * @since 3.5.0
 	 */
-	public ThreadPoolTaskSchedulerBuilder taskDecorator(TaskDecorator taskDecorator) {
+	public ThreadPoolTaskSchedulerBuilder taskDecorator(@Nullable TaskDecorator taskDecorator) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
 				this.threadNamePrefix, taskDecorator, this.customizers);
 	}
@@ -218,7 +221,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 		return taskScheduler;
 	}
 
-	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+	private <T> Set<T> append(@Nullable Set<T> set, Iterable<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);

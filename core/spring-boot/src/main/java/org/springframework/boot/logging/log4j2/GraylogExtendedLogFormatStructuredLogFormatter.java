@@ -30,6 +30,7 @@ import org.apache.logging.log4j.core.net.Severity;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -71,12 +72,13 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	 */
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
-	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, StructuredLoggingJsonMembersCustomizer<?> customizer) {
+	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment,
+			@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members), customizer);
 	}
 
-	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
 			ContextPairs contextPairs, JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("version", "1.1");
@@ -140,7 +142,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		contextPairs.add((contextData, pairs) -> contextData.forEach(pairs::accept));
 	}
 
-	private static BinaryOperator<String> additionalFieldJoiner() {
+	private static BinaryOperator<@Nullable String> additionalFieldJoiner() {
 		return (prefix, name) -> {
 			name = prefix + name;
 			if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {

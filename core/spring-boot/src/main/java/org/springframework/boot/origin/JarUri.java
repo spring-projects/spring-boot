@@ -18,6 +18,8 @@ package org.springframework.boot.origin;
 
 import java.net.URI;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Simple class that understands Jar URLs and can provide short descriptions.
  *
@@ -68,11 +70,11 @@ final class JarUri {
 		return this.uri;
 	}
 
-	static JarUri from(URI uri) {
+	static @Nullable JarUri from(URI uri) {
 		return from(uri.toString());
 	}
 
-	static JarUri from(String uri) {
+	static @Nullable JarUri from(String uri) {
 		if (uri.startsWith(JAR_SCHEME) && uri.contains(JAR_EXTENSION)) {
 			return new JarUri(uri);
 		}

@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.util.StringUtils;
 
@@ -75,7 +77,7 @@ public interface IterableConfigurationPropertySource
 	}
 
 	@Override
-	default IterableConfigurationPropertySource withPrefix(String prefix) {
+	default IterableConfigurationPropertySource withPrefix(@Nullable String prefix) {
 		return (StringUtils.hasText(prefix)) ? new PrefixedIterableConfigurationPropertySource(this, prefix) : this;
 	}
 

@@ -28,6 +28,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.util.LevelToSyslogSeverity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
@@ -73,14 +74,15 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	 */
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
-	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment,
+			@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			ThrowableProxyConverter throwableProxyConverter,
+			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
 				customizer);
 	}
 
-	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+	private static void jsonMembers(Environment environment, @Nullable StackTracePrinter stackTracePrinter,
 			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
 			JsonWriter.Members<ILoggingEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
@@ -128,7 +130,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add("_error_message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
 	}
 
-	private static BinaryOperator<String> additionalFieldJoiner() {
+	private static BinaryOperator<@Nullable String> additionalFieldJoiner() {
 		return (prefix, name) -> {
 			name = prefix + name;
 			if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {

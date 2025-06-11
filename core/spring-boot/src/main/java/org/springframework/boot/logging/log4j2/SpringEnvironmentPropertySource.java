@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.util.PropertySource;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.Environment;
 
@@ -32,7 +33,7 @@ class SpringEnvironmentPropertySource implements PropertySource {
 	 */
 	private static final int PRIORITY = -100;
 
-	private volatile Environment environment;
+	private volatile @Nullable Environment environment;
 
 	@Override
 	public int getPriority() {
@@ -40,7 +41,7 @@ class SpringEnvironmentPropertySource implements PropertySource {
 	}
 
 	@Override
-	public String getProperty(String key) {
+	public @Nullable String getProperty(String key) {
 		Environment environment = this.environment;
 		return (environment != null) ? environment.getProperty(key) : null;
 	}
@@ -51,7 +52,7 @@ class SpringEnvironmentPropertySource implements PropertySource {
 		return environment != null && environment.containsProperty(key);
 	}
 
-	void setEnvironment(Environment environment) {
+	void setEnvironment(@Nullable Environment environment) {
 		this.environment = environment;
 	}
 

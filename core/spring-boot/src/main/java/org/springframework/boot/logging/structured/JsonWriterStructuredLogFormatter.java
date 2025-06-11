@@ -19,6 +19,8 @@ package org.springframework.boot.logging.structured;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.util.LambdaSafe;
@@ -42,12 +44,12 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 	 * @param customizer an optional customizer to apply
 	 */
 	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		this(JsonWriter.of(customized(members, customizer)).withNewLineAtEnd());
 	}
 
 	private static <E> Consumer<Members<E>> customized(Consumer<Members<E>> members,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		return (customizer != null) ? members.andThen(customizeWith(customizer)) : members;
 	}
 

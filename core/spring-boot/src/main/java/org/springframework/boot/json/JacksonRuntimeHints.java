@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdJdkSerializers.AtomicBooleanSer
 import com.fasterxml.jackson.databind.ser.std.StdJdkSerializers.AtomicIntegerSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdJdkSerializers.AtomicLongSerializer;
 import com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
@@ -39,7 +40,7 @@ import org.springframework.util.ClassUtils;
 class JacksonRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		if (!ClassUtils.isPresent("com.fasterxml.jackson.databind.ser.BasicSerializerFactory", classLoader)) {
 			return;
 		}

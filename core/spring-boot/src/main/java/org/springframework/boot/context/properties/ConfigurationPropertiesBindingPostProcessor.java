@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -49,10 +51,13 @@ public class ConfigurationPropertiesBindingPostProcessor
 	 */
 	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class.getName();
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
+	@SuppressWarnings("NullAway.Init")
 	private BeanDefinitionRegistry registry;
 
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurationPropertiesBinder binder;
 
 	@Override
@@ -85,7 +90,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 		return BindMethod.VALUE_OBJECT.equals(BindMethodAttribute.get(this.registry, beanName));
 	}
 
-	private void bind(ConfigurationPropertiesBean bean) {
+	private void bind(@Nullable ConfigurationPropertiesBean bean) {
 		if (bean == null) {
 			return;
 		}

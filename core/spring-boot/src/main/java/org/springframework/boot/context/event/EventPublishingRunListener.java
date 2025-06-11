@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
@@ -99,19 +100,19 @@ class EventPublishingRunListener implements SpringApplicationRunListener, Ordere
 	}
 
 	@Override
-	public void started(ConfigurableApplicationContext context, Duration timeTaken) {
+	public void started(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
 		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context, timeTaken));
 		AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);
 	}
 
 	@Override
-	public void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+	public void ready(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
 		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context, timeTaken));
 		AvailabilityChangeEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
 	}
 
 	@Override
-	public void failed(ConfigurableApplicationContext context, Throwable exception) {
+	public void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application, this.args, context, exception);
 		if (context != null && context.isActive()) {
 			// Listeners have been registered to the application context so we should

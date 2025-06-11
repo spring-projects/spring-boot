@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.StackTracePrinter;
@@ -45,12 +46,12 @@ import org.springframework.util.CollectionUtils;
  */
 class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+	LogstashStructuredLogFormatter(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+			@Nullable StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		super((members) -> jsonMembers(stackTracePrinter, contextPairs, members), customizer);
 	}
 
-	private static void jsonMembers(StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
+	private static void jsonMembers(@Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs,
 			JsonWriter.Members<LogEvent> members) {
 		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);

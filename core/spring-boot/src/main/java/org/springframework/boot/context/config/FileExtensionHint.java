@@ -19,6 +19,8 @@ package org.springframework.boot.context.config;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * User-provided hint for an otherwise missing file extension.
  *
@@ -30,9 +32,9 @@ final class FileExtensionHint {
 
 	private static final FileExtensionHint NONE = new FileExtensionHint(null);
 
-	private final Matcher matcher;
+	private final @Nullable Matcher matcher;
 
-	private FileExtensionHint(Matcher matcher) {
+	private FileExtensionHint(@Nullable Matcher matcher) {
 		this.matcher = matcher;
 	}
 

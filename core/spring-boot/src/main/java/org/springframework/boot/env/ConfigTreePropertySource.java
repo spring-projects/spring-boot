@@ -34,6 +34,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -120,13 +122,13 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	}
 
 	@Override
-	public Value getProperty(String name) {
+	public @Nullable Value getProperty(String name) {
 		PropertyFile propertyFile = this.propertyFiles.get(name);
 		return (propertyFile != null) ? propertyFile.getContent() : null;
 	}
 
 	@Override
-	public Origin getOrigin(String name) {
+	public @Nullable Origin getOrigin(String name) {
 		PropertyFile propertyFile = this.propertyFiles.get(name);
 		return (propertyFile != null) ? propertyFile.getOrigin() : null;
 	}
@@ -182,7 +184,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final Origin origin;
 
-		private final PropertyFileContent cachedContent;
+		private final @Nullable PropertyFileContent cachedContent;
 
 		private final boolean autoTrimTrailingNewLine;
 
@@ -273,7 +275,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final boolean autoTrimTrailingNewLine;
 
-		private volatile byte[] content;
+		private volatile byte @Nullable [] content;
 
 		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent,
 				boolean autoTrimTrailingNewLine) {

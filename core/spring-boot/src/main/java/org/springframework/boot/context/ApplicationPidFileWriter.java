@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -163,7 +164,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		return Boolean.parseBoolean(value);
 	}
 
-	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
+	private @Nullable String getProperty(SpringApplicationEvent event, List<Property> candidates) {
 		for (Property candidate : candidates) {
 			String value = candidate.getValue(event);
 			if (value != null) {
@@ -194,7 +195,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 	 */
 	private interface Property {
 
-		String getValue(SpringApplicationEvent event);
+		@Nullable String getValue(SpringApplicationEvent event);
 
 	}
 
@@ -213,7 +214,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		}
 
 		@Override
-		public String getValue(SpringApplicationEvent event) {
+		public @Nullable String getValue(SpringApplicationEvent event) {
 			Environment environment = getEnvironment(event);
 			if (environment == null) {
 				return null;
@@ -221,7 +222,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 			return environment.getProperty(this.prefix + this.key);
 		}
 
-		private Environment getEnvironment(SpringApplicationEvent event) {
+		private @Nullable Environment getEnvironment(SpringApplicationEvent event) {
 			if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
 				return environmentPreparedEvent.getEnvironment();
 			}
@@ -248,7 +249,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		}
 
 		@Override
-		public String getValue(SpringApplicationEvent event) {
+		public @Nullable String getValue(SpringApplicationEvent event) {
 			return SystemProperties.get(this.properties);
 		}
 

@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -53,7 +55,7 @@ public class LoggingSystemProperties {
 
 	private final Environment environment;
 
-	private final Function<String, String> defaultValueResolver;
+	private final Function<@Nullable String, @Nullable String> defaultValueResolver;
 
 	private final BiConsumer<String, String> setter;
 
@@ -72,7 +74,7 @@ public class LoggingSystemProperties {
 	 * properties
 	 * @since 2.4.2
 	 */
-	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+	public LoggingSystemProperties(Environment environment, @Nullable BiConsumer<String, String> setter) {
 		this(environment, null, setter);
 	}
 
@@ -84,8 +86,9 @@ public class LoggingSystemProperties {
 	 * properties
 	 * @since 3.2.0
 	 */
-	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
-			BiConsumer<String, String> setter) {
+	public LoggingSystemProperties(Environment environment,
+			@Nullable Function<@Nullable String, @Nullable String> defaultValueResolver,
+			@Nullable BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
@@ -97,7 +100,7 @@ public class LoggingSystemProperties {
 	 * @return the {@link Console} to use
 	 * @since 3.5.0
 	 */
-	protected Console getConsole() {
+	protected @Nullable Console getConsole() {
 		return System.console();
 	}
 
@@ -105,7 +108,7 @@ public class LoggingSystemProperties {
 		apply(null);
 	}
 
-	public final void apply(LogFile logFile) {
+	public final void apply(@Nullable LogFile logFile) {
 		PropertyResolver resolver = getPropertyResolver();
 		apply(logFile, resolver);
 	}
@@ -121,7 +124,7 @@ public class LoggingSystemProperties {
 		return this.environment;
 	}
 
-	protected void apply(LogFile logFile, PropertyResolver resolver) {
+	protected void apply(@Nullable LogFile logFile, PropertyResolver resolver) {
 		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
 		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
@@ -162,28 +165,28 @@ public class LoggingSystemProperties {
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
-		setSystemProperty(property, resolver, Function.identity());
+		setSystemProperty(property, resolver, (i) -> i);
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver,
-			Function<String, String> mapper) {
+			Function<@Nullable String, @Nullable String> mapper) {
 		setSystemProperty(property, resolver, null, mapper);
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue) {
-		setSystemProperty(property, resolver, defaultValue, Function.identity());
+		setSystemProperty(property, resolver, defaultValue, (i) -> i);
 	}
 
-	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue,
-			Function<String, String> mapper) {
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver,
+			@Nullable String defaultValue, Function<@Nullable String, @Nullable String> mapper) {
 		if (property.getIncludePropertyName() != null) {
 			if (!resolver.getProperty(property.getIncludePropertyName(), Boolean.class, Boolean.TRUE)) {
 				return;
 			}
 		}
-		String value = (property.getApplicationPropertyName() != null)
-				? resolver.getProperty(property.getApplicationPropertyName()) : null;
-		value = (value != null) ? value : this.defaultValueResolver.apply(property.getApplicationPropertyName());
+		String applicationPropertyName = property.getApplicationPropertyName();
+		String value = (applicationPropertyName != null) ? resolver.getProperty(applicationPropertyName) : null;
+		value = (value != null) ? value : this.defaultValueResolver.apply(applicationPropertyName);
 		value = (value != null) ? value : defaultValue;
 		value = mapper.apply(value);
 		setSystemProperty(property.getEnvironmentVariableName(), value);
@@ -197,7 +200,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(property.getEnvironmentVariableName(), value);
 	}
 
-	private String thresholdMapper(String input) {
+	private @Nullable String thresholdMapper(@Nullable String input) {
 		// YAML converts an unquoted OFF to false
 		if ("false".equals(input)) {
 			return "OFF";
@@ -210,7 +213,7 @@ public class LoggingSystemProperties {
 	 * @param name the property name
 	 * @param value the value
 	 */
-	protected final void setSystemProperty(String name, String value) {
+	protected final void setSystemProperty(String name, @Nullable String value) {
 		this.setter.accept(name, value);
 	}
 

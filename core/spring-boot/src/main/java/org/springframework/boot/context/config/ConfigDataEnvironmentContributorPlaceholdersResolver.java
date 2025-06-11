@@ -16,12 +16,15 @@
 
 package org.springframework.boot.context.config;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.Assert;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.SystemPropertyUtils;
 
@@ -37,19 +40,20 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 
 	private final Iterable<ConfigDataEnvironmentContributor> contributors;
 
-	private final ConfigDataActivationContext activationContext;
+	private final @Nullable ConfigDataActivationContext activationContext;
 
 	private final boolean failOnResolveFromInactiveContributor;
 
 	private final PropertyPlaceholderHelper helper;
 
-	private final ConfigDataEnvironmentContributor activeContributor;
+	private final @Nullable ConfigDataEnvironmentContributor activeContributor;
 
 	private final ConversionService conversionService;
 
 	ConfigDataEnvironmentContributorPlaceholdersResolver(Iterable<ConfigDataEnvironmentContributor> contributors,
-			ConfigDataActivationContext activationContext, ConfigDataEnvironmentContributor activeContributor,
-			boolean failOnResolveFromInactiveContributor, ConversionService conversionService) {
+			@Nullable ConfigDataActivationContext activationContext,
+			@Nullable ConfigDataEnvironmentContributor activeContributor, boolean failOnResolveFromInactiveContributor,
+			ConversionService conversionService) {
 		this.contributors = contributors;
 		this.activationContext = activationContext;
 		this.activeContributor = activeContributor;
@@ -61,14 +65,14 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	}
 
 	@Override
-	public Object resolvePlaceholders(Object value) {
+	public @Nullable Object resolvePlaceholders(@Nullable Object value) {
 		if (value instanceof String string) {
 			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
 		}
 		return value;
 	}
 
-	private String resolvePlaceholder(String placeholder) {
+	private @Nullable String resolvePlaceholder(String placeholder) {
 		Object result = null;
 		for (ConfigDataEnvironmentContributor contributor : this.contributors) {
 			PropertySource<?> propertySource = contributor.getPropertySource();
@@ -76,6 +80,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			if (value != null && !isActive(contributor)) {
 				if (this.failOnResolveFromInactiveContributor) {
 					ConfigDataResource resource = contributor.getResource();
+					Assert.state(propertySource != null, "'propertySource' can't be null here");
 					Origin origin = OriginLookup.getOrigin(propertySource, placeholder);
 					throw new InactiveConfigDataAccessException(propertySource, resource, placeholder, origin);
 				}
@@ -97,7 +102,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			.isActive(this.activationContext);
 	}
 
-	private String convertValueIfNecessary(Object value) {
+	private @Nullable String convertValueIfNecessary(Object value) {
 		return (value instanceof String string) ? string : this.conversionService.convert(value, String.class);
 	}
 

@@ -23,6 +23,7 @@ import jakarta.servlet.Registration;
 import jakarta.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.core.Conventions;
@@ -43,13 +44,13 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
 
-	private String name;
+	private @Nullable String name;
 
 	private boolean asyncSupported = true;
 
 	private Map<String, String> initParameters = new LinkedHashMap<>();
 
-	private String beanName;
+	private @Nullable String beanName;
 
 	private boolean ignoreRegistrationFailure;
 
@@ -139,7 +140,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 		this.beanName = name;
 	}
 
-	protected abstract D addRegistration(String description, ServletContext servletContext);
+	protected abstract @Nullable D addRegistration(String description, ServletContext servletContext);
 
 	protected void configure(D registration) {
 		registration.setAsyncSupported(this.asyncSupported);
@@ -155,12 +156,15 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	 * @param value the object used for convention based names
 	 * @return the deduced name
 	 */
-	protected final String getOrDeduceName(Object value) {
+	protected final String getOrDeduceName(@Nullable Object value) {
 		if (this.name != null) {
 			return this.name;
 		}
 		if (this.beanName != null) {
 			return this.beanName;
+		}
+		if (value == null) {
+			return "null";
 		}
 		return Conventions.getVariableName(value);
 	}

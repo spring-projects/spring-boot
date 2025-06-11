@@ -20,6 +20,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Proxy;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -39,7 +41,7 @@ public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyze
 			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {
 		if (!Proxy.isProxyClass(cause.getActualType())) {
 			return null;
 		}

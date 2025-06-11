@@ -16,8 +16,11 @@
 
 package org.springframework.boot.context.config;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,9 +47,9 @@ public final class ConfigDataLocation implements OriginProvider {
 
 	private final String value;
 
-	private final Origin origin;
+	private final @Nullable Origin origin;
 
-	private ConfigDataLocation(boolean optional, String value, Origin origin) {
+	private ConfigDataLocation(boolean optional, String value, @Nullable Origin origin) {
 		this.value = value;
 		this.optional = optional;
 		this.origin = origin;
@@ -93,7 +96,7 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	@Override
-	public Origin getOrigin() {
+	public @Nullable Origin getOrigin() {
 		return this.origin;
 	}
 
@@ -118,7 +121,10 @@ public final class ConfigDataLocation implements OriginProvider {
 		String[] values = StringUtils.delimitedListToStringArray(toString(), delimiter);
 		ConfigDataLocation[] result = new ConfigDataLocation[values.length];
 		for (int i = 0; i < values.length; i++) {
-			result[i] = of(values[i]).withOrigin(getOrigin());
+			int index = i;
+			ConfigDataLocation configDataLocation = of(values[index]);
+			Assert.state(configDataLocation != null, () -> "Unable to parse '%s'".formatted(values[index]));
+			result[i] = configDataLocation.withOrigin(getOrigin());
 		}
 		return result;
 	}
@@ -150,7 +156,7 @@ public final class ConfigDataLocation implements OriginProvider {
 	 * @param origin the origin to set
 	 * @return a new {@link ConfigDataLocation} instance.
 	 */
-	ConfigDataLocation withOrigin(Origin origin) {
+	ConfigDataLocation withOrigin(@Nullable Origin origin) {
 		return new ConfigDataLocation(this.optional, this.value, origin);
 	}
 
@@ -160,9 +166,16 @@ public final class ConfigDataLocation implements OriginProvider {
 	 * @return a {@link ConfigDataLocation} instance or {@code null} if no location was
 	 * provided
 	 */
-	public static ConfigDataLocation of(String location) {
+	public static @Nullable ConfigDataLocation of(@Nullable String location) {
 		boolean optional = location != null && location.startsWith(OPTIONAL_PREFIX);
-		String value = (!optional) ? location : location.substring(OPTIONAL_PREFIX.length());
+		String value;
+		if (optional) {
+			Assert.state(location != null, "'location' can't be null here");
+			value = location.substring(OPTIONAL_PREFIX.length());
+		}
+		else {
+			value = location;
+		}
 		if (!StringUtils.hasText(value)) {
 			return null;
 		}

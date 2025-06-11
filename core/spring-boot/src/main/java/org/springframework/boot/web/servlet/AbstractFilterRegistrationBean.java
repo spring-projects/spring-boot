@@ -28,6 +28,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -54,7 +55,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 
 	private Set<String> urlPatterns = new LinkedHashSet<>();
 
-	private EnumSet<DispatcherType> dispatcherTypes;
+	private @Nullable EnumSet<DispatcherType> dispatcherTypes;
 
 	private boolean matchAfter;
 
@@ -170,6 +171,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	public EnumSet<DispatcherType> determineDispatcherTypes() {
 		if (CollectionUtils.isEmpty(this.dispatcherTypes)) {
 			T filter = getFilter();
+			Assert.state(filter != null, "'filter' must not be null");
 			if (ClassUtils.isPresent("org.springframework.web.filter.OncePerRequestFilter",
 					filter.getClass().getClassLoader()) && filter instanceof OncePerRequestFilter) {
 				return EnumSet.allOf(DispatcherType.class);
@@ -264,7 +266,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 * Return the {@link Filter} to be registered.
 	 * @return the filter
 	 */
-	public abstract T getFilter();
+	public abstract @Nullable T getFilter();
 
 	/**
 	 * Returns the filter name that will be registered.

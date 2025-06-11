@@ -19,6 +19,8 @@ package org.springframework.boot.context.config;
 import java.io.File;
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.FileUrlResource;
@@ -81,7 +83,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 	 * @return the profile or {@code null}
 	 * @since 2.4.6
 	 */
-	public String getProfile() {
+	public @Nullable String getProfile() {
 		return this.reference.getProfile();
 	}
 
@@ -105,7 +107,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		return ours.equals(other) || isSameFile(getUnderlyingFile(ours), getUnderlyingFile(other));
 	}
 
-	private boolean isSameFile(File ours, File other) {
+	private boolean isSameFile(@Nullable File ours, @Nullable File other) {
 		return (ours != null) && ours.equals(other);
 	}
 
@@ -128,7 +130,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		return this.resource.toString();
 	}
 
-	private File getUnderlyingFile(Resource resource) {
+	private @Nullable File getUnderlyingFile(Resource resource) {
 		try {
 			if (resource instanceof ClassPathResource || resource instanceof FileSystemResource
 					|| resource instanceof FileUrlResource) {

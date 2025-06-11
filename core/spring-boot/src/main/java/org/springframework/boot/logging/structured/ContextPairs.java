@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.util.Assert;
@@ -44,7 +46,7 @@ public class ContextPairs {
 
 	private final String prefix;
 
-	ContextPairs(boolean include, String prefix) {
+	ContextPairs(boolean include, @Nullable String prefix) {
 		this.include = include;
 		this.prefix = (prefix != null) ? prefix : "";
 	}
@@ -67,7 +69,8 @@ public class ContextPairs {
 	 * @param pairs callback to add all the pairs
 	 * @return a {@link BiConsumer} for use with the {@link JsonWriter}
 	 */
-	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(BinaryOperator<String> joiner, Consumer<Pairs<T>> pairs) {
+	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(BinaryOperator<@Nullable String> joiner,
+			Consumer<Pairs<T>> pairs) {
 		return (!this.include) ? none() : new Pairs<>(joiner, pairs)::flat;
 	}
 
@@ -86,7 +89,7 @@ public class ContextPairs {
 		};
 	}
 
-	private BinaryOperator<String> joinWith(String delimeter) {
+	private BinaryOperator<@Nullable String> joinWith(String delimeter) {
 		return (prefix, name) -> {
 			StringBuilder joined = new StringBuilder(prefix.length() + delimeter.length() + name.length());
 			joined.append(prefix);
@@ -105,11 +108,11 @@ public class ContextPairs {
 	 */
 	public class Pairs<T> {
 
-		private final BinaryOperator<String> joiner;
+		private final BinaryOperator<@Nullable String> joiner;
 
 		private final List<BiConsumer<T, BiConsumer<String, ?>>> addedPairs;
 
-		Pairs(BinaryOperator<String> joiner, Consumer<Pairs<T>> pairs) {
+		Pairs(BinaryOperator<@Nullable String> joiner, Consumer<Pairs<T>> pairs) {
 			this.joiner = joiner;
 			this.addedPairs = new ArrayList<>();
 			pairs.accept(this);

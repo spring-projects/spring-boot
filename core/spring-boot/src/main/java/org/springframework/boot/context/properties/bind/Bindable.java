@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
@@ -51,16 +53,16 @@ public final class Bindable<T> {
 
 	private final ResolvableType boxedType;
 
-	private final Supplier<T> value;
+	private final @Nullable Supplier<T> value;
 
 	private final Annotation[] annotations;
 
 	private final EnumSet<BindRestriction> bindRestrictions;
 
-	private final BindMethod bindMethod;
+	private final @Nullable BindMethod bindMethod;
 
-	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
-			EnumSet<BindRestriction> bindRestrictions, BindMethod bindMethod) {
+	private Bindable(ResolvableType type, ResolvableType boxedType, @Nullable Supplier<T> value,
+			Annotation[] annotations, EnumSet<BindRestriction> bindRestrictions, @Nullable BindMethod bindMethod) {
 		this.type = type;
 		this.boxedType = boxedType;
 		this.value = value;
@@ -89,7 +91,7 @@ public final class Bindable<T> {
 	 * Return a supplier that provides the object value or {@code null}.
 	 * @return the value or {@code null}
 	 */
-	public Supplier<T> getValue() {
+	public @Nullable Supplier<T> getValue() {
 		return this.value;
 	}
 
@@ -108,7 +110,7 @@ public final class Bindable<T> {
 	 * @return the associated annotation or {@code null}
 	 */
 	@SuppressWarnings("unchecked")
-	public <A extends Annotation> A getAnnotation(Class<A> type) {
+	public <A extends Annotation> @Nullable A getAnnotation(Class<A> type) {
 		for (Annotation annotation : this.annotations) {
 			if (type.isInstance(annotation)) {
 				return (A) annotation;
@@ -133,7 +135,7 @@ public final class Bindable<T> {
 	 * @return the bind method or {@code null}
 	 * @since 3.0.8
 	 */
-	public BindMethod getBindMethod() {
+	public @Nullable BindMethod getBindMethod() {
 		return this.bindMethod;
 	}
 
@@ -169,7 +171,7 @@ public final class Bindable<T> {
 		return creator.toString();
 	}
 
-	private boolean nullSafeEquals(Object o1, Object o2) {
+	private boolean nullSafeEquals(@Nullable Object o1, @Nullable Object o2) {
 		return ObjectUtils.nullSafeEquals(o1, o2);
 	}
 
@@ -178,7 +180,7 @@ public final class Bindable<T> {
 	 * @param annotations the annotations
 	 * @return an updated {@link Bindable}
 	 */
-	public Bindable<T> withAnnotations(Annotation... annotations) {
+	public Bindable<T> withAnnotations(Annotation @Nullable ... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
 				(annotations != null) ? annotations : NO_ANNOTATIONS, NO_BIND_RESTRICTIONS, this.bindMethod);
 	}
@@ -189,9 +191,8 @@ public final class Bindable<T> {
 	 * @param existingValue the existing value
 	 * @return an updated {@link Bindable}
 	 */
-	public Bindable<T> withExistingValue(T existingValue) {
-		Assert.isTrue(
-				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
+	public Bindable<T> withExistingValue(@Nullable T existingValue) {
+		Assert.isTrue(existingValue == null || this.type.isArray() || boxedTypeIsInstanceOf(existingValue),
 				() -> "'existingValue' must be an instance of " + this.type);
 		Assert.state(this.bindMethod != BindMethod.VALUE_OBJECT,
 				() -> "An existing value cannot be provided when binding as a value object");
@@ -200,12 +201,17 @@ public final class Bindable<T> {
 				BindMethod.JAVA_BEAN);
 	}
 
+	private boolean boxedTypeIsInstanceOf(T existingValue) {
+		Class<?> resolved = this.boxedType.resolve();
+		return resolved != null && resolved.isInstance(existingValue);
+	}
+
 	/**
 	 * Create an updated {@link Bindable} instance with a value supplier.
 	 * @param suppliedValue the supplier for the value
 	 * @return an updated {@link Bindable}
 	 */
-	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
+	public Bindable<T> withSuppliedValue(@Nullable Supplier<T> suppliedValue) {
 		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations, this.bindRestrictions,
 				this.bindMethod);
 	}
@@ -231,7 +237,7 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 * @since 3.0.8
 	 */
-	public Bindable<T> withBindMethod(BindMethod bindMethod) {
+	public Bindable<T> withBindMethod(@Nullable BindMethod bindMethod) {
 		Assert.state(bindMethod != BindMethod.VALUE_OBJECT || this.value == null,
 				() -> "Value object binding cannot be used with an existing or supplied value");
 		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, this.bindRestrictions,

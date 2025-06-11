@@ -25,6 +25,7 @@ import ch.qos.logback.core.model.processor.ModelHandlerException;
 import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import ch.qos.logback.core.model.util.PropertyModelHandlerHelper;
 import ch.qos.logback.core.util.OptionHelper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.Environment;
 
@@ -41,9 +42,9 @@ import org.springframework.core.env.Environment;
  */
 class SpringPropertyModelHandler extends ModelHandlerBase {
 
-	private final Environment environment;
+	private final @Nullable Environment environment;
 
-	SpringPropertyModelHandler(Context context, Environment environment) {
+	SpringPropertyModelHandler(Context context, @Nullable Environment environment) {
 		super(context);
 		this.environment = environment;
 	}

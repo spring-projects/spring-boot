@@ -31,6 +31,7 @@ import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
@@ -73,9 +74,9 @@ class DefaultLogbackConfiguration {
 
 	static final String FILE_LOG_PATTERN = "${FILE_LOG_PATTERN:-" + DEFAULT_FILE_LOG_PATTERN;
 
-	private final LogFile logFile;
+	private final @Nullable LogFile logFile;
 
-	DefaultLogbackConfiguration(LogFile logFile) {
+	DefaultLogbackConfiguration(@Nullable LogFile logFile) {
 		this.logFile = logFile;
 	}
 

@@ -25,6 +25,7 @@ import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
@@ -81,7 +82,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	@Override
-	public Object getProperty(String name) {
+	public @Nullable Object getProperty(String name) {
 		if (!name.startsWith(PREFIX)) {
 			return null;
 		}
@@ -110,7 +111,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		return getRandomBytes();
 	}
 
-	private String getRange(String type, String prefix) {
+	private @Nullable String getRange(String type, String prefix) {
 		if (type.startsWith(prefix)) {
 			int startIndex = prefix.length() + 1;
 			if (type.length() > startIndex) {

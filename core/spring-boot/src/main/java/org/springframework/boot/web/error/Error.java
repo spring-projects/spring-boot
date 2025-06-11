@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.util.Assert;
@@ -50,17 +51,17 @@ public final class Error implements MessageSourceResolvable {
 	}
 
 	@Override
-	public String[] getCodes() {
+	public String @Nullable [] getCodes() {
 		return this.cause.getCodes();
 	}
 
 	@Override
-	public Object[] getArguments() {
+	public Object @Nullable [] getArguments() {
 		return this.cause.getArguments();
 	}
 
 	@Override
-	public String getDefaultMessage() {
+	public @Nullable String getDefaultMessage() {
 		return this.cause.getDefaultMessage();
 	}
 

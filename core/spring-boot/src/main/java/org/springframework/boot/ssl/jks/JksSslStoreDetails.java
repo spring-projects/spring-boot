@@ -18,6 +18,8 @@ package org.springframework.boot.ssl.jks;
 
 import java.security.KeyStore;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,7 +35,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public record JksSslStoreDetails(String type, String provider, String location, String password) {
+public record JksSslStoreDetails(@Nullable String type, @Nullable String provider, @Nullable String location,
+		@Nullable String password) {
 
 	/**
 	 * Return a new {@link JksSslStoreDetails} instance with a new password.
@@ -48,7 +51,7 @@ public record JksSslStoreDetails(String type, String provider, String location, 
 		return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);
 	}
 
-	private boolean isEmpty(String value) {
+	private boolean isEmpty(@Nullable String value) {
 		return !StringUtils.hasText(value);
 	}
 

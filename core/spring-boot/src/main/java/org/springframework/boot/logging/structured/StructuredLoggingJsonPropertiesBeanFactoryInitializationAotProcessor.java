@@ -18,6 +18,8 @@ package org.springframework.boot.logging.structured;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
@@ -43,7 +45,8 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 	private static final String ENVIRONMENT_BEAN_NAME = "environment";
 
 	@Override
-	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
+	public @Nullable BeanFactoryInitializationAotContribution processAheadOfTime(
+			ConfigurableListableBeanFactory beanFactory) {
 		Environment environment = beanFactory.getBean(ENVIRONMENT_BEAN_NAME, Environment.class);
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		if (properties != null) {
@@ -56,21 +59,22 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 		return null;
 	}
 
-	private static String getCustomStackTracePrinter(StructuredLoggingJsonProperties properties) {
+	private static @Nullable String getCustomStackTracePrinter(StructuredLoggingJsonProperties properties) {
 		StackTrace stackTrace = properties.stackTrace();
 		return (stackTrace != null && stackTrace.hasCustomPrinter()) ? stackTrace.printer() : null;
 	}
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {
 
-		private final ClassLoader classLoader;
+		private final @Nullable ClassLoader classLoader;
 
 		private final Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers;
 
-		private final String stackTracePrinter;
+		private final @Nullable String stackTracePrinter;
 
-		private AotContribution(ClassLoader classLoader,
-				Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers, String stackTracePrinter) {
+		private AotContribution(@Nullable ClassLoader classLoader,
+				Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers,
+				@Nullable String stackTracePrinter) {
 			this.classLoader = classLoader;
 			this.customizers = customizers;
 			this.stackTracePrinter = stackTracePrinter;

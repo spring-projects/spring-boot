@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -55,7 +56,7 @@ class PropertySourcesDeducer {
 		return sources;
 	}
 
-	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
+	private @Nullable PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
 		// Take care not to cause early instantiation of all FactoryBeans
 		Map<String, PropertySourcesPlaceholderConfigurer> beans = this.applicationContext
 			.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false, false);
@@ -69,7 +70,7 @@ class PropertySourcesDeducer {
 		return null;
 	}
 
-	private MutablePropertySources extractEnvironmentPropertySources() {
+	private @Nullable MutablePropertySources extractEnvironmentPropertySources() {
 		Environment environment = this.applicationContext.getEnvironment();
 		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			return configurableEnvironment.getPropertySources();

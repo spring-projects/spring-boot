@@ -59,7 +59,8 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 	protected GenericApplicationContext prepareApplicationContext(Class<?> application) {
 		return new AotProcessorHook(application).run(() -> {
 			Method mainMethod = application.getMethod("main", String[].class);
-			return ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { this.applicationArgs });
+			ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { this.applicationArgs });
+			return Void.class;
 		});
 	}
 
@@ -112,7 +113,7 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 				ApplicationContext context = ex.getApplicationContext();
 				Assert.state(context instanceof GenericApplicationContext,
 						() -> "AOT processing requires a GenericApplicationContext but got a "
-								+ context.getClass().getName());
+								+ ((context != null) ? context.getClass().getName() : "null"));
 				return (GenericApplicationContext) context;
 			}
 			throw new IllegalStateException(

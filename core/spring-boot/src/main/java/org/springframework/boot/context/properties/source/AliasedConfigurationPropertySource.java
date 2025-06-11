@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -38,12 +40,12 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		Assert.notNull(name, "'name' must not be null");
 		ConfigurationProperty result = getSource().getConfigurationProperty(name);
 		if (result == null) {
 			ConfigurationPropertyName aliasedName = getAliases().getNameForAlias(name);
-			result = getSource().getConfigurationProperty(aliasedName);
+			result = (aliasedName != null) ? getSource().getConfigurationProperty(aliasedName) : null;
 		}
 		return result;
 	}
@@ -74,7 +76,7 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 	}
 
 	@Override
-	public Object getUnderlyingSource() {
+	public @Nullable Object getUnderlyingSource() {
 		return this.source.getUnderlyingSource();
 	}
 

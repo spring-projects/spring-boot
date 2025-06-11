@@ -18,6 +18,8 @@ package org.springframework.boot.context.event;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -36,7 +38,7 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
-	private final Duration timeTaken;
+	private final @Nullable Duration timeTaken;
 
 	/**
 	 * Create a new {@link ApplicationStartedEvent} instance.
@@ -47,7 +49,7 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 	 * @since 2.6.0
 	 */
 	public ApplicationStartedEvent(SpringApplication application, String[] args, ConfigurableApplicationContext context,
-			Duration timeTaken) {
+			@Nullable Duration timeTaken) {
 		super(application, args);
 		this.context = context;
 		this.timeTaken = timeTaken;
@@ -66,7 +68,7 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 	 * @return the startup time
 	 * @since 2.6.0
 	 */
-	public Duration getTimeTaken() {
+	public @Nullable Duration getTimeTaken() {
 		return this.timeTaken;
 	}
 

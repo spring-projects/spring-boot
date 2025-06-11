@@ -21,6 +21,8 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.info.BuildProperties.BuildPropertiesRuntimeHints;
@@ -47,7 +49,7 @@ public class BuildProperties extends InfoProperties {
 	 * Return the groupId of the project or {@code null}.
 	 * @return the group
 	 */
-	public String getGroup() {
+	public @Nullable String getGroup() {
 		return get("group");
 	}
 
@@ -55,7 +57,7 @@ public class BuildProperties extends InfoProperties {
 	 * Return the artifactId of the project or {@code null}.
 	 * @return the artifact
 	 */
-	public String getArtifact() {
+	public @Nullable String getArtifact() {
 		return get("artifact");
 	}
 
@@ -63,7 +65,7 @@ public class BuildProperties extends InfoProperties {
 	 * Return the name of the project or {@code null}.
 	 * @return the name
 	 */
-	public String getName() {
+	public @Nullable String getName() {
 		return get("name");
 	}
 
@@ -71,7 +73,7 @@ public class BuildProperties extends InfoProperties {
 	 * Return the version of the project or {@code null}.
 	 * @return the version
 	 */
-	public String getVersion() {
+	public @Nullable String getVersion() {
 		return get("version");
 	}
 
@@ -83,7 +85,7 @@ public class BuildProperties extends InfoProperties {
 	 * @return the build time
 	 * @see #get(String)
 	 */
-	public Instant getTime() {
+	public @Nullable Instant getTime() {
 		return getInstant("time");
 	}
 
@@ -109,7 +111,7 @@ public class BuildProperties extends InfoProperties {
 	static class BuildPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("META-INF/build-info.properties");
 		}
 

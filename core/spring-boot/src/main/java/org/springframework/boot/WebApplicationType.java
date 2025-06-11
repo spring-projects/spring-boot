@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
@@ -73,7 +75,7 @@ public enum WebApplicationType {
 	static class WebApplicationTypeRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			for (String servletIndicatorClass : SERVLET_INDICATOR_CLASSES) {
 				registerTypeIfPresent(servletIndicatorClass, classLoader, hints);
 			}
@@ -82,7 +84,7 @@ public enum WebApplicationType {
 			registerTypeIfPresent(WEBMVC_INDICATOR_CLASS, classLoader, hints);
 		}
 
-		private void registerTypeIfPresent(String typeName, ClassLoader classLoader, RuntimeHints hints) {
+		private void registerTypeIfPresent(String typeName, @Nullable ClassLoader classLoader, RuntimeHints hints) {
 			if (ClassUtils.isPresent(typeName, classLoader)) {
 				hints.reflection().registerType(TypeReference.of(typeName));
 			}

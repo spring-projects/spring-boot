@@ -19,6 +19,8 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -84,7 +86,7 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 		}
 	}
 
-	private Class<?> getBeanType(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	private @Nullable Class<?> getBeanType(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		try {
 			return beanFactory.getType(beanName, false);
 		}
@@ -94,7 +96,7 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 	}
 
 	private boolean isExcluded(Collection<LazyInitializationExcludeFilter> filters, String beanName,
-			AbstractBeanDefinition beanDefinition, Class<?> beanType) {
+			AbstractBeanDefinition beanDefinition, @Nullable Class<?> beanType) {
 		if (beanType != null) {
 			for (LazyInitializationExcludeFilter filter : filters) {
 				if (filter.isExcluded(beanName, beanDefinition, beanType)) {

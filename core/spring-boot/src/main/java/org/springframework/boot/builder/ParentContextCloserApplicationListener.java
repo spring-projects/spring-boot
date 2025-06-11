@@ -40,8 +40,9 @@ import org.springframework.util.ObjectUtils;
 public class ParentContextCloserApplicationListener
 		implements ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware, Ordered {
 
-	private final int order = Ordered.LOWEST_PRECEDENCE - 10;
+	private static final int order = Ordered.LOWEST_PRECEDENCE - 10;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext context;
 
 	@Override

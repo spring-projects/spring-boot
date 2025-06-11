@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -42,7 +44,7 @@ import org.springframework.util.StringUtils;
  */
 public class ApplicationHome {
 
-	private final File source;
+	private final @Nullable File source;
 
 	private final File dir;
 
@@ -57,12 +59,12 @@ public class ApplicationHome {
 	 * Create a new {@link ApplicationHome} instance for the specified source class.
 	 * @param sourceClass the source class or {@code null}
 	 */
-	public ApplicationHome(Class<?> sourceClass) {
+	public ApplicationHome(@Nullable Class<?> sourceClass) {
 		this.source = findSource((sourceClass != null) ? sourceClass : getStartClass());
 		this.dir = findHomeDir(this.source);
 	}
 
-	private Class<?> getStartClass() {
+	private @Nullable Class<?> getStartClass() {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			return getStartClass(classLoader.getResources("META-INF/MANIFEST.MF"));
@@ -72,7 +74,7 @@ public class ApplicationHome {
 		}
 	}
 
-	private Class<?> getStartClass(Enumeration<URL> manifestResources) {
+	private @Nullable Class<?> getStartClass(Enumeration<URL> manifestResources) {
 		while (manifestResources.hasMoreElements()) {
 			try (InputStream inputStream = manifestResources.nextElement().openStream()) {
 				Manifest manifest = new Manifest(inputStream);
@@ -88,7 +90,7 @@ public class ApplicationHome {
 		return null;
 	}
 
-	private File findSource(Class<?> sourceClass) {
+	private @Nullable File findSource(@Nullable Class<?> sourceClass) {
 		try {
 			ProtectionDomain domain = (sourceClass != null) ? sourceClass.getProtectionDomain() : null;
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
@@ -136,7 +138,7 @@ public class ApplicationHome {
 		return new File(name);
 	}
 
-	private File findHomeDir(File source) {
+	private File findHomeDir(@Nullable File source) {
 		File homeDir = source;
 		homeDir = (homeDir != null) ? homeDir : findDefaultHomeDir();
 		if (homeDir.isFile()) {
@@ -157,7 +159,7 @@ public class ApplicationHome {
 	 * determined.
 	 * @return the underlying source or {@code null}
 	 */
-	public File getSource() {
+	public @Nullable File getSource() {
 		return this.source;
 	}
 

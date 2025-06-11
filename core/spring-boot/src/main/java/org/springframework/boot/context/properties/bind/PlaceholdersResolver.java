@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.PropertyResolver;
 
 /**
@@ -39,6 +41,6 @@ public interface PlaceholdersResolver {
 	 * @param value the source value
 	 * @return a value with placeholders resolved
 	 */
-	Object resolvePlaceholders(Object value);
+	@Nullable Object resolvePlaceholders(@Nullable Object value);
 
 }

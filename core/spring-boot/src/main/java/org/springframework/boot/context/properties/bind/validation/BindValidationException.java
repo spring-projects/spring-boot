@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind.validation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -45,7 +47,7 @@ public class BindValidationException extends RuntimeException {
 		return this.validationErrors;
 	}
 
-	private static String getMessage(ValidationErrors errors) {
+	private static String getMessage(@Nullable ValidationErrors errors) {
 		StringBuilder message = new StringBuilder("Binding validation errors");
 		if (errors != null) {
 			message.append(" on ").append(errors.getName());

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -95,7 +96,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		@Override
-		public Object getData() throws NoSuchElementException {
+		public @Nullable Object getData() throws NoSuchElementException {
 			Object data = super.getData();
 			if (data instanceof CharSequence charSequence && charSequence.isEmpty()) {
 				return null;
@@ -133,7 +134,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			return OriginTrackedValue.of(getValue(value), origin);
 		}
 
-		private Object getValue(Object value) {
+		private Object getValue(@Nullable Object value) {
 			return (value != null) ? value : "";
 		}
 

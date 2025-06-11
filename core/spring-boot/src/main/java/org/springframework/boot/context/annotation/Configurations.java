@@ -30,6 +30,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
@@ -61,11 +63,11 @@ public abstract class Configurations {
 	private static final Comparator<Object> COMPARATOR = OrderComparator.INSTANCE
 		.thenComparing((other) -> other.getClass().getName());
 
-	private final UnaryOperator<Collection<Class<?>>> sorter;
+	private final @Nullable UnaryOperator<Collection<Class<?>>> sorter;
 
 	private final Set<Class<?>> classes;
 
-	private final Function<Class<?>, String> beanNameGenerator;
+	private final @Nullable Function<Class<?>, String> beanNameGenerator;
 
 	/**
 	 * Create a new {@link Configurations} instance.
@@ -85,7 +87,7 @@ public abstract class Configurations {
 	 * @param beanNameGenerator an optional function used to generate the bean name
 	 * @since 3.4.0
 	 */
-	protected Configurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
+	protected Configurations(@Nullable UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
 			Function<Class<?>, String> beanNameGenerator) {
 		Assert.notNull(classes, "'classes' must not be null");
 		this.sorter = (sorter != null) ? sorter : UnaryOperator.identity();
@@ -127,7 +129,7 @@ public abstract class Configurations {
 	 * @return the bean name
 	 * @since 3.4.0
 	 */
-	public String getBeanName(Class<?> beanClass) {
+	public @Nullable String getBeanName(Class<?> beanClass) {
 		return (this.beanNameGenerator != null) ? this.beanNameGenerator.apply(beanClass) : null;
 	}
 

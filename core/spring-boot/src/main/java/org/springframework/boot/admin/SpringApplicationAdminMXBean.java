@@ -16,6 +16,8 @@
 
 package org.springframework.boot.admin;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * An MBean contract to control and monitor a running {@code SpringApplication} over JMX.
  * Intended for internal use only.
@@ -47,7 +49,7 @@ public interface SpringApplicationAdminMXBean {
 	 * @param key the property key
 	 * @return the property value or {@code null} if it does not exist
 	 */
-	String getProperty(String key);
+	@Nullable String getProperty(String key);
 
 	/**
 	 * Shutdown the application.

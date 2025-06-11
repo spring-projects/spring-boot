@@ -54,6 +54,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistrationBean<DelegatingFilterProxy>
 		implements ApplicationContextAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
 	private final String targetBeanName;

@@ -31,6 +31,8 @@ import java.util.HexFormat;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.NativeDetector;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -50,11 +52,11 @@ public class ApplicationTemp {
 	private static final EnumSet<PosixFilePermission> DIRECTORY_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
 			PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
 
-	private final Class<?> sourceClass;
+	private final @Nullable Class<?> sourceClass;
 
 	private final Lock pathLock = new ReentrantLock();
 
-	private volatile Path path;
+	private volatile @Nullable Path path;
 
 	/**
 	 * Create a new {@link ApplicationTemp} instance.
@@ -67,7 +69,7 @@ public class ApplicationTemp {
 	 * Create a new {@link ApplicationTemp} instance for the specified source class.
 	 * @param sourceClass the source class or {@code null}
 	 */
-	public ApplicationTemp(Class<?> sourceClass) {
+	public ApplicationTemp(@Nullable Class<?> sourceClass) {
 		this.sourceClass = sourceClass;
 	}
 
@@ -106,7 +108,9 @@ public class ApplicationTemp {
 				this.pathLock.unlock();
 			}
 		}
-		return this.path;
+		Path path = this.path;
+		Assert.state(path != null, "'path' must not be null");
+		return path;
 	}
 
 	private Path createDirectory(Path path) {
@@ -138,7 +142,7 @@ public class ApplicationTemp {
 		return tempDirectory;
 	}
 
-	private byte[] generateHash(Class<?> sourceClass) {
+	private byte[] generateHash(@Nullable Class<?> sourceClass) {
 		ApplicationHome home = new ApplicationHome(sourceClass);
 		MessageDigest digest;
 		try {
@@ -159,7 +163,7 @@ public class ApplicationTemp {
 		}
 	}
 
-	private void update(MessageDigest digest, Object source) {
+	private void update(MessageDigest digest, @Nullable Object source) {
 		if (source != null) {
 			digest.update(getUpdateSourceBytes(source));
 		}

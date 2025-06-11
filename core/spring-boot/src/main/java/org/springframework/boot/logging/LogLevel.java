@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Logging levels supported by a {@link LoggingSystem}.
@@ -40,9 +41,9 @@ public enum LogLevel {
 
 	OFF(null);
 
-	private final LogMethod logMethod;
+	private final @Nullable LogMethod logMethod;
 
-	LogLevel(LogMethod logMethod) {
+	LogLevel(@Nullable LogMethod logMethod) {
 		this.logMethod = logMethod;
 	}
 
@@ -63,7 +64,7 @@ public enum LogLevel {
 	 * @param cause the cause to log
 	 * @since 3.1.0
 	 */
-	public void log(Log logger, Object message, Throwable cause) {
+	public void log(@Nullable Log logger, Object message, @Nullable Throwable cause) {
 		if (logger != null && this.logMethod != null) {
 			this.logMethod.log(logger, message, cause);
 		}
@@ -72,7 +73,7 @@ public enum LogLevel {
 	@FunctionalInterface
 	private interface LogMethod {
 
-		void log(Log logger, Object message, Throwable cause);
+		void log(Log logger, Object message, @Nullable Throwable cause);
 
 	}
 

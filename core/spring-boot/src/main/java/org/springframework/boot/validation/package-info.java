@@ -17,4 +17,7 @@
 /**
  * Utilities and classes related to validation.
  */
+@NullMarked
 package org.springframework.boot.validation;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 
@@ -40,7 +42,7 @@ interface DataObjectBinder {
 	 * @param propertyBinder property binder
 	 * @return a bound instance or {@code null}
 	 */
-	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
+	<T> @Nullable T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			DataObjectPropertyBinder propertyBinder);
 
 	/**
@@ -51,7 +53,7 @@ interface DataObjectBinder {
 	 * @param context the bind context
 	 * @return the created instance
 	 */
-	<T> T create(Bindable<T> target, Context context);
+	<T> @Nullable T create(Bindable<T> target, Context context);
 
 	/**
 	 * Callback that can be used to add additional suppressed exceptions when an instance

@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.SimpleTypeConverter;
@@ -43,6 +45,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -54,12 +57,12 @@ import org.springframework.util.CollectionUtils;
  */
 final class BindConverter {
 
-	private static BindConverter sharedInstance;
+	private static @Nullable BindConverter sharedInstance;
 
 	private final List<ConversionService> delegates;
 
-	private BindConverter(List<ConversionService> conversionServices,
-			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+	private BindConverter(@Nullable List<ConversionService> conversionServices,
+			@Nullable Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		List<ConversionService> delegates = new ArrayList<>();
 		delegates.add(new TypeConverterConversionService(propertyEditorInitializer));
 		boolean hasApplication = false;
@@ -75,12 +78,12 @@ final class BindConverter {
 		this.delegates = Collections.unmodifiableList(delegates);
 	}
 
-	boolean canConvert(Object source, ResolvableType targetType, Annotation... targetAnnotations) {
+	boolean canConvert(@Nullable Object source, ResolvableType targetType, Annotation... targetAnnotations) {
 		return canConvert(TypeDescriptor.forObject(source),
 				new ResolvableTypeDescriptor(targetType, targetAnnotations));
 	}
 
-	private boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	private boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : this.delegates) {
 			if (service.canConvert(sourceType, targetType)) {
 				return true;
@@ -89,12 +92,12 @@ final class BindConverter {
 		return false;
 	}
 
-	<T> T convert(Object source, Bindable<T> target) {
+	<T> @Nullable T convert(@Nullable Object source, Bindable<T> target) {
 		return convert(source, target.getType(), target.getAnnotations());
 	}
 
 	@SuppressWarnings("unchecked")
-	<T> T convert(Object source, ResolvableType targetType, Annotation... targetAnnotations) {
+	<T> @Nullable T convert(@Nullable Object source, ResolvableType targetType, Annotation... targetAnnotations) {
 		if (source == null) {
 			return null;
 		}
@@ -102,7 +105,7 @@ final class BindConverter {
 				new ResolvableTypeDescriptor(targetType, targetAnnotations));
 	}
 
-	private Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	private @Nullable Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		ConversionException failure = null;
 		for (ConversionService delegate : this.delegates) {
 			try {
@@ -119,8 +122,8 @@ final class BindConverter {
 		throw (failure != null) ? failure : new ConverterNotFoundException(sourceType, targetType);
 	}
 
-	static BindConverter get(List<ConversionService> conversionServices,
-			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+	static BindConverter get(@Nullable List<ConversionService> conversionServices,
+			@Nullable Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		boolean sharedApplicationConversionService = (conversionServices == null) || (conversionServices.size() == 1
 				&& conversionServices.get(0) == ApplicationConversionService.getSharedInstance());
 		if (propertyEditorInitializer == null && sharedApplicationConversionService) {
@@ -154,18 +157,27 @@ final class BindConverter {
 	 */
 	private static class TypeConverterConversionService extends GenericConversionService {
 
-		TypeConverterConversionService(Consumer<PropertyEditorRegistry> initializer) {
+		TypeConverterConversionService(@Nullable Consumer<PropertyEditorRegistry> initializer) {
 			ApplicationConversionService.addDelimitedStringConverters(this);
 			addConverter(new TypeConverterConverter(initializer));
 		}
 
 		@Override
-		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
 			// Prefer conversion service to handle things like String to char[].
-			if (targetType.isArray() && targetType.getElementTypeDescriptor().isPrimitive()) {
+			if (isPrimitiveArray(targetType)) {
 				return false;
 			}
 			return super.canConvert(sourceType, targetType);
+		}
+
+		private static boolean isPrimitiveArray(TypeDescriptor targetType) {
+			if (!targetType.isArray()) {
+				return false;
+			}
+			TypeDescriptor elementTypeDescriptor = targetType.getElementTypeDescriptor();
+			Assert.state(elementTypeDescriptor != null, "'elementTypeDescriptor' must not be null");
+			return elementTypeDescriptor.isPrimitive();
 		}
 
 	}
@@ -184,13 +196,13 @@ final class BindConverter {
 			EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 		}
 
-		private final Consumer<PropertyEditorRegistry> initializer;
+		private final @Nullable Consumer<PropertyEditorRegistry> initializer;
 
 		// SimpleTypeConverter is not thread-safe to use for conversion but we can use it
 		// in a thread-safe way to check if conversion is possible.
 		private final SimpleTypeConverter matchesOnlyTypeConverter;
 
-		TypeConverterConverter(Consumer<PropertyEditorRegistry> initializer) {
+		TypeConverterConverter(@Nullable Consumer<PropertyEditorRegistry> initializer) {
 			this.initializer = initializer;
 			this.matchesOnlyTypeConverter = createTypeConverter();
 		}
@@ -225,7 +237,7 @@ final class BindConverter {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return createTypeConverter().convertIfNecessary(source, targetType.getType(), targetType);
 		}
 

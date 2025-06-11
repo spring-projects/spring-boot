@@ -16,6 +16,8 @@
 
 package org.springframework.boot.origin;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
@@ -31,7 +33,7 @@ public class PropertySourceOrigin implements Origin, OriginProvider {
 
 	private final String propertyName;
 
-	private final Origin origin;
+	private final @Nullable Origin origin;
 
 	/**
 	 * Create a new {@link PropertySourceOrigin} instance.
@@ -49,7 +51,7 @@ public class PropertySourceOrigin implements Origin, OriginProvider {
 	 * @param origin the actual origin for the source if known
 	 * @since 3.2.8
 	 */
-	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName, Origin origin) {
+	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName, @Nullable Origin origin) {
 		Assert.notNull(propertySource, "'propertySource' must not be null");
 		Assert.hasLength(propertyName, "'propertyName' must not be empty");
 		this.propertySource = propertySource;
@@ -80,12 +82,12 @@ public class PropertySourceOrigin implements Origin, OriginProvider {
 	 * @since 3.2.8
 	 */
 	@Override
-	public Origin getOrigin() {
+	public @Nullable Origin getOrigin() {
 		return this.origin;
 	}
 
 	@Override
-	public Origin getParent() {
+	public @Nullable Origin getParent() {
 		return (this.origin != null) ? this.origin.getParent() : null;
 	}
 

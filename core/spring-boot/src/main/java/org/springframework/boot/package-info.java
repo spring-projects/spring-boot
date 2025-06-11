@@ -19,4 +19,7 @@
  *
  * @see org.springframework.boot.SpringApplication
  */
+@NullMarked
 package org.springframework.boot;
+
+import org.jspecify.annotations.NullMarked;

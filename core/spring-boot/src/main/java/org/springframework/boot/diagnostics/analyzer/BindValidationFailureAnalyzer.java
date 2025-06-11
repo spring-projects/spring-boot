@@ -18,11 +18,14 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.origin.Origin;
+import org.springframework.util.Assert;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -36,7 +39,7 @@ import org.springframework.validation.ObjectError;
 class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
 		ExceptionDetails details = getBindValidationExceptionDetails(rootFailure);
 		if (details == null) {
 			return null;
@@ -44,11 +47,12 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 		return analyzeBindValidationException(details);
 	}
 
-	private ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
+	private @Nullable ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
 		BindValidationException validationException = findCause(rootFailure, BindValidationException.class);
 		if (validationException != null) {
 			BindException bindException = findCause(rootFailure, BindException.class);
 			List<ObjectError> errors = validationException.getValidationErrors().getAllErrors();
+			Assert.state(bindException != null, "BindException not found");
 			return new ExceptionDetails(errors, bindException.getTarget().getType(), validationException);
 		}
 		org.springframework.validation.BindException bindException = findCause(rootFailure,
@@ -89,17 +93,17 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 		private final List<ObjectError> errors;
 
-		private final Object target;
+		private final @Nullable Object target;
 
 		private final Throwable cause;
 
-		ExceptionDetails(List<ObjectError> errors, Object target, Throwable cause) {
+		ExceptionDetails(List<ObjectError> errors, @Nullable Object target, Throwable cause) {
 			this.errors = errors;
 			this.target = target;
 			this.cause = cause;
 		}
 
-		Object getTarget() {
+		@Nullable Object getTarget() {
 			return this.target;
 		}
 

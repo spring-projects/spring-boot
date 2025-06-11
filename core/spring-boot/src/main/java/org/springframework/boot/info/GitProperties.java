@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.info.GitProperties.GitPropertiesRuntimeHints;
@@ -50,7 +52,7 @@ public class GitProperties extends InfoProperties {
 	 * Return the name of the branch or {@code null}.
 	 * @return the branch
 	 */
-	public String getBranch() {
+	public @Nullable String getBranch() {
 		return get("branch");
 	}
 
@@ -58,7 +60,7 @@ public class GitProperties extends InfoProperties {
 	 * Return the full id of the commit or {@code null}.
 	 * @return the full commit id
 	 */
-	public String getCommitId() {
+	public @Nullable String getCommitId() {
 		return get("commit.id");
 	}
 
@@ -66,7 +68,7 @@ public class GitProperties extends InfoProperties {
 	 * Return the abbreviated id of the commit or {@code null}.
 	 * @return the short commit id
 	 */
-	public String getShortCommitId() {
+	public @Nullable String getShortCommitId() {
 		String shortId = get("commit.id.abbrev");
 		if (shortId != null) {
 			return shortId;
@@ -86,7 +88,7 @@ public class GitProperties extends InfoProperties {
 	 * @return the commit time
 	 * @see #get(String)
 	 */
-	public Instant getCommitTime() {
+	public @Nullable Instant getCommitTime() {
 		return getInstant("commit.time");
 	}
 
@@ -119,7 +121,7 @@ public class GitProperties extends InfoProperties {
 	static class GitPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("git.properties");
 		}
 
@@ -128,14 +130,14 @@ public class GitProperties extends InfoProperties {
 	/**
 	 * Coercer used to convert a source value to epoch time.
 	 */
-	private record Coercer(Function<String, Long> action, Predicate<RuntimeException> ignoredExceptions) {
+	private record Coercer(Function<String, @Nullable Long> action, Predicate<RuntimeException> ignoredExceptions) {
 
 		/**
 		 * Attempt to convert the specified value to epoch time.
 		 * @param value the value to coerce to
 		 * @return the epoch time in milliseconds or {@code null}
 		 */
-		String apply(String value) {
+		@Nullable String apply(String value) {
 			try {
 				Long result = this.action.apply(value);
 				return (result != null) ? String.valueOf(result) : null;

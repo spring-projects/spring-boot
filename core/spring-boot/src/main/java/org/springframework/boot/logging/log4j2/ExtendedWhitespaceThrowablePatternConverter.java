@@ -23,6 +23,7 @@ import org.apache.logging.log4j.core.pattern.ConverterKeys;
 import org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link ThrowablePatternConverter} that adds some additional whitespace around the stack
@@ -38,7 +39,7 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends Throwable
 
 	private final ExtendedThrowablePatternConverter delegate;
 
-	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
+	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String @Nullable [] options) {
 		super("WhitespaceExtendedThrowable", "throwable", options, configuration);
 		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
 	}
@@ -60,7 +61,7 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends Throwable
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
 	public static ExtendedWhitespaceThrowablePatternConverter newInstance(Configuration configuration,
-			String[] options) {
+			String @Nullable [] options) {
 		return new ExtendedWhitespaceThrowablePatternConverter(configuration, options);
 	}
 

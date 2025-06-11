@@ -25,6 +25,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -71,7 +73,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	private static final ResolvableType STRING = ResolvableType.forClass(String.class);
 
-	private static volatile ApplicationConversionService sharedInstance;
+	private static volatile @Nullable ApplicationConversionService sharedInstance;
 
 	private final boolean unmodifiable;
 
@@ -79,11 +81,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 		this(null);
 	}
 
-	public ApplicationConversionService(StringValueResolver embeddedValueResolver) {
+	public ApplicationConversionService(@Nullable StringValueResolver embeddedValueResolver) {
 		this(embeddedValueResolver, false);
 	}
 
-	private ApplicationConversionService(StringValueResolver embeddedValueResolver, boolean unmodifiable) {
+	private ApplicationConversionService(@Nullable StringValueResolver embeddedValueResolver, boolean unmodifiable) {
 		if (embeddedValueResolver != null) {
 			setEmbeddedValueResolver(embeddedValueResolver);
 		}
@@ -305,7 +307,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * @since 3.5.0
 	 */
 	public static Map<String, Object> addBeans(FormatterRegistry registry, ListableBeanFactory beanFactory,
-			String qualifier) {
+			@Nullable String qualifier) {
 		ConfigurableListableBeanFactory configurableBeanFactory = getConfigurableListableBeanFactory(beanFactory);
 		Map<String, Object> beans = getBeans(beanFactory, qualifier);
 		beans.forEach((beanName, bean) -> {
@@ -317,7 +319,8 @@ public class ApplicationConversionService extends FormattingConversionService {
 		return beans;
 	}
 
-	private static ConfigurableListableBeanFactory getConfigurableListableBeanFactory(ListableBeanFactory beanFactory) {
+	private static @Nullable ConfigurableListableBeanFactory getConfigurableListableBeanFactory(
+			ListableBeanFactory beanFactory) {
 		if (beanFactory instanceof ConfigurableApplicationContext applicationContext) {
 			return applicationContext.getBeanFactory();
 		}
@@ -327,7 +330,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		return null;
 	}
 
-	private static Map<String, Object> getBeans(ListableBeanFactory beanFactory, String qualifier) {
+	private static Map<String, Object> getBeans(ListableBeanFactory beanFactory, @Nullable String qualifier) {
 		Map<String, Object> beans = new LinkedHashMap<>();
 		beans.putAll(getBeans(beanFactory, Printer.class, qualifier));
 		beans.putAll(getBeans(beanFactory, Parser.class, qualifier));
@@ -338,12 +341,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 		return beans;
 	}
 
-	private static <T> Map<String, T> getBeans(ListableBeanFactory beanFactory, Class<T> type, String qualifier) {
+	private static <T> Map<String, T> getBeans(ListableBeanFactory beanFactory, Class<T> type,
+			@Nullable String qualifier) {
 		return (!StringUtils.hasLength(qualifier)) ? beanFactory.getBeansOfType(type)
 				: BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, type, qualifier);
 	}
 
-	static void addBean(FormatterRegistry registry, Object bean, ResolvableType beanType) {
+	static void addBean(FormatterRegistry registry, Object bean, @Nullable ResolvableType beanType) {
 		if (bean instanceof GenericConverter converterBean) {
 			addBean(registry, converterBean, beanType, GenericConverter.class, registry::addConverter, (Runnable) null);
 		}
@@ -357,6 +361,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 		else if (bean instanceof Formatter<?> formatterBean) {
 			addBean(registry, formatterBean, beanType, Formatter.class, registry::addFormatter, () -> {
+				Assert.state(beanType != null, "beanType is missing");
 				registry.addConverter(new PrinterBeanAdapter(formatterBean, beanType));
 				registry.addConverter(new ParserBeanAdapter(formatterBean, beanType));
 			});
@@ -369,14 +374,15 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 	}
 
-	private static <B, T> void addBean(FormatterRegistry registry, B bean, ResolvableType beanType, Class<T> type,
-			Consumer<B> standardRegistrar, BiFunction<B, ResolvableType, BeanAdapter<?>> beanAdapterFactory) {
+	private static <B, T> void addBean(FormatterRegistry registry, B bean, @Nullable ResolvableType beanType,
+			Class<T> type, Consumer<B> standardRegistrar,
+			BiFunction<B, @Nullable ResolvableType, BeanAdapter<?>> beanAdapterFactory) {
 		addBean(registry, bean, beanType, type, standardRegistrar,
 				() -> registry.addConverter(beanAdapterFactory.apply(bean, beanType)));
 	}
 
-	private static <B, T> void addBean(FormatterRegistry registry, B bean, ResolvableType beanType, Class<T> type,
-			Consumer<B> standardRegistrar, Runnable beanAdapterRegistrar) {
+	private static <B, T> void addBean(FormatterRegistry registry, B bean, @Nullable ResolvableType beanType,
+			Class<T> type, Consumer<B> standardRegistrar, @Nullable Runnable beanAdapterRegistrar) {
 		if (beanType != null && beanAdapterRegistrar != null
 				&& ResolvableType.forInstance(bean).as(type).hasUnresolvableGenerics()) {
 			beanAdapterRegistrar.run();
@@ -436,11 +442,12 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		protected final Object convert(Object source, TypeDescriptor targetType, Converter<?, ?> converter) {
+		protected final @Nullable Object convert(@Nullable Object source, TypeDescriptor targetType,
+				Converter<?, ?> converter) {
 			return (source != null) ? ((Converter) converter).convert(source) : convertNull(targetType);
 		}
 
-		private Object convertNull(TypeDescriptor targetType) {
+		private @Nullable Object convertNull(TypeDescriptor targetType) {
 			return (targetType.getObjectType() != Optional.class) ? null : Optional.empty();
 		}
 
@@ -466,7 +473,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return (source != null) ? print(source) : "";
 		}
 
@@ -492,7 +499,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String text = (String) source;
 			return (!StringUtils.hasText(text)) ? null : parse(text);
 		}
@@ -527,7 +534,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return convert(source, targetType, bean());
 		}
 
@@ -550,7 +557,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return convert(source, targetType, getConverter(targetType::getObjectType));
 		}
 

@@ -17,4 +17,7 @@
 /**
  * Management of trust material that can be used to establish an SSL connection.
  */
+@NullMarked
 package org.springframework.boot.ssl;
+
+import org.jspecify.annotations.NullMarked;

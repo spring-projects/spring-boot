@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -42,14 +44,14 @@ class ConfigDataProperties {
 
 	private final List<ConfigDataLocation> imports;
 
-	private final Activate activate;
+	private final @Nullable Activate activate;
 
 	/**
 	 * Create a new {@link ConfigDataProperties} instance.
 	 * @param imports the imports requested
 	 * @param activate the activate properties
 	 */
-	ConfigDataProperties(@Name("import") List<ConfigDataLocation> imports, Activate activate) {
+	ConfigDataProperties(@Nullable @Name("import") List<ConfigDataLocation> imports, @Nullable Activate activate) {
 		this.imports = (imports != null) ? imports : Collections.emptyList();
 		this.activate = activate;
 	}
@@ -68,7 +70,7 @@ class ConfigDataProperties {
 	 * @param activationContext the activation context
 	 * @return {@code true} if the config data property source is active
 	 */
-	boolean isActive(ConfigDataActivationContext activationContext) {
+	boolean isActive(@Nullable ConfigDataActivationContext activationContext) {
 		return this.activate == null || this.activate.isActive(activationContext);
 	}
 
@@ -86,7 +88,7 @@ class ConfigDataProperties {
 	 * @param binder the binder used to bind the properties
 	 * @return a {@link ConfigDataProperties} instance or {@code null}
 	 */
-	static ConfigDataProperties get(Binder binder) {
+	static @Nullable ConfigDataProperties get(Binder binder) {
 		return binder.bind(NAME, BINDABLE_PROPERTIES, new ConfigDataLocationBindHandler()).orElse(null);
 	}
 
@@ -95,7 +97,7 @@ class ConfigDataProperties {
 	 */
 	static class Activate {
 
-		private final CloudPlatform onCloudPlatform;
+		private final @Nullable CloudPlatform onCloudPlatform;
 
 		private final String[] onProfile;
 
@@ -104,7 +106,7 @@ class ConfigDataProperties {
 		 * @param onCloudPlatform the cloud platform required for activation
 		 * @param onProfile the profile expression required for activation
 		 */
-		Activate(CloudPlatform onCloudPlatform, String[] onProfile) {
+		Activate(@Nullable CloudPlatform onCloudPlatform, String[] onProfile) {
 			this.onProfile = onProfile;
 			this.onCloudPlatform = onCloudPlatform;
 		}
@@ -115,7 +117,7 @@ class ConfigDataProperties {
 		 * @param activationContext the activation context
 		 * @return {@code true} if the config data property source is active
 		 */
-		boolean isActive(ConfigDataActivationContext activationContext) {
+		boolean isActive(@Nullable ConfigDataActivationContext activationContext) {
 			if (activationContext == null) {
 				return false;
 			}
@@ -129,7 +131,7 @@ class ConfigDataProperties {
 			return this.onCloudPlatform == null || this.onCloudPlatform == cloudPlatform;
 		}
 
-		private boolean isActive(Profiles profiles) {
+		private boolean isActive(@Nullable Profiles profiles) {
 			return ObjectUtils.isEmpty(this.onProfile)
 					|| (profiles != null && matchesActiveProfiles(profiles::isAccepted));
 		}

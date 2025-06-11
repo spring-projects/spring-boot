@@ -16,6 +16,8 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
@@ -42,8 +44,8 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, NoUniqueBeanDefinitionException cause,
-			String description) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoUniqueBeanDefinitionException cause,
+			@Nullable String description) {
 		String[] beanNames = extractBeanNames(cause);
 		if (beanNames == null) {
 			return null;
@@ -85,10 +87,13 @@ class NoUniqueBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnal
 		return (resourceDescription != null) ? resourceDescription : "unknown location";
 	}
 
-	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
-		if (cause.getMessage().contains("but found")) {
-			return StringUtils.commaDelimitedListToStringArray(
-					cause.getMessage().substring(cause.getMessage().lastIndexOf(':') + 1).trim());
+	private String @Nullable [] extractBeanNames(NoUniqueBeanDefinitionException cause) {
+		String message = cause.getMessage();
+		if (message == null) {
+			message = "";
+		}
+		if (message.contains("but found")) {
+			return StringUtils.commaDelimitedListToStringArray(message.substring(message.lastIndexOf(':') + 1).trim());
 		}
 		return null;
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.error;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 
@@ -28,9 +30,9 @@ import org.springframework.util.ObjectUtils;
  */
 public class ErrorPage {
 
-	private final HttpStatus status;
+	private final @Nullable HttpStatus status;
 
-	private final Class<? extends Throwable> exception;
+	private final @Nullable Class<? extends Throwable> exception;
 
 	private final String path;
 
@@ -66,7 +68,7 @@ public class ErrorPage {
 	 * Returns the exception type (or {@code null} for a page that matches by status).
 	 * @return the exception type or {@code null}
 	 */
-	public Class<? extends Throwable> getException() {
+	public @Nullable Class<? extends Throwable> getException() {
 		return this.exception;
 	}
 
@@ -75,7 +77,7 @@ public class ErrorPage {
 	 * matches by exception).
 	 * @return the status or {@code null}
 	 */
-	public HttpStatus getStatus() {
+	public @Nullable HttpStatus getStatus() {
 		return this.status;
 	}
 
@@ -91,7 +93,7 @@ public class ErrorPage {
 	 * The exception type name.
 	 * @return the exception type name (or {@code null} if there is none)
 	 */
-	public String getExceptionName() {
+	public @Nullable String getExceptionName() {
 		return (this.exception != null) ? this.exception.getName() : null;
 	}
 

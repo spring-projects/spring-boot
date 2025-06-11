@@ -23,6 +23,7 @@ import java.util.Set;
 import jakarta.validation.MessageInterpolator;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidationException;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -48,7 +49,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);
 	}
 
-	private final MessageSource messageSource;
+	private final @Nullable MessageSource messageSource;
 
 	public MessageInterpolatorFactory() {
 		this(null);
@@ -61,7 +62,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	 * @param messageSource message source to be used by the interpolator
 	 * @since 2.6.0
 	 */
-	public MessageInterpolatorFactory(MessageSource messageSource) {
+	public MessageInterpolatorFactory(@Nullable MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -87,7 +88,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 		}
 	}
 
-	private MessageInterpolator getFallback() {
+	private @Nullable MessageInterpolator getFallback() {
 		for (String fallback : FALLBACKS) {
 			try {
 				return getFallback(fallback);

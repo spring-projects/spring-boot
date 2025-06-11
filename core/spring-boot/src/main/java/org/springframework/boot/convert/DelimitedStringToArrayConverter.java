@@ -20,6 +20,8 @@ import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -52,7 +54,7 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -63,6 +65,7 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
 		String[] elements = getElements(source, (delimiter != null) ? delimiter.value() : ",");
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
+		Assert.state(elementDescriptor != null, "elementDescriptor is missing");
 		Object target = Array.newInstance(elementDescriptor.getType(), elements.length);
 		for (int i = 0; i < elements.length; i++) {
 			String sourceElement = elements[i];

@@ -27,6 +27,7 @@ import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternFormatter;
 import org.apache.logging.log4j.core.pattern.PatternParser;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Log4j2 {@link LogEventPatternConverter} used to help format optional values that should
@@ -66,7 +67,7 @@ public final class EnclosedInSquareBracketsConverter extends LogEventPatternConv
 	 * @param options the options
 	 * @return a new instance, or {@code null} if the options are invalid
 	 */
-	public static EnclosedInSquareBracketsConverter newInstance(Configuration config, String[] options) {
+	public static @Nullable EnclosedInSquareBracketsConverter newInstance(Configuration config, String[] options) {
 		if (options.length < 1) {
 			LOGGER.error("Incorrect number of options on style. Expected at least 1, received {}", options.length);
 			return null;

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
@@ -84,8 +85,8 @@ class ConfigDataLocationResolvers {
 		return Collections.unmodifiableList(reordered);
 	}
 
-	List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location,
-			Profiles profiles) {
+	List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext context,
+			@Nullable ConfigDataLocation location, @Nullable Profiles profiles) {
 		if (location == null) {
 			return Collections.emptyList();
 		}
@@ -98,7 +99,7 @@ class ConfigDataLocationResolvers {
 	}
 
 	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolver<?> resolver,
-			ConfigDataLocationResolverContext context, ConfigDataLocation location, Profiles profiles) {
+			ConfigDataLocationResolverContext context, ConfigDataLocation location, @Nullable Profiles profiles) {
 		List<ConfigDataResolutionResult> resolved = resolve(location, false, () -> resolver.resolve(context, location));
 		if (profiles == null) {
 			return resolved;
@@ -119,7 +120,7 @@ class ConfigDataLocationResolvers {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> List<T> nonNullList(List<? extends T> list) {
+	private <T> List<T> nonNullList(@Nullable List<? extends T> list) {
 		return (list != null) ? (List<T>) list : Collections.emptyList();
 	}
 

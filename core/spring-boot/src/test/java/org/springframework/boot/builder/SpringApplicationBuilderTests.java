@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -325,6 +326,7 @@ class SpringApplicationBuilderTests {
 	@Test
 	void customApplicationWithResourceLoader() {
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		given(resourceLoader.getClassLoader()).willReturn(getClass().getClassLoader());
 		SpringApplicationBuilder applicationBuilder = new SpringApplicationBuilder(resourceLoader,
 				ExampleConfig.class) {
 			@Override

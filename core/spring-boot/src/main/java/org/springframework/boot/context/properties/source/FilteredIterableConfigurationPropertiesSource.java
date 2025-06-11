@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A filtered {@link IterableConfigurationPropertySource}.
  *
@@ -29,14 +31,14 @@ import java.util.stream.Stream;
 class FilteredIterableConfigurationPropertiesSource extends FilteredConfigurationPropertiesSource
 		implements IterableConfigurationPropertySource {
 
-	private ConfigurationPropertyName[] filteredNames;
+	private ConfigurationPropertyName @Nullable [] filteredNames;
 
 	private int numerOfFilteredNames;
 
 	FilteredIterableConfigurationPropertiesSource(IterableConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
 		super(source, filter);
-		ConfigurationPropertyName[] filterableNames = getFilterableNames(source);
+		@Nullable ConfigurationPropertyName[] filterableNames = getFilterableNames(source);
 		if (filterableNames != null) {
 			this.filteredNames = new ConfigurationPropertyName[filterableNames.length];
 			this.numerOfFilteredNames = 0;
@@ -51,7 +53,8 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 		}
 	}
 
-	private ConfigurationPropertyName[] getFilterableNames(IterableConfigurationPropertySource source) {
+	private @Nullable ConfigurationPropertyName @Nullable [] getFilterableNames(
+			IterableConfigurationPropertySource source) {
 		if (source instanceof SpringIterableConfigurationPropertySource springPropertySource
 				&& springPropertySource.isImmutablePropertySource()) {
 			return springPropertySource.getConfigurationPropertyNames();

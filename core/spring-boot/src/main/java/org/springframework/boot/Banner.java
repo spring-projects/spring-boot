@@ -18,6 +18,8 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -34,10 +36,10 @@ public interface Banner {
 	/**
 	 * Print the banner to the specified print stream.
 	 * @param environment the spring environment
-	 * @param sourceClass the source class for the application
+	 * @param sourceClass the source class for the application or {@code null}
 	 * @param out the output print stream
 	 */
-	void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
+	void printBanner(Environment environment, @Nullable Class<?> sourceClass, PrintStream out);
 
 	/**
 	 * An enumeration of possible values for configuring the Banner.

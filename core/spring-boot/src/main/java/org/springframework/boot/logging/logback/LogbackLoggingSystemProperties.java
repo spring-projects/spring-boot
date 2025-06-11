@@ -22,6 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import ch.qos.logback.core.util.FileSize;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -66,13 +67,14 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * properties
 	 * @since 3.2.0
 	 */
-	public LogbackLoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
-			BiConsumer<String, String> setter) {
+	public LogbackLoggingSystemProperties(Environment environment,
+			Function<@Nullable String, @Nullable String> defaultValueResolver,
+			@Nullable BiConsumer<String, String> setter) {
 		super(environment, defaultValueResolver, setter);
 	}
 
 	@Override
-	protected Console getConsole() {
+	protected @Nullable Console getConsole() {
 		return super.getConsole();
 	}
 
@@ -82,7 +84,7 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	@Override
-	protected void apply(LogFile logFile, PropertyResolver resolver) {
+	protected void apply(@Nullable LogFile logFile, PropertyResolver resolver) {
 		super.apply(logFile, resolver);
 		applyJBossLoggingProperties();
 		applyRollingPolicyProperties(resolver);
@@ -117,7 +119,7 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getProperty(PropertyResolver resolver, String key, Class<T> type) {
+	private <T> @Nullable T getProperty(PropertyResolver resolver, String key, Class<T> type) {
 		try {
 			return resolver.getProperty(key, type);
 		}

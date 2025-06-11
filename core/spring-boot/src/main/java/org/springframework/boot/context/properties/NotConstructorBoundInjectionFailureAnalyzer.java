@@ -18,6 +18,8 @@ package org.springframework.boot.context.properties;
 
 import java.lang.reflect.Constructor;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
@@ -28,6 +30,7 @@ import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAna
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.lang.Contract;
 
 /**
  * An {@link AbstractInjectionFailureAnalyzer} for
@@ -45,7 +48,8 @@ class NotConstructorBoundInjectionFailureAnalyzer
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause, String description) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause,
+			@Nullable String description) {
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (isConstructorBindingConfigurationProperties(injectionPoint)) {
 			String simpleName = injectionPoint.getMember().getDeclaringClass().getSimpleName();
@@ -60,7 +64,8 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		return null;
 	}
 
-	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
+	@Contract("null -> false")
+	private boolean isConstructorBindingConfigurationProperties(@Nullable InjectionPoint injectionPoint) {
 		return injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor
 				&& isConstructorBindingConfigurationProperties(constructor);
 	}
@@ -72,7 +77,7 @@ class NotConstructorBoundInjectionFailureAnalyzer
 			.isPresent(ConfigurationProperties.class) && bindMethod == BindMethod.VALUE_OBJECT;
 	}
 
-	private InjectionPoint findInjectionPoint(Throwable failure) {
+	private @Nullable InjectionPoint findInjectionPoint(Throwable failure) {
 		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependencyException == null) {

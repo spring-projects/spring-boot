@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.crac.management.CRaCMXBean;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
@@ -204,27 +205,27 @@ public class SpringApplication {
 
 	private final Set<Class<?>> primarySources;
 
-	private Class<?> mainApplicationClass;
+	private @Nullable Class<?> mainApplicationClass;
 
 	private boolean addCommandLineProperties = true;
 
 	private boolean addConversionService = true;
 
-	private Banner banner;
+	private @Nullable Banner banner;
 
-	private ResourceLoader resourceLoader;
+	private @Nullable ResourceLoader resourceLoader;
 
-	private BeanNameGenerator beanNameGenerator;
+	private @Nullable BeanNameGenerator beanNameGenerator;
 
-	private ConfigurableEnvironment environment;
+	private @Nullable ConfigurableEnvironment environment;
 
 	private boolean headless = true;
 
-	private List<ApplicationContextInitializer<?>> initializers;
+	private List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 
-	private List<ApplicationListener<?>> listeners;
+	private List<ApplicationListener<?>> listeners = new ArrayList<>();
 
-	private Map<String, Object> defaultProperties;
+	private @Nullable Map<String, Object> defaultProperties;
 
 	private final List<BootstrapRegistryInitializer> bootstrapRegistryInitializers;
 
@@ -232,7 +233,7 @@ public class SpringApplication {
 
 	private boolean isCustomEnvironment;
 
-	private String environmentPrefix;
+	private @Nullable String environmentPrefix;
 
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
@@ -265,7 +266,7 @@ public class SpringApplication {
 	 * @see #setSources(Set)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+	public SpringApplication(@Nullable ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "'primarySources' must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
@@ -277,7 +278,7 @@ public class SpringApplication {
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	private Class<?> deduceMainApplicationClass() {
+	private @Nullable Class<?> deduceMainApplicationClass() {
 		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 			.walk(this::findMainClass)
 			.orElse(null);
@@ -314,11 +315,11 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			startup.started();
+			Duration timeTakenToStarted = startup.started();
 			if (this.properties.isLogStartupInfo()) {
 				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
 			}
-			listeners.started(context, startup.timeTakenToStarted());
+			listeners.started(context, timeTakenToStarted);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -373,7 +374,7 @@ public class SpringApplication {
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments, Banner printedBanner) {
+			ApplicationArguments applicationArguments, @Nullable Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		addAotGeneratedInitializerIfNecessary(this.initializers);
@@ -417,6 +418,7 @@ public class SpringApplication {
 			List<ApplicationContextInitializer<?>> aotInitializers = new ArrayList<>(
 					initializers.stream().filter(AotApplicationContextInitializer.class::isInstance).toList());
 			if (aotInitializers.isEmpty()) {
+				Assert.state(this.mainApplicationClass != null, "No application main class found");
 				String initializerClassName = this.mainApplicationClass.getName() + "__ApplicationContextInitializer";
 				if (!ClassUtils.isPresent(initializerClassName, getClassLoader())) {
 					throw new AotInitializerNotFoundException(this.mainApplicationClass, initializerClassName);
@@ -458,7 +460,7 @@ public class SpringApplication {
 		return getSpringFactoriesInstances(type, null);
 	}
 
-	private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
+	private <T> List<T> getSpringFactoriesInstances(Class<T> type, @Nullable ArgumentResolver argumentResolver) {
 		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
 	}
 
@@ -507,8 +509,8 @@ public class SpringApplication {
 		}
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
-			if (sources.contains(name)) {
-				PropertySource<?> source = sources.get(name);
+			PropertySource<?> source = sources.get(name);
+			if (source != null) {
 				CompositePropertySource composite = new CompositePropertySource(name);
 				composite
 					.addPropertySource(new SimpleCommandLinePropertySource("springApplicationCommandLineArgs", args));
@@ -546,7 +548,7 @@ public class SpringApplication {
 		}
 	}
 
-	private Banner printBanner(ConfigurableEnvironment environment) {
+	private @Nullable Banner printBanner(ConfigurableEnvironment environment) {
 		if (this.properties.getBannerMode(environment) == Banner.Mode.OFF) {
 			return null;
 		}
@@ -604,6 +606,8 @@ public class SpringApplication {
 		for (ApplicationContextInitializer initializer : getInitializers()) {
 			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
 					ApplicationContextInitializer.class);
+			Assert.state(requiredType != null,
+					() -> "No generic type found for initializr of type " + initializer.getClass());
 			Assert.state(requiredType.isInstance(context), "Unable to call initializer");
 			initializer.initialize(context);
 		}
@@ -685,9 +689,9 @@ public class SpringApplication {
 	/**
 	 * The ResourceLoader that will be used in the ApplicationContext.
 	 * @return the resourceLoader the resource loader that will be used in the
-	 * ApplicationContext (or null if the default)
+	 * ApplicationContext (or {@code null} if the default)
 	 */
-	public ResourceLoader getResourceLoader() {
+	public @Nullable ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
 	}
 
@@ -699,9 +703,13 @@ public class SpringApplication {
 	 */
 	public ClassLoader getClassLoader() {
 		if (this.resourceLoader != null) {
-			return this.resourceLoader.getClassLoader();
+			ClassLoader classLoader = this.resourceLoader.getClassLoader();
+			Assert.state(classLoader != null, "No classloader found");
+			return classLoader;
 		}
-		return ClassUtils.getDefaultClassLoader();
+		ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
+		Assert.state(classLoader != null, "No classloader found");
+		return classLoader;
 	}
 
 	/**
@@ -781,8 +789,8 @@ public class SpringApplication {
 			.accept((R) runner);
 	}
 
-	private RuntimeException handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
-			SpringApplicationRunListeners listeners) {
+	private RuntimeException handleRunFailure(@Nullable ConfigurableApplicationContext context, Throwable exception,
+			@Nullable SpringApplicationRunListeners listeners) {
 		if (exception instanceof AbandonedRunException abandonedRunException) {
 			return abandonedRunException;
 		}
@@ -808,9 +816,11 @@ public class SpringApplication {
 				: new IllegalStateException(exception);
 	}
 
-	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
+	private Collection<SpringBootExceptionReporter> getExceptionReporters(
+			@Nullable ConfigurableApplicationContext context) {
 		try {
-			ArgumentResolver argumentResolver = ArgumentResolver.of(ConfigurableApplicationContext.class, context);
+			ArgumentResolver argumentResolver = (context != null)
+					? ArgumentResolver.of(ConfigurableApplicationContext.class, context) : ArgumentResolver.none();
 			return getSpringFactoriesInstances(SpringBootExceptionReporter.class, argumentResolver);
 		}
 		catch (Throwable ex) {
@@ -857,7 +867,7 @@ public class SpringApplication {
 		}
 	}
 
-	private void handleExitCode(ConfigurableApplicationContext context, Throwable exception) {
+	private void handleExitCode(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 		int exitCode = getExitCodeFromException(context, exception);
 		if (exitCode != 0) {
 			if (context != null) {
@@ -870,7 +880,7 @@ public class SpringApplication {
 		}
 	}
 
-	private int getExitCodeFromException(ConfigurableApplicationContext context, Throwable exception) {
+	private int getExitCodeFromException(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 		int exitCode = getExitCodeFromMappedException(context, exception);
 		if (exitCode == 0) {
 			exitCode = getExitCodeFromExitCodeGeneratorException(exception);
@@ -878,7 +888,7 @@ public class SpringApplication {
 		return exitCode;
 	}
 
-	private int getExitCodeFromMappedException(ConfigurableApplicationContext context, Throwable exception) {
+	private int getExitCodeFromMappedException(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 		if (context == null || !context.isActive()) {
 			return 0;
 		}
@@ -888,7 +898,7 @@ public class SpringApplication {
 		return generators.getExitCode();
 	}
 
-	private int getExitCodeFromExitCodeGeneratorException(Throwable exception) {
+	private int getExitCodeFromExitCodeGeneratorException(@Nullable Throwable exception) {
 		if (exception == null) {
 			return 0;
 		}
@@ -898,7 +908,7 @@ public class SpringApplication {
 		return getExitCodeFromExitCodeGeneratorException(exception.getCause());
 	}
 
-	SpringBootExceptionHandler getSpringBootExceptionHandler() {
+	@Nullable SpringBootExceptionHandler getSpringBootExceptionHandler() {
 		if (isMainThread(Thread.currentThread())) {
 			return SpringBootExceptionHandler.forCurrentThread();
 		}
@@ -914,7 +924,7 @@ public class SpringApplication {
 	 * Returns the main application class that has been deduced or explicitly configured.
 	 * @return the main application class or {@code null}
 	 */
-	public Class<?> getMainApplicationClass() {
+	public @Nullable Class<?> getMainApplicationClass() {
 		return this.mainApplicationClass;
 	}
 
@@ -924,7 +934,7 @@ public class SpringApplication {
 	 * Can be set to {@code null} if there is no explicit application class.
 	 * @param mainApplicationClass the mainApplicationClass to set or {@code null}
 	 */
-	public void setMainApplicationClass(Class<?> mainApplicationClass) {
+	public void setMainApplicationClass(@Nullable Class<?> mainApplicationClass) {
 		this.mainApplicationClass = mainApplicationClass;
 	}
 
@@ -933,7 +943,7 @@ public class SpringApplication {
 	 * @return the type of web application
 	 * @since 2.0.0
 	 */
-	public WebApplicationType getWebApplicationType() {
+	public @Nullable WebApplicationType getWebApplicationType() {
 		return this.properties.getWebApplicationType();
 	}
 
@@ -1107,7 +1117,7 @@ public class SpringApplication {
 	 * context.
 	 * @param environment the environment
 	 */
-	public void setEnvironment(ConfigurableEnvironment environment) {
+	public void setEnvironment(@Nullable ConfigurableEnvironment environment) {
 		this.isCustomEnvironment = true;
 		this.environment = environment;
 	}
@@ -1191,7 +1201,7 @@ public class SpringApplication {
 	 * @return the environment property prefix
 	 * @since 2.5.0
 	 */
-	public String getEnvironmentPrefix() {
+	public @Nullable String getEnvironmentPrefix() {
 		return this.environmentPrefix;
 	}
 
@@ -1213,7 +1223,7 @@ public class SpringApplication {
 	 * @param applicationContextFactory the factory for the context
 	 * @since 2.4.0
 	 */
-	public void setApplicationContextFactory(ApplicationContextFactory applicationContextFactory) {
+	public void setApplicationContextFactory(@Nullable ApplicationContextFactory applicationContextFactory) {
 		this.applicationContextFactory = (applicationContextFactory != null) ? applicationContextFactory
 				: ApplicationContextFactory.DEFAULT;
 	}
@@ -1424,7 +1434,7 @@ public class SpringApplication {
 	public static void withHook(SpringApplicationHook hook, Runnable action) {
 		withHook(hook, () -> {
 			action.run();
-			return null;
+			return Void.class;
 		});
 	}
 
@@ -1598,7 +1608,7 @@ public class SpringApplication {
 	 */
 	public static class AbandonedRunException extends RuntimeException {
 
-		private final ConfigurableApplicationContext applicationContext;
+		private final @Nullable ConfigurableApplicationContext applicationContext;
 
 		/**
 		 * Create a new {@link AbandonedRunException} instance.
@@ -1613,7 +1623,7 @@ public class SpringApplication {
 		 * @param applicationContext the application context that was available when the
 		 * run was abandoned
 		 */
-		public AbandonedRunException(ConfigurableApplicationContext applicationContext) {
+		public AbandonedRunException(@Nullable ConfigurableApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
@@ -1622,7 +1632,7 @@ public class SpringApplication {
 		 * {@code null} if no context was available.
 		 * @return the application context
 		 */
-		public ConfigurableApplicationContext getApplicationContext() {
+		public @Nullable ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
 		}
 
@@ -1642,7 +1652,7 @@ public class SpringApplication {
 		}
 
 		@Override
-		public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
+		public @Nullable SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
 			return this.used.compareAndSet(false, true) ? this.delegate.getRunListener(springApplication) : null;
 		}
 
@@ -1699,11 +1709,11 @@ public class SpringApplication {
 	 */
 	abstract static class Startup {
 
-		private Duration timeTakenToStarted;
+		private @Nullable Duration timeTakenToStarted;
 
 		protected abstract long startTime();
 
-		protected abstract Long processUptime();
+		protected abstract @Nullable Long processUptime();
 
 		protected abstract String action();
 
@@ -1714,6 +1724,8 @@ public class SpringApplication {
 		}
 
 		Duration timeTakenToStarted() {
+			Assert.state(this.timeTakenToStarted != null,
+					"timeTakenToStarted is not set. Make sure to call started() before this method");
 			return this.timeTakenToStarted;
 		}
 
@@ -1744,7 +1756,7 @@ public class SpringApplication {
 		}
 
 		@Override
-		protected Long processUptime() {
+		protected @Nullable Long processUptime() {
 			try {
 				return ManagementFactory.getRuntimeMXBean().getUptime();
 			}
@@ -1794,7 +1806,7 @@ public class SpringApplication {
 	 * {@link OrderSourceProvider} used to obtain factory method and target type order
 	 * sources. Based on internal {@link DefaultListableBeanFactory} code.
 	 */
-	private class FactoryAwareOrderSourceProvider implements OrderSourceProvider {
+	private static class FactoryAwareOrderSourceProvider implements OrderSourceProvider {
 
 		private final ConfigurableBeanFactory beanFactory;
 
@@ -1806,12 +1818,12 @@ public class SpringApplication {
 		}
 
 		@Override
-		public Object getOrderSource(Object obj) {
+		public @Nullable Object getOrderSource(Object obj) {
 			String beanName = this.instancesToBeanNames.get(obj);
 			return (beanName != null) ? getOrderSource(beanName, obj.getClass()) : null;
 		}
 
-		private Object getOrderSource(String beanName, Class<?> instanceType) {
+		private @Nullable Object getOrderSource(String beanName, Class<?> instanceType) {
 			try {
 				RootBeanDefinition beanDefinition = (RootBeanDefinition) this.beanFactory
 					.getMergedBeanDefinition(beanName);

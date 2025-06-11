@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.context.servlet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.ConfigurablePropertyResolver;
@@ -32,12 +34,12 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 public class ApplicationServletEnvironment extends StandardServletEnvironment {
 
 	@Override
-	protected String doGetActiveProfilesProperty() {
+	protected @Nullable String doGetActiveProfilesProperty() {
 		return null;
 	}
 
 	@Override
-	protected String doGetDefaultProfilesProperty() {
+	protected @Nullable String doGetDefaultProfilesProperty() {
 		return null;
 	}
 

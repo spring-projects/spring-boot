@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
@@ -50,7 +52,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @param key the key of the property
 	 * @return the property value
 	 */
-	public String get(String key) {
+	public @Nullable String get(String key) {
 		return this.entries.getProperty(key);
 	}
 
@@ -60,7 +62,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @param key the key of the property
 	 * @return the property value
 	 */
-	public Instant getInstant(String key) {
+	public @Nullable Instant getInstant(String key) {
 		String s = get(key);
 		if (s != null) {
 			try {

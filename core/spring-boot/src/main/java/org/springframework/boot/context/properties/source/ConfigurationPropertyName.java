@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -63,15 +66,15 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	private final Elements elements;
 
-	private final CharSequence[] uniformElements;
+	private final @Nullable CharSequence[] uniformElements;
 
 	private int hashCode;
 
-	private String[] string = new String[ToStringFormat.values().length];
+	private @Nullable String[] string = new String[ToStringFormat.values().length];
 
-	private Boolean hasDashedElement;
+	private @Nullable Boolean hasDashedElement;
 
-	private ConfigurationPropertyName systemEnvironmentLegacyName;
+	private @Nullable ConfigurationPropertyName systemEnvironmentLegacyName;
 
 	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
@@ -221,7 +224,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a new {@link ConfigurationPropertyName}
 	 * @since 2.5.0
 	 */
-	public ConfigurationPropertyName append(ConfigurationPropertyName suffix) {
+	public ConfigurationPropertyName append(@Nullable ConfigurationPropertyName suffix) {
 		if (suffix == null) {
 			return this;
 		}
@@ -328,13 +331,16 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		return 0;
 	}
 
-	private int compare(String e1, ElementType type1, String e2, ElementType type2) {
+	private int compare(@Nullable String e1, @Nullable ElementType type1, @Nullable String e2,
+			@Nullable ElementType type2) {
 		if (e1 == null) {
 			return -1;
 		}
 		if (e2 == null) {
 			return 1;
 		}
+		Assert.state(type1 != null, "'type1' must not be null");
+		Assert.state(type2 != null, "'type2' must not be null");
 		int result = Boolean.compare(type2.isIndexed(), type1.isIndexed());
 		if (result != 0) {
 			return result;
@@ -531,7 +537,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		return hashCode;
 	}
 
-	ConfigurationPropertyName asSystemEnvironmentLegacyName() {
+	@Nullable ConfigurationPropertyName asSystemEnvironmentLegacyName() {
 		ConfigurationPropertyName name = this.systemEnvironmentLegacyName;
 		if (name == null) {
 			name = ConfigurationPropertyName
@@ -629,6 +635,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a {@link ConfigurationPropertyName} instance
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid
 	 */
+	@SuppressWarnings("NullAway") // See https://github.com/uber/NullAway/issues/1232
 	public static ConfigurationPropertyName of(CharSequence name) {
 		return of(name, false);
 	}
@@ -640,7 +647,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a {@link ConfigurationPropertyName} instance
 	 * @since 2.3.1
 	 */
-	public static ConfigurationPropertyName ofIfValid(CharSequence name) {
+	public static @Nullable ConfigurationPropertyName ofIfValid(CharSequence name) {
 		return of(name, true);
 	}
 
@@ -652,20 +659,20 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @throws InvalidConfigurationPropertyNameException if the name is not valid and
 	 * {@code returnNullIfInvalid} is {@code false}
 	 */
-	static ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
-		Elements elements = elementsOf(name, returnNullIfInvalid);
+	@Contract("_, false -> !null")
+	static @Nullable ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
+		Elements elements = elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
 		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
 	}
 
+	@SuppressWarnings("NullAway") // See https://github.com/uber/NullAway/issues/1232
 	private static Elements probablySingleElementOf(CharSequence name) {
 		return elementsOf(name, false, 1);
 	}
 
-	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
-		return elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
-	}
-
-	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid, int parserCapacity) {
+	@Contract("_, false, _ -> !null")
+	private static @Nullable Elements elementsOf(@Nullable CharSequence name, boolean returnNullIfInvalid,
+			int parserCapacity) {
 		if (name == null) {
 			Assert.isTrue(returnNullIfInvalid, "'name' must not be null");
 			return null;
@@ -727,7 +734,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return a {@link ConfigurationPropertyName}
 	 */
 	static ConfigurationPropertyName adapt(CharSequence name, char separator,
-			Function<CharSequence, CharSequence> elementValueProcessor) {
+			@Nullable Function<CharSequence, CharSequence> elementValueProcessor) {
 		Assert.notNull(name, "Name must not be null");
 		if (name.isEmpty()) {
 			return EMPTY;
@@ -814,10 +821,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		 * {@link #canShortcutWithSource} will always return false which may hurt
 		 * performance.
 		 */
-		private final CharSequence[] resolved;
+		private final @Nullable CharSequence @Nullable [] resolved;
 
-		Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, int[] hashCode,
-				CharSequence[] resolved) {
+		Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, int @Nullable [] hashCode,
+				CharSequence @Nullable [] resolved) {
 			this.source = source;
 			this.size = size;
 			this.start = start;
@@ -980,7 +987,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 		private ElementType[] type;
 
-		private CharSequence[] resolved;
+		private CharSequence @Nullable [] resolved;
 
 		ElementsParser(CharSequence source, char separator) {
 			this(source, separator, DEFAULT_CAPACITY);
@@ -998,7 +1005,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return parse(null);
 		}
 
-		Elements parse(Function<CharSequence, CharSequence> valueProcessor) {
+		Elements parse(@Nullable Function<CharSequence, CharSequence> valueProcessor) {
 			int length = this.source.length();
 			int openBracketCount = 0;
 			int start = 0;
@@ -1059,7 +1066,8 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return existingType;
 		}
 
-		private void add(int start, int end, ElementType type, Function<CharSequence, CharSequence> valueProcessor) {
+		private void add(int start, int end, ElementType type,
+				@Nullable Function<CharSequence, CharSequence> valueProcessor) {
 			if ((end - start) < 1 || type == ElementType.EMPTY) {
 				return;
 			}
@@ -1097,7 +1105,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 			return dest;
 		}
 
-		private CharSequence[] expand(CharSequence[] src) {
+		private CharSequence @Nullable [] expand(CharSequence @Nullable [] src) {
 			if (src == null) {
 				return null;
 			}

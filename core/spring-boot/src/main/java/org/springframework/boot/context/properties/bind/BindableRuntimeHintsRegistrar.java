@@ -31,6 +31,7 @@ import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -83,7 +84,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	}
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		registerHints(hints);
 	}
 
@@ -149,7 +150,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Class<?> type;
 
-		private final Constructor<?> bindConstructor;
+		private final @Nullable Constructor<?> bindConstructor;
 
 		private final BeanProperties bean;
 
@@ -160,12 +161,23 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen) {
-			this.type = bindable.getType().getRawClass();
+			this.type = getRawClass(bindable);
 			this.bindConstructor = (bindable.getBindMethod() != BindMethod.JAVA_BEAN)
-					? BindConstructorProvider.DEFAULT.getBindConstructor(bindable.getType().resolve(), nestedType)
-					: null;
+					? BindConstructorProvider.DEFAULT.getBindConstructor(getBindableType(bindable), nestedType) : null;
 			this.bean = JavaBeanBinder.BeanProperties.of(bindable);
 			this.seen = seen;
+		}
+
+		private static Class<?> getBindableType(Bindable<?> bindable) {
+			Class<?> resolved = bindable.getType().resolve();
+			Assert.state(resolved != null, "'resolved' must not be null");
+			return resolved;
+		}
+
+		private static Class<?> getRawClass(Bindable<?> bindable) {
+			Class<?> rawClass = bindable.getType().getRawClass();
+			Assert.state(rawClass != null, "'rawClass' must not be null");
+			return rawClass;
 		}
 
 		void process(ReflectionHints hints) {
@@ -203,6 +215,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void handleValueObjectProperties(ReflectionHints hints) {
+			Assert.state(this.bindConstructor != null, "'bindConstructor' must not be null");
 			for (int i = 0; i < this.bindConstructor.getParameterCount(); i++) {
 				String propertyName = this.bindConstructor.getParameters()[i].getName();
 				ResolvableType propertyType = ResolvableType.forConstructorParameter(this.bindConstructor, i);
@@ -253,7 +266,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			new Processor(Bindable.of(type), true, this.seen).process(hints);
 		}
 
-		private Class<?> getComponentClass(ResolvableType type) {
+		private @Nullable Class<?> getComponentClass(ResolvableType type) {
 			ResolvableType componentType = getComponentType(type);
 			if (componentType == null) {
 				return null;
@@ -265,7 +278,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			return componentType.toClass();
 		}
 
-		private ResolvableType getComponentType(ResolvableType type) {
+		private @Nullable ResolvableType getComponentType(ResolvableType type) {
 			if (type.isArray()) {
 				return type.getComponentType();
 			}

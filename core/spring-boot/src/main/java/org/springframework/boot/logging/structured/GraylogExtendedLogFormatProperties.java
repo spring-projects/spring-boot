@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
@@ -33,11 +35,11 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 3.4.0
  */
-public record GraylogExtendedLogFormatProperties(String host, Service service) {
+public record GraylogExtendedLogFormatProperties(@Nullable String host, Service service) {
 
 	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, null);
 
-	public GraylogExtendedLogFormatProperties(String host, Service service) {
+	public GraylogExtendedLogFormatProperties(@Nullable String host, @Nullable Service service) {
 		this.host = host;
 		this.service = (service != null) ? service : Service.NONE;
 	}
@@ -48,7 +50,7 @@ public record GraylogExtendedLogFormatProperties(String host, Service service) {
 		return new GraylogExtendedLogFormatProperties(name, service);
 	}
 
-	static String withFallbackProperty(Environment environment, String value, String property) {
+	static @Nullable String withFallbackProperty(Environment environment, @Nullable String value, String property) {
 		return (!StringUtils.hasLength(value)) ? environment.getProperty(property) : value;
 	}
 
@@ -79,7 +81,7 @@ public record GraylogExtendedLogFormatProperties(String host, Service service) {
 	 *
 	 * @param version the version of the application
 	 */
-	public record Service(String version) {
+	public record Service(@Nullable String version) {
 
 		static final Service NONE = new Service(null);
 
@@ -97,7 +99,7 @@ public record GraylogExtendedLogFormatProperties(String host, Service service) {
 	static class GraylogExtendedLogFormatPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			BindableRuntimeHintsRegistrar.forTypes(GraylogExtendedLogFormatProperties.class)
 				.registerHints(hints, classLoader);
 		}

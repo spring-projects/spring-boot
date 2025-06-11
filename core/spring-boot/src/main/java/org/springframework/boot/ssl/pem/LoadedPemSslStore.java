@@ -23,6 +23,8 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -41,9 +43,9 @@ final class LoadedPemSslStore implements PemSslStore {
 
 	private final ResourceLoader resourceLoader;
 
-	private final Supplier<List<X509Certificate>> certificatesSupplier;
+	private final Supplier<CertificatesHolder> certificatesSupplier;
 
-	private final Supplier<PrivateKey> privateKeySupplier;
+	private final Supplier<PrivateKeyHolder> privateKeySupplier;
 
 	LoadedPemSslStore(PemSslStoreDetails details, ResourceLoader resourceLoader) {
 		Assert.notNull(details, "'details' must not be null");
@@ -62,56 +64,63 @@ final class LoadedPemSslStore implements PemSslStore {
 		return new UncheckedIOException(message, (IOException) cause);
 	}
 
-	private static List<X509Certificate> loadCertificates(PemSslStoreDetails details, ResourceLoader resourceLoader)
+	private static CertificatesHolder loadCertificates(PemSslStoreDetails details, ResourceLoader resourceLoader)
 			throws IOException {
 		PemContent pemContent = PemContent.load(details.certificates(), resourceLoader);
 		if (pemContent == null) {
-			return null;
+			return new CertificatesHolder(null);
 		}
 		List<X509Certificate> certificates = pemContent.getCertificates();
 		Assert.state(!CollectionUtils.isEmpty(certificates), "Loaded certificates are empty");
-		return certificates;
+		return new CertificatesHolder(certificates);
 	}
 
-	private static PrivateKey loadPrivateKey(PemSslStoreDetails details, ResourceLoader resourceLoader)
+	private static PrivateKeyHolder loadPrivateKey(PemSslStoreDetails details, ResourceLoader resourceLoader)
 			throws IOException {
 		PemContent pemContent = PemContent.load(details.privateKey(), resourceLoader);
-		return (pemContent != null) ? pemContent.getPrivateKey(details.privateKeyPassword()) : null;
+		return new PrivateKeyHolder(
+				(pemContent != null) ? pemContent.getPrivateKey(details.privateKeyPassword()) : null);
 	}
 
 	@Override
-	public String type() {
+	public @Nullable String type() {
 		return this.details.type();
 	}
 
 	@Override
-	public String alias() {
+	public @Nullable String alias() {
 		return this.details.alias();
 	}
 
 	@Override
-	public String password() {
+	public @Nullable String password() {
 		return this.details.password();
 	}
 
 	@Override
-	public List<X509Certificate> certificates() {
-		return this.certificatesSupplier.get();
+	public @Nullable List<X509Certificate> certificates() {
+		return this.certificatesSupplier.get().certificates();
 	}
 
 	@Override
-	public PrivateKey privateKey() {
-		return this.privateKeySupplier.get();
+	public @Nullable PrivateKey privateKey() {
+		return this.privateKeySupplier.get().privateKey();
 	}
 
 	@Override
-	public PemSslStore withAlias(String alias) {
+	public PemSslStore withAlias(@Nullable String alias) {
 		return new LoadedPemSslStore(this.details.withAlias(alias), this.resourceLoader);
 	}
 
 	@Override
-	public PemSslStore withPassword(String password) {
+	public PemSslStore withPassword(@Nullable String password) {
 		return new LoadedPemSslStore(this.details.withPassword(password), this.resourceLoader);
+	}
+
+	private record PrivateKeyHolder(@Nullable PrivateKey privateKey) {
+	}
+
+	private record CertificatesHolder(@Nullable List<X509Certificate> certificates) {
 	}
 
 }

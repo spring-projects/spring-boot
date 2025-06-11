@@ -18,6 +18,7 @@ package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.event.LoggingEvent;
 
 import org.springframework.boot.logging.StackTracePrinter;
@@ -30,9 +31,9 @@ import org.springframework.util.Assert;
  */
 class Extractor {
 
-	private final StackTracePrinter stackTracePrinter;
+	private final @Nullable StackTracePrinter stackTracePrinter;
 
-	Extractor(StackTracePrinter stackTracePrinter) {
+	Extractor(@Nullable StackTracePrinter stackTracePrinter) {
 		this.stackTracePrinter = stackTracePrinter;
 	}
 
@@ -40,11 +41,11 @@ class Extractor {
 		return event.getMessage().getFormattedMessage() + "\n\n" + stackTrace(event);
 	}
 
-	String stackTrace(LogEvent event) {
+	@Nullable String stackTrace(LogEvent event) {
 		return stackTrace(event.getThrownProxy());
 	}
 
-	String stackTrace(ThrowableProxy throwableProxy) {
+	@Nullable String stackTrace(@Nullable ThrowableProxy throwableProxy) {
 		if (throwableProxy == null) {
 			return null;
 		}

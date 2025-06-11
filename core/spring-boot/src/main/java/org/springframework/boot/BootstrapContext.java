@@ -18,6 +18,8 @@ package org.springframework.boot;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -41,7 +43,7 @@ public interface BootstrapContext {
 	 * @return the instance managed by the context
 	 * @throws IllegalStateException if the type has not been registered
 	 */
-	<T> T get(Class<T> type) throws IllegalStateException;
+	<T> @Nullable T get(Class<T> type) throws IllegalStateException;
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
@@ -51,7 +53,7 @@ public interface BootstrapContext {
 	 * @param other the instance to use if the type has not been registered
 	 * @return the instance
 	 */
-	<T> T getOrElse(Class<T> type, T other);
+	<T> @Nullable T getOrElse(Class<T> type, @Nullable T other);
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
@@ -61,7 +63,7 @@ public interface BootstrapContext {
 	 * @param other a supplier for the instance to use if the type has not been registered
 	 * @return the instance
 	 */
-	<T> T getOrElseSupply(Class<T> type, Supplier<T> other);
+	<T> @Nullable T getOrElseSupply(Class<T> type, Supplier<@Nullable T> other);
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
@@ -74,7 +76,8 @@ public interface BootstrapContext {
 	 * @throws X if the type has not been registered
 	 * @throws IllegalStateException if the type has not been registered
 	 */
-	<T, X extends Throwable> T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier) throws X;
+	<T, X extends Throwable> @Nullable T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier)
+			throws X;
 
 	/**
 	 * Return if a registration exists for the given type.
