@@ -15,7 +15,6 @@
  */
 
 /**
- * Classes related to the auto-configuration of a servlet or reactive web server using
- * Jetty.
+ * Auto-configuration for Jetty.
  */
 package org.springframework.boot.jetty.autoconfigure;

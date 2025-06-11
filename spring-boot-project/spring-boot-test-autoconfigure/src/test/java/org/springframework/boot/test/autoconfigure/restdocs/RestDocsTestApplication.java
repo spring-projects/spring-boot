@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
-import org.springframework.boot.security.actuate.autoconfigure.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 
 /**

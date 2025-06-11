@@ -1,2 +1,2 @@
-org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatReactiveManagementChildContextConfiguration
-org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletManagementChildContextConfiguration
+org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatReactiveManagementChildContextConfiguration
+org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementChildContextConfiguration

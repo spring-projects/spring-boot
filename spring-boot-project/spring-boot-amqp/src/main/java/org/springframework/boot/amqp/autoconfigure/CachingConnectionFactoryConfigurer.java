@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactoryConfigurer<CachingConnectionFactory> {
 

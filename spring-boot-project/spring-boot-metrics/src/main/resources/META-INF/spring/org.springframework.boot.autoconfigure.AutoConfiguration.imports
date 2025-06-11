@@ -1,7 +1,7 @@
-org.springframework.boot.metrics.actuate.endpoint.autoconfigure.MetricsEndpointAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.MetricsAspectsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.MetricsEndpointAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.appoptics.AppOpticsMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.atlas.AtlasMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.datadog.DatadogMetricsExportAutoConfiguration

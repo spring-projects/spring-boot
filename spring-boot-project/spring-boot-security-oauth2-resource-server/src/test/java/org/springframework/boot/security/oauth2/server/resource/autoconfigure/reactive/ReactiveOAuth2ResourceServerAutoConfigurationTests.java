@@ -49,7 +49,7 @@ import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.actuate.autoconfigure.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.reactive.ReactiveManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;

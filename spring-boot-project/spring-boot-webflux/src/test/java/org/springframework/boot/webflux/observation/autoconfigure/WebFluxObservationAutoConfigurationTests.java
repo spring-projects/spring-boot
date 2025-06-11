@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
+import org.springframework.boot.webflux.autoconfigure.WebFluxObservationAutoConfiguration;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 import org.springframework.web.bind.annotation.GetMapping;

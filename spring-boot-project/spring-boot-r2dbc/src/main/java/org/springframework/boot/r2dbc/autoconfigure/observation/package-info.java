@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for R2DBC observation.
+ * Auto-Configuration for R2DBC observations.
  */
 package org.springframework.boot.r2dbc.autoconfigure.observation;

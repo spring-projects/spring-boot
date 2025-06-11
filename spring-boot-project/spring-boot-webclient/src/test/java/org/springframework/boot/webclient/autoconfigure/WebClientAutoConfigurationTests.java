@@ -42,7 +42,7 @@ class WebClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(
-				org.springframework.boot.http.client.reactive.autoconfigure.ClientHttpConnectorAutoConfiguration.class,
+				org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorAutoConfiguration.class,
 				WebClientAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test

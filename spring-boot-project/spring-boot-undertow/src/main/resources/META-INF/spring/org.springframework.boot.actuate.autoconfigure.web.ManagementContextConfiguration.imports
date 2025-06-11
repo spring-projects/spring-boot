@@ -1,2 +1,2 @@
-org.springframework.boot.undertow.actuate.autoconfigure.web.server.UndertowReactiveManagementChildContextConfiguration
-org.springframework.boot.undertow.actuate.autoconfigure.web.server.UndertowServletManagementChildContextConfiguration
+org.springframework.boot.undertow.autoconfigure.actuate.web.server.UndertowReactiveManagementChildContextConfiguration
+org.springframework.boot.undertow.autoconfigure.actuate.web.server.UndertowServletManagementChildContextConfiguration

@@ -19,8 +19,8 @@ package org.springframework.boot.opentelemetry.testcontainers;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -42,8 +42,7 @@ class OpenTelemetryLoggingContainerConnectionDetailsFactory
 	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryLoggingContainerConnectionDetailsFactory() {
-		super("otel/opentelemetry-collector-contrib",
-				"org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration");
+		super("otel/opentelemetry-collector-contrib");
 	}
 
 	@Override

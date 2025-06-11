@@ -29,7 +29,6 @@ import org.springframework.beans.factory.aot.BeanRegistrationCode;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.web.server.context.ConfigurableWebServerApplicationContext;
