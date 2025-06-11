@@ -1,1 +1,1 @@
-org.springframework.boot.security.actuate.autoconfigure.servlet.SecurityRequestMatchersManagementContextConfiguration
+org.springframework.boot.security.autoconfigure.actuate.servlet.SecurityRequestMatchersManagementContextConfiguration

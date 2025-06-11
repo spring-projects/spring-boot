@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Jersey actuator metrics.
+ * Auto-configuration for Jersey metrics.
  */
 package org.springframework.boot.jersey.autoconfigure.metrics;

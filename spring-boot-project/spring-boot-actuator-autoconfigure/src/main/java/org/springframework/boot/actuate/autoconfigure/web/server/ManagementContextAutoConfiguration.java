@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 import java.util.Map;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;

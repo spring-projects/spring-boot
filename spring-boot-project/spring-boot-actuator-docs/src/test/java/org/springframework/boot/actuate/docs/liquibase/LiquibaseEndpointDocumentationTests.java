@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.liquibase.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
+import org.springframework.boot.liquibase.endpoint.LiquibaseEndpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

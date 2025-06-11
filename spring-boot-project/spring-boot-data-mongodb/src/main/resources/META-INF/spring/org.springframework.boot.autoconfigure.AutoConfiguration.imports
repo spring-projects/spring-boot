@@ -1,6 +1,6 @@
-org.springframework.boot.data.mongodb.actuate.health.autoconfigure.MongoHealthContributorAutoConfiguration
-org.springframework.boot.data.mongodb.actuate.health.autoconfigure.MongoReactiveHealthContributorAutoConfiguration
 org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration
 org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration
 org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveRepositoriesAutoConfiguration
 org.springframework.boot.data.mongodb.autoconfigure.MongoRepositoriesAutoConfiguration
+org.springframework.boot.data.mongodb.autoconfigure.health.MongoHealthContributorAutoConfiguration
+org.springframework.boot.data.mongodb.autoconfigure.health.MongoReactiveHealthContributorAutoConfiguration

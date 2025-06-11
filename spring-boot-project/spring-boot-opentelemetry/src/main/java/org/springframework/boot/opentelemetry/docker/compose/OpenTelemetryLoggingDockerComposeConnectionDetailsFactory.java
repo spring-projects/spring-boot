@@ -19,8 +19,8 @@ package org.springframework.boot.opentelemetry.docker.compose;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.Transport;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -40,7 +40,7 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 
 	OpenTelemetryLoggingDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
-				"org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration");
+				"org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration");
 	}
 
 	@Override

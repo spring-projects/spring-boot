@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
+import org.springframework.boot.restclient.autoconfigure.RestTemplateObservationAutoConfiguration;
 import org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

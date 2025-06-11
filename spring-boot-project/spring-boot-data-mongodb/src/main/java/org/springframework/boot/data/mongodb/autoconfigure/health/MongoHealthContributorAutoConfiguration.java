@@ -1,0 +1,58 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.data.mongodb.autoconfigure.health;
+
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.data.mongodb.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoHealthIndicator}.
+ *
+ * @author Stephane Nicoll
+ * @since 4.0.0
+ */
+@AutoConfiguration(after = { MongoReactiveHealthContributorAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoAutoConfiguration.class })
+@ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
+@ConditionalOnBean(MongoTemplate.class)
+@ConditionalOnEnabledHealthIndicator("mongo")
+public class MongoHealthContributorAutoConfiguration
+		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
+
+	public MongoHealthContributorAutoConfiguration() {
+		super(MongoHealthIndicator::new);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
+	public HealthContributor mongoHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, MongoTemplate.class);
+	}
+
+}

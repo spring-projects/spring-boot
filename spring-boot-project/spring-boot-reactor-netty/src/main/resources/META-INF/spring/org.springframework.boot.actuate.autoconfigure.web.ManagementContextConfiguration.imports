@@ -1,1 +1,1 @@
-org.springframework.boot.reactor.netty.actuate.autoconfigure.web.server.NettyReactiveManagementChildContextConfiguration
+org.springframework.boot.reactor.netty.autoconfigure.actuate.web.server.NettyReactiveManagementChildContextConfiguration

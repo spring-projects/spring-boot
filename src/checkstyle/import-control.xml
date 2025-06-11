@@ -57,15 +57,7 @@
 		<allow pkg="io.micrometer" />
 	</subpackage>
 
-	<subpackage name="observation">
-		<allow pkg="io.micrometer" />
-	</subpackage>
-
-	<subpackage name=".*\.observation" regex="true">
-		<allow pkg="io.micrometer" />
-	</subpackage>
-
-	<subpackage name="tracing">
+	<subpackage name=".*\.autoconfigure" regex="true">
 		<allow pkg="io.micrometer" />
 	</subpackage>
 

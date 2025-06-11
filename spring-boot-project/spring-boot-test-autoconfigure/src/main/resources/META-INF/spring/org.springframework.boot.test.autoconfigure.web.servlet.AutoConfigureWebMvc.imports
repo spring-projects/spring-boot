@@ -1,5 +1,5 @@
 # AutoConfigureWebMvc auto-configuration imports
-optional:org.springframework.boot.data.web.autoconfigure.SpringDataWebAutoConfiguration
+optional:org.springframework.boot.data.autoconfigure.web.SpringDataWebAutoConfiguration
 optional:org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration
 optional:org.springframework.boot.groovy.template.autoconfigure.GroovyTemplateAutoConfiguration
 optional:org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration
