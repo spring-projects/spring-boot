@@ -193,7 +193,7 @@ bom {
 			]
 		}
 	}
-	library("Simple JNDI", "0.23.0") {
+	library("Simple JNDI", "0.25.0") {
 		group("com.github.h-thurow") {
 			modules = [
 				"simple-jndi"
