@@ -167,7 +167,7 @@ class MavenBuild {
 			request.setBaseDirectory(this.temp);
 			request.setJavaHome(new File(System.getProperty("java.home")));
 			request.setProperties(this.properties);
-			request.setGoals(this.goals.isEmpty() ? Collections.singletonList("package") : this.goals);
+			request.addArgs(this.goals.isEmpty() ? Collections.singletonList("package") : this.goals);
 			request.setUserSettingsFile(new File(this.temp, "settings.xml"));
 			request.setUpdateSnapshots(true);
 			request.setBatchMode(true);
