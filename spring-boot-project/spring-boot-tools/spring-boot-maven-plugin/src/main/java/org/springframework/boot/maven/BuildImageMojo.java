@@ -33,6 +33,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProjectHelper;
 
 import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
@@ -218,6 +219,10 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 */
 	@Parameter
 	private LayoutFactory layoutFactory;
+
+	protected BuildImageMojo(MavenProjectHelper projectHelper) {
+		super(projectHelper);
+	}
 
 	/**
 	 * Return the type of archive that should be used when building the image.

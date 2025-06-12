@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.util.ObjectUtils;
 
@@ -85,6 +88,11 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	 */
 	@Parameter
 	private String[] profiles;
+
+	@Inject
+	public ProcessAotMojo(ToolchainManager toolchainManager) {
+		super(toolchainManager);
+	}
 
 	@Override
 	protected void executeAot() throws Exception {

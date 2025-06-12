@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -49,8 +50,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
 @Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public class BuildInfoMojo extends AbstractMojo {
 
-	@Component
-	private BuildContext buildContext;
+	private final BuildContext buildContext;
 
 	/**
 	 * The Maven session.
@@ -103,6 +103,11 @@ public class BuildInfoMojo extends AbstractMojo {
 	 */
 	@Parameter(property = "spring-boot.build-info.skip", defaultValue = "false")
 	private boolean skip;
+
+	@Inject
+	public BuildInfoMojo(BuildContext buildContext) {
+		this.buildContext = buildContext;
+	}
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {

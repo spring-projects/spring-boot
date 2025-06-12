@@ -31,7 +31,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
@@ -81,8 +80,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * Maven project helper utils.
 	 * @since 1.0.0
 	 */
-	@Component
-	protected MavenProjectHelper projectHelper;
+	protected final MavenProjectHelper projectHelper;
 
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
@@ -127,6 +125,10 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	@Parameter
 	private Layers layers = new Layers();
+
+	protected AbstractPackagerMojo(MavenProjectHelper projectHelper) {
+		this.projectHelper = projectHelper;
+	}
 
 	/**
 	 * Return the type of archive that should be packaged by this MOJO.
