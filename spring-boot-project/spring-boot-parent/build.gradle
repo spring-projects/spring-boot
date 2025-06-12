@@ -151,7 +151,7 @@ bom {
 			]
 		}
 	}
-	library("MockK", "1.13.5") {
+	library("MockK", "1.14.2") {
 		group("io.mockk") {
 			modules = [
 				"mockk"
