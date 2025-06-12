@@ -64,7 +64,7 @@ public class ZipFileTarArchive implements TarArchive {
 	public void writeTo(OutputStream outputStream) throws IOException {
 		TarArchiveOutputStream tar = new TarArchiveOutputStream(outputStream);
 		tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-		try (ZipFile zipFile = new ZipFile(this.zip)) {
+		try (ZipFile zipFile = ZipFile.builder().setFile(this.zip).get()) {
 			Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
 			while (entries.hasMoreElements()) {
 				ZipArchiveEntry zipEntry = entries.nextElement();
@@ -75,7 +75,7 @@ public class ZipFileTarArchive implements TarArchive {
 	}
 
 	private void assertArchiveHasEntries(File file) {
-		try (ZipFile zipFile = new ZipFile(file)) {
+		try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
 			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "Archive file '" + file + "' is not valid");
 		}
 		catch (IOException ex) {

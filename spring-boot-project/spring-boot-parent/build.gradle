@@ -47,7 +47,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Compress", "1.25.0") {
+	library("Commons Compress", "1.27.1") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-compress"

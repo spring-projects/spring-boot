@@ -579,7 +579,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 	void defaultDirAndFileModesAreUsed() throws IOException {
 		BuildResult result = this.gradleBuild.build(this.taskName);
 		assertThat(result.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		try (ZipFile jarFile = new ZipFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+		try (ZipFile jarFile = ZipFile.builder()
+			.setFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])
+			.get()) {
 			Enumeration<ZipArchiveEntry> entries = jarFile.getEntries();
 			while (entries.hasMoreElements()) {
 				ZipArchiveEntry entry = entries.nextElement();
@@ -605,7 +607,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 					"upgrading_version_8.html#unix_file_permissions_deprecated")
 			.build(this.taskName);
 		assertThat(result.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		try (ZipFile jarFile = new ZipFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+		try (ZipFile jarFile = ZipFile.builder()
+			.setFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])
+			.get()) {
 			Enumeration<ZipArchiveEntry> entries = jarFile.getEntries();
 			while (entries.hasMoreElements()) {
 				ZipArchiveEntry entry = entries.nextElement();

@@ -95,6 +95,7 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 			classpath.add(new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)));
 			classpath.add(new File(pathOfJarContaining(LanguageSettings.class)));
 		}
+		classpath.add(new File(pathOfJarContaining("org.apache.commons.io.Charsets")));
 		classpath.add(new File(pathOfJarContaining(ArchiveEntry.class)));
 		classpath.add(new File(pathOfJarContaining(BuildRequest.class)));
 		classpath.add(new File(pathOfJarContaining(HttpClientConnectionManager.class)));
