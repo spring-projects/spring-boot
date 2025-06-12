@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,6 +45,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -202,7 +202,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 			else {
 				file.getParentFile().mkdirs();
 				try (OutputStream out = new FileOutputStream(file)) {
-					IOUtils.copy(archive, out);
+					StreamUtils.copy(archive, out);
 				}
 			}
 			entry = archive.getNextEntry();
