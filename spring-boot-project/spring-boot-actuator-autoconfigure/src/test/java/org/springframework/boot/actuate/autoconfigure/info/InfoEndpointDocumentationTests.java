@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
@@ -264,7 +263,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 				.withPassword("secret");
 			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
 			sslBundleRegistry.registerBundle("test-0", SslBundle.of(sslStoreBundle));
-			return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+			return new SslInfo(sslBundleRegistry);
 		}
 
 		@Bean
