@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
@@ -52,6 +51,7 @@ import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailabl
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -547,7 +547,7 @@ class BootBuildImageIntegrationTests {
 		TarArchiveEntry entry = new TarArchiveEntry(file, name);
 		entry.setMode(mode);
 		tar.putArchiveEntry(entry);
-		IOUtils.copy(Files.newInputStream(file.toPath()), tar);
+		StreamUtils.copy(Files.newInputStream(file.toPath()), tar);
 		tar.closeArchiveEntry();
 	}
 

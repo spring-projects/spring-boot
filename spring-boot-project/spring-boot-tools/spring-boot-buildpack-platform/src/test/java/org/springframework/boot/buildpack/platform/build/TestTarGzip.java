@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -110,7 +110,7 @@ class TestTarGzip {
 		TarArchiveEntry entry = new TarArchiveEntry(entryName);
 		entry.setSize(content.length());
 		tar.putArchiveEntry(entry);
-		IOUtils.copy(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), tar);
+		StreamUtils.copy(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), tar);
 		tar.closeArchiveEntry();
 	}
 

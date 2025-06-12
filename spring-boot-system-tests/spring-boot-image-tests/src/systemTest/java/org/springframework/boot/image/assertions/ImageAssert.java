@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
@@ -35,6 +34,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.test.json.JsonContentAssert;
+import org.springframework.util.StreamUtils;
 
 /**
  * AssertJ {@link org.assertj.core.api.Assert} for Docker image contents.
@@ -105,7 +105,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 					while (entry != null) {
 						if (entry.getName().equals(name)) {
 							ByteArrayOutputStream entryOut = new ByteArrayOutputStream();
-							IOUtils.copy(in, entryOut);
+							StreamUtils.copy(in, entryOut);
 							assertConsumer.accept(new JsonContentAssert(LayerContentAssert.class, entryOut.toString()));
 							return;
 						}
