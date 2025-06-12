@@ -65,9 +65,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * {@link AutoConfigureGraphQlTester @AutoConfigureGraphQlTester}.
  * <p>
  * Typically {@code @GraphQlTest} is used in combination with
- * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
- * {@link org.springframework.context.annotation.Import @Import} to load any collaborators
- * and other components required for the tests.
+ * {@link org.springframework.test.context.bean.override.mockito.MockitoBean @MockitoBean}
+ * or {@link org.springframework.context.annotation.Import @Import} to load any
+ * collaborators and other components required for the tests.
  * <p>
  * To load your full application configuration instead and test via
  * {@code HttpGraphQlTester}, consider using
