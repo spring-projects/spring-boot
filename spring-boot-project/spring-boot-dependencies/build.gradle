@@ -2290,7 +2290,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "2.5.0") {
+	library("Spring HATEOAS", "2.5.1") {
 		prohibit {
 			versionRange "[3.0.0-M1,)"
 			because "it exceeds our baseline"
