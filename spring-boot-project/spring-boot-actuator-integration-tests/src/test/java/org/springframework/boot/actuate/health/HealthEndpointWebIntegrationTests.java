@@ -17,16 +17,28 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorNameGenerator;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.CompositeReactiveHealthContributor;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthContributor;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.boot.health.registry.DefaultHealthContributorRegistry;
+import org.springframework.boot.health.registry.DefaultReactiveHealthContributorRegistry;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -199,8 +211,7 @@ class HealthEndpointWebIntegrationTests {
 		}
 	}
 
-	private <R extends ContributorRegistry<?>> R getContributorRegistry(ApplicationContext context,
-			Class<R> registryType) {
+	private <R> R getContributorRegistry(ApplicationContext context, Class<R> registryType) {
 		return context.getBeanProvider(registryType).getIfAvailable();
 	}
 
@@ -241,41 +252,44 @@ class HealthEndpointWebIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		HealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> healthContributorBeans) {
-			return new DefaultHealthContributorRegistry(healthContributorBeans);
+		HealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> contributorBeans) {
+			return new DefaultHealthContributorRegistry(null,
+					HealthContributorNameGenerator.withoutStandardSuffixes().registrar(contributorBeans));
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		ReactiveHealthContributorRegistry reactiveHealthContributorRegistry(
-				Map<String, HealthContributor> healthContributorBeans,
-				Map<String, ReactiveHealthContributor> reactiveHealthContributorBeans) {
-			Map<String, ReactiveHealthContributor> allIndicators = new LinkedHashMap<>(reactiveHealthContributorBeans);
-			healthContributorBeans.forEach((name, contributor) -> allIndicators.computeIfAbsent(name,
-					(key) -> ReactiveHealthContributor.adapt(contributor)));
-			return new DefaultReactiveHealthContributorRegistry(allIndicators);
+				Map<String, ReactiveHealthContributor> contributorBeans) {
+			return new DefaultReactiveHealthContributorRegistry(null,
+					HealthContributorNameGenerator.withoutStandardSuffixes().registrar(contributorBeans));
 		}
 
 		@Bean
 		HealthEndpoint healthEndpoint(HealthContributorRegistry healthContributorRegistry,
+				ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new HealthEndpoint(healthContributorRegistry, healthEndpointGroups, null);
+			return new HealthEndpoint(healthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(),
+					healthEndpointGroups, null);
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.SERVLET)
 		HealthEndpointWebExtension healthWebEndpointExtension(HealthContributorRegistry healthContributorRegistry,
+				ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new HealthEndpointWebExtension(healthContributorRegistry, healthEndpointGroups, null);
+			return new HealthEndpointWebExtension(healthContributorRegistry,
+					reactiveHealthContributorRegistry.getIfAvailable(), healthEndpointGroups, null);
 		}
 
 		@Bean
 		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		ReactiveHealthEndpointWebExtension reactiveHealthWebEndpointExtension(
 				ReactiveHealthContributorRegistry reactiveHealthContributorRegistry,
+				ObjectProvider<HealthContributorRegistry> healthContributorRegistry,
 				HealthEndpointGroups healthEndpointGroups) {
-			return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, healthEndpointGroups,
-					null);
+			return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry,
+					healthContributorRegistry.getIfAvailable(), healthEndpointGroups, null);
 		}
 
 		@Bean

@@ -22,15 +22,16 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.WithTestEndpointOutcomeExposureContributor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.webflux.actuate.endpoint.web.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,8 @@ class WebFluxHealthEndpointExtensionAutoConfigurationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withUserConfiguration(HealthIndicatorsConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, WebFluxHealthEndpointExtensionAutoConfiguration.class));
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				WebFluxHealthEndpointExtensionAutoConfiguration.class));
 
 	@Test
 	@WithTestEndpointOutcomeExposureContributor
@@ -65,6 +67,16 @@ class WebFluxHealthEndpointExtensionAutoConfigurationTests {
 				assertThat(context.getBean(WebEndpointsSupplier.class).getEndpoints()).isEmpty();
 				assertThat(context).hasSingleBean(AdditionalHealthEndpointPathsWebFluxHandlerMapping.class);
 			});
+	}
+
+	@Test
+	@WithTestEndpointOutcomeExposureContributor
+	void backsOffWithoutWebEndpointInfrastructure() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.test.exposure.include=*")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(AdditionalHealthEndpointPathsWebFluxHandlerMapping.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

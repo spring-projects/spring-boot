@@ -25,10 +25,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -69,10 +70,10 @@ class ManagementWebSecurityAutoConfigurationTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(contextSupplier(),
 			WebServerApplicationContext.class)
 		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-				EnvironmentEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-				WebMvcAutoConfiguration.class, WebEndpointAutoConfiguration.class, SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class));
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				InfoEndpointAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebMvcAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 
 	private static Supplier<ConfigurableWebApplicationContext> contextSupplier() {
 		return WebApplicationContextRunner.withMockServletContext(MockWebServerApplicationContext::new);

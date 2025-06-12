@@ -581,7 +581,7 @@ You can configure the roles by using the configprop:management.endpoint.health.r
 
 NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
 
-Health information is collected from the content of a javadoc:org.springframework.boot.actuate.health.HealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
+Health information is collected from the content of a javadoc:org.springframework.boot.health.registry.HealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
 Spring Boot includes a number of auto-configured javadoc:org.springframework.boot.actuate.health.HealthContributor[] beans, and you can also write your own.
 
 A javadoc:org.springframework.boot.actuate.health.HealthContributor[] can be either a javadoc:org.springframework.boot.actuate.health.HealthIndicator[] or a javadoc:org.springframework.boot.actuate.health.CompositeHealthContributor[].
@@ -593,7 +593,7 @@ By default, the final system health is derived by a javadoc:org.springframework.
 The first status in the sorted list is used as the overall health status.
 If no javadoc:org.springframework.boot.actuate.health.HealthIndicator[] returns a status that is known to the javadoc:org.springframework.boot.actuate.health.StatusAggregator[], an `UNKNOWN` status is used.
 
-TIP: You can use the javadoc:org.springframework.boot.actuate.health.HealthContributorRegistry[] to register and unregister health indicators at runtime.
+TIP: You can use the javadoc:org.springframework.boot.health.registry.HealthContributorRegistry[] to register and unregister health indicators at runtime.
 
 
 
@@ -653,7 +653,7 @@ with the `key` listed in the following table:
 | Checks that a Neo4j database is up.
 
 | `ping`
-| javadoc:org.springframework.boot.actuate.health.PingHealthIndicator[]
+| javadoc:org.springframework.boot.health.contributor.PingHealthIndicator[]
 | Always responds with `UP`.
 
 | `rabbit`
@@ -771,10 +771,10 @@ The following table shows the default status mappings for the built-in statuses:
 === Reactive Health Indicators
 
 For reactive applications, such as those that use Spring WebFlux, javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] provides a non-blocking contract for getting application health.
-Similar to a traditional javadoc:org.springframework.boot.actuate.health.HealthContributor[], health information is collected from the content of a javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] and javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
+Similar to a traditional javadoc:org.springframework.boot.actuate.health.HealthContributor[], health information is collected from the content of a javadoc:org.springframework.boot.health.registry.ReactiveHealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] and javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
 Regular javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances that do not check against a reactive API are executed on the elastic scheduler.
 
-TIP: In a reactive application, you should use the javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry[] to register and unregister health indicators at runtime.
+TIP: In a reactive application, you should use the javadoc:org.springframework.boot.health.registry.ReactiveHealthContributorRegistry[] to register and unregister health indicators at runtime.
 If you need to register a regular javadoc:org.springframework.boot.actuate.health.HealthContributor[], you should wrap it with `ReactiveHealthContributor#adapt`.
 
 To provide custom health information from a reactive API, you can register Spring beans that implement the javadoc:org.springframework.boot.actuate.health.ReactiveHealthIndicator[] interface.

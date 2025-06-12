@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.autoconfigure.integrationtest.AbstractHe
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.HealthEndpointJerseyExtensionAutoConfiguration;
@@ -50,6 +51,7 @@ class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 					TomcatServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					JerseyAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					HealthContributorRegistryAutoConfiguration.class,
 					HealthEndpointJerseyExtensionAutoConfiguration.class,
 					DiskSpaceHealthContributorAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())

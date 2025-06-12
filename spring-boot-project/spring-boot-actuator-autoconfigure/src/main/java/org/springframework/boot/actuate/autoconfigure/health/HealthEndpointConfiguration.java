@@ -16,39 +16,27 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.health.CompositeHealthContributor;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
-import org.springframework.boot.actuate.health.NamedContributor;
-import org.springframework.boot.actuate.health.NamedContributors;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.health.contributor.HealthContributors;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -80,14 +68,9 @@ class HealthEndpointConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	HealthContributorRegistry healthContributorRegistry(ApplicationContext applicationContext,
-			HealthEndpointGroups groups, Map<String, HealthContributor> healthContributors,
-			Map<String, ReactiveHealthContributor> reactiveHealthContributors) {
-		if (ClassUtils.isPresent("reactor.core.publisher.Flux", applicationContext.getClassLoader())) {
-			healthContributors.putAll(new AdaptedReactiveHealthContributors(reactiveHealthContributors).get());
-		}
-		return new AutoConfiguredHealthContributorRegistry(healthContributors, groups.getNames());
+	GroupsHealthContributorNameValidator groupsHealthContributorNameValidator(
+			ObjectProvider<HealthEndpointGroups> healthEndpointGroups) {
+		return new GroupsHealthContributorNameValidator(healthEndpointGroups.getIfAvailable());
 	}
 
 	@Bean
@@ -99,9 +82,11 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			HealthEndpointProperties properties) {
-		return new HealthEndpoint(registry, groups, properties.getLogging().getSlowIndicatorThreshold());
+	HealthEndpoint healthEndpoint(HealthContributorRegistry halthContributorRegistry,
+			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
+			HealthEndpointGroups groups, HealthEndpointProperties properties) {
+		return new HealthEndpoint(halthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(), groups,
+				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 	@Bean
@@ -136,82 +121,6 @@ class HealthEndpointConfiguration {
 				bean = postProcessor.postProcessHealthEndpointGroups(bean);
 			}
 			return bean;
-		}
-
-	}
-
-	/**
-	 * Adapter to expose {@link ReactiveHealthContributor} beans as
-	 * {@link HealthContributor} instances.
-	 */
-	private static class AdaptedReactiveHealthContributors {
-
-		private final Map<String, HealthContributor> adapted;
-
-		AdaptedReactiveHealthContributors(Map<String, ReactiveHealthContributor> reactiveContributors) {
-			Map<String, HealthContributor> adapted = new LinkedHashMap<>();
-			reactiveContributors.forEach((name, contributor) -> adapted.put(name, adapt(contributor)));
-			this.adapted = Collections.unmodifiableMap(adapted);
-		}
-
-		private HealthContributor adapt(ReactiveHealthContributor contributor) {
-			if (contributor instanceof ReactiveHealthIndicator healthIndicator) {
-				return adapt(healthIndicator);
-			}
-			if (contributor instanceof CompositeReactiveHealthContributor healthContributor) {
-				return adapt(healthContributor);
-			}
-			throw new IllegalStateException("Unsupported ReactiveHealthContributor type " + contributor.getClass());
-		}
-
-		private HealthIndicator adapt(ReactiveHealthIndicator indicator) {
-			return new HealthIndicator() {
-
-				@Override
-				public Health getHealth(boolean includeDetails) {
-					return indicator.getHealth(includeDetails).block();
-				}
-
-				@Override
-				public Health health() {
-					return indicator.health().block();
-				}
-
-			};
-		}
-
-		private CompositeHealthContributor adapt(CompositeReactiveHealthContributor composite) {
-			return new CompositeHealthContributor() {
-
-				@Override
-				public Iterator<NamedContributor<HealthContributor>> iterator() {
-					Iterator<NamedContributor<ReactiveHealthContributor>> iterator = composite.iterator();
-					return new Iterator<>() {
-
-						@Override
-						public boolean hasNext() {
-							return iterator.hasNext();
-						}
-
-						@Override
-						public NamedContributor<HealthContributor> next() {
-							NamedContributor<ReactiveHealthContributor> next = iterator.next();
-							return NamedContributor.of(next.getName(), adapt(next.getContributor()));
-						}
-
-					};
-				}
-
-				@Override
-				public HealthContributor getContributor(String name) {
-					return adapt(composite.getContributor(name));
-				}
-
-			};
-		}
-
-		Map<String, HealthContributor> get() {
-			return this.adapted;
 		}
 
 	}
@@ -264,10 +173,10 @@ class HealthEndpointConfiguration {
 			int pathOffset = 0;
 			Object contributor = this.registry;
 			while (pathOffset < path.length) {
-				if (!(contributor instanceof NamedContributors)) {
+				if (!(contributor instanceof HealthContributors)) {
 					return false;
 				}
-				contributor = ((NamedContributors<?>) contributor).getContributor(path[pathOffset]);
+				contributor = ((HealthContributors) contributor).getContributor(path[pathOffset]);
 				pathOffset++;
 			}
 			return (contributor != null);

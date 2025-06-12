@@ -20,16 +20,16 @@ import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.couchbase.actuate.health.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration;
+import org.springframework.boot.couchbase.health.CouchbaseReactiveHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.CompositeReactiveHealthContributorConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthContributor;
 import org.springframework.context.annotation.Bean;
 
 /**

@@ -37,7 +37,8 @@ class HealthEndpointWebExtensionRuntimeHintsTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new HealthEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Set<Class<?>> bindingTypes = Set.of(Health.class, SystemHealth.class, CompositeHealth.class);
+		Set<Class<?>> bindingTypes = Set.of(IndicatedHealthDescriptor.class, SystemHealthDescriptor.class,
+				CompositeHealthDescriptor.class);
 		for (Class<?> bindingType : bindingTypes) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(bindingType)

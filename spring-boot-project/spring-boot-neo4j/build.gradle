@@ -32,9 +32,9 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("org.testcontainers:neo4j")
 

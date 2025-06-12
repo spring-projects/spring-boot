@@ -19,7 +19,7 @@ package org.springframework.boot.docs.howto.actuator.maphealthindicatorstometric
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.boot.actuate.health.HealthEndpoint
-import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.health.contributor.Status
 import org.springframework.context.annotation.Configuration
 
 @Configuration(proxyBeanMethods = false)

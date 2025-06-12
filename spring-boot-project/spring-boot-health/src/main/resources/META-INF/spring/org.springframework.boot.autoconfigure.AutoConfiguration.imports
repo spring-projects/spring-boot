@@ -1,0 +1,2 @@
+org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration
+org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration

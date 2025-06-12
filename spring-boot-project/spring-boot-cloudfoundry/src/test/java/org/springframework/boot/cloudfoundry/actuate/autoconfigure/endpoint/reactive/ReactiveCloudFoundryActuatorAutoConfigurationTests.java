@@ -34,7 +34,6 @@ import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
@@ -50,6 +49,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.servlet.CloudFoundryInfoEndpointWebExtension;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
@@ -95,15 +96,15 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(
-				AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class, WebFluxAutoConfiguration.class,
-						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class, WebClientCustomizerConfig.class,
-						WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-						InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-						ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class))
 		.withUserConfiguration(UserDetailsServiceConfiguration.class);
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";

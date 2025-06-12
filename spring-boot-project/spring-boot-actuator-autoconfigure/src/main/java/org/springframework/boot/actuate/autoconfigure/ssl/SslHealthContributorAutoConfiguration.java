@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.ssl;
 
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.ssl.SslHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,9 @@ import org.springframework.context.annotation.Bean;
  * @author Jonatan Ivanov
  * @since 3.4.0
  */
-@AutoConfiguration(before = HealthContributorAutoConfiguration.class)
+@AutoConfiguration(
+		beforeName = "org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration")
+@ConditionalOnClass(Health.class)
 @ConditionalOnEnabledHealthIndicator("ssl")
 @EnableConfigurationProperties(SslHealthIndicatorProperties.class)
 public class SslHealthContributorAutoConfiguration {

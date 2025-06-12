@@ -30,11 +30,12 @@ import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoCon
 import org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.ServletHttpExchangesAutoConfiguration;
@@ -72,8 +73,9 @@ class WebMvcEndpointExposureIntegrationTests {
 				WebMvcAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class, ServletHttpExchangesAutoConfiguration.class,
-				HealthContributorAutoConfiguration.class, BeansEndpointAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, ShutdownEndpointAutoConfiguration.class))
+				HealthContributorAutoConfiguration.class, HealthContributorRegistryAutoConfiguration.class,
+				BeansEndpointAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				ShutdownEndpointAutoConfiguration.class))
 		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
 				HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
 		.withPropertyValues("server.port:0");

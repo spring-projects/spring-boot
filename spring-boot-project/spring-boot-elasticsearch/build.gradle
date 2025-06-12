@@ -30,7 +30,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api("org.elasticsearch.client:elasticsearch-rest-client")
 
-	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))

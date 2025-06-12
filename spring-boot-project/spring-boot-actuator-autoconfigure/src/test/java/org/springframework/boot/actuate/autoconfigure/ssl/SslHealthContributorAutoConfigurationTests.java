@@ -22,12 +22,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.ssl.SslHealthContributorAutoConfigurationTests.CustomSslInfoConfiguration.CustomSslHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.ssl.SslHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.ssl.SslBundles;
@@ -47,8 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SslHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(
-				AutoConfigurations.of(SslHealthContributorAutoConfiguration.class, SslAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(SslHealthContributorAutoConfiguration.class,
+				HealthContributorRegistryAutoConfiguration.class, SslAutoConfiguration.class))
 		.withPropertyValues("server.ssl.bundle=ssltest",
 				"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:test.jks");
 

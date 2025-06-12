@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.system;
 
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -33,7 +34,9 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@AutoConfiguration(before = HealthContributorAutoConfiguration.class)
+@AutoConfiguration(
+		beforeName = "org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration")
+@ConditionalOnClass(Health.class)
 @ConditionalOnEnabledHealthIndicator("diskspace")
 @EnableConfigurationProperties(DiskSpaceHealthIndicatorProperties.class)
 public class DiskSpaceHealthContributorAutoConfiguration {
