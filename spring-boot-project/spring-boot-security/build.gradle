@@ -54,6 +54,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-messaging")
 	optional("org.springframework.security:spring-security-rsocket")
 
+	testImplementation(project(":spring-boot-project:spring-boot-health"))
 	testImplementation(project(":spring-boot-project:spring-boot-hibernate"))
 	testImplementation(project(":spring-boot-project:spring-boot-http-converter"))
 	testImplementation(project(":spring-boot-project:spring-boot-jackson"))

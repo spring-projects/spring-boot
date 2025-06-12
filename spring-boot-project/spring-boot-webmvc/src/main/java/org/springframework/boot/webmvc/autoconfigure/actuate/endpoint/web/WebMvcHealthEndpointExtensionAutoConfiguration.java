@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(HealthEndpoint.class)
-@ConditionalOnBean(HealthEndpoint.class)
+@ConditionalOnBean({ HealthEndpoint.class, WebEndpointsSupplier.class, HealthEndpointGroups.class })
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 public class WebMvcHealthEndpointExtensionAutoConfiguration {
 

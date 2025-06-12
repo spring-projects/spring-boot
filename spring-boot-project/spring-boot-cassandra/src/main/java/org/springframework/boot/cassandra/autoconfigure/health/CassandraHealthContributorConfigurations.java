@@ -21,14 +21,14 @@ import java.util.Map;
 import com.datastax.oss.driver.api.core.CqlSession;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.cassandra.actuate.health.CassandraDriverHealthIndicator;
-import org.springframework.boot.cassandra.actuate.health.CassandraDriverReactiveHealthIndicator;
+import org.springframework.boot.cassandra.health.CassandraDriverHealthIndicator;
+import org.springframework.boot.cassandra.health.CassandraDriverReactiveHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.CompositeHealthContributorConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.CompositeReactiveHealthContributorConfiguration;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.ReactiveHealthContributor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

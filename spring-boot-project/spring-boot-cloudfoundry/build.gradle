@@ -31,6 +31,7 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-security"))
 
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional(project(":spring-boot-project:spring-boot-restclient"))
 	optional(project(":spring-boot-project:spring-boot-webclient"))
 	optional(project(":spring-boot-project:spring-boot-webflux"))

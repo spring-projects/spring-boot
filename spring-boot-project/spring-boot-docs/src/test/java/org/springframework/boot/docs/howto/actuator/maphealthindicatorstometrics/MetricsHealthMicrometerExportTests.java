@@ -22,11 +22,12 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +55,8 @@ class MetricsHealthMicrometerExportTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(MyHealthMetricsExportConfiguration.class)
-	@ImportAutoConfiguration(classes = { HealthContributorAutoConfiguration.class, MetricsAutoConfiguration.class,
+	@ImportAutoConfiguration({ HealthContributorAutoConfiguration.class,
+			HealthContributorRegistryAutoConfiguration.class, MetricsAutoConfiguration.class,
 			HealthEndpointAutoConfiguration.class })
 	static class Config {
 
@@ -70,7 +72,7 @@ class MetricsHealthMicrometerExportTests {
 
 		@Bean
 		HealthIndicator outOfService() {
-			return () -> new Health.Builder().outOfService().build();
+			return () -> Health.outOfService().build();
 		}
 
 	}

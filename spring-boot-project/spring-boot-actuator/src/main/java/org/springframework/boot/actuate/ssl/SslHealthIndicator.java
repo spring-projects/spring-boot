@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health.Builder;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.contributor.AbstractHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
@@ -54,7 +54,7 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Builder builder) throws Exception {
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<CertificateChainInfo> validCertificateChains = new ArrayList<>();
 		List<CertificateChainInfo> invalidCertificateChains = new ArrayList<>();
 		List<CertificateChainInfo> expiringCerificateChains = new ArrayList<>();

@@ -29,6 +29,9 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
@@ -46,58 +49,53 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 @ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
-public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
-
-	private static final String[] NO_PATH = {};
+public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, HealthDescriptor> {
 
 	/**
 	 * Create a new {@link HealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @param groups the health endpoint groups
-	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
-	 * @since 2.6.9
+	 * @since 4.0.0
 	 */
-	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
-		super(registry, groups, slowIndicatorLoggingThreshold);
+	public HealthEndpointWebExtension(HealthContributorRegistry registry,
+			ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
+			Duration slowContributorLoggingThreshold) {
+		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext) {
-		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
+		return health(apiVersion, serverNamespace, securityContext, false, EMPTY_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, boolean showAll, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, serverNamespace, securityContext, showAll, path);
+		Result<HealthDescriptor> result = getResult(apiVersion, serverNamespace, securityContext, showAll, path);
 		if (result == null) {
-			return (Arrays.equals(path, NO_PATH))
-					? new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK)
+			return (Arrays.equals(path, EMPTY_PATH))
+					? new WebEndpointResponse<>(IndicatedHealthDescriptor.UP, WebEndpointResponse.STATUS_OK)
 					: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
-		HealthComponent health = result.getHealth();
-		HealthEndpointGroup group = result.getGroup();
-		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
-		return new WebEndpointResponse<>(health, statusCode);
+		HealthDescriptor descriptor = result.descriptor();
+		HealthEndpointGroup group = result.group();
+		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(descriptor.getStatus());
+		return new WebEndpointResponse<>(descriptor, statusCode);
 	}
 
 	@Override
-	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
-		return ((HealthIndicator) contributor).getHealth(includeDetails);
-	}
-
-	@Override
-	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
+	protected HealthDescriptor aggregateDescriptors(ApiVersion apiVersion, Map<String, HealthDescriptor> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
-		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
+		return getCompositeDescriptor(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }

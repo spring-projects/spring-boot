@@ -17,7 +17,7 @@
 package org.springframework.boot.jdbc.autoconfigure.health;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
+import org.springframework.boot.jdbc.health.DataSourceHealthIndicator;
 
 /**
  * External configuration properties for {@link DataSourceHealthIndicator}.

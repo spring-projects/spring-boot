@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.availability;
 
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 
 /**
  * A {@link HealthIndicator} that checks the {@link LivenessState} of the application.

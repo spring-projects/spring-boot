@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docs.actuator.endpoints.health.reactivehealthindicators
 
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 

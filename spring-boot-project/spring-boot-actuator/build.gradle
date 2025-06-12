@@ -27,6 +27,7 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional(project(":spring-boot-project:spring-boot-http-converter"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-validation"))

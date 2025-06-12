@@ -18,9 +18,9 @@ package org.springframework.boot.ldap.autoconfigure.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.ldap.actuate.health.LdapHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.ldap.health.LdapHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.ldap.core.LdapOperations;
 

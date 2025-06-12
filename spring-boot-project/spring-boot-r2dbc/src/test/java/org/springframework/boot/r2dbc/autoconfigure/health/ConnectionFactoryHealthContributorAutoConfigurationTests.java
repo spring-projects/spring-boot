@@ -18,10 +18,10 @@ package org.springframework.boot.r2dbc.autoconfigure.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.r2dbc.actuate.health.ConnectionFactoryHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration;
+import org.springframework.boot.r2dbc.health.ConnectionFactoryHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -35,9 +35,9 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-tx"))
 
-	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("io.micrometer:micrometer-core")

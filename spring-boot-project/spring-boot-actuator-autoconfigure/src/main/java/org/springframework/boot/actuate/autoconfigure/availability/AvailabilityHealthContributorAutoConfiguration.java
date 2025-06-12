@@ -23,8 +23,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.3.2
  */
 @AutoConfiguration(after = ApplicationAvailabilityAutoConfiguration.class)
+@ConditionalOnClass(Health.class)
 public class AvailabilityHealthContributorAutoConfiguration {
 
 	@Bean

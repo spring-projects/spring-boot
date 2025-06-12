@@ -33,8 +33,8 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-health"))
 	optional("jakarta.transaction:jakarta.transaction-api")
 	optional("org.messaginghub:pooled-jms") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"

@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
@@ -39,6 +38,8 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
@@ -290,7 +291,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 					"vcap.application.cf_api:https://my-cloud-controller.com")
 			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class))
+					HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class))
 			.run((context) -> {
 				Collection<ExposableWebEndpoint> endpoints = context
 					.getBean("cloudFoundryWebEndpointServletHandlerMapping",

@@ -20,14 +20,14 @@ import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.neo4j.actuate.health.Neo4jHealthIndicator;
-import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.CompositeHealthContributorConfiguration;
+import org.springframework.boot.health.autoconfigure.contributor.CompositeReactiveHealthContributorConfiguration;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.ReactiveHealthContributor;
+import org.springframework.boot.neo4j.health.Neo4jHealthIndicator;
+import org.springframework.boot.neo4j.health.Neo4jReactiveHealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

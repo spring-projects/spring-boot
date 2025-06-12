@@ -18,16 +18,16 @@ package org.springframework.boot.neo4j.autoconfigure.health;
 
 import org.neo4j.driver.Driver;
 
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.neo4j.actuate.health.Neo4jHealthIndicator;
-import org.springframework.boot.neo4j.actuate.health.Neo4jReactiveHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
 import org.springframework.boot.neo4j.autoconfigure.health.Neo4jHealthContributorConfigurations.Neo4jConfiguration;
 import org.springframework.boot.neo4j.autoconfigure.health.Neo4jHealthContributorConfigurations.Neo4jReactiveConfiguration;
+import org.springframework.boot.neo4j.health.Neo4jHealthIndicator;
+import org.springframework.boot.neo4j.health.Neo4jReactiveHealthIndicator;
 import org.springframework.context.annotation.Import;
 
 /**

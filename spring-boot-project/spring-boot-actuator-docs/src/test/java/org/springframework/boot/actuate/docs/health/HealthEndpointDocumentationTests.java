@@ -29,23 +29,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
-import org.springframework.boot.actuate.health.CompositeHealthContributor;
-import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorNameGenerator;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.registry.DefaultHealthContributorRegistry;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.health.DataSourceHealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -105,11 +106,12 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		HealthEndpoint healthEndpoint(Map<String, HealthContributor> healthContributors) {
-			HealthContributorRegistry registry = new DefaultHealthContributorRegistry(healthContributors);
+		HealthEndpoint healthEndpoint(Map<String, HealthContributor> contributors) {
+			HealthContributorRegistry registry = new DefaultHealthContributorRegistry(null,
+					HealthContributorNameGenerator.withoutStandardSuffixes().registrar(contributors));
 			HealthEndpointGroup primary = new TestHealthEndpointGroup();
 			HealthEndpointGroups groups = HealthEndpointGroups.of(primary, Collections.emptyMap());
-			return new HealthEndpoint(registry, groups, null);
+			return new HealthEndpoint(registry, null, groups, null);
 		}
 
 		@Bean

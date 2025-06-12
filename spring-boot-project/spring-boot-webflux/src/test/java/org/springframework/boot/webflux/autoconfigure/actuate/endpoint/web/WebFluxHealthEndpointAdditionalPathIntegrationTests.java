@@ -24,6 +24,8 @@ import org.springframework.boot.actuate.autoconfigure.integrationtest.AbstractHe
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
@@ -47,8 +49,10 @@ class WebFluxHealthEndpointAdditionalPathIntegrationTests extends
 	WebFluxHealthEndpointAdditionalPathIntegrationTests() {
 		super(new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
-					WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, EndpointAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, WebFluxHealthEndpointExtensionAutoConfiguration.class,
+					WebFluxAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+					HealthContributorRegistryAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
+					EndpointAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					WebFluxHealthEndpointExtensionAutoConfiguration.class,
 					DiskSpaceHealthContributorAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class, NettyReactiveWebServerAutoConfiguration.class,
 					NettyReactiveManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))

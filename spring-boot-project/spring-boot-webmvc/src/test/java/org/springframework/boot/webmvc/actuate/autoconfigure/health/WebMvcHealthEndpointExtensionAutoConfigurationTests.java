@@ -21,14 +21,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.WithTestEndpointOutcomeExposureContributor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webmvc.actuate.endpoint.web.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.webmvc.autoconfigure.actuate.endpoint.web.WebMvcHealthEndpointExtensionAutoConfiguration;
@@ -47,7 +48,8 @@ class WebMvcHealthEndpointExtensionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, WebMvcHealthEndpointExtensionAutoConfiguration.class));
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				WebMvcHealthEndpointExtensionAutoConfiguration.class));
 
 	@Test
 	@WithTestEndpointOutcomeExposureContributor
@@ -65,6 +67,17 @@ class WebMvcHealthEndpointExtensionAutoConfigurationTests {
 				assertThat(context.getBean(WebEndpointsSupplier.class).getEndpoints()).isEmpty();
 				assertThat(context).hasSingleBean(AdditionalHealthEndpointPathsWebMvcHandlerMapping.class);
 			});
+	}
+
+	@Test
+	@WithTestEndpointOutcomeExposureContributor
+	void backsOffWithoutWebEndpointInfrastructure() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class))
+			.withBean(DispatcherServlet.class)
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.test.exposure.include=*")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(AdditionalHealthEndpointPathsWebMvcHandlerMapping.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

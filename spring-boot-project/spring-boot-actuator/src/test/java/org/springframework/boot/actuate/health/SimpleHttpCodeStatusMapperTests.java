@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

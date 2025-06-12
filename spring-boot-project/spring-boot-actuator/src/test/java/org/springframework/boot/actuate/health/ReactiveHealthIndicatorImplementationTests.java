@@ -23,7 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
@@ -73,7 +74,7 @@ class ReactiveHealthIndicatorImplementationTests {
 		}
 
 		@Override
-		protected Mono<Health> doHealthCheck(Builder builder) {
+		protected Mono<Health> doHealthCheck(Health.Builder builder) {
 			return Mono.just(builder.up().build());
 		}
 
@@ -86,7 +87,7 @@ class ReactiveHealthIndicatorImplementationTests {
 		}
 
 		@Override
-		protected Mono<Health> doHealthCheck(Builder builder) {
+		protected Mono<Health> doHealthCheck(Health.Builder builder) {
 			return Mono.error(new UnsupportedOperationException());
 		}
 
@@ -100,7 +101,7 @@ class ReactiveHealthIndicatorImplementationTests {
 		}
 
 		@Override
-		protected Mono<Health> doHealthCheck(Builder builder) {
+		protected Mono<Health> doHealthCheck(Health.Builder builder) {
 			throw new RuntimeException();
 		}
 

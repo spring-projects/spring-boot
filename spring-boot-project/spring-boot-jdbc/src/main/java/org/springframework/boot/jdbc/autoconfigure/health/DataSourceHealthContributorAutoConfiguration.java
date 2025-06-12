@@ -18,11 +18,11 @@ package org.springframework.boot.jdbc.autoconfigure.health;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -30,18 +30,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.CompositeHealthContributor;
-import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.actuate.health.DataSourceHealthIndicator;
+import org.springframework.boot.health.autoconfigure.contributor.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.health.DataSourceHealthIndicator;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -171,8 +171,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		}
 
 		@Override
-		public Iterator<NamedContributor<HealthContributor>> iterator() {
-			return this.delegate.iterator();
+		public Stream<HealthContributors.Entry> stream() {
+			return this.delegate.stream();
 		}
 
 	}

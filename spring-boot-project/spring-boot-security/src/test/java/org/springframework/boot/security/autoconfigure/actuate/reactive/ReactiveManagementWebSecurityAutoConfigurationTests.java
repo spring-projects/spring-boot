@@ -27,10 +27,11 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -67,10 +68,11 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-				WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
-				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class, ReactiveManagementWebSecurityAutoConfiguration.class));
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				InfoEndpointAutoConfiguration.class, WebFluxAutoConfiguration.class,
+				EnvironmentEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class,
+				ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	void permitAllForHealth() {

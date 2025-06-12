@@ -23,6 +23,8 @@ import org.springframework.boot.actuate.autoconfigure.integrationtest.AbstractHe
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration;
@@ -47,6 +49,7 @@ class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
 	WebMvcHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class, HealthContributorRegistryAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 					TomcatServletWebServerAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
 					TomcatServletManagementContextAutoConfiguration.class, WebMvcAutoConfiguration.class,

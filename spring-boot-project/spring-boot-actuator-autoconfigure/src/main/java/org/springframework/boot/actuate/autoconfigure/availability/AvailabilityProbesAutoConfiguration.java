@@ -23,10 +23,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -42,6 +44,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 @AutoConfiguration(after = { AvailabilityHealthContributorAutoConfiguration.class,
 		ApplicationAvailabilityAutoConfiguration.class })
+@ConditionalOnClass(Health.class)
 @Conditional(AvailabilityProbesAutoConfiguration.ProbesCondition.class)
 public class AvailabilityProbesAutoConfiguration {
 

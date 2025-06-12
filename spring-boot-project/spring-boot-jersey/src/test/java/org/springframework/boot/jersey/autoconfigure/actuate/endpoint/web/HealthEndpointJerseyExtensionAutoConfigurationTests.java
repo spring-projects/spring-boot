@@ -22,15 +22,16 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.WithTestEndpointOutcomeExposureContributor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
 import org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.HealthEndpointJerseyExtensionAutoConfiguration.JerseyAdditionalHealthEndpointPathsResourcesRegistrar;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,8 @@ class HealthEndpointJerseyExtensionAutoConfigurationTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(HealthIndicatorsConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-				HealthEndpointAutoConfiguration.class, HealthEndpointJerseyExtensionAutoConfiguration.class));
+				HealthContributorRegistryAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+				HealthEndpointJerseyExtensionAutoConfiguration.class));
 
 	@Test
 	@WithTestEndpointOutcomeExposureContributor

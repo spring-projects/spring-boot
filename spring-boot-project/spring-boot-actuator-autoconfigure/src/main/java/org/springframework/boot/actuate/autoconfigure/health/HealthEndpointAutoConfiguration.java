@@ -20,7 +20,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.Conditi
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -32,11 +35,14 @@ import org.springframework.context.annotation.Import;
  * @author Scott Frederick
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(
+		afterName = "org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration")
+@ConditionalOnClass(Health.class)
+@ConditionalOnBean(type = "org.springframework.boot.health.registry.HealthContributorRegistry")
 @ConditionalOnAvailableEndpoint(HealthEndpoint.class)
 @EnableConfigurationProperties(HealthEndpointProperties.class)
-@Import({ HealthEndpointConfiguration.class, ReactiveHealthEndpointConfiguration.class,
-		HealthEndpointWebExtensionConfiguration.class, HealthEndpointReactiveWebExtensionConfiguration.class })
+@Import({ HealthEndpointConfiguration.class, HealthEndpointWebExtensionConfiguration.class,
+		HealthEndpointReactiveWebExtensionConfiguration.class })
 public class HealthEndpointAutoConfiguration {
 
 }
