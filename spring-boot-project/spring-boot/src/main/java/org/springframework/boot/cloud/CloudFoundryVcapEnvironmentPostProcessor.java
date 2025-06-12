@@ -91,10 +91,6 @@ import org.springframework.util.StringUtils;
  */
 public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
-
-	private static final String VCAP_SERVICES = "VCAP_SERVICES";
-
 	private final Log logger;
 
 	// Before ConfigDataEnvironmentPostProcessor so values there can use these
@@ -126,12 +122,12 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			addWithPrefix(properties, getPropertiesFromApplication(environment, jsonParser), "vcap.application.");
 			addWithPrefix(properties, getPropertiesFromServices(environment, jsonParser), "vcap.services.");
 			MutablePropertySources propertySources = environment.getPropertySources();
+			PropertiesPropertySource vcapSource = new PropertiesPropertySource("vcap", properties);
 			if (propertySources.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-				propertySources.addAfter(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-						new PropertiesPropertySource("vcap", properties));
+				propertySources.addAfter(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME, vcapSource);
 			}
 			else {
-				propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
+				propertySources.addFirst(vcapSource);
 			}
 		}
 	}
@@ -146,7 +142,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	private Properties getPropertiesFromApplication(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
-			String property = environment.getProperty(VCAP_APPLICATION, "{}");
+			String property = environment.getProperty("VCAP_APPLICATION", "{}");
 			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromApplication(properties, map);
 		}
@@ -159,7 +155,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 	private Properties getPropertiesFromServices(Environment environment, JsonParser parser) {
 		Properties properties = new Properties();
 		try {
-			String property = environment.getProperty(VCAP_SERVICES, "{}");
+			String property = environment.getProperty("VCAP_SERVICES", "{}");
 			Map<String, Object> map = parser.parseMap(property);
 			extractPropertiesFromServices(properties, map);
 		}
