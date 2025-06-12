@@ -110,7 +110,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Common Artifact Filters", "3.3.2") {
+	library("Maven Common Artifact Filters", "3.4.0") {
 		group("org.apache.maven.shared") {
 			modules = [
 				"maven-common-artifact-filters"
