@@ -110,12 +110,12 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Bean
-	public ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
+	ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
 		return new ErrorPageCustomizer(this.serverProperties, dispatcherServletPath);
 	}
 
 	@Bean
-	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
+	static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 

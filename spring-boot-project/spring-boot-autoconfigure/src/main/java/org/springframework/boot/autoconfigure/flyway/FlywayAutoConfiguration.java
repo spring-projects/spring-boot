@@ -113,12 +113,12 @@ public class FlywayAutoConfiguration {
 
 	@Bean
 	@ConfigurationPropertiesBinding
-	public static StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
+	static StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
 		return new StringOrNumberToMigrationVersionConverter();
 	}
 
 	@Bean
-	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(ObjectProvider<Flyway> flyways) {
+	FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(ObjectProvider<Flyway> flyways) {
 		return new FlywaySchemaManagementProvider(flyways);
 	}
 

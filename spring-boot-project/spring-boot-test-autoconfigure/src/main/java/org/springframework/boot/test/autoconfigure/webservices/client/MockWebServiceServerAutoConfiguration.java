@@ -37,12 +37,12 @@ import org.springframework.ws.test.client.MockWebServiceServer;
 public class MockWebServiceServerAutoConfiguration {
 
 	@Bean
-	public TestMockWebServiceServer mockWebServiceServer() {
+	TestMockWebServiceServer mockWebServiceServer() {
 		return new TestMockWebServiceServer(new MockWebServiceMessageSender());
 	}
 
 	@Bean
-	public MockWebServiceServerWebServiceTemplateCustomizer mockWebServiceServerWebServiceTemplateCustomizer(
+	MockWebServiceServerWebServiceTemplateCustomizer mockWebServiceServerWebServiceTemplateCustomizer(
 			TestMockWebServiceServer mockWebServiceServer) {
 		return new MockWebServiceServerWebServiceTemplateCustomizer(mockWebServiceServer);
 	}

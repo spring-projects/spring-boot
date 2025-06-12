@@ -25,7 +25,7 @@ public class ThirdPartyConfiguration {
 
 	@Bean
 	@ConfigurationProperties("another")
-	public AnotherComponent anotherComponent() {
+	AnotherComponent anotherComponent() {
 		return new AnotherComponent();
 	}
 

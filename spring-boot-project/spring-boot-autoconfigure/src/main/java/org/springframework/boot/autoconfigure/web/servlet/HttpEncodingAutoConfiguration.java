@@ -64,7 +64,7 @@ public class HttpEncodingAutoConfiguration {
 	}
 
 	@Bean
-	public LocaleCharsetMappingsCustomizer localeCharsetMappingsCustomizer() {
+	LocaleCharsetMappingsCustomizer localeCharsetMappingsCustomizer() {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}
 

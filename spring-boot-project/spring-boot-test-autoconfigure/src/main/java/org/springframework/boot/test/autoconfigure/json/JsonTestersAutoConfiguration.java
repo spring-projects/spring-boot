@@ -69,7 +69,7 @@ import org.springframework.util.ReflectionUtils;
 public class JsonTestersAutoConfiguration {
 
 	@Bean
-	public static JsonMarshalTestersBeanPostProcessor jsonMarshalTestersBeanPostProcessor() {
+	static JsonMarshalTestersBeanPostProcessor jsonMarshalTestersBeanPostProcessor() {
 		return new JsonMarshalTestersBeanPostProcessor();
 	}
 

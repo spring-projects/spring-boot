@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@ import org.springframework.context.annotation.Configuration;
 public class ScannedFactoryBeanWithBeanMethodArgumentsConfiguration {
 
 	@Bean
-	public Foo foo() {
+	Foo foo() {
 		return new Foo();
 	}
 
 	@Bean
-	public ScanFactoryBean exampleBeanFactoryBean(Foo foo) {
+	ScanFactoryBean exampleBeanFactoryBean(Foo foo) {
 		return new ScanFactoryBean("foo");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,15 +77,15 @@ class JerseyAutoConfigurationCustomApplicationTests {
 	static class TestConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		public class JerseyConfiguration {
+		static class JerseyConfiguration {
 
 			@Bean
-			public TestApplication testApplication() {
+			TestApplication testApplication() {
 				return new TestApplication();
 			}
 
 			@Bean
-			public ResourceConfig conf(TestApplication app) {
+			ResourceConfig conf(TestApplication app) {
 				ResourceConfig config = ResourceConfig.forApplication(app);
 				config.register(TestController.class);
 				return config;

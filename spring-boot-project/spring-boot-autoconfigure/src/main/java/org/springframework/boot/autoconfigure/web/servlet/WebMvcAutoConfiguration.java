@@ -202,7 +202,7 @@ public class WebMvcAutoConfiguration {
 
 		private ServletContext servletContext;
 
-		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
+		WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
@@ -383,7 +383,7 @@ public class WebMvcAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebProperties.class)
-	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+	static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
 		private final Resources resourceProperties;
 
@@ -397,7 +397,7 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		public EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
+		EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ListableBeanFactory beanFactory) {
@@ -420,14 +420,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
+		WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
 				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
 			return createWelcomePageHandlerMapping(applicationContext, mvcConversionService, mvcResourceUrlProvider,
 					WelcomePageHandlerMapping::new);
 		}
 
 		@Bean
-		public WelcomePageNotAcceptableHandlerMapping welcomePageNotAcceptableHandlerMapping(
+		WelcomePageNotAcceptableHandlerMapping welcomePageNotAcceptableHandlerMapping(
 				ApplicationContext applicationContext, FormattingConversionService mvcConversionService,
 				ResourceUrlProvider mvcResourceUrlProvider) {
 			return createWelcomePageHandlerMapping(applicationContext, mvcConversionService, mvcResourceUrlProvider,

@@ -82,8 +82,7 @@ import org.springframework.util.StringUtils;
 public class LiquibaseAutoConfiguration {
 
 	@Bean
-	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
-			ObjectProvider<SpringLiquibase> liquibases) {
+	LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(ObjectProvider<SpringLiquibase> liquibases) {
 		return new LiquibaseSchemaManagementProvider(liquibases);
 	}
 

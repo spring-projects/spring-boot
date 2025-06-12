@@ -92,7 +92,7 @@ public class JmxEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = EndpointObjectNameFactory.class, search = SearchStrategy.CURRENT)
-	public DefaultEndpointObjectNameFactory endpointObjectNameFactory(MBeanServer mBeanServer) {
+	DefaultEndpointObjectNameFactory endpointObjectNameFactory(MBeanServer mBeanServer) {
 		String contextId = ObjectUtils.getIdentityHexString(this.applicationContext);
 		return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, mBeanServer, contextId);
 	}

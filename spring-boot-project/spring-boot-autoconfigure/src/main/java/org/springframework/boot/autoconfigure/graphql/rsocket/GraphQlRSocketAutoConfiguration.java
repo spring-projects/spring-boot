@@ -62,7 +62,7 @@ public class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
+	GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
 		return new GraphQlRSocketController(handler);
 	}
 

@@ -98,6 +98,7 @@ final class ArchitectureRules {
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
+		rules.add(allConfigurationMethodsShouldNotBePublicIfReturnTypeOrParameterTypeIsNotPublic());
 		return List.copyOf(rules);
 	}
 
@@ -317,6 +318,30 @@ final class ArchitectureRules {
 			.should()
 			.beStatic()
 			.allowEmptyShould(true);
+	}
+
+	private static ArchRule allConfigurationMethodsShouldNotBePublicIfReturnTypeOrParameterTypeIsNotPublic() {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean")
+			.should(check("not be public if return type is not public or any of parameter types is not public",
+					ArchitectureRules::configurationMethodsShouldNotBePublicIfReturnTypeOrParameterTypeIsNotPublic))
+			.allowEmptyShould(true);
+	}
+
+	private static void configurationMethodsShouldNotBePublicIfReturnTypeOrParameterTypeIsNotPublic(JavaMethod item,
+			ConditionEvents events) {
+		if (!item.getModifiers().contains(JavaModifier.PUBLIC)) {
+			return;
+		}
+		boolean violated = !item.getReturnType().toErasure().getModifiers().contains(JavaModifier.PUBLIC);
+		if (!violated) {
+			violated = item.getParameterTypes()
+				.stream()
+				.anyMatch((parameterType) -> !parameterType.toErasure().getModifiers().contains(JavaModifier.PUBLIC));
+		}
+		if (violated) {
+			addViolation(events, item, item.getDescription()
+					+ " should not be public if return type is not public or any of parameter types is not public");
+		}
 	}
 
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {
