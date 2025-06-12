@@ -26,7 +26,9 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 /**
@@ -46,6 +48,9 @@ public abstract class CheckClasspathForProhibitedDependencies extends DefaultTas
 	public CheckClasspathForProhibitedDependencies() {
 		getOutputs().upToDateWhen((task) -> true);
 	}
+
+	@Input
+	public abstract SetProperty<String> getPermittedGroups();
 
 	public void setClasspath(Configuration classpath) {
 		this.classpath = classpath;
@@ -75,8 +80,8 @@ public abstract class CheckClasspathForProhibitedDependencies extends DefaultTas
 	}
 
 	private boolean prohibited(ModuleVersionIdentifier id) {
-		return PROHIBITED_GROUPS.contains(id.getGroup()) || prohibitedJavax(id) || prohibitedSlf4j(id)
-				|| prohibitedJbossSpec(id);
+		return (!getPermittedGroups().get().contains(id.getGroup())) && (PROHIBITED_GROUPS.contains(id.getGroup())
+				|| prohibitedJavax(id) || prohibitedSlf4j(id) || prohibitedJbossSpec(id));
 	}
 
 	private boolean prohibitedSlf4j(ModuleVersionIdentifier id) {
