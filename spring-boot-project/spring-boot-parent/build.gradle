@@ -39,7 +39,7 @@ bom {
 			]
 		}
 	}
-	library("ClickHouse", "0.6.5") {
+	library("ClickHouse", "0.9.0") {
 		group("com.clickhouse") {
 			modules = [
 				"clickhouse-jdbc",
