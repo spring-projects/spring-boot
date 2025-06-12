@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
 @AutoConfiguration(afterName = { "org.springframework.boot.data.couchbase.autoconfigure.CouchbaseDataAutoConfiguration",
 		"org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
 		"org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration",
-		"org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration" })
+		"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration" })
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")

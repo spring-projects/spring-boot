@@ -27,7 +27,7 @@ description = "Spring Boot Data JPA"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-data-commons"))
-	api(project(":spring-boot-project:spring-boot-jpa"))
+	api(project(":spring-boot-project:spring-boot-hibernate"))
 	api("org.springframework.data:spring-data-jpa")
 	api("org.springframework:spring-aspects")
 
