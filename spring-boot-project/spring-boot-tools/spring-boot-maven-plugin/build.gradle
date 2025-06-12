@@ -15,12 +15,10 @@ dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
-		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	compileOnly("org.apache.maven:maven-plugin-api") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
@@ -88,6 +86,10 @@ dependencies {
 ext {
 	versionElements = version.split("\\.")
 	xsdVersion = versionElements[0] + "." + versionElements[1]
+}
+
+tasks.named("checkCompileClasspathForProhibitedDependencies") {
+	permittedGroups = ["javax.inject"]
 }
 
 tasks.register("copySettingsXml", Copy) {

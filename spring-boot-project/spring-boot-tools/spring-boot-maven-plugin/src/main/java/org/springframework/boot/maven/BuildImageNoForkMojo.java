@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.maven;
 
+import javax.inject.Inject;
+
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProjectHelper;
 
 /**
  * Package an application into an OCI image using a buildpack, but without forking the
@@ -32,5 +35,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class BuildImageNoForkMojo extends BuildImageMojo {
+
+	@Inject
+	public BuildImageNoForkMojo(MavenProjectHelper projectHelper) {
+		super(projectHelper);
+	}
 
 }

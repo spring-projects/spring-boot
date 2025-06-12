@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.resolver.ResolutionErrorHandler;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -103,11 +104,13 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
 	private File generatedClasses;
 
-	@Component
-	private RepositorySystem repositorySystem;
+	private final RepositorySystem repositorySystem;
 
-	@Component
-	private ResolutionErrorHandler resolutionErrorHandler;
+	@Inject
+	public ProcessTestAotMojo(ToolchainManager toolchainManager, RepositorySystem repositorySystem) {
+		super(toolchainManager);
+		this.repositorySystem = repositorySystem;
+	}
 
 	@Override
 	protected void executeAot() throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javax.inject.Inject;
 import javax.management.MBeanServerConnection;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
@@ -34,6 +35,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.RunProcess;
 
@@ -90,6 +92,11 @@ public class StartMojo extends AbstractRunMojo {
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
 	private Boolean useTestClasspath;
+
+	@Inject
+	public StartMojo(ToolchainManager toolchainManager) {
+		super(toolchainManager);
+	}
 
 	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,

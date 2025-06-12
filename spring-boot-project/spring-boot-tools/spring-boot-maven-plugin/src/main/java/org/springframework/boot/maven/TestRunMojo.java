@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
@@ -28,6 +30,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.RunProcess;
 
@@ -60,6 +63,11 @@ public class TestRunMojo extends AbstractRunMojo {
 	 */
 	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
 	private File testClassesDirectory;
+
+	@Inject
+	public TestRunMojo(ToolchainManager toolchainManager) {
+		super(toolchainManager);
+	}
 
 	@Override
 	protected List<File> getClassesDirectories() {

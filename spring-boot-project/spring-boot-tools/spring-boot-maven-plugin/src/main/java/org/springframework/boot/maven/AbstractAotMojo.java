@@ -41,7 +41,6 @@ import javax.tools.ToolProvider;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.toolchain.ToolchainManager;
@@ -65,8 +64,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * The toolchain manager to use to locate a custom JDK.
 	 */
-	@Component
-	private ToolchainManager toolchainManager;
+	private final ToolchainManager toolchainManager;
 
 	/**
 	 * Skip the execution.
@@ -93,6 +91,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.aot.compilerArguments")
 	private String compilerArguments;
+
+	protected AbstractAotMojo(ToolchainManager toolchainManager) {
+		this.toolchainManager = toolchainManager;
+	}
 
 	/**
 	 * Return Maven execution session.
