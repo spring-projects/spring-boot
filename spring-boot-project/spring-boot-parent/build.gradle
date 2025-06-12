@@ -68,7 +68,7 @@ bom {
 			]
 		}
 	}
-	library("Janino", "3.1.10") {
+	library("Janino", "3.1.12") {
 		group("org.codehaus.janino") {
 			bom("janino") {
 				permit("junit:junit")
