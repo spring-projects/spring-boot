@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
@@ -30,8 +31,15 @@ import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
 import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.actuate.info.ProcessInfoContributor;
+import org.springframework.boot.actuate.info.SslInfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.info.SslInfo;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
@@ -55,7 +63,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 	void info() {
 		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
 			.apply(MockMvcRestDocumentation.document("info", gitInfo(), buildInfo(), osInfo(), processInfo(),
-					javaInfo()));
+					javaInfo(), sslInfo()));
 	}
 
 	private ResponseFieldsSnippet gitInfo() {
@@ -166,6 +174,45 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 					.optional());
 	}
 
+	private ResponseFieldsSnippet sslInfo() {
+		return responseFields(beneathPath("ssl"),
+				fieldWithPath("bundles").description("SSL bundles information.").type(JsonFieldType.ARRAY),
+				fieldWithPath("bundles[].name").description("Name of the SSL bundle.").type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains").description("Certificate chains in the bundle.")
+					.type(JsonFieldType.ARRAY),
+				fieldWithPath("bundles[].certificateChains[].alias").description("Alias of the certificate chain.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates").description("Certificates in the chain.")
+					.type(JsonFieldType.ARRAY),
+				fieldWithPath("bundles[].certificateChains[].certificates[].subject")
+					.description("Subject of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].version")
+					.description("Version of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].issuer")
+					.description("Issuer of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].validityStarts")
+					.description("Certificate validity start date.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].serialNumber")
+					.description("Serial number of the certificate.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].validityEnds")
+					.description("Certificate validity end date.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].validity")
+					.description("Certificate validity information.")
+					.type(JsonFieldType.OBJECT),
+				fieldWithPath("bundles[].certificateChains[].certificates[].validity.status")
+					.description("Certificate validity status.")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("bundles[].certificateChains[].certificates[].signatureAlgorithmName")
+					.description("Signature algorithm name.")
+					.type(JsonFieldType.STRING));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -208,6 +255,21 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		JavaInfoContributor javaInfoContributor() {
 			return new JavaInfoContributor();
+		}
+
+		@Bean
+		SslInfo sslInfo() {
+			DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+			JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation("classpath:test.p12")
+				.withPassword("secret");
+			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+			sslBundleRegistry.registerBundle("test-0", SslBundle.of(sslStoreBundle));
+			return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		}
+
+		@Bean
+		SslInfoContributor sslInfoContributor(SslInfo sslInfo) {
+			return new SslInfoContributor(sslInfo);
 		}
 
 	}

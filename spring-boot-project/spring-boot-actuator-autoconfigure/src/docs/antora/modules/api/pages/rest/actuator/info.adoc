@@ -76,3 +76,13 @@ The following table describes the structure of the `java` section of the respons
 
 [cols="2,1,3"]
 include::partial$rest/actuator/info/response-fields-beneath-java.adoc[]
+
+
+
+[[info.retrieving.response-structure.ssl]]
+==== SSL Response Structure
+
+The following table describes the structure of the `ssl` section of the response:
+
+[cols="2,1,3"]
+include::partial$rest/actuator/info/response-fields-beneath-ssl.adoc[]
