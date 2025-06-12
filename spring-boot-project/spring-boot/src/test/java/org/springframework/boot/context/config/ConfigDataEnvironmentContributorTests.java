@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ class ConfigDataEnvironmentContributorTests {
 		ConfigData configData = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigDataResource resource = mock(ConfigDataResource.class);
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
-				resource, false, configData, 0, this.conversionService);
+				resource, false, configData, 0, this.conversionService, ConfigDataEnvironmentUpdateListener.NONE);
 		assertThat(contributor.getResource()).isSameAs(resource);
 	}
 
@@ -109,7 +109,7 @@ class ConfigDataEnvironmentContributorTests {
 		propertySource.setProperty("spring", "boot");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null, null,
-				false, configData, 0, this.conversionService);
+				false, configData, 0, this.conversionService, ConfigDataEnvironmentUpdateListener.NONE);
 		assertThat(contributor.getConfigurationPropertySource()
 			.getConfigurationProperty(ConfigurationPropertyName.of("spring"))
 			.getValue()).isEqualTo("boot");
@@ -321,7 +321,7 @@ class ConfigDataEnvironmentContributorTests {
 		propertySource.setProperty("spring.config.import", "test");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
-				resource, false, configData, 0, this.conversionService);
+				resource, false, configData, 0, this.conversionService, ConfigDataEnvironmentUpdateListener.NONE);
 		assertThat(contributor.getKind()).isEqualTo(Kind.UNBOUND_IMPORT);
 		assertThat(contributor.getResource()).isSameAs(resource);
 		assertThat(contributor.getImports()).isEmpty();
@@ -368,7 +368,7 @@ class ConfigDataEnvironmentContributorTests {
 		TestResource resource = new TestResource("a");
 		ConfigData configData = new ConfigData(Collections.singleton(new MockPropertySource()), Option.IGNORE_IMPORTS);
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
-				resource, false, configData, 0, this.conversionService);
+				resource, false, configData, 0, this.conversionService, ConfigDataEnvironmentUpdateListener.NONE);
 		ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(Collections.singleton(contributor),
 				null);
 		assertThat(bound).isNotNull();
@@ -382,7 +382,8 @@ class ConfigDataEnvironmentContributorTests {
 	private ConfigDataEnvironmentContributor createBoundContributor(ConfigDataResource resource, ConfigData configData,
 			int propertySourceIndex) {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
-				resource, false, configData, propertySourceIndex, this.conversionService);
+				resource, false, configData, propertySourceIndex, this.conversionService,
+				ConfigDataEnvironmentUpdateListener.NONE);
 		return contributor.withBoundProperties(Collections.singleton(contributor), null);
 	}
 

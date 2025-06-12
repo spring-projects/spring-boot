@@ -20,15 +20,13 @@ import java.util.Collections;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.TestApplicationEnvironment;
+import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
@@ -38,6 +36,7 @@ import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link ConfigDataEnvironmentPostProcessor}.
@@ -46,22 +45,19 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Nguyen Bao Sach
  */
-@ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
 
-	private final StandardEnvironment environment = new StandardEnvironment();
+	private final TestApplicationEnvironment environment = new TestApplicationEnvironment();
 
 	private final SpringApplication application = new SpringApplication();
 
-	@Mock
 	private ConfigDataEnvironment configDataEnvironment;
 
-	@Spy
-	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get,
-			new DefaultBootstrapContext());
+	private ConfigDataEnvironmentPostProcessor postProcessor;
 
 	@Test
 	void postProcessEnvironmentWhenNoLoaderCreatesDefaultLoaderInstance() {
+		setupMocksAndSpies();
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.postProcessor).should()
@@ -73,6 +69,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Test
 	void postProcessEnvironmentWhenCustomLoaderUsesSpecifiedLoaderInstance() {
+		setupMocksAndSpies();
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
 		this.application.setResourceLoader(resourceLoader);
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
@@ -85,6 +82,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Test
 	void postProcessEnvironmentWhenHasAdditionalProfilesOnSpringApplicationUsesAdditionalProfiles() {
+		setupMocksAndSpies();
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
@@ -96,6 +94,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Test
 	void postProcessEnvironmentWhenNoActiveProfiles() {
+		setupMocksAndSpies();
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(ResourceLoader.class), any());
@@ -117,6 +116,35 @@ class ConfigDataEnvironmentPostProcessorTests {
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
 			.isTrue();
+	}
+
+	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=dev
+			property=value
+			#---
+			spring.config.activate.on-profile=dev
+			property=dev-value1
+			""")
+	@WithResource(name = "application-dev.properties", content = "property=dev-value2")
+	void applyToCanOverrideConfigDataOptions() {
+		ConfigDataEnvironmentUpdateListener listener = new ConfigDataEnvironmentUpdateListener() {
+
+			@Override
+			public Options onConfigDataOptions(ConfigData configData, PropertySource<?> propertySource,
+					Options options) {
+				return options.with(ConfigData.Option.IGNORE_PROFILES);
+			}
+
+		};
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.emptyList(), listener);
+		assertThat(this.environment.getProperty("property")).isEqualTo("value");
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
+	}
+
+	private void setupMocksAndSpies() {
+		this.configDataEnvironment = mock(ConfigDataEnvironment.class);
+		this.postProcessor = spy(new ConfigDataEnvironmentPostProcessor(Supplier::get, new DefaultBootstrapContext()));
 	}
 
 	private boolean hasDevProfile(ConfigDataResource resource) {
