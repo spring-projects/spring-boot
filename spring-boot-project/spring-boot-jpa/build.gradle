@@ -17,7 +17,6 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
@@ -29,31 +28,14 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-jdbc"))
 	api(project(":spring-boot-project:spring-boot-tx"))
 	api("jakarta.persistence:jakarta.persistence-api")
-	api("org.hibernate.orm:hibernate-core")
 	api("org.springframework:spring-orm")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional("jakarta.servlet:jakarta.servlet-api")
-	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.springframework:spring-webmvc")
 
-	testImplementation(project(":spring-boot-project:spring-boot-flyway"))
-	testImplementation(project(":spring-boot-project:spring-boot-liquibase"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-autoconfigure")))
-	testImplementation("com.zaxxer:HikariCP")
-	testImplementation("javax.cache:cache-api")
-	testImplementation("org.ehcache:ehcache") {
-		artifact {
-			classifier = 'jakarta'
-		}
-	}
-	testImplementation("org.hibernate.orm:hibernate-envers")
-	testImplementation("org.hibernate.orm:hibernate-jcache")
 	testImplementation("org.springframework:spring-context-support")
-
-	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.h2database:h2")
 }

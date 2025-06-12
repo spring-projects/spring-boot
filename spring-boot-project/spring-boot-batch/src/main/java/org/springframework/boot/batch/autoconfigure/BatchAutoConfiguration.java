@@ -70,7 +70,7 @@ import org.springframework.util.StringUtils;
  * @since 4.0.0
  */
 @AutoConfiguration(after = TransactionAutoConfiguration.class,
-		afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
+		afterName = "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
 @ConditionalOnBean({ DataSource.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class)

@@ -35,7 +35,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
-	optional(project(":spring-boot-project:spring-boot-jpa"))
+	optional(project(":spring-boot-project:spring-boot-hibernate"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("com.hazelcast:hazelcast-spring")
 	optional("org.slf4j:slf4j-api")
@@ -47,6 +47,7 @@ dependencies {
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
+	testImplementation(project(":spring-boot-project:spring-boot-hibernate"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":spring-boot-project:spring-boot-testcontainers")))

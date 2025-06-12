@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
  * @since 1.4.0
  * @see AutoConfigureTestEntityManager
  */
-@AutoConfiguration(afterName = "org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ EntityManagerFactory.class })
 public class TestEntityManagerAutoConfiguration {
 

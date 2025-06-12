@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfigurati
 import org.springframework.boot.data.jpa.autoconfigure.domain.city.City;
 import org.springframework.boot.data.jpa.autoconfigure.domain.city.CityRepository;
 import org.springframework.boot.data.jpa.autoconfigure.domain.country.Country;
+import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

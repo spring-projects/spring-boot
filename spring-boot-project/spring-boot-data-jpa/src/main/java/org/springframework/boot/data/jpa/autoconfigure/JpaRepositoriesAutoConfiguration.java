@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
+import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryBuilderCustomizer;
-import org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;

@@ -86,4 +86,5 @@
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
 	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
 	<suppress files="ConfigurationPropertyCaching\.java" checks="SpringJavadoc" message="\@since"/>
+	<suppress files=".*MetricsAutoConfiguration\.java" checks="ImportControl" message=".micrometer"/>
 </suppressions>

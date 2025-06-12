@@ -1,0 +1,75 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
+      "deprecation": {
+        "level": "error",
+        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings."
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.jpa.hibernate.ddl-auto",
+      "values": [
+        {
+          "value": "create",
+          "description": "Create the schema and destroy previous data."
+        },
+        {
+          "value": "create-drop",
+          "description": "Create and then destroy the schema at the end of the session."
+        },
+        {
+          "value": "create-only",
+          "description": "Create the schema."
+        },
+        {
+          "value": "drop",
+          "description": "Drop the schema."
+        },
+        {
+          "value": "none",
+          "description": "Disable DDL handling."
+        },
+        {
+          "value": "truncate",
+          "description": "Truncate the tables in the schema."
+        },
+        {
+          "value": "update",
+          "description": "Update the schema if necessary."
+        },
+        {
+          "value": "validate",
+          "description": "Validate the schema, make no changes to the database."
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.naming.implicit-strategy",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.hibernate.boot.model.naming.ImplicitNamingStrategy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.naming.physical-strategy",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.hibernate.boot.model.naming.PhysicalNamingStrategy"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -54,7 +54,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-		"org.springframework.boot.jpa.autoconfigure.hibernate.HibernateJpaAutoConfiguration" })
+		"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration" })
 @ConditionalOnClass({ Scheduler.class, SchedulerFactoryBean.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(QuartzProperties.class)
 public class QuartzAutoConfiguration {
