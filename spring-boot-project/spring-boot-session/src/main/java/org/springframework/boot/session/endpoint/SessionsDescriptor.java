@@ -28,7 +28,7 @@ import org.springframework.session.Session;
  * Description of user's {@link Session sessions}.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 4.0.0
  */
 public final class SessionsDescriptor implements OperationResponseBody {
 

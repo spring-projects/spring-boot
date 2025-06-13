@@ -38,7 +38,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Stephane Nicoll
  * @author Yanming Zhou
- * @since 2.3.0
+ * @since 4.0.0
  */
 public class RabbitTemplateConfigurer {
 
@@ -51,7 +51,6 @@ public class RabbitTemplateConfigurer {
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
 	 * @param rabbitProperties properties to use
-	 * @since 2.6.0
 	 */
 	public RabbitTemplateConfigurer(RabbitProperties rabbitProperties) {
 		Assert.notNull(rabbitProperties, "'rabbitProperties' must not be null");
@@ -62,7 +61,6 @@ public class RabbitTemplateConfigurer {
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
-	 * @since 2.6.0
 	 */
 	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
@@ -71,7 +69,6 @@ public class RabbitTemplateConfigurer {
 	/**
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
-	 * @since 2.6.0
 	 */
 	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;

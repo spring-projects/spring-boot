@@ -26,8 +26,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.data.elasticsearch.domain.city.City;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchReactiveClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +57,7 @@ class ElasticsearchDataAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
 				ElasticsearchClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
-				ReactiveElasticsearchClientAutoConfiguration.class));
+				ElasticsearchReactiveClientAutoConfiguration.class));
 
 	@Test
 	void defaultRestBeansRegistered() {

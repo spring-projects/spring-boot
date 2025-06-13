@@ -50,19 +50,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link ReactiveTokenValidator}.
+ * Tests for {@link TokenValidator}.
  *
  * @author Madhura Bhave
  */
 @ExtendWith(MockitoExtension.class)
-class ReactiveTokenValidatorTests {
+class TokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
 
 	@Mock
-	private ReactiveCloudFoundrySecurityService securityService;
+	private SecurityService securityService;
 
-	private ReactiveTokenValidator tokenValidator;
+	private TokenValidator tokenValidator;
 
 	private static final String VALID_KEY = """
 			-----BEGIN PUBLIC KEY-----
@@ -94,7 +94,7 @@ class ReactiveTokenValidatorTests {
 	void setup() {
 		VALID_KEYS.put("valid-key", VALID_KEY);
 		INVALID_KEYS.put("invalid-key", INVALID_KEY);
-		this.tokenValidator = new ReactiveTokenValidator(this.securityService);
+		this.tokenValidator = new TokenValidator(this.securityService);
 	}
 
 	@Test

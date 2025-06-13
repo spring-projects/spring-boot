@@ -42,7 +42,6 @@ public final class TransactionManagerCustomizers {
 	/**
 	 * Customize the given {@code transactionManager}.
 	 * @param transactionManager the transaction manager to customize
-	 * @since 3.2.0
 	 */
 	@SuppressWarnings("unchecked")
 	public void customize(TransactionManager transactionManager) {
@@ -56,7 +55,6 @@ public final class TransactionManagerCustomizers {
 	 * {@code customizers}.
 	 * @param customizers the customizers
 	 * @return the new instance
-	 * @since 3.2.0
 	 */
 	public static TransactionManagerCustomizers of(Collection<? extends TransactionManagerCustomizer<?>> customizers) {
 		return new TransactionManagerCustomizers(

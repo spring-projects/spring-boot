@@ -152,7 +152,6 @@ public abstract class JpaBaseConfiguration {
 	 * Return the vendor-specific properties for the given {@link DataSource}.
 	 * @param dataSource the data source
 	 * @return the vendor properties
-	 * @since 3.4.4
 	 */
 	protected abstract Map<String, Object> getVendorProperties(DataSource dataSource);
 

@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Reactor Netty.
  *
  * @author Moritz Halbritter
- * @since 2.7.9
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.reactor.netty")
 public class ReactorNettyProperties {

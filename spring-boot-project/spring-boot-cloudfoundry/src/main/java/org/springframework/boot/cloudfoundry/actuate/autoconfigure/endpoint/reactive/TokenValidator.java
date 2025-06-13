@@ -39,13 +39,13 @@ import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Toke
  *
  * @author Madhura Bhave
  */
-class ReactiveTokenValidator {
+class TokenValidator {
 
-	private final ReactiveCloudFoundrySecurityService securityService;
+	private final SecurityService securityService;
 
 	private volatile Map<String, String> cachedTokenKeys = Collections.emptyMap();
 
-	ReactiveTokenValidator(ReactiveCloudFoundrySecurityService securityService) {
+	TokenValidator(SecurityService securityService) {
 		this.securityService = securityService;
 	}
 

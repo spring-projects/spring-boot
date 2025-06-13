@@ -46,7 +46,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * annotated endpoints over Spring MVC.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  * @deprecated since 3.3.5 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
 @Deprecated(since = "3.3.5", forRemoval = true)

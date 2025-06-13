@@ -43,7 +43,7 @@ import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = KafkaAutoConfiguration.class,
 		afterName = { "org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",

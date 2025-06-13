@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
  * infrastructure when the management context is the same as the main application context.
  *
  * @author Madhura Bhave
- * @since 2.1.0
+ * @since 4.0.0
  */
 @ManagementContextConfiguration(value = ManagementContextType.SAME, proxyBeanMethods = false)
 @EnableConfigurationProperties(JerseyProperties.class)

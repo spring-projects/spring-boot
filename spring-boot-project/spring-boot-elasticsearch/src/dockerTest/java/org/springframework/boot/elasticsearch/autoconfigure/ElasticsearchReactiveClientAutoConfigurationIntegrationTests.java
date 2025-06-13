@@ -35,20 +35,20 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ReactiveElasticsearchClientAutoConfiguration}.
+ * Integration tests for {@link ElasticsearchReactiveClientAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
-class ReactiveElasticsearchClientAutoConfigurationIntegrationTests {
+class ElasticsearchReactiveClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-				ElasticsearchRestClientAutoConfiguration.class, ReactiveElasticsearchClientAutoConfiguration.class));
+				ElasticsearchRestClientAutoConfiguration.class, ElasticsearchReactiveClientAutoConfiguration.class));
 
 	@Test
 	void reactiveClientCanQueryElasticsearchNode() {

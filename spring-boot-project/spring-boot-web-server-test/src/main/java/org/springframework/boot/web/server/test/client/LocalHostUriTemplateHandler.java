@@ -55,7 +55,6 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * context-path and port.
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
-	 * @since 1.4.1
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
 		this(environment, scheme, new DefaultUriBuilderFactory());
@@ -68,7 +67,6 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
 	 * @param handler the delegate handler
-	 * @since 2.0.3
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
 		super(handler);

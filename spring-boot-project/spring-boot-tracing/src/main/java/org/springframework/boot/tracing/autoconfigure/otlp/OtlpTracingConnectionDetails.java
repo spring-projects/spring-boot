@@ -31,7 +31,6 @@ public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 	 * Address to where tracing will be published.
 	 * @param transport the transport to use
 	 * @return the address to where tracing will be published
-	 * @since 3.4.0
 	 */
 	String getUrl(Transport transport);
 

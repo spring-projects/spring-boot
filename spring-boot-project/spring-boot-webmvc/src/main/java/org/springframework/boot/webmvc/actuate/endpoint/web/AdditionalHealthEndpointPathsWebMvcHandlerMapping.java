@@ -33,7 +33,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * path.
  *
  * @author Madhura Bhave
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 

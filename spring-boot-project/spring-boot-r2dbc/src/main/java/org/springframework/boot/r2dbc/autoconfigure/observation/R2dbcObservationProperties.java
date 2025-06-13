@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for R2DBC observability.
  *
  * @author Moritz Halbritter
- * @since 3.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("management.observations.r2dbc")
 public class R2dbcObservationProperties {

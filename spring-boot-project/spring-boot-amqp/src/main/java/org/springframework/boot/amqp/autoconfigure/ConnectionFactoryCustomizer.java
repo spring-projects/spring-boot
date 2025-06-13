@@ -23,7 +23,7 @@ import com.rabbitmq.client.ConnectionFactory;
  * auto-configured RabbitMQ {@link ConnectionFactory}.
  *
  * @author Andy Wilkinson
- * @since 2.5.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ConnectionFactoryCustomizer {

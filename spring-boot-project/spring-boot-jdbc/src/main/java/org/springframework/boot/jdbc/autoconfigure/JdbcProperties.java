@@ -27,7 +27,7 @@ import org.springframework.boot.convert.DurationUnit;
  *
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.jdbc")
 public class JdbcProperties {

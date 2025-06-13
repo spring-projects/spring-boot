@@ -25,7 +25,7 @@ import org.springframework.retry.support.RetryTemplate;
  * of the Rabbit infrastructure.
  *
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface RabbitRetryTemplateCustomizer {

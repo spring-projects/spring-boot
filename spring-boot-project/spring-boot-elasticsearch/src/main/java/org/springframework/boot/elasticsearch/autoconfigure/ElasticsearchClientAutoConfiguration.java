@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Import;
  * {@link EnableAutoConfiguration Auto-configuration} for Elasticsearch's Java client.
  *
  * @author Andy Wilkinson
- * @since 3.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = { ElasticsearchRestClientAutoConfiguration.class },
 		afterName = { "org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration" })

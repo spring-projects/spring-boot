@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.6.0
+ * @since 4.0.0
  */
 public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConnectionFactory> {
 
@@ -56,7 +56,6 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param properties the properties to use to configure the connection factory
 	 * @param connectionDetails the connection details to use to configure the connection
 	 * factory
-	 * @since 3.1.0
 	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails) {

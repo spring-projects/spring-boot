@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * be considered.
  *
  * @author Stephane Nicoll
- * @since 2.6.2
+ * @since 4.0.0
  * @see DatabaseInitializationMode
  */
 public abstract class OnDatabaseInitializationCondition extends SpringBootCondition {

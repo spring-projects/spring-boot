@@ -27,7 +27,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * database.
  *
  * @author Andy Wilkinson
- * @since 2.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.sql.init")
 public class SqlInitializationProperties {

@@ -32,7 +32,7 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
- * @since 1.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(PersistenceExceptionTranslationPostProcessor.class)

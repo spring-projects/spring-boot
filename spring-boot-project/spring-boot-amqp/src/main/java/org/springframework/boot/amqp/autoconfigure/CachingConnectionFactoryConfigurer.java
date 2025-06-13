@@ -52,7 +52,6 @@ public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactor
 	 * @param properties the properties to use to configure the connection factory
 	 * @param connectionDetails the connection details to use to configure the connection
 	 * factory
-	 * @since 3.1.0
 	 */
 	public CachingConnectionFactoryConfigurer(RabbitProperties properties, RabbitConnectionDetails connectionDetails) {
 		super(properties, connectionDetails);

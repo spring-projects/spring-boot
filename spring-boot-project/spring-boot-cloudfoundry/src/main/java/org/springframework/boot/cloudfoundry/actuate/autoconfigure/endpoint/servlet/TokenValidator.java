@@ -38,11 +38,11 @@ import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Toke
  */
 class TokenValidator {
 
-	private final CloudFoundrySecurityService securityService;
+	private final SecurityService securityService;
 
 	private Map<String, String> tokenKeys;
 
-	TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
+	TokenValidator(SecurityService cloudFoundrySecurityService) {
 		this.securityService = cloudFoundrySecurityService;
 	}
 

@@ -64,7 +64,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 	private static final Log logger = LogFactory.getLog(CloudFoundryWebEndpointServletHandlerMapping.class);
 
-	private final CloudFoundrySecurityInterceptor securityInterceptor;
+	private final SecurityInterceptor securityInterceptor;
 
 	private final EndpointLinksResolver linksResolver;
 
@@ -72,7 +72,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
+			CorsConfiguration corsConfiguration, SecurityInterceptor securityInterceptor,
 			Collection<ExposableEndpoint<?>> allEndpoints) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.securityInterceptor = securityInterceptor;
@@ -143,11 +143,11 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 		private final ServletWebOperation delegate;
 
-		private final CloudFoundrySecurityInterceptor securityInterceptor;
+		private final SecurityInterceptor securityInterceptor;
 
 		private final EndpointId endpointId;
 
-		SecureServletWebOperation(ServletWebOperation delegate, CloudFoundrySecurityInterceptor securityInterceptor,
+		SecureServletWebOperation(ServletWebOperation delegate, SecurityInterceptor securityInterceptor,
 				EndpointId endpointId) {
 			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;

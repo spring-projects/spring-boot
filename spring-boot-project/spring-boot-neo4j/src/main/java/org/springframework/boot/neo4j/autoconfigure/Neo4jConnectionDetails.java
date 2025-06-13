@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface Neo4jConnectionDetails extends ConnectionDetails {
 
@@ -54,7 +54,6 @@ public interface Neo4jConnectionDetails extends ConnectionDetails {
 	 * Returns the {@link AuthTokenManager} to use for authentication. Defaults to
 	 * {@code null} in which case the {@link #getAuthToken() auth token} should be used.
 	 * @return the auth token manager
-	 * @since 3.2.0
 	 */
 	default AuthTokenManager getAuthTokenManager() {
 		return null;

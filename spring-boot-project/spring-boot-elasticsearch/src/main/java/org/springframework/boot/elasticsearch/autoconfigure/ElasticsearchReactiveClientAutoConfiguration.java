@@ -35,7 +35,7 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
  * reactive client.
  *
  * @author Brian Clozel
- * @since 3.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = ElasticsearchClientAutoConfiguration.class)
 @ConditionalOnBean(RestClient.class)
@@ -43,7 +43,7 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 @Import({ ElasticsearchClientConfigurations.JsonpMapperConfiguration.class,
 		ElasticsearchClientConfigurations.ElasticsearchTransportConfiguration.class })
-public class ReactiveElasticsearchClientAutoConfiguration {
+public class ElasticsearchReactiveClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

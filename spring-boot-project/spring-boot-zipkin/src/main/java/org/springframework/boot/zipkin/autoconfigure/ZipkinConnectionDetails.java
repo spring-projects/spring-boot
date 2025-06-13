@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * {@link Factory HttpEndpointSupplier.Factory} which defaults to no-op (constant).
  *
  * @author Moritz Halbritter
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface ZipkinConnectionDetails extends ConnectionDetails {
 

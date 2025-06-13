@@ -28,7 +28,7 @@ import org.springframework.core.Ordered;
  * WebSocket customizer for {@link UndertowServletWebServerFactory}.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class WebSocketUndertowServletWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<UndertowServletWebServerFactory>, Ordered {

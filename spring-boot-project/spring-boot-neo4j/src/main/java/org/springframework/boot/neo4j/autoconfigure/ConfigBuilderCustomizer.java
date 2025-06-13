@@ -25,7 +25,7 @@ import org.neo4j.driver.Config.ConfigBuilder;
  * auto-configuration.
  *
  * @author Stephane Nicoll
- * @since 2.4.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ConfigBuilderCustomizer {

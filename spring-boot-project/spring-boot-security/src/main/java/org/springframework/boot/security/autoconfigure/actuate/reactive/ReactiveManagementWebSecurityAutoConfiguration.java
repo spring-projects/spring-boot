@@ -49,7 +49,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * while securing everything else.
  *
  * @author Madhura Bhave
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class,
 		after = ReactiveUserDetailsServiceAutoConfiguration.class,

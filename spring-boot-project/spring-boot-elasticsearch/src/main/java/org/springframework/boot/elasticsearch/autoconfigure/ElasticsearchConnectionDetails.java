@@ -29,7 +29,7 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 
@@ -67,7 +67,6 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	/**
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
-	 * @since 3.5.0
 	 */
 	default SslBundle getSslBundle() {
 		return null;

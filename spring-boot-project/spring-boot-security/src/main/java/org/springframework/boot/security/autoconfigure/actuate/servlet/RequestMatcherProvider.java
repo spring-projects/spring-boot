@@ -25,7 +25,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @author Chris Bono
- * @since 3.5.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface RequestMatcherProvider {

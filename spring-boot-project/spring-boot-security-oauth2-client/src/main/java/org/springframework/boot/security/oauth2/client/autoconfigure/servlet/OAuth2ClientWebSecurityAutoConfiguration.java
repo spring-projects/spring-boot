@@ -42,7 +42,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 3.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = { ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class },
 		after = OAuth2ClientAutoConfiguration.class)

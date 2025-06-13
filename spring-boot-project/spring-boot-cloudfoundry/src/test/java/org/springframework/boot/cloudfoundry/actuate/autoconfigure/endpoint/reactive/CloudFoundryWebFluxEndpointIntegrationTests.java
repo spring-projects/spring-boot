@@ -75,17 +75,17 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryWebFluxEndpointIntegrationTests {
 
-	private final ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
+	private final TokenValidator tokenValidator = mock(TokenValidator.class);
 
-	private final ReactiveCloudFoundrySecurityService securityService = mock(ReactiveCloudFoundrySecurityService.class);
+	private final SecurityService securityService = mock(SecurityService.class);
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
 		.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
 				NettyReactiveWebServerAutoConfiguration.class))
 		.withUserConfiguration(TestEndpointConfiguration.class)
-		.withBean(ReactiveTokenValidator.class, () -> this.tokenValidator)
-		.withBean(ReactiveCloudFoundrySecurityService.class, () -> this.securityService)
+		.withBean(TokenValidator.class, () -> this.tokenValidator)
+		.withBean(SecurityService.class, () -> this.securityService)
 		.withPropertyValues("server.port=0");
 
 	@Test
@@ -233,9 +233,8 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	static class CloudFoundryReactiveConfiguration {
 
 		@Bean
-		CloudFoundrySecurityInterceptor interceptor(ReactiveTokenValidator tokenValidator,
-				ReactiveCloudFoundrySecurityService securityService) {
-			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
+		SecurityInterceptor interceptor(TokenValidator tokenValidator, SecurityService securityService) {
+			return new SecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
@@ -247,7 +246,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 		@Bean
 		CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
-				CloudFoundrySecurityInterceptor interceptor) {
+				SecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));

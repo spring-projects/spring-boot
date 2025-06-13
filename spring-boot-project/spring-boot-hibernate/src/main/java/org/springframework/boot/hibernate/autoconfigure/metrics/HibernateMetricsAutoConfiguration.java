@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Rui Figueira
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = HibernateJpaAutoConfiguration.class,
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")

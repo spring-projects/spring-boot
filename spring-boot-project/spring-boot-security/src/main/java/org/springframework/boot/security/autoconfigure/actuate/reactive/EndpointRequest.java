@@ -59,7 +59,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Chris Bono
- * @since 2.0.0
+ * @since 4.0.0
  */
 public final class EndpointRequest {
 
@@ -131,7 +131,6 @@ public final class EndpointRequest {
 	 * @param webServerNamespace the web server namespace
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
-	 * @since 3.4.0
 	 */
 	public static AdditionalPathsEndpointServerWebExchangeMatcher toAdditionalPaths(
 			WebServerNamespace webServerNamespace, Class<?>... endpoints) {
@@ -147,7 +146,6 @@ public final class EndpointRequest {
 	 * @param webServerNamespace the web server namespace
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
-	 * @since 3.4.0
 	 */
 	public static AdditionalPathsEndpointServerWebExchangeMatcher toAdditionalPaths(
 			WebServerNamespace webServerNamespace, String... endpoints) {
@@ -414,7 +412,6 @@ public final class EndpointRequest {
 		 * @param httpMethod the HTTP method to include
 		 * @return a copy of the matcher further restricted to only match requests with
 		 * the specified HTTP method
-		 * @since 3.5.0
 		 */
 		public AdditionalPathsEndpointServerWebExchangeMatcher withHttpMethod(HttpMethod httpMethod) {
 			return new AdditionalPathsEndpointServerWebExchangeMatcher(this.webServerNamespace, this.endpoints,

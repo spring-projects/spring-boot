@@ -78,7 +78,7 @@ import org.springframework.web.reactive.DispatcherHandler;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)

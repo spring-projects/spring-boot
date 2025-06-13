@@ -47,7 +47,6 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	/**
 	 * Create a new {@link AbstractReactiveHealthIndicator} instance with a default
 	 * {@code healthCheckFailedMessage}.
-	 * @since 2.1.7
 	 */
 	protected AbstractReactiveHealthIndicator() {
 		this(NO_MESSAGE);
@@ -57,7 +56,6 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	 * Create a new {@link AbstractReactiveHealthIndicator} instance with a specific
 	 * message to log when the health check fails.
 	 * @param healthCheckFailedMessage the message to log on health check failure
-	 * @since 2.1.7
 	 */
 	protected AbstractReactiveHealthIndicator(String healthCheckFailedMessage) {
 		this.healthCheckFailedMessage = (ex) -> healthCheckFailedMessage;

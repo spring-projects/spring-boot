@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 3.2.0
+ * @since 4.0.0
  */
 public interface ActiveMQConnectionDetails extends ConnectionDetails {
 

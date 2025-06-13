@@ -119,7 +119,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 		CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
 				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList(),
 				Collections.emptyList());
-		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(restTemplateBuilder,
+		SecurityInterceptor securityInterceptor = getSecurityInterceptor(restTemplateBuilder,
 				applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = discoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
@@ -130,22 +130,21 @@ public class CloudFoundryActuatorAutoConfiguration {
 				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
-	private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
+	private SecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
-		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder,
-				environment);
+		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder, environment);
 		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
-		return new CloudFoundrySecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
+		return new SecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private CloudFoundrySecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+	private SecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",
 				Boolean.class, false);
 		return (cloudControllerUrl != null)
-				? new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
+				? new SecurityService(restTemplateBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

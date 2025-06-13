@@ -35,7 +35,7 @@ import org.springframework.web.server.WebSession;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.0.0
+ * @since 4.0.0
  */
 public class HttpExchangesWebFilter implements WebFilter, Ordered {
 

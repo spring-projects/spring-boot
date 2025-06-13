@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Bean;
  * {@link ElasticsearchRestClientHealthIndicator}.
  *
  * @author Artsiom Yudovin
- * @since 2.1.1
+ * @since 4.0.0
  */
 @AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
 @ConditionalOnClass({ RestClient.class, ConditionalOnEnabledHealthIndicator.class })

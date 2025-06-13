@@ -29,7 +29,7 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
  * auto-configuration.
  *
  * @author Eddú Meléndez
- * @since 2.7.0
+ * @since 4.0.0
  */
 public class RabbitStreamTemplateConfigurer {
 

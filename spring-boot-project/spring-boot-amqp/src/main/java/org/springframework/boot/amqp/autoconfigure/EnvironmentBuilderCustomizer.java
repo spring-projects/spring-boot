@@ -24,7 +24,7 @@ import com.rabbitmq.stream.EnvironmentBuilder;
  * auto-configured {@link Environment} that is created by an {@link EnvironmentBuilder}.
  *
  * @author Andy Wilkinson
- * @since 3.0.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface EnvironmentBuilderCustomizer {

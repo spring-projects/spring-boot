@@ -35,7 +35,7 @@ import org.springframework.ldap.core.LdapOperations;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = LdapAutoConfiguration.class)
 @ConditionalOnClass({ LdapOperations.class, LdapHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })

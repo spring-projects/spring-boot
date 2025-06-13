@@ -45,7 +45,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
  *
  * @author Madhura Bhave
  */
-class ReactiveCloudFoundrySecurityService {
+class SecurityService {
 
 	private static final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP = new ParameterizedTypeReference<>() {
 	};
@@ -54,8 +54,7 @@ class ReactiveCloudFoundrySecurityService {
 
 	private final String cloudControllerUrl;
 
-	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
-			boolean skipSslValidation) {
+	SecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
 		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {

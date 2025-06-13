@@ -23,7 +23,7 @@ import java.net.http.HttpClient.Builder;
  * {@link Builder HttpClient.Builder} used to send spans to Zipkin.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ZipkinHttpClientBuilderCustomizer {

@@ -37,7 +37,7 @@ import org.springframework.mail.MailSender;
  * @author Oliver Gierke
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 1.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ MimeMessage.class, MimeType.class, MailSender.class })

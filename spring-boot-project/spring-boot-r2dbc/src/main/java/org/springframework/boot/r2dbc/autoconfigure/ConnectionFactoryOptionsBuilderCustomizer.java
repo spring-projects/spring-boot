@@ -25,7 +25,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
  * auto-configuration.
  *
  * @author Mark Paluch
- * @since 2.3.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface ConnectionFactoryOptionsBuilderCustomizer {

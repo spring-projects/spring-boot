@@ -38,7 +38,6 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * Create an indicator with the specified {@link Cluster}.
 	 * @param cluster the Couchbase Cluster
-	 * @since 2.0.6
 	 */
 	public CouchbaseHealthIndicator(Cluster cluster) {
 		super("Couchbase health check failed");
