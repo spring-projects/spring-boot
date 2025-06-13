@@ -1261,7 +1261,7 @@ public class ServerProperties {
 			/**
 			 * Log format.
 			 */
-			private FORMAT format = FORMAT.NCSA;
+			private Format format = Format.NCSA;
 
 			/**
 			 * Custom log format, see org.eclipse.jetty.server.CustomRequestLog. If
@@ -1302,11 +1302,11 @@ public class ServerProperties {
 				this.enabled = enabled;
 			}
 
-			public FORMAT getFormat() {
+			public Format getFormat() {
 				return this.format;
 			}
 
-			public void setFormat(FORMAT format) {
+			public void setFormat(Format format) {
 				this.format = format;
 			}
 
@@ -1361,7 +1361,7 @@ public class ServerProperties {
 			/**
 			 * Log format for Jetty access logs.
 			 */
-			public enum FORMAT {
+			public enum Format {
 
 				/**
 				 * NCSA format, as defined in CustomRequestLog#NCSA_FORMAT.
