@@ -302,9 +302,12 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadWhenBindingWithParentContextShouldBind() {
 		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class, "name=parent");
+		assertThat(parent.getEnvironment().getProperty("name")).isEqualTo("parent");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
+		removeSystemProperties();
 		load(new Class<?>[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
+		assertThat(this.context.getEnvironment().getProperty("name")).isEqualTo("child");
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
 		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("child");
