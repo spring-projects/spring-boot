@@ -31,6 +31,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.artifacts.repositories.PasswordCredentials;
+import org.gradle.api.credentials.Credentials;
+import org.gradle.internal.artifacts.repositories.AuthenticationSupportedInternal;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -83,9 +86,10 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 			.toUri();
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			String username = repository.getCredentials().getUsername();
+			PasswordCredentials credentials = credentialsOf(repository);
+			String username = (credentials != null) ? credentials.getUsername() : null;
 			if (username != null) {
-				headers.setBasicAuth(username, repository.getCredentials().getPassword());
+				headers.setBasicAuth(username, credentials.getPassword());
 			}
 			HttpEntity<Void> request = new HttpEntity<>(headers);
 			String metadata = this.rest.exchange(url, HttpMethod.GET, request, String.class).getBody();
@@ -110,6 +114,27 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 					+ repository + ": " + ex.getMessage());
 		}
 		return versions;
+	}
+
+	/**
+	 * Retrives the configured credentials of the given {@code repository}. We cannot use
+	 * {@link MavenArtifactRepository#getCredentials()} as, if the repository has no
+	 * credentials, it has the unwanted side-effect of assigning an empty set of username
+	 * and password credentials to the repository which may cause subsequent "Username
+	 * must not be null!" failures.
+	 * @param repository the repository that is the source of the credentials
+	 * @return the configured password credentials or {@code null}
+	 */
+	private PasswordCredentials credentialsOf(MavenArtifactRepository repository) {
+		Credentials credentials = ((AuthenticationSupportedInternal) repository).getConfiguredCredentials().getOrNull();
+		if (credentials != null) {
+			if (credentials instanceof PasswordCredentials passwordCredentials) {
+				return passwordCredentials;
+			}
+			throw new IllegalStateException("Repository '%s (%s)' has credentials '%s' that are not PasswordCredentials"
+				.formatted(repository.getName(), repository.getUrl(), credentials));
+		}
+		return null;
 	}
 
 }
