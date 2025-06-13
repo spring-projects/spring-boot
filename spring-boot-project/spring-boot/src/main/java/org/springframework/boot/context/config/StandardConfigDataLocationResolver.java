@@ -146,7 +146,6 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location, Profiles profiles) {
-		validateProfiles(profiles);
 		return resolve(getProfileSpecificReferences(context, location.split(), profiles));
 	}
 
@@ -160,27 +159,6 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		return references;
-	}
-
-	private void validateProfiles(Profiles profiles) {
-		for (String profile : profiles) {
-			validateProfile(profile);
-		}
-	}
-
-	private void validateProfile(String profile) {
-		Assert.hasText(profile, "'profile' must contain text");
-		Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
-				() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
-		Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
-				() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
-		profile.codePoints().forEach((codePoint) -> {
-			if (codePoint == '-' || codePoint == '_' || Character.isLetterOrDigit(codePoint)) {
-				return;
-			}
-			throw new IllegalStateException(
-					String.format("Invalid profile '%s': must contain only letters, digits, '-', or '_'", profile));
-		});
 	}
 
 	private String getResourceLocation(ConfigDataLocationResolverContext context,

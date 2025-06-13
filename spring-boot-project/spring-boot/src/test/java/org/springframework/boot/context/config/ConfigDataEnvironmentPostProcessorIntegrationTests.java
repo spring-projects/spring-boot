@@ -1242,6 +1242,36 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.getProperty("v2")).isEqualTo("root-p2");
 	}
 
+	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=fa!l
+			""")
+	void invalidProfileActivePropertyThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run())
+			.havingCause()
+			.withMessageContaining("must contain a letter");
+	}
+
+	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.include=fa!l
+			""")
+	void invalidProfileIncludePropertyThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run())
+			.havingCause()
+			.withMessageContaining("must contain a letter");
+	}
+
+	@Test
+	@WithResource(name = "application.properties", content = """
+			spring.profiles.active=p!1
+			spring.profiles.include=p!2
+			spring.profiles.validate=false
+			""")
+	void unvalidatedProfileProperties() {
+		assertThatNoException().isThrownBy(() -> this.application.run());
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<>("environment containing property source " + sourceName) {
 

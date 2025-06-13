@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +32,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link Profiles}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Sijun Yang
  */
 class ProfilesTests {
 
@@ -416,6 +421,61 @@ class ProfilesTests {
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles.getAccepted()).containsExactly("a", "e", "x", "y", "g", "f", "b", "c");
+	}
+
+	@Test
+	void validNamesArePermitted() {
+		assertValidName("spring.profiles.active", "ok");
+		assertValidName("spring.profiles.default", "ok");
+		assertValidName("spring.profiles.group.a", "ok");
+	}
+
+	@Test
+	void invalidNamesAreNotPermitted() {
+		assertInvalidName("spring.profiles.active", "fa!l");
+		assertInvalidName("spring.profiles.default", "fa!l");
+		assertInvalidName("spring.profiles.group.a", "fa!l");
+	}
+
+	@Test
+	void invalidNamesWhenValidationDisabledArePermitted() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.validate", "false");
+		environment.setProperty("spring.profiles.active", "fa!l");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("fa!l");
+	}
+
+	@Test
+	void invalidNameInEnvironment() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "fa!l");
+		Binder binder = new Binder();
+		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
+			.withMessage("Invalid profile property value found in Envronment under 'spring.profiles.active'");
+	}
+
+	@Test
+	void invalidNameInActive() {
+		MockEnvironment environment = new MockEnvironment();
+		Binder binder = new Binder();
+		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, Set.of("fa!l")))
+			.withMessage("Invalid profile property value found in additional profiles");
+	}
+
+	private void assertValidName(String name, String value) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty(name, value);
+		Binder binder = Binder.get(environment);
+		assertThatNoException().isThrownBy(() -> new Profiles(environment, binder, null));
+	}
+
+	private void assertInvalidName(String name, String value) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty(name, value);
+		Binder binder = Binder.get(environment);
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> new Profiles(environment, binder, null));
 	}
 
 }

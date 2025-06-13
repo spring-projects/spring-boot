@@ -59,6 +59,22 @@ This means that you can specify active profiles in `application.properties` and 
 
 TIP: See xref:features/external-config.adoc#features.external-config.order[the "`Externalized Configuration`"] for more details on the order in which property sources are considered.
 
+[NOTE]
+====
+By default, profile names in Spring Boot may contain letters, numbers, or permitted characters (`-`, `_`, `.`, `+`, `@`).
+In addition, they can only start and end with a letter or number.
+
+This restriction helps to prevent common parsing issues.
+if, however, you prefer more flexible profile names you can set configprop:spring.profiles.validate[] to `false` in your `application.properties` or `application.yaml` file:
+
+[configprops,yaml]
+----
+spring:
+  profiles:
+    validate: false
+----
+====
+
 
 
 [[features.profiles.adding-active-profiles]]
