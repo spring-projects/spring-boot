@@ -34,6 +34,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
@@ -48,6 +49,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass({ ClientHttpConnector.class, Mono.class })
+@Conditional(ConditionalOnClientHttpConnectorBuilderDetection.class)
 @EnableConfigurationProperties(HttpReactiveClientProperties.class)
 public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
 

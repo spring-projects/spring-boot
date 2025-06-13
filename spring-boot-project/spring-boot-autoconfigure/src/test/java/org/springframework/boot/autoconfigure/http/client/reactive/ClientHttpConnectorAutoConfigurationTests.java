@@ -41,6 +41,7 @@ import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -141,6 +142,17 @@ class ClientHttpConnectorAutoConfigurationTests {
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
 				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
 			});
+	}
+
+	@Test
+	void shouldBeConditionalOnAtLeastOneHttpConnectorClass() {
+		FilteredClassLoader classLoader = new FilteredClassLoader(reactor.netty.http.client.HttpClient.class,
+				org.eclipse.jetty.client.HttpClient.class, org.apache.hc.client5.http.impl.async.HttpAsyncClients.class,
+				java.net.http.HttpClient.class);
+		assertThatIllegalStateException().as("enough filtering")
+			.isThrownBy(() -> ClientHttpConnectorBuilder.detect(classLoader));
+		this.contextRunner.withClassLoader(classLoader)
+			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpConnectorSettings.class));
 	}
 
 	private List<String> sslPropertyValues() {
