@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,27 +78,35 @@ public class Profiles implements Iterable<String> {
 	 * @param additionalProfiles any additional active profiles
 	 */
 	Profiles(Environment environment, Binder binder, Collection<String> additionalProfiles) {
-		this.groups = binder.bind("spring.profiles.group", STRING_STRINGS_MAP).orElseGet(LinkedMultiValueMap::new);
-		this.activeProfiles = expandProfiles(getActivatedProfiles(environment, binder, additionalProfiles));
-		this.defaultProfiles = expandProfiles(getDefaultProfiles(environment, binder));
+		ProfilesValidator validator = ProfilesValidator.get(binder);
+		if (additionalProfiles != null) {
+			validator.validate(additionalProfiles, () -> "Invalid profile property value found in additional profiles");
+		}
+		this.groups = binder.bind("spring.profiles.group", STRING_STRINGS_MAP, validator)
+			.orElseGet(LinkedMultiValueMap::new);
+		this.activeProfiles = expandProfiles(getActivatedProfiles(environment, binder, validator, additionalProfiles));
+		this.defaultProfiles = expandProfiles(getDefaultProfiles(environment, binder, validator));
 	}
 
-	private List<String> getActivatedProfiles(Environment environment, Binder binder,
+	private List<String> getActivatedProfiles(Environment environment, Binder binder, ProfilesValidator validator,
 			Collection<String> additionalProfiles) {
-		return asUniqueItemList(getProfiles(environment, binder, Type.ACTIVE), additionalProfiles);
+		return asUniqueItemList(getProfiles(environment, binder, validator, Type.ACTIVE), additionalProfiles);
 	}
 
-	private List<String> getDefaultProfiles(Environment environment, Binder binder) {
-		return asUniqueItemList(getProfiles(environment, binder, Type.DEFAULT));
+	private List<String> getDefaultProfiles(Environment environment, Binder binder, ProfilesValidator validator) {
+		return asUniqueItemList(getProfiles(environment, binder, validator, Type.DEFAULT));
 	}
 
-	private Collection<String> getProfiles(Environment environment, Binder binder, Type type) {
+	private Collection<String> getProfiles(Environment environment, Binder binder, ProfilesValidator validator,
+			Type type) {
 		String environmentPropertyValue = environment.getProperty(type.getName());
 		Set<String> environmentPropertyProfiles = (!StringUtils.hasLength(environmentPropertyValue))
 				? Collections.emptySet()
 				: StringUtils.commaDelimitedListToSet(StringUtils.trimAllWhitespace(environmentPropertyValue));
+		validator.validate(environmentPropertyProfiles,
+				() -> "Invalid profile property value found in Envronment under '%s'".formatted(type.getName()));
 		Set<String> environmentProfiles = new LinkedHashSet<>(Arrays.asList(type.get(environment)));
-		BindResult<Set<String>> boundProfiles = binder.bind(type.getName(), STRING_SET);
+		BindResult<Set<String>> boundProfiles = binder.bind(type.getName(), STRING_SET, validator);
 		if (hasProgrammaticallySetProfiles(type, environmentPropertyValue, environmentPropertyProfiles,
 				environmentProfiles)) {
 			if (!type.isMergeWithEnvironmentProfiles() || !boundProfiles.isBound()) {

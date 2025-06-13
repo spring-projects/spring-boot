@@ -297,14 +297,16 @@ class ConfigDataEnvironment {
 			ConfigurationPropertySource source = contributor.getConfigurationPropertySource();
 			if (source != null && !contributor.hasConfigDataOption(ConfigData.Option.IGNORE_PROFILES)) {
 				Binder binder = new Binder(Collections.singleton(source), placeholdersResolver);
-				binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
-					if (!contributor.isActive(activationContext)) {
-						InactiveConfigDataAccessException.throwIfPropertyFound(contributor, Profiles.INCLUDE_PROFILES);
-						InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
-								Profiles.INCLUDE_PROFILES.append("[0]"));
-					}
-					result.addAll(includes);
-				});
+				binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST, ProfilesValidator.get(binder))
+					.ifBound((includes) -> {
+						if (!contributor.isActive(activationContext)) {
+							InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
+									Profiles.INCLUDE_PROFILES);
+							InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
+									Profiles.INCLUDE_PROFILES.append("[0]"));
+						}
+						result.addAll(includes);
+					});
 			}
 		}
 		return result;

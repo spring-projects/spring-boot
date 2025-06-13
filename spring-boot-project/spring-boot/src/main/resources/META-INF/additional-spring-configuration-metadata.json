@@ -615,6 +615,13 @@
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
     },
     {
+      "name": "spring.profiles.validate",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
+      "description": "Whether profiles should be validated to ensure sensible names are used.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.reactor.debug-agent.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.reactor.ReactorEnvironmentPostProcessor",
