@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Import;
  * @author Eric Spiegelberg
  * @author Stephane Nicoll
  * @author Michael J. Simons
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = Neo4jAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ConditionalOnEnabledHealthIndicator.class })

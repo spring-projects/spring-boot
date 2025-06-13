@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  *
  * @author Vedran Pavic
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 4.0.0
  */
 @Endpoint(id = "sessions")
 public class ReactiveSessionsEndpoint {

@@ -86,7 +86,6 @@ class JdbcUrlBuilder {
 	 * The default implementation appends a {@code ?} followed by the {@code parameters}.
 	 * @param url the url
 	 * @param parameters the parameters
-	 * @since 3.2.7
 	 */
 	protected void appendParameters(StringBuilder url, String parameters) {
 		url.append("?").append(parameters);

@@ -32,7 +32,7 @@ import org.springframework.jms.support.JmsAccessor;
  * handled through a call to {@link JmsAccessor#setSessionTransacted(boolean)}.
  *
  * @author Andy Wilkinson
- * @since 3.2.0
+ * @since 4.0.0
  */
 public final class AcknowledgeMode {
 

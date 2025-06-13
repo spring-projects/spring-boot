@@ -27,7 +27,7 @@ import org.springframework.http.client.ReactorResourceFactory;
  * auto-configuration class.
  *
  * @author Moritz Halbritter
- * @since 2.7.9
+ * @since 4.0.0
  */
 public final class ReactorNettyConfigurations {
 

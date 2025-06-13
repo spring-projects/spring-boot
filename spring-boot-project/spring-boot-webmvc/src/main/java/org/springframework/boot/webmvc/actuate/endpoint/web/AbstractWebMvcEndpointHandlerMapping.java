@@ -84,7 +84,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Brian Clozel
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ImportRuntimeHints(AbstractWebMvcEndpointHandlerMappingRuntimeHints.class)
 public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping

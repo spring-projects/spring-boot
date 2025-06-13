@@ -28,8 +28,8 @@ import org.springframework.boot.data.elasticsearch.domain.city.City;
 import org.springframework.boot.data.elasticsearch.domain.city.ReactiveCityRepository;
 import org.springframework.boot.data.elasticsearch.domain.empty.EmptyDataPackage;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchReactiveClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -41,7 +41,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveElasticsearchRepositoriesAutoConfiguration}.
+ * Tests for {@link ElasticsearchReactiveRepositoriesAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
+class ElasticsearchReactiveRepositoriesAutoConfigurationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
@@ -57,8 +57,8 @@ class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,
 				ElasticsearchRestClientAutoConfiguration.class,
-				ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
-				ReactiveElasticsearchClientAutoConfiguration.class))
+				ElasticsearchReactiveRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
+				ElasticsearchReactiveClientAutoConfiguration.class))
 		.withPropertyValues(
 				"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
 				"spring.elasticsearch.socket-timeout=30s");
@@ -68,7 +68,7 @@ class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(Mono.class))
 			.run((context) -> assertThat(context)
-				.doesNotHaveBean(ReactiveElasticsearchRepositoriesAutoConfiguration.class));
+				.doesNotHaveBean(ElasticsearchReactiveRepositoriesAutoConfiguration.class));
 	}
 
 	@Test

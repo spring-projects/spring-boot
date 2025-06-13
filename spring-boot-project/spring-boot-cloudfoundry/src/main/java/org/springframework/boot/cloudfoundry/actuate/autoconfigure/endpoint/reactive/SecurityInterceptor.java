@@ -37,20 +37,20 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Madhura Bhave
  */
-class CloudFoundrySecurityInterceptor {
+class SecurityInterceptor {
 
-	private static final Log logger = LogFactory.getLog(CloudFoundrySecurityInterceptor.class);
+	private static final Log logger = LogFactory.getLog(SecurityInterceptor.class);
 
-	private final ReactiveTokenValidator tokenValidator;
+	private final TokenValidator tokenValidator;
 
-	private final ReactiveCloudFoundrySecurityService cloudFoundrySecurityService;
+	private final SecurityService cloudFoundrySecurityService;
 
 	private final String applicationId;
 
 	private static final Mono<SecurityResponse> SUCCESS = Mono.just(SecurityResponse.success());
 
-	CloudFoundrySecurityInterceptor(ReactiveTokenValidator tokenValidator,
-			ReactiveCloudFoundrySecurityService cloudFoundrySecurityService, String applicationId) {
+	SecurityInterceptor(TokenValidator tokenValidator, SecurityService cloudFoundrySecurityService,
+			String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
 		this.applicationId = applicationId;

@@ -61,7 +61,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Jens Schauder
- * @since 2.1.0
+ * @since 4.0.0
  * @see EnableJdbcRepositories
  */
 @AutoConfiguration(after = { JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })

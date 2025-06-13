@@ -38,26 +38,26 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 /**
- * Tests for {@link CloudFoundrySecurityInterceptor}.
+ * Tests for {@link SecurityInterceptor}.
  *
  * @author Madhura Bhave
  */
 @ExtendWith(MockitoExtension.class)
-class CloudFoundrySecurityInterceptorTests {
+class SecurityInterceptorTests {
 
 	@Mock
 	private TokenValidator tokenValidator;
 
 	@Mock
-	private CloudFoundrySecurityService securityService;
+	private SecurityService securityService;
 
-	private CloudFoundrySecurityInterceptor interceptor;
+	private SecurityInterceptor interceptor;
 
 	private MockHttpServletRequest request;
 
 	@BeforeEach
 	void setup() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 		this.request = new MockHttpServletRequest();
 	}
 
@@ -85,7 +85,7 @@ class CloudFoundrySecurityInterceptorTests {
 
 	@Test
 	void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());
@@ -93,7 +93,7 @@ class CloudFoundrySecurityInterceptorTests {
 
 	@Test
 	void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, EndpointId.of("test"));
 		assertThat(response.getStatus()).isEqualTo(Reason.SERVICE_UNAVAILABLE.getStatus());

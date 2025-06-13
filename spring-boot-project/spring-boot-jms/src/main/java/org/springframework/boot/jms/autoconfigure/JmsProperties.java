@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Lasse Wulff
  * @author Vedran Pavic
- * @since 1.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.jms")
 public class JmsProperties {

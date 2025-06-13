@@ -57,7 +57,7 @@ import org.springframework.transaction.TransactionManager;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  * @author Michael J. Simons
- * @since 1.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = TransactionAutoConfiguration.class,
 		after = { Neo4jAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })

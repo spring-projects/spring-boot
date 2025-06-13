@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  * @see ArtemisProperties
  */
 @AutoConfiguration(before = JmsAutoConfiguration.class,

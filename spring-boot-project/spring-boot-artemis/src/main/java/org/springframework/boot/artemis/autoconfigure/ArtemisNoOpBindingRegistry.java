@@ -23,7 +23,7 @@ import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 public class ArtemisNoOpBindingRegistry implements BindingRegistry {
 

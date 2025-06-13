@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @param <T> the container factory type.
  * @author Gary Russell
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends AbstractRabbitListenerContainerFactory<?>> {
 
@@ -53,7 +53,6 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
 	 * @param rabbitProperties properties to use
-	 * @since 2.6.0
 	 */
 	protected AbstractRabbitListenerContainerFactoryConfigurer(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
@@ -87,7 +86,6 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	/**
 	 * Set the task executor to use.
 	 * @param taskExecutor the task executor
-	 * @since 3.2.0
 	 */
 	public void setTaskExecutor(Executor taskExecutor) {
 		this.taskExecutor = taskExecutor;

@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.data.elasticsearch.autoconfigure.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.data.elasticsearch.health.ElasticsearchReactiveHealthIndicator;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchReactiveClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
-import org.springframework.boot.elasticsearch.autoconfigure.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.health.ElasticsearchRestHealthContributorAutoConfiguration;
 import org.springframework.boot.elasticsearch.health.ElasticsearchRestClientHealthIndicator;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
@@ -39,7 +39,7 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchDataAutoConfiguration.class,
-				ReactiveElasticsearchClientAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class,
+				ElasticsearchReactiveClientAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class,
 				ElasticsearchReactiveHealthContributorAutoConfiguration.class,
 				HealthContributorAutoConfiguration.class));
 

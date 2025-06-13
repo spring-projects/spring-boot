@@ -48,7 +48,7 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @author Lasse Wulff
  * @author Yanming Zhou
- * @since 1.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.rabbitmq")
 public class RabbitProperties {

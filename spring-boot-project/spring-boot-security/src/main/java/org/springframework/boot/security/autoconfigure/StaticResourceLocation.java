@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * Common locations for static resources.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 public enum StaticResourceLocation {
 

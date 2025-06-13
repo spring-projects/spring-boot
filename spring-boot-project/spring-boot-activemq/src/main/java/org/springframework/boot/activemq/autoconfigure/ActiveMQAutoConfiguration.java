@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Eddú Meléndez
- * @since 3.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = JmsAutoConfiguration.class,
 		after = { JndiConnectionFactoryAutoConfiguration.class, JtaAutoConfiguration.class })

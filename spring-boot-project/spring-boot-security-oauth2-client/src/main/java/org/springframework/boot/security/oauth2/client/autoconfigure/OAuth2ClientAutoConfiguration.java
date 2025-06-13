@@ -31,7 +31,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @since 3.5.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @Conditional(NonReactiveWebApplicationCondition.class)

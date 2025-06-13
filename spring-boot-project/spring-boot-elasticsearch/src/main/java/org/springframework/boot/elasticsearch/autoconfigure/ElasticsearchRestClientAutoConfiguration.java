@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(RestClientBuilder.class)

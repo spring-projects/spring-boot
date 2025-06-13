@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Elasticsearch.
  *
  * @author Andy Wilkinson
- * @since 2.4.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.elasticsearch")
 public class ElasticsearchProperties {

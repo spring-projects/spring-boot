@@ -28,7 +28,7 @@ import org.elasticsearch.client.RestClientBuilder;
  *
  * @author Brian Clozel
  * @author Vedran Pavic
- * @since 2.1.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface RestClientBuilderCustomizer {
@@ -47,7 +47,6 @@ public interface RestClientBuilderCustomizer {
 	/**
 	 * Customize the {@link HttpAsyncClientBuilder}.
 	 * @param builder the builder
-	 * @since 2.3.0
 	 */
 	default void customize(HttpAsyncClientBuilder builder) {
 	}
@@ -55,7 +54,6 @@ public interface RestClientBuilderCustomizer {
 	/**
 	 * Customize the {@link Builder}.
 	 * @param builder the builder
-	 * @since 2.3.0
 	 */
 	default void customize(Builder builder) {
 	}

@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  *
  * @author Stephane Nicoll
  * @author Gary Russell
- * @since 1.3.3
+ * @since 4.0.0
  */
 public final class SimpleRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
@@ -38,7 +38,6 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
 	 * @param rabbitProperties properties to use
-	 * @since 2.6.0
 	 */
 	public SimpleRabbitListenerContainerFactoryConfigurer(RabbitProperties rabbitProperties) {
 		super(rabbitProperties);

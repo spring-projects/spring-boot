@@ -36,7 +36,7 @@ import org.springframework.data.neo4j.repository.support.ReactiveNeo4jRepository
  *
  * @author Michael J. Simons
  * @author Stephane Nicoll
- * @since 2.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = Neo4jReactiveDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jRepository.class, Flux.class })

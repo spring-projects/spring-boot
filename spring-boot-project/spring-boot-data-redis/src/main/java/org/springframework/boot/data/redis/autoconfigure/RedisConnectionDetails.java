@@ -102,7 +102,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		/**
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
-		 * @since 3.5.0
 		 */
 		default SslBundle getSslBundle() {
 			return null;
@@ -124,7 +123,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @param port the port
 		 * @param sslBundle the SSL bundle
 		 * @return the new instance
-		 * @since 3.5.0
 		 */
 		static Standalone of(String host, int port, SslBundle sslBundle) {
 			return of(host, port, 0, sslBundle);
@@ -148,7 +146,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @param database the database
 		 * @param sslBundle the SSL bundle
 		 * @return the new instance
-		 * @since 3.5.0
 		 */
 		static Standalone of(String host, int port, int database, SslBundle sslBundle) {
 			Assert.hasLength(host, "'host' must not be empty");
@@ -216,7 +213,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		/**
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
-		 * @since 3.5.0
 		 */
 		default SslBundle getSslBundle() {
 			return null;
@@ -239,7 +235,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		/**
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
-		 * @since 3.5.0
 		 */
 		default SslBundle getSslBundle() {
 			return null;

@@ -40,24 +40,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link CloudFoundrySecurityInterceptor}.
+ * Tests for {@link SecurityInterceptor}.
  *
  * @author Madhura Bhave
  */
 @ExtendWith(MockitoExtension.class)
-class ReactiveCloudFoundrySecurityInterceptorTests {
+class SecurityInterceptorTests {
 
 	@Mock
-	private ReactiveTokenValidator tokenValidator;
+	private TokenValidator tokenValidator;
 
 	@Mock
-	private ReactiveCloudFoundrySecurityService securityService;
+	private SecurityService securityService;
 
-	private CloudFoundrySecurityInterceptor interceptor;
+	private SecurityInterceptor interceptor;
 
 	@BeforeEach
 	void setup() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, this.securityService, "my-app-id");
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	void preHandleWhenApplicationIdIsNullShouldReturnError() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, this.securityService, null);
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a")
 			.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
 			.build());
@@ -107,7 +107,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnError() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null, "my-app-id");
+		this.interceptor = new SecurityInterceptor(this.tokenValidator, null, "my-app-id");
 		MockServerWebExchange request = MockServerWebExchange
 			.from(MockServerHttpRequest.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))

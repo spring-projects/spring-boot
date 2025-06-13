@@ -26,7 +26,7 @@ import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
  *
  * @author Eddú Meléndez
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 4.0.0
  * @see ArtemisAutoConfiguration
  */
 @FunctionalInterface

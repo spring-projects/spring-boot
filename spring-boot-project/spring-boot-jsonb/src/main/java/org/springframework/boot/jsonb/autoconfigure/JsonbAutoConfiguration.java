@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for JSON-B.
  *
  * @author Eddú Meléndez
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Jsonb.class)

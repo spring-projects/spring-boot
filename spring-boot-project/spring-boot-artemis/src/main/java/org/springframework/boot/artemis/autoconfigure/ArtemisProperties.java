@@ -33,7 +33,7 @@ import org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProper
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Justin Bertram
- * @since 1.3.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.artemis")
 public class ArtemisProperties {

@@ -56,7 +56,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @since 1.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)

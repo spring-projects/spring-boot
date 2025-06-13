@@ -199,8 +199,6 @@ public class LdapProperties {
 
 	/**
 	 * Define the methods to handle referrals.
-	 *
-	 * @since 3.5.0
 	 */
 	public enum Referral {
 

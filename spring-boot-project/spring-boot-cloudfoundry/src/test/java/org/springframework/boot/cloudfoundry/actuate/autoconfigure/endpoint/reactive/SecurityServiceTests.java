@@ -35,11 +35,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveCloudFoundrySecurityService}.
+ * Tests for {@link SecurityService}.
  *
  * @author Madhura Bhave
  */
-class ReactiveCloudFoundrySecurityServiceTests {
+class SecurityServiceTests {
 
 	private static final String CLOUD_CONTROLLER = "/my-cloud-controller.com";
 
@@ -47,7 +47,7 @@ class ReactiveCloudFoundrySecurityServiceTests {
 
 	private static final String UAA_URL = "https://my-cloud-controller.com/uaa";
 
-	private ReactiveCloudFoundrySecurityService securityService;
+	private SecurityService securityService;
 
 	private MockWebServer server;
 
@@ -55,7 +55,7 @@ class ReactiveCloudFoundrySecurityServiceTests {
 	void setup() {
 		this.server = new MockWebServer();
 		WebClient.Builder builder = WebClient.builder().baseUrl(this.server.url("/").toString());
-		this.securityService = new ReactiveCloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);
+		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, false);
 	}
 
 	@AfterEach

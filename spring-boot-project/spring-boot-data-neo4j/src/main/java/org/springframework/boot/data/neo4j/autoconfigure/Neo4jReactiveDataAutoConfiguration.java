@@ -40,7 +40,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
  *
  * @author Michael J. Simons
  * @author Stephane Nicoll
- * @since 2.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = Neo4jDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jTemplate.class, ReactiveTransactionManager.class, Flux.class })

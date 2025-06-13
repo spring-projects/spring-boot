@@ -71,7 +71,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Scott Frederick
- * @since 1.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })

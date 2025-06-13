@@ -98,7 +98,6 @@ public class TestRestTemplate {
 	 * Create a new {@link TestRestTemplate} instance.
 	 * @param restTemplateBuilder builder used to configure underlying
 	 * {@link RestTemplate}
-	 * @since 1.4.1
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
 		this(restTemplateBuilder, null, null);
@@ -128,7 +127,6 @@ public class TestRestTemplate {
 	 * @param username the username to use (or {@code null})
 	 * @param password the password (or {@code null})
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
-	 * @since 2.0.0
 	 */
 	public TestRestTemplate(RestTemplateBuilder builder, String username, String password,
 			HttpClientOption... httpClientOptions) {
@@ -576,7 +574,6 @@ public class TestRestTemplate {
 	 * @param uriVariables the variables to expand the template
 	 * @param <T> the type of the return value
 	 * @return the converted object
-	 * @since 1.4.4
 	 * @see HttpEntity
 	 */
 	public <T> T patchForObject(String url, Object request, Class<T> responseType, Object... uriVariables) {
@@ -597,7 +594,6 @@ public class TestRestTemplate {
 	 * @param uriVariables the variables to expand the template
 	 * @param <T> the type of the return value
 	 * @return the converted object
-	 * @since 1.4.4
 	 * @see HttpEntity
 	 */
 	public <T> T patchForObject(String url, Object request, Class<T> responseType, Map<String, ?> uriVariables) {
@@ -615,7 +611,6 @@ public class TestRestTemplate {
 	 * @param responseType the type of the return value
 	 * @param <T> the type of the return value
 	 * @return the converted object
-	 * @since 1.4.4
 	 * @see HttpEntity
 	 */
 	public <T> T patchForObject(URI url, Object request, Class<T> responseType) {
@@ -949,7 +944,6 @@ public class TestRestTemplate {
 	 * @param username the username
 	 * @param password the password
 	 * @return the new template
-	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		if (username == null && password == null) {
@@ -966,7 +960,6 @@ public class TestRestTemplate {
 	 * (when possible).
 	 * @param redirects the new redirect settings
 	 * @return the new template
-	 * @since 3.5.0
 	 */
 	public TestRestTemplate withRedirects(HttpRedirects redirects) {
 		return withRequestFactorySettings((settings) -> settings.withRedirects(redirects));
@@ -979,7 +972,6 @@ public class TestRestTemplate {
 	 * request factory type (when possible).
 	 * @param requestFactorySettings the new request factory settings
 	 * @return the new template
-	 * @since 3.4.1
 	 */
 	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
@@ -994,7 +986,6 @@ public class TestRestTemplate {
 	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update the
 	 * settings
 	 * @return the new template
-	 * @since 3.4.1
 	 */
 	public TestRestTemplate withRequestFactorySettings(
 			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {

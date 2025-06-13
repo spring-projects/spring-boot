@@ -48,7 +48,7 @@ import org.springframework.util.unit.DataSize;
  * @author Florian Storz
  * @author Michael Weidmann
  * @author Lasse Wulff
- * @since 3.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("server.jetty")
 public class JettyServerProperties {

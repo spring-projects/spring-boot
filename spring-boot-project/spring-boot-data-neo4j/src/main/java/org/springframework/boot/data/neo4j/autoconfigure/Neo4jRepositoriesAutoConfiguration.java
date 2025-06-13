@@ -46,7 +46,7 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * @author Oliver Gierke
  * @author Josh Long
  * @author Michael J. Simons
- * @since 1.4.0
+ * @since 4.0.0
  * @see EnableNeo4jRepositories
  */
 @AutoConfiguration(after = Neo4jDataAutoConfiguration.class)

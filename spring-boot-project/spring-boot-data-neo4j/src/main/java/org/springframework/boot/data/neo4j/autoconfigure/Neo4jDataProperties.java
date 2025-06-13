@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Spring Data Neo4j.
  *
  * @author Michael J. Simons
- * @since 2.4.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.neo4j")
 public class Neo4jDataProperties {

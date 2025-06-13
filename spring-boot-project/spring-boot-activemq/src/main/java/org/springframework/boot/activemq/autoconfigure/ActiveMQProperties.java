@@ -32,7 +32,7 @@ import org.springframework.boot.jms.autoconfigure.JmsPoolConnectionFactoryProper
  * @author Aurélien Leboulanger
  * @author Venil Noronha
  * @author Eddú Meléndez
- * @since 3.1.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.activemq")
 public class ActiveMQProperties {

@@ -44,7 +44,6 @@ public @interface ConditionalOnEnabledTracing {
 	/**
 	 * Name of the tracing exporter.
 	 * @return the name of the tracing exporter
-	 * @since 3.4.0
 	 */
 	String value() default "";
 

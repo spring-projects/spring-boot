@@ -63,7 +63,6 @@ public interface CassandraConnectionDetails extends ConnectionDetails {
 	/**
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
-	 * @since 3.5.0
 	 */
 	default SslBundle getSslBundle() {
 		return null;

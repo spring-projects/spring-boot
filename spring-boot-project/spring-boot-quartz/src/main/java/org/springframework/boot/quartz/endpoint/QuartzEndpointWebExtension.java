@@ -88,7 +88,6 @@ public class QuartzEndpointWebExtension {
 	 * @param state desired state
 	 * @return web endpoint response
 	 * @throws SchedulerException if there is an error triggering the job
-	 * @since 3.5.0
 	 */
 	@WriteOperation
 	public WebEndpointResponse<Object> triggerQuartzJob(@Selector String jobs, @Selector String group,

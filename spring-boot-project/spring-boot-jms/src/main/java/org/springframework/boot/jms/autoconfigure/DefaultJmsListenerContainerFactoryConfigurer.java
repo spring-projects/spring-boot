@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
  * @author Eddú Meléndez
  * @author Vedran Pavic
  * @author Lasse Wulff
- * @since 1.3.3
+ * @since 4.0.0
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
 

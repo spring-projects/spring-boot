@@ -29,15 +29,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveElasticsearchClientAutoConfiguration}.
+ * Tests for {@link ElasticsearchReactiveClientAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
-class ReactiveElasticsearchClientAutoConfigurationTests {
+class ElasticsearchReactiveClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ElasticsearchReactiveClientAutoConfiguration.class));
 
 	@Test
 	void configureWithoutRestClientShouldBackOff() {

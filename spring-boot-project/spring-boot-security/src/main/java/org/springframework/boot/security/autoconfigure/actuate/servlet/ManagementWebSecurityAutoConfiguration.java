@@ -45,7 +45,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *
  * @author Madhura Bhave
  * @author Hatef Palizgar
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
 		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",

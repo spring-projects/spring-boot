@@ -73,7 +73,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	private final TokenValidator tokenValidator = mock(TokenValidator.class);
 
-	private final CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
+	private final SecurityService securityService = mock(SecurityService.class);
 
 	@Test
 	void operationWithSecurityInterceptorForbidden() {
@@ -204,7 +204,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withUserConfiguration(configuration, CloudFoundryMvcConfiguration.class)
 			.withBean(TokenValidator.class, () -> this.tokenValidator)
-			.withBean(CloudFoundrySecurityService.class, () -> this.securityService)
+			.withBean(SecurityService.class, () -> this.securityService)
 			.run((context) -> consumer.accept(context, WebTestClient.bindToServer()
 				.baseUrl("http://localhost:" + getPort(
 						(AnnotationConfigServletWebServerApplicationContext) context.getSourceApplicationContext()))
@@ -227,9 +227,8 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class CloudFoundryMvcConfiguration {
 
 		@Bean
-		CloudFoundrySecurityInterceptor interceptor(TokenValidator tokenValidator,
-				CloudFoundrySecurityService securityService) {
-			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
+		SecurityInterceptor interceptor(TokenValidator tokenValidator, SecurityService securityService) {
+			return new SecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
@@ -241,7 +240,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 		@Bean
 		CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
-				CloudFoundrySecurityInterceptor interceptor) {
+				SecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));

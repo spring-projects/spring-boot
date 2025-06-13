@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for JMS provided from JNDI.
  *
  * @author Phillip Webb
- * @since 1.2.0
+ * @since 4.0.0
  */
 @AutoConfiguration(before = JmsAutoConfiguration.class)
 @ConditionalOnClass(JmsTemplate.class)

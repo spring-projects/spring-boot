@@ -79,7 +79,7 @@ import org.springframework.web.server.WebFilter;
 @ConditionalOnBooleanProperty(name = "management.cloudfoundry.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
-public class ReactiveCloudFoundryActuatorAutoConfiguration {
+public class CloudFoundryReactiveActuatorAutoConfiguration {
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";
 
@@ -115,7 +115,7 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
 				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList(),
 				Collections.emptyList());
-		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(webClientBuilder,
+		SecurityInterceptor securityInterceptor = getSecurityInterceptor(webClientBuilder,
 				applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = endpointDiscoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
@@ -125,23 +125,20 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
-	private CloudFoundrySecurityInterceptor getSecurityInterceptor(WebClient.Builder webClientBuilder,
-			Environment environment) {
-		ReactiveCloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
-				webClientBuilder, environment);
-		ReactiveTokenValidator tokenValidator = new ReactiveTokenValidator(cloudfoundrySecurityService);
-		return new CloudFoundrySecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
+	private SecurityInterceptor getSecurityInterceptor(WebClient.Builder webClientBuilder, Environment environment) {
+		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(webClientBuilder, environment);
+		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
+		return new SecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private ReactiveCloudFoundrySecurityService getCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
+	private SecurityService getCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",
 				Boolean.class, false);
 		return (cloudControllerUrl != null)
-				? new ReactiveCloudFoundrySecurityService(webClientBuilder, cloudControllerUrl, skipSslValidation)
-				: null;
+				? new SecurityService(webClientBuilder, cloudControllerUrl, skipSslValidation) : null;
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

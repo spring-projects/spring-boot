@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Bean;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsHealthIndicator}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = JmsAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, JmsHealthIndicator.class })

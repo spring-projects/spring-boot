@@ -218,7 +218,6 @@ public class QuartzEndpoint {
 	 * @return a description of the triggered job or {@code null} if the job does not
 	 * exist
 	 * @throws SchedulerException if there is an error triggering the job
-	 * @since 3.5.0
 	 */
 	public QuartzJobTriggerDescriptor triggerQuartzJob(String groupName, String jobName) throws SchedulerException {
 		return triggerQuartzJob(JobKey.jobKey(jobName, groupName));
@@ -410,8 +409,6 @@ public class QuartzEndpoint {
 
 	/**
 	 * Description of a triggered on-demand {@link Job Quartz Job}.
-	 *
-	 * @since 3.5.0
 	 */
 	public static final class QuartzJobTriggerDescriptor {
 

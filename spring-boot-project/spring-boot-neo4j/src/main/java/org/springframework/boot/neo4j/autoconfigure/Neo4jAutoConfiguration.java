@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Driver.class)

@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  */
 @ImportRuntimeHints(WebMvcEndpointHandlerMappingRuntimeHints.class)
 public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {

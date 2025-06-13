@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * Servlet stack.
  *
  * @author Vedran Pavic
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Endpoint(id = "sessions")
 public class SessionsEndpoint {
@@ -46,7 +46,6 @@ public class SessionsEndpoint {
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
 	 * @param indexedSessionRepository the indexed session repository
-	 * @since 3.3.0
 	 */
 	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
 			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {

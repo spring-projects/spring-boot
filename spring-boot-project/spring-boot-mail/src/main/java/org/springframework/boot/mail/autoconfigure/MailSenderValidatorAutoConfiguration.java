@@ -30,7 +30,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = MailSenderAutoConfiguration.class)
 @ConditionalOnBooleanProperty("spring.mail.test-connection")

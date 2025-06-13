@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
- * @since 2.1.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = CassandraAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, Flux.class, CassandraDriverReactiveHealthIndicator.class,

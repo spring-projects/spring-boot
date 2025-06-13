@@ -36,7 +36,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link RequestMatcherProvider}.
  *
  * @author Madhura Bhave
- * @since 2.1.8
+ * @since 4.0.0
  */
 @ManagementContextConfiguration(proxyBeanMethods = false)
 @ConditionalOnClass({ RequestMatcher.class })

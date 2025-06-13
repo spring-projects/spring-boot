@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Oliver Gierke
  * @author Stephane Nicoll
  * @author Eddú Meléndez
- * @since 1.2.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.mail")
 public class MailProperties {

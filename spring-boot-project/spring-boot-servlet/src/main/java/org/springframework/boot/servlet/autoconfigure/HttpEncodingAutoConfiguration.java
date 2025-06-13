@@ -33,7 +33,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  *
  * @author Stephane Nicoll
  * @author Brian Clozel
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration
 @EnableConfigurationProperties(ServletEncodingProperties.class)

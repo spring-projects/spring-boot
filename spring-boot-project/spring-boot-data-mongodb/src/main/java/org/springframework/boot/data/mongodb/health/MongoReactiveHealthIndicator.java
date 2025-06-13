@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * A {@link ReactiveHealthIndicator} for Mongo.
  *
  * @author Yulin Qin
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 

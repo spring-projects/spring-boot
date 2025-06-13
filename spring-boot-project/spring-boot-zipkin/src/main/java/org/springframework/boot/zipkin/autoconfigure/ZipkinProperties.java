@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for {@link ZipkinAutoConfiguration}.
  *
  * @author Moritz Halbritter
- * @since 3.0.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("management.zipkin.tracing")
 public class ZipkinProperties {

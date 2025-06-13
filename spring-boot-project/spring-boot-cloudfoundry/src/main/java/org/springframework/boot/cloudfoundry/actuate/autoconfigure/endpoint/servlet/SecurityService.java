@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Madhura Bhave
  */
-class CloudFoundrySecurityService {
+class SecurityService {
 
 	private final RestTemplate restTemplate;
 
@@ -47,8 +47,7 @@ class CloudFoundrySecurityService {
 
 	private String uaaUrl;
 
-	CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl,
-			boolean skipSslValidation) {
+	SecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(restTemplateBuilder, "'restTemplateBuilder' must not be null");
 		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {

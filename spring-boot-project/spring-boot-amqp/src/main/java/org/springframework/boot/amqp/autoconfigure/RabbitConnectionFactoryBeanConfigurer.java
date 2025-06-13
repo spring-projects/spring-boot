@@ -43,7 +43,7 @@ import org.springframework.util.unit.DataSize;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 2.6.0
+ * @since 4.0.0
  */
 public class RabbitConnectionFactoryBeanConfigurer {
 
@@ -74,7 +74,6 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * @param resourceLoader the resource loader
 	 * @param properties the properties
 	 * @param connectionDetails the connection details
-	 * @since 3.1.0
 	 */
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails) {
@@ -89,7 +88,6 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * @param properties the properties
 	 * @param connectionDetails the connection details
 	 * @param sslBundles the SSL bundles
-	 * @since 3.2.0
 	 */
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails, SslBundles sslBundles) {

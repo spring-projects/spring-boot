@@ -43,7 +43,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  *
  * @author Stephane Nicoll
  * @author Fabio Grassi
- * @since 1.2.0
+ * @since 4.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class DataSourcePoolMetadataProvidersConfiguration {

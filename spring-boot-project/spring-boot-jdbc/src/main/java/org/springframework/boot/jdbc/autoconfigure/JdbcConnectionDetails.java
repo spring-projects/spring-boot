@@ -25,7 +25,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
+ * @since 4.0.0
  */
 public interface JdbcConnectionDetails extends ConnectionDetails {
 

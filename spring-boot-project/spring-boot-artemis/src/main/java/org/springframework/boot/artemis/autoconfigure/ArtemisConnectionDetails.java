@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * Details required to establish a connection to an Artemis service.
  *
  * @author Eddú Meléndez
- * @since 3.3.0
+ * @since 4.0.0
  */
 public interface ArtemisConnectionDetails extends ConnectionDetails {
 
