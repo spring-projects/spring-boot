@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.RequestLogWriter;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.Format;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
@@ -201,7 +202,7 @@ public class JettyWebServerFactoryCustomizer
 		if (properties.getCustomFormat() != null) {
 			return properties.getCustomFormat();
 		}
-		if (ServerProperties.Jetty.Accesslog.FORMAT.EXTENDED_NCSA.equals(properties.getFormat())) {
+		if (Format.EXTENDED_NCSA.equals(properties.getFormat())) {
 			return CustomRequestLog.EXTENDED_NCSA_FORMAT;
 		}
 		return CustomRequestLog.NCSA_FORMAT;
