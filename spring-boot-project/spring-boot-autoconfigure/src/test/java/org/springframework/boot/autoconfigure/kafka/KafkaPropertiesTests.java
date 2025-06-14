@@ -27,8 +27,6 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
-import org.springframework.boot.ssl.DefaultSslBundleRegistry;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -36,7 +34,6 @@ import org.springframework.kafka.listener.ContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link KafkaProperties}.
@@ -46,8 +43,6 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  */
 class KafkaPropertiesTests {
-
-	private final SslBundle sslBundle = mock(SslBundle.class);
 
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
@@ -102,15 +97,6 @@ class KafkaPropertiesTests {
 	}
 
 	@Test
-	void sslBundleConfiguration() {
-		KafkaProperties properties = new KafkaProperties();
-		properties.getSsl().setBundle("myBundle");
-		Map<String, Object> consumerProperties = properties
-			.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle));
-		assertThat(consumerProperties).doesNotContainKey(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG);
-	}
-
-	@Test
 	void sslPropertiesWhenKeyStoreLocationAndKeySetShouldThrowException() {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
@@ -133,8 +119,8 @@ class KafkaPropertiesTests {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setBundle("myBundle");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
-		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class).isThrownBy(
-				() -> properties.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle)));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -142,8 +128,8 @@ class KafkaPropertiesTests {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setBundle("myBundle");
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
-		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class).isThrownBy(
-				() -> properties.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle)));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -151,8 +137,8 @@ class KafkaPropertiesTests {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setBundle("myBundle");
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
-		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class).isThrownBy(
-				() -> properties.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle)));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -160,8 +146,8 @@ class KafkaPropertiesTests {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setBundle("myBundle");
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
-		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class).isThrownBy(
-				() -> properties.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle)));
+		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
