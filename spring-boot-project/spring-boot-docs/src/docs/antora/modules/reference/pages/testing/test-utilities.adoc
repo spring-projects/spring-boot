@@ -55,8 +55,9 @@ It is recommended, but not mandatory, to use the Apache HTTP Client (version 5.1
 If you have that on your classpath, the javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] responds by configuring the client appropriately.
 If you do use Apache's HTTP client, some additional test-friendly features are enabled:
 
-* Redirects are not followed (so you can assert the response location).
 * Cookies are ignored (so the template is stateless).
+
+By default, `TestRestTemplate` follows redirects in the same way as `RestTemplate`, regardless of which HTTP client implementation is used.
 
 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] can be instantiated directly in your integration tests, as shown in the following example:
 
