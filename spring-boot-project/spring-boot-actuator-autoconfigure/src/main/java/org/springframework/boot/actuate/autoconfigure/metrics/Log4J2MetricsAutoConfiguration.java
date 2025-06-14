@@ -54,20 +54,20 @@ public class Log4J2MetricsAutoConfiguration {
 
 	static class Log4JCoreLoggerContextCondition extends SpringBootCondition {
 
+		private static final String LOGGER_CONTEXT_CLASS_NAME = "org.apache.logging.log4j.core.LoggerContext";
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			LoggerContext loggerContext = LogManager.getContext(false);
 			try {
-				if (Class.forName("org.apache.logging.log4j.core.LoggerContext").isInstance(loggerContext)) {
-					return ConditionOutcome
-						.match("LoggerContext was an instance of org.apache.logging.log4j.core.LoggerContext");
+				if (Class.forName(LOGGER_CONTEXT_CLASS_NAME).isInstance(loggerContext)) {
+					return ConditionOutcome.match("LoggerContext was an instance of " + LOGGER_CONTEXT_CLASS_NAME);
 				}
 			}
 			catch (Throwable ex) {
 				// Continue with no match
 			}
-			return ConditionOutcome
-				.noMatch("Logger context was not an instance of org.apache.logging.log4j.core.LoggerContext");
+			return ConditionOutcome.noMatch("LoggerContext was not an instance of " + LOGGER_CONTEXT_CLASS_NAME);
 		}
 
 	}
