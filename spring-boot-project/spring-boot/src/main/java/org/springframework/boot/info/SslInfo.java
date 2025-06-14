@@ -50,7 +50,7 @@ public class SslInfo {
 
 	/**
 	 * Creates a new instance.
-	 * @param sslBundles the {@link SslBundles} to extract the info from threshold
+	 * @param sslBundles the {@link SslBundles} to extract the info from
 	 * @since 4.0.0
 	 */
 	public SslInfo(SslBundles sslBundles) {
