@@ -50,7 +50,7 @@ class DynamicPropertySourceMethodsImporter {
 		if (methods.isEmpty()) {
 			return;
 		}
-		methods.forEach((method) -> assertValid(method));
+		methods.forEach(this::assertValid);
 		RootBeanDefinition registrarDefinition = new RootBeanDefinition();
 		registrarDefinition.setBeanClass(DynamicPropertySourcePropertyRegistrar.class);
 		ConstructorArgumentValues arguments = new ConstructorArgumentValues();
