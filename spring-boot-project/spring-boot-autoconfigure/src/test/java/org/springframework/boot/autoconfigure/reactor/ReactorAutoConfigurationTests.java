@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -75,6 +77,7 @@ class ReactorAutoConfigurationTests {
 				.contextWrite(Context.of(THREADLOCAL_KEY, "updated"))
 				.block();
 			assertThat(threadLocalValue.get()).isEqualTo("initial");
+			assertThat(applicationContext).doesNotHaveBean(LazyInitializationExcludeFilter.class);
 		});
 	}
 
@@ -88,6 +91,21 @@ class ReactorAutoConfigurationTests {
 				.block();
 			assertThat(threadLocalValue.get()).isEqualTo("updated");
 		});
+	}
+
+	@Test
+	void shouldConfigurePropagationIfSetToAutoAndLazyInitializationIsEnabled() {
+		AtomicReference<String> threadLocalValue = new AtomicReference<>();
+		this.contextRunner.withPropertyValues("spring.reactor.context-propagation=AUTO")
+			.withInitializer((applicationContext) -> applicationContext
+				.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
+			.run((applicationContext) -> {
+				Mono.just("test")
+					.doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
+					.contextWrite(Context.of(THREADLOCAL_KEY, "updated"))
+					.block();
+				assertThat(threadLocalValue.get()).isEqualTo("updated");
+			});
 	}
 
 }
