@@ -59,7 +59,9 @@ Are you having trouble with Spring Boot? We want to help!
 * Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at {github}/issues[github.com/spring-projects/spring-boot/issues].
 
+== Contributing
 
+We welcome contributions of all kinds! Please read our [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
 
 == Reporting Issues
 
@@ -81,6 +83,8 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 You don't need to build from source to use Spring Boot (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper].
 You also need JDK 17.
 
+== Running Tests
+
 [source,shell]
 ----
 $ ./gradlew publishToMavenLocal
@@ -95,6 +99,19 @@ If you want to build everything, use the `build` task:
 $ ./gradlew build
 ----
 
+
+== Running Tests
+
+Before submitting a pull request, please ensure that all tests pass successfully. You can run the tests using the following command:
+
+[source,shell]
+----
+$ ./gradlew test
+----
+
+
+
+If you encounter any test failures, please review the failure output and address the issues before contributing.
 
 
 == Modules
