@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
@@ -53,7 +54,7 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfiguration
 @ConditionalOnClass(ReactiveHttpInputMessage.class)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class,
 		ReactiveWebServerFactoryConfiguration.EmbeddedTomcat.class,
