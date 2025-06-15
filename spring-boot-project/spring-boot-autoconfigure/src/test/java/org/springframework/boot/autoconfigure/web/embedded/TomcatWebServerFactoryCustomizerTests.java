@@ -59,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Victor Mandujano
  * @author Parviz Rozikov
  * @author Moritz Halbritter
+ * @author Daeho Kwon
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -199,6 +200,20 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.max-parameter-count=100");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
+	}
+
+	@Test
+	void customMaxPartCount() {
+		bind("server.tomcat.max-part-count=20");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartCount()).isEqualTo(20));
+	}
+
+	@Test
+	void customMaxPartHeaderSize() {
+		bind("server.tomcat.max-part-header-size=1024");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartHeaderSize()).isEqualTo(1024));
 	}
 
 	@Test
