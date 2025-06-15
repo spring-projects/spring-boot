@@ -84,7 +84,14 @@ public class ManagementContextAutoConfiguration {
 		 * @param environment the environment
 		 */
 		private void addLocalManagementPortPropertyAlias(ConfigurableEnvironment environment) {
-			environment.getPropertySources().addLast(new PropertySource<>("Management Server") {
+			environment.getPropertySources().addLast(new EnumerablePropertySource<>("Management Server") {
+
+				public static final String[] PROPERTIES = { "local.management.port" };
+
+				@Override
+				public String[] getPropertyNames() {
+					return PROPERTIES;
+				}
 
 				@Override
 				public Object getProperty(String name) {
