@@ -67,8 +67,7 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@Test
 	void filteredAuditEvents() {
-		OffsetDateTime now = OffsetDateTime.now();
-		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
+		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find("alice", now.toInstant(), "logout"))
 			.willReturn(List.of(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		assertThat(this.mvc.get()
