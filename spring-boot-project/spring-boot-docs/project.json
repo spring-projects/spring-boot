@@ -1,0 +1,10 @@
+{
+  "targets": {
+    "dokkatooGeneratePublicationHtml": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    }
+  }
+}

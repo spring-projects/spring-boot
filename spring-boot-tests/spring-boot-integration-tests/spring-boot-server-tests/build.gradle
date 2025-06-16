@@ -24,6 +24,7 @@ dependencies {
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-undertow", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-logging", configuration: "mavenRepository"))
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
 }
@@ -52,6 +53,16 @@ tasks.register("buildApps", GradleBuild) {
 		"undertowBootJar",
 		"undertowBootWar"
 	]
+	// Manually declare expected output files
+    outputs.files(
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.war")
+    )
 }
 
 intTest {

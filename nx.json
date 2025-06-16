@@ -1,0 +1,46 @@
+{
+  "plugins": [
+    {
+      "plugin": "@nx/gradle",
+      "options": {
+        "testTargetName": "test",
+        "classesTargetName": "classes",
+        "buildTargetName": "build",
+        "ciTestTargetName": "ci",
+        "ciIntTestTargetName": "ciIntTest"
+      }
+    }
+  ],
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/src/test/**/*"
+    ]
+  },
+  "targetDefaults": {
+    "homebrewFormula": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    },
+    "antora": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    },
+    "antoraNpmInstall": {
+      "executor": "@nx/gradle:gradle",
+      "options": {
+        "excludeDependsOn": false
+      }
+    }
+  },
+  "bustCache": 101,
+  "nxCloudUrl": "https://staging.nx.app",
+  "nxCloudId": "67a56832eb5d9093e3ebe776"
+}

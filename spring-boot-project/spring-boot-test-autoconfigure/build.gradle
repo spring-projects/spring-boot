@@ -146,3 +146,27 @@ tasks.register("testSliceMetadata", org.springframework.boot.build.test.autoconf
 	sourceSet = sourceSets.main
 	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
 }
+
+javadoc {
+	dependsOn processResources
+}
+
+testSliceMetadata {
+	dependsOn processResources
+}
+
+test {
+	dependsOn processResources
+}
+
+compileTestJava {
+	dependsOn processResources
+}
+
+compileDockerTestJava {
+	dependsOn processResources
+}
+
+jar {
+	dependsOn processResources
+}

@@ -1,0 +1,7 @@
+{
+    "name": "spring-boot",
+    "dependencies": {
+        "@nx/gradle": "21.2.0",
+        "nx": "21.2.0"
+    }
+}

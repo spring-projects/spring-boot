@@ -1,4 +1,5 @@
 plugins {
+	id "dev.nx.gradle.project-graph" version "0.1.2"
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
 }
@@ -9,12 +10,16 @@ defaultTasks 'build'
 
 allprojects {
 	group = "org.springframework.boot"
+	apply {
+    	plugin("dev.nx.gradle.project-graph")
+	}
 }
 
 subprojects {
 	apply plugin: "org.springframework.boot.conventions"
 
 	repositories {
+		mavenLocal()
 		mavenCentral()
 		spring.mavenRepositories()
 	}
@@ -23,4 +28,3 @@ subprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
-

@@ -41,3 +41,10 @@ secrets.yml
 .sts4-cache
 .git-hooks/
 node_modules
+
+.nx/installation
+.nx/cache
+.nx/workspace-data
+
+.specstory/**
+.cursorindexingignore

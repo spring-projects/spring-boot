@@ -94,3 +94,31 @@ tasks.register("syncIntTestDependencies", Sync) {
 intTest {
 	dependsOn syncIntTestDependencies
 }
+
+jar {
+	dependsOn processResources
+}
+
+autoConfigurationMetadata {
+	dependsOn processResources
+}
+
+compileTestJava {
+	dependsOn processResources
+}
+
+compileIntTestJava {
+	dependsOn processResources
+}
+
+test {
+	dependsOn processResources
+}
+
+javadoc {
+	dependsOn processResources
+}
+
+intTest {
+	dependsOn processResources
+}

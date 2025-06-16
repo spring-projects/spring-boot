@@ -202,6 +202,9 @@ dokkatoo {
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 	dependsOn configurations.resolvedBom
+	dependsOn ':spring-boot-project:spring-boot-test-autoconfigure:processResources'
+	dependsOn ':spring-boot-project:spring-boot-devtools:processResources'
+	dependsOn processResources
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	options {
 		author = true
@@ -388,4 +391,28 @@ dokkatoo {
 	dokkatooPublications.configureEach {
 		includes.from("src/docs/dokkatoo/dokka-overview.md")
 	}
+}
+
+test {
+	dependsOn processResources
+}
+
+checkArchitectureTest {
+	dependsOn processResources
+}
+
+checkstyleMain {
+	dependsOn processResources
+}
+
+compileTestJava {
+	dependsOn processResources
+}
+
+tasks.named("antora") {
+    enabled = false
+}
+
+tasks.named("antoraNpmInstall") {
+    enabled = false
 }

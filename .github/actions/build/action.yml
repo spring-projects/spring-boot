@@ -68,17 +68,17 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew build
-    - name: Publish
-      id: publish
-      if: ${{ inputs.publish == 'true' }}
-      shell: bash
-      env:
-        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
-        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
-        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
-        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
+      run: NX_BATCH_MODE=true NX_CLOUD_DEREFERENCE_SYMLINKS=true NX_VERBOSE_LOGGING=true NX_PERF_LOGGING=true NX_CLOUD_NO_TIMEOUTS=true NX_CLOUD_VERBOSE_LOGGING=true npx nx run-many -t build-ci --parallel=32 --batch --outputStyle=stream
+#    - name: Publish
+#      id: publish
+#      if: ${{ inputs.publish == 'true' }}
+#      shell: bash
+#      env:
+#        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+#        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+#        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+#        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
+#      run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version
       shell: bash

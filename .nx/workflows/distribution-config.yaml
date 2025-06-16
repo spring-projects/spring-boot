@@ -1,0 +1,14 @@
+distribute-on:
+  default: 5 linux-extra-large-plus-jvm
+
+assignment-rules:
+  - targets:
+      - 'ciIntTest*'
+    run-on:
+      - agent: linux-extra-large-plus-jvm
+        parallelism: 1
+        
+  - projects:
+      - "*"
+    run-on:
+      - agent: linux-extra-large-plus-jvm

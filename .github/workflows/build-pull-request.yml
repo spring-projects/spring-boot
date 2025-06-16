@@ -5,14 +5,30 @@ permissions:
 jobs:
   build:
     name: Build Pull Request
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          check-latest: true
+          cache: npm
+      - run: npm install
+
+      # This enables task distribution via Nx Cloud
+      # Run this command as early as possible, before dependencies are installed
+      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
+      # Uncomment this line to enable task distribution
+      - run: NX_CLOUD_FORCE_USE_EXECUTE_TASKS_V3=false NX_CLOUD_DEREFERENCE_SYMLINKS=true NX_CLOUD_RETRIEVAL_CONCURRENCY=50 NX_CLOUD_NO_TIMEOUTS=true NX_VERBOSE_LOGGING=true NX_CLOUD_VERBOSE_LOGGING=true NX_PERF_LOGGING=true npx nx-cloud start-ci-run --require-explicit-completion --distribute-on="../../.nx/workflows/distribution-config.yaml"
+
       - name: Build
         id: build
         uses: ./.github/actions/build
+      - name: Stop nx cloud agents
+        if: always()
+        run: npx nx-cloud complete-ci-run
       - name: Print JVM Thread Dumps When Cancelled
         if: cancelled()
         uses: ./.github/actions/print-jvm-thread-dumps

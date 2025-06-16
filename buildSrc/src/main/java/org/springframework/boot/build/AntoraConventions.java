@@ -42,6 +42,7 @@ import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -90,7 +91,8 @@ public class AntoraConventions {
 		TaskProvider<Copy> copyAntoraPackageJsonTask = tasks.register("copyAntoraPackageJson", Copy.class,
 				(task) -> configureCopyAntoraPackageJsonTask(project, task));
 		TaskProvider<NpmInstallTask> npmInstallTask = tasks.register("antoraNpmInstall", NpmInstallTask.class,
-				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask));
+				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask,
+						generateAntoraPlaybookTask));
 		tasks.withType(GenerateAntoraYmlTask.class,
 				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask, resolvedBom));
 		tasks.withType(AntoraTask.class,
@@ -114,13 +116,24 @@ public class AntoraConventions {
 	}
 
 	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask,
-			TaskProvider<Copy> copyAntoraPackageJson) {
+			TaskProvider<Copy> copyAntoraPackageJson, TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		npmInstallTask.dependsOn(copyAntoraPackageJson);
+		npmInstallTask.dependsOn(generateAntoraPlaybookTask);
 		Map<String, String> environment = new HashMap<>();
 		environment.put("npm_config_omit", "optional");
 		environment.put("npm_config_update_notifier", "false");
 		npmInstallTask.getEnvironment().set(environment);
 		npmInstallTask.getNpmCommand().set(List.of("ci", "--silent", "--no-progress"));
+
+		npmInstallTask.getInputs()
+			.files(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"))
+			.withPropertyName("antoraNodeJs")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		npmInstallTask.getInputs()
+			.files(getNodeProjectDir(project))
+			.withPropertyName("antoraNodeProjectDir")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
 	}
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
@@ -163,6 +176,22 @@ public class AntoraConventions {
 			TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		antoraTask.setGroup("Documentation");
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
+
+		antoraTask.getInputs()
+			.file(generateAntoraPlaybookTask.flatMap(GenerateAntoraPlaybook::getOutputFile))
+			.withPropertyName("antoraPlaybookFile")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		antoraTask.getInputs()
+			.files(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"))
+			.withPropertyName("antoraNodeJs")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
+		antoraTask.getInputs()
+			.files(getNodeProjectDir(project))
+			.withPropertyName("antoraNodeProjectDir")
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+
 		antoraTask.setPlaybook("antora-playbook.yml");
 		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
 		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArs(project, antoraTask)));

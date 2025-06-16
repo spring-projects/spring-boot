@@ -233,3 +233,11 @@ antoraContributions {
 		source()
 	}
 }
+
+tasks.named("antora") {
+    enabled = false
+}
+
+tasks.named("antoraNpmInstall") {
+    enabled = false
+}
