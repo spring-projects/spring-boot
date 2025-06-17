@@ -45,7 +45,7 @@ public final class GradleVersions {
 		if (isJavaVersion(JavaVersion.VERSION_21)) {
 			return Arrays.asList("8.5", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 		}
-		return Arrays.asList("7.6.4", "8.4", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
+		return Arrays.asList("7.6.5", "8.4", GradleVersion.current().getVersion(), "9.0.0-milestone-9");
 	}
 
 	public static String minimumCompatible() {
