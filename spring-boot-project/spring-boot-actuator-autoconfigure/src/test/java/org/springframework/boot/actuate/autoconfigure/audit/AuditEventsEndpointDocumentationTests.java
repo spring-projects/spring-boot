@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.audit;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -67,10 +67,10 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@Test
 	void filteredAuditEvents() {
-		OffsetDateTime now = OffsetDateTime.now();
-		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
-		given(this.repository.find("alice", now.toInstant(), "logout"))
-			.willReturn(List.of(new AuditEvent("alice", "logout", Collections.emptyMap())));
+		String queryTimestamp = "2017-11-07T09:37Z";
+		Instant instant = Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(queryTimestamp));
+		given(this.repository.find("alice", instant, "logout"))
+			.willReturn(List.of(new AuditEvent(instant.plusSeconds(73), "alice", "logout", Collections.emptyMap())));
 		assertThat(this.mvc.get()
 			.uri("/actuator/auditevents")
 			.param("principal", "alice")
@@ -85,7 +85,7 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 								.description("Restricts the events to those with the given principal. Optional."),
 							parameterWithName("type")
 								.description("Restricts the events to those with the given type. Optional."))));
-		then(this.repository).should().find("alice", now.toInstant(), "logout");
+		then(this.repository).should().find("alice", instant, "logout");
 	}
 
 	@Configuration(proxyBeanMethods = false)
