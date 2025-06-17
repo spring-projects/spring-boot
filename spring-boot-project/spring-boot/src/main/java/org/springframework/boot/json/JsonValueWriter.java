@@ -267,7 +267,6 @@ class JsonValueWriter {
 				switch (ch) {
 					case '"' -> this.out.append("\\\"");
 					case '\\' -> this.out.append("\\\\");
-					case '/' -> this.out.append("\\/");
 					case '\b' -> this.out.append("\\b");
 					case '\f' -> this.out.append("\\f");
 					case '\n' -> this.out.append("\\n");
