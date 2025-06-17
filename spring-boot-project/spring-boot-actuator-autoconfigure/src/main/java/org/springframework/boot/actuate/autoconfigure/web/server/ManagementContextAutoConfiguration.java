@@ -23,13 +23,15 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
@@ -84,17 +86,7 @@ public class ManagementContextAutoConfiguration {
 		 * @param environment the environment
 		 */
 		private void addLocalManagementPortPropertyAlias(ConfigurableEnvironment environment) {
-			environment.getPropertySources().addLast(new PropertySource<>("Management Server") {
-
-				@Override
-				public Object getProperty(String name) {
-					if ("local.management.port".equals(name)) {
-						return environment.getProperty("local.server.port");
-					}
-					return null;
-				}
-
-			});
+			environment.getPropertySources().addLast(new LocalManagementPortPropertySource(environment));
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -115,6 +107,42 @@ public class ManagementContextAutoConfiguration {
 			return new ChildManagementContextInitializer(managementContextFactory, parentContext);
 		}
 
+	}
+
+	static class LocalManagementPortPropertySource extends EnumerablePropertySource<Object>
+			implements OriginLookup<String> {
+
+		private static final String[] PROPERTIES = { "local.management.port" };
+
+		private final ConfigurableEnvironment environment;
+
+		LocalManagementPortPropertySource(ConfigurableEnvironment environment) {
+			super("Management Server");
+			this.environment = environment;
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return PROPERTIES;
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			if ("local.management.port".equals(name)) {
+				return this.environment.getProperty("local.server.port");
+			}
+			return null;
+		}
+
+		@Override
+		public Origin getOrigin(String key) {
+			return null;
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
 	}
 
 }
