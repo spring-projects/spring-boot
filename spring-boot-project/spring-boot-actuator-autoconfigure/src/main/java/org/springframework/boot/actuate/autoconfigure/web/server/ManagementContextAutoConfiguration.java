@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -109,29 +111,33 @@ public class ManagementContextAutoConfiguration {
 
 	}
 
+	/**
+	 * {@link EnumerablePropertySource} providing {@code local.management.port} support.
+	 */
 	static class LocalManagementPortPropertySource extends EnumerablePropertySource<Object>
 			implements OriginLookup<String> {
 
-		private static final String[] PROPERTIES = { "local.management.port" };
+		private static final Map<String, String> PROPERTY_MAPPINGS = Map.of("local.management.port",
+				"local.server.port");
 
-		private final ConfigurableEnvironment environment;
+		private static final String[] PROPERTY_NAMES = PROPERTY_MAPPINGS.keySet().toArray(String[]::new);
 
-		LocalManagementPortPropertySource(ConfigurableEnvironment environment) {
+		private final Environment environment;
+
+		LocalManagementPortPropertySource(Environment environment) {
 			super("Management Server");
 			this.environment = environment;
 		}
 
 		@Override
 		public String[] getPropertyNames() {
-			return PROPERTIES;
+			return PROPERTY_NAMES;
 		}
 
 		@Override
 		public Object getProperty(String name) {
-			if ("local.management.port".equals(name)) {
-				return this.environment.getProperty("local.server.port");
-			}
-			return null;
+			String mapped = PROPERTY_MAPPINGS.get(name);
+			return (mapped != null) ? this.environment.getProperty(mapped) : null;
 		}
 
 		@Override
@@ -143,6 +149,7 @@ public class ManagementContextAutoConfiguration {
 		public boolean isImmutable() {
 			return true;
 		}
+
 	}
 
 }
