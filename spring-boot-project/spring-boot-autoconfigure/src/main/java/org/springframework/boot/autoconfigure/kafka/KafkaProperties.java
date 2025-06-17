@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -162,7 +161,7 @@ public class KafkaProperties {
 		return this.retry;
 	}
 
-	private Map<String, Object> buildCommonProperties(SslBundles sslBundles) {
+	private Map<String, Object> buildCommonProperties() {
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
@@ -170,7 +169,7 @@ public class KafkaProperties {
 		if (this.clientId != null) {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
 		}
-		properties.putAll(this.ssl.buildProperties(sslBundles));
+		properties.putAll(this.ssl.buildProperties());
 		properties.putAll(this.security.buildProperties());
 		if (!CollectionUtils.isEmpty(this.properties)) {
 			properties.putAll(this.properties);
@@ -187,21 +186,8 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildConsumerProperties() {
-		return buildConsumerProperties(null);
-	}
-
-	/**
-	 * Create an initial map of consumer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaConsumerFactory} bean.
-	 * @param sslBundles bundles providing SSL trust material
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
-	 */
-	public Map<String, Object> buildConsumerProperties(SslBundles sslBundles) {
-		Map<String, Object> properties = buildCommonProperties(sslBundles);
-		properties.putAll(this.consumer.buildProperties(sslBundles));
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.consumer.buildProperties());
 		return properties;
 	}
 
@@ -214,21 +200,8 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildProducerProperties() {
-		return buildProducerProperties(null);
-	}
-
-	/**
-	 * Create an initial map of producer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaProducerFactory} bean.
-	 * @param sslBundles bundles providing SSL trust material
-	 * @return the producer properties initialized with the customizations defined on this
-	 * instance
-	 */
-	public Map<String, Object> buildProducerProperties(SslBundles sslBundles) {
-		Map<String, Object> properties = buildCommonProperties(sslBundles);
-		properties.putAll(this.producer.buildProperties(sslBundles));
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.producer.buildProperties());
 		return properties;
 	}
 
@@ -237,13 +210,12 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaAdmin} bean.
-	 * @param sslBundles bundles providing SSL trust material
 	 * @return the admin properties initialized with the customizations defined on this
 	 * instance
 	 */
-	public Map<String, Object> buildAdminProperties(SslBundles sslBundles) {
-		Map<String, Object> properties = buildCommonProperties(sslBundles);
-		properties.putAll(this.admin.buildProperties(sslBundles));
+	public Map<String, Object> buildAdminProperties() {
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.admin.buildProperties());
 		return properties;
 	}
 
@@ -251,13 +223,12 @@ public class KafkaProperties {
 	 * Create an initial map of streams properties from the state of this instance.
 	 * <p>
 	 * This allows you to add additional properties, if necessary.
-	 * @param sslBundles bundles providing SSL trust material
 	 * @return the streams properties initialized with the customizations defined on this
 	 * instance
 	 */
-	public Map<String, Object> buildStreamsProperties(SslBundles sslBundles) {
-		Map<String, Object> properties = buildCommonProperties(sslBundles);
-		properties.putAll(this.streams.buildProperties(sslBundles));
+	public Map<String, Object> buildStreamsProperties() {
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.streams.buildProperties());
 		return properties;
 	}
 
@@ -473,7 +444,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAutoCommitInterval)
@@ -501,7 +472,7 @@ public class KafkaProperties {
 			map.from(this::getMaxPollInterval)
 				.asInt(Duration::toMillis)
 				.to(properties.in(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties, sslBundles);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -663,7 +634,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
@@ -677,7 +648,7 @@ public class KafkaProperties {
 			map.from(this::getKeySerializer).to(properties.in(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
 			map.from(this::getRetries).to(properties.in(ProducerConfig.RETRIES_CONFIG));
 			map.from(this::getValueSerializer).to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties, sslBundles);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -784,11 +755,11 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
-			return properties.with(this.ssl, this.security, this.properties, sslBundles);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -918,7 +889,7 @@ public class KafkaProperties {
 			return this.properties;
 		}
 
-		public Map<String, Object> buildProperties(SslBundles sslBundles) {
+		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
@@ -929,7 +900,7 @@ public class KafkaProperties {
 			map.from(this::getClientId).to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));
 			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
 			map.from(this::getStateDir).to(properties.in("state.dir"));
-			return properties.with(this.ssl, this.security, this.properties, sslBundles);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -1423,12 +1394,7 @@ public class KafkaProperties {
 			this.protocol = protocol;
 		}
 
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		public Map<String, Object> buildProperties() {
-			return buildProperties(null);
-		}
-
-		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
 			String bundleName = getBundle();
 			Properties properties = new Properties();
@@ -1794,8 +1760,8 @@ public class KafkaProperties {
 			return (value) -> put(key, value);
 		}
 
-		Properties with(Ssl ssl, Security security, Map<String, String> properties, SslBundles sslBundles) {
-			putAll(ssl.buildProperties(sslBundles));
+		Properties with(Ssl ssl, Security security, Map<String, String> properties) {
+			putAll(ssl.buildProperties());
 			putAll(security.buildProperties());
 			putAll(properties);
 			return this;
