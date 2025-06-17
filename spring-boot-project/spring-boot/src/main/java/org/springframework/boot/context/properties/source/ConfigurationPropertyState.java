@@ -66,4 +66,27 @@ public enum ConfigurationPropertyState {
 		return ABSENT;
 	}
 
+	/**
+	 * Search the given iterable using a predicate to determine if content is
+	 * {@link #PRESENT} or {@link #ABSENT}.
+	 * @param <T> the data type
+	 * @param source the source iterable to search
+	 * @param startInclusive the first index to cover
+	 * @param endExclusive index immediately past the last index to cover
+	 * @param predicate the predicate used to test for presence
+	 * @return {@link #PRESENT} if the iterable contains a matching item, otherwise
+	 * {@link #ABSENT}.
+	 */
+	static <T> ConfigurationPropertyState search(T[] source, int startInclusive, int endExclusive,
+			Predicate<T> predicate) {
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(predicate, "'predicate' must not be null");
+		for (int i = startInclusive; i < endExclusive; i++) {
+			if (predicate.test(source[i])) {
+				return PRESENT;
+			}
+		}
+		return ABSENT;
+	}
+
 }

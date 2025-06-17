@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,14 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.env.OriginTrackedMapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigurationPropertiesSourceTests {
 
 	@Test
-	void iteratorShouldFilterNames() {
+	void iteratorFiltersNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		assertThat(filtered.iterator()).toIterable()
@@ -37,13 +44,8 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 			.containsExactly("a", "b", "c");
 	}
 
-	@Override
-	protected ConfigurationPropertySource convertSource(MockConfigurationPropertySource source) {
-		return source;
-	}
-
 	@Test
-	void containsDescendantOfShouldUseContents() {
+	void containsDescendantOfUsesContents() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar.baz", "1");
 		source.put("foo.bar[0]", "1");
@@ -53,6 +55,45 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("faf")))
 			.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
+	@Test
+	void iteratorWhenSpringPropertySourceFiltersNames() {
+		IterableConfigurationPropertySource testSource = (IterableConfigurationPropertySource) createTestSource();
+		Map<String, Object> map = new LinkedHashMap<>();
+		for (ConfigurationPropertyName name : testSource) {
+			map.put(name.toString(), testSource.getConfigurationProperty(name).getValue());
+		}
+		PropertySource<?> propertySource = new OriginTrackedMapPropertySource("test", map, true);
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource.from(propertySource);
+		IterableConfigurationPropertySource filtered = (IterableConfigurationPropertySource) source
+			.filter(this::noBrackets);
+		assertThat(Extractors.byName("filteredNames").apply(filtered)).isNotNull();
+		assertThat(filtered.iterator()).toIterable()
+			.extracting(ConfigurationPropertyName::toString)
+			.containsExactly("a", "b", "c");
+	}
+
+	@Test
+	void containsDescendantOfWhenSpringPropertySourceUsesContents() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("foo.bar.baz", "1");
+		map.put("foo.bar[0]", "1");
+		map.put("faf.bar[0]", "1");
+		PropertySource<?> propertySource = new OriginTrackedMapPropertySource("test", map, true);
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource.from(propertySource);
+		IterableConfigurationPropertySource filtered = (IterableConfigurationPropertySource) source
+			.filter(this::noBrackets);
+		assertThat(Extractors.byName("filteredNames").apply(filtered)).isNotNull();
+		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("foo")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("faf")))
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
+	@Override
+	protected ConfigurationPropertySource convertSource(MockConfigurationPropertySource source) {
+		return source;
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
