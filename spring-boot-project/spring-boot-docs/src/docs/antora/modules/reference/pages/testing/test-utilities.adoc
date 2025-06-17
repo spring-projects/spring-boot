@@ -53,10 +53,7 @@ It provides a fluent API for assertions, unlike javadoc:org.springframework.boot
 
 It is recommended, but not mandatory, to use the Apache HTTP Client (version 5.1 or better).
 If you have that on your classpath, the javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] responds by configuring the client appropriately.
-If you do use Apache's HTTP client, some additional test-friendly features are enabled:
-
-* Redirects are not followed (so you can assert the response location).
-* Cookies are ignored (so the template is stateless).
+If you do use Apache's HTTP client it is configured to ignore cookies (so the template is stateless).
 
 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] can be instantiated directly in your integration tests, as shown in the following example:
 
