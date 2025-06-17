@@ -709,7 +709,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		SimpleDataSourceProperties() {
 			add(DataSourceProperty.URL, SimpleDriverDataSource::getUrl, SimpleDriverDataSource::setUrl);
 			add(DataSourceProperty.DRIVER_CLASS_NAME, Class.class,
-					(dataSource) -> dataSource.getDriver() == null ? null : dataSource.getDriver().getClass(),
+					(dataSource) -> (dataSource.getDriver() != null) ? dataSource.getDriver().getClass() : null,
 					SimpleDriverDataSource::setDriverClass);
 			add(DataSourceProperty.USERNAME, SimpleDriverDataSource::getUsername, SimpleDriverDataSource::setUsername);
 			add(DataSourceProperty.PASSWORD, SimpleDriverDataSource::getPassword, SimpleDriverDataSource::setPassword);

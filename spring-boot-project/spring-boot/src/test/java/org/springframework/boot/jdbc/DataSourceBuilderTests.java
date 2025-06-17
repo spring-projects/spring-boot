@@ -358,7 +358,7 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void buildWhenDerivedFromSimpleDriverDataSourceWithDriverNotSetSucceeds() throws Exception {
+	void buildWhenDerivedFromSimpleDriverDataSourceAndDriverNotSetBuilds() {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
