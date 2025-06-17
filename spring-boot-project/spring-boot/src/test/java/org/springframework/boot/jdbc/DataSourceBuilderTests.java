@@ -359,6 +359,16 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
+	void buildWhenDerivedFromSimpleDriverDataSourceAndDriverNotSetBuilds() {
+		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+		assertThatNoException()
+			.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).type(SimpleDriverDataSource.class).build());
+	}
+
+	@Test
 	void buildWhenDerivedFromOracleDataSourceWithPasswordSetReturnsDataSource() throws Exception {
 		oracle.jdbc.datasource.impl.OracleDataSource dataSource = new oracle.jdbc.datasource.impl.OracleDataSource();
 		dataSource.setUser("test");
