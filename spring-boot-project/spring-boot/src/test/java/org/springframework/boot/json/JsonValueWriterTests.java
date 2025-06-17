@@ -16,7 +16,6 @@
 
 package org.springframework.boot.json;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +26,9 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.json.JsonValueWriter.Series;
 
@@ -168,13 +170,17 @@ class JsonValueWriterTests {
 	void writeWhenStringRequiringEscape() {
 		assertThat(write("\"")).isEqualTo(quoted("\\\""));
 		assertThat(write("\\")).isEqualTo(quoted("\\\\"));
-		assertThat(write("/")).isEqualTo(quoted("\\/"));
 		assertThat(write("\b")).isEqualTo(quoted("\\b"));
 		assertThat(write("\f")).isEqualTo(quoted("\\f"));
 		assertThat(write("\n")).isEqualTo(quoted("\\n"));
 		assertThat(write("\r")).isEqualTo(quoted("\\r"));
 		assertThat(write("\t")).isEqualTo(quoted("\\t"));
 		assertThat(write("\u0000\u001F")).isEqualTo(quoted("\\u0000\\u001F"));
+	}
+
+	@Test
+	void shouldNotEscapeForwardSlash() {
+		assertThat(write("/")).isEqualTo(quoted("/"));
 	}
 
 	@Test
@@ -249,9 +255,15 @@ class JsonValueWriterTests {
 	}
 
 	@Test // gh-44502
+	@EnabledOnOs(OS.WINDOWS)
+	void writeJavaNioPathShouldBeSerializedAsStringOnWindows() {
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c")))).isEqualTo(quoted("a\\\\b\\\\c"));
+	}
+
+	@Test // gh-44502
+	@DisabledOnOs(OS.WINDOWS)
 	void writeJavaNioPathShouldBeSerializedAsString() {
-		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c"))))
-			.isEqualTo(quoted("a\\%1$sb\\%1$sc".formatted(File.separator)));
+		assertThat(doWrite((valueWriter) -> valueWriter.write(Path.of("a/b/c")))).isEqualTo(quoted("a/b/c"));
 	}
 
 	@Test
