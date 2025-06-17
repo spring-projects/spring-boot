@@ -169,7 +169,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return false;
 	}
 
-	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
+	ConfigurationPropertyName[] getConfigurationPropertyNames() {
 		if (!isImmutablePropertySource()) {
 			return getCache().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
@@ -197,7 +197,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return cache;
 	}
 
-	private boolean isImmutablePropertySource() {
+	boolean isImmutablePropertySource() {
 		EnumerablePropertySource<?> source = getPropertySource();
 		if (source instanceof OriginLookup<?> originLookup) {
 			return originLookup.isImmutable();

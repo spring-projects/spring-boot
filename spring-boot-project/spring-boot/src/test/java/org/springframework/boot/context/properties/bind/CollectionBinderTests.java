@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,6 +120,26 @@ class CollectionBinderTests {
 				ConfigurationProperty property = unbound.iterator().next();
 				assertThat(property.getName()).hasToString("foo[3]");
 				assertThat(property.getValue()).isEqualTo("3");
+			});
+	}
+
+	@Test
+	void bindToCollectionWhenNonKnownIndexedChildNotBoundThrowsException() {
+		// gh-45994
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0].first", "Spring");
+		source.put("foo[0].last", "Boot");
+		source.put("foo[1].missing", "bad");
+		this.sources.add(source);
+		assertThatExceptionOfType(BindException.class)
+			.isThrownBy(() -> this.binder.bind("foo", Bindable.listOf(Name.class)))
+			.satisfies((ex) -> {
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+					.getUnboundProperties();
+				assertThat(unbound).hasSize(1);
+				ConfigurationProperty property = unbound.iterator().next();
+				assertThat(property.getName()).hasToString("foo[1].missing");
+				assertThat(property.getValue()).isEqualTo("bad");
 			});
 	}
 
@@ -559,6 +579,10 @@ class CollectionBinderTests {
 		List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
 		}
+
+	}
+
+	record Name(String first, String last) {
 
 	}
 
