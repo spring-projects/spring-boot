@@ -17,12 +17,13 @@
 package org.springframework.boot.metrics.autoconfigure;
 
 import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Bean;
  * aspects.
  *
  * @author Jonatan Ivanov
+ * @author Dominique Villard
  * @since 4.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
@@ -46,17 +48,40 @@ public class MetricsAspectsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	CountedAspect countedAspect(MeterRegistry registry) {
-		return new CountedAspect(registry);
+	CountedAspect countedAspect(MeterRegistry registry,
+			CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler) {
+		CountedAspect countedAspect = new CountedAspect(registry);
+		countedAspect.setMeterTagAnnotationHandler(countedMeterTagAnnotationHandler);
+		return countedAspect;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	TimedAspect timedAspect(MeterRegistry registry,
-			ObjectProvider<MeterTagAnnotationHandler> meterTagAnnotationHandler) {
+	TimedAspect timedAspect(MeterRegistry registry, MeterTagAnnotationHandler meterTagAnnotationHandler) {
 		TimedAspect timedAspect = new TimedAspect(registry);
-		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
+		timedAspect.setMeterTagAnnotationHandler(meterTagAnnotationHandler);
 		return timedAspect;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler(BeanFactory beanFactory,
+			SpelTagValueExpressionResolver metricsTagValueExpressionResolver) {
+		return new CountedMeterTagAnnotationHandler(beanFactory::getBean,
+				(ignored) -> metricsTagValueExpressionResolver);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	MeterTagAnnotationHandler meterTagAnnotationHandler(BeanFactory beanFactory,
+			SpelTagValueExpressionResolver meterTagValueExpressionResolver) {
+		return new MeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> meterTagValueExpressionResolver);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	SpelTagValueExpressionResolver meterTagValueExpressionResolver() {
+		return new SpelTagValueExpressionResolver();
 	}
 
 }

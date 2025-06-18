@@ -38,6 +38,7 @@ import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.metrics.autoconfigure.SpelTagValueExpressionResolver;
 import org.springframework.boot.observation.autoconfigure.ObservationHandlerGroup;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -110,6 +111,8 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(SpanAspect.class);
 				assertThat(context).hasBean("customSpanTagAnnotationHandler");
 				assertThat(context).hasSingleBean(SpanTagAnnotationHandler.class);
+				assertThat(context).hasBean("customMetricsTagValueExpressionResolver");
+				assertThat(context).hasSingleBean(SpelTagValueExpressionResolver.class);
 			});
 	}
 
@@ -265,6 +268,11 @@ class MicrometerTracingAutoConfigurationTests {
 		SpanTagAnnotationHandler customSpanTagAnnotationHandler() {
 			return new SpanTagAnnotationHandler((aClass) -> mock(ValueResolver.class),
 					(aClass) -> mock(ValueExpressionResolver.class));
+		}
+
+		@Bean
+		SpelTagValueExpressionResolver customMetricsTagValueExpressionResolver() {
+			return mock(SpelTagValueExpressionResolver.class);
 		}
 
 	}

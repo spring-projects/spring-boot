@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure;
 
 import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -65,9 +66,18 @@ class MetricsAspectsAutoConfigurationTests {
 	@Test
 	void shouldConfigureMeterTagAnnotationHandler() {
 		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CountedAspect.class);
+			assertThat(context).hasSingleBean(TimedAspect.class);
 			assertThat(ReflectionTestUtils.getField(context.getBean(TimedAspect.class), "meterTagAnnotationHandler"))
 				.isSameAs(context.getBean(MeterTagAnnotationHandler.class));
+		});
+	}
+
+	@Test
+	void shouldConfigureCounterMeterTagAnnotationHandler() {
+		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(CountedAspect.class);
+			assertThat(ReflectionTestUtils.getField(context.getBean(CountedAspect.class), "meterTagAnnotationHandler"))
+				.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
 		});
 	}
 
@@ -126,6 +136,11 @@ class MetricsAspectsAutoConfigurationTests {
 		@Bean
 		MeterTagAnnotationHandler meterTagAnnotationHandler() {
 			return new MeterTagAnnotationHandler(null, null);
+		}
+
+		@Bean
+		CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler() {
+			return new CountedMeterTagAnnotationHandler(null, null);
 		}
 
 	}
