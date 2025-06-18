@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -46,8 +47,10 @@ public class MetricsAspectsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	CountedAspect countedAspect(MeterRegistry registry) {
-		return new CountedAspect(registry);
+	CountedAspect countedAspect(MeterRegistry registry, ObjectProvider<CountedMeterTagAnnotationHandler> countedMeterTagAnnotationHandler) {
+		CountedAspect countedAspect = new CountedAspect(registry);
+		countedMeterTagAnnotationHandler.ifAvailable(countedAspect::setMeterTagAnnotationHandler);
+		return countedAspect;
 	}
 
 	@Bean
