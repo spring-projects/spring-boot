@@ -242,7 +242,7 @@ Application contents will also be in this location in the generated image.
 
 | `securityOptions`
 | `--securityOptions`
-| https://docs.docker.com/engine/reference/run/#security-configuration[Security options] that will be applied to the builder container, provided as an array of string values
+| https://docs.docker.com/reference/cli/docker/container/run/#security-opt[Security options] that will be applied to the builder container, provided as an array of string values
 | `["label=disable"]` on Linux and macOS, `[]` on Windows
 
 |===
