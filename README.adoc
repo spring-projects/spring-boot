@@ -61,6 +61,13 @@ Are you having trouble with Spring Boot? We want to help!
 
 
 
+== Contributing
+
+We welcome contributions of all kinds!
+Please read our link:CONTRIBUTING.adoc[contribution guidelines] before submitting a pull request.
+
+
+
 == Reporting Issues
 
 Spring Boot uses GitHub's integrated issue tracking system to record bugs and feature requests.
