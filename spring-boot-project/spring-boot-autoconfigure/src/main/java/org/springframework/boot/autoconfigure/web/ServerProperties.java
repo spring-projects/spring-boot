@@ -413,6 +413,20 @@ public class ServerProperties {
 		private DataSize maxHttpFormPostSize = DataSize.ofMegabytes(2);
 
 		/**
+		 * Maximum per-part header size permitted in a multipart/form-data request.
+		 * Requests that exceed this limit will be rejected. A value of less than 0 means
+		 * no limit.
+		 */
+		private DataSize maxPartHeaderSize = DataSize.ofBytes(512);
+
+		/**
+		 * Maximum total number of parts permitted in a multipart/form-data request.
+		 * Requests that exceed this limit will be rejected. A value of less than 0 means
+		 * no limit.
+		 */
+		private int maxPartCount = 10;
+
+		/**
 		 * Maximum amount of request body to swallow.
 		 */
 		private DataSize maxSwallowSize = DataSize.ofMegabytes(2);
@@ -523,6 +537,22 @@ public class ServerProperties {
 		 * Whether to use APR.
 		 */
 		private UseApr useApr = UseApr.NEVER;
+
+		public DataSize getMaxPartHeaderSize() {
+			return this.maxPartHeaderSize;
+		}
+
+		public void setMaxPartHeaderSize(DataSize maxPartHeaderSize) {
+			this.maxPartHeaderSize = maxPartHeaderSize;
+		}
+
+		public int getMaxPartCount() {
+			return this.maxPartCount;
+		}
+
+		public void setMaxPartCount(int maxPartCount) {
+			this.maxPartCount = maxPartCount;
+		}
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;

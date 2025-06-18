@@ -37,6 +37,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeader
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
@@ -45,6 +47,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link TomcatWebServerFactoryCustomizer}
@@ -60,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Parviz Rozikov
  * @author Moritz Halbritter
  */
+@DirtiesUrlFactories
 class TomcatWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
@@ -175,6 +179,37 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.max-http-form-post-size=10000");
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(10000));
+	}
+
+	@Test
+	void defaultMaxPartCount() {
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartCount()).isEqualTo(10));
+	}
+
+	@Test
+	void customMaxPartCount() {
+		bind("server.tomcat.max-part-count=5");
+		customizeAndRunServer((server) -> assertThat(server.getTomcat().getConnector().getMaxPartCount()).isEqualTo(5));
+	}
+
+	@Test
+	void defaultMaxPartHeaderSize() {
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartHeaderSize()).isEqualTo(512));
+	}
+
+	@Test
+	void customMaxPartHeaderSize() {
+		bind("server.tomcat.max-part-header-size=4KB");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxPartHeaderSize()).isEqualTo(4096));
+	}
+
+	@Test
+	@ClassPathOverrides("org.apache.tomcat.embed:tomcat-embed-core:10.1.41")
+	void customizerIsCompatibleWithTomcatVersionsWithoutMaxPartCountAndMaxPartHeaderSize() {
+		assertThatNoException().isThrownBy(this::customizeAndRunServer);
 	}
 
 	@Test
@@ -593,11 +628,17 @@ class TomcatWebServerFactoryCustomizerTests {
 				Bindable.ofInstance(this.serverProperties));
 	}
 
+	private void customizeAndRunServer() {
+		customizeAndRunServer(null);
+	}
+
 	private void customizeAndRunServer(Consumer<TomcatWebServer> consumer) {
 		TomcatWebServer server = customizeAndGetServer();
 		server.start();
 		try {
-			consumer.accept(server);
+			if (consumer != null) {
+				consumer.accept(server);
+			}
 		}
 		finally {
 			server.stop();
