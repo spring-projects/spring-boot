@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,20 @@ final class JarFileUrlKey {
 	 * @return a {@link JarFileUrlKey} instance
 	 */
 	static String get(URL url) {
+		if (!isCachableUrl(url)) {
+			return create(url);
+		}
 		Map<URL, String> cache = (JarFileUrlKey.cache != null) ? JarFileUrlKey.cache.get() : null;
 		if (cache == null) {
 			cache = new ConcurrentHashMap<>();
 			JarFileUrlKey.cache = new SoftReference<>(cache);
 		}
 		return cache.computeIfAbsent(url, JarFileUrlKey::create);
+	}
+
+	private static boolean isCachableUrl(URL url) {
+		// Don't cache URL that have a host since equals() will perform DNS lookup
+		return url.getHost() == null || url.getHost().isEmpty();
 	}
 
 	private static String create(URL url) {
