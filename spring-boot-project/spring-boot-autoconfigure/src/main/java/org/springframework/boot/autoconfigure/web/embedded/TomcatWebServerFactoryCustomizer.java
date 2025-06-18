@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,6 +119,10 @@ public class TomcatWebServerFactoryCustomizer
 			.asInt(DataSize::toBytes)
 			.when((maxHttpFormPostSize) -> maxHttpFormPostSize != 0)
 			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
+		map.from(properties::getMaxPartHeaderSize)
+			.asInt(DataSize::toBytes)
+			.to((maxPartHeaderSize) -> customizeMaxPartHeaderSize(factory, maxPartHeaderSize));
+		map.from(properties::getMaxPartCount).to((maxPartCount) -> customizeMaxPartCount(factory, maxPartCount));
 		map.from(properties::getAccesslog)
 			.when(ServerProperties.Tomcat.Accesslog::isEnabled)
 			.to((enabled) -> customizeAccessLog(factory));
@@ -290,6 +294,28 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeMaxHttpFormPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpFormPostSize) {
 		factory.addConnectorCustomizers((connector) -> connector.setMaxPostSize(maxHttpFormPostSize));
+	}
+
+	private void customizeMaxPartCount(ConfigurableTomcatWebServerFactory factory, int maxPartCount) {
+		factory.addConnectorCustomizers((connector) -> {
+			try {
+				connector.setMaxPartCount(maxPartCount);
+			}
+			catch (NoSuchMethodError ex) {
+				// Tomcat < 10.1.42
+			}
+		});
+	}
+
+	private void customizeMaxPartHeaderSize(ConfigurableTomcatWebServerFactory factory, int maxPartHeaderSize) {
+		factory.addConnectorCustomizers((connector) -> {
+			try {
+				connector.setMaxPartHeaderSize(maxPartHeaderSize);
+			}
+			catch (NoSuchMethodError ex) {
+				// Tomcat < 10.1.42
+			}
+		});
 	}
 
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
