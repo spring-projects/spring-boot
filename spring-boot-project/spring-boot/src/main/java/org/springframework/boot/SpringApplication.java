@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -463,7 +463,7 @@ public class SpringApplication {
 	}
 
 	private <T> List<T> getSpringFactoriesInstances(Class<T> type, ArgumentResolver argumentResolver) {
-		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader(null)).load(type, argumentResolver);
+		return SpringFactoriesLoader.forDefaultResourceLocation(getClassLoader()).load(type, argumentResolver);
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
@@ -713,11 +713,10 @@ public class SpringApplication {
 	 * @return a ClassLoader (never null)
 	 */
 	public ClassLoader getClassLoader() {
-		return getClassLoader(ClassUtils.getDefaultClassLoader());
-	}
-
-	private ClassLoader getClassLoader(ClassLoader fallback) {
-		return (this.resourceLoader != null) ? this.resourceLoader.getClassLoader() : fallback;
+		if (this.resourceLoader != null) {
+			return this.resourceLoader.getClassLoader();
+		}
+		return ClassUtils.getDefaultClassLoader();
 	}
 
 	/**
