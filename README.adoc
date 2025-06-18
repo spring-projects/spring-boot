@@ -63,7 +63,8 @@ Are you having trouble with Spring Boot? We want to help!
 
 == Contributing
 
-We welcome contributions of all kinds! Please read our [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
+We welcome contributions of all kinds!
+Please read our link:CONTRIBUTING.adoc[contribution guidelines] before submitting a pull request.
 
 
 
