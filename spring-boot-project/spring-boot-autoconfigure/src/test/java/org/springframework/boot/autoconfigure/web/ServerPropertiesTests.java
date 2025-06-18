@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,6 +254,18 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void customizeTomcatMaxPartCount() {
+		bind("server.tomcat.max-part-count", "5");
+		assertThat(this.properties.getTomcat().getMaxPartCount()).isEqualTo(5);
+	}
+
+	@Test
+	void customizeTomcatMaxPartHeaderSize() {
+		bind("server.tomcat.max-part-header-size", "128");
+		assertThat(this.properties.getTomcat().getMaxPartHeaderSize()).isEqualTo(DataSize.ofBytes(128));
+	}
+
+	@Test
 	void testCustomizeJettyAcceptors() {
 		bind("server.jetty.threads.acceptors", "10");
 		assertThat(this.properties.getJetty().getThreads().getAcceptors()).isEqualTo(10);
@@ -390,6 +402,17 @@ class ServerPropertiesTests {
 	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
 			.isEqualTo(getDefaultConnector().getMaxPostSize());
+	}
+
+	@Test
+	void tomcatMaxPartCountMatchesConnectorDefault() {
+		assertThat(this.properties.getTomcat().getMaxPartCount()).isEqualTo(getDefaultConnector().getMaxPartCount());
+	}
+
+	@Test
+	void tomcatMaxPartHeaderSizeMatchesConnectorDefault() {
+		assertThat(this.properties.getTomcat().getMaxPartHeaderSize().toBytes())
+			.isEqualTo(getDefaultConnector().getMaxPartHeaderSize());
 	}
 
 	@Test
