@@ -29,6 +29,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -47,6 +48,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Web {@link Endpoint @Endpoint} to expose heap dumps.
@@ -112,12 +114,22 @@ public class HeapDumpWebEndpoint {
 	 * @throws HeapDumperUnavailableException if the heap dumper cannot be created
 	 */
 	protected HeapDumper createHeapDumper() throws HeapDumperUnavailableException {
-		try {
-			return new HotSpotDiagnosticMXBeanHeapDumper();
-		}
-		catch (HeapDumperUnavailableException ex) {
+		if (isRunningOnOpenJ9()) {
 			return new OpenJ9DiagnosticsMXBeanHeapDumper();
 		}
+		return new HotSpotDiagnosticMXBeanHeapDumper();
+	}
+
+	private boolean isRunningOnOpenJ9() {
+		String vmName = System.getProperty("java.vm.name");
+		if (StringUtils.hasLength(vmName) && vmName.toLowerCase(Locale.ROOT).contains("openj9")) {
+			return true;
+		}
+		String vmVendor = System.getProperty("java.vm.vendor");
+		if (StringUtils.hasLength(vmVendor) && vmVendor.toLowerCase(Locale.ROOT).contains("openj9")) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
