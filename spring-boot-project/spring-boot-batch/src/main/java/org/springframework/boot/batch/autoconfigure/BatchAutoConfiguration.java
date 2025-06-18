@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
@@ -69,7 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Yanming Zhou
  * @since 4.0.0
  */
-@AutoConfiguration(after = TransactionAutoConfiguration.class,
+@AutoConfiguration(after = { DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class },
 		afterName = "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
 @ConditionalOnBean({ DataSource.class, PlatformTransactionManager.class })
