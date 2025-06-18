@@ -207,7 +207,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@ClassPathOverrides("org.apache.tomcat.embed:tomcat-embed-core:10.1.41")
+	@ClassPathOverrides("org.apache.tomcat.embed:tomcat-embed-core:11.0.7")
 	void customizerIsCompatibleWithTomcatVersionsWithoutMaxPartCountAndMaxPartHeaderSize() {
 		assertThatNoException().isThrownBy(this::customizeAndRunServer);
 	}
