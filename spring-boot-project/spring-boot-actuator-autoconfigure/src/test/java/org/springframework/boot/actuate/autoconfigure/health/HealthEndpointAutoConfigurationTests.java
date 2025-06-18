@@ -55,9 +55,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -371,7 +369,6 @@ class HealthEndpointAutoConfigurationTests {
 					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
 			.withClassLoader(
 					new FilteredClassLoader(Thread.currentThread().getContextClassLoader(), DispatcherServlet.class))
-			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
 					"management.endpoints.test.exposure.include=*")
 			.run((context) -> {
@@ -520,11 +517,6 @@ class HealthEndpointAutoConfigurationTests {
 			given(groups.get("test")).willThrow(new RuntimeException("postprocessed"));
 			return groups;
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class UnconditionalHealthEndpointWebExtensionConfiguration extends HealthEndpointWebExtensionConfiguration {
 
 	}
 
