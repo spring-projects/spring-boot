@@ -155,11 +155,6 @@ public class CouchbaseProperties {
 			 */
 			private String password;
 
-			/**
-			 * Private key password for certificate-based cluster authentication.
-			 */
-			private String privateKeyPassword;
-
 			public String getLocation() {
 				return this.location;
 			}
@@ -174,14 +169,6 @@ public class CouchbaseProperties {
 
 			public void setPassword(String password) {
 				this.password = password;
-			}
-
-			public String getPrivateKeyPassword() {
-				return this.privateKeyPassword;
-			}
-
-			public void setPrivateKeyPassword(String privateKeyPassword) {
-				this.privateKeyPassword = privateKeyPassword;
 			}
 
 		}
