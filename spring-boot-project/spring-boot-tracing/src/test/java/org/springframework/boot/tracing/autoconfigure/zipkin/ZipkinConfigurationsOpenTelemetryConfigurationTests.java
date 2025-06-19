@@ -43,6 +43,15 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, OpenTelemetryConfiguration.class));
 
 	@Test
+	void backsOffWithoutEncoding() {
+		new ApplicationContextRunner().withUserConfiguration(OpenTelemetryConfiguration.class).run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
+			assertThat(context).doesNotHaveBean(BytesEncoder.class);
+		});
+	}
+
+	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
 			.run((context) -> {
