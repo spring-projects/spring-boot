@@ -66,10 +66,18 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
-		assertThat(output).containsPattern("1\\. .*classes");
-		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
-		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
-		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
+		if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
+			assertThat(output).containsPattern("1\\. .*classes");
+			assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+			assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+			assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
+		}
+		else {
+			assertThat(output).containsPattern("1\\. .*classes");
+			assertThat(output).containsPattern("2\\. .*commons-lang3-3.9.jar");
+			assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
+			assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
+		}
 		assertThat(output).doesNotContain("5. ");
 	}
 
@@ -78,10 +86,18 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
-		assertThat(output).containsPattern("1\\. .*classes");
-		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
-		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
-		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
+		if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
+			assertThat(output).containsPattern("1\\. .*classes");
+			assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
+			assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
+			assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
+		}
+		else {
+			assertThat(output).containsPattern("1\\. .*classes");
+			assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
+			assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+			assertThat(output).containsPattern("4\\. .*library-1.0-SNAPSHOT.jar");
+		}
 		assertThat(output).doesNotContain("5. ");
 	}
 
