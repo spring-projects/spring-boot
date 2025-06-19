@@ -1264,6 +1264,13 @@ bom {
 			contains ".BETA"
 			because "we don't want betas"
 		}
+		alignWith {
+			property {
+				name "lettuce"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
