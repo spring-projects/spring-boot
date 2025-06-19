@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -567,6 +567,7 @@ public class Binder {
 			if (source == null) {
 				return supplier.get();
 			}
+			ConfigurationPropertySource previous = this.source.get(0);
 			this.source.set(0, source);
 			this.sourcePushCount++;
 			try {
@@ -574,6 +575,7 @@ public class Binder {
 			}
 			finally {
 				this.sourcePushCount--;
+				this.source.set(0, previous);
 			}
 		}
 
