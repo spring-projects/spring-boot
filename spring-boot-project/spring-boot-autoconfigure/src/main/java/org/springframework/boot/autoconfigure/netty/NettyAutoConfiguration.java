@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.netty;
 import io.netty.util.NettyRuntime;
 import io.netty.util.ResourceLeakDetector;
 
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Netty.
@@ -40,6 +42,11 @@ public class NettyAutoConfiguration {
 			NettyProperties.LeakDetection leakDetection = properties.getLeakDetection();
 			ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.valueOf(leakDetection.name()));
 		}
+	}
+
+	@Bean
+	static LazyInitializationExcludeFilter nettyAutoConfigurationLazyInitializationExcludeFilter() {
+		return LazyInitializationExcludeFilter.forBeanTypes(NettyAutoConfiguration.class);
 	}
 
 }
