@@ -83,6 +83,7 @@ public class ZipkinTracingAutoConfiguration {
 	static class OpenTelemetryConfiguration {
 
 		@Bean
+		@ConditionalOnBean(Encoding.class)
 		@ConditionalOnMissingBean(value = Span.class, parameterizedContainer = BytesEncoder.class)
 		BytesEncoder<Span> spanBytesEncoder(Encoding encoding) {
 			return SpanBytesEncoder.forEncoding(encoding);
