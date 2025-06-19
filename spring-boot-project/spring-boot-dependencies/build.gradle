@@ -1182,6 +1182,13 @@ bom {
 		}
 	}
 	library("Lettuce", "6.4.2.RELEASE") {
+		alignWith {
+			property {
+				name "lettuce"
+				of "org.springframework.data:spring-data-redis"
+				managedBy "Spring Data Bom"
+			}
+		}
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
