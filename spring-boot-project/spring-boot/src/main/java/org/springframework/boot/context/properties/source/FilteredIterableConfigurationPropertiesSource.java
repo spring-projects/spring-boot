@@ -41,6 +41,9 @@ class FilteredIterableConfigurationPropertiesSource extends FilteredConfiguratio
 			this.filteredNames = new ConfigurationPropertyName[filterableNames.length];
 			this.numerOfFilteredNames = 0;
 			for (ConfigurationPropertyName name : filterableNames) {
+				if (name == null) {
+					break;
+				}
 				if (filter.test(name)) {
 					this.filteredNames[this.numerOfFilteredNames++] = name;
 				}

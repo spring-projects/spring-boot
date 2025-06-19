@@ -75,6 +75,24 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 	}
 
 	@Test
+	void iteratorWhenSpringPropertySourceAndAnotherFilterFiltersNames() {
+		IterableConfigurationPropertySource testSource = (IterableConfigurationPropertySource) createTestSource();
+		Map<String, Object> map = new LinkedHashMap<>();
+		for (ConfigurationPropertyName name : testSource) {
+			map.put(name.toString(), testSource.getConfigurationProperty(name).getValue());
+		}
+		PropertySource<?> propertySource = new OriginTrackedMapPropertySource("test", map, true);
+		SpringConfigurationPropertySource source = SpringConfigurationPropertySource.from(propertySource);
+		IterableConfigurationPropertySource filtered = (IterableConfigurationPropertySource) source
+			.filter(this::noBrackets);
+		IterableConfigurationPropertySource secondFiltered = filtered.filter((name) -> !name.toString().contains("c"));
+		assertThat(Extractors.byName("filteredNames").apply(filtered)).isNotNull();
+		assertThat(secondFiltered.iterator()).toIterable()
+			.extracting(ConfigurationPropertyName::toString)
+			.containsExactly("a", "b");
+	}
+
+	@Test
 	void containsDescendantOfWhenSpringPropertySourceUsesContents() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("foo.bar.baz", "1");
