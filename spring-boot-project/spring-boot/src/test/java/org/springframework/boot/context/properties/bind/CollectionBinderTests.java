@@ -144,6 +144,21 @@ class CollectionBinderTests {
 	}
 
 	@Test
+	void bindToNestedCollectionWhenNonKnownIndexed() {
+		// gh-46039
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0].items[0]", "a");
+		source.put("foo[0].items[1]", "b");
+		source.put("foo[0].string", "test");
+		this.sources.add(source);
+		List<ExampleCollectionBean> list = this.binder.bind("foo", Bindable.listOf(ExampleCollectionBean.class)).get();
+		assertThat(list).hasSize(1);
+		ExampleCollectionBean bean = list.get(0);
+		assertThat(bean.getItems()).containsExactly("a", "b", "d");
+		assertThat(bean.getString()).isEqualTo("test");
+	}
+
+	@Test
 	void bindToNonScalarCollectionWhenNonSequentialShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0].value", "1");
@@ -456,6 +471,8 @@ class CollectionBinderTests {
 
 		private Set<String> itemsSet = new LinkedHashSet<>();
 
+		private String string;
+
 		List<String> getItems() {
 			return this.items;
 		}
@@ -470,6 +487,14 @@ class CollectionBinderTests {
 
 		void setItemsSet(Set<String> itemsSet) {
 			this.itemsSet = itemsSet;
+		}
+
+		String getString() {
+			return this.string;
+		}
+
+		void setString(String string) {
+			this.string = string;
 		}
 
 	}

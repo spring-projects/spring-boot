@@ -576,6 +576,7 @@ public class Binder {
 			if (source == null) {
 				return supplier.get();
 			}
+			ConfigurationPropertySource previous = this.source.get(0);
 			this.source.set(0, source);
 			this.sourcePushCount++;
 			try {
@@ -583,6 +584,7 @@ public class Binder {
 			}
 			finally {
 				this.sourcePushCount--;
+				this.source.set(0, previous);
 			}
 		}
 
