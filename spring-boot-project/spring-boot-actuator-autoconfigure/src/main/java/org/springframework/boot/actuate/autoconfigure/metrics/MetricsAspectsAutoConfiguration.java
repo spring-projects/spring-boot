@@ -23,7 +23,8 @@ import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.actuate.autoconfigure.tracing.SpelTagValueExpressionResolver;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -47,19 +48,39 @@ public class MetricsAspectsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	CountedAspect countedAspect(MeterRegistry registry, ObjectProvider<CountedMeterTagAnnotationHandler> countedMeterTagAnnotationHandler) {
+	CountedAspect countedAspect(MeterRegistry registry, CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler) {
 		CountedAspect countedAspect = new CountedAspect(registry);
-		countedMeterTagAnnotationHandler.ifAvailable(countedAspect::setMeterTagAnnotationHandler);
+		countedAspect.setMeterTagAnnotationHandler(countedMeterTagAnnotationHandler);
 		return countedAspect;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	TimedAspect timedAspect(MeterRegistry registry,
-			ObjectProvider<MeterTagAnnotationHandler> meterTagAnnotationHandler) {
+			MeterTagAnnotationHandler meterTagAnnotationHandler) {
 		TimedAspect timedAspect = new TimedAspect(registry);
-		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
+		timedAspect.setMeterTagAnnotationHandler(meterTagAnnotationHandler);
 		return timedAspect;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler(
+			BeanFactory beanFactory, SpelTagValueExpressionResolver metricsTagValueExpressionResolver) {
+		return new CountedMeterTagAnnotationHandler(beanFactory::getBean, ignored -> metricsTagValueExpressionResolver);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	MeterTagAnnotationHandler meterTagAnnotationHandler(
+			BeanFactory beanFactory, SpelTagValueExpressionResolver meterTagValueExpressionResolver) {
+		return new MeterTagAnnotationHandler(beanFactory::getBean, ignored -> meterTagValueExpressionResolver);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	SpelTagValueExpressionResolver meterTagValueExpressionResolver() {
+		return new SpelTagValueExpressionResolver();
 	}
 
 }
