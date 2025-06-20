@@ -18,7 +18,6 @@ package smoketest.data.elasticsearch;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -34,19 +33,19 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke tests for Elasticsearch 8.
+ * Smoke tests for Elasticsearch 9.
  *
  * @author Moritz Halbritter
+ * @author Stephane Nicoll
  */
 @Testcontainers(disabledWithoutDocker = true)
 @DataElasticsearchTest
-@Disabled("Elasticsearch client v9 needs extra config with v8")
-class SampleElasticsearch8ApplicationTests {
+class SampleElasticsearch9ApplicationTests {
 
 	@Container
 	@ServiceConnection
 	@Ssl
-	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH_8.toString())
+	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH_9.toString())
 		.withPassword("my-custom-password");
 
 	@Autowired

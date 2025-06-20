@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image = TestImage.ELASTICSEARCH)
+	@DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image = TestImage.ELASTICSEARCH_9)
 	void runCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}

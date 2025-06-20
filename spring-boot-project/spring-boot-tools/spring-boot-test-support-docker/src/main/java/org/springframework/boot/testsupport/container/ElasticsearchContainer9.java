@@ -19,14 +19,14 @@ package org.springframework.boot.testsupport.container;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
- * A container suitable for testing Elasticsearch 8.
+ * A container suitable for testing Elasticsearch 9.
  *
  * @author Dmytro Nosan
  */
 public class ElasticsearchContainer9 extends ElasticsearchContainer {
 
 	public ElasticsearchContainer9() {
-		super(TestImage.ELASTICSEARCH.toString());
+		super(TestImage.ELASTICSEARCH_9.toString());
 		addEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m");
 		addEnv("xpack.security.enabled", "false");
 	}
