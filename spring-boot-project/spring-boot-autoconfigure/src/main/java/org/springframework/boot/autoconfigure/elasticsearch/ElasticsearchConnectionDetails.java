@@ -55,6 +55,10 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 		return null;
 	}
 
+	default String getAPIKey() {
+		return null;
+	}
+
 	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 * @return prefix added to the path of every request sent to Elasticsearch or

@@ -46,6 +46,10 @@ public class ElasticsearchProperties {
 	 * Password for authentication with Elasticsearch.
 	 */
 	private String password;
+	/**
+	 * APIKey for authentication with Elasticsearch.
+	 */
+	private String APIKey;
 
 	/**
 	 * Connection timeout used when communicating with Elasticsearch.
@@ -92,6 +96,15 @@ public class ElasticsearchProperties {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getAPIKey() {
+		return this.APIKey;
+	}
+
+	public void setAPIKey(String APIKey) {
+		this.APIKey = APIKey;
+	}
+
 
 	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
