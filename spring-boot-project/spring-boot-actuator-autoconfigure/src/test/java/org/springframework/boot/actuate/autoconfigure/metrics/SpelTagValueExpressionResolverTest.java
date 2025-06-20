@@ -38,7 +38,7 @@ class SpelTagValueExpressionResolverTest {
 	@ParameterizedTest
 	@MethodSource
 	void checkValidExpression(Object value, String expression, String expected) {
-		assertThat(resolver.resolve(expression, value)).isEqualTo(expected);
+		assertThat(this.resolver.resolve(expression, value)).isEqualTo(expected);
 	}
 
 	static Stream<Arguments> checkValidExpression() {
@@ -55,7 +55,7 @@ class SpelTagValueExpressionResolverTest {
 	@ParameterizedTest
 	@MethodSource
 	void checkInvalidExpression(Object value, String expression) {
-		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> resolver.resolve(expression, value));
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.resolver.resolve(expression, value));
 	}
 
 	static Stream<Arguments> checkInvalidExpression() {
@@ -67,15 +67,15 @@ class SpelTagValueExpressionResolverTest {
 	}
 
 	@Test
-	void checkParserReuse() throws IllegalAccessException {
-		var map = (Map<?, ?>) ReflectionTestUtils.getField(resolver,"expressionMap");
+	void checkParserReuse() {
+		var map = (Map<?, ?>) ReflectionTestUtils.getField(this.resolver,"expressionMap");
 
-		resolver.resolve("length", "foo");
-		resolver.resolve("length", "bar");
+		this.resolver.resolve("length", "foo");
+		this.resolver.resolve("length", "bar");
 
 		assertThat(map).hasSize(1);
 
-		resolver.resolve("isEmpty", "foo");
+		this.resolver.resolve("isEmpty", "foo");
 		assertThat(map).hasSize(2);
 	}
 }
