@@ -107,6 +107,8 @@ class MicrometerTracingAutoConfigurationTests {
 				assertThat(context).hasSingleBean(SpanAspect.class);
 				assertThat(context).hasBean("customSpanTagAnnotationHandler");
 				assertThat(context).hasSingleBean(SpanTagAnnotationHandler.class);
+				assertThat(context).hasBean("customMetricsTagValueExpressionResolver");
+				assertThat(context).hasSingleBean(SpelTagValueExpressionResolver.class);
 			});
 	}
 
@@ -239,6 +241,10 @@ class MicrometerTracingAutoConfigurationTests {
 					(aClass) -> mock(ValueExpressionResolver.class));
 		}
 
+		@Bean
+		SpelTagValueExpressionResolver customMetricsTagValueExpressionResolver() {
+			return mock(SpelTagValueExpressionResolver.class);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
