@@ -1634,16 +1634,12 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.1.122.Final") {
+	library("Netty", "4.2.2.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
 			contains ".RC"
 			because "we don't want alphas, betas, or release candidates"
-		}
-		prohibit {
-			versionRange "[4.2.0,)"
-			because "Reactor Netty will not support it in time for 3.5.x"
 		}
 		group("io.netty") {
 			bom("netty-bom")
