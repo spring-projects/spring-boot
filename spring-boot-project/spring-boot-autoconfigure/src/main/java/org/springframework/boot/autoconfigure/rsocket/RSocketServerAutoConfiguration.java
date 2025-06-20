@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations;
 import org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server.Spec;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -142,7 +143,7 @@ public class RSocketServerAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		static class IsReactiveWebApplication {
 
 		}
