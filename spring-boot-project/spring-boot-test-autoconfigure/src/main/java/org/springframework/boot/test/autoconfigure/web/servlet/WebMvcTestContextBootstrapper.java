@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
@@ -29,18 +28,12 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  * @author Artsiom Yudovin
  * @author Lorenzo Dee
  */
-class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class WebMvcTestContextBootstrapper extends TestSliceTestContextBootstrapper<WebMvcTest> {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		MergedContextConfiguration processedMergedConfiguration = super.processMergedContextConfiguration(mergedConfig);
 		return new WebMergedContextConfiguration(processedMergedConfiguration, determineResourceBasePath(mergedConfig));
-	}
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		WebMvcTest webMvcTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, WebMvcTest.class);
-		return (webMvcTest != null) ? webMvcTest.properties() : null;
 	}
 
 }
