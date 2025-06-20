@@ -36,7 +36,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.ldap.LLdapContainer;
@@ -108,17 +107,9 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
-	 * A container image suitable for testing Elasticsearch 7.
+	 * A container image suitable for testing Elasticsearch.
 	 */
-	ELASTICSEARCH("docker.elastic.co/elasticsearch/elasticsearch", "7.17.28", () -> ElasticsearchContainer.class,
-			(container) -> ((ElasticsearchContainer) container).withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
-				.withStartupAttempts(5)
-				.withStartupTimeout(Duration.ofMinutes(10))),
-
-	/**
-	 * A container image suitable for testing Elasticsearch 8.
-	 */
-	ELASTICSEARCH_8("elasticsearch", "8.17.1"),
+	ELASTICSEARCH("elasticsearch", "9.0.2"),
 
 	/**
 	 * A container image suitable for testing Grafana OTel LGTM.
@@ -279,7 +270,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Elasticsearch via Bitnami.
 	 */
-	BITNAMI_ELASTICSEARCH("bitnami/elasticsearch", "8.12.1"),
+	BITNAMI_ELASTICSEARCH("bitnami/elasticsearch", "9.0.2"),
 
 	/**
 	 * A container image suitable for testing MariaDB via Bitnami.

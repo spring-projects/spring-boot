@@ -23,10 +23,10 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
  *
  * @author Dmytro Nosan
  */
-public class ElasticsearchContainer8 extends ElasticsearchContainer {
+public class ElasticsearchContainer9 extends ElasticsearchContainer {
 
-	public ElasticsearchContainer8() {
-		super(TestImage.ELASTICSEARCH_8.toString());
+	public ElasticsearchContainer9() {
+		super(TestImage.ELASTICSEARCH.toString());
 		addEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m");
 		addEnv("xpack.security.enabled", "false");
 	}

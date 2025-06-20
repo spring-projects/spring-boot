@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientA
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.container.ElasticsearchContainer8;
+import org.springframework.boot.testsupport.container.ElasticsearchContainer9;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -48,7 +48,7 @@ class ElasticsearchContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer8().withStartupAttempts(5)
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer9().withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired(required = false)

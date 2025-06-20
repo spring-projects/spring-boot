@@ -28,6 +28,7 @@ dependencies {
 	}
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.elasticsearch.client:elasticsearch-rest-client")
 	dockerTestImplementation("org.flywaydb:flyway-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")

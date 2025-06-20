@@ -44,7 +44,7 @@ class SampleElasticsearch8ApplicationTests {
 	@Container
 	@ServiceConnection
 	@Ssl
-	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH_8.toString())
+	static final ElasticsearchContainer elasticSearch = new ElasticsearchContainer(TestImage.ELASTICSEARCH.toString())
 		.withPassword("my-custom-password");
 
 	@Autowired
