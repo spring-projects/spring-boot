@@ -51,11 +51,13 @@ public enum JdbcDatabaseDialect {
 	/**
 	 * Provides an instance of {@link JdbcMySqlDialect}.
 	 */
+	@SuppressWarnings("removal")
 	MARIA(JdbcMySqlDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcMySqlDialect}.
 	 */
+	@SuppressWarnings("removal")
 	MYSQL(JdbcMySqlDialect.INSTANCE),
 
 	/**
