@@ -1928,13 +1928,11 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2024.0.7") {
+	library("Reactor Bom", "2025.0.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
-			bom("reactor-bom") {
-				permit("org.reactivestreams:reactive-streams")
-			}
+			bom("reactor-bom")
 		}
 		links {
 			site("https://projectreactor.io")
