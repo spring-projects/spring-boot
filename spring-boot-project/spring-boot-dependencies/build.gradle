@@ -9,7 +9,7 @@ bom {
 	upgrade {
 		policy = "any"
 		gitHub {
-			issueLabels = ["type: task"]
+			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
 	library("ActiveMQ", "6.1.6") {
@@ -129,7 +129,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/build-helper-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("Byte Buddy", "1.17.5") {
+	library("Byte Buddy", "1.17.6") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -284,7 +284,7 @@ bom {
 			releaseNotes("https://github.com/CycloneDX/cyclonedx-maven-plugin/releases/tag/cyclonedx-maven-plugin-{version}")
 		}
 	}
-	library("DB2 JDBC", "12.1.0.0") {
+	library("DB2 JDBC", "12.1.2.0") {
 		group("com.ibm.db2") {
 			modules = [
 				"jcc"
@@ -653,7 +653,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "15.2.3.Final") {
+	library("Infinispan", "15.2.4.Final") {
 		group("org.infinispan") {
 			bom("infinispan-bom")
 		}
@@ -681,10 +681,7 @@ bom {
 			because "we don't want release candidates"
 		}
 		group("com.fasterxml.jackson") {
-			bom("jackson-bom") {
-				permit("com.fasterxml.woodstox:woodstox-core")
-				permit("org.codehaus.woodstox:stax2-api")
-			}
+			bom("jackson-bom")
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
@@ -1732,7 +1729,7 @@ bom {
 			javadoc("https://javadoc.io/doc/org.messaginghub/pooled-jms/{version}", "org.messaginghub.pooled.jms")
 		}
 	}
-	library("Postgresql", "42.7.6") {
+	library("Postgresql", "42.7.7") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -2149,7 +2146,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Authorization Server", "1.5.0-SNAPSHOT") {
+	library("Spring Authorization Server", "1.5.1") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
@@ -2279,7 +2276,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "3.3.0") {
+	library("Spring LDAP", "3.3.1") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
@@ -2299,7 +2296,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "1.2.6") {
+	library("Spring Pulsar", "1.2.7") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
@@ -2357,7 +2354,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "3.5.0") {
+	library("Spring Session", "3.5.1") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -2510,7 +2507,7 @@ bom {
 			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}
 	}
-	library("UnboundID LDAPSDK", "7.0.2") {
+	library("UnboundID LDAPSDK", "7.0.3") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"

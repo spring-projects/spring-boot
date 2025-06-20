@@ -172,7 +172,7 @@ bom {
 			]
 		}
 	}
-	library("OpenTelemetry Logback Appender", "2.7.0-alpha") {
+	library("OpenTelemetry Logback Appender", "2.16.0-alpha") {
 		group("io.opentelemetry.instrumentation") {
 			modules = [
 				"opentelemetry-logback-appender-1.0"
