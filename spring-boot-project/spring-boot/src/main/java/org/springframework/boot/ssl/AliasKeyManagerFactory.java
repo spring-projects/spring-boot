@@ -26,6 +26,10 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -42,6 +46,7 @@ import javax.net.ssl.X509ExtendedKeyManager;
  * {@link KeyManagerFactory#getKeyManagers()} is final.
  *
  * @author Scott Frederick
+ * @author Stéphane Gobancé
  */
 final class AliasKeyManagerFactory extends KeyManagerFactory {
 
@@ -105,23 +110,23 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 		}
 
 		@Override
-		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
-			return this.delegate.chooseEngineClientAlias(strings, principals, sslEngine);
+		public String chooseEngineClientAlias(String[] keyTypes, Principal[] issuers, SSLEngine sslEngine) {
+			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases).orElse(null);
 		}
 
 		@Override
-		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
-			return this.alias;
+		public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine sslEngine) {
+			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases).orElse(null);
 		}
 
 		@Override
-		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-			return this.delegate.chooseClientAlias(keyType, issuers, socket);
+		public String chooseClientAlias(String[] keyTypes, Principal[] issuers, Socket socket) {
+			return findFirstMatchingAlias(keyTypes, issuers, this::getClientAliases).orElse(null);
 		}
 
 		@Override
 		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
-			return this.delegate.chooseServerAlias(keyType, issuers, socket);
+			return findFirstMatchingAlias(keyType, issuers, this::getServerAliases).orElse(null);
 		}
 
 		@Override
@@ -142,6 +147,50 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 		@Override
 		public String[] getServerAliases(String keyType, Principal[] issuers) {
 			return this.delegate.getServerAliases(keyType, issuers);
+		}
+
+		/**
+		 * Gets this key manager's alias if it matches the given key algorithm and has
+		 * been issued by any of the specified issuers (might be {@code null}, meaning
+		 * issuer does not matter) otherwise returns an {@link Optional#empty() empty
+		 * result }.
+		 * @param keyType the required key algorithm.
+		 * @param issuers the list of acceptable CA issuer subject names or {@code null}
+		 * if it does not matter which issuers are used.
+		 * @param finder the function to find the underlying available key aliases.
+		 * @return this key manager's alias if appropriate or an empty result otherwise.
+		 */
+		private Optional<String> findFirstMatchingAlias(String keyType, Principal[] issuers, KeyAliasFinder finder) {
+			return findFirstMatchingAlias(new String[] { keyType }, issuers, finder);
+		}
+
+		/**
+		 * Gets this key manager's alias if it matches any of the given key algorithms and
+		 * has been issued by any of the specified issuers (might be {@code null}, meaning
+		 * issuer does not matter) otherwise returns an {@link Optional#empty() empty
+		 * result }.
+		 * @param keyTypes the required key algorithms.
+		 * @param issuers the list of acceptable CA issuer subject names or {@code null}
+		 * if it does not matter which issuers are used.
+		 * @param finder the function to find the underlying available key aliases.
+		 * @return this key manager's alias if appropriate or an empty result otherwise.
+		 */
+		private Optional<String> findFirstMatchingAlias(String[] keyTypes, Principal[] issuers, KeyAliasFinder finder) {
+			return Optional.ofNullable(keyTypes)
+				.flatMap((types) -> Stream.of(types)
+					.filter(Objects::nonNull)
+					.map((type) -> finder.apply(type, issuers))
+					.filter(Objects::nonNull)
+					.flatMap(Stream::of)
+					.filter(this.alias::equals)
+					.findFirst());
+		}
+
+		/**
+		 * Typed-BiFunction for better readability.
+		 */
+		private interface KeyAliasFinder extends BiFunction<String, Principal[], String[]> {
+
 		}
 
 	}
