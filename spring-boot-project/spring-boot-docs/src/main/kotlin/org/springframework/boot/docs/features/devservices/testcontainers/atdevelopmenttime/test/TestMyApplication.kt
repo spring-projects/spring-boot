@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfigurationproperties
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.test
 
-class Nested {
+import org.springframework.boot.fromApplication
+import org.springframework.boot.with
+
+fun main(args: Array<String>) {
+	fromApplication<MyApplication>().with(MyContainersConfiguration::class).run(*args)
 }
+
