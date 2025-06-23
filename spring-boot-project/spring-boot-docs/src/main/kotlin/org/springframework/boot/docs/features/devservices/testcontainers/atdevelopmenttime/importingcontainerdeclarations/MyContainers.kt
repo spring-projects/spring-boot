@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.test
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.importingcontainerdeclarations
 
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
+import org.testcontainers.containers.MongoDBContainer
 import org.testcontainers.containers.Neo4jContainer
+import org.testcontainers.junit.jupiter.Container
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyContainersConfiguration {
+interface MyContainers {
 
-	@Bean
-	@ServiceConnection
-	fun neo4jContainer(): Neo4jContainer<*> {
-		return Neo4jContainer("neo4j:5")
+	companion object {
+
+		@Container
+		@ServiceConnection
+		@JvmField
+		val mongoContainer = MongoDBContainer("mongo:5.0")
+
+		@Container
+		@ServiceConnection
+		@JvmField
+		val neo4jContainer = Neo4jContainer("neo4j:5")
+
 	}
 
 }

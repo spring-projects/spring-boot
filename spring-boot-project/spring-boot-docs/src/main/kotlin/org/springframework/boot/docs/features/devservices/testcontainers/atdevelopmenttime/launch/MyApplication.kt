@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.launch
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.launch
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.docs.features.springapplication.MyApplication

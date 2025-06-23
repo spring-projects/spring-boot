@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.launch
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.importingcontainerdeclarations
 
-import org.springframework.boot.fromApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.testcontainers.context.ImportTestcontainers
 
-fun main(args: Array<String>) {
-	fromApplication<MyApplication>().run(*args)
-}
+@TestConfiguration(proxyBeanMethods = false)
+@ImportTestcontainers(MyContainers::class)
+class MyContainersConfiguration
 
