@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import io.undertow.Undertow;
+import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.UpgradeProtocol;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
@@ -110,10 +111,16 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
-		@Bean
-		@ConditionalOnThreading(Threading.VIRTUAL)
-		UndertowDeploymentInfoCustomizer virtualThreadsUndertowDeploymentInfoCustomizer() {
-			return (deploymentInfo) -> deploymentInfo.setExecutor(new VirtualThreadTaskExecutor("undertow-"));
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(DeploymentInfo.class)
+		static class UndertowServletWebServerFactoryCustomizerConfiguration {
+
+			@Bean
+			@ConditionalOnThreading(Threading.VIRTUAL)
+			UndertowDeploymentInfoCustomizer virtualThreadsUndertowDeploymentInfoCustomizer() {
+				return (deploymentInfo) -> deploymentInfo.setExecutor(new VirtualThreadTaskExecutor("undertow-"));
+			}
+
 		}
 
 	}
