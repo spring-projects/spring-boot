@@ -62,6 +62,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 

@@ -64,6 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientConfigurations {
 
