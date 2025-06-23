@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Eddú Meléndez
+ * @author Yanming Zhou
  */
 class OtlpTracingAutoConfigurationTests {
 
@@ -69,6 +70,15 @@ class OtlpTracingAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
 			.run((context) -> assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class)
 				.hasSingleBean(SpanExporter.class));
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfTracingDisabled() {
+		this.tracingDisabledContextRunner
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context).doesNotHaveBean(OtlpTracingProperties.class)
+				.doesNotHaveBean(OtlpTracingConnectionDetails.class)
+				.doesNotHaveBean(SpanExporter.class));
 	}
 
 	@Test
