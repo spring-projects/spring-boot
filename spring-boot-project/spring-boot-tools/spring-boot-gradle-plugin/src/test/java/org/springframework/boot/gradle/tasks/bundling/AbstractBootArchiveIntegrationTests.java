@@ -233,6 +233,21 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void versionMismatchBetweenTransitiveDevelopmentOnlyImplementationDependenciesDoesNotRemoveDependencyFromTheArchive()
+			throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+			.isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Stream<String> libEntryNames = jarFile.stream()
+				.filter((entry) -> !entry.isDirectory())
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith(this.libPath));
+			assertThat(libEntryNames).containsExactly(this.libPath + "two-1.0.jar",
+					this.libPath + "commons-io-2.19.0.jar");
+		}
+	}
+
+	@TestTemplate
 	void testAndDevelopmentOnlyDependenciesAreNotIncludedInTheArchiveByDefault() throws IOException {
 		File srcMainResources = new File(this.gradleBuild.getProjectDir(), "src/main/resources");
 		srcMainResources.mkdirs();
