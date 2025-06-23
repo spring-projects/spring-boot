@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.dynamicproperties
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.dynamicproperties
 
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
