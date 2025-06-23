@@ -38,7 +38,7 @@ class ContextPairsTests {
 		ContextPairs contextPairs = new ContextPairs(false, null);
 		Map<String, String> map = Map.of("spring", "boot");
 		Map<String, Object> actual = apply(contextPairs.flat(".", (pairs) -> pairs.addMapEntries((item) -> map)));
-		assertThat(actual.isEmpty());
+		assertThat(actual).isEmpty();
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class ContextPairsTests {
 		ContextPairs contextPairs = new ContextPairs(false, null);
 		Map<String, String> map = Map.of("spring", "boot");
 		Map<String, Object> actual = apply(contextPairs.nested((pairs) -> pairs.addMapEntries((item) -> map)));
-		assertThat(actual.isEmpty());
+		assertThat(actual).isEmpty();
 	}
 
 	@Test
