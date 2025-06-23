@@ -68,4 +68,11 @@ class HandlerTests {
 		assertThatNoException().isThrownBy(() -> Handler.assertUrlIsNotMalformed(url));
 	}
 
+	@Test
+	void getHostAddressIsNull() throws Exception {
+		// gh-46063
+		String url = "nested:" + this.temp.getAbsolutePath() + "/!nested.jar";
+		assertThat(new Handler().getHostAddress(new URL(url))).isNull();
+	}
+
 }
