@@ -19,8 +19,6 @@ package org.springframework.boot.info;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.time.Clock;
 import java.time.Duration;
@@ -219,25 +217,31 @@ public class SslInfo {
 				Instant starts = getValidityStarts();
 				Instant ends = getValidityEnds();
 				Duration threshold = SslInfo.this.certificateValidityWarningThreshold;
-				try {
-					certificate.checkValidity();
-					return (!isExpiringSoon(certificate, threshold)) ? CertificateValidityInfo.VALID
-							: new CertificateValidityInfo(Status.WILL_EXPIRE_SOON,
-									"Certificate will expire within threshold (%s) at %s", threshold, ends);
-				}
-				catch (CertificateNotYetValidException ex) {
-					return new CertificateValidityInfo(Status.NOT_YET_VALID, "Not valid before %s", starts);
-				}
-				catch (CertificateExpiredException ex) {
-					return new CertificateValidityInfo(Status.EXPIRED, "Not valid after %s", ends);
-				}
+				CertificateValidityInfo.Status validity = checkValidity(starts, ends, threshold);
+				return switch (validity) {
+					case VALID -> CertificateValidityInfo.VALID;
+					case EXPIRED -> new CertificateValidityInfo(Status.EXPIRED, "Not valid after %s", ends);
+					case NOT_YET_VALID ->
+						new CertificateValidityInfo(Status.NOT_YET_VALID, "Not valid before %s", starts);
+					case WILL_EXPIRE_SOON -> new CertificateValidityInfo(Status.WILL_EXPIRE_SOON,
+							"Certificate will expire within threshold (%s) at %s", threshold, ends);
+				};
 			});
 		}
 
-		private boolean isExpiringSoon(X509Certificate certificate, Duration threshold) {
-			Instant shouldBeValidAt = Instant.now(SslInfo.this.clock).plus(threshold);
-			Instant expiresAt = certificate.getNotAfter().toInstant();
-			return shouldBeValidAt.isAfter(expiresAt);
+		private CertificateValidityInfo.Status checkValidity(Instant starts, Instant ends, Duration threshold) {
+			Instant now = SslInfo.this.clock.instant();
+			if (now.isBefore(starts)) {
+				return CertificateValidityInfo.Status.NOT_YET_VALID;
+			}
+			if (now.isAfter(ends)) {
+				return CertificateValidityInfo.Status.EXPIRED;
+			}
+			Instant shouldBeValidAt = now.plus(threshold);
+			if (shouldBeValidAt.isAfter(ends)) {
+				return CertificateValidityInfo.Status.WILL_EXPIRE_SOON;
+			}
+			return CertificateValidityInfo.Status.VALID;
 		}
 
 		private <V, R> R extract(Function<X509Certificate, V> valueExtractor, Function<V, R> resultExtractor) {

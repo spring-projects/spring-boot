@@ -16,17 +16,13 @@
 
 package org.springframework.boot.info;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
@@ -46,8 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SslInfo}.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class SslInfoTests {
+
+	private static final Clock CLOCK = Clock.fixed(Instant.parse("2025-06-18T13:00:00Z"), ZoneId.of("UTC"));
 
 	@Test
 	@WithPackageResources("test.p12")
@@ -71,8 +70,8 @@ class SslInfoTests {
 		assertThat(cert1.getSerialNumber()).isNotEmpty();
 		assertThat(cert1.getVersion()).isEqualTo("V3");
 		assertThat(cert1.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
-		assertThat(cert1.getValidityStarts()).isInThePast();
-		assertThat(cert1.getValidityEnds()).isInTheFuture();
+		assertThat(cert1.getValidityStarts()).isBefore(CLOCK.instant());
+		assertThat(cert1.getValidityEnds()).isAfter(CLOCK.instant());
 		assertThat(cert1.getValidity()).isNotNull();
 		assertThat(cert1.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert1.getValidity().getMessage()).isNull();
@@ -82,8 +81,8 @@ class SslInfoTests {
 		assertThat(cert2.getSerialNumber()).isNotEmpty();
 		assertThat(cert2.getVersion()).isEqualTo("V3");
 		assertThat(cert2.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
-		assertThat(cert2.getValidityStarts()).isInThePast();
-		assertThat(cert2.getValidityEnds()).isInTheFuture();
+		assertThat(cert2.getValidityStarts()).isBefore(CLOCK.instant());
+		assertThat(cert2.getValidityEnds()).isAfter(CLOCK.instant());
 		assertThat(cert2.getValidity()).isNotNull();
 		assertThat(cert2.getValidity().getStatus()).isSameAs(Status.VALID);
 		assertThat(cert2.getValidity().getMessage()).isNull();
@@ -107,8 +106,8 @@ class SslInfoTests {
 		assertThat(cert.getSerialNumber()).isNotEmpty();
 		assertThat(cert.getVersion()).isEqualTo("V3");
 		assertThat(cert.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
-		assertThat(cert.getValidityStarts()).isInTheFuture();
-		assertThat(cert.getValidityEnds()).isInTheFuture();
+		assertThat(cert.getValidityStarts()).isAfter(CLOCK.instant());
+		assertThat(cert.getValidityEnds()).isAfter(CLOCK.instant());
 		assertThat(cert.getValidity()).isNotNull();
 		assertThat(cert.getValidity().getStatus()).isSameAs(Status.NOT_YET_VALID);
 		assertThat(cert.getValidity().getMessage()).startsWith("Not valid before");
@@ -132,18 +131,17 @@ class SslInfoTests {
 		assertThat(cert.getSerialNumber()).isNotEmpty();
 		assertThat(cert.getVersion()).isEqualTo("V3");
 		assertThat(cert.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
-		assertThat(cert.getValidityStarts()).isInThePast();
-		assertThat(cert.getValidityEnds()).isInThePast();
+		assertThat(cert.getValidityStarts()).isBefore(CLOCK.instant());
+		assertThat(cert.getValidityEnds()).isBefore(CLOCK.instant());
 		assertThat(cert.getValidity()).isNotNull();
 		assertThat(cert.getValidity().getStatus()).isSameAs(Status.EXPIRED);
 		assertThat(cert.getValidity().getMessage()).startsWith("Not valid after");
 	}
 
 	@Test
-	void soonToBeExpiredCertificateShouldProvideSslInfo(@TempDir Path tempDir)
-			throws IOException, InterruptedException {
-		Path keyStore = createKeyStore(tempDir);
-		SslInfo sslInfo = createSslInfo(keyStore.toString());
+	@WithPackageResources({ "will-expire-soon.p12" })
+	void soonToBeExpiredCertificateShouldProvideSslInfo() {
+		SslInfo sslInfo = createSslInfo("classpath:will-expire-soon.p12");
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		BundleInfo bundle = sslInfo.getBundles().get(0);
 		assertThat(bundle.getName()).isEqualTo("test-0");
@@ -158,19 +156,18 @@ class SslInfoTests {
 		assertThat(cert.getSerialNumber()).isNotEmpty();
 		assertThat(cert.getVersion()).isEqualTo("V3");
 		assertThat(cert.getSignatureAlgorithmName()).isNotEmpty();
-		assertThat(cert.getValidityStarts()).isInThePast();
-		assertThat(cert.getValidityEnds()).isInTheFuture();
+		assertThat(cert.getValidityStarts()).isBefore(CLOCK.instant());
+		assertThat(cert.getValidityEnds()).isAfter(CLOCK.instant());
 		assertThat(cert.getValidity()).isNotNull();
-		assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
+		assertThat(cert.getValidity().getStatus()).isEqualTo(Status.WILL_EXPIRE_SOON);
 		assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
 	}
 
 	@Test
-	@WithPackageResources({ "test.p12", "test-not-yet-valid.p12", "test-expired.p12" })
-	void multipleBundlesShouldProvideSslInfo(@TempDir Path tempDir) throws IOException, InterruptedException {
-		Path keyStore = createKeyStore(tempDir);
+	@WithPackageResources({ "test.p12", "test-not-yet-valid.p12", "test-expired.p12", "will-expire-soon.p12" })
+	void multipleBundlesShouldProvideSslInfo() {
 		SslInfo sslInfo = createSslInfo("classpath:test.p12", "classpath:test-not-yet-valid.p12",
-				"classpath:test-expired.p12", keyStore.toString());
+				"classpath:test-expired.p12", "classpath:will-expire-soon.p12");
 		assertThat(sslInfo.getBundles()).hasSize(4);
 		assertThat(sslInfo.getBundles()).allSatisfy((bundle) -> assertThat(bundle.getName()).startsWith("test-"));
 		List<CertificateInfo> certs = sslInfo.getBundles()
@@ -188,29 +185,29 @@ class SslInfoTests {
 			assertThat(cert.getValidity()).isNotNull();
 		});
 		assertThat(certs).anySatisfy((cert) -> {
-			assertThat(cert.getValidityStarts()).isInThePast();
-			assertThat(cert.getValidityEnds()).isInTheFuture();
+			assertThat(cert.getValidityStarts()).isBefore(CLOCK.instant());
+			assertThat(cert.getValidityEnds()).isAfter(CLOCK.instant());
 			assertThat(cert.getValidity()).isNotNull();
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.VALID);
 			assertThat(cert.getValidity().getMessage()).isNull();
 		});
 		assertThat(certs).satisfiesOnlyOnce((cert) -> {
-			assertThat(cert.getValidityStarts()).isInTheFuture();
-			assertThat(cert.getValidityEnds()).isInTheFuture();
+			assertThat(cert.getValidityStarts()).isAfter(CLOCK.instant());
+			assertThat(cert.getValidityEnds()).isAfter(CLOCK.instant());
 			assertThat(cert.getValidity()).isNotNull();
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.NOT_YET_VALID);
 			assertThat(cert.getValidity().getMessage()).startsWith("Not valid before");
 		});
 		assertThat(certs).satisfiesOnlyOnce((cert) -> {
-			assertThat(cert.getValidityStarts()).isInThePast();
-			assertThat(cert.getValidityEnds()).isInThePast();
+			assertThat(cert.getValidityStarts()).isBefore(CLOCK.instant());
+			assertThat(cert.getValidityEnds()).isBefore(CLOCK.instant());
 			assertThat(cert.getValidity()).isNotNull();
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.EXPIRED);
 			assertThat(cert.getValidity().getMessage()).startsWith("Not valid after");
 		});
 		assertThat(certs).satisfiesOnlyOnce((cert) -> {
-			assertThat(cert.getValidityStarts()).isInThePast();
-			assertThat(cert.getValidityEnds()).isInTheFuture();
+			assertThat(cert.getValidityStarts()).isBefore(CLOCK.instant());
+			assertThat(cert.getValidityEnds()).isAfter(CLOCK.instant());
 			assertThat(cert.getValidity()).isNotNull();
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
 			assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
@@ -221,7 +218,7 @@ class SslInfoTests {
 	void nullKeyStore() {
 		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
 		sslBundleRegistry.registerBundle("test", SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE));
-		SslInfo sslInfo = new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, Duration.ofDays(7), CLOCK);
 		assertThat(sslInfo.getBundles()).hasSize(1);
 		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
 	}
@@ -233,41 +230,7 @@ class SslInfoTests {
 			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
 			sslBundleRegistry.registerBundle("test-%d".formatted(i), SslBundle.of(sslStoreBundle));
 		}
-		return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
-	}
-
-	private Path createKeyStore(Path directory) throws IOException, InterruptedException {
-		Path keyStore = directory.resolve("test.p12");
-		Process process = createProcessBuilder(keyStore).start();
-		int exitCode = process.waitFor();
-		if (exitCode != 0) {
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-				String out = reader.lines().collect(Collectors.joining("\n"));
-				throw new RuntimeException("Unexpected exit code from keytool: %d\n%s".formatted(exitCode, out));
-			}
-		}
-		return keyStore;
-	}
-
-	private ProcessBuilder createProcessBuilder(Path keystore) {
-		// @formatter:off
-		ProcessBuilder processBuilder = new ProcessBuilder(
-				"keytool",
-				"-genkeypair",
-				"-storetype", "PKCS12",
-				"-alias", "spring-boot",
-				"-keyalg", "RSA",
-				"-storepass", "secret",
-				"-keypass", "secret",
-				"-keystore", keystore.toString(),
-				"-dname", "CN=localhost,OU=Spring,O=VMware,L=Palo Alto,ST=California,C=US",
-				"-validity", "1",
-				"-ext", "SAN=DNS:localhost,IP:::1,IP:127.0.0.1"
-		);
-		// @formatter:on
-		processBuilder.redirectErrorStream(true);
-		return processBuilder;
+		return new SslInfo(sslBundleRegistry, Duration.ofDays(7), CLOCK);
 	}
 
 }
