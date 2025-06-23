@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfigurationproperties
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.test
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.NestedConfigurationProperty
-import org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfigurationproperties.nested.Nested
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.context.annotation.Bean
+import org.testcontainers.containers.Neo4jContainer
 
-@ConfigurationProperties("my.properties")
-data class MyPropertiesKotlin(
-	val name: String,
-	@NestedConfigurationProperty val nested: Nested
-)
+@TestConfiguration(proxyBeanMethods = false)
+class MyContainersConfiguration {
+
+	@Bean
+	@ServiceConnection
+	fun neo4jContainer(): Neo4jContainer<*> {
+		return Neo4jContainer("neo4j:5")
+	}
+
+}
 

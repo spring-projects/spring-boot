@@ -16,13 +16,7 @@
 
 package org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfigurationproperties
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.NestedConfigurationProperty
-import org.springframework.boot.docs.packaging.nativeimage.advanced.nestedconfigurationproperties.nested.Nested
+class Nested {
 
-@ConfigurationProperties("my.properties")
-data class MyPropertiesKotlin(
-	val name: String,
-	@NestedConfigurationProperty val nested: Nested
-)
-
+	var number: Int = 0
+}
