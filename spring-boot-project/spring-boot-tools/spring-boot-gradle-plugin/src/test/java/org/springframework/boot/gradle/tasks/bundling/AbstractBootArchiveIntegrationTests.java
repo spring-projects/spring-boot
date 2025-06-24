@@ -598,10 +598,10 @@ abstract class AbstractBootArchiveIntegrationTests {
 					continue;
 				}
 				if (entry.isDirectory()) {
-					assertEntryMode(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+					assertEntryMode(entry, UnixStat.DEFAULT_DIR_PERM);
 				}
 				else {
-					assertEntryMode(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+					assertEntryMode(entry, UnixStat.DEFAULT_FILE_PERM);
 				}
 			}
 		}
