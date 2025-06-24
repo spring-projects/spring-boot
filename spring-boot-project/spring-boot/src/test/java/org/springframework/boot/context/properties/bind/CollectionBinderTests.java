@@ -19,9 +19,11 @@ package org.springframework.boot.context.properties.bind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -465,6 +468,36 @@ class CollectionBinderTests {
 		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
+	@Test
+	void bindToWellFormedSystemEnvironmentVariableProperty() {
+		// gh-46184
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("FOO_THENAMES_0_FIRST", "spring");
+		map.put("FOO_THENAMES_0_LAST", "boot");
+		map.put("FOO_THENAMES_1_FIRST", "binding");
+		map.put("FOO_THENAMES_1_LAST", "test");
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, map);
+		this.sources.add(ConfigurationPropertySource.from(propertySource));
+		BeanWithCamelCaseNameList result = this.binder.bind("foo", BeanWithCamelCaseNameList.class).get();
+		assertThat(result.theNames()).containsExactly(new Name("spring", "boot"), new Name("binding", "test"));
+	}
+
+	@Test
+	void bindToLegacySystemEnvironmentVariableProperty() {
+		// gh-46184
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("FOO_THE_NAMES_0_FIRST", "spring");
+		map.put("FOO_THE_NAMES_0_LAST", "boot");
+		map.put("FOO_THE_NAMES_1_FIRST", "binding");
+		map.put("FOO_THE_NAMES_1_LAST", "test");
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, map);
+		this.sources.add(ConfigurationPropertySource.from(propertySource));
+		BeanWithCamelCaseNameList result = this.binder.bind("foo", BeanWithCamelCaseNameList.class).get();
+		assertThat(result.theNames()).containsExactly(new Name("spring", "boot"), new Name("binding", "test"));
+	}
+
 	static class ExampleCollectionBean {
 
 		private final List<String> items = new ArrayList<>();
@@ -604,6 +637,10 @@ class CollectionBinderTests {
 		List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
 		}
+
+	}
+
+	record BeanWithCamelCaseNameList(List<Name> theNames) {
 
 	}
 
