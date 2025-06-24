@@ -256,7 +256,7 @@ class BootZipCopyAction implements CopyAction {
 		private void processDirectory(FileCopyDetails details) throws IOException {
 			String name = details.getRelativePath().getPathString();
 			ZipArchiveEntry entry = new ZipArchiveEntry(name + '/');
-			prepareEntry(entry, name, getTime(details), getFileMode(details));
+			prepareEntry(entry, name, getTime(details), getDirMode(details));
 			this.out.putArchiveEntry(entry);
 			this.out.closeArchiveEntry();
 			this.writtenDirectories.add(name);
@@ -476,17 +476,21 @@ class BootZipCopyAction implements CopyAction {
 
 		private int getDirMode() {
 			return (BootZipCopyAction.this.dirMode != null) ? BootZipCopyAction.this.dirMode
-					: UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM;
+					: UnixStat.DEFAULT_DIR_PERM;
 		}
 
 		private int getFileMode() {
 			return (BootZipCopyAction.this.fileMode != null) ? BootZipCopyAction.this.fileMode
-					: UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM;
+					: UnixStat.DEFAULT_FILE_PERM;
+		}
+
+		private int getDirMode(FileCopyDetails details) {
+			return (BootZipCopyAction.this.fileMode != null) ? BootZipCopyAction.this.dirMode : getPermissions(details);
 		}
 
 		private int getFileMode(FileCopyDetails details) {
 			return (BootZipCopyAction.this.fileMode != null) ? BootZipCopyAction.this.fileMode
-					: UnixStat.FILE_FLAG | getPermissions(details);
+					: getPermissions(details);
 		}
 
 		private int getPermissions(FileCopyDetails details) {
