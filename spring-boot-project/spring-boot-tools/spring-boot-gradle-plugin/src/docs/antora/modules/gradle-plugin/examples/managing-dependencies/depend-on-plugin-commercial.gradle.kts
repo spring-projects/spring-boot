@@ -1,3 +1,3 @@
 plugins {
-	id("org.springframework.boot") version "{gradle-project-version}" apply false
+	id("org.springframework.boot") version "{version-spring-boot}" apply false
 }
