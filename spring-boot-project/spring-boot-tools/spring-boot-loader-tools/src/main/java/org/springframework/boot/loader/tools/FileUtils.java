@@ -60,7 +60,10 @@ public abstract class FileUtils {
 	 * @param file the file to hash
 	 * @return the hash value as a String
 	 * @throws IOException if the file cannot be read
+	 * @deprecated since 3.4.8 for removal in 4.0.0 without replacement
 	 */
+	@Deprecated(since = "3.4.8", forRemoval = true)
+	@SuppressWarnings("removal")
 	public static String sha1Hash(File file) throws IOException {
 		return Digest.sha1(InputStreamSupplier.forFile(file));
 	}

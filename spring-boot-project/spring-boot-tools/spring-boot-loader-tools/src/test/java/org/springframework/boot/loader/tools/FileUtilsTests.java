@@ -95,6 +95,8 @@ class FileUtilsTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.4.8", forRemoval = true)
+	@SuppressWarnings("removal")
 	void hash() throws Exception {
 		File file = new File(this.tempDir, "file");
 		try (OutputStream outputStream = new FileOutputStream(file)) {
