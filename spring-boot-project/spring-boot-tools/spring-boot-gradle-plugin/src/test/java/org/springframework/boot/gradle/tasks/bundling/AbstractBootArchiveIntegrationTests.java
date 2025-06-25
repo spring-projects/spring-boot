@@ -52,8 +52,8 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
-import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.testsupport.FileUtils;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;

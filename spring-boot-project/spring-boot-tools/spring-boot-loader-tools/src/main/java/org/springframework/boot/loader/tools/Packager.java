@@ -600,13 +600,6 @@ public abstract class Packager {
 				return library != null && library.isUnpackRequired();
 			}
 
-			@Override
-			public String sha1Hash(String name) throws IOException {
-				Library library = PackagedLibraries.this.libraries.get(name);
-				Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
-				return Digest.sha1(library::openStream);
-			}
-
 		}
 
 	}

@@ -18,17 +18,18 @@ package org.springframework.boot.loader.tools;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
@@ -40,6 +41,7 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.UnixStat;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 /**
  * Abstract base class for JAR writers.
@@ -97,20 +99,21 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
 			JarArchiveEntry entry, Library library) throws IOException {
-		setUpEntry(jarFile, entry);
+		setUpEntry(jarFile, entry, unpackHandler);
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
 			EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
 			JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 			if (transformedEntry != null) {
-				writeEntry(transformedEntry, library, entryWriter, unpackHandler);
+				writeEntry(transformedEntry, library, entryWriter);
 			}
 		}
 	}
 
-	private void setUpEntry(JarFile jarFile, JarArchiveEntry entry) throws IOException {
+	private void setUpEntry(JarFile jarFile, JarArchiveEntry entry, UnpackHandler unpackHandler) throws IOException {
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
 			if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
-				new CrcAndSize(inputStream).setupStoredEntry(entry);
+				new StoredEntryPreparator(inputStream, unpackHandler.requiresUnpack(entry.getName()))
+					.prepareStoredEntry(entry);
 			}
 			else {
 				entry.setCompressedSize(-1);
@@ -151,9 +154,10 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	public void writeNestedLibrary(String location, Library library) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry(location + library.getName());
 		entry.setTime(getNestedLibraryTime(library));
-		new CrcAndSize(library::openStream).setupStoredEntry(entry);
+		new StoredEntryPreparator(library.openStream(), new LibraryUnpackHandler(library).requiresUnpack(location))
+			.prepareStoredEntry(entry);
 		try (InputStream inputStream = library.openStream()) {
-			writeEntry(entry, library, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
+			writeEntry(entry, library, new InputStreamEntryWriter(inputStream));
 		}
 	}
 
@@ -240,7 +244,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
-		writeEntry(entry, null, entryWriter, UnpackHandler.NEVER);
+		writeEntry(entry, null, entryWriter);
 	}
 
 	/**
@@ -249,11 +253,9 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @param entry the entry to write
 	 * @param library the library for the entry or {@code null}
 	 * @param entryWriter the entry writer or {@code null} if there is no content
-	 * @param unpackHandler handles possible unpacking for the entry
 	 * @throws IOException in case of I/O errors
 	 */
-	private void writeEntry(JarArchiveEntry entry, Library library, EntryWriter entryWriter,
-			UnpackHandler unpackHandler) throws IOException {
+	private void writeEntry(JarArchiveEntry entry, Library library, EntryWriter entryWriter) throws IOException {
 		String name = entry.getName();
 		if (this.writtenEntries.add(name)) {
 			writeParentDirectoryEntries(name);
@@ -263,7 +265,6 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				entryWriter = SizeCalculatingEntryWriter.get(entryWriter);
 				entry.setSize(entryWriter.size());
 			}
-			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
 			updateLayerIndex(entry, library);
 			writeToArchive(entry, entryWriter);
 		}
@@ -283,20 +284,9 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));
 			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent + "/"), null, null, UnpackHandler.NEVER);
+				writeEntry(new JarArchiveEntry(parent + "/"), null, null);
 			}
 		}
-	}
-
-	private EntryWriter addUnpackCommentIfNecessary(JarArchiveEntry entry, EntryWriter entryWriter,
-			UnpackHandler unpackHandler) throws IOException {
-		if (entryWriter == null || !unpackHandler.requiresUnpack(entry.getName())) {
-			return entryWriter;
-		}
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		entryWriter.write(output);
-		entry.setComment("UNPACK:" + unpackHandler.sha1Hash(entry.getName()));
-		return new InputStreamEntryWriter(new ByteArrayInputStream(output.toByteArray()));
 	}
 
 	/**
@@ -323,22 +313,33 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	/**
-	 * Data holder for CRC and Size.
+	 * Prepares a {@link ZipEntry#STORED stored} {@link ZipArchiveEntry entry} with CRC
+	 * and size information. Also adds an {@code UNPACK} comment, if needed.
 	 */
-	private static class CrcAndSize {
+	private static class StoredEntryPreparator {
+
+		private static final int BUFFER_SIZE = 32 * 1024;
+
+		private final MessageDigest messageDigest;
 
 		private final CRC32 crc = new CRC32();
 
 		private long size;
 
-		CrcAndSize(InputStreamSupplier supplier) throws IOException {
-			try (InputStream inputStream = supplier.openStream()) {
+		StoredEntryPreparator(InputStream inputStream, boolean unpack) throws IOException {
+			this.messageDigest = (unpack) ? sha1Digest() : null;
+			try (inputStream) {
 				load(inputStream);
 			}
 		}
 
-		CrcAndSize(InputStream inputStream) throws IOException {
-			load(inputStream);
+		private static MessageDigest sha1Digest() {
+			try {
+				return MessageDigest.getInstance("SHA-1");
+			}
+			catch (NoSuchAlgorithmException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 		private void load(InputStream inputStream) throws IOException {
@@ -346,15 +347,21 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				this.crc.update(buffer, 0, bytesRead);
+				if (this.messageDigest != null) {
+					this.messageDigest.update(buffer, 0, bytesRead);
+				}
 				this.size += bytesRead;
 			}
 		}
 
-		void setupStoredEntry(JarArchiveEntry entry) {
+		void prepareStoredEntry(ZipArchiveEntry entry) {
 			entry.setSize(this.size);
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
+			if (this.messageDigest != null) {
+				entry.setComment("UNPACK:" + HexFormat.of().formatHex(this.messageDigest.digest()));
+			}
 		}
 
 	}
@@ -381,23 +388,9 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	interface UnpackHandler {
 
-		UnpackHandler NEVER = new UnpackHandler() {
-
-			@Override
-			public boolean requiresUnpack(String name) {
-				return false;
-			}
-
-			@Override
-			public String sha1Hash(String name) throws IOException {
-				throw new UnsupportedOperationException();
-			}
-
-		};
+		UnpackHandler NEVER = (name) -> false;
 
 		boolean requiresUnpack(String name);
-
-		String sha1Hash(String name) throws IOException;
 
 	}
 
@@ -415,11 +408,6 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		@Override
 		public boolean requiresUnpack(String name) {
 			return this.library.isUnpackRequired();
-		}
-
-		@Override
-		public String sha1Hash(String name) throws IOException {
-			return Digest.sha1(this.library::openStream);
 		}
 
 	}
