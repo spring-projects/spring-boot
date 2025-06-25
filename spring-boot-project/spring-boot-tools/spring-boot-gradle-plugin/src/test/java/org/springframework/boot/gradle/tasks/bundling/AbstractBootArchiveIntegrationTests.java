@@ -243,8 +243,14 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			assertThat(libEntryNames).containsExactly(this.libPath + "two-1.0.jar",
-					this.libPath + "commons-io-2.19.0.jar");
+			if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
+				assertThat(libEntryNames).containsExactly(this.libPath + "two-1.0.jar",
+						this.libPath + "commons-io-2.19.0.jar");
+			}
+			else {
+				assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.19.0.jar",
+						this.libPath + "two-1.0.jar");
+			}
 		}
 	}
 
