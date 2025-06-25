@@ -55,7 +55,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jndi.JndiLocatorDelegate;
-import org.springframework.orm.hibernate5.SpringBeanContainer;
+import org.springframework.orm.jpa.hibernate.SpringBeanContainer;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.jta.JtaTransactionManager;
