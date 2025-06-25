@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - '3.4.x'
+permissions:
+  contents: read
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
