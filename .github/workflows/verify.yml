@@ -30,6 +30,8 @@ on:
       token:
         description: 'Token to use for authentication with GitHub'
         required: true
+permissions:
+  contents: read
 jobs:
   verify:
     name: Verify
