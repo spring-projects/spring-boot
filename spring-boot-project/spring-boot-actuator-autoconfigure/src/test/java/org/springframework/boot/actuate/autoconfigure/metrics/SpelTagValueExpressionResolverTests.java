@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -24,14 +25,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.SpelTagValueExpressionResolver;
 import org.springframework.data.util.Pair;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-class SpelTagValueExpressionResolverTest {
+class SpelTagValueExpressionResolverTests {
 
 	final SpelTagValueExpressionResolver resolver = new SpelTagValueExpressionResolver();
 
@@ -42,9 +42,7 @@ class SpelTagValueExpressionResolverTest {
 	}
 
 	static Stream<Arguments> checkValidExpression() {
-		return Stream.of(
-				Arguments.of("foo", "length", "3"),
-				Arguments.of("foo", "isEmpty", "false"),
+		return Stream.of(Arguments.of("foo", "length", "3"), Arguments.of("foo", "isEmpty", "false"),
 				Arguments.of(Pair.of("left", "right"), "first", "left"),
 				Arguments.of(Map.of("foo", "bar"), "['foo']", "bar"),
 				Arguments.of(Map.of("foo", "bar"), "['baz']", null),
@@ -55,20 +53,18 @@ class SpelTagValueExpressionResolverTest {
 	@ParameterizedTest
 	@MethodSource
 	void checkInvalidExpression(Object value, String expression) {
-		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.resolver.resolve(expression, value));
+		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(expression, value));
 	}
 
 	static Stream<Arguments> checkInvalidExpression() {
-		return Stream.of(
-				Arguments.of("foo", "unknownMethod"),
-				Arguments.of(null, "length"),
+		return Stream.of(Arguments.of("foo", "unknownMethod"), Arguments.of(null, "length"),
 				Arguments.of(Map.of("foo", Pair.of(1, 2)), "['bar'].first"),
-				Arguments.of(Map.of(), "invalid expression"));
+				Arguments.of(Collections.emptyMap(), "invalid expression"));
 	}
 
 	@Test
 	void checkParserReuse() {
-		var map = (Map<?, ?>) ReflectionTestUtils.getField(this.resolver,"expressionMap");
+		var map = (Map<?, ?>) ReflectionTestUtils.getField(this.resolver, "expressionMap");
 
 		this.resolver.resolve("length", "foo");
 		this.resolver.resolve("length", "bar");
@@ -78,4 +74,5 @@ class SpelTagValueExpressionResolverTest {
 		this.resolver.resolve("isEmpty", "foo");
 		assertThat(map).hasSize(2);
 	}
+
 }

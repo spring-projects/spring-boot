@@ -35,6 +35,7 @@ import io.micrometer.tracing.propagation.Propagator;
 import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.SpelTagValueExpressionResolver;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -245,6 +246,7 @@ class MicrometerTracingAutoConfigurationTests {
 		SpelTagValueExpressionResolver customMetricsTagValueExpressionResolver() {
 			return mock(SpelTagValueExpressionResolver.class);
 		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

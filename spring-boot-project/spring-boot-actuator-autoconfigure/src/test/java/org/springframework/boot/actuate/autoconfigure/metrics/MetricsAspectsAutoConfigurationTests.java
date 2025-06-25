@@ -77,7 +77,7 @@ class MetricsAspectsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CountedAspect.class);
 			assertThat(ReflectionTestUtils.getField(context.getBean(CountedAspect.class), "meterTagAnnotationHandler"))
-					.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
+				.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
 		});
 	}
 
@@ -142,6 +142,7 @@ class MetricsAspectsAutoConfigurationTests {
 		CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler() {
 			return new CountedMeterTagAnnotationHandler(null, null);
 		}
+
 	}
 
 }

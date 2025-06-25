@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing;
+package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.micrometer.common.annotation.ValueExpressionResolver;
+import io.micrometer.core.aop.MeterTag;
+import io.micrometer.tracing.annotation.SpanTag;
 
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
+/**
+ * Evaluates a Spel expression applied to a parameter for use in {@link MeterTag}
+ * {@link SpanTag} Micrometer annotations.
+ *
+ * @author Dominique Villard
+ * @since 3.5.1
+ */
 public class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 
 	private final Map<String, Expression> expressionMap = new ConcurrentHashMap<>();
@@ -32,7 +41,8 @@ public class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 	@Override
 	public String resolve(String expression, Object parameter) {
 		try {
-			Expression expressionValue = this.expressionMap.computeIfAbsent(expression, SpelTagValueExpressionResolver::parseExpression);
+			Expression expressionValue = this.expressionMap.computeIfAbsent(expression,
+					SpelTagValueExpressionResolver::parseExpression);
 			SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
 			return expressionValue.getValue(context, parameter, String.class);
 		}
@@ -44,4 +54,5 @@ public class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 	private static Expression parseExpression(String expression) {
 		return new SpelExpressionParser().parseExpression(expression);
 	}
+
 }

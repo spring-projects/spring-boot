@@ -30,6 +30,7 @@ import io.micrometer.tracing.propagation.Propagator;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.actuate.autoconfigure.metrics.SpelTagValueExpressionResolver;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -114,7 +115,8 @@ public class MicrometerTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		SpanTagAnnotationHandler spanTagAnnotationHandler(BeanFactory beanFactory, SpelTagValueExpressionResolver spanTagValueExpressionResolver) {
+		SpanTagAnnotationHandler spanTagAnnotationHandler(BeanFactory beanFactory,
+				SpelTagValueExpressionResolver spanTagValueExpressionResolver) {
 			return new SpanTagAnnotationHandler(beanFactory::getBean, (ignored) -> spanTagValueExpressionResolver);
 		}
 
@@ -132,4 +134,5 @@ public class MicrometerTracingAutoConfiguration {
 		}
 
 	}
+
 }
