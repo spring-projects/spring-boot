@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - '3.5.x'
+permissions:
+  contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
