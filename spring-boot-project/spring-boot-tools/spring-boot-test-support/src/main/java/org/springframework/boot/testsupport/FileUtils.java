@@ -14,36 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools;
+package org.springframework.boot.testsupport;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.DigestInputStream;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
 /**
- * Utility class used to calculate digests.
+ * Utilities when working with {@link File files}.
  *
+ * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-final class Digest {
+public abstract class FileUtils {
 
-	private Digest() {
-	}
+	private static final int BUFFER_SIZE = 32 * 1024;
 
 	/**
-	 * Return the SHA-1 digest from the supplied stream.
-	 * @param supplier the stream supplier
-	 * @return the SHA-1 digest
-	 * @throws IOException on IO error
+	 * Generate a SHA-1 Hash for a given file.
+	 * @param file the file to hash
+	 * @return the hash value as a String
+	 * @throws IOException if the file cannot be read
 	 */
-	static String sha1(InputStreamSupplier supplier) throws IOException {
+	public static String sha1Hash(File file) throws IOException {
 		try {
-			try (DigestInputStream inputStream = new DigestInputStream(supplier.openStream(),
-					MessageDigest.getInstance("SHA-1"))) {
-				inputStream.readAllBytes();
-				return HexFormat.of().formatHex(inputStream.getMessageDigest().digest());
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+			try (InputStream inputStream = new FileInputStream(file)) {
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					messageDigest.update(buffer, 0, bytesRead);
+				}
+				return HexFormat.of().formatHex(messageDigest.digest());
 			}
 		}
 		catch (NoSuchAlgorithmException ex) {

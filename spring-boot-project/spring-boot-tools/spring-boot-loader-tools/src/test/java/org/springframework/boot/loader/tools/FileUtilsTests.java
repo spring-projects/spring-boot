@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -92,15 +91,6 @@ class FileUtilsTests {
 		new File(this.originDirectory, "different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
 		assertThat(file).exists();
-	}
-
-	@Test
-	void hash() throws Exception {
-		File file = new File(this.tempDir, "file");
-		try (OutputStream outputStream = new FileOutputStream(file)) {
-			outputStream.write(new byte[] { 1, 2, 3 });
-		}
-		assertThat(FileUtils.sha1Hash(file)).isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
 	}
 
 	@Test

@@ -56,16 +56,6 @@ public abstract class FileUtils {
 	}
 
 	/**
-	 * Generate a SHA-1 Hash for a given file.
-	 * @param file the file to hash
-	 * @return the hash value as a String
-	 * @throws IOException if the file cannot be read
-	 */
-	public static String sha1Hash(File file) throws IOException {
-		return Digest.sha1(InputStreamSupplier.forFile(file));
-	}
-
-	/**
 	 * Returns {@code true} if the given jar file has been signed.
 	 * @param file the file to check
 	 * @return if the file has been signed

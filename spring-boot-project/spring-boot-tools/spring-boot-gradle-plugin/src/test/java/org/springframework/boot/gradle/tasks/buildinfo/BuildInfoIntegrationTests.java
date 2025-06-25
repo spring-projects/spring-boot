@@ -29,7 +29,7 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
-import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.testsupport.FileUtils;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;

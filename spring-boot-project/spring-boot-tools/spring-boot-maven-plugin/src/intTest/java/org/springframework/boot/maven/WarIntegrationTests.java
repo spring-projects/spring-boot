@@ -29,8 +29,8 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.testsupport.FileUtils;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
