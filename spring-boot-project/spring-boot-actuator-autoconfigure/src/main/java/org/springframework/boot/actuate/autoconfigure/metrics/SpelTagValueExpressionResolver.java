@@ -41,10 +41,10 @@ public class SpelTagValueExpressionResolver implements ValueExpressionResolver {
 	@Override
 	public String resolve(String expression, Object parameter) {
 		try {
-			Expression expressionValue = this.expressionMap.computeIfAbsent(expression,
+			Expression parsedExpression = this.expressionMap.computeIfAbsent(expression,
 					SpelTagValueExpressionResolver::parseExpression);
 			SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
-			return expressionValue.getValue(context, parameter, String.class);
+			return parsedExpression.getValue(context, parameter, String.class);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to evaluate SpEL expression '%s'".formatted(expression), ex);
