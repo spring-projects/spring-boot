@@ -20,12 +20,17 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.DependencyConstraint;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.artifacts.dsl.DependencyConstraintHandler;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.file.FileCollection;
@@ -292,6 +297,26 @@ final class JavaPluginAction implements PluginApplicationAction {
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
 		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
 		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
+		productionRuntimeClasspath.getDependencyConstraints()
+			.addAllLater(project.getProviders().provider(() -> constraintsFrom(runtimeClasspath, project)));
+	}
+
+	private Iterable<DependencyConstraint> constraintsFrom(Configuration configuration, Project project) {
+		DependencyConstraintHandler constraints = project.getDependencies().getConstraints();
+		return resolvedArtifactsOf(configuration).map((artifact) -> artifact.getId().getComponentIdentifier())
+			.filter(ModuleComponentIdentifier.class::isInstance)
+			.map(ModuleComponentIdentifier.class::cast)
+			.map(this::asConstraintNotation)
+			.map(constraints::create)
+			.toList();
+	}
+
+	private Stream<ResolvedArtifactResult> resolvedArtifactsOf(Configuration configuration) {
+		return configuration.getIncoming().getArtifacts().getArtifacts().stream();
+	}
+
+	private String asConstraintNotation(ModuleComponentIdentifier identifier) {
+		return "%s:%s:%s".formatted(identifier.getGroup(), identifier.getModule(), identifier.getVersion());
 	}
 
 	private void configureDevelopmentOnlyConfiguration(Project project) {
