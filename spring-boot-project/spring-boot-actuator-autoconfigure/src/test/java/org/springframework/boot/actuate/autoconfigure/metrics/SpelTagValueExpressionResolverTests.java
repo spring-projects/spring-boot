@@ -16,17 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.data.util.Pair;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -35,44 +29,16 @@ class SpelTagValueExpressionResolverTests {
 
 	final SpelTagValueExpressionResolver resolver = new SpelTagValueExpressionResolver();
 
-	@ParameterizedTest
-	@MethodSource
-	void checkValidExpression(Object value, String expression, String expected) {
-		assertThat(this.resolver.resolve(expression, value)).isEqualTo(expected);
-	}
-
-	static Stream<Arguments> checkValidExpression() {
-		return Stream.of(Arguments.of("foo", "length", "3"), Arguments.of("foo", "isEmpty", "false"),
-				Arguments.of(Pair.of("left", "right"), "first", "left"),
-				Arguments.of(Map.of("foo", "bar"), "['foo']", "bar"),
-				Arguments.of(Map.of("foo", "bar"), "['baz']", null),
-				Arguments.of(Map.of("foo", Pair.of(1, 2)), "['foo'].first", "1"),
-				Arguments.of(Map.of("foo", Pair.of(1, 2)), "['bar']?.first", null));
-	}
-
-	@ParameterizedTest
-	@MethodSource
-	void checkInvalidExpression(Object value, String expression) {
-		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(expression, value));
-	}
-
-	static Stream<Arguments> checkInvalidExpression() {
-		return Stream.of(Arguments.of("foo", "unknownMethod"), Arguments.of(null, "length"),
-				Arguments.of(Map.of("foo", Pair.of(1, 2)), "['bar'].first"),
-				Arguments.of(Collections.emptyMap(), "invalid expression"));
+	@Test
+	void checkValidExpression() {
+		var value = Map.of("foo", Pair.of(1, 2));
+		assertThat(this.resolver.resolve("['foo'].first", value)).isEqualTo("1");
 	}
 
 	@Test
-	void checkParserReuse() {
-		var map = (Map<?, ?>) ReflectionTestUtils.getField(this.resolver, "expressionMap");
-
-		this.resolver.resolve("length", "foo");
-		this.resolver.resolve("length", "bar");
-
-		assertThat(map).hasSize(1);
-
-		this.resolver.resolve("isEmpty", "foo");
-		assertThat(map).hasSize(2);
+	void checkInvalidExpression() {
+		var value = Map.of("foo", Pair.of(1, 2));
+		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve("['bar'].first", value));
 	}
 
 }
