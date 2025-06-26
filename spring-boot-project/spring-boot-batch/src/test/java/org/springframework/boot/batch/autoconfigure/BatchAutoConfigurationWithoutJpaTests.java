@@ -20,9 +20,8 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -57,14 +56,13 @@ class BatchAutoConfigurationWithoutJpaTests {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
-				assertThat(context).hasSingleBean(JobExplorer.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				assertThat(context).hasSingleBean(JobRepository.class);
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 				assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 					.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
-				assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
+				assertThat(context.getBean(JobRepository.class).findRunningJobExecutions("test")).isEmpty();
 				assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
 					.isNull();
 			});
@@ -79,7 +77,7 @@ class BatchAutoConfigurationWithoutJpaTests {
 			.run((context) -> {
 				assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
-				assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
+				assertThat(context.getBean(JobRepository.class).findRunningJobExecutions("test")).isEmpty();
 				assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
 					.isNull();
 			});

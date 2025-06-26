@@ -29,30 +29,24 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.DuplicateJobException;
-import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.converter.JsonJobParametersConverter;
-import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
 import org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer;
-import org.springframework.beans.BeansException;
+import org.springframework.batch.core.step.Step;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -77,7 +71,6 @@ import org.springframework.boot.testsupport.classpath.resources.WithPackageResou
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -92,6 +85,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
@@ -124,8 +118,7 @@ class BatchAutoConfigurationTests {
 	void testDefaultContext() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(JobRepository.class);
-			assertThat(context).hasSingleBean(JobLauncher.class);
-			assertThat(context).hasSingleBean(JobExplorer.class);
+			assertThat(context).hasSingleBean(JobOperator.class);
 			assertThat(context).hasSingleBean(JobRegistry.class);
 			assertThat(context).hasSingleBean(JobOperator.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
@@ -164,7 +157,7 @@ class BatchAutoConfigurationTests {
 	void testDefinesAndLaunchesJob() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				context.getBean(JobLauncherApplicationRunner.class)
 					.run(new DefaultApplicationArguments("jobParam=test"));
 				JobParameters jobParameters = new JobParametersBuilder().addString("jobParam", "test")
@@ -177,25 +170,12 @@ class BatchAutoConfigurationTests {
 	void testDefinesAndLaunchesJobIgnoreOptionArguments() {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				context.getBean(JobLauncherApplicationRunner.class)
 					.run(new DefaultApplicationArguments("--spring.property=value", "jobParam=test"));
 				JobParameters jobParameters = new JobParametersBuilder().addString("jobParam", "test")
 					.toJobParameters();
 				assertThat(context.getBean(JobRepository.class).getLastJobExecution("job", jobParameters)).isNotNull();
-			});
-	}
-
-	@Test
-	void testDefinesAndLaunchesNamedRegisteredJob() {
-		this.contextRunner
-			.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class, EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.batch.job.name:discreteRegisteredJob")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
-				context.getBean(JobLauncherApplicationRunner.class).run();
-				assertThat(context.getBean(JobRepository.class)
-					.getLastJobExecution("discreteRegisteredJob", new JobParameters())).isNotNull();
 			});
 	}
 
@@ -206,7 +186,7 @@ class BatchAutoConfigurationTests {
 					EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.batch.job.name:discreteRegisteredJob")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				context.getBean(JobLauncherApplicationRunner.class).run();
 				assertThat(context.getBean(JobRepository.class)
 					.getLastJobExecution("discreteRegisteredJob", new JobParameters())
@@ -220,7 +200,7 @@ class BatchAutoConfigurationTests {
 			.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.batch.job.name:discreteLocalJob")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				context.getBean(JobLauncherApplicationRunner.class).run();
 				assertThat(context.getBean(JobRepository.class)
 					.getLastJobExecution("discreteLocalJob", new JobParameters())).isNotNull();
@@ -242,7 +222,7 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MultipleJobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.batch.job.name:discreteLocalJob")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				context.getBean(JobLauncherApplicationRunner.class).run();
 				assertThat(context.getBean(JobRepository.class)
 					.getLastJobExecution("discreteLocalJob", new JobParameters())).isNotNull();
@@ -254,7 +234,7 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(JobConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.batch.job.enabled:false")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				assertThat(context).doesNotHaveBean(CommandLineRunner.class);
 			});
 	}
@@ -265,7 +245,7 @@ class BatchAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
 					"spring.batch.jdbc.initialize-schema:never")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.NEVER);
 				assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class);
@@ -300,14 +280,13 @@ class BatchAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
 					"spring.batch.jdbc.schema:classpath:custom-schema.sql", "spring.batch.jdbc.table-prefix:PREFIX_")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JobLauncher.class);
+				assertThat(context).hasSingleBean(JobOperator.class);
 				assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 				assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 					.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
-				JobExplorer jobExplorer = context.getBean(JobExplorer.class);
-				assertThat(jobExplorer.findRunningJobExecutions("test")).isEmpty();
 				JobRepository jobRepository = context.getBean(JobRepository.class);
+				assertThat(jobRepository.findRunningJobExecutions("test")).isEmpty();
 				assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
 			});
 	}
@@ -376,8 +355,8 @@ class BatchAutoConfigurationTests {
 				assertThat(batchTaskExecutor).isInstanceOf(AsyncTaskExecutor.class);
 				assertThat(context.getBean(SpringBootBatchConfiguration.class).getTaskExecutor())
 					.isEqualTo(batchTaskExecutor);
-				assertThat(context.getBean(JobLauncher.class)).hasFieldOrPropertyWithValue("taskExecutor",
-						batchTaskExecutor);
+				JobOperator jobOperator = AopTestUtils.getTargetObject(context.getBean(JobOperator.class));
+				assertThat(jobOperator).hasFieldOrPropertyWithValue("taskExecutor", batchTaskExecutor);
 			});
 	}
 
@@ -550,8 +529,8 @@ class BatchAutoConfigurationTests {
 	}
 
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
-		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobLauncher.class),
-				mock(JobExplorer.class), mock(JobRepository.class));
+		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobOperator.class),
+				mock(JobRepository.class));
 		JobRegistry jobRegistry = mock(JobRegistry.class);
 		given(jobRegistry.getJobNames()).willReturn(Arrays.asList(registeredJobNames));
 		runner.setJobRegistry(jobRegistry);
@@ -673,75 +652,6 @@ class BatchAutoConfigurationTests {
 			};
 			job.setJobRepository(this.jobRepository);
 			return job;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class NamedJobConfigurationWithRegisteredJob {
-
-		@Bean
-		static BeanPostProcessor registryProcessor(ApplicationContext applicationContext) {
-			return new NamedJobJobRegistryBeanPostProcessor(applicationContext);
-		}
-
-	}
-
-	static class NamedJobJobRegistryBeanPostProcessor implements BeanPostProcessor {
-
-		private final ApplicationContext applicationContext;
-
-		NamedJobJobRegistryBeanPostProcessor(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof JobRegistry jobRegistry) {
-				try {
-					jobRegistry.register(getJobFactory());
-				}
-				catch (DuplicateJobException ex) {
-					// Ignore
-				}
-			}
-			return bean;
-		}
-
-		private JobFactory getJobFactory() {
-			JobRepository jobRepository = this.applicationContext.getBean(JobRepository.class);
-			return new JobFactory() {
-
-				@Override
-				public Job createJob() {
-					AbstractJob job = new AbstractJob("discreteRegisteredJob") {
-
-						@Override
-						public Collection<String> getStepNames() {
-							return Collections.emptySet();
-						}
-
-						@Override
-						public Step getStep(String stepName) {
-							return null;
-						}
-
-						@Override
-						protected void doExecute(JobExecution execution) {
-							execution.setStatus(BatchStatus.COMPLETED);
-						}
-
-					};
-					job.setJobRepository(jobRepository);
-					return job;
-				}
-
-				@Override
-				public String getJobName() {
-					return "discreteRegisteredJob";
-				}
-
-			};
 		}
 
 	}
