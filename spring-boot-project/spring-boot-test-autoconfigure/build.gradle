@@ -36,6 +36,7 @@ dependencies {
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("com.h2database:h2")
 	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.elasticsearch.client:elasticsearch-rest-client")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.postgresql:postgresql")
 	dockerTestImplementation("org.testcontainers:cassandra")
