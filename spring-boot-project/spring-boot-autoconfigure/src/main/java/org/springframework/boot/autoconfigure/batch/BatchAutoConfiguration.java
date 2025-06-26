@@ -22,9 +22,9 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
 import org.springframework.batch.core.converter.JobParametersConverter;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
@@ -71,7 +71,7 @@ import org.springframework.util.StringUtils;
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
-@ConditionalOnClass({ JobLauncher.class, DataSource.class, DatabasePopulator.class })
+@ConditionalOnClass({ JobOperator.class, DataSource.class, DatabasePopulator.class })
 @ConditionalOnBean({ DataSource.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class)
 @EnableConfigurationProperties(BatchProperties.class)
@@ -81,9 +81,9 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "spring.batch.job.enabled", matchIfMissing = true)
-	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
+	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator,
 			JobRepository jobRepository, BatchProperties properties) {
-		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
+		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobOperator, jobRepository);
 		String jobName = properties.getJob().getName();
 		if (StringUtils.hasText(jobName)) {
 			runner.setJobName(jobName);
@@ -98,7 +98,7 @@ public class BatchAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class SpringBootBatchConfiguration extends DefaultBatchConfiguration {
+	static class SpringBootBatchConfiguration extends JdbcDefaultBatchConfiguration {
 
 		private final DataSource dataSource;
 
@@ -172,6 +172,7 @@ public class BatchAutoConfiguration {
 					: super.getExecutionContextSerializer();
 		}
 
+		@SuppressWarnings("removal")
 		@Override
 		protected JobParametersConverter getJobParametersConverter() {
 			return (this.jobParametersConverter != null) ? this.jobParametersConverter
