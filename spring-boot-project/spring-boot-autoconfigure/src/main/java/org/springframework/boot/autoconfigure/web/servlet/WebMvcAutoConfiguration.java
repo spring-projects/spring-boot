@@ -217,6 +217,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		@SuppressWarnings("removal")
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			this.messageConvertersProvider
 				.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
