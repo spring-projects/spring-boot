@@ -127,21 +127,9 @@
       }
     },
     {
-      "name": "management.health.db.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable database health check.",
-      "defaultValue": true
-    },
-    {
       "name": "management.health.defaults.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable default health indicators.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.health.diskspace.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable disk space health check.",
       "defaultValue": true
     },
     {
@@ -242,18 +230,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.ssl.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable SSL certificate health check.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.httpexchanges.recording.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable HTTP request-response exchange recording.",
-      "defaultValue": true
-    },
-    {
       "name": "management.httpexchanges.recording.include",
       "defaultValue": [
         "request-headers",
@@ -278,12 +254,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable environment info.",
       "defaultValue": false
-    },
-    {
-      "name": "management.info.git.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable git info.",
-      "defaultValue": true
     },
     {
       "name": "management.info.java.enabled",
@@ -2024,12 +1994,6 @@
         "replacement": "management.httpexchanges.recording.include",
         "level": "error"
       }
-    },
-    {
-      "name": "management.tracing.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether auto-configuration of tracing is enabled to export and propagate traces.",
-      "defaultValue": true
     },
     {
       "name": "management.tracing.propagation.consume",

@@ -23,16 +23,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * External configuration properties for {@link DataSourceHealthIndicator}.
  *
  * @author Julio Gomez
+ * @author Yanming Zhou
  * @since 2.4.0
  */
 @ConfigurationProperties("management.health.db")
 public class DataSourceHealthIndicatorProperties {
 
 	/**
+	 * Whether to enable database health check.
+	 */
+	private boolean enabled = true;
+
+	/**
 	 * Whether to ignore AbstractRoutingDataSources when creating database health
 	 * indicators.
 	 */
 	private boolean ignoreRoutingDataSources = false;
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public boolean isIgnoreRoutingDataSources() {
 		return this.ignoreRoutingDataSources;

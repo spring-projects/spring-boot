@@ -28,10 +28,16 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 1.2.0
  */
 @ConfigurationProperties("management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
+
+	/**
+	 * Whether to enable disk space health check.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Path used to compute the available disk space.
@@ -42,6 +48,14 @@ public class DiskSpaceHealthIndicatorProperties {
 	 * Minimum disk space that should be available.
 	 */
 	private DataSize threshold = DataSize.ofMegabytes(10);
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public File getPath() {
 		return this.path;

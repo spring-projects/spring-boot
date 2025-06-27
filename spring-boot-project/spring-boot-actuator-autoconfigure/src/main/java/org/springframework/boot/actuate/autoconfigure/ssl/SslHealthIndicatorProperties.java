@@ -25,16 +25,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * External configuration properties for {@link SslHealthIndicator}.
  *
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  * @since 3.4.0
  */
 @ConfigurationProperties("management.health.ssl")
 public class SslHealthIndicatorProperties {
 
 	/**
+	 * Whether to enable SSL certificate health check.
+	 */
+	private boolean enabled = true;
+
+	/**
 	 * If an SSL Certificate will be invalid within the time span defined by this
 	 * threshold, it should trigger a warning.
 	 */
 	private Duration certificateValidityWarningThreshold = Duration.ofDays(14);
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public Duration getCertificateValidityWarningThreshold() {
 		return this.certificateValidityWarningThreshold;

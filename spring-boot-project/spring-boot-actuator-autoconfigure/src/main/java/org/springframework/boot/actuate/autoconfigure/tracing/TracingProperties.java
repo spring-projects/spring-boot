@@ -27,10 +27,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Moritz Halbritter
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  * @since 3.0.0
  */
 @ConfigurationProperties("management.tracing")
 public class TracingProperties {
+
+	/**
+	 * Whether auto-configuration of tracing is enabled to export and propagate traces.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Sampling configuration.
@@ -56,6 +62,14 @@ public class TracingProperties {
 	 * OpenTelemetry configuration.
 	 */
 	private final OpenTelemetry opentelemetry = new OpenTelemetry();
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public Sampling getSampling() {
 		return this.sampling;

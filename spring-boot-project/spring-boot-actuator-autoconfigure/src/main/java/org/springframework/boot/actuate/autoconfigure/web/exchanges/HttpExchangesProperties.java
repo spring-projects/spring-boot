@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Venil Noronha
  * @author Madhura Bhave
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties("management.httpexchanges")
@@ -49,11 +50,24 @@ public class HttpExchangesProperties {
 	public static class Recording {
 
 		/**
+		 * Whether to enable HTTP request-response exchange recording.
+		 */
+		private boolean enabled = true;
+
+		/**
 		 * Items to be included in the exchange recording. Defaults to request headers
 		 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie),
 		 * and time taken.
 		 */
 		private Set<Include> include = new HashSet<>(Include.defaultIncludes());
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public Set<Include> getInclude() {
 			return this.include;

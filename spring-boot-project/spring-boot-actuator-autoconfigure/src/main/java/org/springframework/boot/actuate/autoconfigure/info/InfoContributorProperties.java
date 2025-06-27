@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for core info contributors.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties("management.info")
@@ -37,9 +38,22 @@ public class InfoContributorProperties {
 	public static class Git {
 
 		/**
+		 * Whether to enable git info.
+		 */
+		private boolean enabled = true;
+
+		/**
 		 * Mode to use to expose git information.
 		 */
 		private GitInfoContributor.Mode mode = GitInfoContributor.Mode.SIMPLE;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public GitInfoContributor.Mode getMode() {
 			return this.mode;
