@@ -16,14 +16,10 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
-import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
-import org.springframework.boot.sql.init.DatabaseInitializationSettings;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Batch database. May be
@@ -33,54 +29,19 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 2.6.0
  */
-public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
+public class BatchDataSourceScriptDatabaseInitializer
+		extends PropertiesBasedDataSourceScriptDatabaseInitializer<BatchProperties.Jdbc> {
 
 	/**
 	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the Spring Batch data source
 	 * @param properties the Spring Batch JDBC properties
-	 * @see #getSettings
 	 */
 	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchProperties.Jdbc properties) {
-		this(dataSource, getSettings(dataSource, properties));
-	}
-
-	/**
-	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
-	 * @param dataSource the Spring Batch data source
-	 * @param settings the database initialization settings
-	 * @see #getSettings
-	 */
-	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
-		super(dataSource, settings);
-	}
-
-	/**
-	 * Adapts {@link BatchProperties.Jdbc Spring Batch JDBC properties} to
-	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
-	 * placeholders.
-	 * @param dataSource the Spring Batch data source
-	 * @param properties batch JDBC properties
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 * @see #BatchDataSourceScriptDatabaseInitializer(DataSource,
-	 * DatabaseInitializationSettings)
-	 */
-	public static DatabaseInitializationSettings getSettings(DataSource dataSource, BatchProperties.Jdbc properties) {
-		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
-		settings.setMode(properties.getInitializeSchema());
-		settings.setContinueOnError(true);
-		return settings;
-	}
-
-	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		if (StringUtils.hasText(properties.getPlatform())) {
-			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
-		}
-		return platformResolver.resolveAll(dataSource, properties.getSchema());
+		super(dataSource, properties);
 	}
 
 }

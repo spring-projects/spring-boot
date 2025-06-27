@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 
 /**
  * Configuration properties for Spring Integration.
@@ -30,6 +30,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Artem Bilan
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @ConfigurationProperties("spring.integration")
@@ -212,49 +213,14 @@ public class IntegrationProperties {
 
 	}
 
-	public static class Jdbc {
+	public static class Jdbc extends DatabaseInitializationProperties {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 				+ "integration/jdbc/schema-@@platform@@.sql";
 
-		/**
-		 * Path to the SQL file to use to initialize the database schema.
-		 */
-		private String schema = DEFAULT_SCHEMA_LOCATION;
-
-		/**
-		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
-		 * used. Auto-detected by default.
-		 */
-		private String platform;
-
-		/**
-		 * Database schema initialization mode.
-		 */
-		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
-
-		public String getSchema() {
-			return this.schema;
-		}
-
-		public void setSchema(String schema) {
-			this.schema = schema;
-		}
-
-		public String getPlatform() {
-			return this.platform;
-		}
-
-		public void setPlatform(String platform) {
-			this.platform = platform;
-		}
-
-		public DatabaseInitializationMode getInitializeSchema() {
-			return this.initializeSchema;
-		}
-
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-			this.initializeSchema = initializeSchema;
+		@Override
+		public String getDefaultSchemaLocation() {
+			return DEFAULT_SCHEMA_LOCATION;
 		}
 
 	}

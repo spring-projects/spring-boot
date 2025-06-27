@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link QuartzDataSourceScriptDatabaseInitializer}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class QuartzDataSourceScriptDatabaseInitializerTests {
 
@@ -42,7 +43,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		QuartzProperties properties = new QuartzProperties();
 		properties.getJdbc().setPlatform("test");
 		DatabaseInitializationSettings settings = QuartzDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+				properties.getJdbc());
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
 		then(dataSource).shouldHaveNoInteractions();
@@ -54,7 +55,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		properties.getJdbc().setPlatform("test");
 		properties.getJdbc().setCommentPrefix(Arrays.asList("##", "--"));
 		QuartzDataSourceScriptDatabaseInitializer initializer = new QuartzDataSourceScriptDatabaseInitializer(
-				mock(DataSource.class), properties);
+				mock(DataSource.class), properties.getJdbc());
 		ResourceDatabasePopulator populator = mock(ResourceDatabasePopulator.class);
 		initializer.customize(populator);
 		then(populator).should().setCommentPrefixes("##", "--");

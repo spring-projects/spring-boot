@@ -55,6 +55,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
@@ -138,7 +139,7 @@ public class QuartzAutoConfiguration {
 				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties.getJdbc());
 		}
 
 		static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
