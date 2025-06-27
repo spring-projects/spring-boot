@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.annotation.DefaultNewSpanParser;
 import io.micrometer.tracing.annotation.ImperativeMethodInvocationProcessor;
@@ -31,6 +30,7 @@ import io.micrometer.tracing.propagation.Propagator;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.actuate.autoconfigure.metrics.SpelTagValueExpressionResolver;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,10 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Tracing API.
@@ -113,9 +109,15 @@ public class MicrometerTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		SpanTagAnnotationHandler spanTagAnnotationHandler(BeanFactory beanFactory) {
-			ValueExpressionResolver valueExpressionResolver = new SpelTagValueExpressionResolver();
-			return new SpanTagAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
+		SpelTagValueExpressionResolver spanTagValueExpressionResolver() {
+			return new SpelTagValueExpressionResolver();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		SpanTagAnnotationHandler spanTagAnnotationHandler(BeanFactory beanFactory,
+				SpelTagValueExpressionResolver spanTagValueExpressionResolver) {
+			return new SpanTagAnnotationHandler(beanFactory::getBean, (ignored) -> spanTagValueExpressionResolver);
 		}
 
 		@Bean
@@ -129,23 +131,6 @@ public class MicrometerTracingAutoConfiguration {
 		@ConditionalOnMissingBean
 		SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
 			return new SpanAspect(methodInvocationProcessor);
-		}
-
-	}
-
-	private static final class SpelTagValueExpressionResolver implements ValueExpressionResolver {
-
-		@Override
-		public String resolve(String expression, Object parameter) {
-			try {
-				SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
-				ExpressionParser expressionParser = new SpelExpressionParser();
-				Expression expressionToEvaluate = expressionParser.parseExpression(expression);
-				return expressionToEvaluate.getValue(context, parameter, String.class);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Unable to evaluate SpEL expression '%s'".formatted(expression), ex);
-			}
 		}
 
 	}
