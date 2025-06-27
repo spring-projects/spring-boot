@@ -26,8 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -184,19 +187,44 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
 				null)) {
-			converters.addAll(new WebMvcConfigurationSupport() {
+			List<HttpMessageConverter<?>> webMvcConverters = new WebMvcConfigurationSupport() {
 
 				public List<HttpMessageConverter<?>> defaultMessageConverters() {
 					return super.getMessageConverters();
 				}
 
-			}.defaultMessageConverters());
+			}.defaultMessageConverters();
+			converters.addAll(reorderAllEncompassingFormHttpMessageConverterBeforeJackson(webMvcConverters));
 		}
 		else {
 			converters.addAll(new RestTemplate().getMessageConverters());
 		}
 		reorderXmlConvertersToEnd(converters);
 		return converters;
+	}
+
+	@SuppressWarnings("removal")
+	private List<HttpMessageConverter<?>> reorderAllEncompassingFormHttpMessageConverterBeforeJackson(
+			List<HttpMessageConverter<?>> converters) {
+		List<HttpMessageConverter<?>> reordered = new ArrayList<>();
+		for (int i = 0; i < converters.size(); i++) {
+			HttpMessageConverter<?> converter = converters.get(i);
+			if (converter == null) {
+				continue;
+			}
+			if (converter instanceof MappingJackson2XmlHttpMessageConverter
+					|| converter instanceof MappingJackson2HttpMessageConverter
+					|| converter instanceof MappingJackson2CborHttpMessageConverter) {
+				for (int j = i; j < converters.size(); j++) {
+					if (converters.get(j) instanceof AllEncompassingFormHttpMessageConverter) {
+						reordered.add(converters.get(j));
+						converters.set(j, null);
+					}
+				}
+			}
+			reordered.add(converter);
+		}
+		return reordered;
 	}
 
 	@SuppressWarnings("removal")
