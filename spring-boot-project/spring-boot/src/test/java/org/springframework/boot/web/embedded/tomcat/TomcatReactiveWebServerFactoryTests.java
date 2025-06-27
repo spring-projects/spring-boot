@@ -38,6 +38,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.testsupport.junit.EnabledOnLocale;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
@@ -225,6 +226,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
+	@EnabledOnLocale(language = "en")
 	void portClashOfPrimaryConnectorResultsInPortInUseException() throws Exception {
 		doWithBlockedPort((port) -> assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 			AbstractReactiveWebServerFactory factory = getFactory();

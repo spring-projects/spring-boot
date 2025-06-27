@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.data.elasticsearch.ElasticsearchReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.testsupport.junit.EnabledOnLocale;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -87,6 +88,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 	}
 
 	@Test
+	@EnabledOnLocale(language = "en")
 	void elasticsearchIsDown() throws Exception {
 		this.server.shutdown();
 		Health health = this.healthIndicator.health().block(TIMEOUT);

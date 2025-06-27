@@ -83,6 +83,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
+import org.springframework.boot.testsupport.junit.EnabledOnLocale;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -367,6 +368,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@EnabledOnLocale(language = "en")
 	void startupFailureDoesNotResultInUnstoppedThreadsBeingReported(CapturedOutput output) throws Exception {
 		super.portClashOfPrimaryConnectorResultsInPortInUseException();
 		assertThat(output).doesNotContain("appears to have started a thread named [main]");
