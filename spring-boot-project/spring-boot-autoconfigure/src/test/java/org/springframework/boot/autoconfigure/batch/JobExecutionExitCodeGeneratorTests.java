@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.batch;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
