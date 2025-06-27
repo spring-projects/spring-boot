@@ -24,6 +24,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceMXBean;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
@@ -33,6 +35,7 @@ import org.springframework.boot.jdbc.metadata.OracleUcpDataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * Register the {@link DataSourcePoolMetadataProvider} instances for the supported data
@@ -65,6 +68,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HikariDataSource.class)
+	@ImportRuntimeHints(HikariDataSourcePoolMetadataRuntimeHints.class)
 	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
@@ -112,6 +116,15 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 				}
 				return null;
 			};
+		}
+
+	}
+
+	static class HikariDataSourcePoolMetadataRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(HikariDataSource.class, (builder) -> builder.withField("pool"));
 		}
 
 	}
