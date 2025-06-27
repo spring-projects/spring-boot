@@ -67,7 +67,7 @@ abstract class AbstractManagementPortAndPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
 			.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\",\"groups\":[\"comp\",\"live\",\"ready\"]}");
+		assertThat(entity.getBody()).isEqualTo("{\"groups\":[\"comp\",\"live\",\"ready\"],\"status\":\"UP\"}");
 	}
 
 	@Test
@@ -76,7 +76,7 @@ abstract class AbstractManagementPortAndPathSampleActuatorApplicationTests {
 			.getForEntity("http://localhost:" + this.managementPort + "/admin/health/comp", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains(
-				"components\":{\"a\":{\"status\":\"UP\",\"details\":{\"hello\":\"spring-a\"}},\"c\":{\"status\":\"UP\",\"details\":{\"hello\":\"spring-c\"}}");
+				"components\":{\"a\":{\"details\":{\"hello\":\"spring-a\"},\"status\":\"UP\"},\"c\":{\"details\":{\"hello\":\"spring-c\"},\"status\":\"UP\"}}");
 	}
 
 	@Test
