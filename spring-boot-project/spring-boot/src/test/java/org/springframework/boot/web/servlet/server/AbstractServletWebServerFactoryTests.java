@@ -126,6 +126,7 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.classpath.resources.ResourcePath;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
+import org.springframework.boot.testsupport.junit.EnabledOnLocale;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
@@ -1088,6 +1089,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@EnabledOnLocale(language = "en")
 	protected void portClashOfPrimaryConnectorResultsInPortInUseException() throws Exception {
 		doWithBlockedPort((port) -> {
 			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
@@ -1100,6 +1102,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@EnabledOnLocale(language = "en")
 	protected void portClashOfSecondaryConnectorResultsInPortInUseException() throws Exception {
 		doWithBlockedPort((port) -> {
 			assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
