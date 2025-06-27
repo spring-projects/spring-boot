@@ -492,7 +492,7 @@
     {
       "name": "spring.batch.job.enabled",
       "type": "java.lang.Boolean",
-      "description": "Execute all Spring Batch jobs in the context on startup.",
+      "description": "Whether to execute a Spring Batch job on startup. A job is only launched if a single one in the context or a specific name is provided.",
       "defaultValue": true
     },
     {
