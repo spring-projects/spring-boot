@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.testsupport.junit.EnabledOnLocale;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
 
@@ -125,6 +127,7 @@ class AotTests {
 	}
 
 	@TestTemplate
+	@EnabledOnLocale(language = "en")
 	void whenAotRunsWithInvalidCompilerArgumentsCompileFails(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-compiler-arguments")
 			.goals("package")
