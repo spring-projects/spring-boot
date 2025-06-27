@@ -22,6 +22,7 @@ import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,10 +45,12 @@ import org.springframework.context.annotation.Import;
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Eddú Meléndez
+ * @author Yanming Zhou
  * @since 3.4.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class, OtlpHttpSpanExporter.class })
+@ConditionalOnEnabledTracing("otlp")
 @EnableConfigurationProperties(OtlpTracingProperties.class)
 @Import({ OtlpTracingConfigurations.ConnectionDetails.class, OtlpTracingConfigurations.Exporters.class })
 public class OtlpTracingAutoConfiguration {
