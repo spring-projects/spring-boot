@@ -18,6 +18,7 @@ package org.springframework.boot.ansi;
 
 import java.io.Console;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
@@ -31,6 +32,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Yong-Hyun Kim
+ * @author Philemon Hilscher
  * @since 1.0.0
  */
 public abstract class AnsiOutput {
@@ -43,13 +45,15 @@ public abstract class AnsiOutput {
 
 	private static @Nullable Boolean ansiCapable;
 
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name");
 
 	private static final String ENCODE_START = "\033[";
 
 	private static final String ENCODE_END = "m";
 
 	private static final String RESET = "0;" + AnsiColor.DEFAULT;
+
+	private static final List<String> WINDOWS_ANSI_COMPATIBLE = List.of("Windows 11", "Windows Server 2025");
 
 	/**
 	 * Sets if ANSI output is enabled.
@@ -171,11 +175,18 @@ public abstract class AnsiOutput {
 					}
 				}
 			}
-			return !(OPERATING_SYSTEM_NAME.contains("win"));
+			if (isWindows(OPERATING_SYSTEM_NAME)) {
+				return WINDOWS_ANSI_COMPATIBLE.contains(OPERATING_SYSTEM_NAME);
+			}
+			return true;
 		}
 		catch (Throwable ex) {
 			return false;
 		}
+	}
+
+	static boolean isWindows(String osName) {
+		return osName.toLowerCase(Locale.ENGLISH).contains("win");
 	}
 
 	/**
