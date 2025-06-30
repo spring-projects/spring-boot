@@ -31,16 +31,13 @@ content:
   sources:
   - url: .
     branches:
+    - '3.4.x'
+    - '3.5.x'
     - 'main'
-    - '*({0..9}).*({0..9}).x'
-    - '!{0..2}.*'
-    - '!3.{0..3}.*'
     tags:
-    - 'v*.*.*'
-    - '!v{0..2}*'
-    - '!v3.{0..3}.*'
-    - '!v3.3.0-M1'
-    - '!v3.3.0-M2'
+    - 'v3.4.*'
+    - 'v3.5.*'
+    - 'v4.0.*'
     start_paths:
     - spring-boot-project/spring-boot-docs/src/docs/antora
     - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
