@@ -25,15 +25,29 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for OpenTelemetry.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("management.opentelemetry")
 public class OpenTelemetryProperties {
 
 	/**
+	 * Whether to reuse registered global OpenTelemetry.
+	 */
+	private boolean reuseRegisteredGlobal;
+
+	/**
 	 * Resource attributes.
 	 */
 	private Map<String, String> resourceAttributes = new HashMap<>();
+
+	public boolean isReuseRegisteredGlobal() {
+		return this.reuseRegisteredGlobal;
+	}
+
+	public void setReuseRegisteredGlobal(boolean reuseRegisteredGlobal) {
+		this.reuseRegisteredGlobal = reuseRegisteredGlobal;
+	}
 
 	public Map<String, String> getResourceAttributes() {
 		return this.resourceAttributes;

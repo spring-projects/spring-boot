@@ -19,8 +19,11 @@ package org.springframework.boot.opentelemetry.autoconfigure;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -49,6 +52,8 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,6 +62,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Toshiaki Maki
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class OpenTelemetrySdkAutoConfigurationTests {
 
@@ -237,6 +243,21 @@ class OpenTelemetrySdkAutoConfigurationTests {
 				assertThat(context
 					.getBean("customSdkLoggerProviderBuilderCustomizer2", NoopSdkLoggerProviderBuilderCustomizer.class)
 					.called()).isEqualTo(1);
+			});
+	}
+
+	@Test
+	void reuseRegisteredGlobalOpenTelemetry() {
+		OpenTelemetry openTelemetry = mock(OpenTelemetry.class);
+		TracerProvider tracerProvider = mock(TracerProvider.class);
+		Tracer tracer = mock(Tracer.class);
+		given(tracerProvider.get(eq("org.springframework.boot"))).willReturn(tracer);
+		given(openTelemetry.getTracerProvider()).willReturn(tracerProvider);
+		GlobalOpenTelemetry.set(openTelemetry);
+		this.contextRunner.withPropertyValues("management.opentelemetry.reuse-registered-global=true")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(OpenTelemetrySdk.class);
+				assertThat(context.getBean(OpenTelemetry.class).getTracer("org.springframework.boot")).isSameAs(tracer);
 			});
 	}
 
