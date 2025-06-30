@@ -46,6 +46,11 @@ class DefaultDockerCompose implements DockerCompose {
 		this.hostname = DockerHost.get(host, () -> cli.run(new DockerCliCommand.Context()));
 	}
 
+	DefaultDockerCompose(DockerCli cli, String host, java.util.function.Function<String, String> systemEnv) {
+		this.cli = cli;
+		this.hostname = DockerHost.get(host, systemEnv, () -> cli.run(new DockerCliCommand.Context()));
+	}
+
 	@Override
 	public void up(LogLevel logLevel) {
 		up(logLevel, Collections.emptyList());

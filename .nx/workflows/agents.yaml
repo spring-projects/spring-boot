@@ -2,7 +2,6 @@ launch-templates:
   linux-extra-large-plus-jvm:
     env:
       NX_CLOUD_FORCE_USE_EXECUTE_TASKS_V3: "false"
-      DOCKER_HOST: ""
       SERVICES_HOST: ""
       LANG: C.UTF-8
     resource-class: 'docker_linux_amd64/extra_large+'
@@ -20,6 +19,7 @@ launch-templates:
           sudo apt install -y openjdk-21-jdk
           sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
           java -version
+
       - name: Setup gradle
         script: ./gradlew wrapper && ./gradlew --stop && ./gradlew clean
 

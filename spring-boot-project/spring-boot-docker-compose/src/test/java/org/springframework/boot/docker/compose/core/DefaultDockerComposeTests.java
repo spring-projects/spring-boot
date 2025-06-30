@@ -134,7 +134,7 @@ class DefaultDockerComposeTests {
 			.run(new DockerCliCommand.Context());
 		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
 		willReturn(List.of(inspectResponse)).given(this.cli).run(new DockerCliCommand.Inspect(List.of(id)));
-		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, null);
+		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, null, (key) -> null);
 		List<RunningService> runningServices = compose.getRunningServices();
 		assertThat(runningServices).hasSize(1);
 		RunningService runningService = runningServices.get(0);

@@ -64,7 +64,29 @@ public class ResolvedDockerHost extends DockerHost {
 	}
 
 	public boolean isRemote() {
-		return getAddress().startsWith("http") || getAddress().startsWith("tcp");
+		String originalAddress = super.getAddress();
+		if (originalAddress == null) {
+			originalAddress = getDefaultAddress();
+		}
+		// If it starts with unix://, it's definitely local
+		if (originalAddress.startsWith(UNIX_SOCKET_PREFIX)) {
+			return false;
+		}
+		// Check the processed address for http/tcp 
+		String processedAddress = getAddress();
+		if (processedAddress.startsWith("http") || processedAddress.startsWith("tcp")) {
+			// Check if it's localhost or 127.0.0.1 - these are local even over TCP
+			if (processedAddress.contains("localhost") || processedAddress.contains("127.0.0.1")) {
+				return false;
+			}
+			return true;
+		}
+		// If it's not http/tcp and it's a local file reference, it's local
+		if (isLocalFileReference()) {
+			return false;
+		}
+		// Default to remote for anything else
+		return false;
 	}
 
 	public boolean isLocalFileReference() {
