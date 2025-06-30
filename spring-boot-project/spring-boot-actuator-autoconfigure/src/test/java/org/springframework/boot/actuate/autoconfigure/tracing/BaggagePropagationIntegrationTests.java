@@ -22,6 +22,7 @@ import io.micrometer.tracing.BaggageInScope;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.context.Context;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.AfterEach;
@@ -58,6 +59,7 @@ class BaggagePropagationIntegrationTests {
 	@AfterEach
 	void setup() {
 		MDC.clear();
+		GlobalOpenTelemetry.resetForTest();
 	}
 
 	@ParameterizedTest

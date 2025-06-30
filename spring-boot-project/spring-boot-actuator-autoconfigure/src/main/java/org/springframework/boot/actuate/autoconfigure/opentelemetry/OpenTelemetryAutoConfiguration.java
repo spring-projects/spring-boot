@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -29,22 +30,36 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 3.2.0
  */
 @AutoConfiguration
 @ConditionalOnClass(OpenTelemetrySdk.class)
 @EnableConfigurationProperties(OpenTelemetryProperties.class)
 public class OpenTelemetryAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(OpenTelemetry.class)
+	@Conditional(OnRegisteredGlobalOpenTelemetryCondition.class)
+	OpenTelemetry globalOpenTelemetry() {
+		return GlobalOpenTelemetry.get();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
@@ -70,6 +85,17 @@ public class OpenTelemetryAutoConfiguration {
 		ResourceBuilder builder = Resource.builder();
 		new OpenTelemetryResourceAttributes(environment, properties.getResourceAttributes()).applyTo(builder::put);
 		return builder.build();
+	}
+
+	static class OnRegisteredGlobalOpenTelemetryCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			boolean globalOpenTelemetryRegistered = GlobalOpenTelemetry.get() != OpenTelemetry.noop();
+			return new ConditionOutcome(globalOpenTelemetryRegistered, ConditionMessage
+				.of("GlobalOpenTelemetry is" + (globalOpenTelemetryRegistered ? "not" : "") + " NOOP"));
+		}
+
 	}
 
 }
