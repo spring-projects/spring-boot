@@ -1989,6 +1989,7 @@ bom {
 				"spring-boot-amqp",
 				"spring-boot-artemis",
 				"spring-boot-autoconfigure",
+				"spring-boot-autoconfigure-classic",
 				"spring-boot-autoconfigure-processor",
 				"spring-boot-batch",
 				"spring-boot-buildpack-platform",
