@@ -16,14 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.opentelemetry;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -36,17 +40,25 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OpenTelemetryAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class OpenTelemetryAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class));
+
+	@AfterEach
+	void reset() {
+		GlobalOpenTelemetry.resetForTest();
+	}
 
 	@Test
 	void isRegisteredInAutoConfigurationImports() {
@@ -59,6 +71,20 @@ class OpenTelemetryAutoConfigurationTests {
 		this.runner.run((context) -> {
 			assertThat(context).hasSingleBean(OpenTelemetrySdk.class);
 			assertThat(context).hasSingleBean(Resource.class);
+		});
+	}
+
+	@Test
+	void reuseRegisteredGlobalOpenTelemetry() {
+		OpenTelemetry openTelemetry = mock(OpenTelemetry.class);
+		TracerProvider tracerProvider = mock(TracerProvider.class);
+		Tracer tracer = mock(Tracer.class);
+		given(tracerProvider.get(eq("org.springframework.boot"))).willReturn(tracer);
+		given(openTelemetry.getTracerProvider()).willReturn(tracerProvider);
+		GlobalOpenTelemetry.set(openTelemetry);
+		this.runner.run((context) -> {
+			assertThat(context).doesNotHaveBean(OpenTelemetrySdk.class);
+			assertThat(context.getBean(OpenTelemetry.class).getTracer("org.springframework.boot")).isSameAs(tracer);
 		});
 	}
 

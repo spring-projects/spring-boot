@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.tracing.Tracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.common.CompletableResultCode;
@@ -83,6 +84,7 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 	void stopServers() throws Exception {
 		this.mockWebServer.close();
 		this.mockGrpcServer.close();
+		GlobalOpenTelemetry.resetForTest();
 	}
 
 	@Test
