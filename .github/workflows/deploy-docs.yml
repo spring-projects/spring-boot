@@ -16,14 +16,14 @@ jobs:
   build-and-deploy-docs:
     name: Build and Deploy Documentation
     if: github.repository_owner == 'spring-projects'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetch Main Branch
-        run: git fetch origin main:main
+        run: git fetch origin ${{ github.event.repository.default_branch }}:main
       - name: Set Up Node
         uses: actions/setup-node@v4
         with:
@@ -41,10 +41,15 @@ jobs:
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          COMMERCIAL_REPO_USERNAME: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+          COMMERCIAL_REPO_PASSWORD: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+          COMMERCIAL_SNAPSHOT_REPO_URL: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
+          COMMERCIAL_RELEASE_REPO_URL: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
           BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
           BUILD_VERSION: ${{ github.event.inputs.build-version }}
         run: node run.js --no-checkout
-      - name: Sync Documentation
+      - name: Sync OSS Documentation
+        if: ${{ !vars.COMMERCIAL }}
         uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.20
         with:
           docs-username: ${{ secrets.DOCS_USERNAME }}
@@ -55,13 +60,26 @@ jobs:
         env:
           BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
           BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      - name: Bust Cloudflare Cache
+      - name: Bust OSS Cloudflare Cache
+        if: ${{ !vars.COMMERCIAL }}
         uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
         with:
           context-root: spring-boot
           context-path: /
           cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
+      - name: Authenticate for commercial distribution
+        if: ${{ vars.COMMERCIAL }}
+        uses: 'google-github-actions/auth@v2.1.0'
+        with:
+          credentials_json: '${{ secrets.COMMERCIAL_DOCS_GCP_BUCKET_JSON }}'
+      - name: Sync commercial Documentation
+        if: ${{ vars.COMMERCIAL }}
+        uses: 'google-github-actions/upload-cloud-storage@v2.1.0'
+        with:
+          path: 'build/site'
+          destination: '${{ vars.COMMERCIAL_DOCS_HOST }}/spring-boot'
+          parent: false
       - name: Send Notification
         if: failure()
         uses: ./.github/actions/send-notification

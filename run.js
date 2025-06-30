@@ -35,7 +35,8 @@
   function run(skip) {
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
     const uiBundleUrl = packageJson.config['ui-bundle-url'];
-    const command = `npx antora antora-playbook.yml --stacktrace --ui-bundle-url ${uiBundleUrl}`
+    const playbook = (process.env.COMMERCIAL_RELEASE_REPO_URL) ? 'antora-commercial-playbook.yml' : 'antora-playbook.yml'
+    const command = `npx antora ${playbook} --stacktrace --ui-bundle-url ${uiBundleUrl}`
     if (uiBundleUrl.includes('/latest/')) {
       console.log('Refusing to run Antora with development build of UI')
       console.log(`$ ${command}`)

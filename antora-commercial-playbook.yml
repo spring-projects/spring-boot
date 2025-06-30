@@ -1,0 +1,63 @@
+antora:
+  extensions:
+  - require: '@antora/atlas-extension'
+  - require: '@springio/antora-extensions/latest-version-extension'
+  - require: '@springio/antora-extensions/override-navigation-builder-extension'
+  - require: '@springio/antora-extensions/partial-build-extension'
+  - require: '@springio/antora-extensions/publish-docsearch-config-extension'
+  - require: '@springio/antora-extensions/set-algolia-env-extension'
+  - require: '@springio/antora-extensions/static-page-extension'
+  - require: '@springio/antora-xref-extension'
+  - require: '@springio/antora-zip-contents-collector-extension'
+    version_file: gradle.properties
+    on_missing_snapshot_zip: drop_content
+    username: '${env.COMMERCIAL_REPO_USERNAME}'
+    password: '${env.COMMERCIAL_REPO_PASSWORD}'
+    locations:
+    - url: ${env.COMMERCIAL_SNAPSHOT_REPO_URL}/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
+      for-version-type: [snapshot]
+    - url: ${env.COMMERCIAL_RELEASE_REPO_URL}/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
+      for-version-type: [release]
+    # The root component extension must be last!
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: boot
+site:
+  title: Spring Boot
+  url: https://docs.spring.vmware.com/spring-boot
+  robots: allow
+content:
+  sources:
+  - url: .
+    branches:
+    - '3.3.x'
+    tags:
+    - '3.3.{14..100}*'
+    start_paths:
+    - spring-boot-project/spring-boot-docs/src/docs/antora
+    - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
+    version: unspecified
+    edit_url: ~
+asciidoc:
+  sourcemap: true
+  attributes:
+    chomp: all
+    hide-uri-scheme: '@'
+    javadoc-location: xref:api:java/
+    page-pagination: ''
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-boot
+    tabs-sync-option: '@'
+  extensions:
+  - '@asciidoctor/tabs'
+  - '@springio/asciidoctor-extensions'
+  - '@springio/asciidoctor-extensions/configuration-properties-extension'
+  - '@springio/asciidoctor-extensions/javadoc-extension'
+  - '@springio/asciidoctor-extensions/section-ids-extension'
+urls:
+  latest_version_segment: ''
+  latest_version_segment_strategy: redirect:to
+  redirect_facility: httpd
+runtime:
+  log:
+    failure_level: warn
