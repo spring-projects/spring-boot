@@ -85,7 +85,15 @@ final class ConfigurationPropertiesBeanRegistrar {
 			MergedAnnotation<ConfigurationProperties> annotation) {
 		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
 				+ " annotation found on  '" + type.getName() + "'.");
-		BeanDefinitionReaderUtils.registerBeanDefinition(createBeanDefinition(beanName, type), this.registry);
+		try {
+			BeanDefinitionHolder beanDefinition = createBeanDefinition(beanName, type);
+			BeanDefinitionReaderUtils.registerBeanDefinition(beanDefinition, this.registry);
+		}
+		catch (Throwable ex) {
+			throw new IllegalStateException(
+					"Unable to create configuration properties bean definition '%s' (%s)".formatted(beanName, type),
+					ex);
+		}
 	}
 
 	private BeanDefinitionHolder createBeanDefinition(String beanName, Class<?> type) {
