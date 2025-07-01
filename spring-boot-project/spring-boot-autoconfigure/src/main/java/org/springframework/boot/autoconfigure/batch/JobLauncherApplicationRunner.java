@@ -27,18 +27,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionException;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.JobExecutionException;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.job.parameters.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. If a single
+ * {@link ApplicationRunner} to {@link JobOperator launch} Spring Batch jobs. If a single
  * job is found in the context, it will be executed by default. If multiple jobs are
  * found, launch a specific job by providing a jobName.
  *
@@ -78,9 +78,7 @@ public class JobLauncherApplicationRunner
 
 	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
-	private final JobLauncher jobLauncher;
-
-	private final JobExplorer jobExplorer;
+	private final JobOperator jobOperator;
 
 	private final JobRepository jobRepository;
 
@@ -96,17 +94,14 @@ public class JobLauncherApplicationRunner
 
 	/**
 	 * Create a new {@link JobLauncherApplicationRunner}.
-	 * @param jobLauncher to launch jobs
-	 * @param jobExplorer to check the job repository for previous executions
+	 * @param jobOperator to launch jobs
 	 * @param jobRepository to check if a job instance exists with the given parameters
 	 * when running a job
 	 */
-	public JobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer, JobRepository jobRepository) {
-		Assert.notNull(jobLauncher, "'jobLauncher' must not be null");
-		Assert.notNull(jobExplorer, "'jobExplorer' must not be null");
+	public JobLauncherApplicationRunner(JobOperator jobOperator, JobRepository jobRepository) {
+		Assert.notNull(jobOperator, "'jobOperator' must not be null");
 		Assert.notNull(jobRepository, "'jobRepository' must not be null");
-		this.jobLauncher = jobLauncher;
-		this.jobExplorer = jobExplorer;
+		this.jobOperator = jobOperator;
 		this.jobRepository = jobRepository;
 	}
 
@@ -204,28 +199,31 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
-			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	protected void execute(Job job, JobParameters jobParameters)
+			throws JobExecutionAlreadyRunningException, NoSuchJobException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobParameters parameters = getNextJobParameters(job, jobParameters);
-		JobExecution execution = this.jobLauncher.run(job, parameters);
+		JobExecution execution = this.jobOperator.start(job, parameters);
 		if (this.publisher != null) {
 			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
 	}
 
+	@SuppressWarnings("deprecated")
 	private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
-		if (this.jobRepository != null && this.jobRepository.isJobInstanceExists(job.getName(), jobParameters)) {
+		if (this.jobRepository != null && this.jobRepository.getJobInstance(job.getName(), jobParameters) != null) {
 			return getNextJobParametersForExisting(job, jobParameters);
 		}
 		if (job.getJobParametersIncrementer() == null) {
 			return jobParameters;
 		}
-		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobExplorer)
+		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobRepository)
 			.getNextJobParameters(job)
 			.toJobParameters();
 		return merge(nextParameters, jobParameters);
 	}
 
+	@SuppressWarnings("deprecated")
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
