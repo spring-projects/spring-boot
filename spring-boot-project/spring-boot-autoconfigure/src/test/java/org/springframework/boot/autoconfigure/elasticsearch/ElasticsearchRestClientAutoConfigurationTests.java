@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -60,6 +62,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -125,6 +128,24 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			RestClient client = context.getBean(RestClient.class);
 			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
 				.containsExactly("http://localhost:9876");
+		});
+	}
+
+	@Test
+	void configureUriWithAPiKey() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user@localhost:9200","spring.elasticsearch.apikey=some-apiKey").run((context) -> {
+			RestClient client = context.getBean(RestClient.class);
+			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+					.containsExactly("http://localhost:9200");
+			assertThat(client)
+					.extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+					.satisfies(( defaultHeaders) -> {
+						Optional<? extends Header> authHeader = defaultHeaders.stream()
+								.filter(x -> x.getName().equals("Authorization"))
+								.findFirst();
+						assertThat(authHeader).isPresent();
+						assertThat(authHeader.get().getValue()).isEqualTo("ApiKey some-apiKey");
+					});
 		});
 	}
 
