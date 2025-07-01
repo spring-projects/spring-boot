@@ -15,9 +15,10 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 [[features.kotlin.requirements]]
 == Requirements
 
-Spring Boot requires at least Kotlin 2.1.x and manages a suitable Kotlin version through dependency management.
+Spring Boot requires at least Kotlin 2.2.x and manages a suitable Kotlin version through dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
-The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
+
+Kotlin 2.2.x introduces https://kotlinlang.org/docs/whatsnew22.html#new-defaulting-rules-for-use-site-annotation-targets[new defaulting rules for propagating annotations to parameters, fields, and properties]. In order to avoid related warnings and use what will likely become the Kotlin default behavior in an upcoming version, it is recommended to configure the `-Xannotation-default-target=param-property` compiler flag.
 
 Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin classes are final by default], you are likely to want to configure {url-kotlin-docs}/compiler-plugins.html#spring-support[kotlin-spring] plugin in order to automatically open Spring-annotated classes so that they can be proxied.
 
@@ -39,15 +40,13 @@ Kotlin also allows using functional constructs with nullable values as described
 
 Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
 By default, types from Java APIs used in Kotlin are recognized as {url-kotlin-docs}/java-interop.html#null-safety-and-platform-types[platform types] for which null-checks are relaxed.
-{url-kotlin-docs}/java-interop.html#jsr-305-support[Kotlin's support for JSR 305 annotations] combined with nullability annotations provide null-safety for the related Spring API in Kotlin.
+{url-kotlin-docs}/java-interop.html#nullability-annotations[Kotlin's support for nullability annotations] provides null-safety for the annotated APIs like Spring's one in Kotlin.
 
-The JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the following options: `-Xjsr305={strict|warn|ignore}`.
+The https://jspecify.dev[JSpecify] strict checks are https://kotlinlang.org/docs/whatsnew21.html#change-of-jspecify-nullability-mismatch-diagnostics-severity-to-strict[enabled by default], while the JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the following options: `-Xjsr305={strict|warn|ignore}`.
 The default behavior is the same as `-Xjsr305=warn`.
 The `strict` value is required to have null-safety taken in account in Kotlin types inferred from Spring API but should be used with the knowledge that Spring API nullability declaration could evolve even between minor releases and more checks may be added in the future).
 
-WARNING: Generic type arguments, varargs and array elements nullability are not yet supported.
-See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date information.
-Also be aware that Spring Boot's own API is {url-github-issues}/10712[not yet annotated].
+WARNING: Be aware that Spring Boot's own API is {url-github-issues}/10712[not yet annotated].
 
 
 
