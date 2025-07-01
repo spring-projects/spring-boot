@@ -33,14 +33,23 @@ content:
     branches:
     - '3.4.x'
     - '3.5.x'
-    - 'main'
     tags:
     - 'v3.4.*'
     - 'v3.5.*'
-    - 'v4.0.*'
     start_paths:
     - spring-boot-project/spring-boot-docs/src/docs/antora
     - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
+    version: unspecified
+  - url: .
+    branches:
+    - 'main'
+    tags:
+    - 'v4.0.*'
+    start_paths:
+    - spring-boot-project/spring-boot-docs/src/docs/antora
+    - spring-boot-project/spring-boot-actuator-docs/src/docs/antora
     - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
     - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
     version: unspecified
