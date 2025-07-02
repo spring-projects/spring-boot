@@ -19,7 +19,7 @@ pluginManagement {
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		spring.mavenRepositories();
+		spring.mavenRepositories()
 	}
 	resolutionStrategy {
 		eachPlugin {
