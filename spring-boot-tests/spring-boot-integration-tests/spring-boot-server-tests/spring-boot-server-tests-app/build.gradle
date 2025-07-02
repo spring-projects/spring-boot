@@ -80,8 +80,8 @@ dependencies {
 	undertow("org.springframework.boot:spring-boot-starter-undertow")
 }
 
-def boolean isWindows() {
-	return File.separatorChar == '\\';
+static boolean isWindows() {
+	return File.separatorChar == '\\'
 }
 
 ["jetty", "tomcat", "undertow"].each { webServer ->

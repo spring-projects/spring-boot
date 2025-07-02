@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.build.PullPolicy
 
 plugins {
 	id 'java'
