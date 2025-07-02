@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -51,6 +53,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * @author Yanming Zhou
  */
 class TaskExecutorConfigurations {
+
+	private static TaskDecorator getTaskDecorator(ObjectProvider<TaskDecorator> taskDecorator) {
+		List<TaskDecorator> taskDecorators = taskDecorator.orderedStream().toList();
+		if (taskDecorators.size() == 1) {
+			return taskDecorators.get(0);
+		}
+		return (!taskDecorators.isEmpty()) ? new CompositeTaskDecorator(taskDecorators) : null;
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnExecutorCondition.class)
@@ -93,7 +103,7 @@ class TaskExecutorConfigurations {
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
 			builder = builder.customizers(threadPoolTaskExecutorCustomizers.orderedStream()::iterator);
-			builder = builder.taskDecorator(taskDecorator.getIfUnique());
+			builder = builder.taskDecorator(getTaskDecorator(taskDecorator));
 			return builder;
 		}
 
@@ -134,7 +144,7 @@ class TaskExecutorConfigurations {
 			SimpleAsyncTaskExecutorBuilder builder = new SimpleAsyncTaskExecutorBuilder();
 			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
 			builder = builder.customizers(this.taskExecutorCustomizers.orderedStream()::iterator);
-			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+			builder = builder.taskDecorator(getTaskDecorator(this.taskDecorator));
 			TaskExecutionProperties.Simple simple = this.properties.getSimple();
 			builder = builder.rejectTasksWhenLimitReached(simple.isRejectTasksWhenLimitReached());
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
