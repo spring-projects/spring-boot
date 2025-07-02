@@ -53,9 +53,6 @@ public class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoad
 
 	private ClassLoader beanClassLoader;
 
-	ReactiveHttpServiceClientAutoConfiguration() {
-	}
-
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;

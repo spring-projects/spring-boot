@@ -36,7 +36,4 @@ import org.springframework.core.Ordered;
 @Import(ServiceConnectionAutoConfigurationRegistrar.class)
 public class ServiceConnectionAutoConfiguration {
 
-	ServiceConnectionAutoConfiguration() {
-	}
-
 }

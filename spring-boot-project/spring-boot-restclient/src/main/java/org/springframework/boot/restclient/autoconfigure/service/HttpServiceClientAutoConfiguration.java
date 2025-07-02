@@ -55,9 +55,6 @@ public class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware 
 
 	private ClassLoader beanClassLoader;
 
-	HttpServiceClientAutoConfiguration() {
-	}
-
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;

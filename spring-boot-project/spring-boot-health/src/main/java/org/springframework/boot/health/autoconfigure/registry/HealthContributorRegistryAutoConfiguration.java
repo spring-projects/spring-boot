@@ -45,9 +45,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public class HealthContributorRegistryAutoConfiguration {
 
-	HealthContributorRegistryAutoConfiguration() {
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(HealthContributorRegistry.class)
 	DefaultHealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> contributorBeans,

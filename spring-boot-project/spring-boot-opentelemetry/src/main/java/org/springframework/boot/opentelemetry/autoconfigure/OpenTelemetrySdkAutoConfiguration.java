@@ -51,9 +51,6 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(OpenTelemetryProperties.class)
 public class OpenTelemetrySdkAutoConfiguration {
 
-	OpenTelemetrySdkAutoConfiguration() {
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
 	OpenTelemetrySdk openTelemetrySdk(ObjectProvider<SdkTracerProvider> openTelemetrySdkTracerProvider,
