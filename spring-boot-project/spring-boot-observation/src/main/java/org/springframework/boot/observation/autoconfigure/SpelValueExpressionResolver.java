@@ -16,10 +16,12 @@
 
 package org.springframework.boot.observation.autoconfigure;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import io.micrometer.common.annotation.ValueExpressionResolver;
 
 import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
@@ -30,17 +32,23 @@ import org.springframework.expression.spel.support.SimpleEvaluationContext;
  */
 class SpelValueExpressionResolver implements ValueExpressionResolver {
 
+	private final Map<String, Expression> expressionMap = new ConcurrentHashMap<>();
+
 	@Override
 	public String resolve(String expression, Object parameter) {
 		try {
 			SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
-			ExpressionParser expressionParser = new SpelExpressionParser();
-			Expression expressionToEvaluate = expressionParser.parseExpression(expression);
-			return expressionToEvaluate.getValue(context, parameter, String.class);
+			Expression parsedExpression = this.expressionMap.computeIfAbsent(expression,
+					SpelValueExpressionResolver::parseExpression);
+			return parsedExpression.getValue(context, parameter, String.class);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to evaluate SpEL expression '%s'".formatted(expression), ex);
 		}
+	}
+
+	private static Expression parseExpression(String expression) {
+		return new SpelExpressionParser().parseExpression(expression);
 	}
 
 }

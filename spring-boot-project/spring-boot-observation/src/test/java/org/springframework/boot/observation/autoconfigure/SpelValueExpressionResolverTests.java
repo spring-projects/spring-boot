@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -42,6 +44,19 @@ class SpelValueExpressionResolverTests {
 	void checkInvalidExpression() {
 		var value = Map.of("foo", Pair.of(1, 2));
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve("['bar'].first", value));
+	}
+
+	@Test
+	void checkParserReuse() {
+		var map = (Map<?, ?>) ReflectionTestUtils.getField(this.resolver, "expressionMap");
+
+		this.resolver.resolve("length", "foo");
+		this.resolver.resolve("length", "bar");
+
+		assertThat(map).hasSize(1);
+
+		this.resolver.resolve("isEmpty", "foo");
+		assertThat(map).hasSize(2);
 	}
 
 	record Pair(int first, int second) {
