@@ -33,6 +33,7 @@ import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.gradle.testkit.runner.GradleRunner;
+import org.jetbrains.kotlin.gradle.fus.BuildUidService;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.project.model.LanguageSettings;
@@ -92,6 +93,7 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.konan.library.KonanLibrary")));
 			classpath.add(new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)));
 			classpath.add(new File(pathOfJarContaining(LanguageSettings.class)));
+			classpath.add(new File(pathOfJarContaining(BuildUidService.class)));
 		}
 		classpath.add(new File(pathOfJarContaining("org.apache.commons.lang3.ArrayFill")));
 		classpath.add(new File(pathOfJarContaining("org.apache.commons.io.Charsets")));
