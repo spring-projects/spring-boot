@@ -128,7 +128,7 @@ class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	void threadPoolTaskExecutorBuilderShouldUseTaskDecorator() {
-		this.contextRunner.withBean(TaskDecorator.class, this::createTaskDecorator).run((context) -> {
+		this.contextRunner.withBean(TaskDecorator.class, OrderedTaskDecorator::new).run((context) -> {
 			assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
 			ThreadPoolTaskExecutor executor = context.getBean(ThreadPoolTaskExecutorBuilder.class).build();
 			assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
@@ -137,8 +137,9 @@ class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	void threadPoolTaskExecutorBuilderShouldUseCompositeTaskDecorator() {
-		this.contextRunner.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
-			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+		this.contextRunner.withBean("taskDecorator1", TaskDecorator.class, () -> new OrderedTaskDecorator(1))
+			.withBean("taskDecorator2", TaskDecorator.class, () -> new OrderedTaskDecorator(3))
+			.withBean("taskDecorator3", TaskDecorator.class, () -> new OrderedTaskDecorator(2))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ThreadPoolTaskExecutorBuilder.class);
 				ThreadPoolTaskExecutor executor = context.getBean(ThreadPoolTaskExecutorBuilder.class).build();
@@ -147,6 +148,7 @@ class TaskExecutionAutoConfigurationTests {
 					.extracting("taskDecorators")
 					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
 					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator3", TaskDecorator.class),
 							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
@@ -201,7 +203,7 @@ class TaskExecutionAutoConfigurationTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenTaskDecoratorIsDefinedThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
-			.withBean(TaskDecorator.class, this::createTaskDecorator)
+			.withBean(TaskDecorator.class, OrderedTaskDecorator::new)
 			.run((context) -> {
 				SimpleAsyncTaskExecutor executor = context.getBean(SimpleAsyncTaskExecutor.class);
 				assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
@@ -212,8 +214,9 @@ class TaskExecutionAutoConfigurationTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenTaskDecoratorsAreDefinedThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesThem() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
-			.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
-			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+			.withBean("taskDecorator1", TaskDecorator.class, () -> new OrderedTaskDecorator(1))
+			.withBean("taskDecorator2", TaskDecorator.class, () -> new OrderedTaskDecorator(3))
+			.withBean("taskDecorator3", TaskDecorator.class, () -> new OrderedTaskDecorator(2))
 			.run((context) -> {
 				SimpleAsyncTaskExecutor executor = context.getBean(SimpleAsyncTaskExecutor.class);
 				assertThat(executor).extracting("taskDecorator")
@@ -221,6 +224,7 @@ class TaskExecutionAutoConfigurationTests {
 					.extracting("taskDecorators")
 					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
 					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator3", TaskDecorator.class),
 							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
@@ -483,10 +487,6 @@ class TaskExecutionAutoConfigurationTests {
 					.isNotSameAs(context.getBean("applicationTaskExecutor"))
 					.isSameAs(context.getBean("customExecutor"));
 			});
-	}
-
-	private TaskDecorator createTaskDecorator() {
-		return (runnable) -> runnable;
 	}
 
 	private Executor createCustomAsyncExecutor(String threadNamePrefix) {

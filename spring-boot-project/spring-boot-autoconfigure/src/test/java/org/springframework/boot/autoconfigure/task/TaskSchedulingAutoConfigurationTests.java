@@ -145,7 +145,7 @@ class TaskSchedulingAutoConfigurationTests {
 	@Test
 	void simpleAsyncTaskSchedulerBuilderShouldApplyTaskDecorator() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
-			.withBean(TaskDecorator.class, this::createTaskDecorator)
+			.withBean(TaskDecorator.class, OrderedTaskDecorator::new)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
 				assertThat(context).hasSingleBean(TaskDecorator.class);
@@ -158,8 +158,9 @@ class TaskSchedulingAutoConfigurationTests {
 	@Test
 	void simpleAsyncTaskSchedulerBuilderShouldApplyCompositeTaskDecorator() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
-			.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
-			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+			.withBean("taskDecorator1", TaskDecorator.class, () -> new OrderedTaskDecorator(1))
+			.withBean("taskDecorator2", TaskDecorator.class, () -> new OrderedTaskDecorator(3))
+			.withBean("taskDecorator3", TaskDecorator.class, () -> new OrderedTaskDecorator(2))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
 				SimpleAsyncTaskScheduler scheduler = context.getBean(SimpleAsyncTaskSchedulerBuilder.class).build();
@@ -168,6 +169,7 @@ class TaskSchedulingAutoConfigurationTests {
 					.extracting("taskDecorators")
 					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
 					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator3", TaskDecorator.class),
 							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
@@ -175,7 +177,7 @@ class TaskSchedulingAutoConfigurationTests {
 	@Test
 	void threadPoolTaskSchedulerBuilderShouldApplyTaskDecorator() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
-			.withBean(TaskDecorator.class, this::createTaskDecorator)
+			.withBean(TaskDecorator.class, OrderedTaskDecorator::new)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
 				assertThat(context).hasSingleBean(TaskDecorator.class);
@@ -188,8 +190,9 @@ class TaskSchedulingAutoConfigurationTests {
 	@Test
 	void threadPoolTaskSchedulerBuilderShouldApplyCompositeTaskDecorator() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class)
-			.withBean("taskDecorator1", TaskDecorator.class, this::createTaskDecorator)
-			.withBean("taskDecorator2", TaskDecorator.class, this::createTaskDecorator)
+			.withBean("taskDecorator1", TaskDecorator.class, () -> new OrderedTaskDecorator(1))
+			.withBean("taskDecorator2", TaskDecorator.class, () -> new OrderedTaskDecorator(3))
+			.withBean("taskDecorator3", TaskDecorator.class, () -> new OrderedTaskDecorator(2))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
 				ThreadPoolTaskScheduler scheduler = context.getBean(ThreadPoolTaskSchedulerBuilder.class).build();
@@ -198,6 +201,7 @@ class TaskSchedulingAutoConfigurationTests {
 					.extracting("taskDecorators")
 					.asInstanceOf(InstanceOfAssertFactories.list(TaskDecorator.class))
 					.containsExactly(context.getBean("taskDecorator1", TaskDecorator.class),
+							context.getBean("taskDecorator3", TaskDecorator.class),
 							context.getBean("taskDecorator2", TaskDecorator.class));
 			});
 	}
@@ -269,10 +273,6 @@ class TaskSchedulingAutoConfigurationTests {
 				Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> !threadNames.isEmpty());
 				assertThat(threadNames).allMatch((name) -> name.contains("scheduling-test-"));
 			});
-	}
-
-	private TaskDecorator createTaskDecorator() {
-		return (runnable) -> runnable;
 	}
 
 	@Configuration(proxyBeanMethods = false)
