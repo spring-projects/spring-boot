@@ -26,11 +26,11 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MongoContainerConnectionDetailsFactory}.
+ * Tests for {@link AbstractMongoContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  */
-class MongoContainerConnectionDetailsFactoryTests {
+class AbstractMongoContainerConnectionDetailsFactoryTests {
 
 	@Test
 	void shouldRegisterHints() {

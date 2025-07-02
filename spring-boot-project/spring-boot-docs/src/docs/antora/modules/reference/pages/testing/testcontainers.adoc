@@ -150,7 +150,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
 | javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[]
+| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[] or javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBAtlasLocalContainer[]
 
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
 | Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]

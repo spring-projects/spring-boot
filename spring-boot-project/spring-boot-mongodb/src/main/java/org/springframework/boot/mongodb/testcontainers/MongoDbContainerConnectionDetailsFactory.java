@@ -16,13 +16,10 @@
 
 package org.springframework.boot.mongodb.testcontainers;
 
-import com.mongodb.ConnectionString;
 import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
@@ -33,38 +30,11 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MongoContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MongoDBContainer, MongoConnectionDetails> {
+class MongoDbContainerConnectionDetailsFactory
+		extends AbstractMongoContainerConnectionDetailsFactory<MongoDBContainer> {
 
-	MongoContainerConnectionDetailsFactory() {
-		super(ANY_CONNECTION_NAME, "com.mongodb.ConnectionString");
-	}
-
-	@Override
-	protected MongoConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
-		return new MongoContainerConnectionDetails(source);
-	}
-
-	/**
-	 * {@link MongoConnectionDetails} backed by a {@link ContainerConnectionSource}.
-	 */
-	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails<MongoDBContainer>
-			implements MongoConnectionDetails {
-
-		private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
-			super(source);
-		}
-
-		@Override
-		public ConnectionString getConnectionString() {
-			return new ConnectionString(getContainer().getReplicaSetUrl());
-		}
-
-		@Override
-		public SslBundle getSslBundle() {
-			return super.getSslBundle();
-		}
-
+	MongoDbContainerConnectionDetailsFactory() {
+		super(MongoDBContainer::getReplicaSetUrl);
 	}
 
 }
