@@ -30,8 +30,9 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 /**
  * Abstract {@link ContainerConnectionDetailsFactory} to create
  * {@link MongoConnectionDetails} from a
- * {@link ServiceConnection @ServiceConnection}-annotated {@link T}.
+ * {@link ServiceConnection @ServiceConnection}-annotated MongoDB container.
  *
+ * @param <T> type of MongoDB container supported by the factory
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb

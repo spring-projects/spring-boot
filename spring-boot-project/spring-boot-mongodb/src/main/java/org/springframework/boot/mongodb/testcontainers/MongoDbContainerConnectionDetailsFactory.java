@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.mongodb.testcontainers;
 
-import org.testcontainers.mongodb.MongoDBAtlasLocalContainer;
+import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -24,16 +24,17 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create {@link MongoConnectionDetails} from
- * a {@link ServiceConnection @ServiceConnection}-annotated
- * {@link MongoDBAtlasLocalContainer}.
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MongoDBContainer}.
  *
- * @author Wouter Blancquaert
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class MongoAtlasContainerConnectionDetailsFactory
-		extends AbstractMongoContainerConnectionDetailsFactory<MongoDBAtlasLocalContainer> {
+class MongoDbContainerConnectionDetailsFactory
+		extends AbstractMongoContainerConnectionDetailsFactory<MongoDBContainer> {
 
-	MongoAtlasContainerConnectionDetailsFactory() {
-		super(MongoDBAtlasLocalContainer::getDatabaseConnectionString);
+	MongoDbContainerConnectionDetailsFactory() {
+		super(MongoDBContainer::getReplicaSetUrl);
 	}
 
 }

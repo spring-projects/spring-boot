@@ -40,6 +40,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.ldap.LLdapContainer;
+import org.testcontainers.mongodb.MongoDBAtlasLocalContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -155,6 +156,13 @@ public enum TestImage {
 	 */
 	MONGODB("mongo", "5.0.17", () -> MongoDBContainer.class,
 			(container) -> ((MongoDBContainer) container).withStartupAttempts(5)
+				.withStartupTimeout(Duration.ofMinutes(5))),
+
+	/**
+	 * A container image suitable for testing MongoDB Atlas.
+	 */
+	MONGODB_ATLAS("mongodb/mongodb-atlas-local", "8.0.4", () -> MongoDBAtlasLocalContainer.class,
+			(container) -> ((MongoDBAtlasLocalContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(5))),
 
 	/**
