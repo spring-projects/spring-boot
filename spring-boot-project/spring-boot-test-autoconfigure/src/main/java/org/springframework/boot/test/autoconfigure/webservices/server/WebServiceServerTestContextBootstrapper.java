@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.webservices.server;
 
-import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.web.WebMergedContextConfiguration;

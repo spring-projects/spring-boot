@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
-import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 

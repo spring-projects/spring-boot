@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -27,18 +28,18 @@ import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.util.Assert;
 
 /**
- * {@link TestContextBootstrapper} for test slices support.
+ * Base class for test slice {@link TestContextBootstrapper test context bootstrappers}.
  *
  * @param <T> the test slice annotation
  * @author Yanming Zhou
- * @since 3.5.0
+ * @since 4.0.0
  */
-public class TestSliceTestContextBootstrapper<T extends Annotation> extends SpringBootTestContextBootstrapper {
+public abstract class TestSliceTestContextBootstrapper<T extends Annotation> extends SpringBootTestContextBootstrapper {
 
 	private final Class<T> annotationType;
 
 	@SuppressWarnings("unchecked")
-	public TestSliceTestContextBootstrapper() {
+	protected TestSliceTestContextBootstrapper() {
 		this.annotationType = (Class<T>) ResolvableType.forClass(getClass())
 			.as(TestSliceTestContextBootstrapper.class)
 			.getGeneric(0)

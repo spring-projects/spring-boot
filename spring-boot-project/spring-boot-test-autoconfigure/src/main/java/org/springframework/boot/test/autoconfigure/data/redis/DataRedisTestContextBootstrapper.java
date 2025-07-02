@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.springframework.boot.test.context.TestSliceTestContextBootstrapper;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
