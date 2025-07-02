@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
@@ -42,6 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  * @author Alexander Abramov
+ * @author Giheon Do
  * @since 4.0.0
  */
 public class PropertiesMeterFilter implements MeterFilter {
@@ -129,17 +131,16 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	private <T> T doLookup(Map<String, T> values, Id id, Supplier<T> defaultValue) {
-		String name = id.getName();
-		while (StringUtils.hasLength(name)) {
-			T result = values.get(name);
-			if (result != null) {
-				return result;
-			}
-			int lastDot = name.lastIndexOf('.');
-			name = (lastDot != -1) ? name.substring(0, lastDot) : "";
-		}
+		return Stream.iterate(id.getName(), StringUtils::hasLength, this::removeLastSegment)
+			.map(values::get)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElseGet(defaultValue);
+	}
 
-		return defaultValue.get();
+	private String removeLastSegment(String name) {
+		int lastDot = name.lastIndexOf('.');
+		return (lastDot != -1) ? name.substring(0, lastDot) : "";
 	}
 
 }
