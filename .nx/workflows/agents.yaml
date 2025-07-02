@@ -10,6 +10,9 @@ launch-templates:
       - name: java version
         script: java -version
 
+      - name: Docker test
+        script: sleep 10 && docker run --rm hello-world
+
       - name: Checkout
         uses: 'nrwl/nx-cloud-workflows/v3.6/workflow-steps/checkout/main.yaml'
 
