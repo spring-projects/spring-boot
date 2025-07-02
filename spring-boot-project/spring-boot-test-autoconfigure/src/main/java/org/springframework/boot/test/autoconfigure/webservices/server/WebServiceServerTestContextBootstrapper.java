@@ -16,9 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.webservices.server;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
@@ -28,19 +27,12 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  *
  * @author Daniil Razorenov
  */
-class WebServiceServerTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class WebServiceServerTestContextBootstrapper extends TestSliceTestContextBootstrapper<WebServiceServerTest> {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		MergedContextConfiguration processedMergedConfiguration = super.processMergedContextConfiguration(mergedConfig);
 		return new WebMergedContextConfiguration(processedMergedConfiguration, determineResourceBasePath(mergedConfig));
-	}
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		WebServiceServerTest webServiceServerTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
-				WebServiceServerTest.class);
-		return (webServiceServerTest != null) ? webServiceServerTest.properties() : null;
 	}
 
 }

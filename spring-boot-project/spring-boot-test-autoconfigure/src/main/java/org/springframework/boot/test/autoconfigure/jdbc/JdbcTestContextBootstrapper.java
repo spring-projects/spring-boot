@@ -16,21 +16,15 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
  * {@link TestContextBootstrapper} for {@link JdbcTest @JdbcTest} support.
  *
  * @author Artsiom Yudovin
+ * @author Yanming Zhou
  */
-class JdbcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		JdbcTest jdbcTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, JdbcTest.class);
-		return (jdbcTest != null) ? jdbcTest.properties() : null;
-	}
+class JdbcTestContextBootstrapper extends TestSliceTestContextBootstrapper<JdbcTest> {
 
 }

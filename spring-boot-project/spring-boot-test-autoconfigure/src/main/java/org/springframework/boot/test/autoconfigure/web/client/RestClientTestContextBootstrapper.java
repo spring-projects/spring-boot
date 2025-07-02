@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,13 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class RestClientTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		RestClientTest restClientTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
-				RestClientTest.class);
-		return (restClientTest != null) ? restClientTest.properties() : null;
-	}
+class RestClientTestContextBootstrapper extends TestSliceTestContextBootstrapper<RestClientTest> {
 
 }

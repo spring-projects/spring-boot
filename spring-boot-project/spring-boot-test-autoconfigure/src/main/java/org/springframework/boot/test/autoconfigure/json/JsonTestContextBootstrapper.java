@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.json;
 
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,12 +24,6 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-class JsonTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected String[] getProperties(Class<?> testClass) {
-		JsonTest jsonTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, JsonTest.class);
-		return (jsonTest != null) ? jsonTest.properties() : null;
-	}
+class JsonTestContextBootstrapper extends TestSliceTestContextBootstrapper<JsonTest> {
 
 }
