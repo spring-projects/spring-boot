@@ -74,7 +74,7 @@ tasks.register("syncAntSources", Sync) {
 tasks.register("antRun", JavaExec) {
 	workingDir = layout.buildDirectory.dir("ant")
 	dependsOn syncTestRepository, syncAntSources, configurations.antDependencies
-	classpath = configurations.antDependencies;
+	classpath = configurations.antDependencies
 	mainClass = "org.apache.tools.ant.launch.Launcher"
 	args = [ "clean", "build" ]
 	systemProperties = [
