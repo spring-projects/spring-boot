@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
@@ -88,8 +89,8 @@ import org.springframework.util.StringUtils;
  * @since 4.0.0
  */
 @AutoConfiguration(beforeName = "org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration",
-		after = { JmxAutoConfiguration.class, TaskSchedulingAutoConfiguration.class },
-		afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
+		after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
+				TaskSchedulingAutoConfiguration.class })
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
 public class IntegrationAutoConfiguration {
