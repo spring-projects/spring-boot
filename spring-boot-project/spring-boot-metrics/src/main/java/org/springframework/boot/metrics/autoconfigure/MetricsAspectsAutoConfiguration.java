@@ -16,12 +16,15 @@
 
 package org.springframework.boot.metrics.autoconfigure;
 
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -36,9 +40,11 @@ import org.springframework.context.annotation.Bean;
  * aspects.
  *
  * @author Jonatan Ivanov
+ * @author Dominique Villard
  * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+		ObservationAutoConfiguration.class })
 @ConditionalOnClass({ MeterRegistry.class, Advice.class })
 @ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 @ConditionalOnBean(MeterRegistry.class)
@@ -46,8 +52,11 @@ public class MetricsAspectsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	CountedAspect countedAspect(MeterRegistry registry) {
-		return new CountedAspect(registry);
+	CountedAspect countedAspect(MeterRegistry registry,
+			ObjectProvider<CountedMeterTagAnnotationHandler> countedMeterTagAnnotationHandler) {
+		CountedAspect countedAspect = new CountedAspect(registry);
+		countedMeterTagAnnotationHandler.ifAvailable(countedAspect::setMeterTagAnnotationHandler);
+		return countedAspect;
 	}
 
 	@Bean
@@ -57,6 +66,25 @@ public class MetricsAspectsAutoConfiguration {
 		TimedAspect timedAspect = new TimedAspect(registry);
 		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
 		return timedAspect;
+	}
+
+	@ConditionalOnBean(ValueExpressionResolver.class)
+	static class TagAnnotationHandlersConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new CountedMeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		MeterTagAnnotationHandler meterTagAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new MeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
+		}
+
 	}
 
 }

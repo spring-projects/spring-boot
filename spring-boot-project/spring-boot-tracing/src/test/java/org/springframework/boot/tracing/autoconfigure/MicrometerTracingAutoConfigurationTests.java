@@ -58,6 +58,7 @@ class MicrometerTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.observations.annotations.enabled=true")
+		.withBean(ValueExpressionResolver.class, () -> mock(ValueExpressionResolver.class))
 		.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class));
 
 	@Test
