@@ -44,7 +44,7 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	/**
 	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the Quartz Scheduler data source
-	 * @param properties the Quartz properties
+	 * @param properties the Quartz JDBC properties
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzJdbcProperties properties) {
