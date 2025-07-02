@@ -18,6 +18,7 @@ package org.springframework.boot.observation.autoconfigure;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ObservationAutoConfiguration}.
@@ -161,6 +163,18 @@ class ObservationAutoConfigurationTests {
 			assertThat(observation).isEqualTo(Observation.NOOP);
 			observation.stop();
 		});
+	}
+
+	@Test
+	void autoConfiguresValueExpressionResolver() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(SpelValueExpressionResolver.class));
+	}
+
+	@Test
+	void allowsUserDefinedValueExpressionResolver() {
+		this.contextRunner.withBean(ValueExpressionResolver.class, () -> mock(ValueExpressionResolver.class))
+			.run((context) -> assertThat(context).hasSingleBean(ValueExpressionResolver.class)
+				.doesNotHaveBean(SpelValueExpressionResolver.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

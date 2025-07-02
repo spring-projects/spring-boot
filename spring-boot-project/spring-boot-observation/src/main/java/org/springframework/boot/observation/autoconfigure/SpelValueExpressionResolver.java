@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.metrics.autoconfigure;
+package org.springframework.boot.observation.autoconfigure;
 
 import io.micrometer.common.annotation.ValueExpressionResolver;
-import io.micrometer.core.aop.MeterTag;
-import io.micrometer.tracing.annotation.SpanTag;
 
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -26,13 +24,11 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 /**
- * Evaluates a Spel expression applied to a parameter for use in {@link MeterTag}
- * {@link SpanTag} Micrometer annotations.
+ * A {@link Expression SpEL}-based {@link ValueExpressionResolver}.
  *
  * @author Dominique Villard
- * @since 4.0.0
  */
-public class SpelTagValueExpressionResolver implements ValueExpressionResolver {
+class SpelValueExpressionResolver implements ValueExpressionResolver {
 
 	@Override
 	public String resolve(String expression, Object parameter) {

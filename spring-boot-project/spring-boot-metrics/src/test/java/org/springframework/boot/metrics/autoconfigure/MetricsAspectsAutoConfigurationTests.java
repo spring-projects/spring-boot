@@ -16,6 +16,7 @@
 
 package org.springframework.boot.metrics.autoconfigure;
 
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.core.aop.CountedAspect;
 import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MetricsAspectsAutoConfiguration}.
@@ -64,21 +66,53 @@ class MetricsAspectsAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldConfigureMeterTagAnnotationHandler() {
-		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(TimedAspect.class);
-			assertThat(ReflectionTestUtils.getField(context.getBean(TimedAspect.class), "meterTagAnnotationHandler"))
-				.isSameAs(context.getBean(MeterTagAnnotationHandler.class));
-		});
+	void shouldAutoConfigureMeterTagAnnotationHandlerWhenValueExpressionResolverIsAvailable() {
+		this.contextRunner.withBean(ValueExpressionResolver.class, () -> mock(ValueExpressionResolver.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(TimedAspect.class).hasSingleBean(MeterTagAnnotationHandler.class);
+				assertThat(
+						ReflectionTestUtils.getField(context.getBean(TimedAspect.class), "meterTagAnnotationHandler"))
+					.isSameAs(context.getBean(MeterTagAnnotationHandler.class));
+			});
 	}
 
 	@Test
-	void shouldConfigureCounterMeterTagAnnotationHandler() {
-		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CountedAspect.class);
-			assertThat(ReflectionTestUtils.getField(context.getBean(CountedAspect.class), "meterTagAnnotationHandler"))
-				.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
-		});
+	void shouldUseUserDefinedMeterTagAnnotationHandler() {
+		this.contextRunner
+			.withBean("customMeterTagAnnotationHandler", MeterTagAnnotationHandler.class,
+					() -> new MeterTagAnnotationHandler(null, null))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(TimedAspect.class).hasSingleBean(MeterTagAnnotationHandler.class);
+				assertThat(
+						ReflectionTestUtils.getField(context.getBean(TimedAspect.class), "meterTagAnnotationHandler"))
+					.isSameAs(context.getBean("customMeterTagAnnotationHandler"));
+			});
+	}
+
+	@Test
+	void shouldAutoConfigureCountedMeterTagAnnotationHandlerWhenValueExpressionResolverIsAvailable() {
+		this.contextRunner.withBean(ValueExpressionResolver.class, () -> mock(ValueExpressionResolver.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(CountedAspect.class)
+					.hasSingleBean(CountedMeterTagAnnotationHandler.class);
+				assertThat(
+						ReflectionTestUtils.getField(context.getBean(CountedAspect.class), "meterTagAnnotationHandler"))
+					.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
+			});
+	}
+
+	@Test
+	void shouldUseUserDefinedCountedMeterTagAnnotationHandler() {
+		this.contextRunner
+			.withBean("customCountedMeterTagAnnotationHandler", CountedMeterTagAnnotationHandler.class,
+					() -> new CountedMeterTagAnnotationHandler(null, null))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(CountedAspect.class)
+					.hasSingleBean(CountedMeterTagAnnotationHandler.class);
+				assertThat(
+						ReflectionTestUtils.getField(context.getBean(CountedAspect.class), "meterTagAnnotationHandler"))
+					.isSameAs(context.getBean(CountedMeterTagAnnotationHandler.class));
+			});
 	}
 
 	@Test
@@ -126,21 +160,6 @@ class MetricsAspectsAutoConfigurationTests {
 		@Bean
 		TimedAspect customTimedAspect(MeterRegistry registry) {
 			return new TimedAspect(registry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class MeterTagAnnotationHandlerConfiguration {
-
-		@Bean
-		MeterTagAnnotationHandler meterTagAnnotationHandler() {
-			return new MeterTagAnnotationHandler(null, null);
-		}
-
-		@Bean
-		CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler() {
-			return new CountedMeterTagAnnotationHandler(null, null);
 		}
 
 	}

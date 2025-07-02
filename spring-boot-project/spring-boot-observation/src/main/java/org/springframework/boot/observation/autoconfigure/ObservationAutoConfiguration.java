@@ -16,6 +16,7 @@
 
 package org.springframework.boot.observation.autoconfigure;
 
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
@@ -71,6 +72,12 @@ public class ObservationAutoConfiguration {
 	@Order(0)
 	PropertiesObservationFilterPredicate propertiesObservationFilter(ObservationProperties properties) {
 		return new PropertiesObservationFilterPredicate(properties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ValueExpressionResolver.class)
+	SpelValueExpressionResolver spelValueExpressionResolver() {
+		return new SpelValueExpressionResolver();
 	}
 
 	@Configuration(proxyBeanMethods = false)

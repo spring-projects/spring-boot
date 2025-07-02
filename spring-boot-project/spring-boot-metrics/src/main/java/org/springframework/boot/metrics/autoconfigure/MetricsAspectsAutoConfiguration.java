@@ -16,6 +16,7 @@
 
 package org.springframework.boot.metrics.autoconfigure;
 
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import io.micrometer.core.aop.CountedAspect;
 import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
@@ -24,12 +25,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,7 +43,8 @@ import org.springframework.context.annotation.Bean;
  * @author Dominique Villard
  * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+		ObservationAutoConfiguration.class })
 @ConditionalOnClass({ MeterRegistry.class, Advice.class })
 @ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 @ConditionalOnBean(MeterRegistry.class)
@@ -49,39 +53,38 @@ public class MetricsAspectsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	CountedAspect countedAspect(MeterRegistry registry,
-			CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler) {
+			ObjectProvider<CountedMeterTagAnnotationHandler> countedMeterTagAnnotationHandler) {
 		CountedAspect countedAspect = new CountedAspect(registry);
-		countedAspect.setMeterTagAnnotationHandler(countedMeterTagAnnotationHandler);
+		countedMeterTagAnnotationHandler.ifAvailable(countedAspect::setMeterTagAnnotationHandler);
 		return countedAspect;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	TimedAspect timedAspect(MeterRegistry registry, MeterTagAnnotationHandler meterTagAnnotationHandler) {
+	TimedAspect timedAspect(MeterRegistry registry,
+			ObjectProvider<MeterTagAnnotationHandler> meterTagAnnotationHandler) {
 		TimedAspect timedAspect = new TimedAspect(registry);
-		timedAspect.setMeterTagAnnotationHandler(meterTagAnnotationHandler);
+		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
 		return timedAspect;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler(BeanFactory beanFactory,
-			SpelTagValueExpressionResolver metricsTagValueExpressionResolver) {
-		return new CountedMeterTagAnnotationHandler(beanFactory::getBean,
-				(ignored) -> metricsTagValueExpressionResolver);
-	}
+	@ConditionalOnBean(ValueExpressionResolver.class)
+	static class TagAnnotationHandlersConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	MeterTagAnnotationHandler meterTagAnnotationHandler(BeanFactory beanFactory,
-			SpelTagValueExpressionResolver meterTagValueExpressionResolver) {
-		return new MeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> meterTagValueExpressionResolver);
-	}
+		@Bean
+		@ConditionalOnMissingBean
+		CountedMeterTagAnnotationHandler countedMeterTagAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new CountedMeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
+		}
 
-	@Bean
-	@ConditionalOnMissingBean
-	SpelTagValueExpressionResolver meterTagValueExpressionResolver() {
-		return new SpelTagValueExpressionResolver();
+		@Bean
+		@ConditionalOnMissingBean
+		MeterTagAnnotationHandler meterTagAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new MeterTagAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.metrics.autoconfigure;
+package org.springframework.boot.observation.autoconfigure;
 
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.data.util.Pair;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-class SpelTagValueExpressionResolverTests {
+/**
+ * Tests for {@link SpelValueExpressionResolver}.
+ *
+ * @author Dominique Villard
+ */
+class SpelValueExpressionResolverTests {
 
-	final SpelTagValueExpressionResolver resolver = new SpelTagValueExpressionResolver();
+	final SpelValueExpressionResolver resolver = new SpelValueExpressionResolver();
 
 	@Test
 	void checkValidExpression() {
@@ -39,6 +42,14 @@ class SpelTagValueExpressionResolverTests {
 	void checkInvalidExpression() {
 		var value = Map.of("foo", Pair.of(1, 2));
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve("['bar'].first", value));
+	}
+
+	record Pair(int first, int second) {
+
+		static Pair of(int first, int second) {
+			return new Pair(first, second);
+		}
+
 	}
 
 }
