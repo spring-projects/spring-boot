@@ -39,8 +39,8 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 	@Test
 	void getSettingsWithPlatformDoesNotTouchDataSource() {
 		DataSource dataSource = mock(DataSource.class);
-		QuartzProperties properties = new QuartzProperties();
-		properties.getJdbc().setPlatform("test");
+		QuartzJdbcProperties properties = new QuartzJdbcProperties();
+		properties.setPlatform("test");
 		DatabaseInitializationSettings settings = QuartzDataSourceScriptDatabaseInitializer.getSettings(dataSource,
 				properties);
 		assertThat(settings.getSchemaLocations())
@@ -50,9 +50,9 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 
 	@Test
 	void customizeSetCommentPrefixes() {
-		QuartzProperties properties = new QuartzProperties();
-		properties.getJdbc().setPlatform("test");
-		properties.getJdbc().setCommentPrefix(Arrays.asList("##", "--"));
+		QuartzJdbcProperties properties = new QuartzJdbcProperties();
+		properties.setPlatform("test");
+		properties.setCommentPrefix(Arrays.asList("##", "--"));
 		QuartzDataSourceScriptDatabaseInitializer initializer = new QuartzDataSourceScriptDatabaseInitializer(
 				mock(DataSource.class), properties);
 		ResourceDatabasePopulator populator = mock(ResourceDatabasePopulator.class);

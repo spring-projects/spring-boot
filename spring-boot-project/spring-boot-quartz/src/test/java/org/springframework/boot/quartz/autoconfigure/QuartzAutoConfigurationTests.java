@@ -16,10 +16,15 @@
 
 package org.springframework.boot.quartz.autoconfigure;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
@@ -34,6 +39,8 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -52,6 +59,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerA
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -70,8 +78,11 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -131,6 +142,48 @@ class QuartzAutoConfigurationTests {
 					.stream()
 					.map((table) -> (String) table.get("TABLE_NAME"))).noneMatch((name) -> name.startsWith("QRTZ"));
 			});
+	}
+
+	@Test
+	void dataSourceInitializationBacksOffWithoutSpringBootJdbc() {
+		this.contextRunner.withBean(DataSource.class, QuartzAutoConfigurationTests::createTestDataSource)
+			.withBean(SchedulerFactoryBeanCustomizer.class, () -> (schedulerFactoryBean) -> {
+				// Mock out the scheduler so that the context doesn't fail to start
+				// due to missing tables that the JDBC job store requires.
+				try {
+					SchedulerFactory factory = mock(SchedulerFactory.class);
+					given(factory.getScheduler()).willReturn(mock(Scheduler.class));
+					given(factory.getScheduler(anyString())).willReturn(mock(Scheduler.class));
+					schedulerFactoryBean.setSchedulerFactory(factory);
+				}
+				catch (SchedulerException ex) {
+					throw new RuntimeException(ex);
+				}
+			})
+			.withClassLoader(new FilteredClassLoader("org.springframework.boot.jdbc", "org.springframework.boot.sql") {
+
+				@Override
+				public Enumeration<URL> getResources(String name) throws IOException {
+					Enumeration<URL> resources = super.getResources(name);
+					if (!name.equals("META-INF/spring.factories")) {
+						return resources;
+					}
+					// Hide META-INF/spring.factories files with entries from
+					// org.springframework.boot.jdbc
+					return Collections.enumeration(Collections.list(resources).stream().filter((url) -> {
+						try (InputStream input = url.openStream()) {
+							String content = StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+							return !content.contains("org.springframework.boot.jdbc.");
+						}
+						catch (IOException ex) {
+							return true;
+						}
+					}).toList());
+				}
+
+			})
+			.withPropertyValues("spring.quartz.job-store-type=jdbc")
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class));
 	}
 
 	@Test
@@ -368,6 +421,18 @@ class QuartzAutoConfigurationTests {
 		};
 	}
 
+	private static DataSource createTestDataSource() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(true);
+		try {
+			properties.afterPropertiesSet();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return properties.initializeDataSourceBuilder().build();
+	}
+
 	@Import(ComponentThatUsesScheduler.class)
 	@Configuration(proxyBeanMethods = false)
 	static class BaseQuartzConfiguration {
@@ -486,21 +551,14 @@ class QuartzAutoConfigurationTests {
 
 		@Bean
 		@Primary
-		DataSource applicationDataSource() throws Exception {
+		DataSource applicationDataSource() {
 			return createTestDataSource();
 		}
 
 		@QuartzDataSource
 		@Bean
-		DataSource quartzDataSource() throws Exception {
+		DataSource quartzDataSource() {
 			return createTestDataSource();
-		}
-
-		private DataSource createTestDataSource() throws Exception {
-			DataSourceProperties properties = new DataSourceProperties();
-			properties.setGenerateUniqueName(true);
-			properties.afterPropertiesSet();
-			return properties.initializeDataSourceBuilder().build();
 		}
 
 	}
@@ -536,18 +594,6 @@ class QuartzAutoConfigurationTests {
 			return new DataSourceTransactionManager(this.quartzDataSource);
 		}
 
-		private DataSource createTestDataSource() {
-			DataSourceProperties properties = new DataSourceProperties();
-			properties.setGenerateUniqueName(true);
-			try {
-				properties.afterPropertiesSet();
-			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-			return properties.initializeDataSourceBuilder().build();
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -555,7 +601,7 @@ class QuartzAutoConfigurationTests {
 
 		@Bean
 		QuartzDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
-				QuartzProperties properties) {
+				QuartzJdbcProperties properties) {
 			return new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties);
 		}
 

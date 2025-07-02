@@ -47,8 +47,8 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @param properties the Quartz properties
 	 * @see #getSettings
 	 */
-	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzProperties properties) {
-		this(dataSource, getSettings(dataSource, properties), properties.getJdbc().getCommentPrefix());
+	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzJdbcProperties properties) {
+		this(dataSource, getSettings(dataSource, properties), properties.getCommentPrefix());
 	}
 
 	/**
@@ -84,15 +84,15 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #QuartzDataSourceScriptDatabaseInitializer(DataSource,
 	 * DatabaseInitializationSettings)
 	 */
-	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzProperties properties) {
+	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzJdbcProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties.getJdbc()));
-		settings.setMode(properties.getJdbc().getInitializeSchema());
+		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
+		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzProperties.Jdbc properties) {
+	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzJdbcProperties properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");

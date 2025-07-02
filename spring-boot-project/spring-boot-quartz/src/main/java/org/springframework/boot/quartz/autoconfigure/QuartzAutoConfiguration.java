@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.ApplicationContext;
@@ -114,7 +115,7 @@ public class QuartzAutoConfiguration {
 			};
 		}
 
-		private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
+		private static DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
 			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
 			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
 		}
@@ -127,20 +128,26 @@ public class QuartzAutoConfiguration {
 					: transactionManager.getIfUnique();
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		@Conditional(OnQuartzDatasourceInitializationCondition.class)
-		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
-				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
-				QuartzProperties properties) {
-			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
-		}
+		@Configuration(proxyBeanMethods = false)
+		@EnableConfigurationProperties(QuartzJdbcProperties.class)
+		@ConditionalOnClass(DataSourceScriptDatabaseInitializer.class)
+		static class QuartzDataSourceInitializationConfiguration {
 
-		static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+			@Bean
+			@ConditionalOnMissingBean
+			@Conditional(OnQuartzDatasourceInitializationCondition.class)
+			QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(DataSource dataSource,
+					@QuartzDataSource ObjectProvider<DataSource> quartzDataSource, QuartzJdbcProperties properties) {
+				DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
+				return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
+			}
 
-			OnQuartzDatasourceInitializationCondition() {
-				super("Quartz", "spring.quartz.jdbc.initialize-schema");
+			static class OnQuartzDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+				OnQuartzDatasourceInitializationCondition() {
+					super("Quartz", "spring.quartz.jdbc.initialize-schema");
+				}
+
 			}
 
 		}

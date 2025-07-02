@@ -17,14 +17,10 @@
 package org.springframework.boot.quartz.autoconfigure;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
  * Configuration properties for the Quartz Scheduler integration.
@@ -72,8 +68,6 @@ public class QuartzProperties {
 	 * Additional Quartz Scheduler properties.
 	 */
 	private final Map<String, String> properties = new HashMap<>();
-
-	private final Jdbc jdbc = new Jdbc();
 
 	public JobStoreType getJobStoreType() {
 		return this.jobStoreType;
@@ -125,70 +119,6 @@ public class QuartzProperties {
 
 	public Map<String, String> getProperties() {
 		return this.properties;
-	}
-
-	public Jdbc getJdbc() {
-		return this.jdbc;
-	}
-
-	public static class Jdbc {
-
-		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/quartz/impl/"
-				+ "jdbcjobstore/tables_@@platform@@.sql";
-
-		/**
-		 * Path to the SQL file to use to initialize the database schema.
-		 */
-		private String schema = DEFAULT_SCHEMA_LOCATION;
-
-		/**
-		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
-		 * used. Auto-detected by default.
-		 */
-		private String platform;
-
-		/**
-		 * Database schema initialization mode.
-		 */
-		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
-
-		/**
-		 * Prefixes for single-line comments in SQL initialization scripts.
-		 */
-		private List<String> commentPrefix = new ArrayList<>(Arrays.asList("#", "--"));
-
-		public String getSchema() {
-			return this.schema;
-		}
-
-		public void setSchema(String schema) {
-			this.schema = schema;
-		}
-
-		public String getPlatform() {
-			return this.platform;
-		}
-
-		public void setPlatform(String platform) {
-			this.platform = platform;
-		}
-
-		public DatabaseInitializationMode getInitializeSchema() {
-			return this.initializeSchema;
-		}
-
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-			this.initializeSchema = initializeSchema;
-		}
-
-		public List<String> getCommentPrefix() {
-			return this.commentPrefix;
-		}
-
-		public void setCommentPrefix(List<String> commentPrefix) {
-			this.commentPrefix = commentPrefix;
-		}
-
 	}
 
 }
