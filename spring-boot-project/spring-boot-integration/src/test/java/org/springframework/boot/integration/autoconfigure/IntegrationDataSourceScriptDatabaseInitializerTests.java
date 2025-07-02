@@ -36,10 +36,10 @@ class IntegrationDataSourceScriptDatabaseInitializerTests {
 	@Test
 	void getSettingsWithPlatformDoesNotTouchDataSource() {
 		DataSource dataSource = mock(DataSource.class);
-		IntegrationProperties properties = new IntegrationProperties();
-		properties.getJdbc().setPlatform("test");
+		IntegrationJdbcProperties properties = new IntegrationJdbcProperties();
+		properties.setPlatform("test");
 		DatabaseInitializationSettings settings = IntegrationDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties.getJdbc());
+				properties);
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/springframework/integration/jdbc/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();

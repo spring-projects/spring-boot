@@ -264,16 +264,25 @@ public class IntegrationAutoConfiguration {
 	 * Integration JDBC configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ JdbcMessageStore.class, DataSourceScriptDatabaseInitializer.class })
 	@ConditionalOnSingleCandidate(DataSource.class)
-	@Conditional(OnIntegrationDatasourceInitializationCondition.class)
+	@ConditionalOnClass({ JdbcMessageStore.class, DataSourceScriptDatabaseInitializer.class })
+	@EnableConfigurationProperties(IntegrationJdbcProperties.class)
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
-				IntegrationProperties properties) {
-			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
+		@Conditional(OnIntegrationDatasourceInitializationCondition.class)
+		IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
+				IntegrationJdbcProperties properties) {
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties);
+		}
+
+		static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
+
+			OnIntegrationDatasourceInitializationCondition() {
+				super("Integration", "spring.integration.jdbc.initialize-schema");
+			}
+
 		}
 
 	}
@@ -370,14 +379,6 @@ public class IntegrationAutoConfiguration {
 
 			}
 
-		}
-
-	}
-
-	static class OnIntegrationDatasourceInitializationCondition extends OnDatabaseInitializationCondition {
-
-		OnIntegrationDatasourceInitializationCondition() {
-			super("Integration", "spring.integration.jdbc.initialize-schema");
 		}
 
 	}

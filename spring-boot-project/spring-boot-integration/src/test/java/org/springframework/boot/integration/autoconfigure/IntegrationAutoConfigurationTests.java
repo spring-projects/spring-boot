@@ -46,6 +46,7 @@ import org.springframework.boot.context.properties.source.MutuallyExclusiveConfi
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
@@ -56,6 +57,7 @@ import org.springframework.boot.rsocket.autoconfigure.RSocketServerAutoConfigura
 import org.springframework.boot.rsocket.autoconfigure.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
@@ -207,8 +209,8 @@ class IntegrationAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
 					"spring.integration.jdbc.initialize-schema=always")
 			.run((context) -> {
-				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				IntegrationJdbcProperties properties = context.getBean(IntegrationJdbcProperties.class);
+				assertThat(properties.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -227,8 +229,8 @@ class IntegrationAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.generate-unique-name=true",
 					"spring.integration.jdbc.initialize-schema=always")
 			.run((context) -> {
-				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				IntegrationJdbcProperties properties = context.getBean(IntegrationJdbcProperties.class);
+				assertThat(properties.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -247,8 +249,8 @@ class IntegrationAutoConfigurationTests {
 					"spring.integration.jdbc.initialize-schema=never")
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
-				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
+				IntegrationJdbcProperties properties = context.getBean(IntegrationJdbcProperties.class);
+				assertThat(properties.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThatExceptionOfType(BadSqlGrammarException.class)
 					.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
@@ -262,11 +264,27 @@ class IntegrationAutoConfigurationTests {
 					JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
 			.run((context) -> {
-				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
+				IntegrationJdbcProperties properties = context.getBean(IntegrationJdbcProperties.class);
+				assertThat(properties.getInitializeSchema()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
 				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 			});
+	}
+
+	@Test
+	void integrationJdbcDataSourceInitializerBacksOffWithoutSpringBootJdbc() {
+		this.contextRunner.withBean(DataSource.class, IntegrationAutoConfigurationTests::createTestDataSource)
+			.withClassLoader(new FilteredClassLoader("org.springframework.boot.jdbc"))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class));
+	}
+
+	@Test
+	void integrationJdbcDataSourceInitializerBacksOffWithoutSpringBootJdbcAndSql() {
+		this.contextRunner.withBean(DataSource.class, IntegrationAutoConfigurationTests::createTestDataSource)
+			.withClassLoader(new FilteredClassLoader("org.springframework.boot.jdbc", "org.springframework.boot.sql"))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class));
 	}
 
 	@Test
@@ -573,6 +591,18 @@ class IntegrationAutoConfigurationTests {
 			});
 	}
 
+	private static DataSource createTestDataSource() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(true);
+		try {
+			properties.afterPropertiesSet();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return properties.initializeDataSourceBuilder().build();
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
@@ -632,8 +662,8 @@ class IntegrationAutoConfigurationTests {
 
 		@Bean
 		IntegrationDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
-				IntegrationProperties properties) {
-			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
+				IntegrationJdbcProperties properties) {
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties);
 		}
 
 	}

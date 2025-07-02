@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
  * Configuration properties for Spring Integration.
@@ -41,8 +40,6 @@ public class IntegrationProperties {
 
 	private final Error error = new Error();
 
-	private final Jdbc jdbc = new Jdbc();
-
 	private final RSocket rsocket = new RSocket();
 
 	private final Poller poller = new Poller();
@@ -59,10 +56,6 @@ public class IntegrationProperties {
 
 	public Error getError() {
 		return this.error;
-	}
-
-	public Jdbc getJdbc() {
-		return this.jdbc;
 	}
 
 	public RSocket getRsocket() {
@@ -208,53 +201,6 @@ public class IntegrationProperties {
 
 		public void setIgnoreFailures(boolean ignoreFailures) {
 			this.ignoreFailures = ignoreFailures;
-		}
-
-	}
-
-	public static class Jdbc {
-
-		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-				+ "integration/jdbc/schema-@@platform@@.sql";
-
-		/**
-		 * Path to the SQL file to use to initialize the database schema.
-		 */
-		private String schema = DEFAULT_SCHEMA_LOCATION;
-
-		/**
-		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
-		 * used. Auto-detected by default.
-		 */
-		private String platform;
-
-		/**
-		 * Database schema initialization mode.
-		 */
-		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
-
-		public String getSchema() {
-			return this.schema;
-		}
-
-		public void setSchema(String schema) {
-			this.schema = schema;
-		}
-
-		public String getPlatform() {
-			return this.platform;
-		}
-
-		public void setPlatform(String platform) {
-			this.platform = platform;
-		}
-
-		public DatabaseInitializationMode getInitializeSchema() {
-			return this.initializeSchema;
-		}
-
-		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-			this.initializeSchema = initializeSchema;
 		}
 
 	}

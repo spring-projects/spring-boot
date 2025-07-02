@@ -42,8 +42,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 	 * @param properties the Spring Integration JDBC properties
 	 * @see #getSettings
 	 */
-	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource,
-			IntegrationProperties.Jdbc properties) {
+	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource, IntegrationJdbcProperties properties) {
 		this(dataSource, getSettings(dataSource, properties));
 	}
 
@@ -59,7 +58,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 	}
 
 	/**
-	 * Adapts {@link IntegrationProperties.Jdbc Spring Integration JDBC properties} to
+	 * Adapts {@link IntegrationJdbcProperties Spring Integration JDBC properties} to
 	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
 	 * placeholders.
 	 * @param dataSource the Spring Integration data source
@@ -68,7 +67,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 	 * @see #IntegrationDataSourceScriptDatabaseInitializer(DataSource,
 	 * DatabaseInitializationSettings)
 	 */
-	static DatabaseInitializationSettings getSettings(DataSource dataSource, IntegrationProperties.Jdbc properties) {
+	static DatabaseInitializationSettings getSettings(DataSource dataSource, IntegrationJdbcProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
 		settings.setMode(properties.getInitializeSchema());
@@ -76,7 +75,7 @@ public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceSc
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, IntegrationProperties.Jdbc properties) {
+	private static List<String> resolveSchemaLocations(DataSource dataSource, IntegrationJdbcProperties properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
 		if (StringUtils.hasText(properties.getPlatform())) {
