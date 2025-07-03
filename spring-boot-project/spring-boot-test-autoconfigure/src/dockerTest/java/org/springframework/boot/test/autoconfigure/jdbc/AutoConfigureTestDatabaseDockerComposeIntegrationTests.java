@@ -83,7 +83,7 @@ class AutoConfigureTestDatabaseDockerComposeIntegrationTests {
 				Files.writeString(composeFile, composeFileContent);
 				TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
 						"spring.docker.compose.skip.in-tests=false", "spring.docker.compose.stop.command=down",
-						"spring.docker.compose.file=" + composeFile.toAbsolutePath().toString());
+						"spring.docker.compose.file=" + composeFile.toAbsolutePath());
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
