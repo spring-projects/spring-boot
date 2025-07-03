@@ -36,7 +36,6 @@ dependencies {
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
-	dockerTestImplementation("org.elasticsearch.client:elasticsearch-rest-client")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
 	dockerTestImplementation("org.mockito:mockito-core")

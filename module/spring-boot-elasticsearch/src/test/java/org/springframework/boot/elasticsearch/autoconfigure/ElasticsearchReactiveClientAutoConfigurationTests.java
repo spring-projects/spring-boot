@@ -16,7 +16,7 @@
 
 package org.springframework.boot.elasticsearch.autoconfigure;
 
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -61,8 +61,8 @@ class ElasticsearchReactiveClientAutoConfigurationTests {
 	static class RestClientConfiguration {
 
 		@Bean
-		RestClient restClient() {
-			return mock(RestClient.class);
+		Rest5Client restClient() {
+			return mock(Rest5Client.class);
 		}
 
 	}

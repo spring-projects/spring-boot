@@ -27,7 +27,7 @@ description = "Spring Boot Elasticsearch"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("org.elasticsearch.client:elasticsearch-rest-client")
+	api("co.elastic.clients:elasticsearch-java")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
@@ -35,12 +35,7 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-reactor"))
-	optional("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("org.springframework.data:spring-data-elasticsearch") {

@@ -21,22 +21,23 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.http.impl.nio.reactor.IOReactorConfig;
-import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.sniff.Sniffer;
-import org.elasticsearch.client.sniff.SnifferBuilder;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5ClientBuilder;
+import co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer;
+import co.elastic.clients.transport.rest5_client.low_level.sniffer.SnifferBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.nio.ssl.BasicClientTlsStrategy;
+import org.apache.hc.core5.reactor.IOReactorConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -52,6 +53,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -67,7 +69,7 @@ import org.springframework.util.StringUtils;
 class ElasticsearchRestClientConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(RestClientBuilder.class)
+	@ConditionalOnMissingBean(Rest5ClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
 		private final ElasticsearchProperties properties;
@@ -83,30 +85,26 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+		Rest5ClientBuilderCustomizer defaultRestClientBuilderCustomizer(
 				ElasticsearchConnectionDetails connectionDetails) {
-			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
+			return new DefaultRest5ClientBuilderCustomizer(this.properties, connectionDetails);
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
-				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
+		Rest5ClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
+				ObjectProvider<Rest5ClientBuilderCustomizer> builderCustomizers) {
+			Rest5ClientBuilder builder = Rest5Client.builder(connectionDetails.getNodes()
 				.stream()
-				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
+				.map((node) -> new HttpHost(node.protocol().getScheme(), node.hostname(), node.port()))
 				.toArray(HttpHost[]::new));
-			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
-				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
-				SslBundle sslBundle = connectionDetails.getSslBundle();
-				if (sslBundle != null) {
-					configureSsl(httpClientBuilder, sslBundle);
-				}
-				return httpClientBuilder;
-			});
-			builder.setRequestConfigCallback((requestConfigBuilder) -> {
-				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
-				return requestConfigBuilder;
-			});
+			builder.setHttpClientConfigCallback((httpClientBuilder) -> builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(httpClientBuilder)));
+			builder.setConnectionManagerCallback((connectionManagerBuilder) -> builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(connectionManagerBuilder)));
+			builder.setConnectionConfigCallback((connectionConfigBuilder) -> builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(connectionConfigBuilder)));
+			builder.setRequestConfigCallback((requestConfigBuilder) -> builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(requestConfigBuilder)));
 			String pathPrefix = connectionDetails.getPathPrefix();
 			if (pathPrefix != null) {
 				builder.setPathPrefix(pathPrefix);
@@ -115,21 +113,14 @@ class ElasticsearchRestClientConfigurations {
 			return builder;
 		}
 
-		private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
-			SSLContext sslcontext = sslBundle.createSslContext();
-			SslOptions sslOptions = sslBundle.getOptions();
-			httpClientBuilder.setSSLStrategy(new SSLIOSessionStrategy(sslcontext, sslOptions.getEnabledProtocols(),
-					sslOptions.getCiphers(), (HostnameVerifier) null));
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(RestClient.class)
+	@ConditionalOnMissingBean(Rest5Client.class)
 	static class RestClientConfiguration {
 
 		@Bean
-		RestClient elasticsearchRestClient(RestClientBuilder restClientBuilder) {
+		Rest5Client elasticsearchRestClient(Rest5ClientBuilder restClientBuilder) {
 			return restClientBuilder.build();
 		}
 
@@ -137,12 +128,12 @@ class ElasticsearchRestClientConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Sniffer.class)
-	@ConditionalOnSingleCandidate(RestClient.class)
+	@ConditionalOnSingleCandidate(Rest5Client.class)
 	static class RestClientSnifferConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
+		Sniffer elasticsearchSniffer(Rest5Client client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			Duration interval = properties.getRestclient().getSniffer().getInterval();
@@ -154,7 +145,7 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	static class DefaultRestClientBuilderCustomizer implements RestClientBuilderCustomizer {
+	static class DefaultRest5ClientBuilderCustomizer implements Rest5ClientBuilderCustomizer, Ordered {
 
 		private static final PropertyMapper map = PropertyMapper.get();
 
@@ -162,34 +153,54 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchConnectionDetails connectionDetails;
 
-		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
+		DefaultRest5ClientBuilderCustomizer(ElasticsearchProperties properties,
 				ElasticsearchConnectionDetails connectionDetails) {
 			this.properties = properties;
 			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
-		public void customize(RestClientBuilder builder) {
+		public void customize(Rest5ClientBuilder restClientBuilder) {
 		}
 
 		@Override
-		public void customize(HttpAsyncClientBuilder builder) {
-			builder.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
+		public void customize(HttpAsyncClientBuilder httpClientBuilder) {
+			httpClientBuilder
+				.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
 			map.from(this.properties::isSocketKeepAlive)
-				.to((keepAlive) -> builder
-					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
+				.to((keepAlive) -> httpClientBuilder
+					.setIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
 		}
 
 		@Override
-		public void customize(RequestConfig.Builder builder) {
+		public void customize(ConnectionConfig.Builder connectionConfigBuilder) {
 			map.from(this.properties::getConnectionTimeout)
 				.whenNonNull()
-				.asInt(Duration::toMillis)
-				.to(builder::setConnectTimeout);
+				.as(Timeout::of)
+				.to(connectionConfigBuilder::setConnectTimeout);
 			map.from(this.properties::getSocketTimeout)
 				.whenNonNull()
-				.asInt(Duration::toMillis)
-				.to(builder::setSocketTimeout);
+				.as(Timeout::of)
+				.to(connectionConfigBuilder::setSocketTimeout);
+		}
+
+		@Override
+		public void customize(PoolingAsyncClientConnectionManagerBuilder connectionManagerBuilder) {
+			SslBundle sslBundle = this.connectionDetails.getSslBundle();
+			if (sslBundle != null) {
+				SSLContext sslContext = sslBundle.createSslContext();
+				connectionManagerBuilder
+					.setTlsStrategy(new BasicClientTlsStrategy(sslContext, (endpoint, sslEngine) -> {
+						SslOptions sslOptions = sslBundle.getOptions();
+						sslEngine.setEnabledProtocols(sslOptions.getEnabledProtocols());
+						sslEngine.setEnabledCipherSuites(sslOptions.getCiphers());
+					}, null));
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}
@@ -199,8 +210,10 @@ class ElasticsearchRestClientConfigurations {
 		ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
 			String username = connectionDetails.getUsername();
 			if (StringUtils.hasText(username)) {
-				Credentials credentials = new UsernamePasswordCredentials(username, connectionDetails.getPassword());
-				setCredentials(AuthScope.ANY, credentials);
+				String password = connectionDetails.getPassword();
+				char[] passwordChars = StringUtils.hasText(password) ? password.toCharArray() : null;
+				Credentials credentials = new UsernamePasswordCredentials(username, passwordChars);
+				setCredentials(new AuthScope(null, -1), credentials);
 			}
 			Stream<URI> uris = getUris(connectionDetails);
 			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
@@ -227,7 +240,7 @@ class ElasticsearchRestClientConfigurations {
 			}
 			String username = userInfo.substring(0, delimiter);
 			String password = userInfo.substring(delimiter + 1);
-			return new UsernamePasswordCredentials(username, password);
+			return new UsernamePasswordCredentials(username, password.toCharArray());
 		}
 
 	}

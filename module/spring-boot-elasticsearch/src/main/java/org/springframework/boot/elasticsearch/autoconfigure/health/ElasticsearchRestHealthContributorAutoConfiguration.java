@@ -16,7 +16,7 @@
 
 package org.springframework.boot.elasticsearch.autoconfigure.health;
 
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -39,11 +39,11 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration(after = ElasticsearchRestClientAutoConfiguration.class)
-@ConditionalOnClass({ RestClient.class, ConditionalOnEnabledHealthIndicator.class })
-@ConditionalOnBean(RestClient.class)
+@ConditionalOnClass({ Rest5Client.class, ConditionalOnEnabledHealthIndicator.class })
+@ConditionalOnBean(Rest5Client.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
 public final class ElasticsearchRestHealthContributorAutoConfiguration
-		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, RestClient> {
+		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, Rest5Client> {
 
 	ElasticsearchRestHealthContributorAutoConfiguration() {
 		super(ElasticsearchRestClientHealthIndicator::new);
@@ -52,7 +52,7 @@ public final class ElasticsearchRestHealthContributorAutoConfiguration
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
 	HealthContributor elasticsearchHealthContributor(ConfigurableListableBeanFactory beanFactory) {
-		return createContributor(beanFactory, RestClient.class);
+		return createContributor(beanFactory, Rest5Client.class);
 	}
 
 }

@@ -20,12 +20,12 @@ import java.time.Duration;
 import java.util.Map;
 
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.ResponseException;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.apache.http.HttpHost;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestClient;
+import org.apache.hc.core5.http.HttpHost;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,8 +59,8 @@ class ElasticsearchReactiveHealthIndicatorTests {
 	void setup() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		ReactiveElasticsearchClient client = new ReactiveElasticsearchClient(new RestClientTransport(
-				RestClient.builder(HttpHost.create(this.server.getHostName() + ":" + this.server.getPort())).build(),
+		ReactiveElasticsearchClient client = new ReactiveElasticsearchClient(new Rest5ClientTransport(
+				Rest5Client.builder(HttpHost.create(this.server.getHostName() + ":" + this.server.getPort())).build(),
 				new JacksonJsonpMapper()));
 		this.healthIndicator = new ElasticsearchReactiveHealthIndicator(client);
 	}

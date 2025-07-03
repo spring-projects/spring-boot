@@ -17,7 +17,7 @@
 package org.springframework.boot.elasticsearch.autoconfigure;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration(after = { ElasticsearchRestClientAutoConfiguration.class },
 		afterName = { "org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration" })
-@ConditionalOnBean(RestClient.class)
+@ConditionalOnBean(Rest5Client.class)
 @ConditionalOnClass(ElasticsearchClient.class)
 @Import({ JsonpMapperConfiguration.class, ElasticsearchTransportConfiguration.class,
 		ElasticsearchClientConfiguration.class })

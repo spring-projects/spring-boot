@@ -17,7 +17,7 @@
 package org.springframework.boot.elasticsearch.autoconfigure;
 
 import co.elastic.clients.transport.ElasticsearchTransport;
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -38,7 +38,7 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
  * @since 4.0.0
  */
 @AutoConfiguration(after = ElasticsearchClientAutoConfiguration.class)
-@ConditionalOnBean(RestClient.class)
+@ConditionalOnBean(Rest5Client.class)
 @ConditionalOnClass({ ReactiveElasticsearchClient.class, ElasticsearchTransport.class, Mono.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 @Import({ ElasticsearchClientConfigurations.JsonpMapperConfiguration.class,

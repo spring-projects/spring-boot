@@ -22,9 +22,9 @@ import co.elastic.clients.json.SimpleJsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -59,7 +59,7 @@ class ElasticsearchClientAutoConfigurationTests {
 	void withRestClientAutoConfigurationShouldDefineClientAndSupportingBeans() {
 		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
-				.hasSingleBean(RestClientTransport.class)
+				.hasSingleBean(Rest5ClientTransport.class)
 				.hasSingleBean(ElasticsearchClient.class));
 	}
 
@@ -134,8 +134,8 @@ class ElasticsearchClientAutoConfigurationTests {
 	static class RestClientConfiguration {
 
 		@Bean
-		RestClient restClient() {
-			return mock(RestClient.class);
+		Rest5Client restClient() {
+			return mock(Rest5Client.class);
 		}
 
 	}

@@ -18,13 +18,14 @@ package org.springframework.boot.elasticsearch.health;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.http.StatusLine;
-import org.apache.http.entity.BasicHttpEntity;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.transport.rest5_client.low_level.Request;
+import co.elastic.clients.transport.rest5_client.low_level.Response;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.health.contributor.Health;
@@ -44,19 +45,17 @@ import static org.mockito.Mockito.mock;
  */
 class ElasticsearchRestClientHealthIndicatorTests {
 
-	private final RestClient restClient = mock(RestClient.class);
+	private final Rest5Client restClient = mock(Rest5Client.class);
 
 	private final ElasticsearchRestClientHealthIndicator elasticsearchRestClientHealthIndicator = new ElasticsearchRestClientHealthIndicator(
 			this.restClient);
 
 	@Test
 	void elasticsearchIsUp() throws IOException {
-		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "green").getBytes()));
+		BasicHttpEntity httpEntity = new BasicHttpEntity(
+				new ByteArrayInputStream(createJsonResult(200, "green").getBytes()), ContentType.APPLICATION_JSON);
 		Response response = mock(Response.class);
-		StatusLine statusLine = mock(StatusLine.class);
-		given(statusLine.getStatusCode()).willReturn(200);
-		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getStatusCode()).willReturn(200);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		org.springframework.boot.health.contributor.Health health = this.elasticsearchRestClientHealthIndicator
@@ -67,12 +66,10 @@ class ElasticsearchRestClientHealthIndicatorTests {
 
 	@Test
 	void elasticsearchWithYellowStatusIsUp() throws IOException {
-		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()));
+		BasicHttpEntity httpEntity = new BasicHttpEntity(
+				new ByteArrayInputStream(createJsonResult(200, "yellow").getBytes()), ContentType.APPLICATION_JSON);
 		Response response = mock(Response.class);
-		StatusLine statusLine = mock(StatusLine.class);
-		given(statusLine.getStatusCode()).willReturn(200);
-		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getStatusCode()).willReturn(200);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestClientHealthIndicator.health();
@@ -91,25 +88,21 @@ class ElasticsearchRestClientHealthIndicatorTests {
 	@Test
 	void elasticsearchIsDownByResponseCode() throws IOException {
 		Response response = mock(Response.class);
-		StatusLine statusLine = mock(StatusLine.class);
-		given(statusLine.getStatusCode()).willReturn(500);
-		given(statusLine.getReasonPhrase()).willReturn("Internal server error");
-		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getStatusCode()).willReturn(500);
+		given(response.getWarnings()).willReturn(List.of("Bad things happened"));
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestClientHealthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).contains(entry("statusCode", 500),
-				entry("reasonPhrase", "Internal server error"));
+				entry("warnings", List.of("Bad things happened")));
 	}
 
 	@Test
 	void elasticsearchIsOutOfServiceByStatus() throws IOException {
-		BasicHttpEntity httpEntity = new BasicHttpEntity();
-		httpEntity.setContent(new ByteArrayInputStream(createJsonResult(200, "red").getBytes()));
+		BasicHttpEntity httpEntity = new BasicHttpEntity(
+				new ByteArrayInputStream(createJsonResult(200, "red").getBytes()), ContentType.APPLICATION_JSON);
 		Response response = mock(Response.class);
-		StatusLine statusLine = mock(StatusLine.class);
-		given(statusLine.getStatusCode()).willReturn(200);
-		given(response.getStatusLine()).willReturn(statusLine);
+		given(response.getStatusCode()).willReturn(200);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
 		Health health = this.elasticsearchRestClientHealthIndicator.health();
