@@ -111,7 +111,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		return project.provider(() -> {
 			Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
 			Path outputDir = toRealPath(siteDirectory);
-			return "." + File.separator + playbookDir.relativize(outputDir).toString();
+			return "." + File.separator + playbookDir.relativize(outputDir);
 		});
 	}
 
