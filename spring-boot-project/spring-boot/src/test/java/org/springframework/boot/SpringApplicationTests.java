@@ -159,6 +159,7 @@ import static org.mockito.Mockito.spy;
  * @author Tadaya Tsuyukubo
  * @author Yanming Zhou
  * @author Sijun Yang
+ * @author Giheon Do
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -1369,7 +1370,7 @@ class SpringApplicationTests {
 			.run()
 			.getApplicationContext();
 		assertThat(ExampleAdditionalConfig.local.get()).isNotNull();
-		ExampleAdditionalConfig.local.set(null);
+		ExampleAdditionalConfig.local.remove();
 	}
 
 	@Test
