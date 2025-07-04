@@ -37,7 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @ClassPathOverrides({ "org.springframework:spring-core:5.3.12",
-		"org.springframework.data:spring-data-relational:1.1.7.RELEASE" })
+		"org.springframework.data:spring-data-relational:1.1.7.RELEASE",
+		"org.springframework.data:spring-data-r2dbc:3.4.7" })
 class NoSuchMethodFailureAnalyzerTests {
 
 	@Test
