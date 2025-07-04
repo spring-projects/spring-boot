@@ -28,6 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -40,6 +41,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class SpringBootWebSecurityConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(name = "workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder")
+	PathPatternRequestMatcherBuilderFactoryBean workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder() {
+		return new PathPatternRequestMatcherBuilderFactoryBean();
+	}
 
 	/**
 	 * The default configuration for web security. It relies on Spring Security's
