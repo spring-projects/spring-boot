@@ -209,7 +209,6 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	@SuppressWarnings("deprecated")
 	private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
 		if (this.jobRepository != null && this.jobRepository.getJobInstance(job.getName(), jobParameters) != null) {
 			return getNextJobParametersForExisting(job, jobParameters);
@@ -223,7 +222,6 @@ public class JobLauncherApplicationRunner
 		return merge(nextParameters, jobParameters);
 	}
 
-	@SuppressWarnings("deprecated")
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {

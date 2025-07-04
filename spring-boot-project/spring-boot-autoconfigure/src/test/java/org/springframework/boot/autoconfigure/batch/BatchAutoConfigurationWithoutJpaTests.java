@@ -45,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("hibernate-jpa-*.jar")
-@SuppressWarnings("removal")
 class BatchAutoConfigurationWithoutJpaTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

@@ -203,7 +203,6 @@ class JobLauncherApplicationRunnerTests {
 			this.runner = new JobLauncherApplicationRunner(jobOperator, jobRepository);
 		}
 
-		@SuppressWarnings("removal")
 		List<JobInstance> jobInstances() {
 			return this.jobRepository.getJobInstances("job", 0, 100);
 		}

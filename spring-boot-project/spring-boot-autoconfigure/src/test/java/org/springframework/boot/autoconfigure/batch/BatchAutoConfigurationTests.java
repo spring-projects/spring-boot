@@ -85,6 +85,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
@@ -107,7 +108,6 @@ import static org.mockito.Mockito.mock;
  * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings("removal")
 class BatchAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
@@ -355,10 +355,8 @@ class BatchAutoConfigurationTests {
 				assertThat(batchTaskExecutor).isInstanceOf(AsyncTaskExecutor.class);
 				assertThat(context.getBean(SpringBootBatchConfiguration.class).getTaskExecutor())
 					.isEqualTo(batchTaskExecutor);
-				// the following assertion should pass as taskExecutor is inherited from
-				// TaskExecutorJobLauncher
-				// assertThat(context.getBean(JobOperator.class)).hasFieldOrPropertyWithValue("taskExecutor",
-				// batchTaskExecutor);
+				JobOperator jobOperator = AopTestUtils.getTargetObject(context.getBean(JobOperator.class));
+				assertThat(jobOperator).hasFieldOrPropertyWithValue("taskExecutor", batchTaskExecutor);
 			});
 	}
 
