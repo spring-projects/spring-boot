@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 
 /**
  * Configuration properties for the Quartz Scheduler integration when using a JDBC job
@@ -29,58 +29,19 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.quartz.jdbc")
-public class QuartzJdbcProperties {
+public class QuartzJdbcProperties extends DatabaseInitializationProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/quartz/impl/"
 			+ "jdbcjobstore/tables_@@platform@@.sql";
 
 	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
-
-	/**
-	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
-	 * Auto-detected by default.
-	 */
-	private String platform;
-
-	/**
-	 * Database schema initialization mode.
-	 */
-	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
-
-	/**
 	 * Prefixes for single-line comments in SQL initialization scripts.
 	 */
 	private List<String> commentPrefix = new ArrayList<>(Arrays.asList("#", "--"));
-
-	public String getSchema() {
-		return this.schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	public String getPlatform() {
-		return this.platform;
-	}
-
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
-
-	public DatabaseInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
-	}
-
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
-	}
 
 	public List<String> getCommentPrefix() {
 		return this.commentPrefix;
@@ -88,6 +49,11 @@ public class QuartzJdbcProperties {
 
 	public void setCommentPrefix(List<String> commentPrefix) {
 		this.commentPrefix = commentPrefix;
+	}
+
+	@Override
+	public String getDefaultSchemaLocation() {
+		return DEFAULT_SCHEMA_LOCATION;
 	}
 
 }
