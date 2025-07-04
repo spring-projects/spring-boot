@@ -47,10 +47,17 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	private final Map<String, SourceDirectory> sourceDirectories;
 
 	/**
+	 * A flattened map of all files from all source directories for fast, O(1) lookups.
+	 * The key is the file's relative path, and the value is the ClassLoaderFile.
+	 */
+	private final Map<String, ClassLoaderFile> filesByName;
+
+	/**
 	 * Create a new {@link ClassLoaderFiles} instance.
 	 */
 	public ClassLoaderFiles() {
 		this.sourceDirectories = new LinkedHashMap<>();
+		this.filesByName = new LinkedHashMap<>();
 	}
 
 	/**
@@ -60,6 +67,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
 		Assert.notNull(classLoaderFiles, "'classLoaderFiles' must not be null");
 		this.sourceDirectories = new LinkedHashMap<>(classLoaderFiles.sourceDirectories);
+		this.filesByName = new LinkedHashMap<>(classLoaderFiles.filesByName);
 	}
 
 	/**
@@ -97,12 +105,14 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		Assert.notNull(file, "'file' must not be null");
 		removeAll(name);
 		getOrCreateSourceDirectory(sourceDirectory).add(name, file);
+		this.filesByName.put(name, file);
 	}
 
 	private void removeAll(String name) {
 		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
 			sourceDirectory.remove(name);
 		}
+		this.filesByName.remove(name);
 	}
 
 	/**
@@ -128,22 +138,21 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @return the size of the collection
 	 */
 	public int size() {
-		int size = 0;
-		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
-			size += sourceDirectory.getFiles().size();
-		}
-		return size;
+		return this.filesByName.size();
 	}
 
 	@Override
-	public @Nullable ClassLoaderFile getFile(String name) {
-		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
-			ClassLoaderFile file = sourceDirectory.get(name);
-			if (file != null) {
-				return file;
-			}
-		}
-		return null;
+	public ClassLoaderFile getFile(String name) {
+		return this.filesByName.get(name);
+	}
+
+	/**
+	 * Returns a set of all file entries across all source directories for efficient
+	 * iteration.
+	 * @return a set of all file entries
+	 */
+	public Set<Entry<String, ClassLoaderFile>> getFileEntries() {
+		return Collections.unmodifiableSet(this.filesByName.entrySet());
 	}
 
 	/**
