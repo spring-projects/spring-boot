@@ -76,7 +76,8 @@ public final class UrlDecoder {
 		do {
 			byteBuffer.put(unescape(string, index));
 			index += 3;
-		} while (index < length && string.charAt(index) == '%');
+		}
+		while (index < length && string.charAt(index) == '%');
 		byteBuffer.flip();
 		return index;
 	}
