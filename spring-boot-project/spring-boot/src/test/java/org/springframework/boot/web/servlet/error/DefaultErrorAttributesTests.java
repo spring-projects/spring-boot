@@ -241,7 +241,8 @@ class DefaultErrorAttributesTests {
 			assertThat(attributes).doesNotContainKey("message");
 		}
 		if (options.isIncluded(Include.BINDING_ERRORS)) {
-			assertThat(attributes).containsEntry("errors", org.springframework.boot.web.error.Error.wrap(errors));
+			assertThat(attributes).containsEntry("errors",
+					org.springframework.boot.web.error.Error.wrapIfNecessary(errors));
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("errors");

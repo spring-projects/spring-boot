@@ -21,9 +21,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.ObjectError;
 
 /**
  * A wrapper class for {@link MessageSourceResolvable} errors that is safe for JSON
@@ -65,6 +68,7 @@ public final class Error implements MessageSourceResolvable {
 	 * Return the original cause of the error.
 	 * @return the error cause
 	 */
+	@JsonIgnore
 	public MessageSourceResolvable getCause() {
 		return this.cause;
 	}
@@ -91,10 +95,13 @@ public final class Error implements MessageSourceResolvable {
 	}
 
 	/**
-	 * Wrap the given errors.
+	 * Wrap the given errors such that they are suitable for serialization to JSON.
 	 * @param errors the errors to wrap
 	 * @return a new Error list
+	 * @deprecated since 3.5.4 for removal in 4.0.0 in favor of
+	 * {@link #wrapIfNecessary(List)}
 	 */
+	@Deprecated(since = "3.5.4", forRemoval = true)
 	public static List<Error> wrap(List<? extends MessageSourceResolvable> errors) {
 		if (CollectionUtils.isEmpty(errors)) {
 			return Collections.emptyList();
@@ -104,6 +111,29 @@ public final class Error implements MessageSourceResolvable {
 			result.add(new Error(error));
 		}
 		return List.copyOf(result);
+	}
+
+	/**
+	 * Wrap the given errors, if necessary, such that they are suitable for serialization
+	 * to JSON. {@link MessageSourceResolvable} implementations that are known to be
+	 * suitable are not wrapped.
+	 * @param errors the errors to wrap
+	 * @return a new Error list
+	 * @since 3.5.4
+	 */
+	public static List<MessageSourceResolvable> wrapIfNecessary(List<? extends MessageSourceResolvable> errors) {
+		if (CollectionUtils.isEmpty(errors)) {
+			return Collections.emptyList();
+		}
+		List<MessageSourceResolvable> result = new ArrayList<>(errors.size());
+		for (MessageSourceResolvable error : errors) {
+			result.add(requiresWrapping(error) ? new Error(error) : error);
+		}
+		return List.copyOf(result);
+	}
+
+	private static boolean requiresWrapping(MessageSourceResolvable error) {
+		return !(error instanceof ObjectError);
 	}
 
 }
