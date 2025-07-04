@@ -16,6 +16,7 @@
 
 package org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -73,6 +74,7 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled("https://github.com/spring-projects/spring-security/commit/edb7a642c7747592c58d9013e178ab9595a392ed")
 	void registeredClientRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner
 			.withPropertyValues(CLIENT_PREFIX + ".foo.registration.client-id=abcd",
@@ -96,6 +98,7 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled("https://github.com/spring-projects/spring-security/commit/edb7a642c7747592c58d9013e178ab9595a392ed")
 	void registeredClientRepositoryBacksOffWhenRegisteredClientRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(TestRegisteredClientRepositoryConfiguration.class)
 			.withPropertyValues(CLIENT_PREFIX + ".foo.registration.client-id=abcd",
