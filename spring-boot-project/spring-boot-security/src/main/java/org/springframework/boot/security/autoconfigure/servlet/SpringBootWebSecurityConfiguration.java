@@ -16,12 +16,17 @@
 
 package org.springframework.boot.security.autoconfigure.servlet;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,6 +35,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -46,6 +52,32 @@ class SpringBootWebSecurityConfiguration {
 	@ConditionalOnMissingBean(name = "workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder")
 	PathPatternRequestMatcherBuilderFactoryBean workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder() {
 		return new PathPatternRequestMatcherBuilderFactoryBean();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(DispatcherServletPath.class)
+	@ConditionalOnClass(DispatcherServletPath.class)
+	static class PathPatternRequestMatcherBuilderConfiguration {
+
+		@Bean
+		static BeanPostProcessor pathPatternRequestMatcherBuilderBasePathCustomizer(
+				ObjectProvider<DispatcherServletPath> dispatcherServletPath) {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof PathPatternRequestMatcher.Builder builder) {
+						String path = dispatcherServletPath.getObject().getPath();
+						if (!path.equals("/")) {
+							return builder.basePath(path);
+						}
+					}
+					return bean;
+				}
+
+			};
+		}
+
 	}
 
 	/**
