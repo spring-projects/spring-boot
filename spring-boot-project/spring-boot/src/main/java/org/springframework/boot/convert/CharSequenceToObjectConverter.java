@@ -87,12 +87,9 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 				return true;
 			}
 		}
-		if ((targetType.isArray() || targetType.isCollection()) && !targetType.equals(BYTE_ARRAY)) {
-			// StringToArrayConverter / StringToCollectionConverter are better than
-			// ObjectToArrayConverter / ObjectToCollectionConverter
-			return true;
-		}
-		return false;
+		// StringToArrayConverter / StringToCollectionConverter are better than
+		// ObjectToArrayConverter / ObjectToCollectionConverter
+		return (targetType.isArray() || targetType.isCollection()) && !targetType.equals(BYTE_ARRAY);
 	}
 
 	@Override
