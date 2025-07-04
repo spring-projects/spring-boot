@@ -309,11 +309,9 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			Banner printedBanner = printBanner(environment);
-			context = createApplicationContext();
-			context.setApplicationStartup(this.applicationStartup);
-			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
-			refreshContext(context);
-			afterRefresh(context, applicationArguments);
+
+			context = setupAndRefreshContext(bootstrapContext, environment, listeners, applicationArguments, printedBanner);
+
 			startup.started();
 			if (this.properties.isLogStartupInfo()) {
 				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
@@ -334,6 +332,19 @@ public class SpringApplication {
 		}
 		return context;
 	}
+
+	private ConfigurableApplicationContext setupAndRefreshContext(DefaultBootstrapContext bootstrapContext,
+        ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
+        ApplicationArguments applicationArguments, Banner printedBanner) {
+	
+	    ConfigurableApplicationContext context = createApplicationContext();
+	    context.setApplicationStartup(this.applicationStartup);
+	    prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+	    refreshContext(context);
+	    afterRefresh(context, applicationArguments);
+	    return context;
+	}
+	
 
 	private DefaultBootstrapContext createBootstrapContext() {
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
