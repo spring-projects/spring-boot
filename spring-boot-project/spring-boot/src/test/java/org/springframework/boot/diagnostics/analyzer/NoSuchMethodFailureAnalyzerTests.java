@@ -77,7 +77,6 @@ class NoSuchMethodFailureAnalyzerTests {
 	void whenAMethodOnAClassIsMissingThenNoSuchMethodErrorIsAnalyzed() {
 		Throwable failure = createFailureForMissingMethod();
 		assertThat(failure).isNotNull();
-		failure.printStackTrace();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
@@ -107,9 +106,8 @@ class NoSuchMethodFailureAnalyzerTests {
 
 	private Throwable createFailureForMissingMethod() {
 		try {
-			System.out.println(MimeType.class.getProtectionDomain().getCodeSource().getLocation());
 			MimeType mimeType = new MimeType("application", "json");
-			System.out.println(mimeType.isMoreSpecific(null));
+			mimeType.isMoreSpecific(null);
 			return null;
 		}
 		catch (Throwable ex) {
