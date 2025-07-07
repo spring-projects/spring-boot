@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  * @author Olga Maciaszek-Sharma
+ * @author Bart Enkelaar
  * @since 4.0.0
  */
 @AutoConfiguration(before = DataSourceInitializationAutoConfiguration.class)
@@ -77,12 +78,13 @@ public class DataSourceAutoConfiguration {
 			DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class })
 	protected static class PooledDataSourceConfiguration {
 
-		@Bean
-		@ConditionalOnMissingBean(JdbcConnectionDetails.class)
-		PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
-			return new PropertiesJdbcConnectionDetails(properties);
-		}
+	}
 
+	@Bean
+	@Conditional(PooledDataSourceCondition.class)
+	@ConditionalOnMissingBean(JdbcConnectionDetails.class)
+	PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+		return new PropertiesJdbcConnectionDetails(properties);
 	}
 
 	/**
