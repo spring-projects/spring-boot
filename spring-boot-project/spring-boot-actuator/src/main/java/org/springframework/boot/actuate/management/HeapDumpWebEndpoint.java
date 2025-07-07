@@ -126,10 +126,7 @@ public class HeapDumpWebEndpoint {
 			return true;
 		}
 		String vmVendor = System.getProperty("java.vm.vendor");
-		if (StringUtils.hasLength(vmVendor) && vmVendor.toLowerCase(Locale.ROOT).contains("openj9")) {
-			return true;
-		}
-		return false;
+		return StringUtils.hasLength(vmVendor) && vmVendor.toLowerCase(Locale.ROOT).contains("openj9");
 	}
 
 	/**
