@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				"org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration" })
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean

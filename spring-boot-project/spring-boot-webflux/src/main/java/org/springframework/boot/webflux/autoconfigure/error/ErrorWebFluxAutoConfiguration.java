@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,7 +47,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @since 4.0.0
  */
 @AutoConfiguration(before = WebFluxAutoConfiguration.class)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @EnableConfigurationProperties({ ServerProperties.class, WebProperties.class })
 public class ErrorWebFluxAutoConfiguration {

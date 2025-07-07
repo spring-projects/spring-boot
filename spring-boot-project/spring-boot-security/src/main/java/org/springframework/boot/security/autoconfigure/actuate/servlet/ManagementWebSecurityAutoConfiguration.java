@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
@@ -50,7 +51,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
 		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
 				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration" })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ RequestMatcher.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnDefaultWebSecurity
 public class ManagementWebSecurityAutoConfiguration {

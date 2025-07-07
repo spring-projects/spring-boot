@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
@@ -46,7 +47,7 @@ import org.springframework.core.annotation.Order;
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, ObservationApplicationEventListener.class })
 @ConditionalOnBean({ ResourceConfig.class, ObservationRegistry.class })
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })

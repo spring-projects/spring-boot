@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.graphql.autoconfigure.servlet.GraphQlWebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.SecurityDataFetcherExceptionResolver;
@@ -38,7 +39,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * @since 4.0.0
  */
 @AutoConfiguration(after = GraphQlWebMvcAutoConfiguration.class)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class, EnableWebSecurity.class })
 @ConditionalOnBean(GraphQlHttpHandler.class)
 public class GraphQlWebMvcSecurityAutoConfiguration {

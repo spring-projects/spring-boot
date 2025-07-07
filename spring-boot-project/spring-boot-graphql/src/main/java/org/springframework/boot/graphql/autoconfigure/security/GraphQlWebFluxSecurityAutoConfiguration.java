@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.graphql.autoconfigure.reactive.GraphQlWebFluxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.ReactiveSecurityDataFetcherExceptionResolver;
@@ -38,7 +39,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
  * @since 4.0.0
  */
 @AutoConfiguration(after = GraphQlWebFluxAutoConfiguration.class)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class, EnableWebFluxSecurity.class })
 @ConditionalOnBean(GraphQlHttpHandler.class)
 public class GraphQlWebFluxSecurityAutoConfiguration {

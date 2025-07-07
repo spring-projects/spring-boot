@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration.NonReactiveWebApplicationCondition;
 import org.springframework.context.annotation.Conditional;
@@ -46,7 +47,7 @@ public class OAuth2ClientAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
 		static class ReactiveWebApplicationCondition {
 
 		}

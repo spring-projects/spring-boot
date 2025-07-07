@@ -46,6 +46,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryWebEndpointDiscoverer;
 import org.springframework.boot.info.GitProperties;
@@ -78,7 +79,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfiguration(after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class },
 		afterName = "org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementContextAutoConfiguration")
 @ConditionalOnBooleanProperty(name = "management.cloudfoundry.enabled", matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)

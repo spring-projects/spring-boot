@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.security.autoconfigure.actuate.reactive.ReactiveManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		after = ReactiveOAuth2ClientAutoConfiguration.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ServerOAuth2AuthorizedClientRepository.class })
 @ConditionalOnBean(ReactiveOAuth2AuthorizedClientService.class)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveOAuth2ClientWebSecurityAutoConfiguration {
 
 	@Bean

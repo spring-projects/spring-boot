@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
@@ -57,7 +58,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 				"org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
 				"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
 				"org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration" })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ DispatcherServlet.class, Observation.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })

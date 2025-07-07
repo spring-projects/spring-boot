@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryWebEndpointDiscoverer;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.servlet.CloudFoundryInfoEndpointWebExtension;
@@ -77,7 +78,7 @@ import org.springframework.web.server.WebFilter;
  */
 @AutoConfiguration(after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class })
 @ConditionalOnBooleanProperty(name = "management.cloudfoundry.enabled", matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class CloudFoundryReactiveActuatorAutoConfiguration {
 

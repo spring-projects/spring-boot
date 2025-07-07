@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
@@ -46,7 +47,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
  */
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, Tomcat.class, TomcatReactiveWebServerFactory.class })
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ TomcatWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
 public class TomcatReactiveWebServerAutoConfiguration {
