@@ -173,8 +173,9 @@ public class BatchAutoConfiguration {
 					: super.getExecutionContextSerializer();
 		}
 
-		@SuppressWarnings("removal")
 		@Override
+		@Deprecated(since = "4.0.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		protected JobParametersConverter getJobParametersConverter() {
 			return (this.jobParametersConverter != null) ? this.jobParametersConverter
 					: super.getJobParametersConverter();

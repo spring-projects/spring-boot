@@ -508,6 +508,8 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void customJobParametersConverterIsUsed() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withBean(JobParametersConverter.class, JsonJobParametersConverter::new)
@@ -520,6 +522,8 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void defaultJobParametersConverterIsUsed() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).doesNotHaveBean(JobParametersConverter.class);
