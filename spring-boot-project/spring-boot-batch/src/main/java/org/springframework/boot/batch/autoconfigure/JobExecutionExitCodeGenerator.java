@@ -19,7 +19,7 @@ package org.springframework.boot.batch.autoconfigure;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.context.ApplicationListener;
 

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.batch.autoconfigure;
 
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.context.ApplicationEvent;
 
 /**
