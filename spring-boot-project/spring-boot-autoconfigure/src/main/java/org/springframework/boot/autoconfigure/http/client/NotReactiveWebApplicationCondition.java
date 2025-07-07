@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.http.client;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 
@@ -32,7 +33,7 @@ class NotReactiveWebApplicationCondition extends NoneNestedConditions {
 		super(ConfigurationPhase.PARSE_CONFIGURATION);
 	}
 
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	private static final class ReactiveWebApplication {
 
 	}
