@@ -51,8 +51,10 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any validation errors wrapped in {@link Error}, derived from a
- * {@link BindingResult} or {@link MethodValidationResult} exception (if configured)</li>
+ * <li>errors - Any validation errors derived from a {@link BindingResult} or
+ * {@link MethodValidationResult} exception (if configured). To ensure safe serialization
+ * to JSON, errors are {@link Error#wrapIfNecessary(java.util.List) wrapped if
+ * necessary}</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * </ul>
@@ -154,14 +156,14 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
 		errorAttributes.put("message", "Validation failed for object='%s'. Error count: %s"
 			.formatted(result.getObjectName(), result.getAllErrors().size()));
-		errorAttributes.put("errors", Error.wrap(result.getAllErrors()));
+		errorAttributes.put("errors", Error.wrapIfNecessary(result.getAllErrors()));
 	}
 
 	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
 			MethodValidationResult result) {
 		errorAttributes.put("message", "Validation failed for method='%s'. Error count: %s"
 			.formatted(result.getMethod(), result.getAllErrors().size()));
-		errorAttributes.put("errors", Error.wrap(result.getAllErrors()));
+		errorAttributes.put("errors", Error.wrapIfNecessary(result.getAllErrors()));
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {

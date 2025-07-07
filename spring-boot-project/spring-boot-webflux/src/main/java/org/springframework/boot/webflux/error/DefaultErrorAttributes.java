@@ -47,8 +47,10 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any validation errors wrapped in {@link Error}, derived from a
- * {@link BindingResult} or {@link MethodValidationResult} exception (if configured)</li>
+ * <li>errors - Any validation errors derived from a {@link BindingResult} or
+ * {@link MethodValidationResult} exception (if configured). To ensure safe serialization
+ * to JSON, errors are {@link Error#wrapIfNecessary(java.util.List) wrapped if
+ * necessary}</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * <li>requestId - Unique ID associated with the current request</li>
@@ -114,18 +116,18 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (error instanceof BindingResult bindingResult) {
 			exception = error;
 			errorAttributes.put("message", error.getMessage());
-			errorAttributes.put("errors", Error.wrap(bindingResult.getAllErrors()));
+			errorAttributes.put("errors", Error.wrapIfNecessary(bindingResult.getAllErrors()));
 		}
 		else if (error instanceof MethodValidationResult methodValidationResult) {
 			exception = error;
 			errorAttributes.put("message", getErrorMessage(methodValidationResult));
-			errorAttributes.put("errors", Error.wrap(methodValidationResult.getAllErrors()));
+			errorAttributes.put("errors", Error.wrapIfNecessary(methodValidationResult.getAllErrors()));
 		}
 		else if (error instanceof ResponseStatusException responseStatusException) {
 			exception = (responseStatusException.getCause() != null) ? responseStatusException.getCause() : error;
 			errorAttributes.put("message", responseStatusException.getReason());
 			if (exception instanceof BindingResult bindingResult) {
-				errorAttributes.put("errors", Error.wrap(bindingResult.getAllErrors()));
+				errorAttributes.put("errors", Error.wrapIfNecessary(bindingResult.getAllErrors()));
 			}
 		}
 		else {

@@ -273,7 +273,7 @@ class DefaultErrorAttributesTests {
 			.startsWith("Validation failed for argument at index 0 in method: " + "int " + getClass().getName()
 					+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes).containsEntry("errors",
-				org.springframework.boot.web.error.Error.wrap(bindingResult.getAllErrors()));
+				org.springframework.boot.web.error.Error.wrapIfNecessary(bindingResult.getAllErrors()));
 	}
 
 	@Test
@@ -289,7 +289,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 		assertThat(attributes.get("message")).isEqualTo("Invalid");
 		assertThat(attributes).containsEntry("errors",
-				org.springframework.boot.web.error.Error.wrap(bindingResult.getAllErrors()));
+				org.springframework.boot.web.error.Error.wrapIfNecessary(bindingResult.getAllErrors()));
 	}
 
 	@Test
@@ -311,7 +311,7 @@ class DefaultErrorAttributesTests {
 			.isEqualTo(
 					"Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1");
 		assertThat(attributes).containsEntry("errors",
-				org.springframework.boot.web.error.Error.wrap(methodValidationResult.getAllErrors()));
+				org.springframework.boot.web.error.Error.wrapIfNecessary(methodValidationResult.getAllErrors()));
 	}
 
 	@Test
@@ -348,7 +348,7 @@ class DefaultErrorAttributesTests {
 			.isEqualTo(
 					"Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1");
 		assertThat(attributes).containsEntry("errors",
-				org.springframework.boot.web.error.Error.wrap(methodValidationResult.getAllErrors()));
+				org.springframework.boot.web.error.Error.wrapIfNecessary(methodValidationResult.getAllErrors()));
 	}
 
 	@Test
