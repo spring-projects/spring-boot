@@ -80,11 +80,13 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Bean
-	@Conditional(PooledDataSourceCondition.class)
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcConnectionDetails.class)
-	PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
-		return new PropertiesJdbcConnectionDetails(properties);
+	protected static class JdbcConnectionDetailsConfiguration {
+		@Bean
+		PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+			return new PropertiesJdbcConnectionDetails(properties);
+		}
 	}
 
 	/**
