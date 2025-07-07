@@ -220,11 +220,6 @@ public class ExplodedArchive implements Archive {
 			return Arrays.asList(files).iterator();
 		}
 
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("remove");
-		}
-
 		protected abstract T adapt(FileEntry entry);
 
 	}

@@ -576,11 +576,6 @@ public class NestedJarFile extends JarFile {
 		}
 
 		@Override
-		public String getRealName() {
-			return super.getName();
-		}
-
-		@Override
 		public String getName() {
 			return this.name;
 		}

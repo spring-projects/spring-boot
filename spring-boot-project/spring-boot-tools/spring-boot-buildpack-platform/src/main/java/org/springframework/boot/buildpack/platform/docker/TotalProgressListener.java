@@ -56,10 +56,6 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 	}
 
 	@Override
-	public void onStart() {
-	}
-
-	@Override
 	public void onUpdate(E event) {
 		if (event.getId() != null) {
 			this.layers.computeIfAbsent(event.getId(), (value) -> new Layer(this.trackedStatusKeys)).update(event);

@@ -215,10 +215,6 @@ public class Shell {
 			this.lastCommand = command;
 		}
 
-		@Override
-		protected void afterRun(Command command) {
-		}
-
 		boolean handleSigInt() {
 			Command command = this.lastCommand;
 			if (command instanceof RunProcessCommand runProcessCommand) {

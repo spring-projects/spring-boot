@@ -53,11 +53,6 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	@Override
-	public String getHelp() {
-		return null;
-	}
-
-	@Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		List<OptionHelp> help = new ArrayList<>();
 		for (Command command : this.commandRunner) {
