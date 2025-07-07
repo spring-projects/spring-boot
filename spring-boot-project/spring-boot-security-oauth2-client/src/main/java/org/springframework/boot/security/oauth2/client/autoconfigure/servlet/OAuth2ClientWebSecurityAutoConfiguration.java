@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
@@ -52,12 +51,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnBean(OAuth2AuthorizedClientService.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class OAuth2ClientWebSecurityAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(name = "workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder")
-	PathPatternRequestMatcherBuilderFactoryBean workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder() {
-		return new PathPatternRequestMatcherBuilderFactoryBean();
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

@@ -33,7 +33,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
@@ -47,12 +46,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class SpringBootWebSecurityConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(name = "workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder")
-	PathPatternRequestMatcherBuilderFactoryBean workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder() {
-		return new PathPatternRequestMatcherBuilderFactoryBean();
-	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DispatcherServletPath.class)

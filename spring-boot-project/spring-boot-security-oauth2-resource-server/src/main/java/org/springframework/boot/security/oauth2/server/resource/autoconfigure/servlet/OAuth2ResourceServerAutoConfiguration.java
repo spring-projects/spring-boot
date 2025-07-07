@@ -19,7 +19,6 @@ package org.springframework.boot.security.oauth2.server.resource.autoconfigure.s
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,9 +26,7 @@ import org.springframework.boot.security.autoconfigure.actuate.servlet.Managemen
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 
 /**
@@ -46,11 +43,5 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 @Import({ Oauth2ResourceServerConfiguration.JwtConfiguration.class,
 		Oauth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
 public class OAuth2ResourceServerAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(name = "workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder")
-	PathPatternRequestMatcherBuilderFactoryBean workAroundSecurityDependencyCyclePathPatternRequestMatcherBuilder() {
-		return new PathPatternRequestMatcherBuilderFactoryBean();
-	}
 
 }
