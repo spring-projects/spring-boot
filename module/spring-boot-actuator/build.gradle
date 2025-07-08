@@ -1,0 +1,82 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "java-test-fixtures"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Actuator"
+
+dependencies {
+	api(project(":core:spring-boot"))
+
+	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-http-converter"))
+	optional(project(":module:spring-boot-jsonb"))
+	optional(project(":module:spring-boot-validation"))
+	optional(project(":module:spring-boot-web-server"))
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("com.google.code.findbugs:jsr305")
+	optional("com.zaxxer:HikariCP")
+	optional("io.lettuce:lettuce-core")
+	optional("io.micrometer:micrometer-observation")
+	optional("io.micrometer:micrometer-jakarta9")
+	optional("io.micrometer:micrometer-tracing")
+	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
+	optional("io.prometheus:prometheus-metrics-exposition-formats")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("javax.cache:cache-api")
+	optional("org.aspectj:aspectjweaver")
+	optional("org.eclipse.angus:angus-mail")
+	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.influxdb:influxdb-java")
+	optional("org.springframework:spring-context-support")
+	optional("org.springframework:spring-jdbc")
+	optional("org.springframework:spring-messaging")
+	optional("org.springframework.graphql:spring-graphql")
+	optional("org.springframework.security:spring-security-core")
+	optional("org.springframework.security:spring-security-web")
+
+	testFixturesApi("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
+	testFixturesImplementation("org.springframework:spring-test")
+	testFixturesImplementation("org.springframework:spring-webflux")
+
+	testImplementation(project(":core:spring-boot-autoconfigure"))
+	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":module:spring-boot-jackson"))
+	testImplementation(project(":module:spring-boot-jsonb"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("io.micrometer:micrometer-observation-test")
+	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("net.minidev:json-smart")
+	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
+
+	testRuntimeOnly(project(":module:spring-boot-http-codec"))
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
+	testRuntimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
+	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
+	testRuntimeOnly("org.hsqldb:hsqldb")
+}

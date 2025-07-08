@@ -255,7 +255,7 @@ class JavaConventions {
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
 		checkstyle.setToolVersion("10.12.4");
-		checkstyle.getConfigDirectory().set(project.getRootProject().file("src/checkstyle"));
+		checkstyle.getConfigDirectory().set(project.getRootProject().file("config/checkstyle"));
 		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
@@ -278,7 +278,7 @@ class JavaConventions {
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency springBootParent = project.getDependencies()
 			.enforcedPlatform(project.getDependencies()
-				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+				.project(Collections.singletonMap("path", ":platform:spring-boot-internal-dependencies")));
 		dependencyManagement.getDependencies().add(springBootParent);
 		project.getPlugins()
 			.withType(OptionalDependenciesPlugin.class,

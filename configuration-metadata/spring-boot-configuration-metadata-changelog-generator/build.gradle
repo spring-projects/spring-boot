@@ -1,0 +1,73 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Configuration Metadata Changelog Generator"
+
+configurations {
+	oldMetadata
+	newMetadata
+}
+
+dependencies {
+	implementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
+	implementation(project(":configuration-metadata:spring-boot-configuration-metadata"))
+
+	testImplementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
+	dependencies {
+		["spring-boot",
+		 "spring-boot-actuator",
+		 "spring-boot-actuator-autoconfigure",
+		 "spring-boot-autoconfigure",
+		 "spring-boot-devtools",
+		 "spring-boot-test-autoconfigure"].each {
+			oldMetadata("org.springframework.boot:$it:$oldVersion")
+			newMetadata("org.springframework.boot:$it:$newVersion")
+		}
+	}
+
+	def prepareOldMetadata = tasks.register("prepareOldMetadata", Sync) {
+		from(configurations.oldMetadata)
+		if (project.hasProperty("oldVersion")) {
+			destinationDir = project.file("build/configuration-metadata-diff/$oldVersion")
+		}
+	}
+
+	def prepareNewMetadata = tasks.register("prepareNewMetadata", Sync) {
+		from(configurations.newMetadata)
+		if (project.hasProperty("newVersion")) {
+			destinationDir = project.file("build/configuration-metadata-diff/$newVersion")
+		}
+	}
+
+	tasks.register("generate", JavaExec) {
+		inputs.files(prepareOldMetadata, prepareNewMetadata)
+		outputs.file(project.file("build/configuration-metadata-changelog.adoc"))
+		classpath = sourceSets.main.runtimeClasspath
+		mainClass = 'org.springframework.boot.configurationmetadata.changelog.ChangelogGenerator'
+		if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
+			args = [project.file("build/configuration-metadata-diff/$oldVersion"), project.file("build/configuration-metadata-diff/$newVersion"), project.file("build/configuration-metadata-changelog.adoc")]
+		}
+	}
+}

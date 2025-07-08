@@ -1,0 +1,84 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "java-test-fixtures"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Metrics"
+
+dependencies {
+	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-observation"))
+	api("io.micrometer:micrometer-core")
+
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-docker-compose"))
+	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":module:spring-boot-actuator-autoconfigure"))
+	optional(project(":module:spring-boot-opentelemetry"))
+	optional("ch.qos.logback:logback-classic")
+	optional("io.micrometer:micrometer-java21")
+	optional("io.micrometer:micrometer-registry-appoptics")
+	optional("io.micrometer:micrometer-registry-atlas") {
+		exclude group: "javax.inject", module: "javax.inject"
+	}
+	optional("io.micrometer:micrometer-registry-datadog")
+	optional("io.micrometer:micrometer-registry-dynatrace")
+	optional("io.micrometer:micrometer-registry-elastic")
+	optional("io.micrometer:micrometer-registry-ganglia")
+	optional("io.micrometer:micrometer-registry-graphite")
+	optional("io.micrometer:micrometer-registry-humio")
+	optional("io.micrometer:micrometer-registry-influx")
+	optional("io.micrometer:micrometer-registry-jmx")
+	optional("io.micrometer:micrometer-registry-kairos")
+	optional("io.micrometer:micrometer-registry-new-relic")
+	optional("io.micrometer:micrometer-registry-otlp")
+	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.micrometer:micrometer-registry-stackdriver") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("io.micrometer:micrometer-registry-statsd")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
+	optional("org.apache.kafka:kafka-streams")
+	optional("org.apache.logging.log4j:log4j-core")
+	optional("org.aspectj:aspectjweaver")
+	optional("org.testcontainers:grafana")
+	
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
+	dockerTestImplementation("io.rest-assured:rest-assured")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
+	testFixturesImplementation(project(":test-support:spring-boot-test-support"))
+
+	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("io.micrometer:micrometer-registry-atlas")
+	testImplementation("io.micrometer:micrometer-registry-new-relic")
+	testImplementation("io.micrometer:micrometer-registry-prometheus")
+	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
+	testImplementation("org.springframework:spring-webflux")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

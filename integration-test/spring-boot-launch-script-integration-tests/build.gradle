@@ -1,0 +1,81 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java"
+	id "org.springframework.boot.docker-test"
+	id "de.undercouch.download"
+}
+
+description = "Spring Boot Launch Script Integration Tests"
+
+def jdkVersion = "17.0.11+10"
+def jdkArch = "aarch64".equalsIgnoreCase(System.getProperty("os.arch")) ? "aarch64" : "amd64"
+
+configurations {
+	app
+}
+
+dependencies {
+	app project(path: ":platform:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":build-plugin:spring-boot-gradle-plugin", configuration: "mavenRepository")
+
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation("org.testcontainers:testcontainers")
+}
+
+tasks.register("syncMavenRepository", Sync) {
+	from configurations.app
+	into layout.buildDirectory.dir("docker-test-maven-repository")
+}
+
+tasks.register("syncAppSource", org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-launch-script-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-launch-script-tests-app"))
+}
+
+tasks.register("buildApp", GradleBuild) {
+	dependsOn syncAppSource, syncMavenRepository
+	dir = layout.buildDirectory.dir("spring-boot-launch-script-tests-app")
+	startParameter.buildCacheEnabled = false
+	tasks  = ["build"]
+}
+
+tasks.register("downloadJdk", Download) {
+	def destFolder = new File(project.gradle.gradleUserHomeDir, "caches/springboot/downloads/jdk/bellsoft")
+	destFolder.mkdirs()
+	src "https://download.bell-sw.com/java/${jdkVersion}/bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
+	dest destFolder
+	tempAndMove true
+	overwrite false
+	retries 3
+}
+
+tasks.register("syncJdkDownloads", Sync) {
+	dependsOn downloadJdk
+	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/bellsoft/"
+	include "bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
+	into layout.buildDirectory.dir("downloads/jdk/bellsoft/")
+}
+
+tasks.named("processDockerTestResources").configure {
+	dependsOn syncJdkDownloads
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn buildApp
+}

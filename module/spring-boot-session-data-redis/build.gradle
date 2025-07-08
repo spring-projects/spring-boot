@@ -1,0 +1,54 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Session Data Redis"
+
+dependencies {
+	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-session"))
+	api("org.springframework.session:spring-session-data-redis")
+
+	implementation(project(":module:spring-boot-data-redis"))
+	implementation(project(":module:spring-boot-web-server"))
+
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-webflux"))
+
+	dockerTestImplementation(project(":core:spring-boot-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(testFixtures(project(":module:spring-boot-web-server")))
+	dockerTestImplementation(testFixtures(project(":module:spring-boot-session")))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
+	dockerTestRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
+
+	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("org.springframework:spring-web")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

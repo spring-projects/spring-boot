@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
  */
 public class AntoraConventions {
 
-	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
+	private static final String DEPENDENCIES_PATH = ":platform:spring-boot-dependencies";
 
 	private static final List<String> NAV_FILES = List.of("nav.adoc", "local-nav.adoc");
 

@@ -1,0 +1,196 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "org.springframework.boot.antora-contributor"
+	id "org.springframework.boot.maven-plugin"
+	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot Maven Plugin"
+
+configurations {
+	dependenciesBom
+}
+
+dependencies {
+	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
+	compileOnly("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+	}
+	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+	}
+
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	implementation(project(":buildpack:spring-boot-buildpack-platform"))
+	implementation(project(":loader:spring-boot-loader-tools"))
+	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.sonatype.plexus:plexus-build-api") {
+		exclude(group: "org.codehaus.plexus", module: "plexus-utils")
+	}
+	implementation("org.springframework:spring-core")
+	implementation("org.springframework:spring-context")
+
+	optional("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+
+	testImplementation("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-core")
+
+	intTestImplementation(project(":buildpack:spring-boot-buildpack-platform"))
+	intTestImplementation(project(":loader:spring-boot-loader-tools"))
+	intTestImplementation(project(":test-support:spring-boot-test-support"))
+	intTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	intTestImplementation("org.assertj:assertj-core")
+	intTestImplementation("org.junit.jupiter:junit-jupiter")
+
+	mavenRepository(project(path: ":core:spring-boot", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":platform:spring-boot-dependencies", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":core:spring-boot-test", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":module:spring-boot-devtools", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":core:spring-boot-docker-compose", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":starter:spring-boot-starter-parent", configuration: "mavenRepository"))
+
+	versionProperties(project(path: ":platform:spring-boot-dependencies", configuration: "resolvedBom"))
+}
+
+ext {
+	versionElements = version.split("\\.")
+	xsdVersion = versionElements[0] + "." + versionElements[1]
+}
+
+tasks.named("checkCompileClasspathForProhibitedDependencies") {
+	permittedGroups = ["javax.inject"]
+}
+
+tasks.register("copySettingsXml", Copy) {
+	from file("src/intTest/projects/settings.xml")
+	into layout.buildDirectory.dir("generated-resources/settings")
+	filter(springRepositoryTransformers.mavenSettings())
+}
+
+sourceSets {
+	main {
+		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
+	}
+	intTest {
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
+	}
+	dockerTest {
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
+	}
+}
+
+javadoc {
+	options {
+		author = true
+		docTitle = "Spring Boot Maven Plugin ${project.version} API"
+		encoding = "UTF-8"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot Maven Plugin ${project.version} API"
+	}
+}
+
+tasks.register("xsdResources", Sync) {
+	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
+	into layout.buildDirectory.dir("generated/resources/xsd/org/springframework/boot/maven")
+	rename { fileName -> "layers.xsd" }
+}
+
+prepareMavenBinaries {
+	versions = [ "3.9.9", "3.6.3" ]
+}
+
+tasks.named("documentPluginGoals") {
+	goalSections = [
+		"build-image": "build-image",
+		"build-image-no-fork": "build-image",
+		"build-info": "build-info",
+		"help": "help",
+		"process-aot": "aot",
+		"process-test-aot": "aot",
+		"repackage": "packaging",
+		"run": "run",
+		"start": "integration-tests",
+		"stop": "integration-tests",
+		"test-run": "run"
+	]
+}
+
+antoraContributions {
+	'maven-plugin' {
+		aggregateContent {
+			from(documentPluginGoals) {
+				into "modules/maven-plugin/partials/goals"
+			}
+		}
+		catalogContent {
+			from(javadoc) {
+				into "api/java"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
+	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn tasks.named("prepareMavenBinaries")
+}

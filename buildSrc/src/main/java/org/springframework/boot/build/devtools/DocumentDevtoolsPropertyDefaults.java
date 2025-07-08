@@ -49,7 +49,7 @@ public abstract class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 			.getBuildDirectory()
 			.file("generated/docs/using/devtools-property-defaults.adoc"));
 		Map<String, String> dependency = new HashMap<>();
-		dependency.put("path", ":spring-boot-project:spring-boot-devtools");
+		dependency.put("path", ":module:spring-boot-devtools");
 		dependency.put("configuration", "propertyDefaults");
 		this.devtools.getDependencies().add(getProject().getDependencies().project(dependency));
 	}

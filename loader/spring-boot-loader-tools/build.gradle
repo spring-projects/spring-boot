@@ -1,0 +1,117 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Loader Tools"
+
+Provider<Directory> generatedResources = layout.buildDirectory.dir("generated-resources/main")
+
+configurations {
+	loader {
+		extendsFrom dependencyManagement
+		transitive = false
+	}
+	loaderClassic {
+		extendsFrom dependencyManagement
+		transitive = false
+	}
+	jarmode {
+		extendsFrom dependencyManagement
+		transitive = false
+	}
+}
+
+dependencies {
+	api("org.apache.commons:commons-compress")
+	api("org.springframework:spring-core")
+
+	compileOnly("ch.qos.logback:logback-classic")
+
+	loader(project(":loader:spring-boot-loader"))
+	loaderClassic(project(":loader:spring-boot-loader-classic"))
+
+	jarmode(project(":loader:spring-boot-jarmode-tools"))
+
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.zeroturnaround:zt-zip:1.13")
+}
+
+tasks.register("reproducibleLoaderJar", Jar) {
+	dependsOn configurations.loader
+	from {
+		zipTree(configurations.loader.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
+		}
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-loader.jar"
+	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
+}
+
+tasks.register("reproducibleLoaderClassicJar", Jar) {
+	dependsOn configurations.loaderClassic
+	from {
+		zipTree(configurations.loaderClassic.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+			exclude "META-INF/spring-boot.properties"
+		}
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-loader-classic.jar"
+	destinationDirectory = file(generatedResources.map { it.dir("META-INF/loader") })
+}
+
+tasks.register("toolsJar", Sync) {
+	dependsOn configurations.jarmode
+	from {
+		file(configurations.jarmode.incoming.files.singleFile)
+	}
+	rename({ "spring-boot-jarmode-tools.jar" })
+	into(file(generatedResources.map { it.dir("META-INF/jarmode") }))
+}
+
+sourceSets {
+	main {
+		output.dir(generatedResources, builtBy: [toolsJar, reproducibleLoaderJar, reproducibleLoaderClassicJar])
+	}
+}
+
+tasks.named("compileJava") {
+	options.compilerArgs -= ['-Werror']
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.beforeMerged { content ->
+				if (content instanceof org.gradle.plugins.ide.eclipse.model.Classpath) {
+					content.entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder("build/generated-resources/main", "bin/main"))
+				}
+			}
+		}
+	}
+}

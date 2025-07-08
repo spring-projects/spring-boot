@@ -57,11 +57,12 @@ class ConventionsPluginTests {
 			out.println("plugins {");
 			out.println("    id 'com.gradle.develocity'");
 			out.println("}");
-			out.println("include ':spring-boot-project:spring-boot-parent'");
+			out.println("include ':platform:spring-boot-internal-dependencies'");
 		}
-		File springBootParent = new File(this.projectDir, "spring-boot-project/spring-boot-parent/build.gradle");
-		springBootParent.getParentFile().mkdirs();
-		try (PrintWriter out = new PrintWriter(new FileWriter(springBootParent))) {
+		File internalDependencies = new File(this.projectDir,
+				"platform/spring-boot-internal-dependencies/build.gradle");
+		internalDependencies.getParentFile().mkdirs();
+		try (PrintWriter out = new PrintWriter(new FileWriter(internalDependencies))) {
 			out.println("plugins {");
 			out.println("    id 'java-platform'");
 			out.println("}");

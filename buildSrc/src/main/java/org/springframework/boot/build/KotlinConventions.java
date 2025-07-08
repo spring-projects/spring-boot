@@ -102,7 +102,7 @@ class KotlinConventions {
 	private void configureDetekt(Project project) {
 		project.getPlugins().apply(DetektPlugin.class);
 		DetektExtension detekt = project.getExtensions().getByType(DetektExtension.class);
-		detekt.getConfig().setFrom(project.getRootProject().file("src/detekt/config.yml"));
+		detekt.getConfig().setFrom(project.getRootProject().file("config/detekt/config.yml"));
 		project.getTasks().withType(Detekt.class).configureEach((task) -> task.setJvmTarget(JVM_TARGET.getTarget()));
 	}
 

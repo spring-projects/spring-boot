@@ -1,0 +1,94 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-base"
+}
+
+description = "Spring Boot Ant smoke test"
+
+configurations {
+	antDependencies {
+		extendsFrom dependencyManagement
+	}
+	testRepository
+}
+
+sourceSets {
+	test
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath {
+			plusConfigurations = [configurations.testRuntimeClasspath]
+		}
+	}
+}
+
+dependencies {
+	antDependencies "org.apache.ivy:ivy:2.5.0"
+	antDependencies project(path: ":build-plugin:spring-boot-antlib")
+	antDependencies "org.apache.ant:ant-launcher:1.10.7"
+	antDependencies "org.apache.ant:ant:1.10.7"
+
+	testRepository(project(path: ":loader:spring-boot-loader", configuration: "mavenRepository"))
+	testRepository(project(path: ":starter:spring-boot-starter", configuration: "mavenRepository"))
+
+	testImplementation(project(path: ":loader:spring-boot-loader-tools"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.springframework:spring-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.register("syncTestRepository", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("test-repository"))
+	from configurations.testRepository
+	rename {
+		it.replaceAll("-[0-9]+\\.[0-9]+-[0-9]+\\.", "-SNAPSHOT.")
+	}
+}
+
+tasks.register("syncAntSources", Sync) {
+	destinationDir = file(layout.buildDirectory.dir("ant"))
+	from project.layout.projectDirectory
+	include "*.xml"
+	filter(springRepositoryTransformers.ant())
+}
+
+tasks.register("antRun", JavaExec) {
+	workingDir = layout.buildDirectory.dir("ant")
+	dependsOn syncTestRepository, syncAntSources, configurations.antDependencies
+	classpath = configurations.antDependencies
+	mainClass = "org.apache.tools.ant.launch.Launcher"
+	args = [ "clean", "build" ]
+	systemProperties = [
+		"ant-spring-boot.version" : version,
+		"projectDir": project.layout.projectDirectory
+	]
+}
+
+tasks.register("test", Test) {
+	dependsOn antRun
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
+check {
+	dependsOn test
+}
