@@ -78,6 +78,13 @@ class StackdriverPropertiesConfigAdapterTests
 	}
 
 	@Test
+	void whenPropertiesAutoCreateMetricDescriptorsIsSetAdapterAutoCreateMetricDescriptorReturnsIt() {
+		StackdriverProperties properties = new StackdriverProperties();
+		properties.setAutoCreateMetricDescriptors(false);
+		assertThat(new StackdriverPropertiesConfigAdapter(properties).autoCreateMetricDescriptors()).isFalse();
+	}
+
+	@Test
 	@Override
 	protected void adapterOverridesAllConfigMethods() {
 		adapterOverridesAllConfigMethodsExcept("credentials");

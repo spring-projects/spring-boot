@@ -60,6 +60,12 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private String metricTypePrefix = "custom.googleapis.com/";
 
+	/**
+	 * Whether it should be attempted to create a metric descriptor before writing a time
+	 * series.
+	 */
+	private boolean autoCreateMetricDescriptors = true;
+
 	public String getProjectId() {
 		return this.projectId;
 	}
@@ -98,6 +104,14 @@ public class StackdriverProperties extends StepRegistryProperties {
 
 	public void setMetricTypePrefix(String metricTypePrefix) {
 		this.metricTypePrefix = metricTypePrefix;
+	}
+
+	public boolean isAutoCreateMetricDescriptors() {
+		return this.autoCreateMetricDescriptors;
+	}
+
+	public void setAutoCreateMetricDescriptors(boolean autoCreateMetricDescriptors) {
+		this.autoCreateMetricDescriptors = autoCreateMetricDescriptors;
 	}
 
 }

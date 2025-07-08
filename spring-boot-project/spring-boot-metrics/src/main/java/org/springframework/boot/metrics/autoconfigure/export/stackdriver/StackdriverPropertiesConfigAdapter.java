@@ -65,4 +65,10 @@ public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesCo
 		return get(StackdriverProperties::getMetricTypePrefix, StackdriverConfig.super::metricTypePrefix);
 	}
 
+	@Override
+	public boolean autoCreateMetricDescriptors() {
+		return get(StackdriverProperties::isAutoCreateMetricDescriptors,
+				StackdriverConfig.super::autoCreateMetricDescriptors);
+	}
+
 }
