@@ -22,8 +22,9 @@ import java.util.Collections;
 
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.JCacheMetrics;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -44,14 +45,16 @@ class JCacheCacheMeterBinderProviderTests {
 	@Mock
 	private javax.cache.Cache<Object, Object> nativeCache;
 
-	@Test
-	void jCacheCacheProvider() throws URISyntaxException {
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	void jCacheCacheProvider(boolean recordRemovalsAsFunctionCounter) throws URISyntaxException {
 		javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
 		given(cacheManager.getURI()).willReturn(new URI("/test"));
 		given(this.nativeCache.getCacheManager()).willReturn(cacheManager);
 		given(this.nativeCache.getName()).willReturn("test");
 		JCacheCache cache = new JCacheCache(this.nativeCache);
-		MeterBinder meterBinder = new JCacheCacheMeterBinderProvider().getMeterBinder(cache, Collections.emptyList());
+		MeterBinder meterBinder = new JCacheCacheMeterBinderProvider(recordRemovalsAsFunctionCounter)
+			.getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(JCacheMetrics.class);
 	}
 

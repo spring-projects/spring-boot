@@ -26,13 +26,20 @@ import org.springframework.cache.jcache.JCacheCache;
  * {@link CacheMeterBinderProvider} implementation for JCache.
  *
  * @author Stephane Nicoll
+ * @author Alireza Hakimrabet
  * @since 4.0.0
  */
 public class JCacheCacheMeterBinderProvider implements CacheMeterBinderProvider<JCacheCache> {
 
+	private final boolean recordRemovalsAsFunctionCounter;
+
+	public JCacheCacheMeterBinderProvider(boolean recordRemovalsAsFunctionCounter) {
+		this.recordRemovalsAsFunctionCounter = recordRemovalsAsFunctionCounter;
+	}
+
 	@Override
 	public MeterBinder getMeterBinder(JCacheCache cache, Iterable<Tag> tags) {
-		return new JCacheMetrics<>(cache.getNativeCache(), tags);
+		return new JCacheMetrics<>(cache.getNativeCache(), tags, this.recordRemovalsAsFunctionCounter);
 	}
 
 }

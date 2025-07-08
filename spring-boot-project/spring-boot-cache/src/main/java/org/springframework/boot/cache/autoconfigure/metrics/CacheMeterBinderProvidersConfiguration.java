@@ -24,6 +24,8 @@ import org.cache2k.extra.micrometer.Cache2kCacheMetrics;
 import org.cache2k.extra.spring.SpringCache2kCache;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.cache.autoconfigure.CacheProperties;
 import org.springframework.boot.cache.metrics.Cache2kCacheMeterBinderProvider;
 import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 import org.springframework.boot.cache.metrics.CaffeineCacheMeterBinderProvider;
@@ -40,6 +42,7 @@ import org.springframework.data.redis.cache.RedisCache;
  * Configure {@link CacheMeterBinderProvider} beans.
  *
  * @author Stephane Nicoll
+ * @author Alireza Hakimrabet
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MeterBinder.class, CacheMeterBinderProvider.class })
@@ -83,8 +86,10 @@ class CacheMeterBinderProvidersConfiguration {
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
-			return new JCacheCacheMeterBinderProvider();
+		@ConditionalOnMissingBean(JCacheCacheMeterBinderProvider.class)
+		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider(CacheProperties cacheProperties) {
+			return new JCacheCacheMeterBinderProvider(
+					cacheProperties.getJcache().getRegisterRemovalsAsFunctionCounter());
 		}
 
 	}

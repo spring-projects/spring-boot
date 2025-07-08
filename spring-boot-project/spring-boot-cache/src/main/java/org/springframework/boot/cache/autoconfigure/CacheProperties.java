@@ -189,6 +189,8 @@ public class CacheProperties {
 		 */
 		private String provider;
 
+		private boolean registerRemovalsAsFunctionCounter = false;
+
 		public String getProvider() {
 			return this.provider;
 		}
@@ -203,6 +205,14 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
+		}
+
+		public Boolean getRegisterRemovalsAsFunctionCounter() {
+			return this.registerRemovalsAsFunctionCounter;
+		}
+
+		public void setRegisterRemovalsAsFunctionCounter(Boolean registerRemovalsAsFunctionCounter) {
+			this.registerRemovalsAsFunctionCounter = registerRemovalsAsFunctionCounter;
 		}
 
 	}
