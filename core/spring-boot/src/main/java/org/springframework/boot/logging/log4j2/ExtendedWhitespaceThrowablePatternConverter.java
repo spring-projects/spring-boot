@@ -39,7 +39,8 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends Throwable
 
 	private final ExtendedThrowablePatternConverter delegate;
 
-	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String @Nullable [] options) {
+	@SuppressWarnings("deprecation") // https://github.com/apache/logging-log4j2/issues/3809
+	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
 		super("WhitespaceExtendedThrowable", "throwable", options, configuration);
 		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
 	}
@@ -61,7 +62,7 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends Throwable
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
 	public static ExtendedWhitespaceThrowablePatternConverter newInstance(Configuration configuration,
-			String @Nullable [] options) {
+			@Nullable String[] options) {
 		return new ExtendedWhitespaceThrowablePatternConverter(configuration, options);
 	}
 

@@ -87,6 +87,12 @@ tasks.named("checkFormatMain") {
 	source(fileTree("src/main/javaTemplates"))
 }
 
+tasks.named("compileJava") {
+	// Provide the project coordinates to the `GraalVmProcessor`:
+	options.compilerArgs << '-Alog4j.graalvm.groupId=org.springframework.boot'
+	options.compilerArgs << '-Alog4j.graalvm.artifactId=spring-boot-log4j'
+}
+
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		synchronizationTasks syncJavaTemplates

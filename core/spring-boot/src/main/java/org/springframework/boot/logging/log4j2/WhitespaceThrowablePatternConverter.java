@@ -35,7 +35,8 @@ import org.jspecify.annotations.Nullable;
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
 public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
-	private WhitespaceThrowablePatternConverter(Configuration configuration, String @Nullable [] options) {
+	@SuppressWarnings("deprecation") // https://github.com/apache/logging-log4j2/issues/3809
+	private WhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
 		super("WhitespaceThrowable", "throwable", options, configuration);
 	}
 
@@ -56,7 +57,7 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
 	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration,
-			String @Nullable [] options) {
+			@Nullable String[] options) {
 		return new WhitespaceThrowablePatternConverter(configuration, options);
 	}
 
