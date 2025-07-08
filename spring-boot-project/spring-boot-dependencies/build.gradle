@@ -1784,7 +1784,7 @@ bom {
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
-	library("Pulsar Reactive", "0.6.0") {
+	library("Pulsar Reactive", "0.7.0") {
 		group("org.apache.pulsar") {
 			bom("pulsar-client-reactive-bom")
 		}
