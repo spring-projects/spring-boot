@@ -145,11 +145,11 @@ spring:
 [[messaging.jms.sending]]
 == Sending a Message
 
-Spring's javadoc:org.springframework.jms.core.JmsTemplate[] is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
+Spring's javadoc:org.springframework.jms.core.JmsClient[] is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
 
-NOTE: javadoc:org.springframework.jms.core.JmsMessagingTemplate[] can be injected in a similar manner.
+NOTE: javadoc:org.springframework.jms.core.JmsMessagingTemplate[] can be injected in a similar manner, and both use the traditional javadoc:org.springframework.jms.core.JmsTemplate[] that can be injected as well.
 If a javadoc:org.springframework.jms.support.destination.DestinationResolver[] or a javadoc:org.springframework.jms.support.converter.MessageConverter[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.jms.core.JmsTemplate[].
 
 

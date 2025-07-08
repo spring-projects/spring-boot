@@ -35,7 +35,7 @@ import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsMessagingTemplate;
+import org.springframework.jms.core.JmsClient;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,14 +54,14 @@ class ArtemisContainerConnectionDetailsFactoryIntegrationTests {
 	static final ArtemisContainer artemis = TestImage.container(ArtemisContainer.class);
 
 	@Autowired
-	private JmsMessagingTemplate jmsTemplate;
+	private JmsClient jmsClient;
 
 	@Autowired
 	private TestListener listener;
 
 	@Test
 	void connectionCanBeMadeToActiveMQContainer() {
-		this.jmsTemplate.convertAndSend("sample.queue", "message");
+		this.jmsClient.destination("sample.queue").send("message");
 		Awaitility.waitAtMost(Duration.ofMinutes(1))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
 	}

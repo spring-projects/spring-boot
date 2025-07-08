@@ -16,15 +16,15 @@
 
 package org.springframework.boot.docs.messaging.jms.sending
 
-import org.springframework.jms.core.JmsTemplate
+import org.springframework.jms.core.JmsClient
 import org.springframework.stereotype.Component
 
 @Component
-class MyBean(private val jmsTemplate: JmsTemplate) {
+class MyBean(private val jmsClient: JmsClient) {
 
 	// @fold:on // ...
 	fun someMethod() {
-		jmsTemplate.convertAndSend("hello")
+		jmsClient.destination("myQueue").send("hello")
 	}
 	// @fold:off
 

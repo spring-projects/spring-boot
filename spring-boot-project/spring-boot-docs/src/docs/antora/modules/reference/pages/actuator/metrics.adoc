@@ -725,6 +725,7 @@ Auto-configuration enables the instrumentation of all available javadoc:org.spri
 This will produce `"jms.message.publish"` and `"jms.message.process"` metrics respectively.
 See the {url-spring-framework-docs}/integration/observability.html#observability.jms[Spring Framework reference documentation for more information on produced observations].
 
+NOTE: javadoc:org.springframework.jms.core.JmsClient[] and javadoc:org.springframework.jms.core.JmsMessagingTemplate[] that uses a javadoc:org.springframework.jms.core.JmsTemplate[] bean are also instrumented.
 
 
 [[actuator.metrics.supported.spring-mvc]]

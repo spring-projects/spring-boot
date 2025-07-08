@@ -16,10 +16,8 @@
 
 package org.springframework.boot.jms.autoconfigure;
 
-import java.time.Duration;
 import java.util.List;
 
-import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 
@@ -27,28 +25,15 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration.JmsRuntimeHints;
-import org.springframework.boot.jms.autoconfigure.JmsProperties.DeliveryMode;
-import org.springframework.boot.jms.autoconfigure.JmsProperties.Template;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.jms.core.JmsMessageOperations;
-import org.springframework.jms.core.JmsMessagingTemplate;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MessageConverter;
-import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
@@ -62,80 +47,11 @@ import org.springframework.jms.support.destination.DestinationResolver;
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
-@Import(JmsAnnotationDrivenConfiguration.class)
+@Import({ JmsClientConfigurations.JmsTemplateConfiguration.class,
+		JmsClientConfigurations.MessagingTemplateConfiguration.class,
+		JmsClientConfigurations.JmsClientConfiguration.class, JmsAnnotationDrivenConfiguration.class })
 @ImportRuntimeHints(JmsRuntimeHints.class)
 public class JmsAutoConfiguration {
-
-	@Configuration(proxyBeanMethods = false)
-	protected static class JmsTemplateConfiguration {
-
-		private final JmsProperties properties;
-
-		private final ObjectProvider<DestinationResolver> destinationResolver;
-
-		private final ObjectProvider<MessageConverter> messageConverter;
-
-		private final ObjectProvider<ObservationRegistry> observationRegistry;
-
-		public JmsTemplateConfiguration(JmsProperties properties,
-				ObjectProvider<DestinationResolver> destinationResolver,
-				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<ObservationRegistry> observationRegistry) {
-			this.properties = properties;
-			this.destinationResolver = destinationResolver;
-			this.messageConverter = messageConverter;
-			this.observationRegistry = observationRegistry;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(JmsOperations.class)
-		@ConditionalOnSingleCandidate(ConnectionFactory.class)
-		public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
-			PropertyMapper map = PropertyMapper.get();
-			JmsTemplate template = new JmsTemplate(connectionFactory);
-			template.setPubSubDomain(this.properties.isPubSubDomain());
-			map.from(this.destinationResolver::getIfUnique).whenNonNull().to(template::setDestinationResolver);
-			map.from(this.messageConverter::getIfUnique).whenNonNull().to(template::setMessageConverter);
-			map.from(this.observationRegistry::getIfUnique).whenNonNull().to(template::setObservationRegistry);
-			mapTemplateProperties(this.properties.getTemplate(), template);
-			return template;
-		}
-
-		private void mapTemplateProperties(Template properties, JmsTemplate template) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties.getSession().getAcknowledgeMode()::getMode).to(template::setSessionAcknowledgeMode);
-			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
-			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
-			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
-			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
-			map.from(properties::getDeliveryMode).as(DeliveryMode::getValue).to(template::setDeliveryMode);
-			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
-			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
-			map.from(properties::getReceiveTimeout).as(Duration::toMillis).to(template::setReceiveTimeout);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(JmsMessagingTemplate.class)
-	@Import(JmsTemplateConfiguration.class)
-	protected static class MessagingTemplateConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(JmsMessageOperations.class)
-		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
-			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);
-			mapTemplateProperties(properties.getTemplate(), messagingTemplate);
-			return messagingTemplate;
-		}
-
-		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
-		}
-
-	}
 
 	static class JmsRuntimeHints implements RuntimeHintsRegistrar {
 
