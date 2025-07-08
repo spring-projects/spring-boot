@@ -1663,7 +1663,7 @@ bom {
 			javadoc(version -> "https://netty.io/%s.%s/api".formatted(version.major(), version.minor()), "io.netty")
 		}
 	}
-	library("OpenTelemetry", "1.49.0") {
+	library("OpenTelemetry", "1.51.0") {
 		group("io.opentelemetry") {
 			bom("opentelemetry-bom")
 		}
