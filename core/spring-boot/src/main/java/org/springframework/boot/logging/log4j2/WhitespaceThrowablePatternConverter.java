@@ -20,6 +20,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
+import org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter;
+import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 import org.jspecify.annotations.Nullable;
@@ -33,20 +35,31 @@ import org.jspecify.annotations.Nullable;
  */
 @Plugin(name = "WhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
-public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
+public final class WhitespaceThrowablePatternConverter extends LogEventPatternConverter {
+
+	private final LogEventPatternConverter delegate;
+
+	private final String separator;
 
 	@SuppressWarnings("deprecation") // https://github.com/apache/logging-log4j2/issues/3809
 	private WhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
-		super("WhitespaceThrowable", "throwable", options, configuration);
+		super("WhitespaceThrowable", "throwable");
+		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
+		this.separator = ((ExtendedThrowablePatternConverter) this.delegate).getOptions().getSeparator();
 	}
 
 	@Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
-			buffer.append(this.options.getSeparator());
-			super.format(event, buffer);
-			buffer.append(this.options.getSeparator());
+			buffer.append(this.separator);
+			this.delegate.format(event, buffer);
+			buffer.append(this.separator);
 		}
+	}
+
+	@Override
+	public boolean handlesThrowable() {
+		return true;
 	}
 
 	/**
