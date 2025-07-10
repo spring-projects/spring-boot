@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
@@ -90,9 +91,31 @@ class KotlinPluginActionIntegrationTests {
 		assertThat(configured).containsExactlyInAnyOrder("help", "clean");
 	}
 
+	@Test
+	void compileAotJavaHasTransitiveRuntimeDependenciesOnItsClasspathWhenUsingKotlin() {
+		expectConfigurationCacheRequestedDeprecationWarning();
+		expectResolvableUsageIsAlreadyAllowedWarning();
+		String output = this.gradleBuild.build("compileAotJavaClasspath").getOutput();
+		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
+	@Test
+	void compileAotTestJavaHasTransitiveRuntimeDependenciesOnItsClasspathWhenUsingKotlin() {
+		expectConfigurationCacheRequestedDeprecationWarning();
+		expectResolvableUsageIsAlreadyAllowedWarning();
+		String output = this.gradleBuild.build("compileAotTestJavaClasspath").getOutput();
+		assertThat(output).contains("org.jboss.logging" + File.separatorChar + "jboss-logging");
+	}
+
 	private void expectConfigurationCacheRequestedDeprecationWarning() {
 		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.14")
 			.expectDeprecationMessages("The StartParameter.isConfigurationCacheRequested property has been deprecated");
+	}
+
+	private void expectResolvableUsageIsAlreadyAllowedWarning() {
+		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.4")
+			.expectDeprecationMessages("The resolvable usage is already allowed on configuration "
+					+ "':aotRuntimeClasspath'. This behavior has been deprecated.");
 	}
 
 }

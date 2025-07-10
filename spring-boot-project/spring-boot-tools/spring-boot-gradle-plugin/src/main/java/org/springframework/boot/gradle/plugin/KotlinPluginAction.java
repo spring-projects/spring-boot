@@ -34,12 +34,17 @@ class KotlinPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
+		configureKotlinVersionProperty(project);
+		enableJavaParametersOption(project);
+		repairDamageToAotCompileConfigurations(project);
+	}
+
+	private void configureKotlinVersionProperty(Project project) {
 		ExtraPropertiesExtension extraProperties = project.getExtensions().getExtraProperties();
 		if (!extraProperties.has("kotlin.version")) {
 			String kotlinVersion = getKotlinVersion(project);
 			extraProperties.set("kotlin.version", kotlinVersion);
 		}
-		enableJavaParametersOption(project);
 	}
 
 	private String getKotlinVersion(Project project) {
@@ -50,6 +55,13 @@ class KotlinPluginAction implements PluginApplicationAction {
 		project.getTasks()
 			.withType(KotlinCompile.class)
 			.configureEach((compile) -> compile.getCompilerOptions().getJavaParameters().set(true));
+	}
+
+	private void repairDamageToAotCompileConfigurations(Project project) {
+		SpringBootAotPlugin aotPlugin = project.getPlugins().findPlugin(SpringBootAotPlugin.class);
+		if (aotPlugin != null) {
+			aotPlugin.repairKotlinPluginDamage(project);
+		}
 	}
 
 	@Override
