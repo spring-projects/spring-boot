@@ -3,6 +3,7 @@
 <import-control pkg="org.springframework.boot">
 	<allow pkg="io.micrometer.observation" />
 	<disallow pkg="io.micrometer" />
+	<allow class="org.springframework.lang.Contract" />
 	<disallow pkg="org.springframework.lang" />
 	<allow pkg=".*" regex="true" />
 
