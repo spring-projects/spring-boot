@@ -48,7 +48,7 @@ class InteractiveUpgradeResolverTests {
 		List<Library> libraries = new ArrayList<>();
 		DependencyVersion version = DependencyVersion.parse("1.0.0");
 		LibraryVersion libraryVersion = new LibraryVersion(version);
-		Library library = new Library("test", null, libraryVersion, null, null, false, null, null, null, null);
+		Library library = new Library("test", null, libraryVersion, null, null, null, false, null, null, null, null);
 		libraries.add(library);
 		List<Library> librariesToUpgrade = new ArrayList<>();
 		librariesToUpgrade.add(library);

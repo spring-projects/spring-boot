@@ -111,9 +111,9 @@ public class BomExtension {
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment(libraryHandler),
-				libraryHandler.alignWith.dependencyManagementDeclaredIn, libraryHandler.linkRootName,
-				libraryHandler.links));
+				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots,
+				versionAlignment(libraryHandler), libraryHandler.alignWith.dependencyManagementDeclaredIn,
+				libraryHandler.linkRootName, libraryHandler.links));
 	}
 
 	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
@@ -196,6 +196,8 @@ public class BomExtension {
 
 		private final List<Group> groups = new ArrayList<>();
 
+		private UpgradePolicy upgradePolicy;
+
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
 		private final AlignWithHandler alignWith;
@@ -234,6 +236,10 @@ public class BomExtension {
 			action.execute(groupHandler);
 			this.groups
 				.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
+		}
+
+		public void setUpgradePolicy(UpgradePolicy upgradePolicy) {
+			this.upgradePolicy = upgradePolicy;
 		}
 
 		public void prohibit(Action<ProhibitedHandler> action) {

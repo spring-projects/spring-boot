@@ -48,6 +48,7 @@ import org.gradle.api.tasks.options.Option;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.UpgradePolicy;
 import org.springframework.boot.build.bom.bomr.github.GitHub;
 import org.springframework.boot.build.bom.bomr.github.GitHubRepository;
 import org.springframework.boot.build.bom.bomr.github.Issue;
@@ -255,7 +256,11 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private boolean compliesWithUpgradePolicy(Library library, DependencyVersion candidate) {
-		return this.bom.getUpgrade().getPolicy().test(candidate, library.getVersion().getVersion());
+		UpgradePolicy upgradePolicy = library.getUpgradePolicy();
+		if (upgradePolicy == null) {
+			upgradePolicy = this.bom.getUpgrade().getPolicy();
+		}
+		return upgradePolicy.test(candidate, library.getVersion().getVersion());
 	}
 
 	private boolean isAnUpgrade(Library library, DependencyVersion candidate) {
