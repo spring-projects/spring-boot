@@ -237,4 +237,19 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		dependencies.add(dependencyHandler.create("org.junit.platform:junit-platform-launcher"));
 	}
 
+	void repairKotlinPluginDamage(Project project) {
+		project.getPlugins().withType(JavaPlugin.class).configureEach((javaPlugin) -> {
+			repairKotlinPluginDamage(project, SpringBootAotPlugin.AOT_SOURCE_SET_NAME);
+			repairKotlinPluginDamage(project, SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
+		});
+	}
+
+	private void repairKotlinPluginDamage(Project project, String sourceSetName) {
+		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
+		SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
+		Configuration compileClasspath = project.getConfigurations()
+			.getByName(sourceSets.getByName(sourceSetName).getCompileClasspathConfigurationName());
+		configureJavaRuntimeUsageAttribute(project, compileClasspath.getAttributes());
+	}
+
 }
