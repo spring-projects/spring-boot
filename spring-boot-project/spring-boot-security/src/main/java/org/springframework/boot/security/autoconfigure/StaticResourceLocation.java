@@ -50,7 +50,12 @@ public enum StaticResourceLocation {
 	/**
 	 * The {@code "favicon.ico"} resource.
 	 */
-	FAVICON("/favicon.*", "/*/icon-*");
+	FAVICON("/favicon.*", "/*/icon-*"),
+
+	/**
+	 * Resources under {@code "/fonts"}.
+	 */
+	FONTS("/fonts/**");
 
 	private final String[] patterns;
 
