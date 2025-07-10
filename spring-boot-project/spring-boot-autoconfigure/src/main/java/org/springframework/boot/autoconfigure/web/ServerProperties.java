@@ -424,7 +424,7 @@ public class ServerProperties {
 		 * Requests that exceed this limit will be rejected. A value of less than 0 means
 		 * no limit.
 		 */
-		private int maxPartCount = 10;
+		private int maxPartCount = 50;
 
 		/**
 		 * Maximum amount of request body to swallow.
