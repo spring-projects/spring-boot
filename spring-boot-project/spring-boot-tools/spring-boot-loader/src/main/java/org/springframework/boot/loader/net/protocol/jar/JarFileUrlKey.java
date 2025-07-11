@@ -45,11 +45,6 @@ final class JarFileUrlKey {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(this.file);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -62,6 +57,11 @@ final class JarFileUrlKey {
 		return Objects.equals(this.file, other.file) && equalsIgnoringCase(this.protocol, other.protocol)
 				&& equalsIgnoringCase(this.host, other.host) && (this.port == other.port)
 				&& (this.runtimeRef == other.runtimeRef);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.file);
 	}
 
 	private boolean equalsIgnoringCase(String s1, String s2) {
