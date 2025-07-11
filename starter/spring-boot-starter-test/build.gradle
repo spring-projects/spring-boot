@@ -25,6 +25,9 @@ dependencies {
 	api(project(":module:spring-boot-http-client")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-http-codec")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-restclient")) {
 		transitive = false
 	}
