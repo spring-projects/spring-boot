@@ -19,6 +19,7 @@ package org.springframework.boot.http.client;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -71,6 +72,12 @@ public final class JdkClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
+	}
+
+	public JdkClientHttpRequestFactoryBuilder enableVirtualThreadExecutor() {
+		return this.withHttpClientCustomizer(builder ->
+				builder.executor(Executors.newVirtualThreadPerTaskExecutor())
+		);
 	}
 
 	@Override

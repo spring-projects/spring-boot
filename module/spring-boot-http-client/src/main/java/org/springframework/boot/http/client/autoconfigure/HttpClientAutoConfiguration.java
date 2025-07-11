@@ -24,10 +24,13 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
@@ -63,9 +66,22 @@ public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
+	@ConditionalOnThreading(Threading.PLATFORM)
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilderOnPlatform(
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
 		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
+		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilderOnVirtual(
+			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
+		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder jdk) {
+			return customize(jdk.enableVirtualThreadExecutor(), clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
+		}
 		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
 
@@ -74,7 +90,7 @@ public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 			List<ClientHttpRequestFactoryBuilderCustomizer<?>> customizers) {
 		ClientHttpRequestFactoryBuilder<?>[] builderReference = { builder };
 		LambdaSafe.callbacks(ClientHttpRequestFactoryBuilderCustomizer.class, customizers, builderReference[0])
-			.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
+				.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
 		return builderReference[0];
 	}
 
