@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
-import org.springframework.boot.autoconfigure.thread.Threading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Conditional;
 
 /**

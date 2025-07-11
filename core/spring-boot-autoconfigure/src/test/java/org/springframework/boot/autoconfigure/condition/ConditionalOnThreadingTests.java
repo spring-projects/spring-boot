@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
-import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

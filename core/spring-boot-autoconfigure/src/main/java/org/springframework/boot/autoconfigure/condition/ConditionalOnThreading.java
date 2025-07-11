@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.thread.Threading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Conditional;
 
 /**

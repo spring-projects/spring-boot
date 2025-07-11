@@ -18,9 +18,9 @@ package org.springframework.boot.jetty.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
-import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.jetty.autoconfigure.servlet.JettyServletWebServerAutoConfiguration;
+import org.springframework.boot.thread.Threading;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

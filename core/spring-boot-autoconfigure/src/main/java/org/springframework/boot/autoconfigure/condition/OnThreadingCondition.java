@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.thread.Threading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;

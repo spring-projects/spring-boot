@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thread;
+package org.springframework.boot.thread;
 
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.core.env.Environment;

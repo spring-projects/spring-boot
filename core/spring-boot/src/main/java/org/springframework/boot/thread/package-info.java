@@ -17,4 +17,4 @@
 /**
  * Classes related to threads.
  */
-package org.springframework.boot.autoconfigure.thread;
+package org.springframework.boot.thread;

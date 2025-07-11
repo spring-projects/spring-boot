@@ -21,7 +21,7 @@ import org.apache.tomcat.websocket.server.WsSci;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
-import org.springframework.boot.autoconfigure.thread.Threading;
+import org.springframework.boot.thread.Threading;
 import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
