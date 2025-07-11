@@ -48,10 +48,10 @@ content:
     tags:
     - 'v4.0.*'
     start_paths:
-    - spring-boot-project/spring-boot-docs/src/docs/antora
-    - spring-boot-project/spring-boot-actuator-docs/src/docs/antora
-    - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
-    - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
+    - documentation/spring-boot-docs/src/docs/antora
+    - documentation/spring-boot-actuator-docs/src/docs/antora
+    - build-plugin/spring-boot-gradle-plugin/src/docs/antora
+    - build-plugin/spring-boot-maven-plugin/src/docs/antora
     version: unspecified
 asciidoc:
   sourcemap: true
