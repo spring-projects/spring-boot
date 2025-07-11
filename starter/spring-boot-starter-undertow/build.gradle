@@ -22,6 +22,7 @@ description = "Starter for using Undertow as the embedded servlet container. An 
 
 dependencies {
 	api(project(":module:spring-boot-undertow"))
+	api(project(":starter:spring-boot-starter"))
 	api("io.undertow:undertow-servlet")
 	api("io.undertow:undertow-websockets-jsr")
 	api("org.apache.tomcat.embed:tomcat-embed-el")

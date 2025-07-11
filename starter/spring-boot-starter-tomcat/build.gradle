@@ -22,6 +22,7 @@ description = "Starter for using Tomcat as the embedded servlet container. Defau
 
 dependencies {
 	api(project(":module:spring-boot-tomcat"))
+	api(project(":starter:spring-boot-starter"))
 	api("jakarta.annotation:jakarta.annotation-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.apache.tomcat.embed:tomcat-embed-websocket") {

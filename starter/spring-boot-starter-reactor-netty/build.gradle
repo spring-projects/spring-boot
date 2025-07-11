@@ -22,4 +22,5 @@ description = "Starter for using Reactor Netty as the embedded reactive HTTP ser
 
 dependencies {
 	api(project(":module:spring-boot-reactor-netty"))
+	api(project(":starter:spring-boot-starter"))
 }
