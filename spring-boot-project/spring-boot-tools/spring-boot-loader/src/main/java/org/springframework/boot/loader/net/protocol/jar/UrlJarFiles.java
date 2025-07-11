@@ -144,7 +144,7 @@ class UrlJarFiles {
 	 */
 	private static final class Cache {
 
-		private final Map<String, JarFile> jarFileUrlToJarFile = new HashMap<>();
+		private final Map<JarFileUrlKey, JarFile> jarFileUrlToJarFile = new HashMap<>();
 
 		private final Map<JarFile, URL> jarFileToJarFileUrl = new HashMap<>();
 
@@ -154,7 +154,7 @@ class UrlJarFiles {
 		 * @return the cached {@link JarFile} or {@code null}
 		 */
 		JarFile get(URL jarFileUrl) {
-			String urlKey = JarFileUrlKey.get(jarFileUrl);
+			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
 			synchronized (this) {
 				return this.jarFileUrlToJarFile.get(urlKey);
 			}
@@ -180,7 +180,7 @@ class UrlJarFiles {
 		 * they were already there
 		 */
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
-			String urlKey = JarFileUrlKey.get(jarFileUrl);
+			JarFileUrlKey urlKey = new JarFileUrlKey(jarFileUrl);
 			synchronized (this) {
 				JarFile cached = this.jarFileUrlToJarFile.get(urlKey);
 				if (cached == null) {
@@ -200,7 +200,7 @@ class UrlJarFiles {
 			synchronized (this) {
 				URL removedUrl = this.jarFileToJarFileUrl.remove(jarFile);
 				if (removedUrl != null) {
-					this.jarFileUrlToJarFile.remove(JarFileUrlKey.get(removedUrl));
+					this.jarFileUrlToJarFile.remove(new JarFileUrlKey(removedUrl));
 				}
 			}
 		}

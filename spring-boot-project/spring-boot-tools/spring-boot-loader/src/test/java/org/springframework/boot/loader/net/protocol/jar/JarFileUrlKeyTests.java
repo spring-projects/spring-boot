@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -38,51 +39,66 @@ class JarFileUrlKeyTests {
 	}
 
 	@Test
-	void getCreatesKey() throws Exception {
-		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
+	void equalsAndHashCode() throws Exception {
+		JarFileUrlKey k1 = key("jar:nested:/my.jar/!mynested.jar!/my/path");
+		JarFileUrlKey k2 = key("jar:nested:/my.jar/!mynested.jar!/my/path");
+		JarFileUrlKey k3 = key("jar:nested:/my.jar/!mynested.jar!/my/path2");
+		assertThat(k1.hashCode()).isEqualTo(k2.hashCode())
+			.isEqualTo("nested:/my.jar/!mynested.jar!/my/path".hashCode());
+		assertThat(k1).isEqualTo(k1).isEqualTo(k2).isNotEqualTo(k3);
 	}
 
 	@Test
-	void getWhenUppercaseProtocolCreatesKey() throws Exception {
-		URL url = new URL("JAR:nested:/my.jar/!mynested.jar!/my/path");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
+	void equalsWhenUppercaseAndLowercaseProtocol() throws Exception {
+		JarFileUrlKey k1 = key("JAR:nested:/my.jar/!mynested.jar!/my/path");
+		JarFileUrlKey k2 = key("jar:nested:/my.jar/!mynested.jar!/my/path");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasHostAndPortCreatesKey() throws Exception {
-		URL url = new URL("https://example.com:1234/test");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:1234/test");
+	void equalsWhenHasHostAndPort() throws Exception {
+		JarFileUrlKey k1 = key("https://example.com:1234/test");
+		JarFileUrlKey k2 = key("https://example.com:1234/test");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasUppercaseHostCreatesKey() throws Exception {
-		URL url = new URL("https://EXAMPLE.com:1234/test");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:1234/test");
+	void equalsWhenHasUppercaseAndLowercaseHost() throws Exception {
+		JarFileUrlKey k1 = key("https://EXAMPLE.com:1234/test");
+		JarFileUrlKey k2 = key("https://example.com:1234/test");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasNoPortCreatesKeyWithDefaultPort() throws Exception {
-		URL url = new URL("https://EXAMPLE.com/test");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:443/test");
+	void equalsWhenHasNoPortUsesDefaultPort() throws Exception {
+		JarFileUrlKey k1 = key("https://EXAMPLE.com/test");
+		JarFileUrlKey k2 = key("https://example.com:443/test");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasNoFileCreatesKey() throws Exception {
-		URL url = new URL("https://EXAMPLE.com");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:443");
+	void equalsWhenHasNoFile() throws Exception {
+		JarFileUrlKey k1 = key("https://EXAMPLE.com");
+		JarFileUrlKey k2 = key("https://example.com:443");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasRuntimeRefCreatesKey() throws Exception {
-		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+	void equalsWhenHasRuntimeRef() throws Exception {
+		JarFileUrlKey k1 = key("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+		JarFileUrlKey k2 = key("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+		assertThat(k1).isEqualTo(k2);
 	}
 
 	@Test
-	void getWhenHasOtherRefCreatesKeyWithoutRef() throws Exception {
-		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path#example");
-		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
+	void equalsWhenHasOtherRefIgnoresRefs() throws Exception {
+		JarFileUrlKey k1 = key("jar:nested:/my.jar/!mynested.jar!/my/path#example");
+		JarFileUrlKey k2 = key("jar:nested:/my.jar/!mynested.jar!/my/path");
+		assertThat(k1).isEqualTo(k2);
+	}
+
+	private JarFileUrlKey key(String spec) throws MalformedURLException {
+		return new JarFileUrlKey(new URL(spec));
 	}
 
 }

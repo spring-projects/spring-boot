@@ -16,68 +16,56 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import java.lang.ref.SoftReference;
 import java.net.URL;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 
 /**
- * Utility to generate a string key from a jar file {@link URL} that can be used as a
- * cache key.
+ * A fast cache key for a jar file {@link URL} that doesn't trigger DNS lookups.
  *
  * @author Phillip Webb
  */
 final class JarFileUrlKey {
 
-	private static volatile SoftReference<Map<URL, String>> cache;
+	private final String protocol;
 
-	private JarFileUrlKey() {
+	private final String host;
+
+	private final int port;
+
+	private final String file;
+
+	private final boolean runtimeRef;
+
+	JarFileUrlKey(URL url) {
+		this.protocol = url.getProtocol();
+		this.host = url.getHost();
+		this.port = (url.getPort() != -1) ? url.getPort() : url.getDefaultPort();
+		this.file = url.getFile();
+		this.runtimeRef = "runtime".equals(url.getRef());
 	}
 
-	/**
-	 * Get the {@link JarFileUrlKey} for the given URL.
-	 * @param url the source URL
-	 * @return a {@link JarFileUrlKey} instance
-	 */
-	static String get(URL url) {
-		if (!isCachableUrl(url)) {
-			return create(url);
-		}
-		Map<URL, String> cache = (JarFileUrlKey.cache != null) ? JarFileUrlKey.cache.get() : null;
-		if (cache == null) {
-			cache = new ConcurrentHashMap<>();
-			JarFileUrlKey.cache = new SoftReference<>(cache);
-		}
-		return cache.computeIfAbsent(url, JarFileUrlKey::create);
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.file);
 	}
 
-	private static boolean isCachableUrl(URL url) {
-		// Don't cache URL that have a host since equals() will perform DNS lookup
-		return url.getHost() == null || url.getHost().isEmpty();
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		JarFileUrlKey other = (JarFileUrlKey) obj;
+		// We check file first as case sensitive and the most likely item to be different
+		return Objects.equals(this.file, other.file) && equalsIgnoringCase(this.protocol, other.protocol)
+				&& equalsIgnoringCase(this.host, other.host) && (this.port == other.port)
+				&& (this.runtimeRef == other.runtimeRef);
 	}
 
-	private static String create(URL url) {
-		StringBuilder value = new StringBuilder();
-		String protocol = url.getProtocol();
-		String host = url.getHost();
-		int port = (url.getPort() != -1) ? url.getPort() : url.getDefaultPort();
-		String file = url.getFile();
-		value.append(protocol.toLowerCase(Locale.ROOT));
-		value.append(":");
-		if (host != null && !host.isEmpty()) {
-			value.append(host.toLowerCase(Locale.ROOT));
-			value.append((port != -1) ? ":" + port : "");
-		}
-		value.append((file != null) ? file : "");
-		if ("runtime".equals(url.getRef())) {
-			value.append("#runtime");
-		}
-		return value.toString();
-	}
-
-	static void clearCache() {
-		cache = null;
+	private boolean equalsIgnoringCase(String s1, String s2) {
+		return (s1 == s2) || (s1 != null && s1.equalsIgnoreCase(s2));
 	}
 
 }
