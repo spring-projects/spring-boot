@@ -1630,7 +1630,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.28.7") {
+	library("Neo4j Java Driver", "5.28.8") {
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-neo4j"
