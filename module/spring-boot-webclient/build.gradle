@@ -26,7 +26,7 @@ description = "Spring Boot WebClient"
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-http-client"))
-	api("org.springframework:spring-web")
+	api("org.springframework:spring-webflux")
 
 	implementation(project(":module:spring-boot-http-codec"))
 
