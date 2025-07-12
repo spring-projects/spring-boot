@@ -50,8 +50,6 @@ class Log4J2RuntimeHintsTests {
 		ReflectionHints reflection = registerHints();
 		// JSON
 		assertThat(reflection.getTypeHint(ObjectMapper.class)).isNotNull();
-		// XML
-		assertThat(reflection.getTypeHint(DocumentBuilderFactory.class)).isNotNull();
 		// YAML
 		assertThat(reflection.getTypeHint(TypeReference.of("com.fasterxml.jackson.dataformat.yaml.YAMLMapper")))
 			.isNotNull();
