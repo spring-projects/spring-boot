@@ -125,9 +125,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isClassAvailable(Log4J2RuntimeHints.JSON_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2-test.json", "log4j2-test.jsn");
 		}
-		if (isClassAvailable(Log4J2RuntimeHints.XML_TREE_PARSER)) {
-			locations.add("log4j2-test.xml");
-		}
+		locations.add("log4j2-test.xml");
 		locations.add("log4j2.properties");
 		if (isClassAvailable(Log4J2RuntimeHints.YAML_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2.yaml", "log4j2.yml");
@@ -135,9 +133,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isClassAvailable(Log4J2RuntimeHints.JSON_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2.json", "log4j2.jsn");
 		}
-		if (isClassAvailable(Log4J2RuntimeHints.XML_TREE_PARSER)) {
-			locations.add("log4j2.xml");
-		}
+		locations.add("log4j2.xml");
 		String propertyDefinedLocation = new PropertiesUtil(new Properties())
 			.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
 		if (propertyDefinedLocation != null) {

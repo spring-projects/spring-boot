@@ -32,7 +32,6 @@ class Log4J2RuntimeHints implements RuntimeHintsRegistrar {
 
 	// Tree parsers used by Log4j 2 for configuration files.
 	static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
-	static final String XML_TREE_PARSER = "javax.xml.parsers.DocumentBuilderFactory";
 	static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
 
 	// JUL implementations that use Log4j 2 API.
@@ -51,7 +50,6 @@ class Log4J2RuntimeHints implements RuntimeHintsRegistrar {
 		hints.resources().registerPattern("log4j2.springboot");
 		// Declares the types that Log4j2LoggingSystem checks for existence reflectively.
 		registerTypeForReachability(hints, classLoader, JSON_TREE_PARSER_V2);
-		registerTypeForReachability(hints, classLoader, XML_TREE_PARSER);
 		registerTypeForReachability(hints, classLoader, YAML_TREE_PARSER_V2);
 		registerTypeForReachability(hints, classLoader, LOG4J_BRIDGE_HANDLER);
 		registerTypeForReachability(hints, classLoader, LOG4J_LOG_MANAGER);
