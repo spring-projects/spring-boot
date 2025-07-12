@@ -487,7 +487,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private int getDirMode(FileCopyDetails details) {
-			return (BootZipCopyAction.this.fileMode != null) ? BootZipCopyAction.this.dirMode : getPermissions(details);
+			return (BootZipCopyAction.this.dirMode != null) ? BootZipCopyAction.this.dirMode : getPermissions(details);
 		}
 
 		private int getFileMode(FileCopyDetails details) {
