@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -84,6 +83,7 @@ import org.springframework.util.StringUtils;
  * @author Alexander Heusingfeld
  * @author Ben Hale
  * @author Ralph Goers
+ * @author Piotr P. Karwasz
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
@@ -93,6 +93,41 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+
+	/**
+	 * JSON tree parser used by Log4j 2 (optional dependency).
+	 */
+	private static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
+
+	/**
+	 * JSON tree parser embedded in Log4j 3.
+	 */
+	private static final String JSON_TREE_PARSER_V3 = "org.apache.logging.log4j.kit.json.JsonReader";
+
+	/**
+	 * Configuration factory for properties files (Log4j 2).
+	 */
+	private static final String PROPS_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory";
+
+	/**
+	 * Configuration factory for properties files (Log4j 3, optional dependency).
+	 */
+	private static final String PROPS_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory";
+
+	/**
+	 * YAML tree parser used by Log4j 2 (optional dependency).
+	 */
+	private static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
+
+	/**
+	 * Configuration factory for YAML files (Log4j 2, embedded).
+	 */
+	private static final String YAML_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory";
+
+	/**
+	 * Configuration factory for YAML files (Log4j 3, optional dependency).
+	 */
+	private static final String YAML_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.yaml.YamlConfigurationFactory";
 
 	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
@@ -123,32 +158,61 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected String[] getStandardConfigLocations() {
 		List<String> locations = new ArrayList<>();
-		locations.add("log4j2-test.properties");
-		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
-			Collections.addAll(locations, "log4j2-test.yaml", "log4j2-test.yml");
+		// The `log4j2.configurationFile` and `log4j.configuration.location` properties
+		// should be checked first, as they can be set to a custom location.
+		for (String property : new String[] { "log4j2.configurationFile", "log4j.configuration.location" }) {
+			String propertyDefinedLocation = PropertiesUtil.getProperties().getStringProperty(property);
+			if (propertyDefinedLocation != null) {
+				locations.add(propertyDefinedLocation);
+			}
 		}
-		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
-			Collections.addAll(locations, "log4j2-test.json", "log4j2-test.jsn");
-		}
-		locations.add("log4j2-test.xml");
-		locations.add("log4j2.properties");
-		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
-			Collections.addAll(locations, "log4j2.yaml", "log4j2.yml");
-		}
-		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
-			Collections.addAll(locations, "log4j2.json", "log4j2.jsn");
-		}
-		locations.add("log4j2.xml");
-		String propertyDefinedLocation = new PropertiesUtil(new Properties())
-			.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-		if (propertyDefinedLocation != null) {
-			locations.add(propertyDefinedLocation);
-		}
+
+		// If no custom location is defined, we use the standard locations.
+		LoggerContext loggerContext = getLoggerContext();
+		String contextName = loggerContext.getName();
+		List<String> extensions = getStandardConfigExtensions();
+		extensions.forEach((e) -> locations.add("log4j2-test" + contextName + e));
+		extensions.forEach((e) -> locations.add("log4j2-test" + e));
+		extensions.forEach((e) -> locations.add("log4j2" + contextName + e));
+		extensions.forEach((e) -> locations.add("log4j2" + e));
+
 		return StringUtils.toStringArray(locations);
 	}
 
-	protected boolean isClassAvailable(String className) {
-		return ClassUtils.isPresent(className, getClassLoader());
+	private List<String> getStandardConfigExtensions() {
+		List<String> extensions = new ArrayList<>();
+		// These classes need to be visible by the classloader that loads Log4j Core.
+		ClassLoader classLoader = LoggerContext.class.getClassLoader();
+		// The order of the extensions corresponds to the order
+		// in which Log4j Core 2 and 3 will try to load them,
+		// in decreasing value of `@Order`.
+		if (isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
+				|| isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
+			extensions.add(".properties");
+		}
+		if (areClassesAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
+				|| isClassAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
+			Collections.addAll(extensions, ".yaml", ".yml");
+		}
+		if (isClassAvailable(classLoader, JSON_TREE_PARSER_V2) || isClassAvailable(classLoader, JSON_TREE_PARSER_V3)) {
+			Collections.addAll(extensions, ".json", ".jsn");
+		}
+		// We assume the `java.xml` module is always available.
+		extensions.add(".xml");
+		return extensions;
+	}
+
+	private boolean areClassesAvailable(ClassLoader classLoader, String... classNames) {
+		for (String className : classNames) {
+			if (!isClassAvailable(classLoader, className)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
+		return ClassUtils.isPresent(className, classLoader);
 	}
 
 	@Override
