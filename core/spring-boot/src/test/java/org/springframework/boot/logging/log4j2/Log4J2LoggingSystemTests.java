@@ -24,12 +24,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.ProtocolException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
@@ -38,12 +41,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
+import org.apache.logging.log4j.core.config.json.JsonConfigurationFactory;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
+import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationBuilder;
+import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
+import org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusListener;
@@ -53,6 +59,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.MDC;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
@@ -89,6 +98,7 @@ import static org.mockito.Mockito.times;
  * @author Andy Wilkinson
  * @author Ben Hale
  * @author Madhura Bhave
+ * @author Piotr P. Karwasz
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -105,6 +115,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private Configuration configuration;
 
+	private String contextName;
+
 	@BeforeEach
 	void setup() {
 		PluginRegistry.getInstance().clear();
@@ -115,6 +127,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
+		this.contextName = loggerContext.getName();
 	}
 
 	@AfterEach
@@ -293,54 +306,79 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world");
 	}
 
-	@Test
-	void configLocationsWithNoExtraDependencies() {
-		assertThat(this.loggingSystem.getStandardConfigLocations()).contains("log4j2-test.properties",
-				"log4j2-test.xml", "log4j2.properties", "log4j2.xml");
+	static Stream<String> configLocationsWithConfigurationFileSystemProperty() {
+		return Stream.of("log4j2.configurationFile", "log4j.configuration.location");
 	}
 
-	@Test
-	void configLocationsWithJacksonDatabind() {
-		this.loggingSystem.availableClasses(ObjectMapper.class.getName());
-		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
-				"log4j2-test.json", "log4j2-test.jsn", "log4j2-test.xml", "log4j2.properties", "log4j2.json",
-				"log4j2.jsn", "log4j2.xml");
-	}
-
-	@Test
-	void configLocationsWithJacksonDataformatYaml() {
-		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser");
-		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
-				"log4j2-test.yaml", "log4j2-test.yml", "log4j2-test.xml", "log4j2.properties", "log4j2.yaml",
-				"log4j2.yml", "log4j2.xml");
-	}
-
-	@Test
-	void configLocationsWithJacksonDatabindAndDataformatYaml() {
-		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser",
-				ObjectMapper.class.getName());
-		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
-				"log4j2-test.yaml", "log4j2-test.yml", "log4j2-test.json", "log4j2-test.jsn", "log4j2-test.xml",
-				"log4j2.properties", "log4j2.yaml", "log4j2.yml", "log4j2.json", "log4j2.jsn", "log4j2.xml");
-	}
-
-	@Test
-	void configLocationsWithConfigurationFileSystemProperty() {
-		System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "custom-log4j2.properties");
+	@ParameterizedTest
+	@MethodSource
+	void configLocationsWithConfigurationFileSystemProperty(String propertyName) {
+		System.setProperty(propertyName, "custom-log4j2.properties");
 		try {
-			assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
-					"log4j2-test.xml", "log4j2.properties", "log4j2.xml", "custom-log4j2.properties");
+			assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("custom-log4j2.properties",
+					"log4j2-test" + this.contextName + ".xml", "log4j2-test.xml", "log4j2" + this.contextName + ".xml",
+					"log4j2.xml");
 		}
 		finally {
-			System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+			System.clearProperty(propertyName);
 		}
+	}
+
+	static Stream<Arguments> standardConfigLocations() {
+		// For each configuration file format we make "available" to the
+		// Log4j2LoggingSystem:
+		// - The Log4j Core `ConfigurationFactory` class
+		// - The tree parser used internally by that configuration factory
+		return Stream.of(
+				// No classes, only XML
+				Arguments.of(Collections.emptyList(), List.of(".xml")),
+				// Log4j Core 2
+				Arguments.of(List.of(JsonConfigurationFactory.class.getName(), ObjectMapper.class.getName()),
+						List.of(".json", ".jsn", ".xml")),
+				Arguments.of(List.of(PropertiesConfigurationFactory.class.getName(),
+						PropertiesConfigurationBuilder.class.getName()), List.of(".properties", ".xml")),
+				Arguments.of(List.of(YamlConfigurationFactory.class.getName(),
+						"com.fasterxml.jackson.dataformat.yaml.YAMLMapper"), List.of(".yaml", ".yml", ".xml")),
+				Arguments.of(List.of(JsonConfigurationFactory.class.getName(), ObjectMapper.class.getName(),
+						PropertiesConfigurationFactory.class.getName(), PropertiesConfigurationBuilder.class.getName(),
+						YamlConfigurationFactory.class.getName(), "com.fasterxml.jackson.dataformat.yaml.YAMLMapper"),
+						List.of(".properties", ".yaml", ".yml", ".json", ".jsn", ".xml")),
+				// Log4j Core 3
+				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
+						"org.apache.logging.log4j.kit.json.JsonReader"), List.of(".json", ".jsn", ".xml")),
+				Arguments.of(List.of("org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory",
+						"tools.jackson.dataformat.javaprop.JavaPropsMapper"), List.of(".properties", ".xml")),
+				Arguments.of(List.of("org.apache.logging.log4j.config.yaml.YamlConfigurationFactory",
+						"tools.jackson.dataformat.yaml.YAMLMapper"), List.of(".yaml", ".yml", ".xml")),
+				Arguments.of(
+						List.of(JsonConfigurationFactory.class.getName(),
+								"org.apache.logging.log4j.kit.json.JsonReader",
+								"org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory",
+								"tools.jackson.dataformat.javaprop.JavaPropsMapper",
+								"org.apache.logging.log4j.config.yaml.YamlConfigurationFactory",
+								"tools.jackson.dataformat.yaml.YAMLMapper"),
+						List.of(".properties", ".yaml", ".yml", ".json", ".jsn", ".xml")));
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void standardConfigLocations(List<String> availableClasses, List<String> expectedSuffixes) {
+		this.loggingSystem.availableClasses(availableClasses.toArray(new String[0]));
+		String[] locations = this.loggingSystem.getStandardConfigLocations();
+		assertThat(locations).hasSize(4 * expectedSuffixes.size());
+		List<String> expected = new ArrayList<>();
+		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + this.contextName + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2" + this.contextName + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2" + s));
+		assertThat(locations).containsExactlyElementsOf(expected);
 	}
 
 	@Test
 	void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).containsExactly("log4j2-test-spring.properties", "log4j2-test-spring.xml",
-				"log4j2-spring.properties", "log4j2-spring.xml");
+		assertThat(locations).containsExactly("log4j2-test" + this.contextName + "-spring.xml",
+				"log4j2-test-spring.xml", "log4j2" + this.contextName + "-spring.xml", "log4j2-spring.xml");
 	}
 
 	@Test
