@@ -6,6 +6,7 @@ org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataPropertiesRuntimeHints,\
 org.springframework.boot.env.PropertySourceRuntimeHints,\
 org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
+org.springframework.boot.logging.log4j2.Log4J2RuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.logging.structured.ElasticCommonSchemaProperties$ElasticCommonSchemaPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties$GraylogExtendedLogFormatPropertiesRuntimeHints,\

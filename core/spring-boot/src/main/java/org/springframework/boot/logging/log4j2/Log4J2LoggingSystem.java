@@ -90,44 +90,50 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String OPTIONAL_PREFIX = "optional:";
 
-	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
+	/**
+	 * JUL handler that routes messages to the Log4j API (optional dependency).
+	 */
+	static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
-	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+	/**
+	 * JUL LogManager that routes messages to the Log4j API as the backend.
+	 */
+	static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
 	/**
 	 * JSON tree parser used by Log4j 2 (optional dependency).
 	 */
-	private static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
+	static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
 
 	/**
 	 * JSON tree parser embedded in Log4j 3.
 	 */
-	private static final String JSON_TREE_PARSER_V3 = "org.apache.logging.log4j.kit.json.JsonReader";
+	static final String JSON_TREE_PARSER_V3 = "org.apache.logging.log4j.kit.json.JsonReader";
 
 	/**
 	 * Configuration factory for properties files (Log4j 2).
 	 */
-	private static final String PROPS_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory";
+	static final String PROPS_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory";
 
 	/**
 	 * Configuration factory for properties files (Log4j 3, optional dependency).
 	 */
-	private static final String PROPS_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory";
+	static final String PROPS_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory";
 
 	/**
 	 * YAML tree parser used by Log4j 2 (optional dependency).
 	 */
-	private static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
+	static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
 
 	/**
 	 * Configuration factory for YAML files (Log4j 2, embedded).
 	 */
-	private static final String YAML_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory";
+	static final String YAML_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory";
 
 	/**
 	 * Configuration factory for YAML files (Log4j 3, optional dependency).
 	 */
-	private static final String YAML_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.yaml.YamlConfigurationFactory";
+	static final String YAML_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.yaml.YamlConfigurationFactory";
 
 	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
@@ -616,8 +622,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Order(0)
 	public static class Factory implements LoggingSystemFactory {
 
-		private static final boolean PRESENT = ClassUtils
-			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+		static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
+
+		private static final boolean PRESENT = ClassUtils.isPresent(LOG4J_CORE_CONTEXT_FACTORY,
+				Factory.class.getClassLoader());
 
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
