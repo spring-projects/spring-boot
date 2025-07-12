@@ -71,6 +71,9 @@ dependencies {
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.jboss.logging:jboss-logging")
 	testImplementation("org.springframework.data:spring-data-r2dbc")
+
+	// Used in Log4J2RuntimeHintsTests
+	testRuntimeOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 }
 
 def syncJavaTemplates = tasks.register("syncJavaTemplates", Sync) {
