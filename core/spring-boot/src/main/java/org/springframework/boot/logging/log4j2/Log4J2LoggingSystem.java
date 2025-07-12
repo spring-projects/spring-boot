@@ -185,7 +185,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private boolean isLog4jBridgeHandlerAvailable() {
-		return isClassAvailable(Log4J2RuntimeHints.LOG4J_BRIDGE_HANDLER);
+		return ClassUtils.isPresent(Log4J2RuntimeHints.LOG4J_BRIDGE_HANDLER, getClassLoader());
 	}
 
 	private void removeLog4jBridgeHandler() {
