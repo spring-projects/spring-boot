@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.ProtocolException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -330,7 +331,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		// - The tree parser used internally by that configuration factory
 		return Stream.of(
 				// No classes, only XML
-				Arguments.of(List.of(), List.of(".xml")),
+				Arguments.of(Collections.emptyList(), List.of(".xml")),
 				// Log4j Core 2
 				Arguments.of(List.of(JsonConfigurationFactory.class.getName(), ObjectMapper.class.getName()),
 						List.of(".json", ".jsn", ".xml")),
@@ -366,18 +367,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		String[] locations = this.loggingSystem.getStandardConfigLocations();
 		assertThat(locations).hasSize(4 * expectedSuffixes.size());
 		List<String> expected = new ArrayList<>();
-		expectedSuffixes.forEach(s -> expected.add("log4j2-test" + this.contextName + s));
-		expectedSuffixes.forEach(s -> expected.add("log4j2-test" + s));
-		expectedSuffixes.forEach(s -> expected.add("log4j2" + this.contextName + s));
-		expectedSuffixes.forEach(s -> expected.add("log4j2" + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + this.contextName + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2" + this.contextName + s));
+		expectedSuffixes.forEach((s) -> expected.add("log4j2" + s));
 		assertThat(locations).containsExactlyElementsOf(expected);
 	}
 
 	@Test
 	void springConfigLocations() {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).containsExactly("log4j2-test" + contextName + "-spring.xml", "log4j2-test-spring.xml",
-				"log4j2" + contextName + "-spring.xml", "log4j2-spring.xml");
+		assertThat(locations).containsExactly("log4j2-test" + this.contextName + "-spring.xml",
+				"log4j2-test-spring.xml", "log4j2" + this.contextName + "-spring.xml", "log4j2-spring.xml");
 	}
 
 	@Test
