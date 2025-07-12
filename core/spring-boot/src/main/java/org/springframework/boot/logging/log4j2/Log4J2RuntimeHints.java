@@ -61,6 +61,9 @@ class Log4J2RuntimeHints implements RuntimeHintsRegistrar {
 
 	/**
 	 * Registers the type to prevent GraalVM from removing it during the native build.
+	 * @param hints the runtime hints to register with
+	 * @param classLoader the class loader to use for type resolution
+	 * @param typeName the name of the type to register
 	 */
 	private void registerTypeForReachability(RuntimeHints hints, ClassLoader classLoader, String typeName) {
 		hints.reflection().registerTypeIfPresent(classLoader, typeName);
