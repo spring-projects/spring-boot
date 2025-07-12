@@ -16,8 +16,6 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.core.impl.Log4jProvider;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
