@@ -66,6 +66,8 @@ public class Library {
 
 	private final String versionProperty;
 
+	private final UpgradePolicy upgradePolicy;
+
 	private final List<ProhibitedVersion> prohibitedVersions;
 
 	private final boolean considerSnapshots;
@@ -86,6 +88,8 @@ public class Library {
 	 * be {@code null} in which case the {@code name} is used.
 	 * @param version version of the library
 	 * @param groups groups in the library
+	 * @param upgradePolicy the upgrade policy of the library, or {@code null} to use the
+	 * containing bom's policy
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param considerSnapshots whether to consider snapshots
 	 * @param versionAlignment version alignment, if any, for the library
@@ -96,14 +100,16 @@ public class Library {
 	 * @param links a list of HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
-			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
-			String alignsWithBom, String linkRootName, Map<String, List<Link>> links) {
+			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots,
+			VersionAlignment versionAlignment, String alignsWithBom, String linkRootName,
+			Map<String, List<Link>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
 		this.groups = groups;
 		this.versionProperty = "Spring Boot".equals(name) ? null
 				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
+		this.upgradePolicy = upgradePolicy;
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
@@ -134,6 +140,10 @@ public class Library {
 
 	public String getVersionProperty() {
 		return this.versionProperty;
+	}
+
+	public UpgradePolicy getUpgradePolicy() {
+		return this.upgradePolicy;
 	}
 
 	public List<ProhibitedVersion> getProhibitedVersions() {
@@ -180,8 +190,9 @@ public class Library {
 	}
 
 	public Library withVersion(LibraryVersion version) {
-		return new Library(this.name, this.calendarName, version, this.groups, this.prohibitedVersions,
-				this.considerSnapshots, this.versionAlignment, this.alignsWithBom, this.linkRootName, this.links);
+		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
+				this.prohibitedVersions, this.considerSnapshots, this.versionAlignment, this.alignsWithBom,
+				this.linkRootName, this.links);
 	}
 
 	/**

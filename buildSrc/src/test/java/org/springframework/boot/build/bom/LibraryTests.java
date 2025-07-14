@@ -50,7 +50,7 @@ class LibraryTests {
 		String alignsWithBom = null;
 		String linkRootName = null;
 		Map<String, List<Link>> links = Collections.emptyMap();
-		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
 	}
@@ -67,7 +67,7 @@ class LibraryTests {
 		String alignsWithBom = null;
 		String linkRootName = "spring-data";
 		Map<String, List<Link>> links = Collections.emptyMap();
-		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}

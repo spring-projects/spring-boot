@@ -33,7 +33,7 @@ class UpgradeTests {
 
 	@Test
 	void createToRelease() {
-		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null,
+		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null, null,
 				false, null, null, null, null);
 		Upgrade upgrade = new Upgrade(from, from.withVersion(new LibraryVersion(DependencyVersion.parse("1.0.1"))));
 		assertThat(upgrade.from().getNameAndVersion()).isEqualTo("Test 1.0.0");
@@ -43,7 +43,7 @@ class UpgradeTests {
 
 	@Test
 	void createToSnapshot() {
-		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null,
+		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null, null,
 				false, null, null, null, null);
 		Upgrade upgrade = new Upgrade(from,
 				from.withVersion(new LibraryVersion(DependencyVersion.parse("1.0.1-SNAPSHOT"))),
