@@ -407,12 +407,15 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 }
 
 project.rootProject.gradle.projectsEvaluated {
-	Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
+	Set<Project> publishedProjects = rootProject.subprojects
+		.findAll { it != project }
 		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-		.findAll { !it.path.contains(":spring-boot-tools:") ||
-					it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-					it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
-					(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
+		.findAll { !it.path.contains(":build-plugin:") }
+		.findAll { !it.path.contains(":cli:") }
+		.findAll { !it.path.contains(":configuration-metadata:") }
+		.findAll { !it.path.contains(":core:spring-boot-properties-migrator") }
+		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
+		.findAll { !it.path.contains(":loader:spring-boot-loader-classic") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 	aggregatedJavadoc.configure {
 		dependsOn publishedProjects.javadoc
