@@ -66,17 +66,19 @@ class ArtifactReleaseTests {
 	}
 
 	@Test
-	void whenProjectVersionIsMilestoneThenRepositoryIsArtifactoryMilestone() {
+	void whenProjectVersionIsMilestoneThenRepositoryIsMavenCentral() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3-M1");
-		assertThat(ArtifactRelease.forProject(project).getDownloadRepo()).contains("repo.spring.io/milestone");
+		project.setVersion("4.0.0-M1");
+		assertThat(ArtifactRelease.forProject(project).getDownloadRepo())
+			.contains("https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
-	void whenProjectVersionIsReleaseCandidateThenRepositoryIsArtifactoryMilestone() {
+	void whenProjectVersionIsReleaseCandidateThenRepositoryIsMavenCentral() {
 		Project project = ProjectBuilder.builder().build();
-		project.setVersion("1.2.3-RC1");
-		assertThat(ArtifactRelease.forProject(project).getDownloadRepo()).contains("repo.spring.io/milestone");
+		project.setVersion("4.0.0-RC1");
+		assertThat(ArtifactRelease.forProject(project).getDownloadRepo())
+			.contains("https://repo.maven.apache.org/maven2");
 	}
 
 	@Test

@@ -101,9 +101,6 @@ class SpringRepositoriesExtension {
 
 	private void addRepositories(action) {
 		addCommercialRepository("release", false, "/spring-enterprise-maven-prod-local", action)
-		if (this.version.contains("-")) {
-			addOssRepository("milestone", false, "/milestone", action)
-		}
 		if (this.version.endsWith("-SNAPSHOT")) {
 			addCommercialRepository("snapshot", true, "/spring-enterprise-maven-dev-local", action)
 			addOssRepository("snapshot", true, "/snapshot", action)

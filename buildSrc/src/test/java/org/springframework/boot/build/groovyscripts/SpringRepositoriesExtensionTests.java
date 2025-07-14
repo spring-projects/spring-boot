@@ -80,57 +80,45 @@ class SpringRepositoriesExtensionTests {
 	void mavenRepositoriesWhenNotCommercialSnapshot() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(2);
-		verify(this.repositories.get(0)).setName("spring-oss-milestone");
-		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/milestone");
-		verify(this.mavenContent.get(0)).releasesOnly();
-		verify(this.repositories.get(1)).setName("spring-oss-snapshot");
-		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/snapshot");
-		verify(this.mavenContent.get(1)).snapshotsOnly();
+		assertThat(this.repositories).hasSize(1);
+		verify(this.repositories.get(0)).setName("spring-oss-snapshot");
+		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/snapshot");
+		verify(this.mavenContent.get(0)).snapshotsOnly();
 	}
 
 	@Test
 	void mavenRepositoriesWhenCommercialSnapshot() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "commercial");
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(4);
+		assertThat(this.repositories).hasSize(3);
 		verify(this.repositories.get(0)).setName("spring-commercial-release");
 		verify(this.repositories.get(0))
 			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
 		verify(this.mavenContent.get(0)).releasesOnly();
-		verify(this.repositories.get(1)).setName("spring-oss-milestone");
-		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/milestone");
-		verify(this.mavenContent.get(1)).releasesOnly();
-		verify(this.repositories.get(2)).setName("spring-commercial-snapshot");
-		verify(this.repositories.get(2)).setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-dev-local");
+		verify(this.repositories.get(1)).setName("spring-commercial-snapshot");
+		verify(this.repositories.get(1)).setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-dev-local");
+		verify(this.mavenContent.get(1)).snapshotsOnly();
+		verify(this.repositories.get(2)).setName("spring-oss-snapshot");
+		verify(this.repositories.get(2)).setUrl("https://repo.spring.io/snapshot");
 		verify(this.mavenContent.get(2)).snapshotsOnly();
-		verify(this.repositories.get(3)).setName("spring-oss-snapshot");
-		verify(this.repositories.get(3)).setUrl("https://repo.spring.io/snapshot");
-		verify(this.mavenContent.get(3)).snapshotsOnly();
 	}
 
 	@Test
 	void mavenRepositoriesWhenNotCommercialMilestone() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-M1", "oss");
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(1);
-		verify(this.repositories.get(0)).setName("spring-oss-milestone");
-		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/milestone");
-		verify(this.mavenContent.get(0)).releasesOnly();
+		assertThat(this.repositories).isEmpty();
 	}
 
 	@Test
 	void mavenRepositoriesWhenCommercialMilestone() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-M1", "commercial");
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(2);
+		assertThat(this.repositories).hasSize(1);
 		verify(this.repositories.get(0)).setName("spring-commercial-release");
 		verify(this.repositories.get(0))
 			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
 		verify(this.mavenContent.get(0)).releasesOnly();
-		verify(this.repositories.get(1)).setName("spring-oss-milestone");
-		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/milestone");
-		verify(this.mavenContent.get(1)).releasesOnly();
 	}
 
 	@Test
@@ -155,7 +143,7 @@ class SpringRepositoriesExtensionTests {
 	void mavenRepositoriesWhenConditionMatches() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
 		extension.mavenRepositories(true);
-		assertThat(this.repositories).hasSize(2);
+		assertThat(this.repositories).hasSize(1);
 	}
 
 	@Test
@@ -169,9 +157,8 @@ class SpringRepositoriesExtensionTests {
 	void mavenRepositoriesExcludingBootGroup() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
 		extension.mavenRepositoriesExcludingBootGroup();
-		assertThat(this.contents).hasSize(2);
+		assertThat(this.contents).hasSize(1);
 		verify(this.contents.get(0)).excludeGroup("org.springframework.boot");
-		verify(this.contents.get(1)).excludeGroup("org.springframework.boot");
 	}
 
 	@Test
@@ -185,9 +172,9 @@ class SpringRepositoriesExtensionTests {
 		environment.put("COMMERCIAL_SNAPSHOT_REPO_PASSWORD", "spass");
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "commercial", environment::get);
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(4);
+		assertThat(this.repositories).hasSize(3);
 		verify(this.repositories.get(0)).setUrl("curl");
-		verify(this.repositories.get(2)).setUrl("surl");
+		verify(this.repositories.get(1)).setUrl("surl");
 		assertThat(this.credentials).hasSize(2);
 		verify(this.credentials.get(0)).setUsername("cuser");
 		verify(this.credentials.get(0)).setPassword("cpass");
@@ -203,9 +190,9 @@ class SpringRepositoriesExtensionTests {
 		environment.put("COMMERCIAL_REPO_PASSWORD", "pass");
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "commercial", environment::get);
 		extension.mavenRepositories();
-		assertThat(this.repositories).hasSize(4);
+		assertThat(this.repositories).hasSize(3);
 		verify(this.repositories.get(0)).setUrl("url");
-		verify(this.repositories.get(2)).setUrl("url");
+		verify(this.repositories.get(1)).setUrl("url");
 		assertThat(this.credentials).hasSize(2);
 		verify(this.credentials.get(0)).setUsername("user");
 		verify(this.credentials.get(0)).setPassword("pass");

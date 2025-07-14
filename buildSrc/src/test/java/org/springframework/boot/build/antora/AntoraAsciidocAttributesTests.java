@@ -134,7 +134,7 @@ class AntoraAsciidocAttributesTests {
 	void urlArtifactRepositoryWhenMilestone() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.OPEN_SOURCE,
 				null, mockDependencyVersions(), null);
-		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/milestone");
+		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
