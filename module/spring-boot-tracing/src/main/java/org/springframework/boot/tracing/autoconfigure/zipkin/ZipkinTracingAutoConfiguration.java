@@ -50,7 +50,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(afterName = "org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration")
 @ConditionalOnClass(Encoding.class)
 @Import({ BraveConfiguration.class, OpenTelemetryConfiguration.class })
 public class ZipkinTracingAutoConfiguration {
@@ -60,6 +60,7 @@ public class ZipkinTracingAutoConfiguration {
 	static class BraveConfiguration {
 
 		@Bean
+		@ConditionalOnBean(Encoding.class)
 		@ConditionalOnMissingBean(value = MutableSpan.class, parameterizedContainer = BytesEncoder.class)
 		BytesEncoder<MutableSpan> mutableSpanBytesEncoder(Encoding encoding,
 				ObjectProvider<Tag<Throwable>> throwableTagProvider) {
