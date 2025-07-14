@@ -62,7 +62,7 @@ class HttpMessageConvertersRestClientCustomizerTests {
 		assertThat(apply(new HttpMessageConvertersRestClientCustomizer(c1, c2), c0)).containsExactly(c1, c2);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "removal" })
 	private List<HttpMessageConverter<?>> apply(HttpMessageConvertersRestClientCustomizer customizer,
 			HttpMessageConverter<?>... converters) {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>(Arrays.asList(converters));

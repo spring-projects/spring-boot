@@ -45,6 +45,7 @@ public class HttpMessageConvertersRestClientCustomizer implements RestClientCust
 		this.messageConverters = messageConverters;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void customize(RestClient.Builder restClientBuilder) {
 		restClientBuilder.messageConverters(this::configureMessageConverters);
