@@ -237,7 +237,7 @@ class AntoraAsciidocAttributesTests {
 		VersionAlignment versionAlignment = null;
 		String alignsWithBom = null;
 		String linkRootName = null;
-		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
+		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, considerSnapshots,
 				versionAlignment, alignsWithBom, linkRootName, links);
 		return library;
 	}
