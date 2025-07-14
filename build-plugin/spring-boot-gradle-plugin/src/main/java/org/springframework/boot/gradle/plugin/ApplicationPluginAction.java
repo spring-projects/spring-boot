@@ -141,9 +141,13 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void configureFileMode(CopySpec copySpec, int mode) {
-		copySpec.setFileMode(mode);
+		try {
+			copySpec.getClass().getMethod("setFileMode", Integer.class).invoke(copySpec, Integer.valueOf(mode));
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to set file mode on CopySpec", ex);
+		}
 	}
 
 }

@@ -285,7 +285,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureProductionRuntimeClasspathConfiguration(Project project) {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		productionRuntimeClasspath.setVisible(false);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		productionRuntimeClasspath.attributes((attributes) -> {

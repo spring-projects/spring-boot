@@ -504,9 +504,13 @@ class BootZipCopyAction implements CopyAction {
 					? details.getPermissions().toUnixNumeric() : getMode(details);
 		}
 
-		@SuppressWarnings("deprecation")
 		private int getMode(FileCopyDetails details) {
-			return details.getMode();
+			try {
+				return (int) details.getClass().getMethod("getMode").invoke(details);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to get mode from FileCopyDetails", ex);
+			}
 		}
 
 	}

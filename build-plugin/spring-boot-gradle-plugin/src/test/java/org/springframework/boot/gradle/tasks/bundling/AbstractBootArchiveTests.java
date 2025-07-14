@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -407,23 +410,46 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void reproducibleOrderingCanBeEnabled() throws IOException {
+	void archiveIsReproducibleByDefault() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
-		this.task.from(newFile("bravo.txt"), newFile("alpha.txt"), newFile("charlie.txt"));
-		this.task.setReproducibleFileOrder(true);
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
 		executeTask();
 		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
-		List<String> textFiles = new ArrayList<>();
+		List<String> files = new ArrayList<>();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				if (entry.getName().endsWith(".txt")) {
-					textFiles.add(entry.getName());
+				OffsetDateTime lastModifiedTime = entry.getLastModifiedTime().toInstant().atOffset(ZoneOffset.UTC);
+				assertThat(lastModifiedTime).isEqualTo(OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+				if (entry.getName().startsWith("files/")) {
+					files.add(entry.getName());
 				}
 			}
 		}
-		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
+		assertThat(files).containsExactly("files/", "files/a/", "files/a/alpha.txt", "files/b/", "files/b/bravo.txt",
+				"files/c/", "files/c/charlie.txt");
+	}
+
+	@Test
+	void archiveReproducibilityCanBeDisabled() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
+		this.task.setPreserveFileTimestamps(true);
+		this.task.setReproducibleFileOrder(false);
+		executeTask();
+		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".txt") || entry.getName().startsWith("BOOT-INF/lib/")) {
+					OffsetDateTime lastModifiedTime = entry.getLastModifiedTime().toInstant().atOffset(ZoneOffset.UTC);
+					assertThat(lastModifiedTime)
+						.isNotEqualTo(OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+				}
+			}
+		}
 	}
 
 	@Test
@@ -661,6 +687,19 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			entryNames.add(entries.nextElement().getName());
 		}
 		return entryNames;
+	}
+
+	protected File newFiles(String... names) throws IOException {
+		File dir = new File(this.temp, UUID.randomUUID().toString());
+		dir.mkdir();
+		List<File> files = new ArrayList<>();
+		for (String name : names) {
+			File file = new File(dir, name);
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+			files.add(file);
+		}
+		return dir;
 	}
 
 	protected File newFile(String name) throws IOException {
