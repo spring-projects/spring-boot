@@ -64,5 +64,5 @@ dependencies {
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("io.grpc:grpc-api:1.72.0")
+	testRuntimeOnly("io.grpc:grpc-api")
 }

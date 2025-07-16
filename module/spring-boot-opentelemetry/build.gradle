@@ -46,5 +46,5 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("io.grpc:grpc-api:1.72.0")
+	testRuntimeOnly("io.grpc:grpc-api")
 }

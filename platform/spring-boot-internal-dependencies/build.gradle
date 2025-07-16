@@ -90,7 +90,12 @@ bom {
 				"jsr305"
 			]
 		}
-	}	
+	}
+	library("gRPC", "1.73.0") {
+		group("io.grpc") {
+			bom("grpc-bom")
+		}
+	}
 	library("Janino", "3.1.12") {
 		group("org.codehaus.janino") {
 			bom("janino") {
