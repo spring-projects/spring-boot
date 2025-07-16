@@ -1603,7 +1603,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.1.122.Final") {
+	library("Netty", "4.1.123.Final") {
 		group("io.netty") {
 			bom("netty-bom")
 		}
