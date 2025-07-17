@@ -19,29 +19,23 @@ package org.springframework.boot.batch.autoconfigure;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.JobExecutionException;
-import org.springframework.batch.core.job.parameters.JobParameter;
 import org.springframework.batch.core.job.parameters.JobParameters;
-import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.job.parameters.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +74,6 @@ public class JobLauncherApplicationRunner
 
 	private final JobOperator jobOperator;
 
-	private final JobRepository jobRepository;
-
 	private JobRegistry jobRegistry;
 
 	private String jobName;
@@ -95,14 +87,10 @@ public class JobLauncherApplicationRunner
 	/**
 	 * Create a new {@link JobLauncherApplicationRunner}.
 	 * @param jobOperator to launch jobs
-	 * @param jobRepository to check if a job instance exists with the given parameters
-	 * when running a job
 	 */
-	public JobLauncherApplicationRunner(JobOperator jobOperator, JobRepository jobRepository) {
+	public JobLauncherApplicationRunner(JobOperator jobOperator) {
 		Assert.notNull(jobOperator, "'jobOperator' must not be null");
-		Assert.notNull(jobRepository, "'jobRepository' must not be null");
 		this.jobOperator = jobOperator;
-		this.jobRepository = jobRepository;
 	}
 
 	@Override
@@ -197,46 +185,10 @@ public class JobLauncherApplicationRunner
 	protected void execute(Job job, JobParameters jobParameters)
 			throws JobExecutionAlreadyRunningException, NoSuchJobException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		JobParameters parameters = getNextJobParameters(job, jobParameters);
-		JobExecution execution = this.jobOperator.start(job, parameters);
+		JobExecution execution = this.jobOperator.start(job, jobParameters);
 		if (this.publisher != null) {
 			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
-	}
-
-	private JobParameters getNextJobParameters(Job job, JobParameters jobParameters) {
-		if (this.jobRepository != null && this.jobRepository.getJobInstance(job.getName(), jobParameters) != null) {
-			return getNextJobParametersForExisting(job, jobParameters);
-		}
-		if (job.getJobParametersIncrementer() == null) {
-			return jobParameters;
-		}
-		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobRepository)
-			.getNextJobParameters(job)
-			.toJobParameters();
-		return merge(nextParameters, jobParameters);
-	}
-
-	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
-		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
-		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
-			JobParameters previousIdentifyingParameters = new JobParameters(
-					lastExecution.getJobParameters().getIdentifyingParameters());
-			return merge(previousIdentifyingParameters, jobParameters);
-		}
-		return jobParameters;
-	}
-
-	private boolean isStoppedOrFailed(JobExecution execution) {
-		BatchStatus status = (execution != null) ? execution.getStatus() : null;
-		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
-	}
-
-	private JobParameters merge(JobParameters parameters, JobParameters additionals) {
-		Map<String, JobParameter<?>> merged = new LinkedHashMap<>();
-		merged.putAll(parameters.getParameters());
-		merged.putAll(additionals.getParameters());
-		return new JobParameters(merged);
 	}
 
 }
