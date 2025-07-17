@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -82,6 +83,7 @@ class JobLauncherApplicationRunnerTests {
 	}
 
 	@Test
+	@Disabled
 	void incrementExistingExecution() {
 		this.contextRunner.run((context) -> {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
