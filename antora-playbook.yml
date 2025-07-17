@@ -31,9 +31,11 @@ content:
   sources:
   - url: .
     branches:
+    - '3.3.x'
     - '3.4.x'
     - '3.5.x'
     tags:
+    - 'v3.3.*'
     - 'v3.4.*'
     - 'v3.5.*'
     start_paths:
