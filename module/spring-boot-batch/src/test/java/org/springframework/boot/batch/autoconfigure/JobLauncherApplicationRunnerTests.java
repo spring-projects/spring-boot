@@ -115,8 +115,8 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.build();
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+				.build();
 			JobParameters jobParameters = new JobParametersBuilder().addLong("run.id", 1L).toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
 			jobLauncherContext.runner.execute(job, jobParameters);
@@ -152,8 +152,7 @@ class JobLauncherApplicationRunnerTests {
 				.preventRestart()
 				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
 				.build();
-			JobParameters jobParameters = new JobParametersBuilder()
-					.addString("name", "foo").toJobParameters();
+			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
 			assertThatExceptionOfType(JobRestartException.class).isThrownBy(() -> {

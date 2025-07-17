@@ -81,7 +81,8 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "spring.batch.job.enabled", matchIfMissing = true)
-	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties) {
+	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator,
+			BatchProperties properties) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobOperator);
 		String jobName = properties.getJob().getName();
 		if (StringUtils.hasText(jobName)) {
