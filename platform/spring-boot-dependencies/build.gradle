@@ -238,7 +238,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-lang")
-			releaseNotes("https://commons.apache.org/proper/commons-lang/changes-report.html#a{version}")
+			releaseNotes("https://commons.apache.org/proper/commons-lang/changes.html#a{version}")
 		}
 	}
 	library("Commons Logging", "1.3.5") {
