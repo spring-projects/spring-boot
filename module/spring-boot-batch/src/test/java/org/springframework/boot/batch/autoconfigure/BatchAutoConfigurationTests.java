@@ -533,8 +533,7 @@ class BatchAutoConfigurationTests {
 	}
 
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
-		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobOperator.class),
-				mock(JobRepository.class));
+		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobOperator.class));
 		JobRegistry jobRegistry = mock(JobRegistry.class);
 		given(jobRegistry.getJobNames()).willReturn(Arrays.asList(registeredJobNames));
 		runner.setJobRegistry(jobRegistry);

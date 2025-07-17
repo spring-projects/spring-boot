@@ -86,14 +86,15 @@ class JobLauncherApplicationRunnerTests {
 		this.contextRunner.run((context) -> {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.configureJob().incrementer(new RunIdIncrementer()).build();
-			jobLauncherContext.runner.execute(job, new JobParameters());
-			jobLauncherContext.runner.execute(job, new JobParameters());
+			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
+			jobLauncherContext.runner.execute(job, jobParameters);
+			jobLauncherContext.runner.execute(job, jobParameters);
 			assertThat(jobLauncherContext.jobInstances()).hasSize(2);
 		});
 	}
 
 	@Test
-	void retryFailedExecution() {
+	void retryFailedExecutionWithIncrementer() {
 		this.contextRunner.run((context) -> {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
@@ -102,7 +103,23 @@ class JobLauncherApplicationRunnerTests {
 				.incrementer(new RunIdIncrementer())
 				.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
-			jobLauncherContext.runner.execute(job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
+			jobLauncherContext.runner.execute(job, new JobParameters());
+			// with an incrementer, we always create a new job instance
+			assertThat(jobLauncherContext.jobInstances()).hasSize(2);
+		});
+	}
+
+	@Test
+	void retryFailedExecutionWithoutIncrementer() {
+		this.contextRunner.run((context) -> {
+			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
+			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
+			Job job = jobLauncherContext.jobBuilder()
+					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+					.build();
+			JobParameters jobParameters = new JobParametersBuilder().addLong("run.id", 1L).toJobParameters();
+			jobLauncherContext.runner.execute(job, jobParameters);
+			jobLauncherContext.runner.execute(job, jobParameters);
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
 		});
 	}
@@ -134,17 +151,14 @@ class JobLauncherApplicationRunnerTests {
 			Job job = jobLauncherContext.jobBuilder()
 				.preventRestart()
 				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-				.incrementer(new RunIdIncrementer())
 				.build();
-			jobLauncherContext.runner.execute(job, new JobParameters());
-			jobLauncherContext.runner.execute(job, new JobParameters());
-			// A failed job that is not restartable does not re-use the job params of
-			// the last execution, but creates a new job instance when running it again.
-			assertThat(jobLauncherContext.jobInstances()).hasSize(2);
+			JobParameters jobParameters = new JobParametersBuilder()
+					.addString("name", "foo").toJobParameters();
+			jobLauncherContext.runner.execute(job, jobParameters);
+			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
 			assertThatExceptionOfType(JobRestartException.class).isThrownBy(() -> {
 				// try to re-run a failed execution
-				jobLauncherContext.runner.execute(job,
-						new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
+				jobLauncherContext.runner.execute(job, jobParameters);
 				fail("expected JobRestartException");
 			}).withMessageContaining("JobInstance already exists and is not restartable");
 		});
@@ -157,9 +171,8 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
 				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-				.incrementer(new RunIdIncrementer())
 				.build();
-			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
+			JobParameters jobParameters = new JobParametersBuilder().addLong("run.id", 1L, true)
 				.addLong("foo", 2L, false)
 				.toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
@@ -200,7 +213,7 @@ class JobLauncherApplicationRunnerTests {
 			this.jobBuilder = new JobBuilder("job", jobRepository);
 			this.job = this.jobBuilder.start(this.step).build();
 			this.jobRepository = context.getBean(JobRepository.class);
-			this.runner = new JobLauncherApplicationRunner(jobOperator, jobRepository);
+			this.runner = new JobLauncherApplicationRunner(jobOperator);
 		}
 
 		List<JobInstance> jobInstances() {

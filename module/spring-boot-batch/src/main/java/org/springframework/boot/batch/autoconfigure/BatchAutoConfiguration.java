@@ -26,7 +26,6 @@ import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConf
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -82,9 +81,8 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "spring.batch.job.enabled", matchIfMissing = true)
-	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator,
-			JobRepository jobRepository, BatchProperties properties) {
-		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobOperator, jobRepository);
+	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties) {
+		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobOperator);
 		String jobName = properties.getJob().getName();
 		if (StringUtils.hasText(jobName)) {
 			runner.setJobName(jobName);
