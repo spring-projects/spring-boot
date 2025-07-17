@@ -163,7 +163,7 @@ public class GraphQlAutoConfiguration {
 			ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
-			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
+			.configureBinder((options) -> options.conversionService(ApplicationConversionService.getSharedInstance()));
 		executorProvider.ifAvailable(controllerConfigurer::setExecutor);
 		argumentResolvers.orderedStream().forEach(controllerConfigurer::addCustomArgumentResolver);
 		return controllerConfigurer;
