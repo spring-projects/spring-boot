@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for SSL bundles.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.ssl;
+
+import org.jspecify.annotations.NullMarked;

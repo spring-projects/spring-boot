@@ -34,6 +34,7 @@ import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -94,7 +95,9 @@ public final class JmxAutoConfiguration {
 		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
 		factory.setLocateExistingServerIfPossible(true);
 		factory.afterPropertiesSet();
-		return factory.getObject();
+		MBeanServer mBeanServer = factory.getObject();
+		Assert.state(mBeanServer != null, "'mBeanServer' must not be null");
+		return mBeanServer;
 	}
 
 }

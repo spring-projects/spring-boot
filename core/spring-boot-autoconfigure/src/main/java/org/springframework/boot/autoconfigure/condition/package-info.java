@@ -17,4 +17,7 @@
 /**
  * {@code @Condition} annotations and supporting classes.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.condition;
+
+import org.jspecify.annotations.NullMarked;

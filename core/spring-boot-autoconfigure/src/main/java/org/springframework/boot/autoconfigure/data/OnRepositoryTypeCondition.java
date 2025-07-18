@@ -19,12 +19,15 @@ package org.springframework.boot.autoconfigure.data;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link SpringBootCondition} for controlling what type of Spring Data repositories are
@@ -36,10 +39,14 @@ class OnRepositoryTypeCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnRepositoryType.class.getName(),
-				true);
-		RepositoryType configuredType = getTypeProperty(context.getEnvironment(), (String) attributes.get("store"));
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnRepositoryType.class.getName(), true);
+		Assert.state(attributes != null, "'attributes' must not be null");
+		String store = (String) attributes.get("store");
+		Assert.state(store != null, "'store' must not be null");
+		RepositoryType configuredType = getTypeProperty(context.getEnvironment(), store);
 		RepositoryType requiredType = (RepositoryType) attributes.get("type");
+		Assert.state(requiredType != null, "'requiredType' must not be null");
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnRepositoryType.class);
 		if (configuredType == requiredType || configuredType == RepositoryType.AUTO) {
 			return ConditionOutcome

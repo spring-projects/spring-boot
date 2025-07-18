@@ -23,6 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
@@ -49,7 +51,7 @@ public class MessageSourceProperties {
 	/**
 	 * List of locale-independent property file resources containing common messages.
 	 */
-	private List<Resource> commonMessages;
+	private @Nullable List<Resource> commonMessages;
 
 	/**
 	 * Message bundles encoding.
@@ -61,7 +63,7 @@ public class MessageSourceProperties {
 	 * forever. If a duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration cacheDuration;
+	private @Nullable Duration cacheDuration;
 
 	/**
 	 * Whether to fall back to the system Locale if no files for a specific Locale have
@@ -98,11 +100,11 @@ public class MessageSourceProperties {
 		this.encoding = encoding;
 	}
 
-	public Duration getCacheDuration() {
+	public @Nullable Duration getCacheDuration() {
 		return this.cacheDuration;
 	}
 
-	public void setCacheDuration(Duration cacheDuration) {
+	public void setCacheDuration(@Nullable Duration cacheDuration) {
 		this.cacheDuration = cacheDuration;
 	}
 
@@ -130,11 +132,11 @@ public class MessageSourceProperties {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 
-	public List<Resource> getCommonMessages() {
+	public @Nullable List<Resource> getCommonMessages() {
 		return this.commonMessages;
 	}
 
-	public void setCommonMessages(List<Resource> commonMessages) {
+	public void setCommonMessages(@Nullable List<Resource> commonMessages) {
 		this.commonMessages = commonMessages;
 	}
 

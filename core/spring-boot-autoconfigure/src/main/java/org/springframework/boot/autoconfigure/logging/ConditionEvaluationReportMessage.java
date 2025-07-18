@@ -27,6 +27,7 @@ import java.util.Set;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -133,6 +134,7 @@ public class ConditionEvaluationReportMessage {
 		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
 		for (String shortName : shortNames) {
 			List<String> fullyQualifiedNames = map.get(shortName);
+			Assert.state(fullyQualifiedNames != null, "'fullyQualifiedNames' must not be null");
 			if (fullyQualifiedNames.size() > 1) {
 				fullyQualifiedNames
 					.forEach((fullyQualifiedName) -> result.put(fullyQualifiedName, outcomes.get(fullyQualifiedName)));

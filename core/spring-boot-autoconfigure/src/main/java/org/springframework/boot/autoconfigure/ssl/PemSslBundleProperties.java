@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 
 /**
@@ -55,57 +57,57 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Type of the store to create, e.g. JKS.
 		 */
-		private String type;
+		private @Nullable String type;
 
 		/**
 		 * Location or content of the certificate or certificate chain in PEM format.
 		 */
-		private String certificate;
+		private @Nullable String certificate;
 
 		/**
 		 * Location or content of the private key in PEM format.
 		 */
-		private String privateKey;
+		private @Nullable String privateKey;
 
 		/**
 		 * Password used to decrypt an encrypted private key.
 		 */
-		private String privateKeyPassword;
+		private @Nullable String privateKeyPassword;
 
 		/**
 		 * Whether to verify that the private key matches the public key.
 		 */
 		private boolean verifyKeys;
 
-		public String getType() {
+		public @Nullable String getType() {
 			return this.type;
 		}
 
-		public void setType(String type) {
+		public void setType(@Nullable String type) {
 			this.type = type;
 		}
 
-		public String getCertificate() {
+		public @Nullable String getCertificate() {
 			return this.certificate;
 		}
 
-		public void setCertificate(String certificate) {
+		public void setCertificate(@Nullable String certificate) {
 			this.certificate = certificate;
 		}
 
-		public String getPrivateKey() {
+		public @Nullable String getPrivateKey() {
 			return this.privateKey;
 		}
 
-		public void setPrivateKey(String privateKey) {
+		public void setPrivateKey(@Nullable String privateKey) {
 			this.privateKey = privateKey;
 		}
 
-		public String getPrivateKeyPassword() {
+		public @Nullable String getPrivateKeyPassword() {
 			return this.privateKeyPassword;
 		}
 
-		public void setPrivateKeyPassword(String privateKeyPassword) {
+		public void setPrivateKeyPassword(@Nullable String privateKeyPassword) {
 			this.privateKeyPassword = privateKeyPassword;
 		}
 

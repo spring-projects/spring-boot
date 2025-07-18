@@ -72,7 +72,9 @@ public class EntityScanner {
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
 				for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(), this.context.getClassLoader()));
+					String beanClassName = candidate.getBeanClassName();
+					Assert.state(beanClassName != null, "'beanClassName' must not be null");
+					entitySet.add(ClassUtils.forName(beanClassName, this.context.getClassLoader()));
 				}
 			}
 		}

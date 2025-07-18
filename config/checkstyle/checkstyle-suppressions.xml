@@ -90,4 +90,5 @@
 	<suppress files="PemPrivateKeyParser\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="Bindable\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="LambdaSafe\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
+	<suppress files="ConditionMessage\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 </suppressions>

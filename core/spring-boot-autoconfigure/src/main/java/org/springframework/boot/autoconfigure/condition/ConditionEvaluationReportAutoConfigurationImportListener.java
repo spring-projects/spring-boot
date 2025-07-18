@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -32,7 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
 class ConditionEvaluationReportAutoConfigurationImportListener
 		implements AutoConfigurationImportListener, BeanFactoryAware {
 
-	private ConfigurableListableBeanFactory beanFactory;
+	private @Nullable ConfigurableListableBeanFactory beanFactory;
 
 	@Override
 	public void onAutoConfigurationImportEvent(AutoConfigurationImportEvent event) {

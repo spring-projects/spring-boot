@@ -22,6 +22,8 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StringUtils;
@@ -42,7 +44,7 @@ final class AutoConfigurationMetadataLoader {
 		return loadMetadata(classLoader, PATH);
 	}
 
-	static AutoConfigurationMetadata loadMetadata(ClassLoader classLoader, String path) {
+	static AutoConfigurationMetadata loadMetadata(@Nullable ClassLoader classLoader, String path) {
 		try {
 			Enumeration<URL> urls = (classLoader != null) ? classLoader.getResources(path)
 					: ClassLoader.getSystemResources(path);
@@ -78,34 +80,34 @@ final class AutoConfigurationMetadataLoader {
 		}
 
 		@Override
-		public Integer getInteger(String className, String key) {
+		public @Nullable Integer getInteger(String className, String key) {
 			return getInteger(className, key, null);
 		}
 
 		@Override
-		public Integer getInteger(String className, String key, Integer defaultValue) {
+		public @Nullable Integer getInteger(String className, String key, @Nullable Integer defaultValue) {
 			String value = get(className, key);
 			return (value != null) ? Integer.valueOf(value) : defaultValue;
 		}
 
 		@Override
-		public Set<String> getSet(String className, String key) {
+		public @Nullable Set<String> getSet(String className, String key) {
 			return getSet(className, key, null);
 		}
 
 		@Override
-		public Set<String> getSet(String className, String key, Set<String> defaultValue) {
+		public @Nullable Set<String> getSet(String className, String key, @Nullable Set<String> defaultValue) {
 			String value = get(className, key);
 			return (value != null) ? StringUtils.commaDelimitedListToSet(value) : defaultValue;
 		}
 
 		@Override
-		public String get(String className, String key) {
+		public @Nullable String get(String className, String key) {
 			return get(className, key, null);
 		}
 
 		@Override
-		public String get(String className, String key, String defaultValue) {
+		public @Nullable String get(String className, String key, @Nullable String defaultValue) {
 			String value = this.properties.getProperty(className + "." + key);
 			return (value != null) ? value : defaultValue;
 		}

@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InjectionPoint;
@@ -74,7 +76,8 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 	}
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause, String description) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause,
+			@Nullable String description) {
 		if (cause.getNumberOfBeansFound() != 0) {
 			return null;
 		}
@@ -118,7 +121,9 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 	}
 
 	private Class<?> extractBeanType(ResolvableType resolvableType) {
-		return resolvableType.getRawClass();
+		Class<?> rawClass = resolvableType.getRawClass();
+		Assert.state(rawClass != null, "'rawClass' must not be null");
+		return rawClass;
 	}
 
 	private List<AutoConfigurationResult> getAutoConfigurationResults(NoSuchBeanDefinitionException cause) {
@@ -140,7 +145,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 			.toList();
 	}
 
-	private MethodMetadata getFactoryMethodMetadata(String beanName) {
+	private @Nullable MethodMetadata getFactoryMethodMetadata(String beanName) {
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
 		if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
 			return annotatedBeanDefinition.getFactoryMethodMetadata();
@@ -183,7 +188,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		}
 	}
 
-	private InjectionPoint findInjectionPoint(Throwable failure) {
+	private @Nullable InjectionPoint findInjectionPoint(Throwable failure) {
 		UnsatisfiedDependencyException unsatisfiedDependencyException = findCause(failure,
 				UnsatisfiedDependencyException.class);
 		if (unsatisfiedDependencyException == null) {
@@ -196,7 +201,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 
 		private final String className;
 
-		private final String methodName;
+		private final @Nullable String methodName;
 
 		Source(String source) {
 			String[] tokens = source.split("#");
@@ -208,7 +213,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 			return this.className;
 		}
 
-		String getMethodName() {
+		@Nullable String getMethodName() {
 			return this.methodName;
 		}
 
@@ -252,7 +257,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		}
 
 		private boolean hasName(MethodMetadata methodMetadata, String name) {
-			Map<String, Object> attributes = methodMetadata.getAnnotationAttributes(Bean.class.getName());
+			Map<String, @Nullable Object> attributes = methodMetadata.getAnnotationAttributes(Bean.class.getName());
 			String[] candidates = (attributes != null) ? (String[]) attributes.get("name") : null;
 			if (candidates != null) {
 				for (String candidate : candidates) {
@@ -309,11 +314,11 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 
 	private static class UserConfigurationResult {
 
-		private final MethodMetadata methodMetadata;
+		private final @Nullable MethodMetadata methodMetadata;
 
 		private final boolean nullBean;
 
-		UserConfigurationResult(MethodMetadata methodMetadata, boolean nullBean) {
+		UserConfigurationResult(@Nullable MethodMetadata methodMetadata, boolean nullBean) {
 			this.methodMetadata = methodMetadata;
 			this.nullBean = nullBean;
 		}

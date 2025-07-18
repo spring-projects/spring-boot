@@ -26,6 +26,8 @@ import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -47,17 +49,18 @@ class CertificateMatcher {
 
 	private final Signature signature;
 
-	private final byte[] generatedSignature;
+	private final byte @Nullable [] generatedSignature;
 
 	CertificateMatcher(PrivateKey privateKey) {
 		Assert.notNull(privateKey, "'privateKey' must not be null");
 		this.privateKey = privateKey;
-		this.signature = createSignature(privateKey);
-		Assert.state(this.signature != null, "Failed to create signature");
-		this.generatedSignature = sign(this.signature, privateKey);
+		Signature signature = createSignature(privateKey);
+		Assert.state(signature != null, "Failed to create signature");
+		this.signature = signature;
+		this.generatedSignature = sign(signature, privateKey);
 	}
 
-	private Signature createSignature(PrivateKey privateKey) {
+	private @Nullable Signature createSignature(PrivateKey privateKey) {
 		try {
 			String algorithm = getSignatureAlgorithm(privateKey);
 			return (algorithm != null) ? Signature.getInstance(algorithm) : null;
@@ -67,7 +70,7 @@ class CertificateMatcher {
 		}
 	}
 
-	private static String getSignatureAlgorithm(PrivateKey privateKey) {
+	private static @Nullable String getSignatureAlgorithm(PrivateKey privateKey) {
 		// https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#signature-algorithms
 		// https://docs.oracle.com/en/java/javase/17/docs/specs/security/standard-names.html#keypairgenerator-algorithms
 		return switch (privateKey.getAlgorithm()) {
@@ -103,7 +106,7 @@ class CertificateMatcher {
 		}
 	}
 
-	private static byte[] sign(Signature signature, PrivateKey privateKey) {
+	private static byte @Nullable [] sign(Signature signature, PrivateKey privateKey) {
 		try {
 			signature.initSign(privateKey);
 			signature.update(DATA);

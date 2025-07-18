@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for admin-related features.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.admin;
+
+import org.jspecify.annotations.NullMarked;

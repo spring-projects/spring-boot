@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -54,7 +56,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 class TaskExecutorConfigurations {
 
-	private static TaskDecorator getTaskDecorator(ObjectProvider<TaskDecorator> taskDecorator) {
+	private static @Nullable TaskDecorator getTaskDecorator(ObjectProvider<TaskDecorator> taskDecorator) {
 		List<TaskDecorator> taskDecorators = taskDecorator.orderedStream().toList();
 		if (taskDecorators.size() == 1) {
 			return taskDecorators.get(0);

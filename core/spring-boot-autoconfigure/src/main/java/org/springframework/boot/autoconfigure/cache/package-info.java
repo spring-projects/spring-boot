@@ -17,4 +17,7 @@
 /**
  * Auto-configuration base classes for Caching support.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.cache;
+
+import org.jspecify.annotations.NullMarked;

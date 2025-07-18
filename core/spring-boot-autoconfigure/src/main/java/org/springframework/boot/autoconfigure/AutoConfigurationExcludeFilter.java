@@ -19,12 +19,15 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.util.Assert;
 
 /**
  * A {@link TypeFilter} implementation that matches registered auto-configuration classes.
@@ -35,9 +38,10 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
-	private volatile List<String> autoConfigurations;
+	private volatile @Nullable List<String> autoConfigurations;
 
 	@Override
 	public void setBeanClassLoader(ClassLoader beanClassLoader) {
@@ -66,6 +70,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 			ImportCandidates importCandidates = ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader);
 			this.autoConfigurations = importCandidates.getCandidates();
 		}
+		Assert.state(this.autoConfigurations != null, "'autoConfigurations' must not be null");
 		return this.autoConfigurations;
 	}
 

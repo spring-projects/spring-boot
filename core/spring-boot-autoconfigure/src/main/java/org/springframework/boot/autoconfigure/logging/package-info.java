@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for logging.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.logging;
+
+import org.jspecify.annotations.NullMarked;

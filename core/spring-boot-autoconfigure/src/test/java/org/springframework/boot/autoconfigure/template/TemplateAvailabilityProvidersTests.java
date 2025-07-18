@@ -73,7 +73,7 @@ class TemplateAvailabilityProvidersTests {
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TemplateAvailabilityProviders((ApplicationContext) null))
-			.withMessageContaining("'classLoader' must not be null");
+			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test

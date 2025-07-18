@@ -17,4 +17,7 @@
 /**
  * Auto-configuration base classes for Spring Data.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.data;
+
+import org.jspecify.annotations.NullMarked;

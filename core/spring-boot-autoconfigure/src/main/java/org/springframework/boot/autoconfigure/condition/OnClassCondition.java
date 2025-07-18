@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
@@ -44,7 +46,7 @@ import org.springframework.util.StringUtils;
 class OnClassCondition extends FilteringSpringBootCondition {
 
 	@Override
-	protected final ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+	protected final @Nullable ConditionOutcome[] getOutcomes(@Nullable String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		// Split the work and perform half in a background thread if more than one
 		// processor is available. Using a single additional thread seems to offer the
@@ -59,22 +61,22 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		}
 	}
 
-	private ConditionOutcome[] resolveOutcomesThreaded(String[] autoConfigurationClasses,
+	private @Nullable ConditionOutcome[] resolveOutcomesThreaded(@Nullable String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		int split = autoConfigurationClasses.length / 2;
 		OutcomesResolver firstHalfResolver = createOutcomesResolver(autoConfigurationClasses, 0, split,
 				autoConfigurationMetadata);
 		OutcomesResolver secondHalfResolver = new StandardOutcomesResolver(autoConfigurationClasses, split,
 				autoConfigurationClasses.length, autoConfigurationMetadata, getBeanClassLoader());
-		ConditionOutcome[] secondHalf = secondHalfResolver.resolveOutcomes();
-		ConditionOutcome[] firstHalf = firstHalfResolver.resolveOutcomes();
-		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
+		@Nullable ConditionOutcome[] secondHalf = secondHalfResolver.resolveOutcomes();
+		@Nullable ConditionOutcome[] firstHalf = firstHalfResolver.resolveOutcomes();
+		@Nullable ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
 		System.arraycopy(firstHalf, 0, outcomes, 0, firstHalf.length);
 		System.arraycopy(secondHalf, 0, outcomes, split, secondHalf.length);
 		return outcomes;
 	}
 
-	private OutcomesResolver createOutcomesResolver(String[] autoConfigurationClasses, int start, int end,
+	private OutcomesResolver createOutcomesResolver(@Nullable String[] autoConfigurationClasses, int start, int end,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		OutcomesResolver outcomesResolver = new StandardOutcomesResolver(autoConfigurationClasses, start, end,
 				autoConfigurationMetadata, getBeanClassLoader());
@@ -112,8 +114,9 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		return ConditionOutcome.match(matchMessage);
 	}
 
-	private List<String> getCandidates(AnnotatedTypeMetadata metadata, Class<?> annotationType) {
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(annotationType.getName(), true);
+	private @Nullable List<String> getCandidates(AnnotatedTypeMetadata metadata, Class<?> annotationType) {
+		MultiValueMap<String, @Nullable Object> attributes = metadata
+			.getAllAnnotationAttributes(annotationType.getName(), true);
 		if (attributes == null) {
 			return null;
 		}
@@ -123,7 +126,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		return candidates;
 	}
 
-	private void addAll(List<String> list, List<Object> itemsToAdd) {
+	private void addAll(List<String> list, @Nullable List<@Nullable Object> itemsToAdd) {
 		if (itemsToAdd != null) {
 			for (Object item : itemsToAdd) {
 				Collections.addAll(list, (String[]) item);
@@ -133,7 +136,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 	private interface OutcomesResolver {
 
-		ConditionOutcome[] resolveOutcomes();
+		@Nullable ConditionOutcome[] resolveOutcomes();
 
 	}
 
@@ -141,9 +144,9 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 		private final Thread thread;
 
-		private volatile ConditionOutcome[] outcomes;
+		private volatile @Nullable ConditionOutcome @Nullable [] outcomes;
 
-		private volatile Throwable failure;
+		private volatile @Nullable Throwable failure;
 
 		private ThreadedOutcomesResolver(OutcomesResolver outcomesResolver) {
 			this.thread = new Thread(() -> {
@@ -158,7 +161,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		}
 
 		@Override
-		public ConditionOutcome[] resolveOutcomes() {
+		public @Nullable ConditionOutcome[] resolveOutcomes() {
 			try {
 				this.thread.join();
 			}
@@ -169,7 +172,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			if (failure != null) {
 				ReflectionUtils.rethrowRuntimeException(failure);
 			}
-			ConditionOutcome[] outcomes = this.outcomes;
+			@Nullable ConditionOutcome[] outcomes = this.outcomes;
 			return (outcomes != null) ? outcomes : new ConditionOutcome[0];
 		}
 
@@ -177,7 +180,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 	private static final class StandardOutcomesResolver implements OutcomesResolver {
 
-		private final String[] autoConfigurationClasses;
+		private final @Nullable String[] autoConfigurationClasses;
 
 		private final int start;
 
@@ -187,7 +190,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 		private final ClassLoader beanClassLoader;
 
-		private StandardOutcomesResolver(String[] autoConfigurationClasses, int start, int end,
+		private StandardOutcomesResolver(@Nullable String[] autoConfigurationClasses, int start, int end,
 				AutoConfigurationMetadata autoConfigurationMetadata, ClassLoader beanClassLoader) {
 			this.autoConfigurationClasses = autoConfigurationClasses;
 			this.start = start;
@@ -197,13 +200,13 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		}
 
 		@Override
-		public ConditionOutcome[] resolveOutcomes() {
+		public @Nullable ConditionOutcome[] resolveOutcomes() {
 			return getOutcomes(this.autoConfigurationClasses, this.start, this.end, this.autoConfigurationMetadata);
 		}
 
-		private ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses, int start, int end,
-				AutoConfigurationMetadata autoConfigurationMetadata) {
-			ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
+		private @Nullable ConditionOutcome[] getOutcomes(@Nullable String[] autoConfigurationClasses, int start,
+				int end, AutoConfigurationMetadata autoConfigurationMetadata) {
+			@Nullable ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
 			for (int i = start; i < end; i++) {
 				String autoConfigurationClass = autoConfigurationClasses[i];
 				if (autoConfigurationClass != null) {
@@ -216,7 +219,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			return outcomes;
 		}
 
-		private ConditionOutcome getOutcome(String candidates) {
+		private @Nullable ConditionOutcome getOutcome(String candidates) {
 			try {
 				if (!candidates.contains(",")) {
 					return getOutcome(candidates, this.beanClassLoader);
@@ -234,7 +237,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			return null;
 		}
 
-		private ConditionOutcome getOutcome(String className, ClassLoader classLoader) {
+		private @Nullable ConditionOutcome getOutcome(String className, ClassLoader classLoader) {
 			if (ClassNameFilter.MISSING.matches(className, classLoader)) {
 				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
 					.didNotFind("required class")

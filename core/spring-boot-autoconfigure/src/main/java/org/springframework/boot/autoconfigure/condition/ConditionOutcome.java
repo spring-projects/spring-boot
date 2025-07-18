@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -111,13 +113,13 @@ public class ConditionOutcome {
 	 * Return an outcome message or {@code null}.
 	 * @return the message or {@code null}
 	 */
-	public String getMessage() {
+	public @Nullable String getMessage() {
 		return this.message.isEmpty() ? null : this.message.toString();
 	}
 
 	/**
-	 * Return an outcome message or {@code null}.
-	 * @return the message or {@code null}
+	 * Return an outcome message.
+	 * @return the message
 	 */
 	public ConditionMessage getConditionMessage() {
 		return this.message;

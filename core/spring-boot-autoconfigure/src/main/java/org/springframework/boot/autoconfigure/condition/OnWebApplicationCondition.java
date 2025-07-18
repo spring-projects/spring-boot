@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebEnvironment;
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
@@ -49,9 +52,9 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	private static final String REACTIVE_WEB_APPLICATION_CLASS = "org.springframework.web.reactive.HandlerResult";
 
 	@Override
-	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+	protected @Nullable ConditionOutcome[] getOutcomes(@Nullable String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
-		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
+		@Nullable ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
 		for (int i = 0; i < outcomes.length; i++) {
 			String autoConfigurationClass = autoConfigurationClasses[i];
 			if (autoConfigurationClass != null) {
@@ -62,7 +65,7 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 		return outcomes;
 	}
 
-	private ConditionOutcome getOutcome(String type) {
+	private @Nullable ConditionOutcome getOutcome(@Nullable String type) {
 		if (type == null) {
 			return null;
 		}
@@ -157,9 +160,12 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	}
 
 	private Type deduceType(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
 		if (attributes != null) {
-			return (Type) attributes.get("type");
+			Object type = attributes.get("type");
+			Assert.state(type != null, "'type' must not be null");
+			return (Type) type;
 		}
 		return Type.ANY;
 	}

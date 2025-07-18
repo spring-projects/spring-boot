@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -129,8 +131,14 @@ class OnPropertyCondition extends SpringBootCondition {
 			this.annotationType = annotationType;
 			this.prefix = (!annotationAttributes.containsKey("prefix")) ? "" : getPrefix(annotationAttributes);
 			this.names = getNames(annotationAttributes);
-			this.havingValue = annotationAttributes.get("havingValue").toString();
+			this.havingValue = getHavingValue(annotationAttributes);
 			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
+		}
+
+		private static String getHavingValue(AnnotationAttributes annotationAttributes) {
+			Object havingValue = annotationAttributes.get("havingValue");
+			Assert.state(havingValue != null, "'havingValue' must not be null");
+			return havingValue.toString();
 		}
 
 		private String getPrefix(AnnotationAttributes annotationAttributes) {
@@ -144,6 +152,8 @@ class OnPropertyCondition extends SpringBootCondition {
 		private String[] getNames(AnnotationAttributes annotationAttributes) {
 			String[] value = (String[]) annotationAttributes.get("value");
 			String[] name = (String[]) annotationAttributes.get("name");
+			Assert.state(value != null, "'value' must not be null");
+			Assert.state(name != null, "'name' must not be null");
 			Assert.state(value.length > 0 || name.length > 0,
 					() -> "The name or value attribute of @%s must be specified"
 						.formatted(ClassUtils.getShortName(this.annotationType)));
@@ -169,7 +179,7 @@ class OnPropertyCondition extends SpringBootCondition {
 			}
 		}
 
-		private boolean isMatch(String value, String requiredValue) {
+		private boolean isMatch(@Nullable String value, String requiredValue) {
 			if (StringUtils.hasLength(requiredValue)) {
 				return requiredValue.equalsIgnoreCase(value);
 			}

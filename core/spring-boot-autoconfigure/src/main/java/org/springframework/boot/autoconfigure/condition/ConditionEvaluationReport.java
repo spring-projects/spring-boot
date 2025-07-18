@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
@@ -58,7 +60,7 @@ public final class ConditionEvaluationReport {
 
 	private boolean addedAncestorOutcomes;
 
-	private ConditionEvaluationReport parent;
+	private @Nullable ConditionEvaluationReport parent;
 
 	private final List<String> exclusions = new ArrayList<>();
 
@@ -154,7 +156,7 @@ public final class ConditionEvaluationReport {
 	 * The parent report (from a parent BeanFactory if there is one).
 	 * @return the parent report (or null if there isn't one)
 	 */
-	public ConditionEvaluationReport getParent() {
+	public @Nullable ConditionEvaluationReport getParent() {
 		return this.parent;
 	}
 
@@ -164,7 +166,7 @@ public final class ConditionEvaluationReport {
 	 * @param beanFactory the bean factory (may be {@code null})
 	 * @return the {@link ConditionEvaluationReport} or {@code null}
 	 */
-	public static ConditionEvaluationReport find(BeanFactory beanFactory) {
+	public static @Nullable ConditionEvaluationReport find(BeanFactory beanFactory) {
 		if (beanFactory instanceof ConfigurableListableBeanFactory) {
 			return ConditionEvaluationReport.get((ConfigurableListableBeanFactory) beanFactory);
 		}
@@ -191,7 +193,7 @@ public final class ConditionEvaluationReport {
 		}
 	}
 
-	private static void locateParent(BeanFactory beanFactory, ConditionEvaluationReport report) {
+	private static void locateParent(@Nullable BeanFactory beanFactory, ConditionEvaluationReport report) {
 		if (beanFactory != null && report.parent == null && beanFactory.containsBean(BEAN_NAME)) {
 			report.parent = beanFactory.getBean(BEAN_NAME, ConditionEvaluationReport.class);
 		}

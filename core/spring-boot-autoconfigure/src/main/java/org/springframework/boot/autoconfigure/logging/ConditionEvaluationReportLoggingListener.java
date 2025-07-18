@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.logging;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
@@ -124,7 +126,7 @@ public class ConditionEvaluationReportLoggingListener
 		}
 
 		@Override
-		public boolean supportsSourceType(Class<?> sourceType) {
+		public boolean supportsSourceType(@Nullable Class<?> sourceType) {
 			return true;
 		}
 

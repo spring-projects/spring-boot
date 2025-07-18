@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -53,7 +54,7 @@ public class ConnectionDetailsFactories {
 	 * @param classLoader the class loader used to load factories
 	 * @since 3.5.0
 	 */
-	public ConnectionDetailsFactories(ClassLoader classLoader) {
+	public ConnectionDetailsFactories(@Nullable ClassLoader classLoader) {
 		this(SpringFactoriesLoader.forDefaultResourceLocation(classLoader));
 	}
 
@@ -126,9 +127,10 @@ public class ConnectionDetailsFactories {
 			ConnectionDetailsFactory<S, D> factory) {
 
 		@SuppressWarnings("unchecked")
-		private static <S, D extends ConnectionDetails> Registration<S, D> get(ConnectionDetailsFactory<S, D> factory) {
+		private static <S, D extends ConnectionDetails> @Nullable Registration<S, D> get(
+				ConnectionDetailsFactory<S, D> factory) {
 			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
-			Class<?>[] generics = type.resolveGenerics();
+			@Nullable Class<?>[] generics = type.resolveGenerics();
 			Class<S> sourceType = (Class<S>) generics[0];
 			Class<D> connectionDetailsType = (Class<D>) generics[1];
 			return (sourceType != null && connectionDetailsType != null)

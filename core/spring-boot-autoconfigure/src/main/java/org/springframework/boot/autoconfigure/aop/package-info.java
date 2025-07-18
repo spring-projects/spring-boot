@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring AOP.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.aop;
+
+import org.jspecify.annotations.NullMarked;

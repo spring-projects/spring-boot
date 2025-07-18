@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for the Spring context.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.context;
+
+import org.jspecify.annotations.NullMarked;

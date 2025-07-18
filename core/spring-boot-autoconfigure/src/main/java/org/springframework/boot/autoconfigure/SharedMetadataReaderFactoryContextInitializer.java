@@ -191,6 +191,7 @@ class SharedMetadataReaderFactoryContextInitializer implements
 			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>, ResourceLoaderAware,
 			ApplicationListener<ContextRefreshedEvent> {
 
+		@SuppressWarnings("NullAway.Init")
 		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
 
 		@Override

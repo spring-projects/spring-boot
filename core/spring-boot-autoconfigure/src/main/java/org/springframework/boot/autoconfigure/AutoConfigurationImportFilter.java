@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.EnvironmentAware;
@@ -54,6 +56,6 @@ public interface AutoConfigurationImportFilter {
 	 * {@code autoConfigurationClasses} parameter. Entries containing {@code false} will
 	 * not be imported.
 	 */
-	boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata);
+	boolean[] match(@Nullable String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata);
 
 }

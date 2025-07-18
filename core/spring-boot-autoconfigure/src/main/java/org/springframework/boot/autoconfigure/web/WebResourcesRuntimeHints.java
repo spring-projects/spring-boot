@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
@@ -33,7 +35,7 @@ public class WebResourcesRuntimeHints implements RuntimeHintsRegistrar {
 			"public/");
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		ClassLoader classLoaderToUse = (classLoader != null) ? classLoader : getClass().getClassLoader();
 		String[] locations = DEFAULT_LOCATIONS.stream()
 			.filter((candidate) -> classLoaderToUse.getResource(candidate) != null)

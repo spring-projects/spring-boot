@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.service.connection;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A factory to create {@link ConnectionDetails} from a given {@code source}.
  * Implementations should be registered in {@code META-INF/spring.factories}.
@@ -36,6 +38,6 @@ public interface ConnectionDetailsFactory<S, D extends ConnectionDetails> {
 	 * @param source the source
 	 * @return the connection details or {@code null}
 	 */
-	D getConnectionDetails(S source);
+	@Nullable D getConnectionDetails(S source);
 
 }

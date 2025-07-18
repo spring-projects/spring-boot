@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -60,6 +62,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -90,9 +93,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	@Override
-	protected final ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
+	protected final @Nullable ConditionOutcome[] getOutcomes(@Nullable String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
-		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
+		@Nullable ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
 		for (int i = 0; i < outcomes.length; i++) {
 			String autoConfigurationClass = autoConfigurationClasses[i];
 			if (autoConfigurationClass != null) {
@@ -108,7 +111,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return outcomes;
 	}
 
-	private ConditionOutcome getOutcome(Set<String> requiredBeanTypes, Class<? extends Annotation> annotation) {
+	private @Nullable ConditionOutcome getOutcome(@Nullable Set<String> requiredBeanTypes,
+			Class<? extends Annotation> annotation) {
 		List<String> missing = filter(requiredBeanTypes, ClassNameFilter.MISSING, getBeanClassLoader());
 		if (!missing.isEmpty()) {
 			ConditionMessage message = ConditionMessage.forCondition(annotation)
@@ -171,7 +175,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return ConditionOutcome
 				.match(spec.message(matchMessage).found("a single bean").items(Style.QUOTE, allBeans));
 		}
-		Map<String, BeanDefinition> beanDefinitions = getBeanDefinitions(spec.context.getBeanFactory(), allBeans,
+		ConfigurableListableBeanFactory beanFactory = spec.context.getBeanFactory();
+		Assert.state(beanFactory != null, "'beanFactory' must not be null");
+		Map<String, BeanDefinition> beanDefinitions = getBeanDefinitions(beanFactory, allBeans,
 				spec.getStrategy() == SearchStrategy.ALL);
 		List<String> primaryBeans = getPrimaryBeans(beanDefinitions);
 		if (primaryBeans.size() == 1) {
@@ -249,6 +255,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private ConfigurableListableBeanFactory getSearchBeanFactory(Spec<?> spec) {
 		ConfigurableListableBeanFactory beanFactory = spec.getContext().getBeanFactory();
+		Assert.state(beanFactory != null, "'beanFactory' must not be null'");
 		if (spec.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			Assert.state(parent instanceof ConfigurableListableBeanFactory,
@@ -269,8 +276,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return matchedNames;
 	}
 
-	private boolean isCandidate(ConfigurableListableBeanFactory beanFactory, String name, BeanDefinition definition,
-			Set<String> ignoredBeans) {
+	private boolean isCandidate(ConfigurableListableBeanFactory beanFactory, String name,
+			@Nullable BeanDefinition definition, Set<String> ignoredBeans) {
 		return (!ignoredBeans.contains(name)) && (definition == null
 				|| isAutowireCandidate(beanFactory, name, definition) && isDefaultCandidate(definition));
 	}
@@ -316,12 +323,14 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return (result != null) ? result : Collections.emptyMap();
 	}
 
-	private Map<String, BeanDefinition> collectBeanDefinitionsForType(ListableBeanFactory beanFactory,
+	private @Nullable Map<String, BeanDefinition> collectBeanDefinitionsForType(ListableBeanFactory beanFactory,
 			boolean considerHierarchy, ResolvableType type, Set<ResolvableType> parameterizedContainers,
-			Map<String, BeanDefinition> result) {
+			@Nullable Map<String, BeanDefinition> result) {
 		result = putAll(result, beanFactory.getBeanNamesForType(type, true, false), beanFactory);
 		for (ResolvableType parameterizedContainer : parameterizedContainers) {
-			ResolvableType generic = ResolvableType.forClassWithGenerics(parameterizedContainer.resolve(), type);
+			Class<?> resolved = parameterizedContainer.resolve();
+			Assert.state(resolved != null, "'resolved' must not be null");
+			ResolvableType generic = ResolvableType.forClassWithGenerics(resolved, type);
 			result = putAll(result, beanFactory.getBeanNamesForType(generic, true, false), beanFactory);
 		}
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
@@ -334,7 +343,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return result;
 	}
 
-	private Map<String, BeanDefinition> getBeanDefinitionsForAnnotation(ClassLoader classLoader,
+	private Map<String, BeanDefinition> getBeanDefinitionsForAnnotation(@Nullable ClassLoader classLoader,
 			ConfigurableListableBeanFactory beanFactory, String type, boolean considerHierarchy) throws LinkageError {
 		Map<String, BeanDefinition> result = null;
 		try {
@@ -348,13 +357,14 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends Annotation> resolveAnnotationType(ClassLoader classLoader, String type)
+	private Class<? extends Annotation> resolveAnnotationType(@Nullable ClassLoader classLoader, String type)
 			throws ClassNotFoundException {
 		return (Class<? extends Annotation>) resolve(type, classLoader);
 	}
 
-	private Map<String, BeanDefinition> collectBeanDefinitionsForAnnotation(ListableBeanFactory beanFactory,
-			Class<? extends Annotation> annotationType, boolean considerHierarchy, Map<String, BeanDefinition> result) {
+	private @Nullable Map<String, BeanDefinition> collectBeanDefinitionsForAnnotation(ListableBeanFactory beanFactory,
+			Class<? extends Annotation> annotationType, boolean considerHierarchy,
+			@Nullable Map<String, BeanDefinition> result) {
 		result = putAll(result, getBeanNamesForAnnotation(beanFactory, annotationType), beanFactory);
 		if (considerHierarchy) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
@@ -477,7 +487,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return matches;
 	}
 
-	private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName,
+	private @Nullable BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName,
 			boolean considerHierarchy) {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			return beanFactory.getBeanDefinition(beanName);
@@ -489,7 +499,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
-	private static Set<String> addAll(Set<String> result, Collection<String> additional) {
+	private static @Nullable Set<String> addAll(@Nullable Set<String> result, @Nullable Collection<String> additional) {
 		if (CollectionUtils.isEmpty(additional)) {
 			return result;
 		}
@@ -498,8 +508,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return result;
 	}
 
-	private static Map<String, BeanDefinition> putAll(Map<String, BeanDefinition> result, String[] beanNames,
-			ListableBeanFactory beanFactory) {
+	private static @Nullable Map<String, BeanDefinition> putAll(@Nullable Map<String, BeanDefinition> result,
+			String[] beanNames, ListableBeanFactory beanFactory) {
 		if (ObjectUtils.isEmpty(beanNames)) {
 			return result;
 		}
@@ -517,7 +527,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return result;
 	}
 
-	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+	private static @Nullable BeanDefinition getBeanDefinition(String beanName,
+			ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
@@ -548,7 +559,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private final Set<ResolvableType> parameterizedContainers;
 
-		private final SearchStrategy strategy;
+		private final @Nullable SearchStrategy strategy;
 
 		Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
 				Class<A> annotationType) {
@@ -621,7 +632,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return resolved;
 		}
 
-		protected void validate(BeanTypeDeductionException ex) {
+		protected void validate(@Nullable BeanTypeDeductionException ex) {
 			if (!hasAtLeastOneElement(getTypes(), getNames(), getAnnotations())) {
 				String message = getAnnotationName() + " did not specify a bean using type, name or annotation";
 				if (ex == null) {
@@ -671,13 +682,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return returnType;
 		}
 
-		private boolean isParameterizedContainer(Class<?> type) {
+		private boolean isParameterizedContainer(@Nullable Class<?> type) {
 			return (type != null) && this.parameterizedContainers.stream()
 				.map(ResolvableType::resolve)
 				.anyMatch((container) -> container != null && container.isAssignableFrom(type));
 		}
 
-		private ResolvableType getMethodReturnType(MethodMetadata metadata, ClassLoader classLoader)
+		private ResolvableType getMethodReturnType(MethodMetadata metadata, @Nullable ClassLoader classLoader)
 				throws ClassNotFoundException, LinkageError {
 			Class<?> declaringClass = resolve(metadata.getDeclaringClassName(), classLoader);
 			Method beanMethod = findBeanMethod(declaringClass, metadata.getMethodName());
@@ -698,7 +709,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			throw new IllegalStateException("Unable to find bean method " + methodName);
 		}
 
-		private boolean isBeanMethod(Method method) {
+		@Contract("null -> false")
+		private boolean isBeanMethod(@Nullable Method method) {
 			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 				.isPresent(Bean.class);
 		}
@@ -761,8 +773,10 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				string.append(StringUtils.collectionToCommaDelimitedString(this.ignoredTypes));
 				string.append("; ");
 			}
-			string.append("SearchStrategy: ");
-			string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
+			if (this.strategy != null) {
+				string.append("SearchStrategy: ");
+				string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
+			}
 			string.append(")");
 			return string.toString();
 		}
@@ -789,7 +803,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		@Override
-		protected void validate(BeanTypeDeductionException ex) {
+		protected void validate(@Nullable BeanTypeDeductionException ex) {
 			Assert.isTrue(getTypes().size() == 1,
 					() -> getAnnotationName() + " annotations must specify only one type (got "
 							+ StringUtils.collectionToCommaDelimitedString(getTypes()) + ")");

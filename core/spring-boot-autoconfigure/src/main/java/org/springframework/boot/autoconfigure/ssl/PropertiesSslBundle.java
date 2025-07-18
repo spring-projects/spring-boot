@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
@@ -60,11 +66,11 @@ public final class PropertiesSslBundle implements SslBundle {
 		this.managers = SslManagerBundle.from(this.stores, this.key);
 	}
 
-	private static SslBundleKey asSslKeyReference(Key key) {
+	private static SslBundleKey asSslKeyReference(@Nullable Key key) {
 		return (key != null) ? SslBundleKey.of(key.getPassword(), key.getAlias()) : SslBundleKey.NONE;
 	}
 
-	private static SslOptions asSslOptions(SslBundleProperties.Options options) {
+	private static SslOptions asSslOptions(SslBundleProperties.@Nullable Options options) {
 		return (options != null) ? SslOptions.of(options.getCiphers(), options.getEnabledProtocols()) : SslOptions.NONE;
 	}
 
@@ -120,13 +126,18 @@ public final class PropertiesSslBundle implements SslBundle {
 		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
-	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties,
+	private static @Nullable PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties,
 			ResourceLoader resourceLoader) {
 		PemSslStoreDetails details = asPemSslStoreDetails(properties);
 		PemSslStore pemSslStore = PemSslStore.load(details, resourceLoader);
 		if (properties.isVerifyKeys()) {
-			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
-			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
+			Assert.state(pemSslStore != null, "'pemSslStore' must not be null");
+			PrivateKey privateKey = pemSslStore.privateKey();
+			Assert.state(privateKey != null, "'privateKey' must not be null");
+			CertificateMatcher certificateMatcher = new CertificateMatcher(privateKey);
+			List<X509Certificate> certificates = pemSslStore.certificates();
+			Assert.state(certificates != null, "'certificates' must not be null");
+			Assert.state(certificateMatcher.matchesAny(certificates),
 					() -> "Private key in %s matches none of the certificates in the chain".formatted(propertyName));
 		}
 		return pemSslStore;

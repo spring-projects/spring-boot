@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -71,12 +73,13 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	@Override
-	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
+	protected @Nullable AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		return null;
 	}
 
 	@Override
-	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
+			@Nullable AnnotationAttributes attributes) {
 		List<String> candidates = new ArrayList<>();
 		Map<Class<?>, List<Annotation>> annotations = getAnnotations(metadata);
 		annotations.forEach(
@@ -93,13 +96,13 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	private Collection<String> getConfigurationsForAnnotation(Class<?> source, Annotation annotation) {
 		String[] classes = (String[]) AnnotationUtils.getAnnotationAttributes(annotation, true).get("classes");
-		if (classes.length > 0) {
+		if (classes != null && classes.length > 0) {
 			return Arrays.asList(classes);
 		}
 		return loadFactoryNames(source).stream().map(this::mapFactoryName).filter(Objects::nonNull).toList();
 	}
 
-	private String mapFactoryName(String name) {
+	private @Nullable String mapFactoryName(String name) {
 		if (!name.startsWith(OPTIONAL_PREFIX)) {
 			return name;
 		}
@@ -117,7 +120,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	@Override
-	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+	protected Set<String> getExclusions(AnnotationMetadata metadata, @Nullable AnnotationAttributes attributes) {
 		Set<String> exclusions = new LinkedHashSet<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		for (String annotationName : ANNOTATION_NAMES) {
@@ -148,7 +151,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		return Collections.unmodifiableMap(annotations);
 	}
 
-	private void collectAnnotations(Class<?> source, MultiValueMap<Class<?>, Annotation> annotations,
+	private void collectAnnotations(@Nullable Class<?> source, MultiValueMap<Class<?>, Annotation> annotations,
 			HashSet<Class<?>> seen) {
 		if (source != null && seen.add(source)) {
 			for (Annotation annotation : source.getDeclaredAnnotations()) {

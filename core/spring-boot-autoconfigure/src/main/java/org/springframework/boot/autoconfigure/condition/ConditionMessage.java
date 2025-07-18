@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -38,13 +40,13 @@ import org.springframework.util.StringUtils;
  */
 public final class ConditionMessage {
 
-	private final String message;
+	private final @Nullable String message;
 
 	private ConditionMessage() {
 		this(null);
 	}
 
-	private ConditionMessage(String message) {
+	private ConditionMessage(@Nullable String message) {
 		this.message = message;
 	}
 
@@ -87,7 +89,7 @@ public final class ConditionMessage {
 	 * @param message the message to append
 	 * @return a new {@link ConditionMessage} instance
 	 */
-	public ConditionMessage append(String message) {
+	public ConditionMessage append(@Nullable String message) {
 		if (!StringUtils.hasLength(message)) {
 			return this;
 		}
@@ -158,7 +160,7 @@ public final class ConditionMessage {
 	 * @param messages the source messages (may be {@code null})
 	 * @return a new {@link ConditionMessage} instance
 	 */
-	public static ConditionMessage of(Collection<? extends ConditionMessage> messages) {
+	public static ConditionMessage of(@Nullable Collection<? extends ConditionMessage> messages) {
 		ConditionMessage result = new ConditionMessage();
 		if (messages != null) {
 			for (ConditionMessage message : messages) {
@@ -296,7 +298,7 @@ public final class ConditionMessage {
 		 * @param reason the reason for the message
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage because(String reason) {
+		public ConditionMessage because(@Nullable String reason) {
 			if (StringUtils.hasLength(reason)) {
 				return new ConditionMessage(ConditionMessage.this,
 						StringUtils.hasLength(this.condition) ? this.condition + " " + reason : reason);
@@ -343,7 +345,7 @@ public final class ConditionMessage {
 		 * @param items the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage items(Object... items) {
+		public ConditionMessage items(Object @Nullable ... items) {
 			return items(Style.NORMAL, items);
 		}
 
@@ -355,7 +357,7 @@ public final class ConditionMessage {
 		 * @param items the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage items(Style style, Object... items) {
+		public ConditionMessage items(Style style, Object @Nullable ... items) {
 			return items(style, (items != null) ? Arrays.asList(items) : null);
 		}
 
@@ -366,7 +368,7 @@ public final class ConditionMessage {
 		 * @param items the source of the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage items(Collection<?> items) {
+		public ConditionMessage items(@Nullable Collection<?> items) {
 			return items(Style.NORMAL, items);
 		}
 
@@ -378,7 +380,7 @@ public final class ConditionMessage {
 		 * @param items the source of the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
-		public ConditionMessage items(Style style, Collection<?> items) {
+		public ConditionMessage items(Style style, @Nullable Collection<?> items) {
 			Assert.notNull(style, "'style' must not be null");
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
@@ -408,7 +410,7 @@ public final class ConditionMessage {
 		NORMAL {
 
 			@Override
-			protected Object applyToItem(Object item) {
+			protected @Nullable Object applyToItem(@Nullable Object item) {
 				return item;
 			}
 
@@ -420,24 +422,27 @@ public final class ConditionMessage {
 		QUOTE {
 
 			@Override
-			protected String applyToItem(Object item) {
+			protected @Nullable String applyToItem(@Nullable Object item) {
 				return (item != null) ? "'" + item + "'" : null;
 			}
 
 		};
 
-		public Collection<?> applyTo(Collection<?> items) {
+		public @Nullable Collection<?> applyTo(@Nullable Collection<?> items) {
 			if (items == null) {
 				return null;
 			}
 			List<Object> result = new ArrayList<>(items.size());
 			for (Object item : items) {
-				result.add(applyToItem(item));
+				Object applied = applyToItem(item);
+				if (applied != null) {
+					result.add(applied);
+				}
 			}
 			return result;
 		}
 
-		protected abstract Object applyToItem(Object item);
+		protected abstract @Nullable Object applyToItem(@Nullable Object item);
 
 	}
 

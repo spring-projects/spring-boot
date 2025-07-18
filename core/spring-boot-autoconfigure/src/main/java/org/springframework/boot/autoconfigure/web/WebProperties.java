@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
@@ -39,7 +41,7 @@ public class WebProperties {
 	 * Locale to use. By default, this locale is overridden by the "Accept-Language"
 	 * header.
 	 */
-	private Locale locale;
+	private @Nullable Locale locale;
 
 	/**
 	 * Define how the locale should be resolved.
@@ -48,11 +50,11 @@ public class WebProperties {
 
 	private final Resources resources = new Resources();
 
-	public Locale getLocale() {
+	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(Locale locale) {
+	public void setLocale(@Nullable Locale locale) {
 		this.locale = locale;
 	}
 
@@ -155,7 +157,7 @@ public class WebProperties {
 			 * Whether to enable the Spring Resource Handling chain. By default, disabled
 			 * unless at least one strategy has been enabled.
 			 */
-			private Boolean enabled;
+			private @Nullable Boolean enabled;
 
 			/**
 			 * Whether to enable caching in the Resource chain.
@@ -177,7 +179,7 @@ public class WebProperties {
 			 * @return whether the resource chain is enabled or {@code null} if no
 			 * specified settings are present.
 			 */
-			public Boolean getEnabled() {
+			public @Nullable Boolean getEnabled() {
 				return getEnabled(getStrategy().getFixed().isEnabled(), getStrategy().getContent().isEnabled(),
 						this.enabled);
 			}
@@ -213,7 +215,8 @@ public class WebProperties {
 				this.customized = true;
 			}
 
-			static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
+			static @Nullable Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
+					@Nullable Boolean chainEnabled) {
 				return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 			}
 
@@ -299,7 +302,7 @@ public class WebProperties {
 					/**
 					 * Version string to use for the fixed Version Strategy.
 					 */
-					private String version;
+					private @Nullable String version;
 
 					public boolean isEnabled() {
 						return this.enabled;
@@ -319,11 +322,11 @@ public class WebProperties {
 						this.paths = paths;
 					}
 
-					public String getVersion() {
+					public @Nullable String getVersion() {
 						return this.version;
 					}
 
-					public void setVersion(String version) {
+					public void setVersion(@Nullable String version) {
 						this.customized = true;
 						this.version = version;
 					}
@@ -351,7 +354,7 @@ public class WebProperties {
 			 * by the 'spring.web.resources.cache.cachecontrol' properties.
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
-			private Duration period;
+			private @Nullable Duration period;
 
 			/**
 			 * Cache control HTTP headers, only allows valid directive combinations.
@@ -365,11 +368,11 @@ public class WebProperties {
 			 */
 			private boolean useLastModified = true;
 
-			public Duration getPeriod() {
+			public @Nullable Duration getPeriod() {
 				return this.period;
 			}
 
-			public void setPeriod(Duration period) {
+			public void setPeriod(@Nullable Duration period) {
 				this.customized = true;
 				this.period = period;
 			}
@@ -402,169 +405,169 @@ public class WebProperties {
 				 * suffix is not specified.
 				 */
 				@DurationUnit(ChronoUnit.SECONDS)
-				private Duration maxAge;
+				private @Nullable Duration maxAge;
 
 				/**
 				 * Indicate that the cached response can be reused only if re-validated
 				 * with the server.
 				 */
-				private Boolean noCache;
+				private @Nullable Boolean noCache;
 
 				/**
 				 * Indicate to not cache the response in any case.
 				 */
-				private Boolean noStore;
+				private @Nullable Boolean noStore;
 
 				/**
 				 * Indicate that once it has become stale, a cache must not use the
 				 * response without re-validating it with the server.
 				 */
-				private Boolean mustRevalidate;
+				private @Nullable Boolean mustRevalidate;
 
 				/**
 				 * Indicate intermediaries (caches and others) that they should not
 				 * transform the response content.
 				 */
-				private Boolean noTransform;
+				private @Nullable Boolean noTransform;
 
 				/**
 				 * Indicate that any cache may store the response.
 				 */
-				private Boolean cachePublic;
+				private @Nullable Boolean cachePublic;
 
 				/**
 				 * Indicate that the response message is intended for a single user and
 				 * must not be stored by a shared cache.
 				 */
-				private Boolean cachePrivate;
+				private @Nullable Boolean cachePrivate;
 
 				/**
 				 * Same meaning as the "must-revalidate" directive, except that it does
 				 * not apply to private caches.
 				 */
-				private Boolean proxyRevalidate;
+				private @Nullable Boolean proxyRevalidate;
 
 				/**
 				 * Maximum time the response can be served after it becomes stale, in
 				 * seconds if no duration suffix is not specified.
 				 */
 				@DurationUnit(ChronoUnit.SECONDS)
-				private Duration staleWhileRevalidate;
+				private @Nullable Duration staleWhileRevalidate;
 
 				/**
 				 * Maximum time the response may be used when errors are encountered, in
 				 * seconds if no duration suffix is not specified.
 				 */
 				@DurationUnit(ChronoUnit.SECONDS)
-				private Duration staleIfError;
+				private @Nullable Duration staleIfError;
 
 				/**
 				 * Maximum time the response should be cached by shared caches, in seconds
 				 * if no duration suffix is not specified.
 				 */
 				@DurationUnit(ChronoUnit.SECONDS)
-				private Duration sMaxAge;
+				private @Nullable Duration sMaxAge;
 
-				public Duration getMaxAge() {
+				public @Nullable Duration getMaxAge() {
 					return this.maxAge;
 				}
 
-				public void setMaxAge(Duration maxAge) {
+				public void setMaxAge(@Nullable Duration maxAge) {
 					this.customized = true;
 					this.maxAge = maxAge;
 				}
 
-				public Boolean getNoCache() {
+				public @Nullable Boolean getNoCache() {
 					return this.noCache;
 				}
 
-				public void setNoCache(Boolean noCache) {
+				public void setNoCache(@Nullable Boolean noCache) {
 					this.customized = true;
 					this.noCache = noCache;
 				}
 
-				public Boolean getNoStore() {
+				public @Nullable Boolean getNoStore() {
 					return this.noStore;
 				}
 
-				public void setNoStore(Boolean noStore) {
+				public void setNoStore(@Nullable Boolean noStore) {
 					this.customized = true;
 					this.noStore = noStore;
 				}
 
-				public Boolean getMustRevalidate() {
+				public @Nullable Boolean getMustRevalidate() {
 					return this.mustRevalidate;
 				}
 
-				public void setMustRevalidate(Boolean mustRevalidate) {
+				public void setMustRevalidate(@Nullable Boolean mustRevalidate) {
 					this.customized = true;
 					this.mustRevalidate = mustRevalidate;
 				}
 
-				public Boolean getNoTransform() {
+				public @Nullable Boolean getNoTransform() {
 					return this.noTransform;
 				}
 
-				public void setNoTransform(Boolean noTransform) {
+				public void setNoTransform(@Nullable Boolean noTransform) {
 					this.customized = true;
 					this.noTransform = noTransform;
 				}
 
-				public Boolean getCachePublic() {
+				public @Nullable Boolean getCachePublic() {
 					return this.cachePublic;
 				}
 
-				public void setCachePublic(Boolean cachePublic) {
+				public void setCachePublic(@Nullable Boolean cachePublic) {
 					this.customized = true;
 					this.cachePublic = cachePublic;
 				}
 
-				public Boolean getCachePrivate() {
+				public @Nullable Boolean getCachePrivate() {
 					return this.cachePrivate;
 				}
 
-				public void setCachePrivate(Boolean cachePrivate) {
+				public void setCachePrivate(@Nullable Boolean cachePrivate) {
 					this.customized = true;
 					this.cachePrivate = cachePrivate;
 				}
 
-				public Boolean getProxyRevalidate() {
+				public @Nullable Boolean getProxyRevalidate() {
 					return this.proxyRevalidate;
 				}
 
-				public void setProxyRevalidate(Boolean proxyRevalidate) {
+				public void setProxyRevalidate(@Nullable Boolean proxyRevalidate) {
 					this.customized = true;
 					this.proxyRevalidate = proxyRevalidate;
 				}
 
-				public Duration getStaleWhileRevalidate() {
+				public @Nullable Duration getStaleWhileRevalidate() {
 					return this.staleWhileRevalidate;
 				}
 
-				public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
+				public void setStaleWhileRevalidate(@Nullable Duration staleWhileRevalidate) {
 					this.customized = true;
 					this.staleWhileRevalidate = staleWhileRevalidate;
 				}
 
-				public Duration getStaleIfError() {
+				public @Nullable Duration getStaleIfError() {
 					return this.staleIfError;
 				}
 
-				public void setStaleIfError(Duration staleIfError) {
+				public void setStaleIfError(@Nullable Duration staleIfError) {
 					this.customized = true;
 					this.staleIfError = staleIfError;
 				}
 
-				public Duration getSMaxAge() {
+				public @Nullable Duration getSMaxAge() {
 					return this.sMaxAge;
 				}
 
-				public void setSMaxAge(Duration sMaxAge) {
+				public void setSMaxAge(@Nullable Duration sMaxAge) {
 					this.customized = true;
 					this.sMaxAge = sMaxAge;
 				}
 
-				public CacheControl toHttpCacheControl() {
+				public @Nullable CacheControl toHttpCacheControl() {
 					PropertyMapper map = PropertyMapper.get();
 					CacheControl control = createCacheControl();
 					map.from(this::getMustRevalidate).whenTrue().toCall(control::mustRevalidate);

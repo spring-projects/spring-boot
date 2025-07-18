@@ -17,4 +17,7 @@
 /**
  * General purpose domain annotations and classes.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.domain;
+
+import org.jspecify.annotations.NullMarked;

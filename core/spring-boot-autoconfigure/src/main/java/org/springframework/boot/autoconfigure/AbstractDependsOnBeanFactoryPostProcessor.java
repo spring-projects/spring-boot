@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
@@ -50,7 +52,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 
 	private final Class<?> beanClass;
 
-	private final Class<? extends FactoryBean<?>> factoryBeanClass;
+	private final @Nullable Class<? extends FactoryBean<?>> factoryBeanClass;
 
 	private final Function<ListableBeanFactory, Set<String>> dependsOn;
 
@@ -61,7 +63,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	 * @param dependsOn dependency names
 	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-			Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
+			@Nullable Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = (beanFactory) -> new HashSet<>(Arrays.asList(dependsOn));
@@ -75,7 +77,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	 * @since 2.1.7
 	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-			Class<? extends FactoryBean<?>> factoryBeanClass, Class<?>... dependencyTypes) {
+			@Nullable Class<? extends FactoryBean<?>> factoryBeanClass, Class<?>... dependencyTypes) {
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = (beanFactory) -> Arrays.stream(dependencyTypes)

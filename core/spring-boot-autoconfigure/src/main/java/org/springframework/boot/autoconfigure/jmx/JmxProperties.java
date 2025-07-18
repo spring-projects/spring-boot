@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jmx;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.support.RegistrationPolicy;
 
@@ -46,7 +48,7 @@ public class JmxProperties {
 	/**
 	 * JMX domain name.
 	 */
-	private String defaultDomain;
+	private @Nullable String defaultDomain;
 
 	/**
 	 * JMX Registration policy.
@@ -77,11 +79,11 @@ public class JmxProperties {
 		this.server = server;
 	}
 
-	public String getDefaultDomain() {
+	public @Nullable String getDefaultDomain() {
 		return this.defaultDomain;
 	}
 
-	public void setDefaultDomain(String defaultDomain) {
+	public void setDefaultDomain(@Nullable String defaultDomain) {
 		this.defaultDomain = defaultDomain;
 	}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.annotation.Condition;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks for a required version of Java.
@@ -40,9 +43,12 @@ class OnJavaCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
+		Map<String, @Nullable Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
+		Assert.state(attributes != null, "'attributes' must not be null");
 		Range range = (Range) attributes.get("range");
+		Assert.state(range != null, "'range' must not be null");
 		JavaVersion version = (JavaVersion) attributes.get("value");
+		Assert.state(version != null, "'version' must not be null");
 		return getMatchOutcome(range, JVM_VERSION, version);
 	}
 

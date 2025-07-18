@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.task;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -86,7 +88,7 @@ public class TaskExecutionProperties {
 		 * Set the maximum number of parallel accesses allowed. -1 indicates no
 		 * concurrency limit at all.
 		 */
-		private Integer concurrencyLimit;
+		private @Nullable Integer concurrencyLimit;
 
 		public boolean isRejectTasksWhenLimitReached() {
 			return this.rejectTasksWhenLimitReached;
@@ -96,11 +98,11 @@ public class TaskExecutionProperties {
 			this.rejectTasksWhenLimitReached = rejectTasksWhenLimitReached;
 		}
 
-		public Integer getConcurrencyLimit() {
+		public @Nullable Integer getConcurrencyLimit() {
 			return this.concurrencyLimit;
 		}
 
-		public void setConcurrencyLimit(Integer concurrencyLimit) {
+		public void setConcurrencyLimit(@Nullable Integer concurrencyLimit) {
 			this.concurrencyLimit = concurrencyLimit;
 		}
 
@@ -215,7 +217,7 @@ public class TaskExecutionProperties {
 		/**
 		 * Maximum time the executor should wait for remaining tasks to complete.
 		 */
-		private Duration awaitTerminationPeriod;
+		private @Nullable Duration awaitTerminationPeriod;
 
 		public boolean isAwaitTermination() {
 			return this.awaitTermination;
@@ -225,11 +227,11 @@ public class TaskExecutionProperties {
 			this.awaitTermination = awaitTermination;
 		}
 
-		public Duration getAwaitTerminationPeriod() {
+		public @Nullable Duration getAwaitTerminationPeriod() {
 			return this.awaitTerminationPeriod;
 		}
 
-		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+		public void setAwaitTerminationPeriod(@Nullable Duration awaitTerminationPeriod) {
 			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 

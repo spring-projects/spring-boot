@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for project information.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.info;
+
+import org.jspecify.annotations.NullMarked;

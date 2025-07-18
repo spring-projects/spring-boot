@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.container;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.AttributeAccessor;
 
@@ -29,7 +31,7 @@ import org.springframework.core.AttributeAccessor;
  * @author Phillip Webb
  * @since 3.4.0
  */
-public record ContainerImageMetadata(String imageName) {
+public record ContainerImageMetadata(@Nullable String imageName) {
 
 	static final String NAME = ContainerImageMetadata.class.getName();
 
@@ -37,7 +39,7 @@ public record ContainerImageMetadata(String imageName) {
 	 * Add this container image metadata to the given attributes.
 	 * @param attributes the attributes to add the metadata to
 	 */
-	public void addTo(AttributeAccessor attributes) {
+	public void addTo(@Nullable AttributeAccessor attributes) {
 		if (attributes != null) {
 			attributes.setAttribute(NAME, this);
 		}
@@ -49,7 +51,7 @@ public record ContainerImageMetadata(String imageName) {
 	 * @param attributes the attributes to check
 	 * @return if metadata is present
 	 */
-	public static boolean isPresent(AttributeAccessor attributes) {
+	public static boolean isPresent(@Nullable AttributeAccessor attributes) {
 		return getFrom(attributes) != null;
 	}
 
@@ -59,7 +61,7 @@ public record ContainerImageMetadata(String imageName) {
 	 * @param attributes the attributes
 	 * @return the metadata or {@code null}
 	 */
-	public static ContainerImageMetadata getFrom(AttributeAccessor attributes) {
+	public static @Nullable ContainerImageMetadata getFrom(@Nullable AttributeAccessor attributes) {
 		return (attributes != null) ? (ContainerImageMetadata) attributes.getAttribute(NAME) : null;
 	}
 

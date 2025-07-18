@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.ssl;
 
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Moritz Halbritter
  */
-record BundleContentProperty(String name, String value) {
+record BundleContentProperty(String name, @Nullable String value) {
 
 	/**
 	 * Return if the property value is PEM content.
@@ -54,6 +56,7 @@ record BundleContentProperty(String name, String value) {
 	Path toWatchPath(ResourceLoader resourceLoader) {
 		try {
 			Assert.state(!isPemContent(), "Value contains PEM content");
+			Assert.state(this.value != null, "Value must not be null");
 			Resource resource = resourceLoader.getResource(this.value);
 			if (!resource.isFile()) {
 				throw new BundleContentNotWatchableException(this);

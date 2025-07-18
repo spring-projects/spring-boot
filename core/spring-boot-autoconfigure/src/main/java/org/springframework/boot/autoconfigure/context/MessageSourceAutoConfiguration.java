@@ -22,6 +22,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -92,7 +94,7 @@ public final class MessageSourceAutoConfiguration {
 		return messageSource;
 	}
 
-	private Properties loadCommonMessages(List<Resource> resources) {
+	private @Nullable Properties loadCommonMessages(@Nullable List<Resource> resources) {
 		if (CollectionUtils.isEmpty(resources)) {
 			return null;
 		}
@@ -135,7 +137,7 @@ public final class MessageSourceAutoConfiguration {
 			return ConditionOutcome.noMatch(message.didNotFind("bundle with basename " + basename).atAll());
 		}
 
-		private Resource[] getResources(ClassLoader classLoader, String name) {
+		private Resource[] getResources(@Nullable ClassLoader classLoader, String name) {
 			String target = name.replace('.', '/');
 			try {
 				return new PathMatchingResourcePatternResolver(classLoader)
@@ -151,7 +153,7 @@ public final class MessageSourceAutoConfiguration {
 	static class MessageSourceRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("messages.properties").registerPattern("messages_*.properties");
 		}
 

@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web.format;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -30,13 +32,13 @@ import org.springframework.util.StringUtils;
  */
 public class DateTimeFormatters {
 
-	private DateTimeFormatter dateFormatter;
+	private @Nullable DateTimeFormatter dateFormatter;
 
-	private String datePattern;
+	private @Nullable String datePattern;
 
-	private DateTimeFormatter timeFormatter;
+	private @Nullable DateTimeFormatter timeFormatter;
 
-	private DateTimeFormatter dateTimeFormatter;
+	private @Nullable DateTimeFormatter dateTimeFormatter;
 
 	/**
 	 * Configures the date format using the given {@code pattern}.
@@ -77,19 +79,19 @@ public class DateTimeFormatters {
 		return this;
 	}
 
-	DateTimeFormatter getDateFormatter() {
+	@Nullable DateTimeFormatter getDateFormatter() {
 		return this.dateFormatter;
 	}
 
-	String getDatePattern() {
+	@Nullable String getDatePattern() {
 		return this.datePattern;
 	}
 
-	DateTimeFormatter getTimeFormatter() {
+	@Nullable DateTimeFormatter getTimeFormatter() {
 		return this.timeFormatter;
 	}
 
-	DateTimeFormatter getDateTimeFormatter() {
+	@Nullable DateTimeFormatter getDateTimeFormatter() {
 		return this.dateTimeFormatter;
 	}
 
@@ -97,7 +99,7 @@ public class DateTimeFormatters {
 		return this.dateFormatter != null || this.timeFormatter != null || this.dateTimeFormatter != null;
 	}
 
-	private static DateTimeFormatter formatter(String pattern) {
+	private static @Nullable DateTimeFormatter formatter(String pattern) {
 		return StringUtils.hasText(pattern)
 				? DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.SMART) : null;
 	}

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.ssl;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundle;
 
 /**
@@ -79,26 +81,26 @@ public abstract class SslBundleProperties {
 		/**
 		 * Supported SSL ciphers.
 		 */
-		private Set<String> ciphers;
+		private @Nullable Set<String> ciphers;
 
 		/**
 		 * Enabled SSL protocols.
 		 */
-		private Set<String> enabledProtocols;
+		private @Nullable Set<String> enabledProtocols;
 
-		public Set<String> getCiphers() {
+		public @Nullable Set<String> getCiphers() {
 			return this.ciphers;
 		}
 
-		public void setCiphers(Set<String> ciphers) {
+		public void setCiphers(@Nullable Set<String> ciphers) {
 			this.ciphers = ciphers;
 		}
 
-		public Set<String> getEnabledProtocols() {
+		public @Nullable Set<String> getEnabledProtocols() {
 			return this.enabledProtocols;
 		}
 
-		public void setEnabledProtocols(Set<String> enabledProtocols) {
+		public void setEnabledProtocols(@Nullable Set<String> enabledProtocols) {
 			this.enabledProtocols = enabledProtocols;
 		}
 
@@ -109,26 +111,26 @@ public abstract class SslBundleProperties {
 		/**
 		 * The password used to access the key in the key store.
 		 */
-		private String password;
+		private @Nullable String password;
 
 		/**
 		 * The alias that identifies the key in the key store.
 		 */
-		private String alias;
+		private @Nullable String alias;
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
-		public String getAlias() {
+		public @Nullable String getAlias() {
 			return this.alias;
 		}
 
-		public void setAlias(String alias) {
+		public void setAlias(@Nullable String alias) {
 			this.alias = alias;
 		}
 

@@ -21,6 +21,8 @@ import java.util.Hashtable;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,6 +30,7 @@ import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.support.JmxUtils;
 import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -39,6 +42,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements ApplicationContextAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext applicationContext;
 
 	private boolean ensureUniqueRuntimeObjectNames;
@@ -62,7 +66,7 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	}
 
 	@Override
-	public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
+	public ObjectName getObjectName(Object managedBean, @Nullable String beanKey) throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
 		if (this.ensureUniqueRuntimeObjectNames) {
 			return JmxUtils.appendIdentityToObjectName(name, managedBean);
@@ -73,12 +77,15 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		return name;
 	}
 
-	private boolean parentContextContainsSameBean(ApplicationContext context, String beanKey) {
+	private boolean parentContextContainsSameBean(ApplicationContext context, @Nullable String beanKey) {
 		if (context.getParent() == null) {
 			return false;
 		}
 		try {
-			this.applicationContext.getParent().getBean(beanKey);
+			ApplicationContext parent = this.applicationContext.getParent();
+			Assert.state(parent != null, "'parent' must not be null");
+			Assert.state(beanKey != null, "'beanKey' must not be null");
+			parent.getBean(beanKey);
 			return true;
 		}
 		catch (BeansException ex) {

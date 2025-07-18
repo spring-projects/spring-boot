@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -24,6 +28,7 @@ import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * A Condition that evaluates a SpEL expression.
@@ -37,8 +42,11 @@ class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
-			.get("value");
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnExpression.class.getName());
+		Assert.state(attributes != null, "'attributes' must not be null");
+		String expression = (String) attributes.get("value");
+		Assert.state(expression != null, "'expression' must not be null");
 		expression = wrapIfNecessary(expression);
 		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
 				"(" + expression + ")");

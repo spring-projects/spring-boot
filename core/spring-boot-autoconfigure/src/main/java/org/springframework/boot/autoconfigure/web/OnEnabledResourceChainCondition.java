@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -24,6 +26,7 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.lang.Contract;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -64,8 +67,13 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		return ConditionOutcome.noMatch(message.because("disabled"));
 	}
 
-	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key, Boolean defaultValue) {
+	@Contract("_, _, !null -> !null")
+	private @Nullable Boolean getEnabledProperty(ConfigurableEnvironment environment, String key,
+			@Nullable Boolean defaultValue) {
 		String name = "spring.web.resources.chain." + key + "enabled";
+		if (defaultValue == null) {
+			return environment.getProperty(name, Boolean.class);
+		}
 		return environment.getProperty(name, Boolean.class, defaultValue);
 	}
 

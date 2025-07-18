@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -153,8 +155,8 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 
 		@SuppressWarnings("unchecked")
 		private List<String[]> getConditionClasses(AnnotatedTypeMetadata metadata) {
-			MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(Conditional.class.getName(),
-					true);
+			MultiValueMap<String, @Nullable Object> attributes = metadata
+				.getAllAnnotationAttributes(Conditional.class.getName(), true);
 			Object values = (attributes != null) ? attributes.get("value") : null;
 			return (List<String[]>) ((values != null) ? values : Collections.emptyList());
 		}

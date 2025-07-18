@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -57,7 +58,7 @@ class FileWatcher implements Closeable {
 
 	private final Object lock = new Object();
 
-	private WatcherThread thread;
+	private @Nullable WatcherThread thread;
 
 	/**
 	 * Create a new {@link FileWatcher} instance.
@@ -241,6 +242,7 @@ class FileWatcher implements Closeable {
 			Path directory = (Path) key.watchable();
 			for (WatchEvent<?> event : key.pollEvents()) {
 				Path file = directory.resolve((Path) event.context());
+				Assert.state(registrations != null, "'registrations' must not be null");
 				for (Registration registration : registrations) {
 					if (registration.manages(file)) {
 						actions.add(registration.action());

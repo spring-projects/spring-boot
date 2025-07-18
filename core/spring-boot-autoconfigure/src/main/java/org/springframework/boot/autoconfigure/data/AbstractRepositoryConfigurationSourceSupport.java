@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data;
 
 import java.lang.annotation.Annotation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -48,15 +50,18 @@ import org.springframework.data.util.Streamable;
 public abstract class AbstractRepositoryConfigurationSourceSupport
 		implements ImportBeanDefinitionRegistrar, BeanFactoryAware, ResourceLoaderAware, EnvironmentAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
+	@SuppressWarnings("NullAway.Init")
 	private BeanFactory beanFactory;
 
+	@SuppressWarnings("NullAway.Init")
 	private Environment environment;
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
-			BeanNameGenerator importBeanNameGenerator) {
+			@Nullable BeanNameGenerator importBeanNameGenerator) {
 		RepositoryConfigurationDelegate delegate = new RepositoryConfigurationDelegate(
 				getConfigurationSource(registry, importBeanNameGenerator), this.resourceLoader, this.environment);
 		delegate.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
@@ -68,7 +73,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource(BeanDefinitionRegistry registry,
-			BeanNameGenerator importBeanNameGenerator) {
+			@Nullable BeanNameGenerator importBeanNameGenerator) {
 		AnnotationMetadata metadata = AnnotationMetadata.introspect(getConfiguration());
 		return new AutoConfiguredAnnotationRepositoryConfigurationSource(metadata, getAnnotation(), this.resourceLoader,
 				this.environment, registry, importBeanNameGenerator) {
@@ -129,7 +134,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 
 		AutoConfiguredAnnotationRepositoryConfigurationSource(AnnotationMetadata metadata,
 				Class<? extends Annotation> annotation, ResourceLoader resourceLoader, Environment environment,
-				BeanDefinitionRegistry registry, BeanNameGenerator generator) {
+				BeanDefinitionRegistry registry, @Nullable BeanNameGenerator generator) {
 			super(metadata, annotation, resourceLoader, environment, registry, generator);
 		}
 

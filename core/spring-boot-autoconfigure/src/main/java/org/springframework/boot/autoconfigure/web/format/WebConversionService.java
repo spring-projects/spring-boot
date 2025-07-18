@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
@@ -79,7 +81,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 		dateTime.registerFormatters(this);
 	}
 
-	private void configure(Supplier<DateTimeFormatter> supplier, Consumer<DateTimeFormatter> consumer) {
+	private void configure(Supplier<@Nullable DateTimeFormatter> supplier, Consumer<DateTimeFormatter> consumer) {
 		DateTimeFormatter formatter = supplier.get();
 		if (formatter != null) {
 			consumer.accept(formatter);

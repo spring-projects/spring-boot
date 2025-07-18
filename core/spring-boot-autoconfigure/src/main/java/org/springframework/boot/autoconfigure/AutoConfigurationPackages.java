@@ -30,12 +30,14 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -105,8 +107,9 @@ public abstract class AutoConfigurationPackages {
 	private static void addBasePackages(BeanDefinition beanDefinition, String[] additionalBasePackages) {
 		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 		if (constructorArgumentValues.hasIndexedArgumentValue(0)) {
-			String[] existingPackages = (String[]) constructorArgumentValues.getIndexedArgumentValue(0, String[].class)
-				.getValue();
+			ValueHolder indexedArgumentValue = constructorArgumentValues.getIndexedArgumentValue(0, String[].class);
+			Assert.state(indexedArgumentValue != null, "'indexedArgumentValue' must not be null");
+			String[] existingPackages = (String[]) indexedArgumentValue.getValue();
 			constructorArgumentValues.addIndexedArgumentValue(0,
 					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages))
 						.distinct()
@@ -145,6 +148,7 @@ public abstract class AutoConfigurationPackages {
 		PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+			Assert.state(attributes != null, "'attributes' must not be null");
 			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
 				packageNames.add(basePackageClass.getPackage().getName());

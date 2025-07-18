@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -85,7 +87,7 @@ public final class ProjectInfoAutoConfiguration {
 		return target;
 	}
 
-	private Properties loadSource(Resource location, Charset encoding) throws IOException {
+	private Properties loadSource(Resource location, @Nullable Charset encoding) throws IOException {
 		if (encoding != null) {
 			return PropertiesLoaderUtils.loadProperties(new EncodedResource(location, encoding));
 		}

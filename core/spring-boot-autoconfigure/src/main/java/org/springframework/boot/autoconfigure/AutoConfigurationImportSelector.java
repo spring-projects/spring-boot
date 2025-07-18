@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
@@ -89,23 +90,27 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private final Class<?> autoConfigurationAnnotation;
 
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurableListableBeanFactory beanFactory;
 
+	@SuppressWarnings("NullAway.Init")
 	private Environment environment;
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
-	private volatile ConfigurationClassFilter configurationClassFilter;
+	private volatile @Nullable ConfigurationClassFilter configurationClassFilter;
 
-	private volatile AutoConfigurationReplacements autoConfigurationReplacements;
+	private volatile @Nullable AutoConfigurationReplacements autoConfigurationReplacements;
 
 	public AutoConfigurationImportSelector() {
 		this(null);
 	}
 
-	AutoConfigurationImportSelector(Class<?> autoConfigurationAnnotation) {
+	AutoConfigurationImportSelector(@Nullable Class<?> autoConfigurationAnnotation) {
 		this.autoConfigurationAnnotation = (autoConfigurationAnnotation != null) ? autoConfigurationAnnotation
 				: AutoConfiguration.class;
 	}
@@ -168,7 +173,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @param metadata the annotation metadata
 	 * @return annotation attributes
 	 */
-	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
+	protected @Nullable AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		String name = getAnnotationClass().getName();
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(name, true));
 		Assert.state(attributes != null, () -> "No auto-configuration attributes found. Is " + metadata.getClassName()
@@ -192,7 +197,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * attributes}
 	 * @return a list of candidate configurations
 	 */
-	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
+			@Nullable AnnotationAttributes attributes) {
 		ImportCandidates importCandidates = ImportCandidates.load(this.autoConfigurationAnnotation,
 				getBeanClassLoader());
 		List<String> configurations = importCandidates.getCandidates();
@@ -237,10 +243,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * attributes}
 	 * @return exclusions or an empty set
 	 */
-	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+	protected Set<String> getExclusions(AnnotationMetadata metadata, @Nullable AnnotationAttributes attributes) {
 		Set<String> excluded = new LinkedHashSet<>();
-		excluded.addAll(asList(attributes, "exclude"));
-		excluded.addAll(asList(attributes, "excludeName"));
+		if (attributes != null) {
+			excluded.addAll(asList(attributes, "exclude"));
+			excluded.addAll(asList(attributes, "excludeName"));
+		}
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
 		return getAutoConfigurationReplacements().replaceAll(excluded);
 	}
@@ -389,7 +397,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		List<String> filter(List<String> configurations) {
 			long startTime = System.nanoTime();
-			String[] candidates = StringUtils.toStringArray(configurations);
+			@Nullable String[] candidates = StringUtils.toStringArray(configurations);
 			boolean skipped = false;
 			for (AutoConfigurationImportFilter filter : this.filters) {
 				boolean[] match = filter.match(candidates, this.autoConfigurationMetadata);
@@ -426,15 +434,18 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private final List<AutoConfigurationEntry> autoConfigurationEntries = new ArrayList<>();
 
+		@SuppressWarnings("NullAway.Init")
 		private ClassLoader beanClassLoader;
 
+		@SuppressWarnings("NullAway.Init")
 		private BeanFactory beanFactory;
 
+		@SuppressWarnings("NullAway.Init")
 		private ResourceLoader resourceLoader;
 
-		private AutoConfigurationMetadata autoConfigurationMetadata;
+		private @Nullable AutoConfigurationMetadata autoConfigurationMetadata;
 
-		private AutoConfigurationReplacements autoConfigurationReplacements;
+		private @Nullable AutoConfigurationReplacements autoConfigurationReplacements;
 
 		@Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
@@ -488,8 +499,14 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 			processedConfigurations.removeAll(allExclusions);
 			return sortAutoConfigurations(processedConfigurations, getAutoConfigurationMetadata()).stream()
-				.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName))
+				.map(this::getEntry)
 				.toList();
+		}
+
+		private Entry getEntry(String importClassName) {
+			AnnotationMetadata metadata = this.entries.get(importClassName);
+			Assert.state(metadata != null, "'metadata' must not be null");
+			return new Entry(metadata, importClassName);
 		}
 
 		private AutoConfigurationMetadata getAutoConfigurationMetadata() {
@@ -501,6 +518,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private List<String> sortAutoConfigurations(Set<String> configurations,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
+			Assert.state(this.autoConfigurationReplacements != null,
+					"'autoConfigurationReplacements' must not be null");
 			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata,
 					this.autoConfigurationReplacements::replace)
 				.getInPriorityOrder(configurations);

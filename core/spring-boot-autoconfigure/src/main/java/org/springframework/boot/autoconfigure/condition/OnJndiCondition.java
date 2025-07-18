@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.condition;
 
 import javax.naming.NamingException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -26,6 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.jndi.JndiLocatorSupport;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,9 +42,10 @@ class OnJndiCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes
+		AnnotationAttributes attributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
-		String[] locations = annotationAttributes.getStringArray("value");
+		Assert.state(attributes != null, "'attributes' must not be null");
+		String[] locations = attributes.getStringArray("value");
 		try {
 			return getMatchOutcome(locations);
 		}
@@ -88,7 +92,7 @@ class OnJndiCondition extends SpringBootCondition {
 			this.locations = locations;
 		}
 
-		public String lookupFirstLocation() {
+		public @Nullable String lookupFirstLocation() {
 			for (String location : this.locations) {
 				try {
 					lookup(location);

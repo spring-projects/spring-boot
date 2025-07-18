@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for common web concerns.
  */
+@NullMarked
 package org.springframework.boot.autoconfigure.web;
+
+import org.jspecify.annotations.NullMarked;

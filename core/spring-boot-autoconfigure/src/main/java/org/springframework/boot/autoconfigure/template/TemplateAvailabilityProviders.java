@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -72,7 +74,14 @@ public class TemplateAvailabilityProviders {
 	 * @param applicationContext the source application context
 	 */
 	public TemplateAvailabilityProviders(ApplicationContext applicationContext) {
-		this((applicationContext != null) ? applicationContext.getClassLoader() : null);
+		this(getClassLoader(applicationContext));
+	}
+
+	private static ClassLoader getClassLoader(ApplicationContext applicationContext) {
+		Assert.notNull(applicationContext, "'applicationContext' must not be null");
+		ClassLoader classLoader = applicationContext.getClassLoader();
+		Assert.state(classLoader != null, "'classLoader' must not be null");
+		return classLoader;
 	}
 
 	/**
@@ -107,10 +116,11 @@ public class TemplateAvailabilityProviders {
 	 * @param applicationContext the application context
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
-	public TemplateAvailabilityProvider getProvider(String view, ApplicationContext applicationContext) {
+	public @Nullable TemplateAvailabilityProvider getProvider(String view, ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "'applicationContext' must not be null");
-		return getProvider(view, applicationContext.getEnvironment(), applicationContext.getClassLoader(),
-				applicationContext);
+		ClassLoader classLoader = applicationContext.getClassLoader();
+		Assert.state(classLoader != null, "'classLoader' must not be null");
+		return getProvider(view, applicationContext.getEnvironment(), classLoader, applicationContext);
 	}
 
 	/**
@@ -121,8 +131,8 @@ public class TemplateAvailabilityProviders {
 	 * @param resourceLoader the resource loader
 	 * @return a {@link TemplateAvailabilityProvider} or null
 	 */
-	public TemplateAvailabilityProvider getProvider(String view, Environment environment, ClassLoader classLoader,
-			ResourceLoader resourceLoader) {
+	public @Nullable TemplateAvailabilityProvider getProvider(String view, Environment environment,
+			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		Assert.notNull(view, "'view' must not be null");
 		Assert.notNull(environment, "'environment' must not be null");
 		Assert.notNull(classLoader, "'classLoader' must not be null");
@@ -143,8 +153,8 @@ public class TemplateAvailabilityProviders {
 		return (provider != NONE) ? provider : null;
 	}
 
-	private TemplateAvailabilityProvider findProvider(String view, Environment environment, ClassLoader classLoader,
-			ResourceLoader resourceLoader) {
+	private @Nullable TemplateAvailabilityProvider findProvider(String view, Environment environment,
+			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		for (TemplateAvailabilityProvider candidate : this.providers) {
 			if (candidate.isTemplateAvailable(view, environment, classLoader, resourceLoader)) {
 				return candidate;
