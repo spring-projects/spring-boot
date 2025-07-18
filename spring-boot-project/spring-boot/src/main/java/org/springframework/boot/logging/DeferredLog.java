@@ -246,14 +246,7 @@ public class DeferredLog implements Log {
 	}
 
 	static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
-		switch (level) {
-			case TRACE -> log.trace(message, throwable);
-			case DEBUG -> log.debug(message, throwable);
-			case INFO -> log.info(message, throwable);
-			case WARN -> log.warn(message, throwable);
-			case ERROR -> log.error(message, throwable);
-			case FATAL -> log.fatal(message, throwable);
-		}
+		level.log(log, message, throwable);
 	}
 
 	static class Lines implements Iterable<Line> {
