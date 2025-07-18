@@ -19,7 +19,6 @@ package org.springframework.boot.security.oauth2.server.authorization.autoconfig
 import java.util.List;
 
 import jakarta.servlet.Filter;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -70,7 +69,6 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner();
 
 	@Test
-	@Disabled("https://github.com/spring-projects/spring-security/commit/edb7a642c7747592c58d9013e178ab9595a392ed")
 	void webSecurityConfigurationConfiguresAuthorizationServerWithFormLogin() {
 		this.contextRunner.withUserConfiguration(TestOAuth2AuthorizationServerConfiguration.class)
 			.withPropertyValues(CLIENT_PREFIX + ".foo.registration.client-id=abcd",
@@ -99,7 +97,6 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 	}
 
 	@Test
-	@Disabled("https://github.com/spring-projects/spring-security/commit/edb7a642c7747592c58d9013e178ab9595a392ed")
 	void securityFilterChainsBackOffWhenSecurityFilterChainBeanPresent() {
 		this.contextRunner
 			.withUserConfiguration(TestSecurityFilterChainConfiguration.class,
