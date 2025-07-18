@@ -76,7 +76,7 @@ public final class CorrelationIdFormatter {
 
 	private CorrelationIdFormatter(List<Part> parts) {
 		this.parts = parts;
-		this.blank = String.format("[%s] ", parts.stream().map(Part::blank).collect(Collectors.joining(" ")));
+		this.blank = "[" + parts.stream().map(Part::blank).collect(Collectors.joining(" ")) + "] ";
 	}
 
 	/**
