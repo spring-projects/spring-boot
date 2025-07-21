@@ -59,7 +59,8 @@ class SpringBootWebSecurityConfiguration {
 
 				@Override
 				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-					if (bean instanceof PathPatternRequestMatcher.Builder builder) {
+					if ("pathPatternRequestMatcherBuilder".equals(beanName)
+							&& bean instanceof PathPatternRequestMatcher.Builder builder) {
 						String path = dispatcherServletPath.getObject().getPath();
 						if (!path.equals("/")) {
 							return builder.basePath(path);

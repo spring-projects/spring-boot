@@ -42,6 +42,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,11 +53,13 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.web.PathPatternRequestMatcherBuilderFactoryBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -214,6 +217,24 @@ class SecurityAutoConfigurationTests {
 			.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
 			.withPropertyValues("jwt.public-key=classpath:public-key-location")
 			.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
+	}
+
+	@Test
+	void whenDispatcherServletPathIsSetPathPatternRequestMatcherBuilderHasCustomBasePath() {
+		this.contextRunner.withBean(DispatcherServletPath.class, () -> () -> "/dispatcher-servlet").run((context) -> {
+			PathPatternRequestMatcher.Builder builder = context.getBean(PathPatternRequestMatcher.Builder.class);
+			assertThat(builder).extracting("basePath").isEqualTo("/dispatcher-servlet");
+		});
+	}
+
+	@Test
+	void givenACustomPathPatternRequestMatcherBuilderwhenDispatcherServletPathIsSetBuilderBasePathIsNotCustomized() {
+		this.contextRunner.withBean(PathPatternRequestMatcherBuilderFactoryBean.class)
+			.withBean(DispatcherServletPath.class, () -> () -> "/dispatcher-servlet")
+			.run((context) -> {
+				PathPatternRequestMatcher.Builder builder = context.getBean(PathPatternRequestMatcher.Builder.class);
+				assertThat(builder).extracting("basePath").isEqualTo("");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
