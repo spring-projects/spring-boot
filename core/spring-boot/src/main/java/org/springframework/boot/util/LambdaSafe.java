@@ -146,8 +146,9 @@ public final class LambdaSafe {
 		 * type.
 		 * @param filter the filter to use
 		 * @return this instance
+		 * @since 3.4.8
 		 */
-		SELF withFilter(Filter<C, A> filter) {
+		public SELF withFilter(Filter<C, A> filter) {
 			Assert.notNull(filter, "'filter' must not be null");
 			this.filter = filter;
 			return self();
