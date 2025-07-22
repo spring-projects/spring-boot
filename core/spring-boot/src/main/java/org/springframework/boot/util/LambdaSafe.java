@@ -349,11 +349,8 @@ public final class LambdaSafe {
 		@Override
 		public boolean match(Class<C> callbackType, C callbackInstance, A argument, Object[] additionalArguments) {
 			ResolvableType type = ResolvableType.forClass(callbackType, callbackInstance.getClass());
-			if (type.getGenerics().length == 1 && type.resolveGeneric() != null) {
-				return type.resolveGeneric().isInstance(argument);
-			}
-
-			return true;
+			return type.getGenerics().length == 1 && type.resolveGeneric() != null
+					&& type.resolveGeneric().isInstance(argument);
 		}
 
 	}
