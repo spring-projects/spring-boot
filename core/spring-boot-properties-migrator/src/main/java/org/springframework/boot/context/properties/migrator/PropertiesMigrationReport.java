@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provides a properties migration report.
  *
@@ -38,7 +40,7 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that should be renamed
 	 */
-	String getWarningReport() {
+	@Nullable String getWarningReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
@@ -60,7 +62,7 @@ class PropertiesMigrationReport {
 	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that are no longer supported
 	 */
-	String getErrorReport() {
+	@Nullable String getErrorReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;

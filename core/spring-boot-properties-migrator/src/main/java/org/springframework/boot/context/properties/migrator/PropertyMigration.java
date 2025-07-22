@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -43,11 +45,11 @@ class PropertyMigration {
 
 	private final ConfigurationProperty property;
 
-	private final Integer lineNumber;
+	private final @Nullable Integer lineNumber;
 
 	private final ConfigurationMetadataProperty metadata;
 
-	private final ConfigurationMetadataProperty replacementMetadata;
+	private final @Nullable ConfigurationMetadataProperty replacementMetadata;
 
 	/**
 	 * Whether this migration happened from a map type.
@@ -57,7 +59,7 @@ class PropertyMigration {
 	private final boolean compatibleType;
 
 	PropertyMigration(ConfigurationProperty property, ConfigurationMetadataProperty metadata,
-			ConfigurationMetadataProperty replacementMetadata, boolean mapMigration) {
+			@Nullable ConfigurationMetadataProperty replacementMetadata, boolean mapMigration) {
 		this.property = property;
 		this.lineNumber = determineLineNumber(property);
 		this.metadata = metadata;
@@ -66,7 +68,7 @@ class PropertyMigration {
 		this.compatibleType = determineCompatibleType(metadata, replacementMetadata);
 	}
 
-	private static Integer determineLineNumber(ConfigurationProperty property) {
+	private static @Nullable Integer determineLineNumber(ConfigurationProperty property) {
 		Origin origin = property.getOrigin();
 		if (origin instanceof PropertySourceOrigin propertySourceOrigin) {
 			origin = propertySourceOrigin.getOrigin();
@@ -80,7 +82,7 @@ class PropertyMigration {
 	}
 
 	private static boolean determineCompatibleType(ConfigurationMetadataProperty metadata,
-			ConfigurationMetadataProperty replacementMetadata) {
+			@Nullable ConfigurationMetadataProperty replacementMetadata) {
 		String currentType = determineType(metadata);
 		String replacementType = determineType(replacementMetadata);
 		if (currentType == null || replacementType == null) {
@@ -93,7 +95,7 @@ class PropertyMigration {
 				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()));
 	}
 
-	private static String determineType(ConfigurationMetadataProperty metadata) {
+	private static @Nullable String determineType(@Nullable ConfigurationMetadataProperty metadata) {
 		if (metadata == null || metadata.getType() == null) {
 			return null;
 		}
@@ -112,7 +114,7 @@ class PropertyMigration {
 		return this.property;
 	}
 
-	Integer getLineNumber() {
+	@Nullable Integer getLineNumber() {
 		return this.lineNumber;
 	}
 
@@ -126,7 +128,9 @@ class PropertyMigration {
 
 	String getNewPropertyName() {
 		if (this.mapMigration) {
-			return getNewMapPropertyName(this.property, this.metadata, this.replacementMetadata).toString();
+			ConfigurationMetadataProperty replacementMetadata = this.replacementMetadata;
+			Assert.state(replacementMetadata != null, "'replacementMetadata' must not be null");
+			return getNewMapPropertyName(this.property, this.metadata, replacementMetadata).toString();
 		}
 		return this.metadata.getDeprecation().getReplacement();
 	}

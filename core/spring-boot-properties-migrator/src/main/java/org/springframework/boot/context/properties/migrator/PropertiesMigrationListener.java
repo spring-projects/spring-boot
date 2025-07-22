@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
@@ -44,7 +45,7 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 
 	private static final Log logger = LogFactory.getLog(PropertiesMigrationListener.class);
 
-	private PropertiesMigrationReport report;
+	private @Nullable PropertiesMigrationReport report;
 
 	private boolean reported;
 

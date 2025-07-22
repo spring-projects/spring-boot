@@ -26,6 +26,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -38,6 +40,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -109,7 +112,9 @@ class PropertiesMigrationReporter {
 		if (source.getUnderlyingSource() instanceof PropertySource<?> underlyingSource) {
 			return underlyingSource.getName();
 		}
-		return source.getUnderlyingSource().toString();
+		Object underlyingSource = source.getUnderlyingSource();
+		Assert.state(underlyingSource != null, "'underlyingSource' must not be null");
+		return underlyingSource.toString();
 	}
 
 	private List<PropertyMigration> getMigrations(ConfigurationPropertySource propertySource,
@@ -149,7 +154,8 @@ class PropertiesMigrationReporter {
 				&& Objects.equals(propertySourceOrigin.getPropertyName(), replacement.getId());
 	}
 
-	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {
+	private @Nullable ConfigurationMetadataProperty determineReplacementMetadata(
+			ConfigurationMetadataProperty metadata) {
 		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
 			ConfigurationMetadataProperty replacement = this.allProperties.get(replacementId);
@@ -161,7 +167,7 @@ class PropertiesMigrationReporter {
 		return null;
 	}
 
-	private ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
+	private @Nullable ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
 		int lastDot = fullId.lastIndexOf('.');
 		if (lastDot == -1) {
 			return null;
@@ -178,7 +184,7 @@ class PropertiesMigrationReporter {
 		return type != null && type.startsWith(Map.class.getName());
 	}
 
-	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
+	private @Nullable PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
 		report.add(name, properties);
 		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType).toList();
@@ -229,7 +235,7 @@ class PropertiesMigrationReporter {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			this.accessedNames.add(name);
 			return null;
 		}
