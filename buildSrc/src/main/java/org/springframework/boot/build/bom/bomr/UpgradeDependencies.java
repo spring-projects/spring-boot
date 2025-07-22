@@ -265,10 +265,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private boolean compliesWithUpgradePolicy(Library library, DependencyVersion candidate) {
-		UpgradePolicy upgradePolicy = library.getUpgradePolicy();
-		if (upgradePolicy == null) {
-			upgradePolicy = this.bom.getUpgrade().getPolicy();
-		}
+		UpgradePolicy libraryPolicy = library.getUpgradePolicy();
+		UpgradePolicy bomPolicy = this.bom.getUpgrade().getPolicy();
+		UpgradePolicy upgradePolicy = UpgradePolicy.max(libraryPolicy, bomPolicy);
 		return upgradePolicy.test(candidate, library.getVersion().getVersion());
 	}
 

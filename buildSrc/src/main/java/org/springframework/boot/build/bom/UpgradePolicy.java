@@ -53,4 +53,14 @@ public enum UpgradePolicy implements BiPredicate<DependencyVersion, DependencyVe
 		return this.delegate.test(candidate, current);
 	}
 
+	public static UpgradePolicy max(UpgradePolicy one, UpgradePolicy two) {
+		if (one == null && two != null) {
+			return two;
+		}
+		else if (one != null && two == null) {
+			return one;
+		}
+		return (one.ordinal() < two.ordinal()) ? one : two;
+	}
+
 }
