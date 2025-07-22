@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers.service.connection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -33,6 +34,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by
@@ -71,7 +73,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 	}
 
 	private Set<ServiceConnection> getServiceConnections(ConfigurableListableBeanFactory beanFactory, String beanName,
-			MergedAnnotations annotations) {
+			@Nullable MergedAnnotations annotations) {
 		Set<ServiceConnection> serviceConnections = beanFactory.findAllAnnotationsOnBean(beanName,
 				ServiceConnection.class, false);
 		if (annotations != null) {
@@ -83,7 +85,7 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 		return serviceConnections;
 	}
 
-	private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
+	private @Nullable BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
@@ -94,12 +96,13 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 
 	@SuppressWarnings("unchecked")
 	private <C extends Container<?>> ContainerConnectionSource<C> createSource(
-			ConfigurableListableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition,
-			MergedAnnotations annotations, ServiceConnection serviceConnection) {
+			ConfigurableListableBeanFactory beanFactory, String beanName, @Nullable BeanDefinition beanDefinition,
+			@Nullable MergedAnnotations annotations, ServiceConnection serviceConnection) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);
 		Class<C> containerType = (Class<C>) beanFactory.getType(beanName, false);
 		String containerImageName = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
 				? testcontainerBeanDefinition.getContainerImageName() : null;
+		Assert.state(containerType != null, "'containerType' must not be null");
 		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, serviceConnection,
 				() -> beanFactory.getBean(beanName, containerType),
 				SslBundleSource.get(beanFactory, beanName, annotations), annotations);

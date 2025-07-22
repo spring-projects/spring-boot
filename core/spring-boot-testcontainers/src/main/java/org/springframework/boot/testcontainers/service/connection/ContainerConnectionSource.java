@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.utility.DockerImageName;
 
@@ -54,21 +55,22 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Class<C> containerType;
 
-	private final String containerImageName;
+	private final @Nullable String containerImageName;
 
-	private final String connectionName;
+	private final @Nullable String connectionName;
 
 	private final Set<Class<?>> connectionDetailsTypes;
 
 	private final Supplier<C> containerSupplier;
 
-	private final SslBundleSource sslBundleSource;
+	private final @Nullable SslBundleSource sslBundleSource;
 
-	private final MergedAnnotations annotations;
+	private final @Nullable MergedAnnotations annotations;
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier,
-			SslBundleSource sslBundleSource, MergedAnnotations annotations) {
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType,
+			@Nullable String containerImageName, MergedAnnotation<ServiceConnection> annotation,
+			Supplier<C> containerSupplier, @Nullable SslBundleSource sslBundleSource,
+			@Nullable MergedAnnotations annotations) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
@@ -80,9 +82,9 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.annotations = annotations;
 	}
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			ServiceConnection annotation, Supplier<C> containerSupplier, SslBundleSource sslBundleSource,
-			MergedAnnotations annotations) {
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType,
+			@Nullable String containerImageName, ServiceConnection annotation, Supplier<C> containerSupplier,
+			@Nullable SslBundleSource sslBundleSource, @Nullable MergedAnnotations annotations) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
@@ -94,7 +96,8 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.annotations = annotations;
 	}
 
-	private static String getOrDeduceConnectionName(String connectionName, String containerImageName) {
+	private static @Nullable String getOrDeduceConnectionName(@Nullable String connectionName,
+			@Nullable String containerImageName) {
 		if (StringUtils.hasText(connectionName)) {
 			return connectionName;
 		}
@@ -114,7 +117,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 	 * @return if the connection is accepted by this source
 	 * @since 3.4.0
 	 */
-	public boolean accepts(String requiredConnectionName, Class<?> requiredContainerType,
+	public boolean accepts(@Nullable String requiredConnectionName, Class<?> requiredContainerType,
 			Class<?> requiredConnectionDetailsType) {
 		if (StringUtils.hasText(requiredConnectionName)
 				&& !requiredConnectionName.equalsIgnoreCase(this.connectionName)) {
@@ -152,11 +155,11 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.origin;
 	}
 
-	String getContainerImageName() {
+	@Nullable String getContainerImageName() {
 		return this.containerImageName;
 	}
 
-	String getConnectionName() {
+	@Nullable String getConnectionName() {
 		return this.connectionName;
 	}
 
@@ -168,7 +171,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.connectionDetailsTypes;
 	}
 
-	SslBundleSource getSslBundleSource() {
+	@Nullable SslBundleSource getSslBundleSource() {
 		return this.sslBundleSource;
 	}
 

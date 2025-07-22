@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -91,8 +92,8 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 * Relevant details from {@link ContainerConnectionSource} used as a
 	 * MergedContextConfiguration cache key.
 	 */
-	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container,
-			SslBundleSource sslBundleSource) {
+	private record CacheKey(@Nullable String connectionName, Set<Class<?>> connectionDetailsTypes,
+			Container<?> container, @Nullable SslBundleSource sslBundleSource) {
 
 		CacheKey(ContainerConnectionSource<?> source) {
 			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get(),

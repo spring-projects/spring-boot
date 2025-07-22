@@ -17,4 +17,7 @@
 /**
  * Support for testcontainers.
  */
+@NullMarked
 package org.springframework.boot.testcontainers;
+
+import org.jspecify.annotations.NullMarked;

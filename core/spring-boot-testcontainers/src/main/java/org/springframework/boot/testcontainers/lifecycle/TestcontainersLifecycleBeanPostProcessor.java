@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
@@ -145,7 +146,7 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 		return List.of(this.beanFactory.getBeanNamesForType(type, true, false));
 	}
 
-	private List<Object> getBeans(List<String> beanNames) {
+	private @Nullable List<Object> getBeans(List<String> beanNames) {
 		List<Object> beans = new ArrayList<>(beanNames.size());
 		for (String beanName : beanNames) {
 			try {

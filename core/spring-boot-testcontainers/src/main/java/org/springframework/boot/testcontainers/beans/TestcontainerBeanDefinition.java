@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testcontainers.beans;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.annotation.MergedAnnotations;
 
@@ -32,7 +34,7 @@ public interface TestcontainerBeanDefinition extends BeanDefinition {
 	 * Return the container image name or {@code null} if the image name is not yet known.
 	 * @return the container image name
 	 */
-	String getContainerImageName();
+	@Nullable String getContainerImageName();
 
 	/**
 	 * Return any annotations declared alongside the container.

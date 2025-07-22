@@ -17,4 +17,7 @@
 /**
  * Dynamic container properties support.
  */
+@NullMarked
 package org.springframework.boot.testcontainers.properties;
+
+import org.jspecify.annotations.NullMarked;

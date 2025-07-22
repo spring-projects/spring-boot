@@ -17,4 +17,7 @@
 /**
  * Spring context support classes for Testcontainers.
  */
+@NullMarked
 package org.springframework.boot.testcontainers.context;
+
+import org.jspecify.annotations.NullMarked;

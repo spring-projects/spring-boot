@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.context;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -42,7 +43,7 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private final ContainerFieldsImporter containerFieldsImporter;
 
-	private final DynamicPropertySourceMethodsImporter dynamicPropertySourceMethodsImporter;
+	private final @Nullable DynamicPropertySourceMethodsImporter dynamicPropertySourceMethodsImporter;
 
 	ImportTestcontainersRegistrar(Environment environment) {
 		this.containerFieldsImporter = new ContainerFieldsImporter();

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.lifecycle.Startable;
 
@@ -62,7 +63,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	/**
 	 * Constant passed to the constructor when any connection name is accepted.
 	 */
-	protected static final String ANY_CONNECTION_NAME = null;
+	protected static final @Nullable String ANY_CONNECTION_NAME = null;
 
 	private final List<String> connectionNames;
 
@@ -82,7 +83,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @param connectionName the required connection name or {@link #ANY_CONNECTION_NAME}
 	 * @param requiredClassNames the names of classes that must be present
 	 */
-	protected ContainerConnectionDetailsFactory(String connectionName, String... requiredClassNames) {
+	protected ContainerConnectionDetailsFactory(@Nullable String connectionName, String... requiredClassNames) {
 		this(Arrays.asList(connectionName), requiredClassNames);
 	}
 
@@ -100,14 +101,16 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	@Override
-	public final D getConnectionDetails(ContainerConnectionSource<C> source) {
+	public final @Nullable D getConnectionDetails(ContainerConnectionSource<C> source) {
 		if (!hasRequiredClasses()) {
 			return null;
 		}
 		try {
-			Class<?>[] generics = resolveGenerics();
+			@Nullable Class<?>[] generics = resolveGenerics();
 			Class<?> requiredContainerType = generics[0];
 			Class<?> requiredConnectionDetailsType = generics[1];
+			Assert.state(requiredContainerType != null, "'requiredContainerType' must not be null");
+			Assert.state(requiredConnectionDetailsType != null, "'requiredConnectionDetailsType' must not be null");
 			if (sourceAccepts(source, requiredContainerType, requiredConnectionDetailsType)) {
 				return getContainerConnectionDetails(source);
 			}
@@ -142,7 +145,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			.allMatch((requiredClassName) -> ClassUtils.isPresent(requiredClassName, null));
 	}
 
-	private Class<?>[] resolveGenerics() {
+	private @Nullable Class<?>[] resolveGenerics() {
 		return ResolvableType.forClass(ContainerConnectionDetailsFactory.class, getClass()).resolveGenerics();
 	}
 
@@ -153,7 +156,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<C> source);
+	protected abstract @Nullable D getContainerConnectionDetails(ContainerConnectionSource<C> source);
 
 	/**
 	 * Base class for {@link ConnectionDetails} results that are backed by a
@@ -166,9 +169,9 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 
 		private final ContainerConnectionSource<C> source;
 
-		private volatile C container;
+		private volatile @Nullable C container;
 
-		private volatile SslBundle sslBundle;
+		private volatile @Nullable SslBundle sslBundle;
 
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
@@ -203,7 +206,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		 * @return the ssl bundle or {@code null}
 		 * @since 3.5.0
 		 */
-		protected SslBundle getSslBundle() {
+		protected @Nullable SslBundle getSslBundle() {
 			if (this.source.getSslBundleSource() == null) {
 				return null;
 			}
@@ -242,7 +245,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		private static final Log logger = LogFactory.getLog(ContainerConnectionDetailsFactoriesRuntimeHints.class);
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			SpringFactoriesLoader.forDefaultResourceLocation(classLoader)
 				.load(ConnectionDetailsFactory.class, FailureHandler.logging(logger))
 				.stream()

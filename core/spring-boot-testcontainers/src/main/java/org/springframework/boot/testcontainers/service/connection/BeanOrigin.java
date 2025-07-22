@@ -18,6 +18,8 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.origin.Origin;
 
@@ -30,9 +32,9 @@ class BeanOrigin implements Origin {
 
 	private final String beanName;
 
-	private final String resourceDescription;
+	private final @Nullable String resourceDescription;
 
-	BeanOrigin(String beanName, BeanDefinition beanDefinition) {
+	BeanOrigin(String beanName, @Nullable BeanDefinition beanDefinition) {
 		this.beanName = beanName;
 		this.resourceDescription = (beanDefinition != null) ? beanDefinition.getResourceDescription() : null;
 	}

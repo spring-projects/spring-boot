@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -47,8 +49,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Moritz Halbritter
  */
-record SslBundleSource(Ssl ssl, PemKeyStore pemKeyStore, PemTrustStore pemTrustStore, JksKeyStore jksKeyStore,
-		JksTrustStore jksTrustStore) {
+record SslBundleSource(@Nullable Ssl ssl, @Nullable PemKeyStore pemKeyStore, @Nullable PemTrustStore pemTrustStore,
+		@Nullable JksKeyStore jksKeyStore, @Nullable JksTrustStore jksTrustStore) {
 
 	SslBundleSource {
 		boolean hasPem = (pemKeyStore != null || pemTrustStore != null);
@@ -58,7 +60,7 @@ record SslBundleSource(Ssl ssl, PemKeyStore pemKeyStore, PemTrustStore pemTrustS
 		}
 	}
 
-	SslBundle getSslBundle() {
+	@Nullable SslBundle getSslBundle() {
 		SslStoreBundle stores = stores();
 		if (stores == null) {
 			return null;
@@ -70,7 +72,7 @@ record SslBundleSource(Ssl ssl, PemKeyStore pemKeyStore, PemTrustStore pemTrustS
 		return SslBundle.of(stores, key, options, protocol);
 	}
 
-	private SslStoreBundle stores() {
+	private @Nullable SslStoreBundle stores() {
 		if (this.pemKeyStore != null || this.pemTrustStore != null) {
 			return new PemSslStoreBundle(pemKeyStoreDetails(), pemTrustStoreDetails());
 		}
@@ -80,49 +82,50 @@ record SslBundleSource(Ssl ssl, PemKeyStore pemKeyStore, PemTrustStore pemTrustS
 		return null;
 	}
 
-	private PemSslStoreDetails pemKeyStoreDetails() {
+	private @Nullable PemSslStoreDetails pemKeyStoreDetails() {
 		PemKeyStore store = this.pemKeyStore;
 		return (store != null) ? new PemSslStoreDetails(nullIfEmpty(store.type()), nullIfEmpty(store.certificate()),
 				nullIfEmpty(store.privateKey()), nullIfEmpty(store.privateKeyPassword())) : null;
 	}
 
-	private PemSslStoreDetails pemTrustStoreDetails() {
+	private @Nullable PemSslStoreDetails pemTrustStoreDetails() {
 		PemTrustStore store = this.pemTrustStore;
 		return (store != null) ? new PemSslStoreDetails(nullIfEmpty(store.type()), nullIfEmpty(store.certificate()),
 				nullIfEmpty(store.privateKey()), nullIfEmpty(store.privateKeyPassword())) : null;
 	}
 
-	private JksSslStoreDetails jksKeyStoreDetails() {
+	private @Nullable JksSslStoreDetails jksKeyStoreDetails() {
 		JksKeyStore store = this.jksKeyStore;
 		return (store != null) ? new JksSslStoreDetails(nullIfEmpty(store.type()), nullIfEmpty(store.provider()),
 				nullIfEmpty(store.location()), nullIfEmpty(store.password())) : null;
 	}
 
-	private JksSslStoreDetails jksTrustStoreDetails() {
+	private @Nullable JksSslStoreDetails jksTrustStoreDetails() {
 		JksTrustStore store = this.jksTrustStore;
 		return (store != null) ? new JksSslStoreDetails(nullIfEmpty(store.type()), nullIfEmpty(store.provider()),
 				nullIfEmpty(store.location()), nullIfEmpty(store.password())) : null;
 	}
 
-	private String nullIfEmpty(String string) {
+	private @Nullable String nullIfEmpty(@Nullable String string) {
 		if (StringUtils.hasLength(string)) {
 			return string;
 		}
 		return null;
 	}
 
-	private String[] nullIfEmpty(String[] array) {
+	private String @Nullable [] nullIfEmpty(String @Nullable [] array) {
 		if (array == null || array.length == 0) {
 			return null;
 		}
 		return array;
 	}
 
-	static SslBundleSource get(MergedAnnotations annotations) {
+	static @Nullable SslBundleSource get(MergedAnnotations annotations) {
 		return get(null, null, annotations);
 	}
 
-	static SslBundleSource get(ListableBeanFactory beanFactory, String beanName, MergedAnnotations annotations) {
+	static @Nullable SslBundleSource get(@Nullable ListableBeanFactory beanFactory, @Nullable String beanName,
+			@Nullable MergedAnnotations annotations) {
 		Ssl ssl = getAnnotation(beanFactory, beanName, annotations, Ssl.class);
 		PemKeyStore pemKeyStore = getAnnotation(beanFactory, beanName, annotations, PemKeyStore.class);
 		PemTrustStore pemTrustStore = getAnnotation(beanFactory, beanName, annotations, PemTrustStore.class);
@@ -135,10 +138,10 @@ record SslBundleSource(Ssl ssl, PemKeyStore pemKeyStore, PemTrustStore pemTrustS
 		return new SslBundleSource(ssl, pemKeyStore, pemTrustStore, jksKeyStore, jksTrustStore);
 	}
 
-	private static <A extends Annotation> A getAnnotation(ListableBeanFactory beanFactory, String beanName,
-			MergedAnnotations annotations, Class<A> annotationType) {
-		Set<A> found = (beanFactory != null) ? beanFactory.findAllAnnotationsOnBean(beanName, annotationType, false)
-				: Collections.emptySet();
+	private static <A extends Annotation> @Nullable A getAnnotation(@Nullable ListableBeanFactory beanFactory,
+			@Nullable String beanName, @Nullable MergedAnnotations annotations, Class<A> annotationType) {
+		Set<A> found = (beanFactory != null && beanName != null)
+				? beanFactory.findAllAnnotationsOnBean(beanName, annotationType, false) : Collections.emptySet();
 		if (annotations != null) {
 			found = new LinkedHashSet<>(found);
 			annotations.stream(annotationType).map(MergedAnnotation::synthesize).forEach(found::add);

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.lifecycle.Startables;
@@ -72,11 +73,11 @@ public enum TestcontainersStartup {
 
 	abstract void start(Collection<? extends Startable> startables);
 
-	static TestcontainersStartup get(ConfigurableEnvironment environment) {
+	static TestcontainersStartup get(@Nullable ConfigurableEnvironment environment) {
 		return get((environment != null) ? environment.getProperty(PROPERTY) : null);
 	}
 
-	private static TestcontainersStartup get(String value) {
+	private static TestcontainersStartup get(@Nullable String value) {
 		if (value == null) {
 			return SEQUENTIAL;
 		}

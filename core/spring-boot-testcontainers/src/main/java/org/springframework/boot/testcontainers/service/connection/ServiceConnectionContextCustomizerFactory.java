@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 
 import org.springframework.boot.origin.Origin;
@@ -54,7 +55,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		return new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private void collectSources(Class<?> candidate, List<ContainerConnectionSource<?>> sources) {
+	private void collectSources(@Nullable Class<?> candidate, List<ContainerConnectionSource<?>> sources) {
 		if (candidate == Object.class || candidate == null) {
 			return;
 		}
@@ -91,7 +92,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 				() -> container, SslBundleSource.get(annotations), annotations);
 	}
 
-	private Object getFieldValue(Field field) {
+	private @Nullable Object getFieldValue(Field field) {
 		ReflectionUtils.makeAccessible(field);
 		return ReflectionUtils.getField(field, null);
 	}
