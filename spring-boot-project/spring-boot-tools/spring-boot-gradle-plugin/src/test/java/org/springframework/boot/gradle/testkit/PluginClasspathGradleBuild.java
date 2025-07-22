@@ -43,6 +43,7 @@ import org.tomlj.Toml;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
@@ -55,12 +56,12 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
  */
 public class PluginClasspathGradleBuild extends GradleBuild {
 
-	public PluginClasspathGradleBuild() {
-		super();
+	public PluginClasspathGradleBuild(BuildOutput buildOutput) {
+		super(buildOutput);
 	}
 
-	public PluginClasspathGradleBuild(Dsl dsl) {
-		super(dsl);
+	public PluginClasspathGradleBuild(BuildOutput buildOutput, Dsl dsl) {
+		super(buildOutput, dsl);
 	}
 
 	@Override
