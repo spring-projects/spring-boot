@@ -19,8 +19,8 @@ package org.springframework.boot.rsocket.autoconfigure;
 import java.net.URI;
 import java.time.Duration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -121,14 +121,13 @@ class RSocketWebSocketNettyRouteProviderTests {
 		}
 
 		@Bean
-		ObjectMapper objectMapper() {
-			return new ObjectMapper();
+		JsonMapper jsonMapper() {
+			return JsonMapper.builder().build();
 		}
 
 		@Bean
-		@SuppressWarnings({ "removal", "deprecation" })
-		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder() {
-			return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
+		JsonMapper.Builder jsonMapperBuilder() {
+			return JsonMapper.builder();
 		}
 
 	}

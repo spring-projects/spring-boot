@@ -16,9 +16,9 @@
 
 package org.springframework.boot.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Serializer;
 import org.springframework.boot.jackson.types.NameAndAge;
@@ -26,21 +26,20 @@ import org.springframework.boot.jackson.types.NameAndAge;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JsonObjectSerializer}.
+ * Tests for {@link ObjectValueSerializer}.
  *
  * @author Phillip Webb
  */
-class JsonObjectSerializerTests {
+class ObjectValueSerializerTests {
 
 	@Test
 	void serializeObjectShouldWriteJson() throws Exception {
 		Serializer serializer = new NameAndAgeJsonComponent.Serializer();
 		SimpleModule module = new SimpleModule();
 		module.addSerializer(NameAndAge.class, serializer);
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
-		String json = mapper.writeValueAsString(new NameAndAge("spring", 100));
-		assertThat(json).isEqualToIgnoringWhitespace("{\"name\":\"spring\",\"age\":100}");
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
+		String json = mapper.writeValueAsString(NameAndAge.create("spring", 100));
+		assertThat(json).isEqualToIgnoringWhitespace("{\"theName\":\"spring\",\"theAge\":100}");
 	}
 
 }

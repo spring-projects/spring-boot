@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.graphql.tester;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.GraphQL;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -30,6 +30,8 @@ import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 
 /**
  * Auto-configuration for {@link GraphQlTester}.
@@ -46,15 +48,13 @@ public final class GraphQlTesterAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
-	@SuppressWarnings({ "removal", "deprecation" })
 	ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService,
-			ObjectProvider<ObjectMapper> objectMapperProvider) {
+			ObjectProvider<JsonMapper> jsonMapperProvider) {
 		ExecutionGraphQlServiceTester.Builder<?> builder = ExecutionGraphQlServiceTester.builder(graphQlService);
-		objectMapperProvider.ifAvailable((objectMapper) -> {
-			builder.encoder(new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper,
-					MediaType.APPLICATION_GRAPHQL_RESPONSE, MediaType.APPLICATION_JSON, APPLICATION_GRAPHQL));
-			builder.decoder(new org.springframework.http.codec.json.Jackson2JsonDecoder(objectMapper,
-					MediaType.APPLICATION_JSON));
+		jsonMapperProvider.ifAvailable((objectMapper) -> {
+			builder.encoder(new JacksonJsonEncoder(objectMapper, MediaType.APPLICATION_GRAPHQL_RESPONSE,
+					MediaType.APPLICATION_JSON, APPLICATION_GRAPHQL));
+			builder.decoder(new JacksonJsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
 		});
 		return builder.build();
 	}

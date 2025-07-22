@@ -43,4 +43,5 @@ dependencies {
 	testImplementation("net.minidev:json-smart")
 	testImplementation("org.springframework.security:spring-security-web")
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // Required for Jersey
 }

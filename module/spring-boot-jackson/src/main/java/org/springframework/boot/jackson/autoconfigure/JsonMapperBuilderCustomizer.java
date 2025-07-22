@@ -16,26 +16,23 @@
 
 package org.springframework.boot.jackson.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link ObjectMapper} through {@link Jackson2ObjectMapperBuilder} to fine-tune its
- * auto-configuration.
+ * {@link JsonMapper} through {@link tools.jackson.databind.json.JsonMapper.Builder} to
+ * fine-tune its auto-configuration.
  *
  * @author Grzegorz Poznachowski
  * @since 4.0.0
  */
 @FunctionalInterface
-@SuppressWarnings("removal")
-public interface Jackson2ObjectMapperBuilderCustomizer {
+public interface JsonMapperBuilderCustomizer {
 
 	/**
-	 * Customize the JacksonObjectMapperBuilder.
-	 * @param jacksonObjectMapperBuilder the JacksonObjectMapperBuilder to customize
+	 * Customize the JsonMapper.Builder.
+	 * @param jsonMapperBuilder the builder to customize
 	 */
-	void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder);
+	void customize(JsonMapper.Builder jsonMapperBuilder);
 
 }

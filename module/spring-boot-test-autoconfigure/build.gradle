@@ -79,7 +79,6 @@ dependencies {
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("jakarta.transaction:jakarta.transaction-api")
-	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")

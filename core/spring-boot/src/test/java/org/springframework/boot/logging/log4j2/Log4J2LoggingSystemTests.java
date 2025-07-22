@@ -34,7 +34,6 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
@@ -333,15 +332,16 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				// No classes, only XML
 				Arguments.of(Collections.emptyList(), List.of(".xml")),
 				// Log4j Core 2
-				Arguments.of(List.of(JsonConfigurationFactory.class.getName(), ObjectMapper.class.getName()),
-						List.of(".json", ".jsn", ".xml")),
+				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
+						"com.fasterxml.jackson.databind.ObjectMapper"), List.of(".json", ".jsn", ".xml")),
 				Arguments.of(List.of(PropertiesConfigurationFactory.class.getName(),
 						PropertiesConfigurationBuilder.class.getName()), List.of(".properties", ".xml")),
 				Arguments.of(List.of(YamlConfigurationFactory.class.getName(),
 						"com.fasterxml.jackson.dataformat.yaml.YAMLMapper"), List.of(".yaml", ".yml", ".xml")),
-				Arguments.of(List.of(JsonConfigurationFactory.class.getName(), ObjectMapper.class.getName(),
-						PropertiesConfigurationFactory.class.getName(), PropertiesConfigurationBuilder.class.getName(),
-						YamlConfigurationFactory.class.getName(), "com.fasterxml.jackson.dataformat.yaml.YAMLMapper"),
+				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
+						"com.fasterxml.jackson.databind.ObjectMapper", PropertiesConfigurationFactory.class.getName(),
+						PropertiesConfigurationBuilder.class.getName(), YamlConfigurationFactory.class.getName(),
+						"com.fasterxml.jackson.dataformat.yaml.YAMLMapper"),
 						List.of(".properties", ".yaml", ".yml", ".json", ".jsn", ".xml")),
 				// Log4j Core 3
 				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),

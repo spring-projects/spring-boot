@@ -22,14 +22,14 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.NullNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Deserializer;
 import org.springframework.boot.jackson.types.NameAndAge;
@@ -41,11 +41,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link JsonObjectDeserializer}.
+ * Tests for {@link ObjectValueDeserializer}.
  *
  * @author Phillip Webb
  */
-class JsonObjectDeserializerTests {
+class ObjectValueDeserializerTests {
 
 	private final TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 
@@ -54,8 +54,7 @@ class JsonObjectDeserializerTests {
 		Deserializer deserializer = new NameAndAgeJsonComponent.Deserializer();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(NameAndAge.class, deserializer);
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+		ObjectMapper mapper = JsonMapper.builder().addModule(module).build();
 		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
@@ -77,7 +76,7 @@ class JsonObjectDeserializerTests {
 	@Test
 	void nullSafeValueWhenClassIsStringShouldReturnString() {
 		JsonNode node = mock(JsonNode.class);
-		given(node.textValue()).willReturn("abc");
+		given(node.stringValue()).willReturn("abc");
 		String value = this.testDeserializer.testNullSafeValue(node, String.class);
 		assertThat(value).isEqualTo("abc");
 	}
@@ -149,7 +148,7 @@ class JsonObjectDeserializerTests {
 	@Test
 	void nullSafeValueWithMapperShouldTransformValue() {
 		JsonNode node = mock(JsonNode.class);
-		given(node.textValue()).willReturn("2023-12-01");
+		given(node.stringValue()).willReturn("2023-12-01");
 		LocalDate result = this.testDeserializer.testNullSafeValue(node, String.class, LocalDate::parse);
 		assertThat(result).isEqualTo(LocalDate.of(2023, 12, 1));
 	}
@@ -191,11 +190,10 @@ class JsonObjectDeserializerTests {
 		assertThat(this.testDeserializer.testGetRequiredNode(node, "test")).isEqualTo(node);
 	}
 
-	static class TestJsonObjectDeserializer<T> extends JsonObjectDeserializer<T> {
+	static class TestJsonObjectDeserializer<T> extends ObjectValueDeserializer<T> {
 
 		@Override
-		protected T deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
-				JsonNode tree) {
+		protected T deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
 			return null;
 		}
 

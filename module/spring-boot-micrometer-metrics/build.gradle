@@ -73,12 +73,12 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("io.micrometer:micrometer-registry-atlas")
 	testImplementation("io.micrometer:micrometer-registry-new-relic")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.springframework:spring-webflux")
+	testImplementation("tools.jackson.core:jackson-databind")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

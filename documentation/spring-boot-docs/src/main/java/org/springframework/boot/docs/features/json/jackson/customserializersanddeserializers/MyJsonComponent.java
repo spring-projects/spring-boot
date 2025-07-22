@@ -16,41 +16,37 @@
 
 package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.ValueSerializer;
 
 import org.springframework.boot.jackson.JsonComponent;
 
 @JsonComponent
 public class MyJsonComponent {
 
-	public static class Serializer extends JsonSerializer<MyObject> {
+	public static class Serializer extends ValueSerializer<MyObject> {
 
 		@Override
-		public void serialize(MyObject value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+		public void serialize(MyObject value, JsonGenerator jgen, SerializationContext context) {
 			jgen.writeStartObject();
-			jgen.writeStringField("name", value.getName());
-			jgen.writeNumberField("age", value.getAge());
+			jgen.writeStringProperty("name", value.getName());
+			jgen.writeNumberProperty("age", value.getAge());
 			jgen.writeEndObject();
 		}
 
 	}
 
-	public static class Deserializer extends JsonDeserializer<MyObject> {
+	public static class Deserializer extends ValueDeserializer<MyObject> {
 
 		@Override
-		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
-			ObjectCodec codec = jsonParser.getCodec();
-			JsonNode tree = codec.readTree(jsonParser);
-			String name = tree.get("name").textValue();
+		public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) {
+			JsonNode tree = jsonParser.readValueAsTree();
+			String name = tree.get("name").stringValue();
 			int age = tree.get("age").intValue();
 			return new MyObject(name, age);
 		}

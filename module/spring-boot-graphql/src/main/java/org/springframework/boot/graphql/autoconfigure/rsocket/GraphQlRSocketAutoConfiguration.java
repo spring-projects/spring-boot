@@ -16,10 +16,10 @@
 
 package org.springframework.boot.graphql.autoconfigure.rsocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.GraphQL;
 import io.rsocket.core.RSocketServer;
 import reactor.netty.http.server.HttpServer;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -35,6 +35,7 @@ import org.springframework.graphql.data.method.annotation.support.AnnotatedContr
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.server.GraphQlRSocketHandler;
 import org.springframework.graphql.server.RSocketGraphQlInterceptor;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 /**
@@ -53,11 +54,10 @@ public final class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings({ "removal", "deprecation" })
 	GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
-			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
+			ObjectProvider<RSocketGraphQlInterceptor> interceptors, JsonMapper jsonMapper) {
 		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),
-				new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper));
+				new JacksonJsonEncoder(jsonMapper));
 	}
 
 	@Bean

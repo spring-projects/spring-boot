@@ -19,8 +19,8 @@ package org.springframework.boot.websocket.autoconfigure.servlet;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -36,6 +36,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
+import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
@@ -58,18 +59,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public final class WebSocketMessagingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
-	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
+	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, JsonMapper.class })
+	@ConditionalOnClass({ JsonMapper.class, AbstractMessageBrokerConfiguration.class })
 	@Order(0)
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
-		private final ObjectMapper objectMapper;
+		private final JsonMapper jsonMapper;
 
 		private final @Nullable AsyncTaskExecutor executor;
 
-		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
-				Map<String, AsyncTaskExecutor> taskExecutors) {
-			this.objectMapper = objectMapper;
+		WebSocketMessageConverterConfiguration(JsonMapper jsonMapper, Map<String, AsyncTaskExecutor> taskExecutors) {
+			this.jsonMapper = jsonMapper;
 			this.executor = determineAsyncTaskExecutor(taskExecutors);
 		}
 
@@ -83,9 +83,7 @@ public final class WebSocketMessagingAutoConfiguration {
 
 		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			@SuppressWarnings({ "removal", "deprecation" })
-			org.springframework.messaging.converter.MappingJackson2MessageConverter converter = new org.springframework.messaging.converter.MappingJackson2MessageConverter(
-					this.objectMapper);
+			JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter(this.jsonMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
 			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
 			converter.setContentTypeResolver(resolver);

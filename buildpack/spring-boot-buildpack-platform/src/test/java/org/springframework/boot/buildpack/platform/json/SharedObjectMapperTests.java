@@ -16,12 +16,11 @@
 
 package org.springframework.boot.buildpack.platform.json;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.SerializationFeature;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,14 +35,14 @@ class SharedObjectMapperTests {
 	void getReturnsConfiguredObjectMapper() {
 		ObjectMapper mapper = SharedObjectMapper.get();
 		assertThat(mapper).isNotNull();
-		assertThat(mapper.getRegisteredModuleIds()).contains(new ParameterNamesModule().getTypeId());
-		assertThat(SerializationFeature.INDENT_OUTPUT
-			.enabledIn(mapper.getSerializationConfig().getSerializationFeatures())).isTrue();
+		assertThat(
+				SerializationFeature.INDENT_OUTPUT.enabledIn(mapper.serializationConfig().getSerializationFeatures()))
+			.isTrue();
 		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-			.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
-		assertThat(mapper.getSerializationConfig().getPropertyNamingStrategy())
+			.enabledIn(mapper.deserializationConfig().getDeserializationFeatures())).isFalse();
+		assertThat(mapper.serializationConfig().getPropertyNamingStrategy())
 			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
-		assertThat(mapper.getDeserializationConfig().getPropertyNamingStrategy())
+		assertThat(mapper.deserializationConfig().getPropertyNamingStrategy())
 			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 	}
 

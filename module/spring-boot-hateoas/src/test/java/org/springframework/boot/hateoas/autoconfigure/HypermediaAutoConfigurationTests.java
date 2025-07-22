@@ -35,6 +35,7 @@ import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -85,13 +86,12 @@ class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void whenUsingTheDefaultConfigurationThenMappingJacksonConverterCanWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
 				.stream()
-				.filter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class::isInstance)
+				.filter(JacksonJsonHttpMessageConverter.class::isInstance)
 				.findFirst();
 			assertThat(mappingJacksonConverter).hasValueSatisfying(
 					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
@@ -100,14 +100,13 @@ class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void whenHalIsNotTheDefaultJsonMediaTypeThenMappingJacksonConverterCannotWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.withPropertyValues("spring.hateoas.use-hal-as-default-json-media-type:false")
 			.run((context) -> {
 				RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 				Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
 					.stream()
-					.filter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class::isInstance)
+					.filter(JacksonJsonHttpMessageConverter.class::isInstance)
 					.findFirst();
 				assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
 						converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))

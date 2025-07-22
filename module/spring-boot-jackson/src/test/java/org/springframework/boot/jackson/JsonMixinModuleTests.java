@@ -19,10 +19,10 @@ package org.springframework.boot.jackson;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.jackson.scan.a.RenameMixInClass;
@@ -67,7 +67,7 @@ class JsonMixinModuleTests {
 		load(RenameMixInClass.class);
 		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"username\":\"spring\"}");
-		assertMixIn(module, new NameAndAge("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
+		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	@Test
@@ -75,21 +75,21 @@ class JsonMixinModuleTests {
 		load(EmptyMixInClass.class);
 		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"name\":\"spring\"}");
-		assertMixIn(module, new NameAndAge("spring", 100), "{\"name\":\"spring\",\"age\":100}");
+		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"name\":\"spring\"}");
 	}
 
 	@Test
 	void jsonWithModuleWithRenameMixInAbstractClassShouldBeMixedIn() throws Exception {
 		load(RenameMixInAbstractClass.class);
 		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
-		assertMixIn(module, new NameAndAge("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
+		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	@Test
 	void jsonWithModuleWithRenameMixInInterfaceShouldBeMixedIn() throws Exception {
 		load(RenameMixInInterface.class);
 		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
-		assertMixIn(module, new NameAndAge("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
+		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	private void load(Class<?>... basePackageClasses) {
@@ -108,9 +108,8 @@ class JsonMixinModuleTests {
 		return jsonMixinModule;
 	}
 
-	private void assertMixIn(Module module, Name value, String expectedJson) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+	private void assertMixIn(JacksonModule module, Name value, String expectedJson) throws Exception {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		String json = mapper.writeValueAsString(value);
 		assertThat(json).isEqualToIgnoringWhitespace(expectedJson);
 	}

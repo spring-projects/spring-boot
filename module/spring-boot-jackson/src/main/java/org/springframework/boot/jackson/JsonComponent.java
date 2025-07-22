@@ -22,29 +22,29 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.KeyDeserializer;
+import tools.jackson.databind.KeyDeserializer;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.ValueSerializer;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link Component @Component} that provides {@link JsonSerializer},
- * {@link JsonDeserializer} or {@link KeyDeserializer} implementations to be registered
+ * {@link Component @Component} that provides {@link ValueSerializer},
+ * {@link ValueDeserializer} or {@link KeyDeserializer} implementations to be registered
  * with Jackson when {@link JsonComponentModule} is in use. Can be used to annotate
  * implementations directly or a class that contains them as inner-classes. For example:
  * <pre class="code">
  * &#064;JsonComponent
  * public class CustomerJsonComponent {
  *
- *     public static class Serializer extends JsonSerializer&lt;Customer&gt; {
+ *     public static class Serializer extends ValueSerializer&lt;Customer&gt; {
  *
  *         // ...
  *
  *     }
  *
- *     public static class Deserializer extends JsonDeserializer&lt;Customer&gt; {
+ *     public static class Deserializer extends ValueDeserializer&lt;Customer&gt; {
  *
  *         // ...
  *
@@ -76,10 +76,9 @@ public @interface JsonComponent {
 	/**
 	 * The types that are handled by the provided serializer/deserializer. This attribute
 	 * is mandatory for a {@link KeyDeserializer}, as the type cannot be inferred. For a
-	 * {@link JsonSerializer} or {@link JsonDeserializer} it can be used to limit handling
-	 * to a subclasses of type inferred from the generic.
+	 * {@link ValueSerializer} or {@link ValueDeserializer} it can be used to limit
+	 * handling to a subclasses of type inferred from the generic.
 	 * @return the types that should be handled by the component
-	 * @since 2.2.0
 	 */
 	Class<?>[] type() default {};
 
@@ -87,7 +86,6 @@ public @interface JsonComponent {
 	 * The scope under which the serializer/deserializer should be registered with the
 	 * module.
 	 * @return the component's handle type
-	 * @since 2.2.0
 	 */
 	Scope scope() default Scope.VALUES;
 
@@ -98,15 +96,15 @@ public @interface JsonComponent {
 
 		/**
 		 * A serializer/deserializer for regular value content.
-		 * @see JsonSerializer
-		 * @see JsonDeserializer
+		 * @see ValueSerializer
+		 * @see ValueDeserializer
 		 */
 		VALUES,
 
 		/**
 		 * A serializer/deserializer for keys.
-		 * @see JsonSerializer
-		 * @see KeyDeserializer
+		 * @see ValueSerializer
+		 * @see ValueDeserializer
 		 */
 		KEYS
 

@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.lang.Contract;
 

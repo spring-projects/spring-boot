@@ -64,6 +64,7 @@ class ConnectionNamePredicateTests {
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/library/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com:8080/library/redis"));
 		assertThat(predicateOf("redis")).rejects(sourceOf("internalhost:8080/redis"));
+		assertThat(predicateOf("redis")).accepts(sourceOf("docker.my-company.com/library/redis:latest"));
 	}
 
 	@Test

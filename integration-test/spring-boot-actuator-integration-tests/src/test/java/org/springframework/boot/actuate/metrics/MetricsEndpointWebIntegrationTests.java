@@ -16,16 +16,15 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.micrometer.metrics.actuate.endpoint.MetricsEndpoint;
@@ -49,7 +48,7 @@ class MetricsEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	@SuppressWarnings("unchecked")
-	void listNames(WebTestClient client) throws IOException {
+	void listNames(WebTestClient client) {
 		String responseBody = client.get()
 			.uri("/actuator/metrics")
 			.exchange()

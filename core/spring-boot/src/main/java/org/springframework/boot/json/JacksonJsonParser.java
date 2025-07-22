@@ -19,9 +19,9 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.

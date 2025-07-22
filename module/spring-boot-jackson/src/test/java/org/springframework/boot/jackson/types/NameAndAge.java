@@ -28,7 +28,7 @@ public final class NameAndAge extends Name {
 
 	private final int age;
 
-	public NameAndAge(String name, int age) {
+	private NameAndAge(String name, int age) {
 		super(name);
 		this.age = age;
 	}
@@ -65,6 +65,10 @@ public final class NameAndAge extends Name {
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.age);
 		return result;
+	}
+
+	public static NameAndAge create(String name, int age) {
+		return new NameAndAge(name, age);
 	}
 
 }

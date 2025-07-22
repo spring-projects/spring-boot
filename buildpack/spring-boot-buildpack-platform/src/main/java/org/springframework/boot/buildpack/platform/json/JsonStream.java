@@ -20,12 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Utility class that allows JSON to be parsed and processed as it's received.
@@ -64,8 +63,7 @@ public class JsonStream {
 	 * @throws IOException on IO error
 	 */
 	public <T> void get(InputStream content, Class<T> type, Consumer<T> consumer) throws IOException {
-		JsonFactory jsonFactory = this.objectMapper.getFactory();
-		try (JsonParser parser = jsonFactory.createParser(content)) {
+		try (JsonParser parser = this.objectMapper.createParser(content)) {
 			while (!parser.isClosed()) {
 				JsonToken token = parser.nextToken();
 				if (token != null && token != JsonToken.END_OBJECT) {
@@ -79,9 +77,9 @@ public class JsonStream {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> @Nullable T read(JsonParser parser, Class<T> type) throws IOException {
+	private <T> @Nullable T read(JsonParser parser, Class<T> type) {
 		if (ObjectNode.class.isAssignableFrom(type)) {
-			ObjectNode node = this.objectMapper.readTree(parser);
+			ObjectNode node = (ObjectNode) this.objectMapper.readTree(parser);
 			if (node == null || node.isMissingNode() || node.isEmpty()) {
 				return null;
 			}

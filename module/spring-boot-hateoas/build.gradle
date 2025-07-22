@@ -28,7 +28,7 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.hateoas:spring-hateoas")
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation(project(":module:spring-boot-jackson"))
 	implementation("org.springframework:spring-webmvc")
 
 	optional(project(":core:spring-boot-autoconfigure"))

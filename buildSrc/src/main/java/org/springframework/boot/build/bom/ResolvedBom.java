@@ -25,10 +25,8 @@ import java.net.URI;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * A resolved bom.
@@ -42,10 +40,9 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	private static final ObjectMapper objectMapper;
 
 	static {
-		ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-			.setDefaultPropertyInclusion(Include.NON_EMPTY);
-		mapper.configOverride(List.class).setSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));
-		objectMapper = mapper;
+		objectMapper = JsonMapper.builder()
+			.changeDefaultPropertyInclusion((value) -> value.withContentInclusion(Include.NON_EMPTY))
+			.build();
 	}
 
 	public static ResolvedBom readFrom(File file) {
@@ -58,12 +55,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public void writeTo(Writer writer) {
-		try {
-			objectMapper.writeValue(writer, this);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		objectMapper.writeValue(writer, this);
 	}
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,

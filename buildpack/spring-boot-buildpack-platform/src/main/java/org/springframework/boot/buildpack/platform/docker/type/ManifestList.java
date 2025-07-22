@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.Assert;

@@ -16,16 +16,14 @@
 
 package org.springframework.boot.docker.compose.core;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Support class used to handle JSON returned from the {@link DockerCli}.
@@ -40,7 +38,6 @@ final class DockerJson {
 		.defaultLocale(Locale.ENGLISH)
 		.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-		.addModule(new ParameterNamesModule())
 		.build();
 
 	private DockerJson() {
@@ -74,12 +71,7 @@ final class DockerJson {
 	}
 
 	private static <T> T deserialize(String json, JavaType type) {
-		try {
-			return objectMapper.readValue(json.trim(), type);
-		}
-		catch (IOException ex) {
-			throw new DockerOutputParseException(json, ex);
-		}
+		return objectMapper.readValue(json.trim(), type);
 	}
 
 }

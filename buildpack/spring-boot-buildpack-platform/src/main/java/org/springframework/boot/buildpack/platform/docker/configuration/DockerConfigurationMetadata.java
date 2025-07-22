@@ -28,10 +28,10 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -120,7 +120,7 @@ final class DockerConfigurationMetadata {
 		try {
 			return DockerConfig.fromJson(readPathContent(path));
 		}
-		catch (JsonProcessingException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException("Error parsing Docker configuration file '" + path + "'", ex);
 		}
 	}
@@ -142,7 +142,7 @@ final class DockerConfigurationMetadata {
 			}
 			return context;
 		}
-		catch (JsonProcessingException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException("Error parsing Docker context metadata file '" + metaPath + "'", ex);
 		}
 	}
@@ -181,7 +181,7 @@ final class DockerConfigurationMetadata {
 			super(node, MethodHandles.lookup());
 			this.currentContext = valueAt("/currentContext", String.class);
 			this.credsStore = valueAt("/credsStore", String.class);
-			this.credHelpers = mapAt("/credHelpers", JsonNode::textValue);
+			this.credHelpers = mapAt("/credHelpers", JsonNode::stringValue);
 			this.auths = mapAt("/auths", Auth::new);
 		}
 
@@ -201,7 +201,7 @@ final class DockerConfigurationMetadata {
 			return this.auths;
 		}
 
-		static DockerConfig fromJson(String json) throws JsonProcessingException {
+		static DockerConfig fromJson(String json) {
 			return new DockerConfig(SharedObjectMapper.get().readTree(json));
 		}
 
@@ -285,7 +285,7 @@ final class DockerConfigurationMetadata {
 			return new DockerContext(this.getNode(), tlsPath);
 		}
 
-		static DockerContext fromJson(String json) throws JsonProcessingException {
+		static DockerContext fromJson(String json) {
 			return new DockerContext(SharedObjectMapper.get().readTree(json), null);
 		}
 

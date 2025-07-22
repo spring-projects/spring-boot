@@ -43,9 +43,9 @@ dependencies {
 	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
 	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
-	implementation(platform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}"))
+	implementation(platform("com.fasterxml.jackson:jackson-bom:${jackson2Version}"))
+	implementation(platform("tools.jackson:jackson-bom:${jacksonVersion}"))
 	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
-	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
 	implementation("com.tngtech.archunit:archunit:1.4.1")
@@ -65,6 +65,7 @@ dependencies {
 	implementation("org.springframework:spring-web")
 	implementation("org.yaml:snakeyaml:${snakeYamlVersion}")
 	implementation("io.spring.gradle.nullability:nullability-plugin:${nullabilityPluginVersion}")
+	implementation("tools.jackson.core:jackson-databind")
 
 	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")

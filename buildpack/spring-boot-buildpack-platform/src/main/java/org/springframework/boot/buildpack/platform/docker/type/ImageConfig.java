@@ -22,9 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 
@@ -111,7 +111,7 @@ public class ImageConfig extends MappedObject {
 		private final ObjectNode copy;
 
 		private Update(ImageConfig source) {
-			this.copy = source.getNode().deepCopy();
+			this.copy = (ObjectNode) source.getNode().deepCopy();
 		}
 
 		private ImageConfig run(Consumer<Update> update) {

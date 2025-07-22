@@ -26,9 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -40,6 +37,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * {@link SourceTask} that checks {@code spring-configuration-metadata.json} files.
@@ -65,7 +63,7 @@ public abstract class CheckSpringConfigurationMetadata extends DefaultTask {
 	public abstract ListProperty<String> getExclusions();
 
 	@TaskAction
-	void check() throws JsonParseException, IOException {
+	void check() throws IOException {
 		Report report = createReport();
 		File reportFile = getReportLocation().get().getAsFile();
 		Files.write(reportFile.toPath(), report, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -76,7 +74,7 @@ public abstract class CheckSpringConfigurationMetadata extends DefaultTask {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Report createReport() throws IOException, JsonParseException, JsonMappingException {
+	private Report createReport() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		File file = getMetadataLocation().get().getAsFile();
 		Report report = new Report(this.projectRoot.relativize(file.toPath()));

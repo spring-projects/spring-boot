@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.StringUtils;
@@ -54,7 +54,7 @@ public class Image extends MappedObject {
 
 	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.digests = childrenAt("/RepoDigests", JsonNode::asText);
+		this.digests = childrenAt("/RepoDigests", JsonNode::asString);
 		this.config = new ImageConfig(getNode().at("/Config"));
 		this.layers = extractLayers(valueAt("/RootFS/Layers", String[].class));
 		this.os = valueAt("/Os", String.class);

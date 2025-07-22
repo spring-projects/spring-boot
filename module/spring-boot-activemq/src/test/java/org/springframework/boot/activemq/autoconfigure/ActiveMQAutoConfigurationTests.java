@@ -16,6 +16,12 @@
 
 package org.springframework.boot.activemq.autoconfigure;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
@@ -46,6 +52,14 @@ class ActiveMQAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class));
+
+	@Test
+	void dunno() throws JsonProcessingException {
+		Map<String, String> map = new HashMap<>();
+		map.put("key", null);
+		String string = new ObjectMapper().setDefaultPropertyInclusion(Include.NON_NULL).writeValueAsString(map);
+		System.out.println(string);
+	}
 
 	@Test
 	void brokerIsEmbeddedByDefault() {

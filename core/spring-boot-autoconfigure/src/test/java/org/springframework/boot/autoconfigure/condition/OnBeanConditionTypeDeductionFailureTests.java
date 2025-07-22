@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.condition.OnBeanCondition.BeanTypeDeductionException;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;

@@ -16,20 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.json.app;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
 
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
-import org.springframework.boot.jackson.JsonObjectSerializer;
+import org.springframework.boot.jackson.ObjectValueDeserializer;
+import org.springframework.boot.jackson.ObjectValueSerializer;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 
 /**
@@ -41,23 +39,22 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 @JsonComponent
 public class ExampleJsonComponent {
 
-	static class Serializer extends JsonObjectSerializer<ExampleCustomObject> {
+	static class Serializer extends ObjectValueSerializer<ExampleCustomObject> {
 
 		@Override
-		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializerProvider provider)
-				throws IOException {
-			jgen.writeStringField("value", value.value());
-			jgen.writeNumberField("date", value.date().getTime());
-			jgen.writeStringField("uuid", value.uuid().toString());
+		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializationContext context) {
+			jgen.writeStringProperty("value", value.value());
+			jgen.writeNumberProperty("date", value.date().getTime());
+			jgen.writeStringProperty("uuid", value.uuid().toString());
 		}
 
 	}
 
-	static class Deserializer extends JsonObjectDeserializer<ExampleCustomObject> {
+	static class Deserializer extends ObjectValueDeserializer<ExampleCustomObject> {
 
 		@Override
 		protected ExampleCustomObject deserializeObject(JsonParser jsonParser, DeserializationContext context,
-				ObjectCodec codec, JsonNode tree) throws IOException {
+				JsonNode tree) {
 			String value = nullSafeValue(tree.get("value"), String.class);
 			Date date = nullSafeValue(tree.get("date"), Long.class, Date::new);
 			UUID uuid = nullSafeValue(tree.get("uuid"), String.class, UUID::fromString);

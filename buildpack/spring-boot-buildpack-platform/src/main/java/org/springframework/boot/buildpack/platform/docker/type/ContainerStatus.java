@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.Assert;

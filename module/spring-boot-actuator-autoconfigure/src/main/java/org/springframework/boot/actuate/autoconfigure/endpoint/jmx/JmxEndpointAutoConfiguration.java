@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import javax.management.MBeanServer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;

@@ -26,11 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.data.autoconfigure.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Rest's MVC
@@ -53,13 +53,14 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
 @EnableConfigurationProperties(RepositoryRestProperties.class)
 @Import(RepositoryRestMvcConfiguration.class)
-@SuppressWarnings("removal")
 public final class RepositoryRestMvcAutoConfiguration {
 
 	@Bean
 	SpringBootRepositoryRestConfigurer springBootRepositoryRestConfigurer(
-			ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder, RepositoryRestProperties properties) {
-		return new SpringBootRepositoryRestConfigurer(objectMapperBuilder.getIfAvailable(), properties);
+			ObjectProvider<JsonMapperBuilderCustomizer> jsonMapperBuilderCustomizers,
+			RepositoryRestProperties properties) {
+		return new SpringBootRepositoryRestConfigurer(jsonMapperBuilderCustomizers.orderedStream().toList(),
+				properties);
 	}
 
 }

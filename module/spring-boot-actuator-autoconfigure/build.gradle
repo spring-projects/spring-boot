@@ -29,13 +29,11 @@ dependencies {
 	api(project(":core:spring-boot-autoconfigure"))
 	api(project(":module:spring-boot-actuator"))
 
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	implementation("tools.jackson.core:jackson-databind")
 
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-web-server"))
 
-	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("io.micrometer:micrometer-core")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")

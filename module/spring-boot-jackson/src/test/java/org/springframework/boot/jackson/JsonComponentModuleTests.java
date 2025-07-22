@@ -16,16 +16,15 @@
 
 package org.springframework.boot.jackson;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -121,7 +120,7 @@ class JsonComponentModuleTests {
 		load(NameAndCareerJsonComponent.class);
 		JsonComponentModule module = this.context.getBean(JsonComponentModule.class);
 		assertSerialize(module, new NameAndCareer("spring", "developer"), "{\"name\":\"spring\"}");
-		assertSerialize(module);
+		assertSerialize(module, NameAndAge.create("spring", 100), "{\"age\":100,\"name\":\"spring\"}");
 		assertDeserializeForSpecifiedClasses(module);
 	}
 
@@ -157,29 +156,26 @@ class JsonComponentModuleTests {
 		this.context = context;
 	}
 
-	private void assertSerialize(Module module, Name value, String expectedJson) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+	private void assertSerialize(JacksonModule module, Name value, String expectedJson) throws Exception {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		String json = mapper.writeValueAsString(value);
 		assertThat(json).isEqualToIgnoringWhitespace(expectedJson);
 	}
 
-	private void assertSerialize(Module module) throws Exception {
-		assertSerialize(module, new NameAndAge("spring", 100), "{\"name\":\"spring\",\"age\":100}");
+	private void assertSerialize(JacksonModule module) throws Exception {
+		assertSerialize(module, NameAndAge.create("spring", 100), "{\"theName\":\"spring\",\"theAge\":100}");
 	}
 
-	private void assertDeserialize(Module module) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+	private void assertDeserialize(JacksonModule module) throws Exception {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
 
-	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
-		assertThatExceptionOfType(JsonMappingException.class)
+	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module) {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
+		assertThatExceptionOfType(JacksonException.class)
 			.isThrownBy(() -> mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
 		NameAndCareer nameAndCareer = mapper.readValue("{\"name\":\"spring\",\"career\":\"developer\"}",
 				NameAndCareer.class);
@@ -187,22 +183,20 @@ class JsonComponentModuleTests {
 		assertThat(nameAndCareer.getCareer()).isEqualTo("developer");
 	}
 
-	private void assertKeySerialize(Module module) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+	private void assertKeySerialize(JacksonModule module) {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		Map<NameAndAge, Boolean> map = new HashMap<>();
-		map.put(new NameAndAge("spring", 100), true);
+		map.put(NameAndAge.create("spring", 100), true);
 		String json = mapper.writeValueAsString(map);
 		assertThat(json).isEqualToIgnoringWhitespace("{\"spring is 100\":  true}");
 	}
 
-	private void assertKeyDeserialize(Module module) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(module);
+	private void assertKeyDeserialize(JacksonModule module) {
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<>() {
 		};
 		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}", typeRef);
-		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
+		assertThat(map).containsEntry(NameAndAge.create("spring", 100), true);
 	}
 
 	@JsonComponent

@@ -17,8 +17,6 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.gradle.node.NodeExtension;
 import com.github.gradle.node.npm.task.NpmInstallTask;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
@@ -44,6 +41,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
@@ -198,18 +196,13 @@ public class AntoraConventions {
 	}
 
 	private String getUiBundleUrl(Project project) {
-		try {
-			File packageJson = project.getRootProject().file("antora/package.json");
-			ObjectMapper objectMapper = new ObjectMapper();
-			Map<?, ?> json = objectMapper.readerFor(Map.class).readValue(packageJson);
-			Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
-			String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
-			Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");
-			return url;
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		File packageJson = project.getRootProject().file("antora/package.json");
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<?, ?> json = objectMapper.readerFor(Map.class).readValue(packageJson);
+		Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
+		String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
+		Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");
+		return url;
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {

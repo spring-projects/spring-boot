@@ -18,19 +18,19 @@ package org.springframework.boot.actuate.endpoint.jackson;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 
 /**
- * Interface used to supply the {@link ObjectMapper} that should be used when serializing
+ * Interface used to supply the {@link JsonMapper} that should be used when serializing
  * endpoint results.
  *
  * @author Phillip Webb
- * @since 3.0.0
+ * @since 4.0.0
  * @see OperationResponseBody
  */
-public interface EndpointObjectMapper {
+public interface EndpointJsonMapper {
 
 	/**
 	 * The default supported types.
@@ -38,16 +38,15 @@ public interface EndpointObjectMapper {
 	Set<Class<?>> DEFAULT_SUPPORTED_TYPES = Set.of(OperationResponseBody.class);
 
 	/**
-	 * Return the {@link ObjectMapper} that should be used to serialize
+	 * Return the {@link JsonMapper} that should be used to serialize
 	 * {@link OperationResponseBody} endpoint results.
 	 * @return the object mapper
 	 */
-	ObjectMapper get();
+	JsonMapper get();
 
 	/**
 	 * Return the types that this endpoint mapper supports.
 	 * @return the supported types
-	 * @since 4.0.0
 	 */
 	default Set<Class<?>> getSupportedTypes() {
 		return DEFAULT_SUPPORTED_TYPES;

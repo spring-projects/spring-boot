@@ -29,30 +29,30 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.introspect.Annotated;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
-import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
-import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
-import com.fasterxml.jackson.databind.ser.SerializerFactory;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.BeanDescription;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationConfig;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.MapperConfig;
+import tools.jackson.databind.introspect.Annotated;
+import tools.jackson.databind.introspect.AnnotatedMethod;
+import tools.jackson.databind.introspect.DefaultAccessorNamingStrategy;
+import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.BeanPropertyWriter;
+import tools.jackson.databind.ser.BeanSerializerFactory;
+import tools.jackson.databind.ser.PropertyWriter;
+import tools.jackson.databind.ser.SerializerFactory;
+import tools.jackson.databind.ser.ValueSerializerModifier;
+import tools.jackson.databind.ser.std.SimpleBeanPropertyFilter;
+import tools.jackson.databind.ser.std.SimpleFilterProvider;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -180,13 +180,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	protected void configureJsonMapper(JsonMapper.Builder builder) {
 		builder.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		builder.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-		builder.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-		builder.configure(MapperFeature.USE_STD_BEAN_NAMING, true);
-		builder.serializationInclusion(Include.NON_NULL);
+		builder.changeDefaultPropertyInclusion((value) -> value.withValueInclusion(Include.NON_NULL));
+		builder.accessorNaming(new DefaultAccessorNamingStrategy.Provider().withFirstCharAcceptance(true, false));
 		applyConfigurationPropertiesFilter(builder);
 		applySerializationModifier(builder);
-		builder.addModule(new JavaTimeModule());
 		builder.addModule(new ConfigurationPropertiesModule());
 	}
 
@@ -411,8 +408,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private static final class ConfigurationPropertiesAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
 		@Override
-		public Object findFilterId(Annotated a) {
-			Object id = super.findFilterId(a);
+		public Object findFilterId(MapperConfig<?> config, Annotated a) {
+			Object id = super.findFilterId(config, a);
 			if (id == null) {
 				id = CONFIGURATION_PROPERTIES_FILTER_ID;
 			}
@@ -450,7 +447,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		}
 
 		@Override
-		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider,
+		public void serializeAsProperty(Object pojo, JsonGenerator jgen, SerializationContext context,
 				PropertyWriter writer) throws Exception {
 			if (writer instanceof BeanPropertyWriter beanPropertyWriter) {
 				try {
@@ -470,7 +467,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					return;
 				}
 			}
-			super.serializeAsField(pojo, jgen, provider, writer);
+			super.serializeAsProperty(pojo, jgen, context, writer);
 		}
 
 	}
@@ -487,14 +484,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * {@link BeanSerializerModifier} to return only relevant configuration properties.
+	 * {@link ValueSerializerModifier} to return only relevant configuration properties.
 	 */
-	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+	protected static class GenericSerializerModifier extends ValueSerializerModifier {
 
 		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription.Supplier beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			Class<?> beanClass = beanDesc.getType().getRawClass();
@@ -508,7 +505,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return result;
 		}
 
-		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer,
+		private boolean isCandidate(BeanDescription.Supplier beanDesc, BeanPropertyWriter writer,
 				@Nullable Constructor<?> constructor) {
 			if (constructor != null) {
 				Parameter[] parameters = constructor.getParameters();
@@ -529,10 +526,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return isReadable(beanDesc, writer);
 		}
 
-		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
-			Class<?> parentType = beanDesc.getType().getRawClass();
+		private boolean isReadable(BeanDescription.Supplier beanDesc, BeanPropertyWriter writer) {
+			Class<?> parentType = beanDesc.get().getType().getRawClass();
 			Class<?> type = writer.getType().getRawClass();
-			AnnotatedMethod setter = findSetter(beanDesc, writer);
+			AnnotatedMethod setter = findSetter(beanDesc.get(), writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
 			// that it is a nested class used solely for binding to config props, so it

@@ -45,8 +45,8 @@ class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
 				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
-		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
 	}
 
 	@Test
@@ -56,8 +56,8 @@ class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
 				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).startsWith("{\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"");
-		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).startsWith("{\"_links\":{\"self\":{\"href\"");
+		assertThat(entity.getBody()).endsWith(",\"id\":1,\"firstName\":\"Oliver\",\"lastName\":\"Gierke\"}");
 	}
 
 	@Test

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -66,6 +66,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
@@ -141,29 +142,28 @@ public class WebFluxEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(EndpointObjectMapper.class)
+	@ConditionalOnBean(EndpointJsonMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	static ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor serverCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-			ObjectProvider<EndpointObjectMapper> endpointObjectMapper) {
-		return new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-				SingletonSupplier.of(endpointObjectMapper::getObject));
+	static ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor serverCodecConfigurerEndpointJsonMapperBeanPostProcessor(
+			ObjectProvider<EndpointJsonMapper> endpointJsonMapper) {
+		return new ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor(
+				SingletonSupplier.of(endpointJsonMapper::getObject));
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to apply {@link EndpointObjectMapper} for
+	 * {@link BeanPostProcessor} to apply {@link EndpointJsonMapper} for
 	 * {@link OperationResponseBody} to
 	 * {@link org.springframework.http.codec.json.Jackson2JsonEncoder} instances.
 	 */
-	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
+	static class ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor implements BeanPostProcessor {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
 			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
-		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
+		private final Supplier<EndpointJsonMapper> endpointJsonMapper;
 
-		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-				Supplier<EndpointObjectMapper> endpointObjectMapper) {
-			this.endpointObjectMapper = endpointObjectMapper;
+		ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor(Supplier<EndpointJsonMapper> endpointJsonMapper) {
+			this.endpointJsonMapper = endpointJsonMapper;
 		}
 
 		@Override
@@ -182,19 +182,17 @@ public class WebFluxEndpointManagementContextConfiguration {
 			}
 		}
 
-		@SuppressWarnings({ "removal", "deprecation" })
 		private void process(Encoder<?> encoder) {
-			if (encoder instanceof org.springframework.http.codec.json.Jackson2JsonEncoder jackson2JsonEncoder) {
-				this.endpointObjectMapper.get()
+			if (encoder instanceof JacksonJsonEncoder jacksonJsonEncoder) {
+				this.endpointJsonMapper.get()
 					.getSupportedTypes()
-					.forEach((type) -> jackson2JsonEncoder.registerObjectMappersForType(type,
-							this::registerForAllMimeTypes));
+					.forEach((type) -> jacksonJsonEncoder.registerMappersForType(type, this::registerForAllMimeTypes));
 			}
 		}
 
-		private void registerForAllMimeTypes(Map<MimeType, ObjectMapper> registrar) {
-			ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
-			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, objectMapper));
+		private void registerForAllMimeTypes(Map<MimeType, JsonMapper> registrar) {
+			JsonMapper jsonMapper = this.endpointJsonMapper.get().get();
+			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, jsonMapper));
 		}
 
 	}

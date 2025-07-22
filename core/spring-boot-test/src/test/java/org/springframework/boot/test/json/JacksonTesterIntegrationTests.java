@@ -22,11 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.core.io.ByteArrayResource;
 
@@ -55,14 +54,14 @@ class JacksonTesterIntegrationTests {
 
 	@Test
 	void typicalTest() throws Exception {
-		JacksonTester.initFields(this, new ObjectMapper());
+		JacksonTester.initFields(this, new JsonMapper());
 		String example = JSON;
 		assertThat(this.simpleJson.parse(example).getObject().getName()).isEqualTo("Spring");
 	}
 
 	@Test
 	void typicalListTest() throws Exception {
-		JacksonTester.initFields(this, new ObjectMapper());
+		JacksonTester.initFields(this, new JsonMapper());
 		String example = "[" + JSON + "]";
 		assertThat(this.listJson.parse(example)).asInstanceOf(InstanceOfAssertFactories.LIST).hasSize(1);
 		assertThat(this.listJson.parse(example).getObject().get(0).getName()).isEqualTo("Spring");
@@ -70,7 +69,7 @@ class JacksonTesterIntegrationTests {
 
 	@Test
 	void typicalMapTest() throws Exception {
-		JacksonTester.initFields(this, new ObjectMapper());
+		JacksonTester.initFields(this, new JsonMapper());
 		Map<String, Integer> map = new LinkedHashMap<>();
 		map.put("a", 1);
 		map.put("b", 2);
@@ -79,7 +78,7 @@ class JacksonTesterIntegrationTests {
 
 	@Test
 	void stringLiteral() throws Exception {
-		JacksonTester.initFields(this, new ObjectMapper());
+		JacksonTester.initFields(this, new JsonMapper());
 		String stringWithSpecialCharacters = "myString";
 		assertThat(this.stringJson.write(stringWithSpecialCharacters)).extractingJsonPathStringValue("@")
 			.isEqualTo(stringWithSpecialCharacters);
@@ -87,7 +86,7 @@ class JacksonTesterIntegrationTests {
 
 	@Test
 	void parseSpecialCharactersTest() throws Exception {
-		JacksonTester.initFields(this, new ObjectMapper());
+		JacksonTester.initFields(this, new JsonMapper());
 		// Confirms that the handling of special characters is symmetrical between
 		// the serialization (through the JacksonTester) and the parsing (through
 		// json-path). By default json-path uses SimpleJson as its parser, which has a

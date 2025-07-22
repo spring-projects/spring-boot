@@ -33,7 +33,6 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
@@ -49,6 +48,7 @@ dependencies {
 	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.yaml:snakeyaml")
+	optional("tools.jackson.core:jackson-databind")
 
 	testFixturesCompileOnly(project(":test-support:spring-boot-test-support"))
 

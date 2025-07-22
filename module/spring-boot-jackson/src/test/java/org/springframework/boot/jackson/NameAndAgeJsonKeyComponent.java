@@ -16,13 +16,11 @@
 
 package org.springframework.boot.jackson;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.KeyDeserializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.KeyDeserializer;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 import org.springframework.boot.jackson.types.NameAndAge;
 
@@ -34,11 +32,11 @@ import org.springframework.boot.jackson.types.NameAndAge;
 @JsonComponent(type = NameAndAge.class, scope = JsonComponent.Scope.KEYS)
 public class NameAndAgeJsonKeyComponent {
 
-	static class Serializer extends JsonSerializer<NameAndAge> {
+	static class Serializer extends ValueSerializer<NameAndAge> {
 
 		@Override
-		public void serialize(NameAndAge value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
-			jgen.writeFieldName(value.asKey());
+		public void serialize(NameAndAge value, JsonGenerator jgen, SerializationContext serializers) {
+			jgen.writeName(value.asKey());
 		}
 
 	}
@@ -46,9 +44,9 @@ public class NameAndAgeJsonKeyComponent {
 	static class Deserializer extends KeyDeserializer {
 
 		@Override
-		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) throws IOException {
+		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) {
 			String[] keys = key.split("is");
-			return new NameAndAge(keys[0].trim(), Integer.parseInt(keys[1].trim()));
+			return NameAndAge.create(keys[0].trim(), Integer.parseInt(keys[1].trim()));
 		}
 
 	}

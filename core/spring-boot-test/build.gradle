@@ -27,7 +27,6 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework:spring-test")
 
-	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("io.projectreactor.netty:reactor-netty-http")
@@ -44,6 +43,7 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql-test")
+	optional("tools.jackson.core:jackson-databind")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")

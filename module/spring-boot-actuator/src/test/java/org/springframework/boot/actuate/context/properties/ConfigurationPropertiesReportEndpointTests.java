@@ -179,7 +179,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	void descriptorWithMixedCaseProperty() {
 		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
 			.run(assertProperties("mixedcase",
-					(properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
+					(properties) -> assertThat(properties).containsEntry("mIxedCase", "mixed")));
 	}
 
 	@Test

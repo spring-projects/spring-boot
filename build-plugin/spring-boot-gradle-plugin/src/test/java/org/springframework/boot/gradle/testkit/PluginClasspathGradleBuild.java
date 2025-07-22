@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.Versioned;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sun.jna.Platform;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.antlr.v4.runtime.Lexer;
@@ -39,6 +36,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.project.model.LanguageSettings;
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion;
 import org.tomlj.Toml;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.JacksonModule;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
@@ -103,9 +102,8 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		classpath.add(new File(pathOfJarContaining(HttpClientConnectionManager.class)));
 		classpath.add(new File(pathOfJarContaining(HttpRequest.class)));
 		classpath.add(new File(pathOfJarContaining(HttpVersionPolicy.class)));
-		classpath.add(new File(pathOfJarContaining(Module.class)));
-		classpath.add(new File(pathOfJarContaining(Versioned.class)));
-		classpath.add(new File(pathOfJarContaining(ParameterNamesModule.class)));
+		classpath.add(new File(pathOfJarContaining(JacksonModule.class)));
+		classpath.add(new File(pathOfJarContaining(JsonParser.class)));
 		classpath.add(new File(pathOfJarContaining("com.github.openjson.JSONObject")));
 		classpath.add(new File(pathOfJarContaining(JsonView.class)));
 		classpath.add(new File(pathOfJarContaining(Platform.class)));

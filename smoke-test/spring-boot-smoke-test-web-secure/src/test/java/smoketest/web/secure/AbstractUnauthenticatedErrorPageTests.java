@@ -16,8 +16,8 @@
 
 package smoketest.web.secure;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.test.client.TestRestTemplate;
@@ -50,7 +50,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 				HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -68,7 +68,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 				HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Not Found");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Not Found");
 	}
 
 	@Test
@@ -77,7 +77,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Not Found");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Not Found");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
 	@Test
@@ -95,7 +95,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/fail", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Internal Server Error");
+		assertThat(jsonResponse.get("error").asString()).isEqualTo("Internal Server Error");
 	}
 
 	@Test

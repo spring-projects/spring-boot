@@ -16,38 +16,33 @@
 
 package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.object;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
 
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
-import org.springframework.boot.jackson.JsonObjectSerializer;
+import org.springframework.boot.jackson.ObjectValueDeserializer;
+import org.springframework.boot.jackson.ObjectValueSerializer;
 
 @JsonComponent
 public class MyJsonComponent {
 
-	public static class Serializer extends JsonObjectSerializer<MyObject> {
+	public static class Serializer extends ObjectValueSerializer<MyObject> {
 
 		@Override
-		protected void serializeObject(MyObject value, JsonGenerator jgen, SerializerProvider provider)
-				throws IOException {
-			jgen.writeStringField("name", value.getName());
-			jgen.writeNumberField("age", value.getAge());
+		protected void serializeObject(MyObject value, JsonGenerator jgen, SerializationContext context) {
+			jgen.writeStringProperty("name", value.getName());
+			jgen.writeNumberProperty("age", value.getAge());
 		}
 
 	}
 
-	public static class Deserializer extends JsonObjectDeserializer<MyObject> {
+	public static class Deserializer extends ObjectValueDeserializer<MyObject> {
 
 		@Override
-		protected MyObject deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
-				JsonNode tree) throws IOException {
+		protected MyObject deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			int age = nullSafeValue(tree.get("age"), Integer.class);
 			return new MyObject(name, age);

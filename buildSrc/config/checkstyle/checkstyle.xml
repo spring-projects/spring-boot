@@ -6,4 +6,11 @@
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
 		<property name="excludes" value="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck" />
 	</module>
+	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
+			<property name="regexp" value="true" />
+			<property name="illegalPkgs"
+				value="^com\.fasterxml\.jackson(?!\.annotation).*" />
+		</module>
+	</module>
 </module>

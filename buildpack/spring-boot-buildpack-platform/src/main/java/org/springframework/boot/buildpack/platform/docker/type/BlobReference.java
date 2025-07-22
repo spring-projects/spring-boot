@@ -18,7 +18,7 @@ package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.Assert;

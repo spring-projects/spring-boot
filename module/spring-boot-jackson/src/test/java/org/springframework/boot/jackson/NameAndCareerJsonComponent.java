@@ -16,14 +16,11 @@
 
 package org.springframework.boot.jackson;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
 
 import org.springframework.boot.jackson.types.Name;
 import org.springframework.boot.jackson.types.NameAndCareer;
@@ -36,20 +33,19 @@ import org.springframework.boot.jackson.types.NameAndCareer;
 @JsonComponent(type = NameAndCareer.class)
 public class NameAndCareerJsonComponent {
 
-	static class Serializer extends JsonObjectSerializer<Name> {
+	static class Serializer extends ObjectValueSerializer<Name> {
 
 		@Override
-		protected void serializeObject(Name value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-			jgen.writeStringField("name", value.getName());
+		protected void serializeObject(Name value, JsonGenerator jgen, SerializationContext context) {
+			jgen.writeStringProperty("name", value.getName());
 		}
 
 	}
 
-	static class Deserializer extends JsonObjectDeserializer<Name> {
+	static class Deserializer extends ObjectValueDeserializer<Name> {
 
 		@Override
-		protected Name deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
-				JsonNode tree) throws IOException {
+		protected Name deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			String career = nullSafeValue(tree.get("career"), String.class);
 			return new NameAndCareer(name, career);

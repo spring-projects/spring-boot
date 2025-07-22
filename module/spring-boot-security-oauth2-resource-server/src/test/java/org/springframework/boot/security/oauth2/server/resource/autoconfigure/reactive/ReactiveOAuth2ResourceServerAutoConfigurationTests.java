@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -47,6 +45,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.security.autoconfigure.actuate.reactive.ReactiveManagementWebSecurityAutoConfiguration;
@@ -757,7 +756,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		return issuer;
 	}
 
-	private void setupMockResponse(String issuer) throws JsonProcessingException {
+	private void setupMockResponse(String issuer) {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
 			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -766,7 +765,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				new MockResponse().setResponseCode(200).setHeader("Content-Type", "application/json").setBody(JWK_SET));
 	}
 
-	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
+	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) {
 		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);

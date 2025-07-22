@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
@@ -152,7 +152,7 @@ class BuilderMetadata extends MappedObject {
 			String json = SharedObjectMapper.get().writeValueAsString(getNode());
 			update.withLabel(LABEL_NAME, json);
 		}
-		catch (JsonProcessingException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -239,7 +239,7 @@ class BuilderMetadata extends MappedObject {
 		RunImage(JsonNode node) {
 			super(node, MethodHandles.lookup());
 			this.image = extractImage();
-			this.mirrors = childrenAt("/mirrors", JsonNode::asText);
+			this.mirrors = childrenAt("/mirrors", JsonNode::asString);
 		}
 
 		private String extractImage() {
@@ -352,7 +352,7 @@ class BuilderMetadata extends MappedObject {
 		private final ObjectNode copy;
 
 		private Update(BuilderMetadata source) {
-			this.copy = source.getNode().deepCopy();
+			this.copy = (ObjectNode) source.getNode().deepCopy();
 		}
 
 		private BuilderMetadata run(Consumer<Update> update) {

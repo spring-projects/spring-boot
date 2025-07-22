@@ -20,17 +20,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -40,30 +38,27 @@ import org.springframework.util.ClassUtils;
  * @since 3.0.0
  */
 @AutoConfiguration
-@SuppressWarnings("removal")
 public final class JacksonEndpointAutoConfiguration {
 
 	private static final String CONTRIBUTED_HEALTH = "org.springframework.boot.health.contributor.ContributedHealth";
 
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
-	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	EndpointObjectMapper endpointObjectMapper() {
-		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
-			.featuresToEnable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-					SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
-			.serializationInclusion(Include.NON_NULL)
+	@ConditionalOnClass(ObjectMapper.class)
+	EndpointJsonMapper endpointJsonMapper() {
+		JsonMapper jsonMapper = JsonMapper.builder()
+			.changeDefaultPropertyInclusion(
+					(value) -> value.withValueInclusion(Include.NON_NULL).withContentInclusion(Include.NON_NULL))
 			.build();
-		Set<Class<?>> supportedTypes = new HashSet<>(EndpointObjectMapper.DEFAULT_SUPPORTED_TYPES);
+		Set<Class<?>> supportedTypes = new HashSet<>(EndpointJsonMapper.DEFAULT_SUPPORTED_TYPES);
 		if (ClassUtils.isPresent(CONTRIBUTED_HEALTH, null)) {
 			supportedTypes.add(ClassUtils.resolveClassName(CONTRIBUTED_HEALTH, null));
 		}
-		return new EndpointObjectMapper() {
+		return new EndpointJsonMapper() {
 
 			@Override
-			public ObjectMapper get() {
-				return objectMapper;
+			public JsonMapper get() {
+				return jsonMapper;
 			}
 
 			@Override

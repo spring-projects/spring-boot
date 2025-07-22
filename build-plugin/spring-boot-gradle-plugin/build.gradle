@@ -59,8 +59,6 @@ dependencies {
 
 	testImplementation(project(":test-support:spring-boot-gradle-test-support"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("com.fasterxml.jackson.core:jackson-databind")
-	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.tngtech.archunit:archunit-junit5:1.4.0")
 	testImplementation("net.java.dev.jna:jna-platform")
 	testImplementation("org.apache.commons:commons-compress")
@@ -70,6 +68,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.tomlj:tomlj:1.0.0")
+	testImplementation("tools.jackson.core:jackson-databind")
 }
 
 repositories {

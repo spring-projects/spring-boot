@@ -18,8 +18,8 @@ package org.springframework.boot.http.codec.autoconfigure;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
@@ -77,14 +77,14 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
-		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
+	void jacksonCodecCustomizerIsAutoConfiguredWhenJsonMapperIsPresent() {
+		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
 	void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
-		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class, CodecCustomizerConfiguration.class)
+		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class, CodecCustomizerConfiguration.class)
 			.run((context) -> {
 				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
 				assertThat(codecCustomizers).hasSize(3);
@@ -107,11 +107,11 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ObjectMapperConfiguration {
+	static class JsonMapperConfiguration {
 
 		@Bean
-		ObjectMapper objectMapper() {
-			return new ObjectMapper();
+		JsonMapper jsonMapper() {
+			return new JsonMapper();
 		}
 
 	}

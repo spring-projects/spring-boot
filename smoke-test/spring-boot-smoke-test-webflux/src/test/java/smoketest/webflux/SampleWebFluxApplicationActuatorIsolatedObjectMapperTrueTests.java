@@ -18,8 +18,8 @@ package smoketest.webflux;
 
 import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "management.endpoints.jackson.isolated-object-mapper=true")
+		properties = { "management.endpoints.jackson.isolated-object-mapper=true",
+				"spring.jackson.mapper.require-setters-for-getters=true" })
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
 class SampleWebFluxApplicationActuatorIsolatedObjectMapperTrueTests {
 
@@ -44,7 +45,7 @@ class SampleWebFluxApplicationActuatorIsolatedObjectMapperTrueTests {
 	private WebTestClient webClient;
 
 	@Test
-	void linksEndpointShouldBeAvailable() {
+	void bodyIsPresentAsOnlyMainObjectMapperRequiresSettersForGetters() {
 		this.webClient.get()
 			.uri("/actuator/startup")
 			.accept(MediaType.APPLICATION_JSON)

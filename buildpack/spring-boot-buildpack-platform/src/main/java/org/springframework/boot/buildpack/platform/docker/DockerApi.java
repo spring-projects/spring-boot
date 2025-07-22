@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -286,10 +287,13 @@ public class DockerApi {
 			listener.onStart();
 			try {
 				try (Response response = http().post(loadUri, "application/x-tar", archive::writeTo)) {
-					jsonStream().get(response.getContent(), LoadImageUpdateEvent.class, (event) -> {
-						streamListener.onUpdate(event);
-						listener.onUpdate(event);
-					});
+					InputStream content = response.getContent();
+					if (content != null) {
+						jsonStream().get(content, LoadImageUpdateEvent.class, (event) -> {
+							streamListener.onUpdate(event);
+							listener.onUpdate(event);
+						});
+					}
 				}
 				streamListener.assertValidResponseReceived();
 			}
@@ -395,7 +399,7 @@ public class DockerApi {
 					: buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
-					.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());
+					.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asString());
 			}
 		}
 

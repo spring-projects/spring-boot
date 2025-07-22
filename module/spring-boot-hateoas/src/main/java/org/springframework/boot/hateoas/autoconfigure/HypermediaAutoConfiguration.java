@@ -16,7 +16,7 @@
 
 package org.springframework.boot.hateoas.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -48,7 +48,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 @AutoConfiguration
 @ConditionalOnClass({ EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class,
-		ObjectMapper.class })
+		JsonMapper.class })
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(HateoasProperties.class)
 public final class HypermediaAutoConfiguration {

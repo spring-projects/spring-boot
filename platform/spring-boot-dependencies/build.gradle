@@ -681,9 +681,19 @@ bom {
 			releaseNotes("https://github.com/influxdata/influxdb-java/releases/tag/influxdb-java-{version}")
 		}
 	}
-	library("Jackson Bom", "${jacksonVersion}") {
+	library("Jackson 2 Bom", "${jackson2Version}") {
 		group("com.fasterxml.jackson") {
 			bom("jackson-bom")
+		}
+		links {
+			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+		}
+	}
+	library("Jackson Bom", "${jacksonVersion}") {
+		group("tools.jackson") {
+			bom("jackson-bom") {
+				permit("com.fasterxml.jackson.core:jackson-annotations")
+			}
 		}
 		links {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")

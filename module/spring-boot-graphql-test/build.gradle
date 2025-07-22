@@ -38,7 +38,7 @@ dependencies {
 	testImplementation("org.springframework:spring-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
+	testRuntimeOnly("tools.jackson.core:jackson-databind")
 }
 
 tasks.named("javadoc") {

@@ -33,6 +33,7 @@ dependencies {
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jackson"))
+	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("org.testcontainers:couchbase")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))

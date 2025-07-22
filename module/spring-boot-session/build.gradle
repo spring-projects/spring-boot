@@ -55,5 +55,4 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }

@@ -36,8 +36,8 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-reactor-netty"))
-	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("io.rsocket:rsocket-transport-netty")
+	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

@@ -19,9 +19,8 @@ package org.springframework.boot.build.bom.bomr.github;
 import java.util.Base64;
 import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
@@ -61,8 +60,7 @@ final class StandardGitHub implements GitHub {
 
 	@SuppressWarnings({ "deprecation", "removal" })
 	private RestTemplate createRestTemplate() {
-		return new RestTemplate(Collections.singletonList(
-				new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(new ObjectMapper())));
+		return new RestTemplate(Collections.singletonList(new JacksonJsonHttpMessageConverter()));
 	}
 
 }

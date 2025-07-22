@@ -26,10 +26,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 import org.slf4j.helpers.BasicMarkerFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMembersCustomizerBuilder;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -122,14 +120,8 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected Map<String, Object> deserialize(String json) {
-		try {
-			return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
-			});
-		}
-		catch (JsonProcessingException ex) {
-			Assertions.fail("Failed to deserialize JSON: " + json, ex);
-			return null;
-		}
+		return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
+		});
 	}
 
 }

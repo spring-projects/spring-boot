@@ -24,14 +24,14 @@ import java.util.TimeZone;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.cfg.EnumFeature;
-import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.json.JsonWriteFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.EnumFeature;
+import tools.jackson.databind.cfg.JsonNodeFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -81,14 +81,14 @@ public class JacksonProperties {
 	private final Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
 
 	/**
-	 * Jackson on/off features for parsers.
+	 * Jackson on/off features for readers.
 	 */
-	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(JsonParser.Feature.class);
+	private final Map<JsonReadFeature, Boolean> read = new EnumMap<>(JsonReadFeature.class);
 
 	/**
-	 * Jackson on/off features for generators.
+	 * Jackson on/off features for writers.
 	 */
-	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
+	private final Map<JsonWriteFeature, Boolean> write = new EnumMap<>(JsonWriteFeature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -152,12 +152,12 @@ public class JacksonProperties {
 		return this.mapper;
 	}
 
-	public Map<JsonParser.Feature, Boolean> getParser() {
-		return this.parser;
+	public Map<JsonReadFeature, Boolean> getRead() {
+		return this.read;
 	}
 
-	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
-		return this.generator;
+	public Map<JsonWriteFeature, Boolean> getWrite() {
+		return this.write;
 	}
 
 	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {

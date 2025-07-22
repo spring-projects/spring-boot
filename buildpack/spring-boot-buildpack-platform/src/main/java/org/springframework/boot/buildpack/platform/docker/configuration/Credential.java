@@ -18,8 +18,8 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.lang.invoke.MethodHandles;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.Assert;

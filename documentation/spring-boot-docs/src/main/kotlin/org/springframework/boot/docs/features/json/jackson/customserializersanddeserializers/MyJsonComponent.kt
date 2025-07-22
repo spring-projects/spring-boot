@@ -16,36 +16,32 @@
 
 package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
+import tools.jackson.core.JsonGenerator
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.ValueSerializer
+
 import org.springframework.boot.jackson.JsonComponent
-import java.io.IOException
 
 @JsonComponent
 class MyJsonComponent {
 
-	class Serializer : JsonSerializer<MyObject>() {
-		@Throws(IOException::class)
-		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializerProvider) {
+	class Serializer : ValueSerializer<MyObject>() {
+		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializationContext) {
 			jgen.writeStartObject()
-			jgen.writeStringField("name", value.name)
-			jgen.writeNumberField("age", value.age)
+			jgen.writeStringProperty("name", value.name)
+			jgen.writeNumberProperty("age", value.age)
 			jgen.writeEndObject()
 		}
 	}
 
-	class Deserializer : JsonDeserializer<MyObject>() {
-		@Throws(IOException::class, JsonProcessingException::class)
+	class Deserializer : ValueDeserializer<MyObject>() {
 		override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): MyObject {
-			val codec = jsonParser.codec
-			val tree = codec.readTree<JsonNode>(jsonParser)
-			val name = tree["name"].textValue()
+			val tree = jsonParser.readValueAsTree<JsonNode>()
+			val name = tree["name"].stringValue()
 			val age = tree["age"].intValue()
 			return MyObject(name, age)
 		}

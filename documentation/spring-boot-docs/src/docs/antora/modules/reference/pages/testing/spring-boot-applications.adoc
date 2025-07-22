@@ -281,7 +281,7 @@ You can use this combination if you are not interested in "`slicing`" your appli
 To test that object JSON serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.test.autoconfigure.json.JsonTest[format=annotation] annotation.
 javadoc:org.springframework.boot.test.autoconfigure.json.JsonTest[format=annotation] auto-configures the available supported JSON mapper, which can be one of the following libraries:
 
-* Jackson javadoc:com.fasterxml.jackson.databind.ObjectMapper[], any javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] beans and any Jackson javadoc:com.fasterxml.jackson.databind.Module[]
+* Jackson javadoc:tools.jackson.databind.JsonMapper[], any javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] beans and any Jackson javadoc:tools.jackson.databind.JacksonModule[]
 * `Gson`
 * `Jsonb`
 
@@ -317,7 +317,7 @@ javadoc:org.springframework.boot.context.properties.EnableConfigurationPropertie
 
 TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as the Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes by using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
+TIP: If you need to register extra components, such as a javadoc:tools.jackson.databind.JacksonModule[], you can import additional configuration classes by using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
 Often, javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] is limited to a single controller and is used in combination with javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] to provide mock implementations for required collaborators.
 
@@ -361,7 +361,7 @@ javadoc:org.springframework.boot.context.properties.EnableConfigurationPropertie
 
 TIP: A list of the auto-configurations that are enabled by javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as Jackson javadoc:com.fasterxml.jackson.databind.Module[], you can import additional configuration classes using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
+TIP: If you need to register extra components, such as a javadoc:tools.jackson.databind.JacksonModule[], you can import additional configuration classes using javadoc:org.springframework.context.annotation.Import[format=annotation] on your test.
 
 Often, javadoc:org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest[format=annotation] is limited to a single controller and used in combination with the javadoc:org.springframework.test.context.bean.override.mockito.MockitoBean[format=annotation] annotation to provide mock implementations for required collaborators.
 

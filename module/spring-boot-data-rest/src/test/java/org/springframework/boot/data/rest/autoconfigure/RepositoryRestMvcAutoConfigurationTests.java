@@ -17,9 +17,11 @@
 package org.springframework.boot.data.rest.autoconfigure;
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -160,14 +162,11 @@ class RepositoryRestMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
-	@SuppressWarnings({ "removal", "deprecation" })
-	static class TestConfigurationWithObjectMapperBuilder {
+	static class TestConfigurationWithJsonMapperBuilder {
 
 		@Bean
-		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder() {
-			org.springframework.http.converter.json.Jackson2ObjectMapperBuilder objectMapperBuilder = new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
-			objectMapperBuilder.simpleDateFormat("yyyy-MM");
-			return objectMapperBuilder;
+		JsonMapper.Builder jsonMapperBuilder() {
+			return JsonMapper.builder().defaultDateFormat(new SimpleDateFormat("yyyy-MM"));
 		}
 
 	}

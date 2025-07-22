@@ -27,13 +27,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -147,7 +147,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
 		WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
-				new ObjectMapper(),
+				new JsonMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientInboundChannel(registration);
 		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
@@ -158,7 +158,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
-				new ObjectMapper(),
+				new JsonMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientOutboundChannel(registration);
 		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
@@ -187,7 +187,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	private List<MessageConverter> getCustomizedConverters() {
 		List<MessageConverter> customizedConverters = new ArrayList<>();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
-				new ObjectMapper(), Collections.emptyMap());
+				new JsonMapper(), Collections.emptyMap());
 		configuration.configureMessageConverters(customizedConverters);
 		return customizedConverters;
 	}

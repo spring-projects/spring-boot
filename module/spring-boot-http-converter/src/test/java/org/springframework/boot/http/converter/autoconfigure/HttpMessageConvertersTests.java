@@ -28,11 +28,11 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
+import org.springframework.http.converter.cbor.JacksonCborHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,7 +43,6 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@SuppressWarnings("removal")
 class HttpMessageConvertersTests {
 
 	@Test
@@ -56,21 +55,21 @@ class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
-				MappingJackson2XmlHttpMessageConverter.class);
+				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class,
+				JacksonXmlHttpMessageConverter.class);
 	}
 
 	@Test
 	void addBeforeExistingConverter() {
-		MappingJackson2HttpMessageConverter converter1 = new MappingJackson2HttpMessageConverter();
-		MappingJackson2HttpMessageConverter converter2 = new MappingJackson2HttpMessageConverter();
+		JacksonJsonHttpMessageConverter converter1 = new JacksonJsonHttpMessageConverter();
+		JacksonJsonHttpMessageConverter converter2 = new JacksonJsonHttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1, converter2);
 		assertThat(converters.getConverters()).contains(converter1);
 		assertThat(converters.getConverters()).contains(converter2);
-		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<>();
+		List<JacksonJsonHttpMessageConverter> httpConverters = new ArrayList<>();
 		for (HttpMessageConverter<?> candidate : converters) {
-			if (candidate instanceof MappingJackson2HttpMessageConverter) {
-				httpConverters.add((MappingJackson2HttpMessageConverter) candidate);
+			if (candidate instanceof JacksonJsonHttpMessageConverter jsonConverter) {
+				httpConverters.add(jsonConverter);
 			}
 		}
 		// The existing converter is still there, but with a lower priority
@@ -86,7 +85,7 @@ class HttpMessageConvertersTests {
 		HttpMessageConverters converters = new HttpMessageConverters(converter1);
 		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
 		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class);
+				JacksonJsonHttpMessageConverter.class);
 	}
 
 	@Test
@@ -114,7 +113,7 @@ class HttpMessageConvertersTests {
 
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessConverters(List<HttpMessageConverter<?>> converters) {
-				converters.removeIf(MappingJackson2XmlHttpMessageConverter.class::isInstance);
+				converters.removeIf(JacksonXmlHttpMessageConverter.class::isInstance);
 				return converters;
 			}
 
@@ -126,7 +125,7 @@ class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
+				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class);
 	}
 
 	@Test
@@ -136,7 +135,7 @@ class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessPartConverters(
 					List<HttpMessageConverter<?>> converters) {
-				converters.removeIf(MappingJackson2XmlHttpMessageConverter.class::isInstance);
+				converters.removeIf(JacksonXmlHttpMessageConverter.class::isInstance);
 				return converters;
 			}
 
@@ -147,7 +146,7 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
+				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class);
 	}
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {

@@ -30,9 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -111,7 +112,7 @@ public class MappedObject {
 			return Collections.emptyList();
 		}
 		List<T> children = new ArrayList<>();
-		node.elements().forEachRemaining((childNode) -> children.add(factory.apply(childNode)));
+		node.values().forEach((childNode) -> children.add(factory.apply(childNode)));
 		return Collections.unmodifiableList(children);
 	}
 
@@ -146,7 +147,7 @@ public class MappedObject {
 		try {
 			return SharedObjectMapper.get().treeToValue(result, type);
 		}
-		catch (IOException ex) {
+		catch (JacksonException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

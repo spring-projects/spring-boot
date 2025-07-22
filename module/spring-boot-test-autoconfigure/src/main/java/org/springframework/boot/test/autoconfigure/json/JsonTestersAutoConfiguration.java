@@ -20,10 +20,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -82,14 +82,14 @@ public final class JsonTestersAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
 	static class JacksonJsonTestersConfiguration {
 
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-		@ConditionalOnBean(ObjectMapper.class)
+		@ConditionalOnBean(JsonMapper.class)
 		@ImportRuntimeHints(JacksonTesterRuntimeHints.class)
-		FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
+		FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(JsonMapper mapper) {
 			return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
 		}
 

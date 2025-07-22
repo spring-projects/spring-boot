@@ -123,6 +123,7 @@ class ElasticsearchClientAutoConfigurationTests {
 	void jacksonJsonpMapperDoesNotUseGlobalObjectMapper() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
+			.withBean(ObjectMapper.class)
 			.run((context) -> {
 				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
 				JacksonJsonpMapper jacksonJsonpMapper = context.getBean(JacksonJsonpMapper.class);

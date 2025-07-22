@@ -162,10 +162,9 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
-		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
-		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
-		addDependencyVersion(attributes, "jackson-dataformat-xml",
-				"com.fasterxml.jackson.dataformat:jackson-dataformat-xml");
+		addDependencyVersion(attributes, "jackson-core", "tools.jackson.core:jackson-core");
+		addDependencyVersion(attributes, "jackson-databind", "tools.jackson.core:jackson-databind");
+		addDependencyVersion(attributes, "jackson-dataformat-xml", "tools.jackson.dataformat:jackson-dataformat-xml");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
