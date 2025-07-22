@@ -86,6 +86,21 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	void shouldOutputNestedAdditionalEcsJson() {
+		this.environment.setProperty("logging.structured.json.add.extra.value", "test");
+		this.encoder.setFormat("ecs");
+		this.encoder.start();
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = encode(event);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("extra");
+		assertThat((Map<String, Object>) deserialized.get("extra")).containsEntry("value", "test");
+		System.out.println(deserialized);
+	}
+
+	@Test
 	void shouldSupportLogstashCommonFormat() {
 		this.encoder.setFormat("logstash");
 		this.encoder.start();

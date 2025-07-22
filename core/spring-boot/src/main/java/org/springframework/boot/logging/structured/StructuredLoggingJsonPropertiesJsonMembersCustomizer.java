@@ -36,10 +36,13 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 
 	private final StructuredLoggingJsonProperties properties;
 
+	private final boolean nested;
+
 	StructuredLoggingJsonPropertiesJsonMembersCustomizer(Instantiator<?> instantiator,
-			StructuredLoggingJsonProperties properties) {
+			StructuredLoggingJsonProperties properties, boolean nested) {
 		this.instantiator = instantiator;
 		this.properties = properties;
+		this.nested = nested;
 	}
 
 	@Override
@@ -48,7 +51,13 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 		members.applyingNameProcessor(this::renameJsonMembers);
 		Map<String, String> add = this.properties.add();
 		if (!CollectionUtils.isEmpty(add)) {
-			add.forEach(members::add);
+			if (this.nested) {
+				ContextPairs contextPairs = new ContextPairs(true, "");
+				members.add().usingPairs(contextPairs.nested((pairs) -> pairs.addMapEntries((source) -> add)));
+			}
+			else {
+				add.forEach(members::add);
+			}
 		}
 		this.properties.customizers(this.instantiator).forEach((customizer) -> customizer.customize(members));
 	}

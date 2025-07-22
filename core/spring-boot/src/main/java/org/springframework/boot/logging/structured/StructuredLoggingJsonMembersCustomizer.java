@@ -53,4 +53,37 @@ public interface StructuredLoggingJsonMembersCustomizer<T> {
 	 */
 	void customize(JsonWriter.Members<T> members);
 
+	/**
+	 * Builder that can be injected into a {@link StructuredLogFormatter} to build the
+	 * {@link StructuredLoggingJsonMembersCustomizer} when specific settings are required.
+	 *
+	 * @param <T> the type being written
+	 * @since 3.5.4
+	 */
+	interface Builder<T> {
+
+		/**
+		 * Use nested fields when adding JSON from user defined properties.
+		 * @return this builder
+		 */
+		default Builder<T> nested() {
+			return nested(true);
+		}
+
+		/**
+		 * Set if nested fields should be used when adding JSON from user defined
+		 * properties.
+		 * @param nested if nested fields are to be used
+		 * @return this builder
+		 */
+		Builder<T> nested(boolean nested);
+
+		/**
+		 * Build the {@link StructuredLoggingJsonMembersCustomizer}.
+		 * @return the built customizer
+		 */
+		StructuredLoggingJsonMembersCustomizer<T> build();
+
+	}
+
 }

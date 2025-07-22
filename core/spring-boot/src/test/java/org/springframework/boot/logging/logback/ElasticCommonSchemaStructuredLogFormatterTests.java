@@ -58,7 +58,12 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		this.environment.setProperty("spring.application.pid", "1");
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null,
-				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
+				TestContextPairs.include(), getThrowableProxyConverter(), this.customizerBuilder);
+	}
+
+	@Test
+	void callsNestedOnCustomizerBuilder() {
+		assertThat(this.customizerBuilder.isNested()).isTrue();
 	}
 
 	@Test
@@ -115,7 +120,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@SuppressWarnings("unchecked")
 	void shouldFormatExceptionUsingStackTracePrinter() {
 		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
-				TestContextPairs.include(), getThrowableProxyConverter(), this.customizer);
+				TestContextPairs.include(), getThrowableProxyConverter(), this.customizerBuilder);
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Collections.emptyMap());
 		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));

@@ -28,6 +28,7 @@ import org.springframework.core.env.Environment;
  * <ul>
  * <li>{@link Environment}</li>
  * <li>{@link StructuredLoggingJsonMembersCustomizer}</li>
+ * <li>{@link StructuredLoggingJsonMembersCustomizer.Builder}</li>
  * <li>{@link StackTracePrinter} (may be {@code null})</li>
  * <li>{@link ContextPairs}</li>
  * </ul>
