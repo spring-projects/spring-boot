@@ -313,9 +313,10 @@ public final class LambdaSafe {
 	 *
 	 * @param <C> the callback type
 	 * @param <A> the primary argument type
+	 * @since 3.4.8
 	 */
 	@FunctionalInterface
-	interface Filter<C, A> {
+	public interface Filter<C, A> {
 
 		/**
 		 * Determine if the given callback matches and should be invoked.
