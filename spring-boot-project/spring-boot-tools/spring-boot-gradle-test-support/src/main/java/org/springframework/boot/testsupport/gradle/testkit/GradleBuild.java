@@ -37,6 +37,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -50,6 +51,8 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Scott Frederick
  */
 public class GradleBuild {
+
+	private final BuildOutput buildOutput;
 
 	private final Dsl dsl;
 
@@ -71,11 +74,12 @@ public class GradleBuild {
 
 	private final Map<String, String> scriptProperties = new HashMap<>();
 
-	public GradleBuild() {
-		this(Dsl.GROOVY);
+	public GradleBuild(BuildOutput buildOutput) {
+		this(buildOutput, Dsl.GROOVY);
 	}
 
-	protected GradleBuild(Dsl dsl) {
+	protected GradleBuild(BuildOutput buildOutput, Dsl dsl) {
+		this.buildOutput = buildOutput;
 		this.dsl = dsl;
 	}
 
@@ -206,10 +210,10 @@ public class GradleBuild {
 	}
 
 	private File getTestKitDir() {
-		File temp = new File(System.getProperty("java.io.tmpdir"));
-		String username = System.getProperty("user.name");
+		File build = this.buildOutput.getRootLocation();
+		File testKitRoot = new File(build, "gradle-test-kit");
 		String gradleVersion = (this.gradleVersion != null) ? this.gradleVersion : "default";
-		return new File(temp, ".gradle-test-kit-" + username + "-" + getBootVersion() + "-" + gradleVersion);
+		return new File(testKitRoot, gradleVersion).getAbsoluteFile();
 	}
 
 	public File getProjectDir() {

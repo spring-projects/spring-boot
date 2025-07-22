@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 import org.springframework.util.Assert;
@@ -34,21 +35,22 @@ import org.springframework.util.ReflectionUtils;
  */
 public class GradleBuildInjectionExtension implements BeforeEachCallback {
 
-	private final GradleBuild gradleBuild;
+	private final String bootVersion;
 
 	GradleBuildInjectionExtension() {
-		this.gradleBuild = new GradleBuild();
-		this.gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
 		String bootVersion = System.getProperty("springBootVersion");
 		Assert.state(bootVersion != null, "Property 'springBootVersion' must be set in build environment");
-		this.gradleBuild.bootVersion(bootVersion);
+		this.bootVersion = bootVersion;
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
+		GradleBuild gradleBuild = new GradleBuild(new BuildOutput(context.getRequiredTestClass()))
+			.gradleVersion(GradleVersions.minimumCompatible())
+			.bootVersion(this.bootVersion);
 		Field field = ReflectionUtils.findField(context.getRequiredTestClass(), "gradleBuild");
 		field.setAccessible(true);
-		field.set(context.getRequiredTestInstance(), this.gradleBuild);
+		field.set(context.getRequiredTestInstance(), gradleBuild);
 	}
 
 }
