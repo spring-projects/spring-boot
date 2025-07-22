@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.AnnotationUtils;
 
 import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
@@ -54,8 +55,8 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			.map(GradleVersion::version)
 			.collect(Collectors.toCollection(TreeSet::new))
 			.last();
-		GradleCompatibility gradleCompatibility = AnnotationUtils
-			.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class)
+		Class<?> testClass = context.getRequiredTestClass();
+		GradleCompatibility gradleCompatibility = AnnotationUtils.findAnnotation(testClass, GradleCompatibility.class)
 			.get();
 		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
 		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {
@@ -65,10 +66,11 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 		}
 		return gradleVersions.flatMap((version) -> {
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();
-			invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, false));
+			BuildOutput buildOutput = new BuildOutput(testClass);
+			invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, false, buildOutput));
 			boolean configurationCache = gradleCompatibility.configurationCache();
 			if (configurationCache && GradleVersion.version(version).equals(highestVersion)) {
-				invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, true));
+				invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, true, buildOutput));
 			}
 			return invocationContexts.stream();
 		});
@@ -81,11 +83,15 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 
 	private static final class GradleVersionTestTemplateInvocationContext implements TestTemplateInvocationContext {
 
+		private final BuildOutput buildOutput;
+
 		private final String gradleVersion;
 
 		private final boolean configurationCache;
 
-		GradleVersionTestTemplateInvocationContext(String gradleVersion, boolean configurationCache) {
+		GradleVersionTestTemplateInvocationContext(String gradleVersion, boolean configurationCache,
+				BuildOutput buildOutput) {
+			this.buildOutput = buildOutput;
 			this.gradleVersion = gradleVersion;
 			this.configurationCache = configurationCache;
 		}
@@ -97,7 +103,8 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new PluginClasspathGradleBuild().gradleVersion(this.gradleVersion);
+			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.buildOutput)
+				.gradleVersion(this.gradleVersion);
 			if (this.configurationCache) {
 				gradleBuild.configurationCache();
 			}

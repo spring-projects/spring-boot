@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
 import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
@@ -42,7 +43,8 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		return Stream.of(Dsl.values()).map(DslTestTemplateInvocationContext::new);
+		BuildOutput buildOutput = new BuildOutput(context.getRequiredTestClass());
+		return Stream.of(Dsl.values()).map((dsl) -> new DslTestTemplateInvocationContext(buildOutput, dsl));
 	}
 
 	@Override
@@ -52,15 +54,18 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 	private static final class DslTestTemplateInvocationContext implements TestTemplateInvocationContext {
 
+		private final BuildOutput buildOutput;
+
 		private final Dsl dsl;
 
-		DslTestTemplateInvocationContext(Dsl dsl) {
+		DslTestTemplateInvocationContext(BuildOutput buildOutput, Dsl dsl) {
+			this.buildOutput = buildOutput;
 			this.dsl = dsl;
 		}
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.dsl);
+			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.buildOutput, this.dsl);
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
