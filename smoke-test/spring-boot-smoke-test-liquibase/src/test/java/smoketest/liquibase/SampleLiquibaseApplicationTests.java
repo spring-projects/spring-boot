@@ -56,7 +56,7 @@ class SampleLiquibaseApplicationTests {
 			assumeThat(serverNotRunning(ex)).isFalse();
 		}
 		assertThat(output).contains("Successfully acquired change log lock")
-			.contains("Creating database history table with name: PUBLIC.DATABASECHANGELOG")
+			.contains("Creating database changelog table with name: PUBLIC.DATABASECHANGELOG")
 			.contains("Table person created")
 			.contains("ChangeSet db/changelog/db.changelog-master.yaml::1::" + "marceloverdijk ran successfully")
 			.contains("New row inserted into person")
