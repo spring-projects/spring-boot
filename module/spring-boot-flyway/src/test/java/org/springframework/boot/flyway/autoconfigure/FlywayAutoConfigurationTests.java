@@ -749,6 +749,14 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void powershellExecutableIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.powershell-executable=my-pwsh")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getPowershellExecutable())
+				.isEqualTo("my-pwsh"));
+	}
+
+	@Test
 	void postgresqlExtensionIsNotLoadedByDefault() {
 		FluentConfiguration configuration = mock(FluentConfiguration.class);
 		new PostgresqlFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);

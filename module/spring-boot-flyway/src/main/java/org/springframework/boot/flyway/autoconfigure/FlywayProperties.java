@@ -259,6 +259,12 @@ public class FlywayProperties {
 	private String scriptPlaceholderSuffix = "__";
 
 	/**
+	 * PowerShell executable to use for running PowerShell scripts. Default to
+	 * "powershell" on Windows, "pwsh" on other platforms.
+	 */
+	private String powershellExecutable;
+
+	/**
 	 * Whether Flyway should execute SQL within a transaction.
 	 */
 	private boolean executeInTransaction = true;
@@ -659,6 +665,14 @@ public class FlywayProperties {
 
 	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
 		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
+	}
+
+	public String getPowershellExecutable() {
+		return this.powershellExecutable;
+	}
+
+	public void setPowershellExecutable(String powershellExecutable) {
+		this.powershellExecutable = powershellExecutable;
 	}
 
 	public boolean isExecuteInTransaction() {

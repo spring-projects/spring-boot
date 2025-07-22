@@ -297,6 +297,8 @@ public class FlywayAutoConfiguration {
 				.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
 			map.from(properties.getScriptPlaceholderSuffix())
 				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
+			map.from(properties.getPowershellExecutable())
+				.to((powershellExecutable) -> configuration.powershellExecutable(powershellExecutable));
 			configureExecuteInTransaction(configuration, properties, map);
 			map.from(properties::getLoggers).to((loggers) -> configuration.loggers(loggers));
 			map.from(properties::getCommunityDbSupportEnabled)
