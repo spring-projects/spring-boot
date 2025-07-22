@@ -74,10 +74,9 @@ jobs:
       - name: Sync to Maven Central
         uses: ./.github/actions/sync-to-maven-central
         with:
+          central-token-password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          central-token-username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           jfrog-cli-config-token: ${{ secrets.JF_ARTIFACTORY_SPRING }}
-          ossrh-s01-staging-profile: ${{ secrets.OSSRH_S01_STAGING_PROFILE }}
-          ossrh-s01-token-password: ${{ secrets.OSSRH_S01_TOKEN_PASSWORD }}
-          ossrh-s01-token-username: ${{ secrets.OSSRH_S01_TOKEN_USERNAME }}
           spring-boot-version: ${{ needs.build-and-stage-release.outputs.version }}
   promote-release:
     name: Promote Release
